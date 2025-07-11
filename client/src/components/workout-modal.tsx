@@ -34,10 +34,10 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
       setWorkoutName(editingWorkout.name);
       setSelectedColor(editingWorkout.color);
       setDailyGoal(editingWorkout.dailyGoal);
-    } else {
+    } else if (!isOpen) {
       resetForm();
     }
-  }, [editingWorkout]);
+  }, [editingWorkout, isOpen]);
 
   const handleSave = () => {
     if (workoutName.trim() && dailyGoal > 0) {
@@ -90,11 +90,22 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
             </Label>
             <Input
               id="daily-goal"
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               min="1"
               max="1000"
-              value={dailyGoal || ''}
-              onChange={(e) => setDailyGoal(parseInt(e.target.value) || 1)}
+              value={dailyGoal.toString()}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, ''); // Only allow digits
+                const numValue = parseInt(value) || 0;
+                if (numValue >= 1 && numValue <= 1000) {
+                  setDailyGoal(numValue);
+                } else if (value === '') {
+                  setDailyGoal(1);
+                }
+              }}
+              onFocus={(e) => e.target.select()} // Select all text when focused
               className="bg-slate-700 border-slate-600 text-white focus:border-green-500 focus:ring-green-500"
             />
           </div>

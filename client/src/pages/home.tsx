@@ -49,9 +49,11 @@ export default function Home() {
 
   const handleAddWorkout = (name: string, color: string, dailyGoal: number) => {
     if (editingWorkout) {
+      // Update the existing workout's goal
       updateWorkoutGoal(editingWorkout.id, dailyGoal);
       setEditingWorkout(null);
     } else {
+      // Add new workout
       addWorkout(name, color, dailyGoal);
     }
   };
