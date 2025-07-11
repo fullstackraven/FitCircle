@@ -34,13 +34,15 @@ Preferred communication style: Simple, everyday language.
 
 ### Workout Management System
 - **Custom Hook**: `useWorkouts` handles all workout state management
-- **Data Structure**: Workouts stored with ID, name, color, and daily log tracking
+- **Data Structure**: Workouts stored with ID, name, color, daily goal, and daily log tracking
+- **Goal System**: Each workout has a customizable daily goal with visual progress tracking
 - **Persistence**: Automatic localStorage sync on every data change
 - **Color System**: 8 predefined workout colors (green, blue, purple, amber, red, pink, cyan, lime)
 
 ### UI Components
-- **Circular Counters**: Large, tappable workout tracking buttons with visual feedback
-- **Modal System**: Add new workout modal with name input and color selection
+- **Progress Circles**: Large, tappable workout tracking buttons with animated progress rings
+- **Goal Visualization**: SVG-based progress rings that fill as users approach their daily goals
+- **Modal System**: Add/edit workout modal with name, goal, and color selection
 - **Responsive Design**: Mobile-first approach with touch-friendly interactions
 - **Dark Theme**: Default dark background with bright colored accent elements
 

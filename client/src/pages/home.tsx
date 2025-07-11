@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, Edit } from 'lucide-react';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { WorkoutModal } from '@/components/workout-modal';
+import { ProgressCircle } from '@/components/progress-circle';
 
 const colorClassMap: { [key: string]: string } = {
   green: 'workout-green',
@@ -19,6 +20,7 @@ export default function Home() {
     addWorkout,
     incrementWorkout,
     decrementWorkout,
+    updateWorkoutGoal,
     getTodaysTotals,
     getRecentActivity,
     getAvailableColors,
@@ -28,6 +30,7 @@ export default function Home() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
+  const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number } | null>(null);
 
   const workouts = getWorkoutArray();
   const todaysTotals = getTodaysTotals();
@@ -44,8 +47,24 @@ export default function Home() {
     decrementWorkout(workoutId);
   };
 
-  const handleAddWorkout = (name: string, color: string) => {
-    addWorkout(name, color);
+  const handleAddWorkout = (name: string, color: string, dailyGoal: number) => {
+    if (editingWorkout) {
+      updateWorkoutGoal(editingWorkout.id, dailyGoal);
+      setEditingWorkout(null);
+    } else {
+      addWorkout(name, color, dailyGoal);
+    }
+  };
+
+  const handleEditWorkout = (workout: any) => {
+    const todayTotal = todaysTotals.find(t => t.id === workout.id);
+    setEditingWorkout({
+      id: workout.id,
+      name: workout.name,
+      color: workout.color,
+      dailyGoal: workout.dailyGoal
+    });
+    setIsModalOpen(true);
   };
 
   const getCurrentDate = () => {
@@ -73,25 +92,42 @@ export default function Home() {
       <section className="mb-8">
         <div className="grid grid-cols-2 gap-6 justify-items-center">
           {/* Configured Workout Circles */}
-          {workouts.map((workout) => (
-            <div key={workout.id} className="flex flex-col items-center space-y-3">
-              <button
-                onClick={() => handleWorkoutClick(workout.id)}
-                className={`w-20 h-20 rounded-full ${colorClassMap[workout.color]} flex items-center justify-center text-white font-bold text-xl shadow-lg transform transition-transform duration-150 hover:scale-105 active:scale-95 ${
-                  clickingWorkout === workout.id ? 'bounce-animation' : ''
-                }`}
-              >
-                <span>{workout.count}</span>
-              </button>
-              <span className="text-sm text-slate-300 font-medium">{workout.name}</span>
-              <button
-                onClick={() => handleUndo(workout.id)}
-                className="text-xs text-slate-400 hover:text-slate-200 underline"
-              >
-                UNDO
-              </button>
-            </div>
-          ))}
+          {workouts.map((workout) => {
+            const todayTotal = todaysTotals.find(t => t.id === workout.id);
+            const currentCount = todayTotal?.count || 0;
+            
+            return (
+              <div key={workout.id} className="flex flex-col items-center space-y-3">
+                <ProgressCircle
+                  count={currentCount}
+                  goal={workout.dailyGoal}
+                  color={workout.color}
+                  onClick={() => handleWorkoutClick(workout.id)}
+                  isAnimating={clickingWorkout === workout.id}
+                />
+                <div className="text-center">
+                  <div className="flex items-center space-x-1">
+                    <span className="text-sm text-slate-300 font-medium">{workout.name}</span>
+                    <button
+                      onClick={() => handleEditWorkout(workout)}
+                      className="text-slate-400 hover:text-slate-200 transition-colors"
+                    >
+                      <Edit size={12} />
+                    </button>
+                  </div>
+                  <div className="text-xs text-slate-400">
+                    {currentCount}/{workout.dailyGoal}
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleUndo(workout.id)}
+                  className="text-xs text-slate-400 hover:text-slate-200 underline"
+                >
+                  UNDO
+                </button>
+              </div>
+            );
+          })}
 
           {/* Empty Circles for Adding New Workouts */}
           {canAddMoreWorkouts() && (
@@ -164,9 +200,13 @@ export default function Home() {
       {/* Workout Configuration Modal */}
       <WorkoutModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingWorkout(null);
+        }}
         onSave={handleAddWorkout}
         availableColors={availableColors}
+        editingWorkout={editingWorkout}
       />
     </div>
   );

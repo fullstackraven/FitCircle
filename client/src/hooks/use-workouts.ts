@@ -5,6 +5,7 @@ export interface Workout {
   name: string;
   color: string;
   count: number;
+  dailyGoal: number;
 }
 
 export interface DailyLog {
@@ -54,13 +55,14 @@ export function useWorkouts() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }, [data]);
 
-  const addWorkout = (name: string, color: string) => {
+  const addWorkout = (name: string, color: string, dailyGoal: number) => {
     const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
     const newWorkout: Workout = {
       id,
       name,
       color,
-      count: 0
+      count: 0,
+      dailyGoal
     };
 
     setData(prev => ({
@@ -183,6 +185,19 @@ export function useWorkouts() {
     return Object.values(data.workouts);
   };
 
+  const updateWorkoutGoal = (workoutId: string, newGoal: number) => {
+    setData(prev => ({
+      ...prev,
+      workouts: {
+        ...prev.workouts,
+        [workoutId]: {
+          ...prev.workouts[workoutId],
+          dailyGoal: newGoal
+        }
+      }
+    }));
+  };
+
   const canAddMoreWorkouts = () => {
     return Object.keys(data.workouts).length < 10;
   };
@@ -192,6 +207,7 @@ export function useWorkouts() {
     addWorkout,
     incrementWorkout,
     decrementWorkout,
+    updateWorkoutGoal,
     getTodaysTotals,
     getRecentActivity,
     getAvailableColors,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,8 +7,9 @@ import { Label } from '@/components/ui/label';
 interface WorkoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string, color: string) => void;
+  onSave: (name: string, color: string, dailyGoal: number) => void;
   availableColors: string[];
+  editingWorkout?: { id: string; name: string; color: string; dailyGoal: number } | null;
 }
 
 const colorClassMap: { [key: string]: string } = {
@@ -22,22 +23,38 @@ const colorClassMap: { [key: string]: string } = {
   lime: 'workout-lime'
 };
 
-export function WorkoutModal({ isOpen, onClose, onSave, availableColors }: WorkoutModalProps) {
+export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editingWorkout }: WorkoutModalProps) {
   const [workoutName, setWorkoutName] = useState('');
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || 'green');
+  const [dailyGoal, setDailyGoal] = useState(10);
+
+  // Initialize form when editing
+  useEffect(() => {
+    if (editingWorkout) {
+      setWorkoutName(editingWorkout.name);
+      setSelectedColor(editingWorkout.color);
+      setDailyGoal(editingWorkout.dailyGoal);
+    } else {
+      resetForm();
+    }
+  }, [editingWorkout]);
 
   const handleSave = () => {
-    if (workoutName.trim()) {
-      onSave(workoutName.trim(), selectedColor);
-      setWorkoutName('');
-      setSelectedColor(availableColors[0] || 'green');
+    if (workoutName.trim() && dailyGoal > 0) {
+      onSave(workoutName.trim(), selectedColor, dailyGoal);
+      resetForm();
       onClose();
     }
   };
 
-  const handleCancel = () => {
+  const resetForm = () => {
     setWorkoutName('');
     setSelectedColor(availableColors[0] || 'green');
+    setDailyGoal(10);
+  };
+
+  const handleCancel = () => {
+    resetForm();
     onClose();
   };
 
@@ -46,7 +63,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors }: Worko
       <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-center text-white">
-            Add New Workout
+            {editingWorkout ? 'Edit Workout' : 'Add New Workout'}
           </DialogTitle>
         </DialogHeader>
         
@@ -66,11 +83,27 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors }: Worko
             />
           </div>
 
+          {/* Daily Goal Input */}
+          <div className="space-y-2">
+            <Label htmlFor="daily-goal" className="text-sm font-medium text-white">
+              Daily Goal
+            </Label>
+            <Input
+              id="daily-goal"
+              type="number"
+              min="1"
+              max="1000"
+              value={dailyGoal}
+              onChange={(e) => setDailyGoal(parseInt(e.target.value) || 1)}
+              className="bg-slate-700 border-slate-600 text-white focus:border-green-500 focus:ring-green-500"
+            />
+          </div>
+
           {/* Color Selection */}
           <div className="space-y-3">
             <Label className="text-sm font-medium text-white">Choose Color</Label>
             <div className="grid grid-cols-4 gap-3">
-              {availableColors.map((color) => (
+              {(editingWorkout ? [...availableColors, editingWorkout.color] : availableColors).map((color) => (
                 <button
                   key={color}
                   onClick={() => setSelectedColor(color)}
@@ -95,10 +128,10 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors }: Worko
             </Button>
             <Button
               onClick={handleSave}
-              disabled={!workoutName.trim()}
+              disabled={!workoutName.trim() || dailyGoal <= 0}
               className="flex-1 workout-green text-white hover:opacity-90"
             >
-              Add Workout
+              {editingWorkout ? 'Update Workout' : 'Add Workout'}
             </Button>
           </div>
         </div>
