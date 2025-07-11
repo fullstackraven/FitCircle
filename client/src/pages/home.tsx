@@ -65,7 +65,7 @@ export default function Home() {
     <div className="container mx-auto px-4 py-6 max-w-md min-h-screen">
       {/* Header Section */}
       <header className="text-center mb-8">
-        <h1 className="text-2xl font-bold mb-2 text-white">Custom Workout Tracker</h1>
+        <h1 className="text-2xl font-bold mb-2 text-white">FitCircle</h1>
         <p className="text-slate-300 text-lg">{getCurrentDate()}</p>
       </header>
 
