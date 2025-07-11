@@ -18,7 +18,7 @@ export interface WorkoutData {
 }
 
 const WORKOUT_COLORS = [
-  'green', 'blue', 'purple', 'amber', 'red', 'pink', 'cyan', 'lime'
+  'green', 'blue', 'purple', 'amber', 'red', 'pink', 'cyan', 'lime', 'orange', 'indigo', 'emerald', 'yellow'
 ];
 
 const STORAGE_KEY = 'workout-tracker-data';
@@ -177,8 +177,8 @@ export function useWorkouts() {
   };
 
   const getAvailableColors = () => {
-    const usedColors = Object.values(data.workouts).map(w => w.color);
-    return WORKOUT_COLORS.filter(color => !usedColors.includes(color));
+    // Return all colors - users can select any color for any workout
+    return WORKOUT_COLORS;
   };
 
   const getWorkoutArray = () => {

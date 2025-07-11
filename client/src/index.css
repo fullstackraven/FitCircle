@@ -35,6 +35,10 @@
   --workout-pink: hsl(330, 81%, 60%);
   --workout-cyan: hsl(188, 94%, 43%);
   --workout-lime: hsl(84, 81%, 44%);
+  --workout-orange: hsl(25, 95%, 53%);
+  --workout-indigo: hsl(243, 75%, 59%);
+  --workout-emerald: hsl(160, 84%, 39%);
+  --workout-yellow: hsl(54, 91%, 60%);
 }
 
 .dark {
@@ -100,6 +104,18 @@
   }
   .workout-lime {
     background-color: var(--workout-lime);
+  }
+  .workout-orange {
+    background-color: var(--workout-orange);
+  }
+  .workout-indigo {
+    background-color: var(--workout-indigo);
+  }
+  .workout-emerald {
+    background-color: var(--workout-emerald);
+  }
+  .workout-yellow {
+    background-color: var(--workout-yellow);
   }
 }
 

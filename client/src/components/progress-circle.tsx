@@ -16,7 +16,11 @@ const colorClassMap: { [key: string]: string } = {
   red: 'workout-red',
   pink: 'workout-pink',
   cyan: 'workout-cyan',
-  lime: 'workout-lime'
+  lime: 'workout-lime',
+  orange: 'workout-orange',
+  indigo: 'workout-indigo',
+  emerald: 'workout-emerald',
+  yellow: 'workout-yellow'
 };
 
 const strokeColorMap: { [key: string]: string } = {
@@ -27,7 +31,11 @@ const strokeColorMap: { [key: string]: string } = {
   red: '#ef4444',
   pink: '#ec4899',
   cyan: '#06b6d4',
-  lime: '#84cc16'
+  lime: '#84cc16',
+  orange: '#f97316',
+  indigo: '#6366f1',
+  emerald: '#10b981',
+  yellow: '#eab308'
 };
 
 export function ProgressCircle({ 

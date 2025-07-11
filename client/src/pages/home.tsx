@@ -12,7 +12,11 @@ const colorClassMap: { [key: string]: string } = {
   red: 'workout-red',
   pink: 'workout-pink',
   cyan: 'workout-cyan',
-  lime: 'workout-lime'
+  lime: 'workout-lime',
+  orange: 'workout-orange',
+  indigo: 'workout-indigo',
+  emerald: 'workout-emerald',
+  yellow: 'workout-yellow'
 };
 
 export default function Home() {
