@@ -53,9 +53,9 @@ export function ProgressCircle({
       }`}
       style={{ width: size, height: size }}
     >
-      {/* Background circle */}
+      {/* Background circle - more transparent */}
       <div 
-        className={`absolute inset-0 rounded-full ${colorClassMap[color]} flex items-center justify-center shadow-lg`}
+        className={`absolute inset-0 rounded-full ${colorClassMap[color]} flex items-center justify-center shadow-lg opacity-40`}
       >
         <span className="text-white font-bold text-xl z-10">{count}</span>
       </div>
@@ -66,29 +66,30 @@ export function ProgressCircle({
         width={size}
         height={size}
       >
-        {/* Background ring */}
+        {/* Background ring - darker and thicker */}
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="rgba(255, 255, 255, 0.2)"
-          strokeWidth={strokeWidth}
+          stroke="rgba(255, 255, 255, 0.1)"
+          strokeWidth={strokeWidth + 2}
           fill="none"
         />
-        {/* Progress ring */}
+        {/* Progress ring - Apple fitness style */}
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
           stroke={strokeColorMap[color] || '#22c55e'}
-          strokeWidth={strokeWidth}
+          strokeWidth={strokeWidth + 2}
           fill="none"
           strokeDasharray={strokeDasharray}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          className="transition-all duration-300 ease-out"
+          className="transition-all duration-500 ease-out"
           style={{
-            filter: progress >= 1 ? 'drop-shadow(0 0 8px currentColor)' : 'none'
+            filter: progress >= 1 ? 'drop-shadow(0 0 12px currentColor)' : 'drop-shadow(0 0 4px currentColor)',
+            opacity: 0.9
           }}
         />
       </svg>

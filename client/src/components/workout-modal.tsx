@@ -93,7 +93,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
               type="number"
               min="1"
               max="1000"
-              value={dailyGoal}
+              value={dailyGoal || ''}
               onChange={(e) => setDailyGoal(parseInt(e.target.value) || 1)}
               className="bg-slate-700 border-slate-600 text-white focus:border-green-500 focus:ring-green-500"
             />

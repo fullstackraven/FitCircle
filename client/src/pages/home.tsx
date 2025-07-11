@@ -115,8 +115,8 @@ export default function Home() {
                       <Edit size={12} />
                     </button>
                   </div>
-                  <div className="text-xs text-slate-400">
-                    {currentCount}/{workout.dailyGoal}
+                  <div className="text-xs text-slate-400 font-mono">
+                    {Math.round((currentCount / workout.dailyGoal) * 100)}%
                   </div>
                 </div>
                 <button
