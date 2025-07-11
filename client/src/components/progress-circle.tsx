@@ -65,23 +65,31 @@ export function ProgressCircle({
     >
       {/* Background circle - more transparent when completed */}
       <div 
-        className={`absolute inset-0 rounded-full ${colorClassMap[color]} flex items-center justify-center shadow-lg transition-opacity duration-300 ${
+        className={`absolute inset-0 rounded-full ${colorClassMap[color]} shadow-lg transition-opacity duration-300 ${
           progress >= 1 ? 'opacity-20' : 'opacity-40'
         }`}
-      >
+      />
+      
+      {/* Content overlay - completely separate from background transparency */}
+      <div className="absolute inset-0 flex items-center justify-center z-20">
         {progress >= 1 ? (
-          <Check size={32} className="z-10 drop-shadow-xl" style={{ 
-            color: '#22c55e', 
-            filter: 'drop-shadow(0 0 12px #22c55e) drop-shadow(0 0 24px #22c55e)',
-            opacity: 1
-          }} />
+          <Check 
+            size={32} 
+            style={{ 
+              color: '#00ff41', // Bright neon green
+              filter: 'drop-shadow(0 0 16px #00ff41) drop-shadow(0 0 32px #00ff41)',
+              opacity: 1
+            }} 
+          />
         ) : (
           <span 
-            className="font-black text-xl z-10 drop-shadow-lg" 
+            className="font-black text-xl" 
             style={{ 
               color: '#ffffff', 
-              textShadow: '0 2px 8px rgba(0,0,0,1), 0 0 16px rgba(0,0,0,0.8)',
-              opacity: 1
+              textShadow: '0 2px 8px rgba(0,0,0,1), 0 4px 16px rgba(0,0,0,0.8), 0 0 8px rgba(255,255,255,0.5)',
+              opacity: 1,
+              fontSize: '20px',
+              fontWeight: 900
             }}
           >
             {count}
