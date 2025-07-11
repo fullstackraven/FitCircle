@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Plus, Minus } from 'lucide-react';
-import { useWorkouts } from '@/hooks/use-workouts';
+import { useWorkoutsApi } from '@/hooks/use-workouts-api';
 import { WorkoutModal } from '@/components/workout-modal';
 
 const colorClassMap: { [key: string]: string } = {
@@ -23,8 +23,9 @@ export default function Home() {
     getRecentActivity,
     getAvailableColors,
     getWorkoutArray,
-    canAddMoreWorkouts
-  } = useWorkouts();
+    canAddMoreWorkouts,
+    isLoading
+  } = useWorkoutsApi();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
@@ -34,13 +35,13 @@ export default function Home() {
   const recentActivity = getRecentActivity();
   const availableColors = getAvailableColors();
 
-  const handleWorkoutClick = (workoutId: string) => {
+  const handleWorkoutClick = (workoutId: number) => {
     incrementWorkout(workoutId);
-    setClickingWorkout(workoutId);
+    setClickingWorkout(workoutId.toString());
     setTimeout(() => setClickingWorkout(null), 200);
   };
 
-  const handleUndo = (workoutId: string) => {
+  const handleUndo = (workoutId: number) => {
     decrementWorkout(workoutId);
   };
 
@@ -61,6 +62,17 @@ export default function Home() {
   const minSlots = Math.max(4, workouts.length + (canAddMoreWorkouts() ? 1 : 0));
   const emptySlots = Math.max(0, minSlots - workouts.length);
 
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-6 max-w-md min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-slate-300">Loading workouts...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-md min-h-screen">
       {/* Header Section */}
@@ -78,10 +90,10 @@ export default function Home() {
               <button
                 onClick={() => handleWorkoutClick(workout.id)}
                 className={`w-20 h-20 rounded-full ${colorClassMap[workout.color]} flex items-center justify-center text-white font-bold text-xl shadow-lg transform transition-transform duration-150 hover:scale-105 active:scale-95 ${
-                  clickingWorkout === workout.id ? 'bounce-animation' : ''
+                  clickingWorkout === workout.id.toString() ? 'bounce-animation' : ''
                 }`}
               >
-                <span>{workout.count}</span>
+                <span>{todaysTotals.find(t => t.id === workout.id)?.count || 0}</span>
               </button>
               <span className="text-sm text-slate-300 font-medium">{workout.name}</span>
               <button
