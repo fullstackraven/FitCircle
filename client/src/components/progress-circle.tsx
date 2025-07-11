@@ -70,9 +70,22 @@ export function ProgressCircle({
         }`}
       >
         {progress >= 1 ? (
-          <Check size={32} className="text-green-500 z-10 drop-shadow-xl" style={{ filter: 'drop-shadow(0 0 8px #22c55e)' }} />
+          <Check size={32} className="z-10 drop-shadow-xl" style={{ 
+            color: '#22c55e', 
+            filter: 'drop-shadow(0 0 12px #22c55e) drop-shadow(0 0 24px #22c55e)',
+            opacity: 1
+          }} />
         ) : (
-          <span className="text-white font-black text-xl z-10 drop-shadow-lg" style={{ color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>{count}</span>
+          <span 
+            className="font-black text-xl z-10 drop-shadow-lg" 
+            style={{ 
+              color: '#ffffff', 
+              textShadow: '0 2px 8px rgba(0,0,0,1), 0 0 16px rgba(0,0,0,0.8)',
+              opacity: 1
+            }}
+          >
+            {count}
+          </span>
         )}
       </div>
       
