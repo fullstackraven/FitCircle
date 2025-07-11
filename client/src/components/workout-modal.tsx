@@ -26,7 +26,7 @@ const colorClassMap: { [key: string]: string } = {
 export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editingWorkout }: WorkoutModalProps) {
   const [workoutName, setWorkoutName] = useState('');
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || 'green');
-  const [dailyGoal, setDailyGoal] = useState(10);
+  const [dailyGoal, setDailyGoal] = useState<number | string>(10);
 
   // Initialize form when editing
   useEffect(() => {
@@ -40,8 +40,9 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
   }, [editingWorkout, isOpen]);
 
   const handleSave = () => {
-    if (workoutName.trim() && dailyGoal > 0) {
-      onSave(workoutName.trim(), selectedColor, dailyGoal);
+    const finalGoal = typeof dailyGoal === 'string' ? parseInt(dailyGoal) || 1 : dailyGoal;
+    if (workoutName.trim() && finalGoal > 0) {
+      onSave(workoutName.trim(), selectedColor, finalGoal);
       resetForm();
       onClose();
     }
@@ -93,15 +94,25 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
               type="text"
               inputMode="numeric"
               pattern="[0-9]*"
-              min="1"
-              max="1000"
               value={dailyGoal.toString()}
               onChange={(e) => {
                 const value = e.target.value.replace(/\D/g, ''); // Only allow digits
-                const numValue = parseInt(value) || 0;
-                if (numValue >= 1 && numValue <= 1000) {
+                
+                if (value === '') {
+                  // Allow empty field for editing
+                  setDailyGoal('');
+                  return;
+                }
+                
+                const numValue = parseInt(value);
+                // Allow up to 4 digits (1-9999)
+                if (numValue >= 1 && numValue <= 9999) {
                   setDailyGoal(numValue);
-                } else if (value === '') {
+                }
+              }}
+              onBlur={(e) => {
+                // If field is empty on blur, set to 1
+                if (dailyGoal === '' || dailyGoal === 0) {
                   setDailyGoal(1);
                 }
               }}
@@ -139,7 +150,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
             </Button>
             <Button
               onClick={handleSave}
-              disabled={!workoutName.trim() || dailyGoal <= 0}
+              disabled={!workoutName.trim() || !dailyGoal || (typeof dailyGoal === 'number' && dailyGoal <= 0)}
               className="flex-1 workout-green text-white hover:opacity-90"
             >
               {editingWorkout ? 'Update Workout' : 'Add Workout'}
