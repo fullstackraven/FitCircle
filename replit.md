@@ -25,10 +25,10 @@ Preferred communication style: Simple, everyday language.
 - **Development**: Hot reloading with Vite middleware integration
 
 ### Data Storage Solutions
-- **Primary Storage**: PostgreSQL database with Neon serverless driver for workout data persistence
-- **Database Schema**: Workouts and workout logs tables with Drizzle ORM
-- **API Layer**: RESTful endpoints for workout and workout log management
-- **Frontend Integration**: React Query for data fetching and caching
+- **Primary Storage**: Local browser localStorage for workout data persistence
+- **Database**: PostgreSQL with Neon serverless driver (configured for future use)
+- **Schema**: Workout and workout log tables defined with Drizzle ORM
+- **Current Implementation**: localStorage-based for simplicity and immediate functionality
 
 ## Key Components
 
