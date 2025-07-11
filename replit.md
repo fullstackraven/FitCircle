@@ -1,8 +1,8 @@
-# Workout Tracker Web App
+# FitCircle - Workout Tracker Web App
 
 ## Overview
 
-This is a mobile-friendly workout tracking web app inspired by the "Push-Ups" iOS app. It features a clean, dark-themed interface with large circular counters for tracking different exercises. The app uses localStorage for data persistence and provides an intuitive tap-to-increment interface with undo functionality.
+FitCircle is a mobile-friendly workout tracking web app inspired by the "Push-Ups" iOS app. It features a clean, dark-themed interface with large circular counters for tracking different exercises. The app uses localStorage for data persistence and provides an intuitive tap-to-increment interface with undo functionality.
 
 ## User Preferences
 
