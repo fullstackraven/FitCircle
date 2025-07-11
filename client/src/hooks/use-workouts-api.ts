@@ -29,7 +29,10 @@ export function useWorkoutsApi() {
   // Fetch workouts
   const { data: workouts = [], isLoading: workoutsLoading } = useQuery({
     queryKey: ['/api/workouts'],
-    queryFn: () => apiRequest('/api/workouts', { method: 'GET' })
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/workouts');
+      return await response.json();
+    }
   });
 
   // Fetch recent workout logs
@@ -41,37 +44,42 @@ export function useWorkoutsApi() {
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       const startDate = getDateString(sevenDaysAgo);
       
-      return apiRequest(`/api/workout-logs/range/${startDate}/${today}`, { method: 'GET' });
+      const response = await apiRequest('GET', `/api/workout-logs/range/${startDate}/${today}`);
+      return await response.json();
     }
   });
 
   // Create workout mutation
   const createWorkoutMutation = useMutation({
-    mutationFn: (data: { name: string; color: string }) => 
-      apiRequest('/api/workouts', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
-      }),
+    mutationFn: async (data: { name: string; color: string }) => {
+      console.log('Creating workout API call:', data);
+      const response = await apiRequest('POST', '/api/workouts', data);
+      const result = await response.json();
+      console.log('Created workout:', result);
+      return result;
+    },
     onSuccess: () => {
+      console.log('Workout created successfully, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ['/api/workouts'] });
+    },
+    onError: (error) => {
+      console.error('Error creating workout:', error);
     }
   });
 
   // Update workout log mutation
   const updateWorkoutLogMutation = useMutation({
-    mutationFn: (data: { workoutId: number; date: string; count: number }) => 
-      apiRequest('/api/workout-logs', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
-      }),
+    mutationFn: async (data: { workoutId: number; date: string; count: number }) => {
+      const response = await apiRequest('POST', '/api/workout-logs', data);
+      return await response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/workout-logs/range'] });
     }
   });
 
   const addWorkout = (name: string, color: string) => {
+    console.log('Adding workout:', { name, color });
     createWorkoutMutation.mutate({ name, color });
   };
 
