@@ -198,6 +198,25 @@ export function useWorkouts() {
     }));
   };
 
+  const deleteWorkout = (workoutId: string) => {
+    setData(prev => {
+      const { [workoutId]: removed, ...remainingWorkouts } = prev.workouts;
+      
+      // Also remove all logs for this workout
+      const cleanedDailyLogs = Object.fromEntries(
+        Object.entries(prev.dailyLogs).map(([date, log]) => {
+          const { [workoutId]: removedLog, ...remainingLog } = log;
+          return [date, remainingLog];
+        })
+      );
+      
+      return {
+        workouts: remainingWorkouts,
+        dailyLogs: cleanedDailyLogs
+      };
+    });
+  };
+
   const canAddMoreWorkouts = () => {
     return Object.keys(data.workouts).length < 10;
   };
@@ -207,6 +226,7 @@ export function useWorkouts() {
     addWorkout,
     incrementWorkout,
     decrementWorkout,
+    deleteWorkout,
     updateWorkoutGoal,
     getTodaysTotals,
     getRecentActivity,

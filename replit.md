@@ -95,6 +95,15 @@ Preferred communication style: Simple, everyday language.
 - `npm run start`: Production server startup
 - `npm run db:push`: Database schema updates via Drizzle
 
+### Recent Changes (January 2025)
+
+- **Delete Functionality**: Added trash can icon next to undo button for workout deletion
+- **Icon-Based Controls**: Replaced text "UNDO" button with backward arrow (Undo2) icon
+- **Expanded Color System**: Added 4 new colors (orange, indigo, emerald, yellow) for 12 total colors
+- **Color Selection Freedom**: All 12 colors available for every workout creation (no longer filters used colors)
+- **Workout Limit**: Confirmed 10 maximum workouts (increased from previous 7-workout constraint)
+- **Complete Data Cleanup**: Delete function removes workout and all historical log data
+
 ### Key Architectural Decisions
 
 1. **localStorage over Database**: Chose client-side storage for simplicity and offline functionality, with database prepared for future user accounts

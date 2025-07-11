@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Minus, Edit } from 'lucide-react';
+import { Plus, Minus, Edit, Undo2, Trash2 } from 'lucide-react';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
@@ -24,6 +24,7 @@ export default function Home() {
     addWorkout,
     incrementWorkout,
     decrementWorkout,
+    deleteWorkout,
     updateWorkoutGoal,
     getTodaysTotals,
     getRecentActivity,
@@ -49,6 +50,12 @@ export default function Home() {
 
   const handleUndo = (workoutId: string) => {
     decrementWorkout(workoutId);
+  };
+
+  const handleDeleteWorkout = (workoutId: string) => {
+    if (confirm('Are you sure you want to delete this workout? This will remove all its data.')) {
+      deleteWorkout(workoutId);
+    }
   };
 
   const handleAddWorkout = (name: string, color: string, dailyGoal: number) => {
@@ -125,12 +132,22 @@ export default function Home() {
                     {Math.round((currentCount / workout.dailyGoal) * 100)}%
                   </div>
                 </div>
-                <button
-                  onClick={() => handleUndo(workout.id)}
-                  className="text-xs text-slate-400 hover:text-slate-200 underline"
-                >
-                  UNDO
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handleUndo(workout.id)}
+                    className="text-slate-400 hover:text-slate-200 transition-colors p-1"
+                    title="Undo last rep"
+                  >
+                    <Undo2 size={14} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteWorkout(workout.id)}
+                    className="text-slate-400 hover:text-red-400 transition-colors p-1"
+                    title="Delete workout"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </div>
             );
           })}
