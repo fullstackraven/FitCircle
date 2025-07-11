@@ -57,7 +57,7 @@ export function ProgressCircle({
       <div 
         className={`absolute inset-0 rounded-full ${colorClassMap[color]} flex items-center justify-center shadow-lg opacity-40`}
       >
-        <span className="text-white font-bold text-xl z-10">{count}</span>
+        <span className="text-white font-black text-xl z-10 drop-shadow-lg" style={{ color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>{count}</span>
       </div>
       
       {/* Progress ring */}
