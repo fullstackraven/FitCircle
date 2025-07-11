@@ -38,11 +38,23 @@ export default function Home() {
   const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number } | null>(null);
 
   const workouts = getWorkoutArray();
+  
+  // Get the correct workout object for click handling  
+  const getWorkoutById = (id: string) => workouts.find(w => w.id === id);
   const todaysTotals = getTodaysTotals();
   const recentActivity = getRecentActivity();
   const availableColors = getAvailableColors();
 
   const handleWorkoutClick = (workoutId: string) => {
+    const todayTotal = todaysTotals.find(t => t.id === workoutId);
+    const currentCount = todayTotal?.count || 0;
+    const workout = getWorkoutById(workoutId);
+    
+    // Don't allow clicking if goal is already met
+    if (workout && currentCount >= workout.dailyGoal) {
+      return;
+    }
+    
     incrementWorkout(workoutId);
     setClickingWorkout(workoutId);
     setTimeout(() => setClickingWorkout(null), 200);
@@ -129,7 +141,7 @@ export default function Home() {
                     </button>
                   </div>
                   <div className="text-xs text-slate-400 font-mono">
-                    {Math.round((currentCount / workout.dailyGoal) * 100)}%
+                    {currentCount >= workout.dailyGoal ? 'COMPLETED!' : `${Math.round((currentCount / workout.dailyGoal) * 100)}%`}
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">

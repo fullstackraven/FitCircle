@@ -1,3 +1,5 @@
+import { Check } from 'lucide-react';
+
 interface ProgressCircleProps {
   count: number;
   goal: number;
@@ -61,11 +63,17 @@ export function ProgressCircle({
       }`}
       style={{ width: size, height: size }}
     >
-      {/* Background circle - more transparent */}
+      {/* Background circle - more transparent when completed */}
       <div 
-        className={`absolute inset-0 rounded-full ${colorClassMap[color]} flex items-center justify-center shadow-lg opacity-40`}
+        className={`absolute inset-0 rounded-full ${colorClassMap[color]} flex items-center justify-center shadow-lg transition-opacity duration-300 ${
+          progress >= 1 ? 'opacity-20' : 'opacity-40'
+        }`}
       >
-        <span className="text-white font-black text-xl z-10 drop-shadow-lg" style={{ color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>{count}</span>
+        {progress >= 1 ? (
+          <Check size={32} className="text-green-500 z-10 drop-shadow-xl" style={{ filter: 'drop-shadow(0 0 8px #22c55e)' }} />
+        ) : (
+          <span className="text-white font-black text-xl z-10 drop-shadow-lg" style={{ color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>{count}</span>
+        )}
       </div>
       
       {/* Progress ring */}
@@ -96,18 +104,13 @@ export function ProgressCircle({
           strokeLinecap="round"
           className="transition-all duration-500 ease-out"
           style={{
-            filter: progress >= 1 ? 'drop-shadow(0 0 12px currentColor)' : 'drop-shadow(0 0 4px currentColor)',
+            filter: progress >= 1 ? 'drop-shadow(0 0 16px currentColor) drop-shadow(0 0 32px currentColor)' : 'drop-shadow(0 0 4px currentColor)',
             opacity: 0.9
           }}
         />
       </svg>
       
-      {/* Goal achieved indicator */}
-      {progress >= 1 && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="absolute inset-0 rounded-full bg-white opacity-20 animate-pulse" />
-        </div>
-      )}
+
     </button>
   );
 }
