@@ -1,23 +1,33 @@
-const CACHE_NAME = "fitcircle-cache-v1";
-const urlsToCache = [
-  "/",
-  "/index.html",
-  "/assets/index-[your-js-file].js",
-  "/assets/index-[your-css-file].css",
-  "/assets/icon-192.png",
-  "/assets/icon-512.png"
-];
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open("v1").then((cache) => {
+      const filesToCache = [
+        "/",
+        "/index.html",
+        "/index.js",
+        "/manifest.json",
+        "/icon-192.png",
+        "/icon-512.png",
+        "/assets/index-jfoYbGNU.js",
+        "/assets/index-C3jjMwyE.css",
+      ];
 
-// Replace with your actual hashed filenames!
-
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
-  );
+      // Try to cache everything individually, even if some fail
+      return Promise.allSettled(
+        filesToCache.map((file) =>
+          cache.add(file).catch((err) =>
+            console.warn(`⚠️ Failed to cache ${file}:`, err)
+          )
+        )
+      );
+    })
+  );
 });
 
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request).then(resp => resp || fetch(event.request))
-  );
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
 });
