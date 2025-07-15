@@ -7,7 +7,7 @@ export default defineConfig({
   base: '/FitCircle/', // Replace 'fitcircle' with your actual repository name
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './client/src'),
+      '@': path.resolve(__dirname, './src'),
       '@shared': path.resolve(__dirname, './shared'),
     },
   },
@@ -15,7 +15,7 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     rollupOptions: {
-      input: './client/index.html',
+      input: './index.html',
     },
   },
   server: {
