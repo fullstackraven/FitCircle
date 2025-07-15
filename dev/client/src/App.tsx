@@ -7,7 +7,7 @@ import NotFound from "@/pages/not-found";
 function AppRoutes() {
   return (
     <Switch>
-      <Route path="/FitCircle/" component={Home} />
+      <Route path="/" component={Home} />
       <Route component={NotFound} />
     </Switch>
   );
