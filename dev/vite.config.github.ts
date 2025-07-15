@@ -4,7 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/fitcircle/', // Replace 'fitcircle' with your actual repository name
+  base: '/FitCircle/', // Replace 'fitcircle' with your actual repository name
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './client/src'),
