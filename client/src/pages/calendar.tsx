@@ -100,7 +100,7 @@ export default function CalendarPage() {
                 color: '#000000',
                 fontWeight: 'bold'
               } : {}}
-            ></div>
+            >
               {format(date, "d")}
               {complete && (
                 <CheckCircle className="absolute -top-1 -right-2 text-white opacity-80 w-4 h-4" />
