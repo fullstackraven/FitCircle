@@ -187,8 +187,9 @@ export default function Home() {
             </div>
           ))}
         </div>
-      </section>
-
+  
+       </section>
+      
       {/* Today's Totals Section */}
       {todaysTotals.some(w => w.count > 0) && (
         <section className="mb-8">
