@@ -118,7 +118,7 @@ export default function Home() {
 
       {/* Workout Circles Grid */}
       <section className="mb-8">
-        <div className="grid grid-cols-2 gap-6 justify-items-center p-4"></div>
+        <div className="grid grid-cols-2 gap-6 justify-items-center p-4">
           {workouts.map((workout) => {
             const todayTotal = todaysTotals.find(t => t.id === workout.id);
             const currentCount = todayTotal?.count || 0;
@@ -187,8 +187,7 @@ export default function Home() {
             </div>
           ))}
         </div>
-  
-       </section>
+      </section>
       
       {/* Today's Totals Section */}
       {todaysTotals.some(w => w.count > 0) && (
