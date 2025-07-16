@@ -93,8 +93,14 @@ export default function CalendarPage() {
               key={date.toISOString()}
               className={`aspect-square rounded-xl flex items-center justify-center relative text-sm font-medium
                 ${isCurrent ? "bg-slate-800 text-white" : "bg-slate-700 text-slate-500"} 
-                ${complete ? "bg-green-600 text-white" : ""}`}
-            >
+                ${complete ? "bg-green-500 text-white shadow-lg shadow-green-500/50" : ""}`}
+              style={complete ? {
+                backgroundColor: '#00ff41',
+                boxShadow: '0 0 20px rgba(0, 255, 65, 0.6), 0 0 40px rgba(0, 255, 65, 0.3)',
+                color: '#000000',
+                fontWeight: 'bold'
+              } : {}}
+            ></div>
               {format(date, "d")}
               {complete && (
                 <CheckCircle className="absolute -top-1 -right-2 text-white opacity-80 w-4 h-4" />
