@@ -266,7 +266,7 @@ export function useWorkouts() {
   };
 
   const getMonthlyStats = (year: number, month: number) => {
-    const workoutArray = Object.values(data.workouts);
+    const workoutArray = Object.values(data.workouts || {});
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
     let totalReps = 0;
@@ -274,10 +274,19 @@ export function useWorkouts() {
     let goalsHit = 0;
     let totalPossibleGoals = 0;
 
+    if (workoutArray.length === 0) {
+      return {
+        totalReps: 0,
+        workoutsCompleted: 0,
+        monthlyGoalPercentage: 0,
+        daysInMonth
+      };
+    }
+
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day);
       const dateStr = getDateString(date);
-      const dayLog = data.dailyLogs[dateStr] || {};
+      const dayLog = data.dailyLogs?.[dateStr] || {};
       
       let dayWorkoutsCompleted = 0;
       
@@ -305,10 +314,17 @@ export function useWorkouts() {
   };
 
   const getTotalStats = () => {
-    const workoutArray = Object.values(data.workouts);
+    const workoutArray = Object.values(data.workouts || {});
     let totalReps = 0;
     let totalGoalsHit = 0;
     let totalPossibleGoals = 0;
+
+    if (workoutArray.length === 0 || !data.dailyLogs) {
+      return {
+        totalReps: 0,
+        totalGoalPercentage: 0
+      };
+    }
 
     Object.entries(data.dailyLogs).forEach(([, dayLog]) => {
       workoutArray.forEach(workout => {
@@ -328,14 +344,20 @@ export function useWorkouts() {
   };
 
   const getIndividualWorkoutTotals = () => {
-    const workoutArray = Object.values(data.workouts);
+    const workoutArray = Object.values(data.workouts || {});
+    
+    if (workoutArray.length === 0) {
+      return [];
+    }
     
     return workoutArray.map(workout => {
       let totalReps = 0;
       
-      Object.entries(data.dailyLogs).forEach(([, dayLog]) => {
-        totalReps += dayLog[workout.id] || 0;
-      });
+      if (data.dailyLogs) {
+        Object.entries(data.dailyLogs).forEach(([, dayLog]) => {
+          totalReps += dayLog[workout.id] || 0;
+        });
+      }
       
       return {
         id: workout.id,

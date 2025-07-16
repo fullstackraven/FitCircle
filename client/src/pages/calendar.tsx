@@ -51,8 +51,8 @@ export default function CalendarPage() {
     getTotalStats,
     getIndividualWorkoutTotals
   } = useWorkouts();
-  const workouts = getWorkoutArray();
-  const logs = getDailyLogs();
+  const workouts = getWorkoutArray() || [];
+  const logs = getDailyLogs() || {};
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isStatsOpen, setIsStatsOpen] = useState(false);
@@ -74,7 +74,7 @@ export default function CalendarPage() {
   const isDayComplete = (date: Date) => {
     const dateStr = date.toISOString().split("T")[0];
     const dayLog = logs[dateStr];
-    if (!dayLog) return false;
+    if (!dayLog || !workouts.length) return false;
     return workouts.every(w => dayLog[w.id] >= w.dailyGoal);
   };
 
@@ -97,9 +97,17 @@ export default function CalendarPage() {
     setJournalText('');
   };
 
-  const monthlyStats = getMonthlyStats(currentMonth.getFullYear(), currentMonth.getMonth());
-  const totalStats = getTotalStats();
-  const individualWorkoutTotals = getIndividualWorkoutTotals();
+  const monthlyStats = getMonthlyStats(currentMonth.getFullYear(), currentMonth.getMonth()) || {
+    totalReps: 0,
+    workoutsCompleted: 0,
+    monthlyGoalPercentage: 0,
+    daysInMonth: 0
+  };
+  const totalStats = getTotalStats() || {
+    totalReps: 0,
+    totalGoalPercentage: 0
+  };
+  const individualWorkoutTotals = getIndividualWorkoutTotals() || [];
 
   return (
     <div className="p-4 max-w-3xl mx-auto min-h-screen">
@@ -145,7 +153,7 @@ export default function CalendarPage() {
           const isCurrent = isSameMonth(date, currentMonth);
           const complete = isDayComplete(date);
           const dateStr = date.toISOString().split("T")[0];
-          const hasJournal = getJournalEntry(dateStr).length > 0;
+          const hasJournal = (getJournalEntry(dateStr) || "").length > 0;
 
           return (
             <div
