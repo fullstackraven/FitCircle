@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Minus, Edit, Undo2, Trash2 } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays } from 'lucide-react';
+import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
@@ -20,6 +21,8 @@ const colorClassMap: { [key: string]: string } = {
 };
 
 export default function Home() {
+  const [, navigate] = useLocation();
+
   const {
     addWorkout,
     incrementWorkout,
@@ -38,8 +41,6 @@ export default function Home() {
   const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number } | null>(null);
 
   const workouts = getWorkoutArray();
-  
-  // Get the correct workout object for click handling  
   const getWorkoutById = (id: string) => workouts.find(w => w.id === id);
   const todaysTotals = getTodaysTotals();
   const recentActivity = getRecentActivity();
@@ -49,12 +50,9 @@ export default function Home() {
     const todayTotal = todaysTotals.find(t => t.id === workoutId);
     const currentCount = todayTotal?.count || 0;
     const workout = getWorkoutById(workoutId);
-    
-    // Don't allow clicking if goal is already met
-    if (workout && currentCount >= workout.dailyGoal) {
-      return;
-    }
-    
+
+    if (workout && currentCount >= workout.dailyGoal) return;
+
     incrementWorkout(workoutId);
     setClickingWorkout(workoutId);
     setTimeout(() => setClickingWorkout(null), 200);
@@ -72,17 +70,14 @@ export default function Home() {
 
   const handleAddWorkout = (name: string, color: string, dailyGoal: number) => {
     if (editingWorkout) {
-      // Update the existing workout's goal
       updateWorkoutGoal(editingWorkout.id, dailyGoal);
       setEditingWorkout(null);
     } else {
-      // Add new workout
       addWorkout(name, color, dailyGoal);
     }
   };
 
   const handleEditWorkout = (workout: any) => {
-    const todayTotal = todaysTotals.find(t => t.id === workout.id);
     setEditingWorkout({
       id: workout.id,
       name: workout.name,
@@ -101,26 +96,33 @@ export default function Home() {
     });
   };
 
-  // Fill empty slots up to 4 minimum (or current count if more than 4)
   const minSlots = Math.max(4, workouts.length + (canAddMoreWorkouts() ? 1 : 0));
   const emptySlots = Math.max(0, minSlots - workouts.length);
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-md min-h-screen">
       {/* Header Section */}
-      <header className="text-center mb-8">
+      <header className="relative text-center mb-8">
         <h1 className="text-2xl font-bold mb-2 text-white">FitCircle</h1>
         <p className="text-slate-300 text-lg">{getCurrentDate()}</p>
+
+        {/* Calendar View Icon */}
+        <button
+          onClick={() => navigate('/calendar')}
+          className="absolute top-0 right-0 text-slate-400 hover:text-white transition-colors"
+          title="View Calendar"
+        >
+          <CalendarDays size={22} />
+        </button>
       </header>
 
       {/* Workout Circles Grid */}
       <section className="mb-8">
         <div className="grid grid-cols-2 gap-6 justify-items-center">
-          {/* Configured Workout Circles */}
           {workouts.map((workout) => {
             const todayTotal = todaysTotals.find(t => t.id === workout.id);
             const currentCount = todayTotal?.count || 0;
-            
+
             return (
               <div key={workout.id} className="flex flex-col items-center space-y-3">
                 <ProgressCircle
@@ -164,7 +166,6 @@ export default function Home() {
             );
           })}
 
-          {/* Empty Circles for Adding New Workouts */}
           {canAddMoreWorkouts() && (
             <div className="flex flex-col items-center space-y-3">
               <button
@@ -174,11 +175,10 @@ export default function Home() {
                 <Plus size={24} />
               </button>
               <span className="text-sm text-slate-500 font-medium">Add Workout</span>
-              <div className="h-5"></div> {/* Spacer for alignment */}
+              <div className="h-5"></div>
             </div>
           )}
 
-          {/* Additional empty slots for visual balance */}
           {Array.from({ length: Math.max(0, emptySlots - (canAddMoreWorkouts() ? 1 : 0)) }).map((_, index) => (
             <div key={`empty-${index}`} className="flex flex-col items-center space-y-3">
               <div className="w-20 h-20 rounded-full border-2 border-dashed border-slate-700 opacity-30"></div>
@@ -232,7 +232,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* Workout Configuration Modal */}
       <WorkoutModal
         isOpen={isModalOpen}
         onClose={() => {
