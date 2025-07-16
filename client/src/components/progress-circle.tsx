@@ -50,7 +50,10 @@ export function ProgressCircle({
   isAnimating = false 
 }: ProgressCircleProps) {
   const progress = goal > 0 ? Math.min(count / goal, 1) : 0;
-  const radius = (size - strokeWidth) / 2;
+  // Add padding to accommodate the stroke width
+  const padding = strokeWidth + 4;
+  const svgSize = size + padding * 2;
+  const radius = size / 2;
   const circumference = radius * 2 * Math.PI;
   const strokeDasharray = circumference;
   const strokeDashoffset = isNaN(progress) ? circumference : circumference - (progress * circumference);
@@ -61,17 +64,31 @@ export function ProgressCircle({
       className={`relative transform transition-transform duration-150 hover:scale-105 active:scale-95 ${
         isAnimating ? 'bounce-animation' : ''
       }`}
-      style={{ width: size, height: size }}
+      style={{ width: svgSize, height: svgSize }}
     >
       {/* Background circle - more transparent when completed */}
       <div 
-        className={`absolute inset-0 rounded-full ${colorClassMap[color]} shadow-lg transition-opacity duration-300 ${
+        className={`absolute rounded-full ${colorClassMap[color]} shadow-lg transition-opacity duration-300 ${
           progress >= 1 ? 'opacity-20' : 'opacity-40'
         }`}
+        style={{ 
+          width: size, 
+          height: size, 
+          top: padding, 
+          left: padding 
+        }}
       />
       
       {/* Content overlay - completely separate from background transparency */}
-      <div className="absolute inset-0 flex items-center justify-center z-20">
+      <div 
+        className="absolute flex items-center justify-center z-20"
+        style={{ 
+          width: size, 
+          height: size, 
+          top: padding, 
+          left: padding 
+        }}
+      >
         {progress >= 1 ? (
           <Check 
             size={32} 
@@ -99,14 +116,15 @@ export function ProgressCircle({
       
       {/* Progress ring */}
       <svg
-        className="absolute inset-0 transform -rotate-90"
-        width={size}
-        height={size}
+        className="absolute transform -rotate-90"
+        width={svgSize}
+        height={svgSize}
+        style={{ top: 0, left: 0 }}
       >
         {/* Background ring - darker and thicker */}
         <circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={svgSize / 2}
+          cy={svgSize / 2}
           r={radius}
           stroke="rgba(255, 255, 255, 0.1)"
           strokeWidth={strokeWidth + 2}
@@ -114,8 +132,8 @@ export function ProgressCircle({
         />
         {/* Progress ring - Apple fitness style */}
         <circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={svgSize / 2}
+          cy={svgSize / 2}
           r={radius}
           stroke={strokeColorMap[color] || '#22c55e'}
           strokeWidth={strokeWidth + 2}

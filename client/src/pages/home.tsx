@@ -123,18 +123,14 @@ export default function Home() {
             const todayTotal = todaysTotals.find(t => t.id === workout.id);
             const currentCount = todayTotal?.count || 0;
 
-      // Calculate padding based on stroke width
-           const strokeWidth = 8; // Adjust this as needed
-           const adjustedSize = (workout.size || 100) + strokeWidth; // Add stroke width to size
-
             return (
               <div key={workout.id} className="flex flex-col items-center space-y-3">
                 <ProgressCircle
                   count={currentCount}
                   goal={workout.dailyGoal}
                   color={workout.color}
-                  size={adjustedSize}
-                  strokeWidth={strokeWidth}
+                  size={80}
+                  strokeWidth={8}
                   onClick={() => handleWorkoutClick(workout.id)}
                   isAnimating={clickingWorkout === workout.id}
                 />
