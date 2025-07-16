@@ -12,9 +12,15 @@ export interface DailyLog {
   [workoutId: string]: number;
 }
 
+export interface JournalEntry {
+  date: string;
+  entry: string;
+}
+
 export interface WorkoutData {
   workouts: { [id: string]: Workout };
   dailyLogs: { [date: string]: DailyLog };
+  journalEntries: { [date: string]: string };
   lastDate?: string;
 }
 
@@ -36,6 +42,7 @@ export function useWorkouts() {
   const [data, setData] = useState<WorkoutData>({
     workouts: {},
     dailyLogs: {},
+    journalEntries: {},
     lastDate: getTodayString()
   });
 
@@ -244,6 +251,82 @@ export function useWorkouts() {
     return Object.keys(data.workouts).length < 10;
   };
 
+  const addJournalEntry = (date: string, entry: string) => {
+    setData(prev => ({
+      ...prev,
+      journalEntries: {
+        ...prev.journalEntries,
+        [date]: entry
+      }
+    }));
+  };
+
+  const getJournalEntry = (date: string) => {
+    return data.journalEntries[date] || '';
+  };
+
+  const getMonthlyStats = (year: number, month: number) => {
+    const workoutArray = Object.values(data.workouts);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    let totalReps = 0;
+    let workoutsCompleted = 0;
+    let goalsHit = 0;
+    let totalPossibleGoals = 0;
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      const dateStr = getDateString(date);
+      const dayLog = data.dailyLogs[dateStr] || {};
+      
+      let dayWorkoutsCompleted = 0;
+      
+      workoutArray.forEach(workout => {
+        const count = dayLog[workout.id] || 0;
+        totalReps += count;
+        if (count >= workout.dailyGoal) {
+          goalsHit++;
+          dayWorkoutsCompleted++;
+        }
+        totalPossibleGoals++;
+      });
+      
+      if (dayWorkoutsCompleted === workoutArray.length && workoutArray.length > 0) {
+        workoutsCompleted++;
+      }
+    }
+
+    return {
+      totalReps,
+      workoutsCompleted,
+      monthlyGoalPercentage: totalPossibleGoals > 0 ? (goalsHit / totalPossibleGoals) * 100 : 0,
+      daysInMonth
+    };
+  };
+
+  const getTotalStats = () => {
+    const workoutArray = Object.values(data.workouts);
+    let totalReps = 0;
+    let totalGoalsHit = 0;
+    let totalPossibleGoals = 0;
+
+    Object.entries(data.dailyLogs).forEach(([, dayLog]) => {
+      workoutArray.forEach(workout => {
+        const count = dayLog[workout.id] || 0;
+        totalReps += count;
+        if (count >= workout.dailyGoal) {
+          totalGoalsHit++;
+        }
+        totalPossibleGoals++;
+      });
+    });
+
+    return {
+      totalReps,
+      totalGoalPercentage: totalPossibleGoals > 0 ? (totalGoalsHit / totalPossibleGoals) * 100 : 0
+    };
+  };
+
   return {
     workouts: data.workouts,
     addWorkout,
@@ -257,5 +340,9 @@ export function useWorkouts() {
     getWorkoutArray,
     canAddMoreWorkouts,
     getDailyLogs: () => data.dailyLogs,
+    addJournalEntry,
+    getJournalEntry,
+    getMonthlyStats,
+    getTotalStats,
   };
 }
