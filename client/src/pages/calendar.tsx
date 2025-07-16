@@ -7,7 +7,8 @@ import {
   BarChart3,
   BookOpen,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  TrendingUp
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
@@ -24,6 +25,21 @@ import {
   isSameMonth
 } from "date-fns";
 
+const colorClassMap: { [key: string]: string } = {
+  green: 'workout-green',
+  blue: 'workout-blue',
+  purple: 'workout-purple',
+  amber: 'workout-amber',
+  red: 'workout-red',
+  pink: 'workout-pink',
+  cyan: 'workout-cyan',
+  lime: 'workout-lime',
+  orange: 'workout-orange',
+  indigo: 'workout-indigo',
+  emerald: 'workout-emerald',
+  yellow: 'workout-yellow'
+};
+
 export default function CalendarPage() {
   const [, navigate] = useLocation();
   const { 
@@ -32,13 +48,15 @@ export default function CalendarPage() {
     addJournalEntry, 
     getJournalEntry, 
     getMonthlyStats, 
-    getTotalStats 
+    getTotalStats,
+    getIndividualWorkoutTotals
   } = useWorkouts();
   const workouts = getWorkoutArray();
   const logs = getDailyLogs();
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isStatsOpen, setIsStatsOpen] = useState(false);
+  const [isWorkoutTotalsOpen, setIsWorkoutTotalsOpen] = useState(false);
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [journalText, setJournalText] = useState('');
@@ -81,6 +99,7 @@ export default function CalendarPage() {
 
   const monthlyStats = getMonthlyStats(currentMonth.getFullYear(), currentMonth.getMonth());
   const totalStats = getTotalStats();
+  const individualWorkoutTotals = getIndividualWorkoutTotals();
 
   return (
     <div className="p-4 max-w-3xl mx-auto min-h-screen">
@@ -172,8 +191,8 @@ export default function CalendarPage() {
             <div className="mt-4 bg-slate-800 rounded-lg p-4 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{monthlyStats.totalReps}</div>
-                  <div className="text-sm text-slate-400">Total Reps This Month</div>
+                  <div className="text-2xl font-bold text-white">{totalStats.totalReps}</div>
+                  <div className="text-sm text-slate-400">Total Reps All Time</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-white">{monthlyStats.workoutsCompleted}</div>
@@ -187,6 +206,42 @@ export default function CalendarPage() {
                   <div className="text-2xl font-bold text-blue-400">{totalStats.totalGoalPercentage.toFixed(1)}%</div>
                   <div className="text-sm text-slate-400">Goals Hit Total</div>
                 </div>
+              </div>
+
+              {/* Individual Workout Totals Panel */}
+              <div className="mt-4">
+                <Collapsible open={isWorkoutTotalsOpen} onOpenChange={setIsWorkoutTotalsOpen}>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors">
+                    <div className="flex items-center space-x-2">
+                      <TrendingUp className="w-4 h-4 text-amber-400" />
+                      <span className="text-white font-medium text-sm">Individual Workout Totals</span>
+                    </div>
+                    {isWorkoutTotalsOpen ? (
+                      <ChevronUp className="w-4 h-4 text-slate-400" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-slate-400" />
+                    )}
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="mt-3 space-y-2">
+                      {individualWorkoutTotals.length > 0 ? (
+                        individualWorkoutTotals.map((workout) => (
+                          <div key={workout.id} className="flex items-center justify-between p-2 bg-slate-600 rounded">
+                            <div className="flex items-center space-x-2">
+                              <div className={`w-3 h-3 rounded-full ${colorClassMap[workout.color]}`}></div>
+                              <span className="text-sm font-medium text-white">{workout.name}</span>
+                            </div>
+                            <span className="text-sm font-bold text-white">{workout.totalReps}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-4">
+                          <p className="text-slate-400 text-sm">No workouts created yet</p>
+                        </div>
+                      )}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
               </div>
             </div>
           </CollapsibleContent>

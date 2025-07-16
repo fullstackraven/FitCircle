@@ -327,6 +327,25 @@ export function useWorkouts() {
     };
   };
 
+  const getIndividualWorkoutTotals = () => {
+    const workoutArray = Object.values(data.workouts);
+    
+    return workoutArray.map(workout => {
+      let totalReps = 0;
+      
+      Object.entries(data.dailyLogs).forEach(([, dayLog]) => {
+        totalReps += dayLog[workout.id] || 0;
+      });
+      
+      return {
+        id: workout.id,
+        name: workout.name,
+        color: workout.color,
+        totalReps
+      };
+    });
+  };
+
   return {
     workouts: data.workouts,
     addWorkout,
@@ -344,5 +363,6 @@ export function useWorkouts() {
     getJournalEntry,
     getMonthlyStats,
     getTotalStats,
+    getIndividualWorkoutTotals,
   };
 }
