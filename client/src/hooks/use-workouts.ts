@@ -71,7 +71,7 @@ export function useWorkouts() {
   useEffect(() => {
     const checkDateChange = () => {
       const today = getTodayString();
-      if (data.lastDate !== today) {
+      if (data.lastDate && data.lastDate !== today) {
         setData(prev => ({
           ...prev,
           lastDate: today,
@@ -82,10 +82,14 @@ export function useWorkouts() {
       }
     };
 
-    checkDateChange();
+    // Only check after initial load
+    if (data.lastDate) {
+      checkDateChange();
+    }
+    
     const interval = setInterval(checkDateChange, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [data.lastDate]);
+  }, []);
 
   const addWorkout = (name: string, color: string, dailyGoal: number) => {
     const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
