@@ -17,7 +17,39 @@
     <script type="module" src="./src/main.tsx"></script>
     <script>
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("service-worker.js");
+        navigator.serviceWorker.register("service-worker.js")
+          .then((registration) => {
+            console.log('Service Worker registered successfully');
+            
+            // Check for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed') {
+                  if (navigator.serviceWorker.controller) {
+                    // New update available
+                    console.log('New content is available; please refresh.');
+                    // Optionally show a notification to the user
+                    if (confirm('New version available! Refresh to update?')) {
+                      newWorker.postMessage({ type: 'SKIP_WAITING' });
+                      window.location.reload();
+                    }
+                  } else {
+                    // Content is cached for the first time
+                    console.log('Content is cached for offline use.');
+                  }
+                }
+              });
+            });
+            
+            // Listen for controlling service worker changes
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+              window.location.reload();
+            });
+          })
+          .catch((error) => {
+            console.error('Service Worker registration failed:', error);
+          });
       }
     </script>
   </body>
