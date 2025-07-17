@@ -72,7 +72,11 @@ export default function CalendarPage() {
   }
 
   const isDayComplete = (date: Date) => {
-    const dateStr = date.toISOString().split("T")[0];
+    // Use local timezone date formatting to match workout data
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
     const dayLog = logs[dateStr];
     if (!dayLog || !workouts.length) return false;
     return workouts.every(w => dayLog[w.id] >= w.dailyGoal);
@@ -82,7 +86,11 @@ export default function CalendarPage() {
     if (!isSameMonth(date, currentMonth)) return;
     
     setSelectedDate(date);
-    const dateStr = date.toISOString().split("T")[0];
+    // Use local timezone date formatting to match workout data
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
     const existingEntry = getJournalEntry(dateStr);
     setJournalText(existingEntry);
     setIsJournalOpen(true);
@@ -91,7 +99,11 @@ export default function CalendarPage() {
   const handleJournalSubmit = () => {
     if (!selectedDate) return;
     
-    const dateStr = selectedDate.toISOString().split("T")[0];
+    // Use local timezone date formatting to match workout data
+    const year = selectedDate.getFullYear();
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
     addJournalEntry(dateStr, journalText);
     setSelectedDate(null);
     setJournalText('');
@@ -152,7 +164,11 @@ export default function CalendarPage() {
         {days.map(date => {
           const isCurrent = isSameMonth(date, currentMonth);
           const complete = isDayComplete(date);
-          const dateStr = date.toISOString().split("T")[0];
+          // Use local timezone date formatting to match workout data
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          const dateStr = `${year}-${month}-${day}`;
           const hasJournal = (getJournalEntry(dateStr) || "").length > 0;
 
           return (
