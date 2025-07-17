@@ -180,15 +180,12 @@ export default function CalendarPage() {
                 ${complete ? "bg-green-500 text-white shadow-lg shadow-green-500/50" : ""}`}
               style={complete ? {
                 backgroundColor: '#00ff41',
-                boxShadow: '0 0 20px rgba(0, 255, 65, 0.6), 0 0 40px rgba(0, 255, 65, 0.3)',
+                boxShadow: '0 0 8px rgba(0, 255, 65, 0.4), 0 0 16px rgba(0, 255, 65, 0.2)',
                 color: '#000000',
                 fontWeight: 'bold'
               } : {}}
             >
               {format(date, "d")}
-              {complete && (
-                <CheckCircle className="absolute -top-1 -right-2 text-white opacity-80 w-4 h-4" />
-              )}
               {hasJournal && (
                 <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-400 rounded-full" />
               )}
