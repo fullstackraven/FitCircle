@@ -96,7 +96,7 @@ export function useWorkouts() {
     
     const interval = setInterval(checkDateChange, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [data.lastDate]);
 
   const addWorkout = (name: string, color: string, dailyGoal: number) => {
     const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
@@ -197,7 +197,12 @@ export function useWorkouts() {
       const dateString = getDateString(date);
       const dayLog = data.dailyLogs[dateString] || {};
 
-      const isYesterday = date.getDate() === new Date().getDate() - 1;
+      // Calculate yesterday properly using date strings instead of getDate() comparison
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayString = getDateString(yesterday);
+      const isYesterday = dateString === yesterdayString;
+      
       const formattedDate = isYesterday ? 'Yesterday' : date.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
