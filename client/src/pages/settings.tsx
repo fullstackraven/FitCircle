@@ -1,6 +1,6 @@
 
-import { useState, useEffect } from 'react';
-import { ArrowLeft, Download, RefreshCw, Trash2, AlertTriangle } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, Download, Upload, RefreshCw, Trash2, AlertTriangle } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +18,9 @@ import {
 export default function SettingsPage() {
   const [, navigate] = useLocation();
   const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importStatus, setImportStatus] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const exportData = () => {
     setIsExporting(true);
@@ -50,9 +53,12 @@ export default function SettingsPage() {
       exportDate: new Date().toISOString(),
     };
 
-    // Get all workout-related data
+    // Get all workout-related data, meditation logs, and fasting logs
     Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('fitcircle_workouts') || key.startsWith('fitcircle_logs')) {
+      if (key.startsWith('fitcircle_workouts') || 
+          key.startsWith('fitcircle_logs') || 
+          key.startsWith('fitcircle_meditation_logs') ||
+          key.startsWith('fitcircle_fasting_logs')) {
         data.workouts[key] = localStorage.getItem(key);
       }
     });
@@ -98,6 +104,106 @@ export default function SettingsPage() {
     });
     
     return rows.map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    setImportStatus('');
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const csv = e.target?.result as string;
+        const result = parseCSVAndRestore(csv);
+        
+        if (result.success) {
+          setImportStatus(`Successfully imported ${result.itemsRestored} data items!`);
+          setTimeout(() => {
+            setImportStatus('');
+            navigate('/'); // Go back to home to see the restored data
+          }, 2000);
+        } else {
+          setImportStatus(`Import failed: ${result.error}`);
+        }
+      } catch (error) {
+        setImportStatus('Failed to read file. Please ensure it\'s a valid FitCircle CSV export.');
+      } finally {
+        setIsImporting(false);
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }
+    };
+
+    reader.onerror = () => {
+      setImportStatus('Failed to read file.');
+      setIsImporting(false);
+    };
+
+    reader.readAsText(file);
+  };
+
+  const parseCSVAndRestore = (csv: string) => {
+    try {
+      const lines = csv.split('\n');
+      const header = lines[0];
+      
+      // Verify it's our CSV format
+      if (!header.includes('Category') || !header.includes('Field') || !header.includes('Value')) {
+        return { success: false, error: 'Invalid CSV format. Please use a FitCircle export file.' };
+      }
+
+      let itemsRestored = 0;
+      const dataToRestore: { [key: string]: string } = {};
+
+      // Parse each line
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+
+        // Parse CSV row (handle quoted values)
+        const matches = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+        if (!matches || matches.length < 3) continue;
+
+        const category = matches[0].replace(/"/g, '');
+        const field = matches[1].replace(/"/g, '');
+        const value = matches[2].replace(/"/g, '');
+
+        if (!value) continue;
+
+        // Convert back to localStorage keys
+        if (category === 'Profile') {
+          dataToRestore[`fitcircle_${field}`] = value;
+          itemsRestored++;
+        } else if (category === 'Measurements') {
+          dataToRestore[`fitcircle_${field}`] = value;
+          itemsRestored++;
+        } else if (category === 'Workouts') {
+          dataToRestore[field] = value; // Workout keys already have full fitcircle_ prefix
+          itemsRestored++;
+        } else if (category === 'Settings') {
+          dataToRestore[`fitcircle_${field}`] = value;
+          itemsRestored++;
+        }
+      }
+
+      // Restore data to localStorage
+      Object.entries(dataToRestore).forEach(([key, value]) => {
+        localStorage.setItem(key, value);
+      });
+
+      return { success: true, itemsRestored };
+    } catch (error) {
+      return { success: false, error: 'Failed to parse CSV data.' };
+    }
   };
 
   const refreshData = () => {
@@ -167,6 +273,30 @@ export default function SettingsPage() {
               <Download className="w-4 h-4" />
               <span>{isExporting ? 'Exporting...' : 'Export Data'}</span>
             </Button>
+
+            {/* Import Data */}
+            <div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv"
+                onChange={handleFileUpload}
+                style={{ display: 'none' }}
+              />
+              <Button
+                onClick={handleImportClick}
+                disabled={isImporting}
+                className="w-full flex items-center justify-center space-x-2 bg-green-600 hover:bg-green-700"
+              >
+                <Upload className="w-4 h-4" />
+                <span>{isImporting ? 'Importing...' : 'Import Data'}</span>
+              </Button>
+              {importStatus && (
+                <p className={`text-sm mt-2 ${importStatus.includes('failed') || importStatus.includes('Failed') ? 'text-red-400' : 'text-green-400'}`}>
+                  {importStatus}
+                </p>
+              )}
+            </div>
 
             {/* Refresh Data */}
             <Button

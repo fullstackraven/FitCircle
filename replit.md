@@ -119,6 +119,7 @@ Preferred communication style: Simple, everyday language.
 - **Measurements Icon**: Changed from scale to human body icon (User) in dashboard
 - **Intermittent Fasting**: Added complete intermittent fasting log feature with duration tracking and heat bar visualization
 - **Meditation Feature**: Added meditation timer with circular progress indicator, pause/resume functionality, meditation session logging, and gong sound effect on completion
+- **Data Import/Export**: Added CSV import functionality to restore data from previous exports, creating a complete backup and recovery system
 
 ### Data Persistence and iOS Considerations
 
@@ -129,7 +130,10 @@ Preferred communication style: Simple, everyday language.
 - **Storage Pressure**: If your device runs very low on storage, iOS may clear browser data including localStorage
 - **PWA Installation**: Installing the app as a PWA (Add to Home Screen) provides better data persistence than using it in Safari
 
-**Backup Recommendations**: Consider periodically exporting your data through the Settings page or implementing a simple backup feature.
+**Backup and Recovery Features**: 
+- **Export Data**: Create CSV backups of all your data (workouts, measurements, fasting logs, meditation sessions)
+- **Import Data**: Restore data from previously exported CSV files
+- **Data Included**: Profile information, body measurements, workout history, intermittent fasting logs, meditation session logs
 
 ### Key Architectural Decisions
 
