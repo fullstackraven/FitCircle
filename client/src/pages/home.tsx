@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { WorkoutModal } from '@/components/workout-modal';
@@ -141,6 +141,15 @@ export default function Home() {
     >
       {/* Header Section */}
       <header className="relative text-center mb-8">
+        {/* Hamburger Menu Icon */}
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="absolute top-0 left-0 text-slate-400 hover:text-white transition-colors"
+          title="Open Menu"
+        >
+          <Menu size={22} />
+        </button>
+
         <h1 className="text-2xl font-bold mb-2 text-white">FitCircle</h1>
         <p className="text-slate-300 text-lg">{getCurrentDate()}</p>
 
