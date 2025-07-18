@@ -45,6 +45,16 @@ export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
 
+  // Update username when it changes in localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUserName(localStorage.getItem('fitcircle_username') || 'User');
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   const workouts = getWorkoutArray();
   const getWorkoutById = (id: string) => workouts.find(w => w.id === id);
   const todaysTotals = getTodaysTotals();
