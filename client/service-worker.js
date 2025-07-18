@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'fitcircle-v3';
+const CACHE_NAME = 'fitcircle-v4-' + Date.now();
 const urlsToCache = [
   '/',
   '/index.html',
@@ -9,27 +9,34 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', (event) => {
+  console.log('Service worker installing with cache:', CACHE_NAME);
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => cache.addAll(urlsToCache))
-      .then(() => self.skipWaiting())
+      .then(() => {
+        console.log('Service worker installed, skipping waiting');
+        return self.skipWaiting();
+      })
   );
-  console.log('Service worker installed.');
 });
 
 self.addEventListener('activate', (event) => {
+  console.log('Service worker activating, clearing old caches');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
+            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
-    }).then(() => self.clients.claim())
+    }).then(() => {
+      console.log('Service worker activated, claiming clients');
+      return self.clients.claim();
+    })
   );
-  console.log('Service worker activated.');
 });
 
 self.addEventListener('fetch', (event) => {

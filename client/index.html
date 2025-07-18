@@ -14,7 +14,7 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./src/main.tsx"></script>
+    <script type="module" src="./src/main.tsx?v=1752842831"></script>
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("service-worker.js")
@@ -30,9 +30,20 @@
                     // New update available
                     console.log('New content is available; please refresh.');
                     // Auto-refresh for PWA updates
-                    console.log('Auto-refreshing for new version...');
+                    console.log('New version detected, forcing refresh...');
                     newWorker.postMessage({ type: 'SKIP_WAITING' });
-                    window.location.reload();
+                    // Clear all caches before reload
+                    if ('caches' in window) {
+                      caches.keys().then(function(names) {
+                        return Promise.all(names.map(function(name) {
+                          return caches.delete(name);
+                        }));
+                      }).then(function() {
+                        window.location.reload(true);
+                      });
+                    } else {
+                      window.location.reload(true);
+                    }
                   } else {
                     // Content is cached for the first time
                     console.log('Content is cached for offline use.');
