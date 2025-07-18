@@ -1,9 +1,11 @@
-import { useState } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, User, Scale, Settings, Moon, Sun } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Switch } from '@/components/ui/switch';
 
 const colorClassMap: { [key: string]: string } = {
   green: 'workout-green',
@@ -39,6 +41,9 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
   const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number } | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
 
   const workouts = getWorkoutArray();
   const getWorkoutById = (id: string) => workouts.find(w => w.id === id);
@@ -99,8 +104,46 @@ export default function Home() {
   const minSlots = Math.max(4, workouts.length + (canAddMoreWorkouts() ? 1 : 0));
   const emptySlots = Math.max(0, minSlots - workouts.length);
 
+  // Touch/swipe handling
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchEndX, setTouchEndX] = useState(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX - touchEndX > 100) {
+      setIsSidebarOpen(true);
+    }
+  };
+
+  // Theme management
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('fitcircle_theme');
+    if (savedTheme) {
+      setIsDarkMode(savedTheme === 'dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    localStorage.setItem('fitcircle_theme', newTheme ? 'dark' : 'light');
+    document.documentElement.classList.toggle('light', !newTheme);
+  };
+
   return (
-    <div className="container mx-auto px-4 py-6 max-w-md min-h-screen">
+    <div 
+      className="container mx-auto px-4 py-6 max-w-md min-h-screen"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Header Section */}
       <header className="relative text-center mb-8">
         <h1 className="text-2xl font-bold mb-2 text-white">FitCircle</h1>
@@ -244,6 +287,69 @@ export default function Home() {
         availableColors={availableColors}
         editingWorkout={editingWorkout}
       />
+
+      {/* Sidebar Dashboard */}
+      <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+        <SheetContent side="left" className="w-80 bg-slate-900 border-slate-700">
+          <div className="flex flex-col h-full">
+            {/* User Profile Section */}
+            <div 
+              className="flex items-center space-x-3 p-4 border-b border-slate-700 cursor-pointer hover:bg-slate-800 transition-colors"
+              onClick={() => {
+                setIsSidebarOpen(false);
+                navigate('/profile');
+              }}
+            >
+              <img src="/icon-192.png" alt="FitCircle" className="w-12 h-12 rounded-full" />
+              <div>
+                <div className="text-white font-medium">{userName}</div>
+                <div className="text-slate-400 text-xs">view profile</div>
+              </div>
+            </div>
+
+            {/* Dashboard Menu Items */}
+            <div className="flex-1 py-4">
+              {/* Measurements */}
+              <div 
+                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  navigate('/measurements');
+                }}
+              >
+                <Scale className="w-5 h-5 text-slate-400" />
+                <span className="text-white">Measurements</span>
+              </div>
+
+              {/* Dark/Light Mode Toggle */}
+              <div className="flex items-center justify-between p-4">
+                <div className="flex items-center space-x-3">
+                  {isDarkMode ? <Moon className="w-5 h-5 text-slate-400" /> : <Sun className="w-5 h-5 text-slate-400" />}
+                  <span className="text-white">{isDarkMode ? 'Dark Mode' : 'Light Mode'}</span>
+                </div>
+                <Switch checked={isDarkMode} onCheckedChange={toggleTheme} />
+              </div>
+
+              {/* Settings */}
+              <div 
+                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  navigate('/settings');
+                }}
+              >
+                <Settings className="w-5 h-5 text-slate-400" />
+                <span className="text-white">Settings</span>
+              </div>
+            </div>
+
+            {/* Version */}
+            <div className="p-4 border-t border-slate-700">
+              <div className="text-slate-500 text-xs text-center">Version 1.0.0</div>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
