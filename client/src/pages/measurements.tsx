@@ -96,7 +96,7 @@ export default function MeasurementsPage() {
                 <Input
                   value={height}
                   onChange={(e) => setHeight(e.target.value)}
-                  placeholder="e.g., 5'10\" or 178cm"
+                  placeholder="e.g., 5'10 or 178cm"
                   className="bg-slate-700 border-slate-600 text-white"
                 />
               </div>
