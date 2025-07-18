@@ -114,7 +114,7 @@ export default function FastingPage() {
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>
           </button>
-          <h1 className="text-xl font-semibold">Intermittent Fasting</h1>
+          <h1 className="text-xl font-semibold">Fasting Log</h1>
           <div className="w-16"></div>
         </div>
 
