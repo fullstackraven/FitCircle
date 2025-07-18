@@ -127,7 +127,7 @@ export default function Home() {
   };
 
   const handleTouchEnd = () => {
-    if (touchEndX - touchStartX > 100) {
+    if (touchStartX - touchEndX < -100) {
       setIsSidebarOpen(true);
     }
   };
@@ -191,6 +191,7 @@ export default function Home() {
         {/* Calendar View Icon */}
         <button
           onClick={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             navigate('/calendar');
           }}
@@ -342,7 +343,20 @@ export default function Home() {
                 navigate('/profile');
               }}
             >
-              <img src="/icon-192.png" alt="FitCircle" className="w-12 h-12 rounded-full" />
+              <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center overflow-hidden">
+                <img 
+                  src="./icon-192.png" 
+                  alt="FitCircle" 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const parent = e.currentTarget.parentElement;
+                    if (parent) {
+                      parent.innerHTML = '<div class="text-white font-bold text-lg">FC</div>';
+                    }
+                  }}
+                />
+              </div>
               <div>
                 <div className="text-white font-medium">{userName}</div>
                 <div className="text-slate-400 text-xs">view profile</div>

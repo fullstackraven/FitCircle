@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Download, RefreshCw, Trash2, AlertTriangle } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,13 @@ import {
 export default function SettingsPage() {
   const [, navigate] = useLocation();
   const [isExporting, setIsExporting] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('fitcircle_theme');
+    const isDark = savedTheme === 'dark' || !savedTheme;
+    setIsDarkMode(isDark);
+  }, []);
 
   const exportData = () => {
     setIsExporting(true);
@@ -118,7 +125,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className={`min-h-screen ${isDarkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
       <div className="container mx-auto px-4 py-6 max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -134,8 +141,8 @@ export default function SettingsPage() {
         </div>
 
         {/* Manage Data Section */}
-        <div className="bg-slate-800 rounded-lg p-6">
-          <h2 className="text-lg font-semibold mb-6 text-white">Manage Data</h2>
+        <div className={`${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'} rounded-lg p-6`}>
+          <h2 className={`text-lg font-semibold mb-6 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Manage Data</h2>
           
           <div className="space-y-4">
             {/* Export Data */}

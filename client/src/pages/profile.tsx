@@ -11,6 +11,7 @@ export default function ProfilePage() {
   const [age, setAge] = useState('');
   const [birthday, setBirthday] = useState('');
   const [fitnessGoal, setFitnessGoal] = useState('');
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   useEffect(() => {
     // Load saved profile data
@@ -18,6 +19,11 @@ export default function ProfilePage() {
     setAge(localStorage.getItem('fitcircle_age') || '');
     setBirthday(localStorage.getItem('fitcircle_birthday') || '');
     setFitnessGoal(localStorage.getItem('fitcircle_fitness_goal') || '');
+    
+    // Load theme
+    const savedTheme = localStorage.getItem('fitcircle_theme');
+    const isDark = savedTheme === 'dark' || !savedTheme;
+    setIsDarkMode(isDark);
   }, []);
 
   const handleSave = () => {
@@ -29,7 +35,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className={`min-h-screen ${isDarkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
       <div className="container mx-auto px-4 py-6 max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -46,8 +52,8 @@ export default function ProfilePage() {
 
         {/* Profile Icon */}
         <div className="flex justify-center mb-8">
-          <div className="w-24 h-24 bg-slate-800 rounded-full flex items-center justify-center">
-            <User className="w-12 h-12 text-slate-400" />
+          <div className={`w-24 h-24 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-200'} rounded-full flex items-center justify-center`}>
+            <User className={`w-12 h-12 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`} />
           </div>
         </div>
 
@@ -59,7 +65,7 @@ export default function ProfilePage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
-              className="bg-slate-800 border-slate-700 text-white"
+              className={isDarkMode ? "bg-slate-800 border-slate-700 text-white" : "bg-white border-slate-300 text-slate-900"}
             />
           </div>
 
@@ -70,7 +76,7 @@ export default function ProfilePage() {
               value={age}
               onChange={(e) => setAge(e.target.value)}
               placeholder="Enter your age"
-              className="bg-slate-800 border-slate-700 text-white"
+              className={isDarkMode ? "bg-slate-800 border-slate-700 text-white" : "bg-white border-slate-300 text-slate-900"}
             />
           </div>
 
@@ -80,7 +86,7 @@ export default function ProfilePage() {
               type="date"
               value={birthday}
               onChange={(e) => setBirthday(e.target.value)}
-              className="bg-slate-800 border-slate-700 text-white"
+              className={isDarkMode ? "bg-slate-800 border-slate-700 text-white" : "bg-white border-slate-300 text-slate-900"}
             />
           </div>
 
@@ -90,7 +96,7 @@ export default function ProfilePage() {
               value={fitnessGoal}
               onChange={(e) => setFitnessGoal(e.target.value)}
               placeholder="e.g., Build muscle, Lose weight, Stay healthy"
-              className="bg-slate-800 border-slate-700 text-white"
+              className={isDarkMode ? "bg-slate-800 border-slate-700 text-white" : "bg-white border-slate-300 text-slate-900"}
             />
           </div>
 
