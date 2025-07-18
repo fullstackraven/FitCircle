@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, Plus } from 'lucide-react';
+import { ArrowLeft, Clock, Plus, Edit, Trash2 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,7 @@ export default function FastingPage() {
   const [, navigate] = useLocation();
   const [logs, setLogs] = useState<FastingLog[]>([]);
   const [isLogging, setIsLogging] = useState(false);
+  const [editingLog, setEditingLog] = useState<FastingLog | null>(null);
   
   // Form state
   const [startDate, setStartDate] = useState('');
@@ -76,21 +77,60 @@ export default function FastingPage() {
       return;
     }
 
-    const newLog: FastingLog = {
-      id: Date.now().toString(),
-      startDate,
-      startTime,
-      endDate,
-      endTime,
-      duration,
-      loggedAt: new Date().toISOString()
-    };
+    if (editingLog) {
+      // Update existing log
+      const updatedLogs = logs.map(log => 
+        log.id === editingLog.id 
+          ? { ...log, startDate, startTime, endDate, endTime, duration }
+          : log
+      );
+      setLogs(updatedLogs);
+      localStorage.setItem('fitcircle_fasting_logs', JSON.stringify(updatedLogs));
+      setEditingLog(null);
+    } else {
+      // Create new log
+      const newLog: FastingLog = {
+        id: Date.now().toString(),
+        startDate,
+        startTime,
+        endDate,
+        endTime,
+        duration,
+        loggedAt: new Date().toISOString()
+      };
 
-    const updatedLogs = [newLog, ...logs];
-    setLogs(updatedLogs);
-    localStorage.setItem('fitcircle_fasting_logs', JSON.stringify(updatedLogs));
+      const updatedLogs = [newLog, ...logs];
+      setLogs(updatedLogs);
+      localStorage.setItem('fitcircle_fasting_logs', JSON.stringify(updatedLogs));
+    }
 
     // Reset form
+    setStartDate('');
+    setStartTime('');
+    setEndDate('');
+    setEndTime('');
+    setIsLogging(false);
+  };
+
+  const handleEditLog = (log: FastingLog) => {
+    setEditingLog(log);
+    setStartDate(log.startDate);
+    setStartTime(log.startTime);
+    setEndDate(log.endDate);
+    setEndTime(log.endTime);
+    setIsLogging(true);
+  };
+
+  const handleDeleteLog = (logId: string) => {
+    if (confirm('Are you sure you want to delete this fasting log?')) {
+      const updatedLogs = logs.filter(log => log.id !== logId);
+      setLogs(updatedLogs);
+      localStorage.setItem('fitcircle_fasting_logs', JSON.stringify(updatedLogs));
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingLog(null);
     setStartDate('');
     setStartTime('');
     setEndDate('');
@@ -136,7 +176,7 @@ export default function FastingPage() {
           <div className="mb-8 bg-slate-800 rounded-lg p-6">
             <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
               <Clock className="w-5 h-5" />
-              <span>Log Fast</span>
+              <span>{editingLog ? 'Edit Fast' : 'Log Fast'}</span>
             </h2>
             
             <div className="space-y-4">
@@ -206,16 +246,10 @@ export default function FastingPage() {
                   onClick={handleLogFast}
                   className="flex-1 bg-green-600 hover:bg-green-700"
                 >
-                  Log Fast
+                  {editingLog ? 'Update Fast' : 'Log Fast'}
                 </Button>
                 <Button
-                  onClick={() => {
-                    setIsLogging(false);
-                    setStartDate('');
-                    setStartTime('');
-                    setEndDate('');
-                    setEndTime('');
-                  }}
+                  onClick={handleCancelEdit}
                   variant="outline"
                   className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
                 >
@@ -248,6 +282,20 @@ export default function FastingPage() {
                     <div className="text-sm text-slate-300">
                       Logged on {loggedDate} at {loggedTime}
                     </div>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEditLog(log)}
+                        className="text-slate-400 hover:text-blue-400 transition-colors"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteLog(log.id)}
+                        className="text-slate-400 hover:text-red-400 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                   
                   <div className="text-center">
@@ -268,7 +316,7 @@ export default function FastingPage() {
                     
                     {/* Fast Period */}
                     <div className="text-sm text-slate-400">
-                      {new Date(log.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} {log.startTime} - {new Date(log.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} {log.endTime}
+                      {log.startDate} {log.startTime} - {log.endDate} {log.endTime}
                     </div>
                   </div>
                 </div>
