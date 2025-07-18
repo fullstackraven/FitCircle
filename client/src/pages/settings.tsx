@@ -36,7 +36,10 @@ export default function SettingsPage() {
     const allData: { [key: string]: string } = {};
     
     Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('fitcircle_')) {
+      if (key.startsWith('fitcircle_') || 
+          key === 'workout-tracker-data' ||
+          key === 'fitcircle_meditation_logs' ||
+          key === 'fitcircle_fasting_logs') {
         const value = localStorage.getItem(key);
         if (value !== null) {
           allData[key] = value;
@@ -154,7 +157,10 @@ export default function SettingsPage() {
         value = value.replace(/""/g, '"');
 
         // Only restore FitCircle data
-        if (key.startsWith('fitcircle_') && value) {
+        if ((key.startsWith('fitcircle_') || 
+             key === 'workout-tracker-data' ||
+             key === 'fitcircle_meditation_logs' ||
+             key === 'fitcircle_fasting_logs') && value) {
           localStorage.setItem(key, value);
           itemsRestored++;
         }
@@ -239,7 +245,10 @@ export default function SettingsPage() {
       const allData: { [key: string]: string } = {};
       
       Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('fitcircle_')) {
+        if (key.startsWith('fitcircle_') || 
+            key === 'workout-tracker-data' ||
+            key === 'fitcircle_meditation_logs' ||
+            key === 'fitcircle_fasting_logs') {
           const value = localStorage.getItem(key);
           if (value !== null) {
             allData[key] = value;
@@ -303,7 +312,10 @@ export default function SettingsPage() {
   const eraseAllData = () => {
     // Clear all FitCircle related localStorage
     Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('fitcircle_')) {
+      if (key.startsWith('fitcircle_') || 
+          key === 'workout-tracker-data' ||
+          key === 'fitcircle_meditation_logs' ||
+          key === 'fitcircle_fasting_logs') {
         localStorage.removeItem(key);
       }
     });
