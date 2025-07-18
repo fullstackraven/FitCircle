@@ -134,7 +134,8 @@ export default function Home() {
 
   return (
     <div 
-      className="container mx-auto px-4 py-6 max-w-md min-h-screen bg-slate-950 text-white"
+      className="container mx-auto px-4 py-6 max-w-md min-h-screen text-white"
+      style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

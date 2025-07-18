@@ -122,7 +122,7 @@ export default function CalendarPage() {
   const individualWorkoutTotals = getIndividualWorkoutTotals() || [];
 
   return (
-    <div className="p-4 max-w-3xl mx-auto min-h-screen bg-background">
+    <div className="p-4 max-w-3xl mx-auto min-h-screen" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => navigate("/")}
