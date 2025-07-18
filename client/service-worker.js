@@ -49,10 +49,15 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
+    // Always try network first to get fresh content
     fetch(event.request)
       .then((response) => {
-        // Network first for main content
         if (response.ok) {
+          // Don't cache in development to force updates
+          if (event.request.url.includes('localhost') || event.request.url.includes('replit.dev')) {
+            return response;
+          }
+          
           const responseClone = response.clone();
           caches.open(CACHE_NAME)
             .then((cache) => {

@@ -101,8 +101,28 @@ export default function SettingsPage() {
   };
 
   const refreshData = () => {
-    // This would typically sync with a server, for now just reload the page
-    window.location.reload();
+    // Clear service worker cache and reload
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
+        }
+        // Clear all caches
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            return Promise.all(names.map(function(name) {
+              return caches.delete(name);
+            }));
+          }).then(function() {
+            window.location.reload(true);
+          });
+        } else {
+          window.location.reload(true);
+        }
+      });
+    } else {
+      window.location.reload(true);
+    }
   };
 
   const eraseAllData = () => {
@@ -155,7 +175,7 @@ export default function SettingsPage() {
               className="w-full flex items-center justify-center space-x-2 border-slate-600 text-slate-300 hover:bg-slate-700"
             >
               <RefreshCw className="w-4 h-4" />
-              <span>Refresh All Data</span>
+              <span>Force App Update</span>
             </Button>
 
             {/* Erase All Data */}

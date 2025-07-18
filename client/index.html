@@ -14,7 +14,7 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./src/main.tsx?v=1752842831"></script>
+    <script type="module" src="./src/main.tsx?v=1752842950"></script>
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("service-worker.js")
@@ -54,8 +54,12 @@
             
             // Listen for controlling service worker changes
             navigator.serviceWorker.addEventListener('controllerchange', () => {
+              console.log('Service worker controller changed, reloading page');
               window.location.reload();
             });
+            
+            // Force update check immediately
+            registration.update();
           })
           .catch((error) => {
             console.error('Service Worker registration failed:', error);
