@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, User, Scale, Settings, Moon, Sun } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Switch } from '@/components/ui/switch';
 
 const colorClassMap: { [key: string]: string } = {
   green: 'workout-green',
@@ -42,8 +41,25 @@ export default function Home() {
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
   const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number } | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
+
+  // Touch/swipe handling for dashboard
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchEndX, setTouchEndX] = useState(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchEndX - touchStartX > 100) { // Swipe right
+      setIsSidebarOpen(true);
+    }
+  };
 
   // Update username when it changes in localStorage
   useEffect(() => {
@@ -114,71 +130,11 @@ export default function Home() {
   const minSlots = Math.max(4, workouts.length + (canAddMoreWorkouts() ? 1 : 0));
   const emptySlots = Math.max(0, minSlots - workouts.length);
 
-  // Touch/swipe handling
-  const [touchStartX, setTouchStartX] = useState(0);
-  const [touchEndX, setTouchEndX] = useState(0);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStartX(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEndX(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (touchStartX - touchEndX < -100) {
-      setIsSidebarOpen(true);
-    }
-  };
-
-  // Theme management
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('fitcircle_theme');
-    if (savedTheme) {
-      const isDark = savedTheme === 'dark';
-      setIsDarkMode(isDark);
-      if (isDark) {
-        document.documentElement.classList.remove('light');
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        document.documentElement.classList.add('light');
-      }
-    } else {
-      // Default to dark mode
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = !isDarkMode;
-    setIsDarkMode(newTheme);
-    localStorage.setItem('fitcircle_theme', newTheme ? 'dark' : 'light');
-    
-    if (newTheme) {
-      // Dark mode
-      document.documentElement.classList.remove('light');
-      document.documentElement.classList.add('dark');
-      document.body.style.background = 'hsl(222, 47%, 11%)';
-      document.body.style.color = 'hsl(0, 0%, 98%)';
-    } else {
-      // Light mode
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-      document.body.style.background = 'hsl(0, 0%, 98%)';
-      document.body.style.color = 'hsl(222, 47%, 11%)';
-    }
-  };
+  
 
   return (
     <div 
-      className={`container mx-auto px-4 py-6 max-w-md min-h-screen ${
-        isDarkMode 
-          ? 'bg-slate-950 text-white' 
-          : 'bg-white text-slate-900'
-      }`}
+      className="container mx-auto px-4 py-6 max-w-md min-h-screen bg-slate-950 text-white"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -190,11 +146,7 @@ export default function Home() {
 
         {/* Calendar View Icon */}
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            navigate('/calendar');
-          }}
+          onClick={() => navigate('/calendar')}
           className="absolute top-0 right-0 text-slate-400 hover:text-white transition-colors"
           title="View Calendar"
         >
@@ -343,19 +295,8 @@ export default function Home() {
                 navigate('/profile');
               }}
             >
-              <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center overflow-hidden">
-                <img 
-                  src="./icon-192.png" 
-                  alt="FitCircle" 
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    const parent = e.currentTarget.parentElement;
-                    if (parent) {
-                      parent.innerHTML = '<div class="text-white font-bold text-lg">FC</div>';
-                    }
-                  }}
-                />
+              <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center border-2 border-green-400">
+                <CheckCircle className="w-8 h-8 text-white" />
               </div>
               <div>
                 <div className="text-white font-medium">{userName}</div>
@@ -375,15 +316,6 @@ export default function Home() {
               >
                 <Scale className="w-5 h-5 text-slate-400" />
                 <span className="text-white">Measurements</span>
-              </div>
-
-              {/* Dark/Light Mode Toggle */}
-              <div className="flex items-center justify-between p-4">
-                <div className="flex items-center space-x-3">
-                  {isDarkMode ? <Moon className="w-5 h-5 text-slate-400" /> : <Sun className="w-5 h-5 text-slate-400" />}
-                  <span className="text-white">{isDarkMode ? 'Dark Mode' : 'Light Mode'}</span>
-                </div>
-                <Switch checked={isDarkMode} onCheckedChange={toggleTheme} />
               </div>
 
               {/* Settings */}

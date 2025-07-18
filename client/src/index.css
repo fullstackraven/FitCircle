@@ -25,7 +25,7 @@
   --destructive-foreground: hsl(60, 9.1%, 97.8%);
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
-  
+
   /* Custom workout colors */
   --workout-green: hsl(158, 64%, 52%);
   --workout-blue: hsl(217, 91%, 60%);
@@ -41,50 +41,20 @@
   --workout-yellow: hsl(54, 91%, 60%);
 }
 
-.light {
-  --background: hsl(0, 0%, 98%);
-  --foreground: hsl(222, 47%, 11%);
-  --muted: hsl(210, 40%, 96%);
-  --muted-foreground: hsl(215, 16%, 47%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(222, 47%, 11%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(222, 47%, 11%);
-  --border: hsl(214, 32%, 91%);
-  --input: hsl(214, 32%, 91%);
-  --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(210, 40%, 98%);
-  --secondary: hsl(210, 40%, 96%);
-  --secondary-foreground: hsl(222, 47%, 11%);
-  --accent: hsl(210, 40%, 96%);
-  --accent-foreground: hsl(222, 47%, 11%);
-  --destructive: hsl(0, 84%, 60%);
-  --destructive-foreground: hsl(210, 40%, 98%);
-  --ring: hsl(215, 20%, 65%);
-  --radius: 0.5rem;
-}
-
-.dark {
-  --background: hsl(222, 47%, 11%);
-  --foreground: hsl(0, 0%, 98%);
-  --muted: hsl(217, 32%, 17%);
-  --muted-foreground: hsl(215, 20%, 65%);
-  --popover: hsl(224, 71%, 4%);
-  --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(224, 71%, 4%);
-  --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(215, 27%, 32%);
-  --input: hsl(215, 27%, 32%);
-  --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(215, 27%, 32%);
-  --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(215, 27%, 32%);
-  --accent-foreground: hsl(0, 0%, 98%);
-  --destructive: hsl(0, 62.8%, 30.6%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(215, 20%, 65%);
-  --radius: 0.5rem;
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: hsl(222, 47%, 11%);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
 }
 
 @layer base {
