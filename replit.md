@@ -114,6 +114,7 @@ Preferred communication style: Simple, everyday language.
 - **Tailwind CSS Fix**: Fixed dark mode configuration for build compatibility
 - **Single Theme**: Removed all dark/light mode functionality, using consistent "hsl(222, 47%, 11%)" background
 - **Hamburger Menu**: Added hamburger menu icon to home page for easy dashboard access
+- **Removed Swipe Navigation**: Removed all swipe-to-right functionality app-wide to prevent navigation conflicts
 - **Left/Right Measurements**: Added separate fields for left and right measurements (biceps, forearms, thighs, calves)
 - **Measurements Icon**: Changed from scale to human body icon (User) in dashboard
 - **Intermittent Fasting**: Added complete intermittent fasting log feature with duration tracking and heat bar visualization

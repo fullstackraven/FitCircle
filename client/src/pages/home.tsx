@@ -43,23 +43,7 @@ export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
 
-  // Touch/swipe handling for dashboard
-  const [touchStartX, setTouchStartX] = useState(0);
-  const [touchEndX, setTouchEndX] = useState(0);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStartX(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEndX(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (touchEndX - touchStartX > 100) { // Swipe right
-      setIsSidebarOpen(true);
-    }
-  };
 
   // Update username when it changes in localStorage
   useEffect(() => {
@@ -136,9 +120,6 @@ export default function Home() {
     <div 
       className="container mx-auto px-4 py-6 max-w-md min-h-screen text-white"
       style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
     >
       {/* Header Section */}
       <header className="relative text-center mb-8">
