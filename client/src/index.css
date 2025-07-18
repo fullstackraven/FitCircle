@@ -43,6 +43,15 @@
     @apply bg-background text-foreground;
     background-color: hsl(222, 47%, 11%);
     color: hsl(210, 40%, 98%);
+    /* Disable browser swipe navigation */
+    overscroll-behavior-x: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Disable swipe gestures on all containers */
+  .container, .min-h-screen, div[class*="mx-auto"] {
+    overscroll-behavior-x: none;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
