@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'fitcircle-v1';
+const CACHE_NAME = 'fitcircle-v3';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -33,16 +33,33 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Skip caching for API calls and hot reload
+  if (event.request.url.includes('/api/') || 
+      event.request.url.includes('/@vite/') ||
+      event.request.url.includes('/__vite_ping') ||
+      event.request.url.includes('/src/')) {
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then((response) => {
-        // Cache hit - return response
-        if (response) {
+        // Network first for main content
+        if (response.ok) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME)
+            .then((cache) => {
+              cache.put(event.request, responseClone);
+            });
           return response;
         }
-        return fetch(event.request);
-      }
-    )
+        // If network fails, try cache
+        return caches.match(event.request);
+      })
+      .catch(() => {
+        // Network failed, try cache
+        return caches.match(event.request);
+      })
   );
 });
 
