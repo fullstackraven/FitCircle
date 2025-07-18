@@ -127,7 +127,7 @@ export default function Home() {
   };
 
   const handleTouchEnd = () => {
-    if (touchStartX - touchEndX > 100) {
+    if (touchEndX - touchStartX > 100) {
       setIsSidebarOpen(true);
     }
   };
@@ -136,7 +136,19 @@ export default function Home() {
   useEffect(() => {
     const savedTheme = localStorage.getItem('fitcircle_theme');
     if (savedTheme) {
-      setIsDarkMode(savedTheme === 'dark');
+      const isDark = savedTheme === 'dark';
+      setIsDarkMode(isDark);
+      if (isDark) {
+        document.documentElement.classList.remove('light');
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+      }
+    } else {
+      // Default to dark mode
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
     }
   }, []);
 
@@ -144,12 +156,29 @@ export default function Home() {
     const newTheme = !isDarkMode;
     setIsDarkMode(newTheme);
     localStorage.setItem('fitcircle_theme', newTheme ? 'dark' : 'light');
-    document.documentElement.classList.toggle('light', !newTheme);
+    
+    if (newTheme) {
+      // Dark mode
+      document.documentElement.classList.remove('light');
+      document.documentElement.classList.add('dark');
+      document.body.style.background = 'hsl(222, 47%, 11%)';
+      document.body.style.color = 'hsl(0, 0%, 98%)';
+    } else {
+      // Light mode
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+      document.body.style.background = 'hsl(0, 0%, 98%)';
+      document.body.style.color = 'hsl(222, 47%, 11%)';
+    }
   };
 
   return (
     <div 
-      className="container mx-auto px-4 py-6 max-w-md min-h-screen"
+      className={`container mx-auto px-4 py-6 max-w-md min-h-screen ${
+        isDarkMode 
+          ? 'bg-slate-950 text-white' 
+          : 'bg-white text-slate-900'
+      }`}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -161,7 +190,10 @@ export default function Home() {
 
         {/* Calendar View Icon */}
         <button
-          onClick={() => navigate('/calendar')}
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate('/calendar');
+          }}
           className="absolute top-0 right-0 text-slate-400 hover:text-white transition-colors"
           title="View Calendar"
         >
