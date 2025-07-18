@@ -63,31 +63,61 @@ export default function MeditationPage() {
     };
   }, [isActive, isPaused, timeLeft]);
 
-  const playGongSound = () => {
-    // Create a simple gong sound using Web Audio API
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    
-    // Create oscillator for the gong sound
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    // Connect nodes
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    // Configure gong-like sound (low frequency with decay)
-    oscillator.frequency.setValueAtTime(80, audioContext.currentTime); // Low frequency
-    oscillator.frequency.exponentialRampToValueAtTime(60, audioContext.currentTime + 0.1);
-    oscillator.frequency.exponentialRampToValueAtTime(40, audioContext.currentTime + 0.5);
-    
-    // Volume envelope for gong effect
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-    gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
-    
-    // Play the sound
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 2);
+
+
+  const playGongSound = async () => {
+    try {
+      // Create audio context - iOS requires user interaction first
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      // Resume context if suspended (iOS requirement)
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+      
+      // Create multiple oscillators for richer gong sound
+      const oscillators = [
+        { freq: 196, gain: 0.3 }, // G3
+        { freq: 220, gain: 0.2 }, // A3
+        { freq: 294, gain: 0.1 }, // D4
+      ];
+      
+      const masterGain = audioContext.createGain();
+      masterGain.connect(audioContext.destination);
+      
+      oscillators.forEach(({ freq, gain }) => {
+        const osc = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        osc.connect(gainNode);
+        gainNode.connect(masterGain);
+        
+        osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.8, audioContext.currentTime + 0.1);
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(gain, audioContext.currentTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 3);
+        
+        osc.start(audioContext.currentTime);
+        osc.stop(audioContext.currentTime + 3);
+      });
+      
+      // Set master volume
+      masterGain.gain.setValueAtTime(0.5, audioContext.currentTime);
+      masterGain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 3);
+      
+    } catch (error) {
+      console.log('Could not play gong sound:', error);
+      // Fallback: try system beep or vibration
+      try {
+        if (navigator.vibrate) {
+          navigator.vibrate([200, 100, 200, 100, 200]);
+        }
+      } catch (vibrateError) {
+        console.log('Vibration also not available');
+      }
+    }
   };
 
   const handleSessionComplete = () => {
@@ -95,11 +125,7 @@ export default function MeditationPage() {
     setIsPaused(false);
     
     // Play completion sound
-    try {
-      playGongSound();
-    } catch (error) {
-      console.log('Could not play gong sound:', error);
-    }
+    playGongSound();
     
     // Show completion message
     setShowCompletion(true);
@@ -120,11 +146,21 @@ export default function MeditationPage() {
     localStorage.setItem('fitcircle_meditation_logs', JSON.stringify(updatedLogs));
   };
 
-  const startMeditation = () => {
+  const startMeditation = async () => {
     const minutes = parseInt(inputMinutes);
     if (!minutes || minutes <= 0) {
       alert('Please enter a valid duration in minutes');
       return;
+    }
+
+    // Initialize audio context on user interaction (iOS requirement)
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+    } catch (error) {
+      console.log('Audio context initialization failed:', error);
     }
 
     const durationInSeconds = minutes * 60;

@@ -120,6 +120,17 @@ Preferred communication style: Simple, everyday language.
 - **Intermittent Fasting**: Added complete intermittent fasting log feature with duration tracking and heat bar visualization
 - **Meditation Feature**: Added meditation timer with circular progress indicator, pause/resume functionality, meditation session logging, and gong sound effect on completion
 
+### Data Persistence and iOS Considerations
+
+**localStorage Reliability**: Your data is stored in the browser's localStorage, which is generally persistent across phone restarts and app updates. However, there are some iOS-specific considerations:
+
+- **iOS Updates**: Major iOS updates typically preserve localStorage data, but it's not 100% guaranteed
+- **Phone Restarts**: Regular restarts should not affect your data
+- **Storage Pressure**: If your device runs very low on storage, iOS may clear browser data including localStorage
+- **PWA Installation**: Installing the app as a PWA (Add to Home Screen) provides better data persistence than using it in Safari
+
+**Backup Recommendations**: Consider periodically exporting your data through the Settings page or implementing a simple backup feature.
+
 ### Key Architectural Decisions
 
 1. **localStorage over Database**: Chose client-side storage for simplicity and offline functionality, with database prepared for future user accounts
