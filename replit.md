@@ -95,6 +95,13 @@ Preferred communication style: Simple, everyday language.
 - `npm run start`: Production server startup
 - `npm run db:push`: Database schema updates via Drizzle
 
+### Static Deployment
+- **Static Build**: `npx vite build --config vite.config.static.ts`
+- **Output Directory**: `dist/` (ready for static hosting)
+- **Configuration**: Uses `vite.config.static.ts` for static-only builds
+- **Dependencies**: Removed React Query client - app works purely with localStorage
+- **Deployment Target**: Set to static in Replit deployment configuration
+
 ### Recent Changes (January 2025)
 
 - **Delete Functionality**: Added trash can icon next to undo button for workout deletion
@@ -103,6 +110,8 @@ Preferred communication style: Simple, everyday language.
 - **Color Selection Freedom**: All 12 colors available for every workout creation (no longer filters used colors)
 - **Workout Limit**: Confirmed 10 maximum workouts (increased from previous 7-workout constraint)
 - **Complete Data Cleanup**: Delete function removes workout and all historical log data
+- **Static Deployment Ready**: Converted app for static deployment by removing backend dependencies
+- **Tailwind CSS Fix**: Fixed dark mode configuration for build compatibility
 
 ### Key Architectural Decisions
 
