@@ -22,6 +22,7 @@ export default function MeditationPage() {
   const [inputMinutes, setInputMinutes] = useState('');
   const [logs, setLogs] = useState<MeditationLog[]>([]);
   const [isLogOpen, setIsLogOpen] = useState(false);
+  const [showCompletion, setShowCompletion] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -62,9 +63,47 @@ export default function MeditationPage() {
     };
   }, [isActive, isPaused, timeLeft]);
 
+  const playGongSound = () => {
+    // Create a simple gong sound using Web Audio API
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    
+    // Create oscillator for the gong sound
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    // Connect nodes
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // Configure gong-like sound (low frequency with decay)
+    oscillator.frequency.setValueAtTime(80, audioContext.currentTime); // Low frequency
+    oscillator.frequency.exponentialRampToValueAtTime(60, audioContext.currentTime + 0.1);
+    oscillator.frequency.exponentialRampToValueAtTime(40, audioContext.currentTime + 0.5);
+    
+    // Volume envelope for gong effect
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
+    
+    // Play the sound
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 2);
+  };
+
   const handleSessionComplete = () => {
     setIsActive(false);
     setIsPaused(false);
+    
+    // Play completion sound
+    try {
+      playGongSound();
+    } catch (error) {
+      console.log('Could not play gong sound:', error);
+    }
+    
+    // Show completion message
+    setShowCompletion(true);
+    setTimeout(() => setShowCompletion(false), 3000);
     
     // Create meditation log entry
     const now = new Date();
@@ -144,6 +183,17 @@ export default function MeditationPage() {
           <h1 className="text-xl font-semibold">Meditation</h1>
           <div className="w-16"></div>
         </div>
+
+        {/* Completion Notification */}
+        {showCompletion && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-slate-800 rounded-lg p-8 text-center max-w-sm mx-4 border border-blue-500">
+              <div className="text-6xl mb-4">🧘‍♂️</div>
+              <h2 className="text-2xl font-bold text-white mb-2">Session Complete!</h2>
+              <p className="text-slate-300">Well done on completing your meditation</p>
+            </div>
+          </div>
+        )}
 
         {/* Meditation Timer */}
         <div className="flex flex-col items-center mb-8">
