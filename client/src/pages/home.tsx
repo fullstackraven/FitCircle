@@ -66,7 +66,7 @@ export default function Home() {
     const handleStorageChange = () => {
       setUserName(localStorage.getItem('fitcircle_username') || 'User');
     };
-    
+
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
@@ -130,7 +130,7 @@ export default function Home() {
   const minSlots = Math.max(4, workouts.length + (canAddMoreWorkouts() ? 1 : 0));
   const emptySlots = Math.max(0, minSlots - workouts.length);
 
-  
+
 
   return (
     <div 
@@ -228,7 +228,7 @@ export default function Home() {
           ))}
         </div>
       </section>
-      
+
       {/* Today's Totals Section */}
       {todaysTotals.some(w => w.count > 0) && (
         <section className="mb-8">
