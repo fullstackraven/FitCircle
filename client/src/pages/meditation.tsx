@@ -1,0 +1,295 @@
+import { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, Play, Pause, Square, ChevronDown, ChevronUp } from 'lucide-react';
+import { useLocation } from 'wouter';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+
+interface MeditationLog {
+  id: string;
+  date: string;
+  time: string;
+  duration: number; // in minutes
+  completedAt: string;
+}
+
+export default function MeditationPage() {
+  const [, navigate] = useLocation();
+  const [isActive, setIsActive] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0); // in seconds
+  const [totalDuration, setTotalDuration] = useState(0); // in seconds
+  const [inputMinutes, setInputMinutes] = useState('');
+  const [logs, setLogs] = useState<MeditationLog[]>([]);
+  const [isLogOpen, setIsLogOpen] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    // Load saved meditation logs
+    const savedLogs = localStorage.getItem('fitcircle_meditation_logs');
+    if (savedLogs) {
+      try {
+        setLogs(JSON.parse(savedLogs));
+      } catch (error) {
+        console.error('Failed to parse meditation logs:', error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isActive && !isPaused && timeLeft > 0) {
+      intervalRef.current = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            // Session completed
+            handleSessionComplete();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isActive, isPaused, timeLeft]);
+
+  const handleSessionComplete = () => {
+    setIsActive(false);
+    setIsPaused(false);
+    
+    // Create meditation log entry
+    const now = new Date();
+    const newLog: MeditationLog = {
+      id: Date.now().toString(),
+      date: now.toLocaleDateString(),
+      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      duration: Math.floor(totalDuration / 60),
+      completedAt: now.toISOString()
+    };
+
+    const updatedLogs = [newLog, ...logs];
+    setLogs(updatedLogs);
+    localStorage.setItem('fitcircle_meditation_logs', JSON.stringify(updatedLogs));
+  };
+
+  const startMeditation = () => {
+    const minutes = parseInt(inputMinutes);
+    if (!minutes || minutes <= 0) {
+      alert('Please enter a valid duration in minutes');
+      return;
+    }
+
+    const durationInSeconds = minutes * 60;
+    setTotalDuration(durationInSeconds);
+    setTimeLeft(durationInSeconds);
+    setIsActive(true);
+    setIsPaused(false);
+    setInputMinutes('');
+  };
+
+  const pauseMeditation = () => {
+    setIsPaused(true);
+  };
+
+  const resumeMeditation = () => {
+    setIsPaused(false);
+  };
+
+  const stopMeditation = () => {
+    setIsActive(false);
+    setIsPaused(false);
+    setTimeLeft(0);
+    setTotalDuration(0);
+  };
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const getProgressPercentage = (): number => {
+    if (totalDuration === 0) return 0;
+    return ((totalDuration - timeLeft) / totalDuration) * 100;
+  };
+
+  const getProgressStroke = (): number => {
+    const radius = 120;
+    const circumference = 2 * Math.PI * radius;
+    const progress = getProgressPercentage();
+    return circumference - (progress / 100) * circumference;
+  };
+
+  return (
+    <div className="min-h-screen text-white" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+      <div className="container mx-auto px-4 py-6 max-w-md">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <button
+            onClick={() => navigate('/')}
+            className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back</span>
+          </button>
+          <h1 className="text-xl font-semibold">Meditation</h1>
+          <div className="w-16"></div>
+        </div>
+
+        {/* Meditation Timer */}
+        <div className="flex flex-col items-center mb-8">
+          {!isActive ? (
+            /* Start Session Form */
+            <div className="bg-slate-800 rounded-lg p-6 w-full max-w-sm">
+              <h2 className="text-lg font-semibold mb-4 text-center">Start Meditation</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Duration (minutes)
+                  </label>
+                  <Input
+                    type="number"
+                    value={inputMinutes}
+                    onChange={(e) => setInputMinutes(e.target.value)}
+                    placeholder="e.g., 10"
+                    className="bg-slate-700 border-slate-600 text-white text-center"
+                    min="1"
+                  />
+                </div>
+                <Button
+                  onClick={startMeditation}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Start Meditation
+                </Button>
+              </div>
+            </div>
+          ) : (
+            /* Active Session */
+            <div className="flex flex-col items-center">
+              {/* Progress Circle */}
+              <div className="relative mb-8">
+                <svg width="280" height="280" className="transform -rotate-90">
+                  {/* Background circle */}
+                  <circle
+                    cx="140"
+                    cy="140"
+                    r="120"
+                    stroke="rgba(100, 116, 139, 0.3)"
+                    strokeWidth="12"
+                    fill="none"
+                  />
+                  {/* Progress circle */}
+                  <circle
+                    cx="140"
+                    cy="140"
+                    r="120"
+                    stroke="rgb(59, 130, 246)"
+                    strokeWidth="12"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 120}`}
+                    strokeDashoffset={getProgressStroke()}
+                    className="transition-all duration-1000 ease-linear"
+                    style={{
+                      filter: 'drop-shadow(0 0 20px rgba(59, 130, 246, 0.5))'
+                    }}
+                  />
+                </svg>
+                
+                {/* Time display */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-white font-mono mb-2">
+                      {formatTime(timeLeft)}
+                    </div>
+                    <div className="text-sm text-slate-400">
+                      {isPaused ? 'Paused' : 'Meditating...'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Control Buttons */}
+              <div className="flex space-x-4">
+                {!isPaused ? (
+                  <Button
+                    onClick={pauseMeditation}
+                    variant="outline"
+                    className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  >
+                    <Pause className="w-4 h-4 mr-2" />
+                    Pause
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={resumeMeditation}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    Resume
+                  </Button>
+                )}
+                <Button
+                  onClick={stopMeditation}
+                  variant="outline"
+                  className="border-red-600 text-red-400 hover:bg-red-900/20"
+                >
+                  <Square className="w-4 h-4 mr-2" />
+                  Stop
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Meditation Log */}
+        <Collapsible open={isLogOpen} onOpenChange={setIsLogOpen}>
+          <CollapsibleTrigger asChild>
+            <Button 
+              variant="ghost" 
+              className="w-full justify-between text-slate-300 hover:text-white hover:bg-slate-800"
+            >
+              <span className="text-lg font-semibold">Meditation Log</span>
+              {isLogOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-2 mt-4">
+            {logs.length === 0 ? (
+              <div className="text-center py-8 text-slate-400">
+                <p>No meditation sessions yet.</p>
+                <p className="text-sm mt-2">Complete a meditation session to see your log here.</p>
+              </div>
+            ) : (
+              logs.map((log) => (
+                <div key={log.id} className="bg-slate-800 rounded-lg p-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="text-sm text-slate-300">
+                        {log.date} at {log.time}
+                      </div>
+                      <div className="text-lg font-semibold text-blue-400">
+                        {log.duration} minute{log.duration !== 1 ? 's' : ''}
+                      </div>
+                    </div>
+                    <div className="text-2xl">🧘‍♂️</div>
+                  </div>
+                </div>
+              ))
+            )}
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
+    </div>
+  );
+}

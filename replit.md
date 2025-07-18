@@ -118,6 +118,7 @@ Preferred communication style: Simple, everyday language.
 - **Left/Right Measurements**: Added separate fields for left and right measurements (biceps, forearms, thighs, calves)
 - **Measurements Icon**: Changed from scale to human body icon (User) in dashboard
 - **Intermittent Fasting**: Added complete intermittent fasting log feature with duration tracking and heat bar visualization
+- **Meditation Feature**: Added meditation timer with circular progress indicator, pause/resume functionality, and meditation session logging
 
 ### Key Architectural Decisions
 
