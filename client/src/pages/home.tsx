@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { WorkoutModal } from '@/components/workout-modal';
@@ -324,8 +324,20 @@ export default function Home() {
                   navigate('/measurements');
                 }}
               >
-                <Scale className="w-5 h-5 text-slate-400" />
+                <User className="w-5 h-5 text-slate-400" />
                 <span className="text-white">Measurements</span>
+              </div>
+
+              {/* Intermittent Fasting */}
+              <div 
+                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  navigate('/fasting');
+                }}
+              >
+                <Clock className="w-5 h-5 text-slate-400" />
+                <span className="text-white">Intermittent Fasting</span>
               </div>
 
               {/* Settings */}

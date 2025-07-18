@@ -118,7 +118,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen text-white" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="container mx-auto px-4 py-6 max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

@@ -18,10 +18,14 @@ export default function MeasurementsPage() {
   const [chest, setChest] = useState('');
   const [waist, setWaist] = useState('');
   const [hips, setHips] = useState('');
-  const [bicep, setBicep] = useState('');
-  const [forearm, setForearm] = useState('');
-  const [thigh, setThigh] = useState('');
-  const [calf, setCalf] = useState('');
+  const [bicepLeft, setBicepLeft] = useState('');
+  const [bicepRight, setBicepRight] = useState('');
+  const [forearmLeft, setForearmLeft] = useState('');
+  const [forearmRight, setForearmRight] = useState('');
+  const [thighLeft, setThighLeft] = useState('');
+  const [thighRight, setThighRight] = useState('');
+  const [calfLeft, setCalfLeft] = useState('');
+  const [calfRight, setCalfRight] = useState('');
 
   useEffect(() => {
     // Load saved measurements
@@ -32,10 +36,14 @@ export default function MeasurementsPage() {
     setChest(localStorage.getItem('fitcircle_chest') || '');
     setWaist(localStorage.getItem('fitcircle_waist') || '');
     setHips(localStorage.getItem('fitcircle_hips') || '');
-    setBicep(localStorage.getItem('fitcircle_bicep') || '');
-    setForearm(localStorage.getItem('fitcircle_forearm') || '');
-    setThigh(localStorage.getItem('fitcircle_thigh') || '');
-    setCalf(localStorage.getItem('fitcircle_calf') || '');
+    setBicepLeft(localStorage.getItem('fitcircle_bicep_left') || '');
+    setBicepRight(localStorage.getItem('fitcircle_bicep_right') || '');
+    setForearmLeft(localStorage.getItem('fitcircle_forearm_left') || '');
+    setForearmRight(localStorage.getItem('fitcircle_forearm_right') || '');
+    setThighLeft(localStorage.getItem('fitcircle_thigh_left') || '');
+    setThighRight(localStorage.getItem('fitcircle_thigh_right') || '');
+    setCalfLeft(localStorage.getItem('fitcircle_calf_left') || '');
+    setCalfRight(localStorage.getItem('fitcircle_calf_right') || '');
   }, []);
 
   const handleSave = () => {
@@ -49,16 +57,20 @@ export default function MeasurementsPage() {
     localStorage.setItem('fitcircle_chest', chest);
     localStorage.setItem('fitcircle_waist', waist);
     localStorage.setItem('fitcircle_hips', hips);
-    localStorage.setItem('fitcircle_bicep', bicep);
-    localStorage.setItem('fitcircle_forearm', forearm);
-    localStorage.setItem('fitcircle_thigh', thigh);
-    localStorage.setItem('fitcircle_calf', calf);
+    localStorage.setItem('fitcircle_bicep_left', bicepLeft);
+    localStorage.setItem('fitcircle_bicep_right', bicepRight);
+    localStorage.setItem('fitcircle_forearm_left', forearmLeft);
+    localStorage.setItem('fitcircle_forearm_right', forearmRight);
+    localStorage.setItem('fitcircle_thigh_left', thighLeft);
+    localStorage.setItem('fitcircle_thigh_right', thighRight);
+    localStorage.setItem('fitcircle_calf_left', calfLeft);
+    localStorage.setItem('fitcircle_calf_right', calfRight);
     
     navigate('/');
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen text-white" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="container mx-auto px-4 py-6 max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -160,42 +172,74 @@ export default function MeasurementsPage() {
 
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">Bicep</label>
-              <Input
-                value={bicep}
-                onChange={(e) => setBicep(e.target.value)}
-                placeholder="e.g., 14 inches"
-                className="bg-slate-700 border-slate-600 text-white"
-              />
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  value={bicepLeft}
+                  onChange={(e) => setBicepLeft(e.target.value)}
+                  placeholder="Left (e.g., 14 inches)"
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+                <Input
+                  value={bicepRight}
+                  onChange={(e) => setBicepRight(e.target.value)}
+                  placeholder="Right (e.g., 14 inches)"
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">Forearm</label>
-              <Input
-                value={forearm}
-                onChange={(e) => setForearm(e.target.value)}
-                placeholder="e.g., 11 inches"
-                className="bg-slate-700 border-slate-600 text-white"
-              />
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  value={forearmLeft}
+                  onChange={(e) => setForearmLeft(e.target.value)}
+                  placeholder="Left (e.g., 11 inches)"
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+                <Input
+                  value={forearmRight}
+                  onChange={(e) => setForearmRight(e.target.value)}
+                  placeholder="Right (e.g., 11 inches)"
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">Thigh</label>
-              <Input
-                value={thigh}
-                onChange={(e) => setThigh(e.target.value)}
-                placeholder="e.g., 22 inches"
-                className="bg-slate-700 border-slate-600 text-white"
-              />
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  value={thighLeft}
+                  onChange={(e) => setThighLeft(e.target.value)}
+                  placeholder="Left (e.g., 22 inches)"
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+                <Input
+                  value={thighRight}
+                  onChange={(e) => setThighRight(e.target.value)}
+                  placeholder="Right (e.g., 22 inches)"
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">Calf</label>
-              <Input
-                value={calf}
-                onChange={(e) => setCalf(e.target.value)}
-                placeholder="e.g., 15 inches"
-                className="bg-slate-700 border-slate-600 text-white"
-              />
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  value={calfLeft}
+                  onChange={(e) => setCalfLeft(e.target.value)}
+                  placeholder="Left (e.g., 15 inches)"
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+                <Input
+                  value={calfRight}
+                  onChange={(e) => setCalfRight(e.target.value)}
+                  placeholder="Right (e.g., 15 inches)"
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
             </div>
           </div>
         </div>

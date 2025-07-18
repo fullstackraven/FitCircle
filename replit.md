@@ -112,6 +112,11 @@ Preferred communication style: Simple, everyday language.
 - **Complete Data Cleanup**: Delete function removes workout and all historical log data
 - **Static Deployment Ready**: Converted app for static deployment by removing backend dependencies
 - **Tailwind CSS Fix**: Fixed dark mode configuration for build compatibility
+- **Single Theme**: Removed all dark/light mode functionality, using consistent "hsl(222, 47%, 11%)" background
+- **Hamburger Menu**: Added hamburger menu icon to home page for easy dashboard access
+- **Left/Right Measurements**: Added separate fields for left and right measurements (biceps, forearms, thighs, calves)
+- **Measurements Icon**: Changed from scale to human body icon (User) in dashboard
+- **Intermittent Fasting**: Added complete intermittent fasting log feature with duration tracking and heat bar visualization
 
 ### Key Architectural Decisions
 
