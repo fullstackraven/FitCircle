@@ -114,7 +114,6 @@ Preferred communication style: Simple, everyday language.
 - **Tailwind CSS Fix**: Fixed dark mode configuration for build compatibility
 - **Single Theme**: Removed all dark/light mode functionality, using consistent "hsl(222, 47%, 11%)" background
 - **Hamburger Menu**: Added hamburger menu icon to home page for easy dashboard access
-- **Removed Swipe Navigation**: Removed all swipe-to-right functionality app-wide to prevent navigation conflicts
 - **Left/Right Measurements**: Added separate fields for left and right measurements (biceps, forearms, thighs, calves)
 - **Measurements Icon**: Changed from scale to human body icon (User) in dashboard
 - **Intermittent Fasting**: Added complete intermittent fasting log feature with duration tracking and heat bar visualization
@@ -124,6 +123,8 @@ Preferred communication style: Simple, everyday language.
 - **Goals Management**: Created centralized goals page with progress bars for hydration, meditation, fasting, and weight goals
 - **Enhanced Measurements**: Updated measurements page with trend tracking and horizontal scrolling line graphs for time-series data
 - **Complete Export System**: Updated data export to include all new hydration, goals, and measurement history data
+- **Dashboard Navigation Fix**: Added URL parameter tracking for dashboard navigation - back buttons now return to dashboard instead of home page when accessed via hamburger menu
+- **Complete Swipe Prevention**: Implemented comprehensive touch event prevention in main.tsx to completely disable all horizontal swipe navigation, including history-based navigation, gesture events, and overscroll behaviors
 
 ### Data Persistence and iOS Considerations
 
