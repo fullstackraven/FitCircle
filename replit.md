@@ -125,6 +125,10 @@ Preferred communication style: Simple, everyday language.
 - **Complete Export System**: Updated data export to include all new hydration, goals, and measurement history data
 - **Dashboard Navigation Fix**: Added URL parameter tracking for dashboard navigation - back buttons now return to dashboard instead of home page when accessed via hamburger menu
 - **Complete Swipe Prevention**: Implemented comprehensive touch event prevention in main.tsx to completely disable all horizontal swipe navigation, including history-based navigation, gesture events, and overscroll behaviors
+- **Liquid Type Selection**: Enhanced hydration tracking with liquid type selection (Water, Coffee, Tea, Custom) with custom input field for personalized entries
+- **Enhanced Hydration Export**: Upgraded CSV export to include liquid types in structured format with dedicated columns for better data analysis
+- **Improved Auto-Backup**: Fixed auto-backup scheduling with better persistence, status display, and daily 11:59pm trigger reliability
+- **Data Migration**: Added automatic migration for existing hydration entries to include liquid type (defaults to "Water" for legacy data)
 
 ### Data Persistence and iOS Considerations
 

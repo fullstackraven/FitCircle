@@ -34,11 +34,30 @@ export default function SettingsPage() {
   const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Check auto backup status on mount
+  // Check auto backup status on mount and set up scheduling
   useEffect(() => {
     const autoBackup = localStorage.getItem('fitcircle_auto_backup');
-    setAutoBackupEnabled(autoBackup === 'true');
+    const isEnabled = autoBackup === 'true';
+    setAutoBackupEnabled(isEnabled);
+    
+    // If auto backup is enabled, check if we need to perform a backup
+    if (isEnabled) {
+      checkAndPerformBackup();
+      scheduleAutoBackup();
+    }
   }, []);
+
+  const checkAndPerformBackup = () => {
+    const now = new Date();
+    const lastBackupStr = localStorage.getItem('fitcircle_last_backup_date');
+    const today = now.toISOString().split('T')[0];
+    
+    // If we haven't backed up today and it's past 11:59 PM, perform backup
+    if (lastBackupStr !== today && now.getHours() === 23 && now.getMinutes() >= 59) {
+      performAutoBackup();
+      localStorage.setItem('fitcircle_last_backup_date', today);
+    }
+  };
 
   const exportData = () => {
     setIsExporting(true);
@@ -78,14 +97,140 @@ export default function SettingsPage() {
 
   const convertToCSV = (data: { [key: string]: string }) => {
     const rows = [];
-    rows.push(['LocalStorageKey', 'Value']);
+    rows.push(['DataType', 'Date', 'Time', 'Category', 'Value', 'LiquidType', 'Notes']);
     
-    // Export all localStorage data exactly as stored
-    Object.entries(data).forEach(([key, value]) => {
-      // Escape quotes in the value
-      const escapedValue = value.replace(/"/g, '""');
-      rows.push([key, escapedValue]);
-    });
+    // Process hydration data specifically to include liquid types
+    const hydrationData = data['fitcircle_hydration_data'];
+    if (hydrationData) {
+      try {
+        const parsed = JSON.parse(hydrationData);
+        Object.entries(parsed.logs || {}).forEach(([date, log]: [string, any]) => {
+          if (log.entries) {
+            log.entries.forEach((entry: any) => {
+              rows.push([
+                'Hydration',
+                date,
+                entry.time || '',
+                'Liquid Intake',
+                `${entry.amount}oz`,
+                entry.liquidType || 'Water',
+                ''
+              ]);
+            });
+          }
+        });
+      } catch (error) {
+        console.error('Error parsing hydration data:', error);
+      }
+    }
+    
+    // Process workout data
+    const workoutData = data['workout-tracker-data'];
+    if (workoutData) {
+      try {
+        const parsed = JSON.parse(workoutData);
+        parsed.forEach((workout: any) => {
+          Object.entries(workout.dailyLogs || {}).forEach(([date, count]: [string, any]) => {
+            if (count > 0) {
+              rows.push([
+                'Workout',
+                date,
+                '',
+                workout.name,
+                count.toString(),
+                '',
+                `Goal: ${workout.dailyGoal}`
+              ]);
+            }
+          });
+        });
+      } catch (error) {
+        console.error('Error parsing workout data:', error);
+      }
+    }
+    
+    // Process meditation data
+    const meditationData = data['fitcircle_meditation_logs'];
+    if (meditationData) {
+      try {
+        const parsed = JSON.parse(meditationData);
+        parsed.forEach((session: any) => {
+          rows.push([
+            'Meditation',
+            session.date,
+            session.time || '',
+            'Session',
+            `${session.duration}min`,
+            '',
+            session.completed ? 'Completed' : 'Incomplete'
+          ]);
+        });
+      } catch (error) {
+        console.error('Error parsing meditation data:', error);
+      }
+    }
+    
+    // Process fasting data
+    const fastingData = data['fitcircle_fasting_logs'];
+    if (fastingData) {
+      try {
+        const parsed = JSON.parse(fastingData);
+        Object.entries(parsed).forEach(([date, entry]: [string, any]) => {
+          if (entry.duration > 0) {
+            rows.push([
+              'Fasting',
+              date,
+              '',
+              'Intermittent Fast',
+              `${entry.duration}hrs`,
+              '',
+              `Start: ${entry.startTime || 'N/A'}, End: ${entry.endTime || 'N/A'}`
+            ]);
+          }
+        });
+      } catch (error) {
+        console.error('Error parsing fasting data:', error);
+      }
+    }
+    
+    // Process measurements data
+    const measurementsData = data['fitcircle_measurements'];
+    if (measurementsData) {
+      try {
+        const parsed = JSON.parse(measurementsData);
+        Object.entries(parsed.history || {}).forEach(([date, measurements]: [string, any]) => {
+          Object.entries(measurements).forEach(([category, value]: [string, any]) => {
+            if (value !== null && value !== undefined && value !== '') {
+              rows.push([
+                'Measurement',
+                date,
+                '',
+                category,
+                value.toString(),
+                '',
+                ''
+              ]);
+            }
+          });
+        });
+      } catch (error) {
+        console.error('Error parsing measurements data:', error);
+      }
+    }
+    
+    // Add goals data
+    const hydrationGoal = data['fitcircle_goal_hydration'];
+    const meditationGoal = data['fitcircle_goal_meditation'];
+    const fastingGoal = data['fitcircle_goal_fasting'];
+    const weightGoal = data['fitcircle_goal_weight'];
+    
+    if (hydrationGoal) rows.push(['Goal', '', '', 'Hydration', `${hydrationGoal}oz/day`, '', '']);
+    if (meditationGoal) rows.push(['Goal', '', '', 'Meditation', `${meditationGoal}min/day`, '', '']);
+    if (fastingGoal) rows.push(['Goal', '', '', 'Fasting', `${fastingGoal}hrs/day`, '', '']);
+    if (weightGoal) rows.push(['Goal', '', '', 'Weight', `${weightGoal}lbs`, '', '']);
+    
+    // Add export metadata
+    rows.push(['Metadata', new Date().toISOString().split('T')[0], new Date().toLocaleTimeString(), 'Export', 'Complete', '', 'FitCircle Data Export']);
     
     return rows.map(row => row.map(field => `"${field}"`).join(',')).join('\n');
   };
@@ -219,7 +364,7 @@ export default function SettingsPage() {
   };
 
   const scheduleAutoBackup = () => {
-    // Calculate milliseconds until next 11:59 PM
+    // Store the scheduled backup time in localStorage
     const now = new Date();
     const nextBackup = new Date();
     nextBackup.setHours(23, 59, 0, 0);
@@ -229,16 +374,22 @@ export default function SettingsPage() {
       nextBackup.setDate(nextBackup.getDate() + 1);
     }
     
+    localStorage.setItem('fitcircle_next_backup', nextBackup.toISOString());
+    
     const timeUntilBackup = nextBackup.getTime() - now.getTime();
     
-    // Set timeout for the first backup
-    setTimeout(() => {
+    // Set timeout for the first backup (max 24 hours to avoid issues)
+    const timeoutId = setTimeout(() => {
       performAutoBackup();
-      // Then schedule daily backups every 24 hours
-      setInterval(performAutoBackup, 24 * 60 * 60 * 1000);
-    }, timeUntilBackup);
+      // Reschedule for next day
+      scheduleAutoBackup();
+    }, Math.min(timeUntilBackup, 24 * 60 * 60 * 1000));
     
     console.log(`Auto backup scheduled for: ${nextBackup.toLocaleString()}`);
+    console.log(`Time until backup: ${Math.round(timeUntilBackup / (1000 * 60))} minutes`);
+    
+    // Store timeout ID for potential cleanup
+    localStorage.setItem('fitcircle_backup_timeout', timeoutId.toString());
   };
 
   const clearAutoBackup = () => {
@@ -279,10 +430,11 @@ export default function SettingsPage() {
       };
       
       localStorage.setItem('fitcircle_last_auto_backup', JSON.stringify(backupData));
+      localStorage.setItem('fitcircle_last_backup_date', new Date().toISOString().split('T')[0]);
       
       // Show notification (if app is active)
       if (document.visibilityState === 'visible') {
-        console.log('Auto backup created successfully');
+        console.log('Auto backup created successfully at', new Date().toLocaleString());
       }
       
     } catch (error) {
