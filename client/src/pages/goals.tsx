@@ -94,14 +94,7 @@ export default function GoalsPage() {
       </div>
 
       <div className="p-6">
-        {/* Header Section */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Target className="w-8 h-8 text-blue-400" />
-          </div>
-          <h2 className="text-2xl font-bold mb-2">Your Goals</h2>
-          <p className="text-slate-400">Set and track your daily wellness targets</p>
-        </div>
+
 
         {/* Goals List */}
         <div className="space-y-6">
@@ -112,7 +105,6 @@ export default function GoalsPage() {
                   <span className="text-2xl">{item.icon}</span>
                   <div>
                     <h3 className="text-lg font-semibold text-white">{item.title}</h3>
-                    <p className="text-sm text-slate-400">{item.description}</p>
                   </div>
                 </div>
                 {item.key !== 'fastingHours' && (

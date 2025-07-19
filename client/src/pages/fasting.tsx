@@ -280,7 +280,7 @@ export default function FastingPage() {
                 <div key={log.id} className="bg-slate-800 rounded-lg p-4">
                   <div className="flex justify-between items-start mb-2">
                     <div className="text-sm text-slate-300">
-                      Logged on {loggedDate} at {loggedTime}
+                      {loggedDate}
                     </div>
                     <div className="flex space-x-2">
                       <button
@@ -316,7 +316,7 @@ export default function FastingPage() {
                     
                     {/* Fast Period */}
                     <div className="text-sm text-slate-400">
-                      {log.startDate} {log.startTime} - {log.endDate} {log.endTime}
+                      {new Date(log.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(log.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </div>
                   </div>
                 </div>
