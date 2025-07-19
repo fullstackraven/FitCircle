@@ -120,6 +120,10 @@ Preferred communication style: Simple, everyday language.
 - **Intermittent Fasting**: Added complete intermittent fasting log feature with duration tracking and heat bar visualization
 - **Meditation Feature**: Added meditation timer with circular progress indicator, pause/resume functionality, meditation session logging, and gong sound effect on completion
 - **Data Import/Export**: Added CSV import functionality to restore data from previous exports, creating a complete backup and recovery system
+- **Hydration Tracking**: Added comprehensive hydration tracker with daily goals, progress visualization, and logging
+- **Goals Management**: Created centralized goals page with progress bars for hydration, meditation, fasting, and weight goals
+- **Enhanced Measurements**: Updated measurements page with trend tracking and horizontal scrolling line graphs for time-series data
+- **Complete Export System**: Updated data export to include all new hydration, goals, and measurement history data
 
 ### Data Persistence and iOS Considerations
 

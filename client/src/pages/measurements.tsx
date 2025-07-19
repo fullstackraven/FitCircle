@@ -1,256 +1,205 @@
-
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Scale } from 'lucide-react';
+import { ChevronLeft, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useMeasurements } from '@/hooks/use-measurements';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+
+interface MeasurementFieldConfig {
+  key: keyof import('@/hooks/use-measurements').MeasurementData;
+  label: string;
+  unit: string;
+  category: string;
+}
+
+const measurementFields: MeasurementFieldConfig[] = [
+  { key: 'weight', label: 'Weight', unit: 'lbs', category: 'Body' },
+  { key: 'height', label: 'Height', unit: 'in', category: 'Body' },
+  { key: 'bodyFat', label: 'Body Fat', unit: '%', category: 'Body' },
+  { key: 'neck', label: 'Neck', unit: 'in', category: 'Circumference' },
+  { key: 'chest', label: 'Chest', unit: 'in', category: 'Circumference' },
+  { key: 'waist', label: 'Waist', unit: 'in', category: 'Circumference' },
+  { key: 'hips', label: 'Hips', unit: 'in', category: 'Circumference' },
+  { key: 'bicepLeft', label: 'Bicep (L)', unit: 'in', category: 'Arms' },
+  { key: 'bicepRight', label: 'Bicep (R)', unit: 'in', category: 'Arms' },
+  { key: 'forearmLeft', label: 'Forearm (L)', unit: 'in', category: 'Arms' },
+  { key: 'forearmRight', label: 'Forearm (R)', unit: 'in', category: 'Arms' },
+  { key: 'thighLeft', label: 'Thigh (L)', unit: 'in', category: 'Legs' },
+  { key: 'thighRight', label: 'Thigh (R)', unit: 'in', category: 'Legs' },
+  { key: 'calfLeft', label: 'Calf (L)', unit: 'in', category: 'Legs' },
+  { key: 'calfRight', label: 'Calf (R)', unit: 'in', category: 'Legs' },
+];
 
 export default function MeasurementsPage() {
   const [, navigate] = useLocation();
+  const { addMeasurement, getLatestValue, getValueTrend, getChartData } = useMeasurements();
   
-  // Body measurements
-  const [weight, setWeight] = useState('');
-  const [height, setHeight] = useState('');
-  const [bodyFat, setBodyFat] = useState('');
-  
-  // Circumferences
-  const [neck, setNeck] = useState('');
-  const [chest, setChest] = useState('');
-  const [waist, setWaist] = useState('');
-  const [hips, setHips] = useState('');
-  const [bicepLeft, setBicepLeft] = useState('');
-  const [bicepRight, setBicepRight] = useState('');
-  const [forearmLeft, setForearmLeft] = useState('');
-  const [forearmRight, setForearmRight] = useState('');
-  const [thighLeft, setThighLeft] = useState('');
-  const [thighRight, setThighRight] = useState('');
-  const [calfLeft, setCalfLeft] = useState('');
-  const [calfRight, setCalfRight] = useState('');
+  const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
+  const [showGraphs, setShowGraphs] = useState(false);
 
   useEffect(() => {
-    // Load saved measurements
-    setWeight(localStorage.getItem('fitcircle_weight') || '');
-    setHeight(localStorage.getItem('fitcircle_height') || '');
-    setBodyFat(localStorage.getItem('fitcircle_body_fat') || '');
-    setNeck(localStorage.getItem('fitcircle_neck') || '');
-    setChest(localStorage.getItem('fitcircle_chest') || '');
-    setWaist(localStorage.getItem('fitcircle_waist') || '');
-    setHips(localStorage.getItem('fitcircle_hips') || '');
-    setBicepLeft(localStorage.getItem('fitcircle_bicep_left') || '');
-    setBicepRight(localStorage.getItem('fitcircle_bicep_right') || '');
-    setForearmLeft(localStorage.getItem('fitcircle_forearm_left') || '');
-    setForearmRight(localStorage.getItem('fitcircle_forearm_right') || '');
-    setThighLeft(localStorage.getItem('fitcircle_thigh_left') || '');
-    setThighRight(localStorage.getItem('fitcircle_thigh_right') || '');
-    setCalfLeft(localStorage.getItem('fitcircle_calf_left') || '');
-    setCalfRight(localStorage.getItem('fitcircle_calf_right') || '');
+    // Load latest values
+    const initialValues: { [key: string]: string } = {};
+    measurementFields.forEach(field => {
+      const latestValue = getLatestValue(field.key);
+      initialValues[field.key] = latestValue?.toString() || '';
+    });
+    setInputValues(initialValues);
   }, []);
 
+  const handleInputChange = (key: string, value: string) => {
+    setInputValues(prev => ({ ...prev, [key]: value }));
+  };
+
   const handleSave = () => {
-    // Save body measurements
-    localStorage.setItem('fitcircle_weight', weight);
-    localStorage.setItem('fitcircle_height', height);
-    localStorage.setItem('fitcircle_body_fat', bodyFat);
-    
-    // Save circumferences
-    localStorage.setItem('fitcircle_neck', neck);
-    localStorage.setItem('fitcircle_chest', chest);
-    localStorage.setItem('fitcircle_waist', waist);
-    localStorage.setItem('fitcircle_hips', hips);
-    localStorage.setItem('fitcircle_bicep_left', bicepLeft);
-    localStorage.setItem('fitcircle_bicep_right', bicepRight);
-    localStorage.setItem('fitcircle_forearm_left', forearmLeft);
-    localStorage.setItem('fitcircle_forearm_right', forearmRight);
-    localStorage.setItem('fitcircle_thigh_left', thighLeft);
-    localStorage.setItem('fitcircle_thigh_right', thighRight);
-    localStorage.setItem('fitcircle_calf_left', calfLeft);
-    localStorage.setItem('fitcircle_calf_right', calfRight);
+    // Save measurements with history
+    measurementFields.forEach(field => {
+      const value = parseFloat(inputValues[field.key]);
+      if (!isNaN(value) && value > 0) {
+        addMeasurement(field.key, value);
+      }
+    });
     
     navigate('/');
   };
 
+  const getTrendIcon = (trend: 'up' | 'down' | 'neutral') => {
+    switch (trend) {
+      case 'up': return <TrendingUp className="w-4 h-4 text-green-400" />;
+      case 'down': return <TrendingDown className="w-4 h-4 text-red-400" />;
+      default: return <Minus className="w-4 h-4 text-slate-400" />;
+    }
+  };
+
+  const categorizedFields = measurementFields.reduce((acc, field) => {
+    if (!acc[field.category]) acc[field.category] = [];
+    acc[field.category].push(field);
+    return acc;
+  }, {} as { [category: string]: MeasurementFieldConfig[] });
+
   return (
     <div className="min-h-screen text-white" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
-      <div className="container mx-auto px-4 py-6 max-w-md">
+      <div className="container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <button
             onClick={() => navigate('/')}
-            className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
+            className="flex items-center space-x-2 text-slate-300 hover:text-white"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5" />
             <span>Back</span>
           </button>
           <h1 className="text-xl font-semibold">Measurements</h1>
-          <div className="w-16"></div>
+          <button
+            onClick={() => setShowGraphs(!showGraphs)}
+            className="text-sm bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded"
+          >
+            {showGraphs ? 'Input' : 'Graphs'}
+          </button>
         </div>
 
-        {/* Body Measures Section */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-            <Scale className="w-5 h-5" />
-            <span>Body Measures</span>
-          </h2>
-          
-          <div className="bg-slate-800 rounded-lg p-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Weight</label>
-              <Input
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-                placeholder="e.g., 70kg or 154lbs"
-                className="bg-slate-700 border-slate-600 text-white"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Height</label>
-              <Input
-                value={height}
-                onChange={(e) => setHeight(e.target.value)}
-                placeholder="e.g., 5'10 or 178cm"
-                className="bg-slate-700 border-slate-600 text-white"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Body Fat %</label>
-              <Input
-                value={bodyFat}
-                onChange={(e) => setBodyFat(e.target.value)}
-                placeholder="e.g., 15%"
-                className="bg-slate-700 border-slate-600 text-white"
-              />
-            </div>
+        {!showGraphs ? (
+          /* Input Mode */
+          <div className="space-y-6">
+            {Object.entries(categorizedFields).map(([category, fields]) => (
+              <section key={category} className="bg-slate-800 rounded-lg p-6">
+                <h2 className="text-lg font-semibold mb-4 text-white">{category}</h2>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  {fields.map(field => (
+                    <div key={field.key}>
+                      <Label htmlFor={field.key} className="text-slate-300 flex items-center space-x-2">
+                        <span>{field.label}</span>
+                        {getLatestValue(field.key) && getTrendIcon(getValueTrend(field.key))}
+                      </Label>
+                      <Input
+                        id={field.key}
+                        type="number"
+                        value={inputValues[field.key] || ''}
+                        onChange={(e) => handleInputChange(field.key, e.target.value)}
+                        placeholder={`${field.unit}`}
+                        className="bg-slate-700 border-slate-600 text-white mt-1"
+                      />
+                      {getLatestValue(field.key) && (
+                        <div className="text-xs text-slate-400 mt-1">
+                          Last: {getLatestValue(field.key)}{field.unit}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+            
+            <Button
+              onClick={handleSave}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium"
+            >
+              Save Measurements
+            </Button>
           </div>
-        </div>
+        ) : (
+          /* Graph Mode */
+          <div className="space-y-6">
+            <div className="flex overflow-x-auto space-x-4 pb-4">
+              {measurementFields
+                .filter(field => getChartData(field.key).length > 1)
+                .map(field => {
+                  const chartData = getChartData(field.key).map(entry => ({
+                    date: new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                    value: entry.value
+                  }));
 
-        {/* Circumferences Section */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">Circumferences</h2>
-          
-          <div className="bg-slate-800 rounded-lg p-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Neck</label>
-              <Input
-                value={neck}
-                onChange={(e) => setNeck(e.target.value)}
-                placeholder="e.g., 15 inches"
-                className="bg-slate-700 border-slate-600 text-white"
-              />
+                  return (
+                    <div key={field.key} className="flex-shrink-0 w-80 bg-slate-800 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold mb-2 text-white flex items-center space-x-2">
+                        <span>{field.label}</span>
+                        {getTrendIcon(getValueTrend(field.key))}
+                      </h3>
+                      <div className="h-40">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart data={chartData}>
+                            <XAxis 
+                              dataKey="date" 
+                              axisLine={false}
+                              tickLine={false}
+                              tick={{ fontSize: 10, fill: '#94a3b8' }}
+                            />
+                            <YAxis 
+                              axisLine={false}
+                              tickLine={false}
+                              tick={{ fontSize: 10, fill: '#94a3b8' }}
+                            />
+                            <Line 
+                              type="monotone" 
+                              dataKey="value" 
+                              stroke="#3b82f6" 
+                              strokeWidth={2}
+                              dot={{ r: 3, fill: '#3b82f6' }}
+                            />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div className="mt-2 text-sm text-slate-400">
+                        Latest: {getLatestValue(field.key)}{field.unit} | 
+                        {chartData.length} data points
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Chest</label>
-              <Input
-                value={chest}
-                onChange={(e) => setChest(e.target.value)}
-                placeholder="e.g., 42 inches"
-                className="bg-slate-700 border-slate-600 text-white"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Waist</label>
-              <Input
-                value={waist}
-                onChange={(e) => setWaist(e.target.value)}
-                placeholder="e.g., 32 inches"
-                className="bg-slate-700 border-slate-600 text-white"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Hips</label>
-              <Input
-                value={hips}
-                onChange={(e) => setHips(e.target.value)}
-                placeholder="e.g., 38 inches"
-                className="bg-slate-700 border-slate-600 text-white"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Bicep</label>
-              <div className="grid grid-cols-2 gap-2">
-                <Input
-                  value={bicepLeft}
-                  onChange={(e) => setBicepLeft(e.target.value)}
-                  placeholder="Left (e.g., 14 inches)"
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-                <Input
-                  value={bicepRight}
-                  onChange={(e) => setBicepRight(e.target.value)}
-                  placeholder="Right (e.g., 14 inches)"
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
+            
+            {measurementFields.filter(field => getChartData(field.key).length > 1).length === 0 && (
+              <div className="text-center text-slate-500 py-12">
+                <div className="text-6xl mb-4">📈</div>
+                <h3 className="text-lg font-semibold mb-2">No Trend Data Yet</h3>
+                <p className="text-sm">Add measurements over time to see trend graphs here</p>
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Forearm</label>
-              <div className="grid grid-cols-2 gap-2">
-                <Input
-                  value={forearmLeft}
-                  onChange={(e) => setForearmLeft(e.target.value)}
-                  placeholder="Left (e.g., 11 inches)"
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-                <Input
-                  value={forearmRight}
-                  onChange={(e) => setForearmRight(e.target.value)}
-                  placeholder="Right (e.g., 11 inches)"
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Thigh</label>
-              <div className="grid grid-cols-2 gap-2">
-                <Input
-                  value={thighLeft}
-                  onChange={(e) => setThighLeft(e.target.value)}
-                  placeholder="Left (e.g., 22 inches)"
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-                <Input
-                  value={thighRight}
-                  onChange={(e) => setThighRight(e.target.value)}
-                  placeholder="Right (e.g., 22 inches)"
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Calf</label>
-              <div className="grid grid-cols-2 gap-2">
-                <Input
-                  value={calfLeft}
-                  onChange={(e) => setCalfLeft(e.target.value)}
-                  placeholder="Left (e.g., 15 inches)"
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-                <Input
-                  value={calfRight}
-                  onChange={(e) => setCalfRight(e.target.value)}
-                  placeholder="Right (e.g., 15 inches)"
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-              </div>
-            </div>
+            )}
           </div>
-        </div>
-
-        {/* Save Button */}
-        <Button 
-          onClick={handleSave}
-          className="w-full bg-blue-600 hover:bg-blue-700"
-        >
-          Save Measurements
-        </Button>
+        )}
       </div>
     </div>
   );

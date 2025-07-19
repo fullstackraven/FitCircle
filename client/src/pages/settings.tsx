@@ -37,9 +37,7 @@ export default function SettingsPage() {
     
     Object.keys(localStorage).forEach(key => {
       if (key.startsWith('fitcircle_') || 
-          key === 'workout-tracker-data' ||
-          key === 'fitcircle_meditation_logs' ||
-          key === 'fitcircle_fasting_logs') {
+          key === 'workout-tracker-data') {
         const value = localStorage.getItem(key);
         if (value !== null) {
           allData[key] = value;
@@ -158,9 +156,7 @@ export default function SettingsPage() {
 
         // Only restore FitCircle data
         if ((key.startsWith('fitcircle_') || 
-             key === 'workout-tracker-data' ||
-             key === 'fitcircle_meditation_logs' ||
-             key === 'fitcircle_fasting_logs') && value) {
+             key === 'workout-tracker-data') && value) {
           localStorage.setItem(key, value);
           itemsRestored++;
         }
@@ -246,9 +242,7 @@ export default function SettingsPage() {
       
       Object.keys(localStorage).forEach(key => {
         if (key.startsWith('fitcircle_') || 
-            key === 'workout-tracker-data' ||
-            key === 'fitcircle_meditation_logs' ||
-            key === 'fitcircle_fasting_logs') {
+            key === 'workout-tracker-data') {
           const value = localStorage.getItem(key);
           if (value !== null) {
             allData[key] = value;
@@ -313,9 +307,7 @@ export default function SettingsPage() {
     // Clear all FitCircle related localStorage
     Object.keys(localStorage).forEach(key => {
       if (key.startsWith('fitcircle_') || 
-          key === 'workout-tracker-data' ||
-          key === 'fitcircle_meditation_logs' ||
-          key === 'fitcircle_fasting_logs') {
+          key === 'workout-tracker-data') {
         localStorage.removeItem(key);
       }
     });

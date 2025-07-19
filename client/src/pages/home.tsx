@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { WorkoutModal } from '@/components/workout-modal';
@@ -331,6 +331,30 @@ export default function Home() {
               >
                 <Brain className="w-5 h-5 text-slate-400" />
                 <span className="text-white">Meditation</span>
+              </div>
+
+              {/* Hydration */}
+              <div 
+                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  navigate('/hydration');
+                }}
+              >
+                <Droplet className="w-5 h-5 text-blue-400" />
+                <span className="text-white">Hydration</span>
+              </div>
+
+              {/* Goals */}
+              <div 
+                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  navigate('/goals');
+                }}
+              >
+                <Target className="w-5 h-5 text-green-400" />
+                <span className="text-white">Goals</span>
               </div>
 
               {/* Settings */}
