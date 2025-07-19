@@ -161,8 +161,8 @@ export function useGoals() {
         if (completedFasts.length > 0) {
           // Calculate all-time average
           const averageHours = completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length;
-          // Scale against 24 hours max instead of goal (0-24hr range)
-          fastingProgress = Math.min((averageHours / 24) * 100, 100);
+          // Scale against the fasting goal
+          fastingProgress = Math.min((averageHours / goals.fastingHours) * 100, 100);
         }
       } catch (e) {
         fastingProgress = 0;

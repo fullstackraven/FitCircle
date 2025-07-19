@@ -349,7 +349,7 @@ export default function Home() {
                   navigate('/hydration?from=dashboard');
                 }}
               >
-                <Droplet className="w-5 h-5 text-blue-400" />
+                <Droplet className="w-5 h-5 text-slate-400" />
                 <span className="text-white">Hydration</span>
               </div>
 
@@ -361,7 +361,7 @@ export default function Home() {
                   navigate('/goals?from=dashboard');
                 }}
               >
-                <Target className="w-5 h-5 text-green-400" />
+                <Target className="w-5 h-5 text-slate-400" />
                 <span className="text-white">Goals</span>
               </div>
 
