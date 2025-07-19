@@ -32,14 +32,32 @@ export default function HydrationPage() {
   } = useHydration();
 
   const [addAmount, setAddAmount] = useState('8');
+  const [selectedLiquidType, setSelectedLiquidType] = useState('Water');
+  const [customLiquidType, setCustomLiquidType] = useState('');
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [newGoal, setNewGoal] = useState(dailyGoalOz.toString());
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
+  const liquidTypes = ['Water', 'Coffee', 'Tea', 'Custom'];
+
   const handleAddHydration = () => {
     const amount = parseFloat(addAmount);
     if (amount > 0) {
-      addHydration(amount);
+      const liquidType = selectedLiquidType === 'Custom' ? customLiquidType || 'Custom' : selectedLiquidType;
+      addHydration(amount, liquidType);
+      // Reset custom input after adding
+      if (selectedLiquidType === 'Custom') {
+        setCustomLiquidType('');
+      }
+    }
+  };
+
+  const handleQuickAdd = (amount: number) => {
+    const liquidType = selectedLiquidType === 'Custom' ? customLiquidType || 'Custom' : selectedLiquidType;
+    addHydration(amount, liquidType);
+    // Reset custom input after adding
+    if (selectedLiquidType === 'Custom') {
+      setCustomLiquidType('');
     }
   };
 
@@ -130,17 +148,48 @@ export default function HydrationPage() {
         </div>
 
         {/* Add Hydration Controls */}
-        <div className="bg-slate-800 rounded-lg p-6">
-          <h2 className="text-lg font-semibold mb-4">Add Water</h2>
+        <div className="bg-slate-800 rounded-lg p-6 space-y-4">
+          <h2 className="text-lg font-semibold">Add Liquid</h2>
+          
+          {/* Liquid Type Selection */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium text-slate-300">Liquid Type</Label>
+            <div className="grid grid-cols-4 gap-2">
+              {liquidTypes.map(type => (
+                <button
+                  key={type}
+                  onClick={() => setSelectedLiquidType(type)}
+                  className={`py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                    selectedLiquidType === type
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+                  }`}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+            
+            {/* Custom Liquid Type Input */}
+            {selectedLiquidType === 'Custom' && (
+              <Input
+                type="text"
+                value={customLiquidType}
+                onChange={(e) => setCustomLiquidType(e.target.value)}
+                placeholder="Enter liquid type"
+                className="bg-slate-700 border-slate-600 text-white"
+              />
+            )}
+          </div>
           
           {/* Quick Add Buttons */}
-          <div className="grid grid-cols-5 gap-2 mb-4">
+          <div className="grid grid-cols-5 gap-2">
             {quickAddAmounts.map(amount => (
               <Button
                 key={amount}
                 variant="outline"
                 size="sm"
-                onClick={() => addHydration(amount)}
+                onClick={() => handleQuickAdd(amount)}
                 className="border-slate-600 text-slate-300 hover:bg-slate-700"
               >
                 {amount}oz
@@ -175,9 +224,12 @@ export default function HydrationPage() {
             <h3 className="text-lg font-semibold mb-3">Today's Intake</h3>
             <div className="space-y-2">
               {todayEntries.slice().reverse().map((entry, index) => (
-                <div key={index} className="flex justify-between text-sm">
+                <div key={index} className="flex justify-between items-center text-sm">
                   <span className="text-slate-400">{entry.time}</span>
-                  <span className="text-blue-400">{entry.amount}oz</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-slate-300">{entry.liquidType || 'Water'}</span>
+                    <span className="text-blue-400">{entry.amount}oz</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -196,7 +248,7 @@ export default function HydrationPage() {
             {recentLogs.length > 0 ? (
               recentLogs.map((log) => (
                 <div key={log.date} className="bg-slate-800 rounded-lg p-4">
-                  <div className="flex justify-between items-center mb-2">
+                  <div className="flex justify-between items-center mb-3">
                     <span className="text-white font-medium">
                       {new Date(log.date).toLocaleDateString('en-US', { 
                         weekday: 'short', 
@@ -208,8 +260,26 @@ export default function HydrationPage() {
                       {log.totalOz}oz
                     </span>
                   </div>
-                  <div className="text-xs text-slate-400">
+                  <div className="text-xs text-slate-400 mb-2">
                     {log.entries.length} entries
+                  </div>
+                  
+                  {/* Show detailed entries for this day */}
+                  <div className="space-y-1">
+                    {log.entries.slice(0, 3).map((entry, index) => (
+                      <div key={index} className="flex justify-between items-center text-xs">
+                        <span className="text-slate-500">{entry.time}</span>
+                        <div className="flex items-center space-x-1">
+                          <span className="text-slate-400">{entry.liquidType || 'Water'}</span>
+                          <span className="text-slate-300">{entry.amount}oz</span>
+                        </div>
+                      </div>
+                    ))}
+                    {log.entries.length > 3 && (
+                      <div className="text-xs text-slate-500 text-center mt-1">
+                        +{log.entries.length - 3} more entries
+                      </div>
+                    )}
                   </div>
                 </div>
               ))

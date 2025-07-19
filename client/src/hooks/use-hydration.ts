@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react';
 
+export interface HydrationEntry {
+  time: string;
+  amount: number;
+  liquidType: string;
+}
+
 export interface HydrationLog {
   date: string;
   totalOz: number;
-  entries: { time: string; amount: number }[];
+  entries: HydrationEntry[];
 }
 
 export interface HydrationData {
@@ -47,8 +53,22 @@ export function useHydration() {
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
+        
+        // Migrate old data format - add liquidType to entries that don't have it
+        const migratedLogs: { [date: string]: HydrationLog } = {};
+        Object.entries(parsed.logs || {}).forEach(([date, log]: [string, any]) => {
+          migratedLogs[date] = {
+            ...log,
+            entries: log.entries.map((entry: any) => ({
+              ...entry,
+              liquidType: entry.liquidType || 'Water' // Default to Water for old entries
+            }))
+          };
+        });
+        
         setData(prev => ({
           ...parsed,
+          logs: migratedLogs,
           lastDate: parsed.lastDate || getTodayString(),
           // Sync goal from Goals page if it exists and is different
           dailyGoalOz: goalFromGoalsPage ? parseFloat(goalFromGoalsPage) : parsed.dailyGoalOz || 64
@@ -89,7 +109,7 @@ export function useHydration() {
     return () => clearInterval(interval);
   }, [data.lastDate]);
 
-  const addHydration = (amountOz: number) => {
+  const addHydration = (amountOz: number, liquidType: string = 'Water') => {
     const today = getTodayString();
     const currentTime = getCurrentTime();
     
@@ -100,7 +120,7 @@ export function useHydration() {
       const updatedLog = {
         ...todayLog,
         totalOz: todayLog.totalOz + amountOz,
-        entries: [...todayLog.entries, { time: currentTime, amount: amountOz }]
+        entries: [...todayLog.entries, { time: currentTime, amount: amountOz, liquidType }]
       };
 
       return {
