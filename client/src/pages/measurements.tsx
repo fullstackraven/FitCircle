@@ -54,15 +54,26 @@ export default function MeasurementsPage() {
   };
 
   const handleSave = () => {
+    console.log('handleSave called, input values:', inputValues);
+    let savedCount = 0;
+    
     // Save measurements with history
     measurementFields.forEach(field => {
       const value = parseFloat(inputValues[field.key]);
+      console.log(`Field ${field.key}: value = ${inputValues[field.key]}, parsed = ${value}`);
       if (!isNaN(value) && value > 0) {
+        console.log(`Saving ${field.key} = ${value}`);
         addMeasurement(field.key, value);
+        savedCount++;
       }
     });
     
-    navigate('/');
+    console.log(`Saved ${savedCount} measurements`);
+    
+    // Add a small delay to ensure localStorage writes complete
+    setTimeout(() => {
+      navigate('/');
+    }, 100);
   };
 
   const getTrendIcon = (trend: 'up' | 'down' | 'neutral') => {
