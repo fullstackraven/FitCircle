@@ -9,6 +9,17 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 
 export default function HydrationPage() {
   const [, navigate] = useLocation();
+  
+  // Check if we came from dashboard
+  const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
+  
+  const handleBack = () => {
+    if (fromDashboard) {
+      navigate('/?dashboard=open');
+    } else {
+      navigate('/');
+    }
+  };
   const { 
     dailyGoalOz, 
     currentDayOz, 
@@ -55,7 +66,7 @@ export default function HydrationPage() {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-slate-700">
         <button
-          onClick={() => navigate('/')}
+          onClick={handleBack}
           className="flex items-center space-x-2 text-slate-300 hover:text-white"
         >
           <ChevronLeft className="w-5 h-5" />

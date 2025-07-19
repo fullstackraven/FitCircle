@@ -15,6 +15,17 @@ interface MeditationLog {
 
 export default function MeditationPage() {
   const [, navigate] = useLocation();
+  
+  // Check if we came from dashboard
+  const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
+  
+  const handleBack = () => {
+    if (fromDashboard) {
+      navigate('/?dashboard=open');
+    } else {
+      navigate('/');
+    }
+  };
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0); // in seconds
@@ -210,7 +221,7 @@ export default function MeditationPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <button
-            onClick={() => navigate('/')}
+            onClick={handleBack}
             className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
           >
             <ArrowLeft className="w-5 h-5" />

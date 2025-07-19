@@ -43,7 +43,15 @@ export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
 
-
+  // Check if we should open dashboard on load
+  useEffect(() => {
+    const shouldOpenDashboard = new URLSearchParams(window.location.search).get('dashboard') === 'open';
+    if (shouldOpenDashboard) {
+      setIsSidebarOpen(true);
+      // Clear the URL parameter
+      window.history.replaceState({}, '', '/');
+    }
+  }, []);
 
   // Update username when it changes in localStorage
   useEffect(() => {
@@ -283,7 +291,7 @@ export default function Home() {
               className="flex items-center space-x-3 p-4 border-b border-slate-700 cursor-pointer hover:bg-slate-800 transition-colors"
               onClick={() => {
                 setIsSidebarOpen(false);
-                navigate('/profile');
+                navigate('/profile?from=dashboard');
               }}
             >
               <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center border-2 border-green-400">
@@ -302,7 +310,7 @@ export default function Home() {
                 className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
                 onClick={() => {
                   setIsSidebarOpen(false);
-                  navigate('/measurements');
+                  navigate('/measurements?from=dashboard');
                 }}
               >
                 <User className="w-5 h-5 text-slate-400" />
@@ -314,7 +322,7 @@ export default function Home() {
                 className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
                 onClick={() => {
                   setIsSidebarOpen(false);
-                  navigate('/fasting');
+                  navigate('/fasting?from=dashboard');
                 }}
               >
                 <Clock className="w-5 h-5 text-slate-400" />
@@ -326,7 +334,7 @@ export default function Home() {
                 className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
                 onClick={() => {
                   setIsSidebarOpen(false);
-                  navigate('/meditation');
+                  navigate('/meditation?from=dashboard');
                 }}
               >
                 <Brain className="w-5 h-5 text-slate-400" />
@@ -338,7 +346,7 @@ export default function Home() {
                 className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
                 onClick={() => {
                   setIsSidebarOpen(false);
-                  navigate('/hydration');
+                  navigate('/hydration?from=dashboard');
                 }}
               >
                 <Droplet className="w-5 h-5 text-blue-400" />
@@ -350,7 +358,7 @@ export default function Home() {
                 className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
                 onClick={() => {
                   setIsSidebarOpen(false);
-                  navigate('/goals');
+                  navigate('/goals?from=dashboard');
                 }}
               >
                 <Target className="w-5 h-5 text-green-400" />
@@ -362,7 +370,7 @@ export default function Home() {
                 className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
                 onClick={() => {
                   setIsSidebarOpen(false);
-                  navigate('/settings');
+                  navigate('/settings?from=dashboard');
                 }}
               >
                 <Settings className="w-5 h-5 text-slate-400" />

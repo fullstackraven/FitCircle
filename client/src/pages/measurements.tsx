@@ -34,6 +34,17 @@ const measurementFields: MeasurementFieldConfig[] = [
 
 export default function MeasurementsPage() {
   const [, navigate] = useLocation();
+  
+  // Check if we came from dashboard
+  const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
+  
+  const handleBack = () => {
+    if (fromDashboard) {
+      navigate('/?dashboard=open');
+    } else {
+      navigate('/');
+    }
+  };
   const { addMeasurement, getLatestValue, getValueTrend, getChartData } = useMeasurements();
   
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
@@ -110,7 +121,7 @@ export default function MeasurementsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <button
-            onClick={() => navigate('/')}
+            onClick={handleBack}
             className="flex items-center space-x-2 text-slate-300 hover:text-white"
           >
             <ChevronLeft className="w-5 h-5" />
