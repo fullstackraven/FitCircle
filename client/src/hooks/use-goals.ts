@@ -108,32 +108,29 @@ export function useGoals() {
       }
     }
 
-    // Fasting progress (today's actual progress, not average)
+    // Fasting progress (all-time average with 24hr max scale)
     const fastingData = localStorage.getItem('fitcircle_fasting_logs');
     let fastingProgress = 0;
     if (fastingData) {
       try {
         const logs = JSON.parse(fastingData);
-        const todayLog = logs[today];
+        const completedFasts: number[] = [];
         
-        if (todayLog?.endDate && todayLog?.startDate) {
-          // Calculate actual hours fasted today
-          const duration = (new Date(todayLog.endDate).getTime() - new Date(todayLog.startDate).getTime()) / (1000 * 60 * 60);
-          fastingProgress = Math.min((duration / goals.fastingHours) * 100, 100);
-        } else {
-          // If no completed fast today, check if there's an active fast
-          const allDates = Object.keys(logs).sort().reverse();
-          for (const date of allDates) {
-            const log = logs[date];
-            if (log?.startDate && !log?.endDate) {
-              // Active fast found - calculate current duration
-              const now = new Date();
-              const startTime = new Date(log.startDate);
-              const currentDuration = (now.getTime() - startTime.getTime()) / (1000 * 60 * 60);
-              fastingProgress = Math.min((currentDuration / goals.fastingHours) * 100, 100);
-              break;
+        // Collect all completed fasting sessions
+        Object.values(logs).forEach((log: any) => {
+          if (log?.endDate && log?.startDate) {
+            const duration = (new Date(log.endDate).getTime() - new Date(log.startDate).getTime()) / (1000 * 60 * 60);
+            if (duration > 0) {
+              completedFasts.push(duration);
             }
           }
+        });
+        
+        if (completedFasts.length > 0) {
+          // Calculate all-time average
+          const averageHours = completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length;
+          // Scale against 24 hours max instead of goal (0-24hr range)
+          fastingProgress = Math.min((averageHours / 24) * 100, 100);
         }
       } catch (e) {
         fastingProgress = 0;

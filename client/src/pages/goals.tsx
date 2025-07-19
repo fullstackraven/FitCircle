@@ -63,7 +63,7 @@ export default function GoalsPage() {
       title: 'Intermittent Fasting',
       unit: 'hrs',
       icon: '⏱️',
-      description: '7-day average fasting duration',
+      description: 'All-time average fasting duration',
       progress: progress.fastingProgress,
       color: 'bg-orange-600'
     },
@@ -115,15 +115,17 @@ export default function GoalsPage() {
                     <p className="text-sm text-slate-400">{item.description}</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleEdit(item.key)}
-                  className="text-slate-400 hover:text-white"
-                >
-                  <Edit className="w-4 h-4" />
-                </button>
+                {item.key !== 'fastingHours' && (
+                  <button
+                    onClick={() => handleEdit(item.key)}
+                    className="text-slate-400 hover:text-white"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                )}
               </div>
 
-              {editingGoal === item.key ? (
+              {editingGoal === item.key && item.key !== 'fastingHours' ? (
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor={item.key} className="text-slate-300">
@@ -160,10 +162,16 @@ export default function GoalsPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-2xl font-bold text-white">
-                      {goals[item.key]} {item.unit}
+                      {item.key === 'fastingHours' 
+                        ? `${((item.progress / 100) * 24).toFixed(1)} ${item.unit}` 
+                        : `${goals[item.key]} ${item.unit}`
+                      }
                     </span>
                     <span className="text-sm text-slate-400">
-                      {Math.round(item.progress)}% achieved
+                      {item.key === 'fastingHours' 
+                        ? 'Average of all sessions'
+                        : `${Math.round(item.progress)}% achieved`
+                      }
                     </span>
                   </div>
                   
@@ -174,6 +182,13 @@ export default function GoalsPage() {
                       style={{ width: `${Math.min(item.progress, 100)}%` }}
                     />
                   </div>
+                  
+                  {/* Special note for fasting */}
+                  {item.key === 'fastingHours' && (
+                    <div className="text-xs text-slate-500">
+                      Scale: 0-24 hours • Updates with each completed fast
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -187,7 +202,7 @@ export default function GoalsPage() {
             <li>• Set realistic and achievable daily targets</li>
             <li>• Progress bars show recent performance vs your goals</li>
             <li>• Weight goal shows how close you are to your target</li>
-            <li>• Meditation and fasting show 7-day averages</li>
+            <li>• Meditation shows 7-day average, fasting shows all-time average</li>
           </ul>
         </div>
       </div>
