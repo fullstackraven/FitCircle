@@ -87,20 +87,26 @@ window.addEventListener('popstate', function(e) {
 document.body.style.overscrollBehavior = 'none';
 document.documentElement.style.overscrollBehavior = 'none';
 
-// Additional CSS to prevent any swipe behaviors
+// Targeted CSS to prevent browser navigation swipes while allowing legitimate scrolling
 const antiSwipeStyle = document.createElement('style');
 antiSwipeStyle.textContent = `
-  * {
-    overscroll-behavior: none !important;
-    overscroll-behavior-x: none !important;
-    -webkit-overscroll-behavior: none !important;
-    -webkit-overscroll-behavior-x: none !important;
-  }
-  
   html, body {
     touch-action: pan-y pinch-zoom !important;
     -webkit-touch-action: pan-y pinch-zoom !important;
     -ms-touch-action: pan-y pinch-zoom !important;
+    overscroll-behavior: none !important;
+    overscroll-behavior-x: none !important;
+  }
+  
+  /* Allow horizontal scrolling in specific containers */
+  .horizontal-scroll {
+    touch-action: pan-x pan-y !important;
+    -webkit-touch-action: pan-x pan-y !important;
+    overscroll-behavior-x: auto !important;
+  }
+  
+  /* Prevent overscroll on main page containers only */
+  .main-container {
     overscroll-behavior: none !important;
     overscroll-behavior-x: none !important;
   }

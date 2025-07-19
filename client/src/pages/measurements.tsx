@@ -174,7 +174,7 @@ export default function MeasurementsPage() {
           <section className="bg-slate-800 rounded-lg p-6">
             <h2 className="text-lg font-semibold mb-4 text-white">Trend Graphs</h2>
             
-            <div className="flex overflow-x-auto space-x-4 pb-4">
+            <div className="flex overflow-x-auto space-x-4 pb-4 horizontal-scroll">
               {measurementFields
                 .filter(field => getChartData(field.key).length > 0)
                 .map(field => {
