@@ -1,9 +1,9 @@
 // src/main.tsx
 
 import { createRoot } from "react-dom/client";
-import SimpleApp from "./simple-app";
+import App from "./App";
 import "./index.css";
-// Removed wouter to isolate React issues
+import { Router } from "wouter";
 
 // Completely disable browser swipe navigation
 let startX = 0;
@@ -107,4 +107,8 @@ antiSwipeStyle.textContent = `
 `;
 document.head.appendChild(antiSwipeStyle);
 
-createRoot(document.getElementById("root")!).render(<SimpleApp />);
+createRoot(document.getElementById("root")!).render(
+  <Router>
+    <App />
+  </Router>
+);
