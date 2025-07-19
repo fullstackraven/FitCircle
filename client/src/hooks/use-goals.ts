@@ -55,19 +55,34 @@ export function useGoals() {
     };
     
     localStorage.setItem(`${STORAGE_PREFIX}${keyMap[goalType]}`, value.toString());
+    
+    // Special case: Also update hydration hook data if hydration goal is changed
+    if (goalType === 'hydrationOz') {
+      const hydrationData = localStorage.getItem('fitcircle_hydration_data');
+      if (hydrationData) {
+        try {
+          const parsed = JSON.parse(hydrationData);
+          parsed.dailyGoalOz = value;
+          localStorage.setItem('fitcircle_hydration_data', JSON.stringify(parsed));
+        } catch (e) {
+          console.error('Failed to sync hydration goal:', e);
+        }
+      }
+    }
   };
 
   const calculateProgress = (): GoalProgress => {
     // Get current data from other storage keys
     const today = new Date().toISOString().split('T')[0];
     
-    // Hydration progress
+    // Hydration progress - use the goal from hydration data, not goals data
     const hydrationData = localStorage.getItem('fitcircle_hydration_data');
     let hydrationProgress = 0;
     if (hydrationData) {
       try {
         const parsed = JSON.parse(hydrationData);
-        hydrationProgress = Math.min((parsed.currentDayOz / goals.hydrationOz) * 100, 100);
+        const actualGoal = parsed.dailyGoalOz || goals.hydrationOz; // Use hydration data's goal
+        hydrationProgress = Math.min((parsed.currentDayOz / actualGoal) * 100, 100);
       } catch (e) {
         hydrationProgress = 0;
       }
@@ -93,27 +108,32 @@ export function useGoals() {
       }
     }
 
-    // Fasting progress (average last 7 days)
+    // Fasting progress (today's actual progress, not average)
     const fastingData = localStorage.getItem('fitcircle_fasting_logs');
     let fastingProgress = 0;
     if (fastingData) {
       try {
         const logs = JSON.parse(fastingData);
-        const last7Days = Object.keys(logs)
-          .sort()
-          .slice(-7)
-          .map(date => {
-            const dayLog = logs[date];
-            if (dayLog?.endDate && dayLog?.startDate) {
-              const duration = (new Date(dayLog.endDate).getTime() - new Date(dayLog.startDate).getTime()) / (1000 * 60 * 60);
-              return duration;
-            }
-            return 0;
-          });
+        const todayLog = logs[today];
         
-        if (last7Days.length > 0) {
-          const avgHours = last7Days.reduce((sum, hours) => sum + hours, 0) / last7Days.length;
-          fastingProgress = Math.min((avgHours / goals.fastingHours) * 100, 100);
+        if (todayLog?.endDate && todayLog?.startDate) {
+          // Calculate actual hours fasted today
+          const duration = (new Date(todayLog.endDate).getTime() - new Date(todayLog.startDate).getTime()) / (1000 * 60 * 60);
+          fastingProgress = Math.min((duration / goals.fastingHours) * 100, 100);
+        } else {
+          // If no completed fast today, check if there's an active fast
+          const allDates = Object.keys(logs).sort().reverse();
+          for (const date of allDates) {
+            const log = logs[date];
+            if (log?.startDate && !log?.endDate) {
+              // Active fast found - calculate current duration
+              const now = new Date();
+              const startTime = new Date(log.startDate);
+              const currentDuration = (now.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+              fastingProgress = Math.min((currentDuration / goals.fastingHours) * 100, 100);
+              break;
+            }
+          }
         }
       } catch (e) {
         fastingProgress = 0;

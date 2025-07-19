@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, Target, Edit } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useGoals } from '@/hooks/use-goals';
@@ -9,6 +9,17 @@ import { Label } from '@/components/ui/label';
 export default function GoalsPage() {
   const [, navigate] = useLocation();
   const { goals, updateGoal, progress } = useGoals();
+  
+  // Force update goals when hydration data changes
+  const [refreshKey, setRefreshKey] = useState(0);
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRefreshKey(prev => prev + 1);
+    }, 1000); // Update every second for real-time progress
+    
+    return () => clearInterval(interval);
+  }, []);
   
   const [editingGoal, setEditingGoal] = useState<string | null>(null);
   const [tempValues, setTempValues] = useState(goals);

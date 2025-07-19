@@ -36,6 +36,8 @@ export default function HydrationPage() {
     const goal = parseFloat(newGoal);
     if (goal > 0) {
       setDailyGoal(goal);
+      // Also update goals page to keep in sync
+      localStorage.setItem('fitcircle_goal_hydration', goal.toString());
       setIsGoalModalOpen(false);
     }
   };

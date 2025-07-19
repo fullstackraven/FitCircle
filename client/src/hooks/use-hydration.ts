@@ -42,16 +42,26 @@ export function useHydration() {
   // Load data from localStorage on mount
   useEffect(() => {
     const savedData = localStorage.getItem(STORAGE_KEY);
+    const goalFromGoalsPage = localStorage.getItem('fitcircle_goal_hydration');
+    
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
         setData(prev => ({
           ...parsed,
-          lastDate: parsed.lastDate || getTodayString()
+          lastDate: parsed.lastDate || getTodayString(),
+          // Sync goal from Goals page if it exists and is different
+          dailyGoalOz: goalFromGoalsPage ? parseFloat(goalFromGoalsPage) : parsed.dailyGoalOz || 64
         }));
       } catch (error) {
         console.error('Failed to parse hydration data:', error);
       }
+    } else if (goalFromGoalsPage) {
+      // If no hydration data but goal exists, use it
+      setData(prev => ({
+        ...prev,
+        dailyGoalOz: parseFloat(goalFromGoalsPage)
+      }));
     }
   }, []);
 
@@ -107,7 +117,7 @@ export function useHydration() {
   const setDailyGoal = (goalOz: number) => {
     setData(prev => ({ ...prev, dailyGoalOz: goalOz }));
     
-    // Also update the goals page
+    // Also update the goals page - keep both in sync
     localStorage.setItem('fitcircle_goal_hydration', goalOz.toString());
   };
 
