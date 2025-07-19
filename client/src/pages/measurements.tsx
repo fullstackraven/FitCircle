@@ -84,11 +84,8 @@ export default function MeasurementsPage() {
     });
     
     if (savedCount > 0) {
-      // Show success feedback and navigate after a brief delay
+      // Show success feedback but stay on measurements page
       alert(`Successfully saved ${savedCount} measurement${savedCount > 1 ? 's' : ''}!`);
-      setTimeout(() => {
-        navigate('/');
-      }, 500);
     } else {
       alert('Failed to save measurements. Please try again.');
     }
@@ -174,7 +171,7 @@ export default function MeasurementsPage() {
           <div className="space-y-6">
             <div className="flex overflow-x-auto space-x-4 pb-4">
               {measurementFields
-                .filter(field => getChartData(field.key).length > 1)
+                .filter(field => getChartData(field.key).length > 0)
                 .map(field => {
                   const chartData = getChartData(field.key).map(entry => ({
                     date: new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
@@ -200,27 +197,34 @@ export default function MeasurementsPage() {
                               axisLine={false}
                               tickLine={false}
                               tick={{ fontSize: 10, fill: '#94a3b8' }}
+                              domain={chartData.length === 1 ? ['dataMin - 5', 'dataMax + 5'] : ['auto', 'auto']}
                             />
                             <Line 
                               type="monotone" 
                               dataKey="value" 
                               stroke="#3b82f6" 
                               strokeWidth={2}
-                              dot={{ r: 3, fill: '#3b82f6' }}
+                              dot={{ r: 5, fill: '#3b82f6' }}
+                              connectNulls={false}
                             />
                           </LineChart>
                         </ResponsiveContainer>
                       </div>
                       <div className="mt-2 text-sm text-slate-400">
                         Latest: {getLatestValue(field.key)}{field.unit} | 
-                        {chartData.length} data points
+                        {chartData.length} data point{chartData.length > 1 ? 's' : ''}
+                        {chartData.length === 1 && (
+                          <div className="text-xs text-blue-400 mt-1">
+                            Add more entries to see trend line
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
                 })}
             </div>
             
-            {measurementFields.filter(field => getChartData(field.key).length > 1).length === 0 && (
+            {measurementFields.filter(field => getChartData(field.key).length > 0).length === 0 && (
               <div className="text-center text-slate-500 py-12">
                 <div className="text-6xl mb-4">📈</div>
                 <h3 className="text-lg font-semibold mb-2">No Trend Data Yet</h3>
