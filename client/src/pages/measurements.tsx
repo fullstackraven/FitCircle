@@ -37,7 +37,6 @@ export default function MeasurementsPage() {
   const { addMeasurement, getLatestValue, getValueTrend, getChartData } = useMeasurements();
   
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
-  const [showGraphs, setShowGraphs] = useState(false);
 
   useEffect(() => {
     // Load latest values
@@ -118,57 +117,52 @@ export default function MeasurementsPage() {
             <span>Back</span>
           </button>
           <h1 className="text-xl font-semibold">Measurements</h1>
-          <button
-            onClick={() => setShowGraphs(!showGraphs)}
-            className="text-sm bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded"
-          >
-            {showGraphs ? 'Input' : 'Graphs'}
-          </button>
+          <div className="w-20"></div> {/* Spacer for centered title */}
         </div>
 
-        {!showGraphs ? (
-          /* Input Mode */
-          <div className="space-y-6">
-            {Object.entries(categorizedFields).map(([category, fields]) => (
-              <section key={category} className="bg-slate-800 rounded-lg p-6">
-                <h2 className="text-lg font-semibold mb-4 text-white">{category}</h2>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  {fields.map(field => (
-                    <div key={field.key}>
-                      <Label htmlFor={field.key} className="text-slate-300 flex items-center space-x-2">
-                        <span>{field.label}</span>
-                        {getLatestValue(field.key) && getTrendIcon(getValueTrend(field.key))}
-                      </Label>
-                      <Input
-                        id={field.key}
-                        type="number"
-                        value={inputValues[field.key] || ''}
-                        onChange={(e) => handleInputChange(field.key, e.target.value)}
-                        placeholder={`${field.unit}`}
-                        className="bg-slate-700 border-slate-600 text-white mt-1"
-                      />
-                      {getLatestValue(field.key) && (
-                        <div className="text-xs text-slate-400 mt-1">
-                          Last: {getLatestValue(field.key)}{field.unit}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            ))}
+        {/* Input Section */}
+        <div className="space-y-6">
+          {Object.entries(categorizedFields).map(([category, fields]) => (
+            <section key={category} className="bg-slate-800 rounded-lg p-6">
+              <h2 className="text-lg font-semibold mb-4 text-white">{category}</h2>
+              
+              <div className="grid grid-cols-2 gap-4">
+                {fields.map(field => (
+                  <div key={field.key}>
+                    <Label htmlFor={field.key} className="text-slate-300 flex items-center space-x-2">
+                      <span>{field.label}</span>
+                      {getLatestValue(field.key) && getTrendIcon(getValueTrend(field.key))}
+                    </Label>
+                    <Input
+                      id={field.key}
+                      type="number"
+                      value={inputValues[field.key] || ''}
+                      onChange={(e) => handleInputChange(field.key, e.target.value)}
+                      placeholder={`${field.unit}`}
+                      className="bg-slate-700 border-slate-600 text-white mt-1"
+                    />
+                    {getLatestValue(field.key) && (
+                      <div className="text-xs text-slate-400 mt-1">
+                        Last: {getLatestValue(field.key)}{field.unit}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))}
+          
+          <Button
+            onClick={handleSave}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium"
+          >
+            Save Measurements
+          </Button>
+          
+          {/* Trend Graphs Section */}
+          <section className="bg-slate-800 rounded-lg p-6">
+            <h2 className="text-lg font-semibold mb-4 text-white">Trend Graphs</h2>
             
-            <Button
-              onClick={handleSave}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium"
-            >
-              Save Measurements
-            </Button>
-          </div>
-        ) : (
-          /* Graph Mode */
-          <div className="space-y-6">
             <div className="flex overflow-x-auto space-x-4 pb-4">
               {measurementFields
                 .filter(field => getChartData(field.key).length > 0)
@@ -179,7 +173,7 @@ export default function MeasurementsPage() {
                   }));
 
                   return (
-                    <div key={field.key} className="flex-shrink-0 w-80 bg-slate-800 rounded-lg p-4">
+                    <div key={field.key} className="flex-shrink-0 w-80 bg-slate-700 rounded-lg p-4">
                       <h3 className="text-lg font-semibold mb-2 text-white flex items-center space-x-2">
                         <span>{field.label}</span>
                         {getTrendIcon(getValueTrend(field.key))}
@@ -225,14 +219,14 @@ export default function MeasurementsPage() {
             </div>
             
             {measurementFields.filter(field => getChartData(field.key).length > 0).length === 0 && (
-              <div className="text-center text-slate-500 py-12">
-                <div className="text-6xl mb-4">📈</div>
-                <h3 className="text-lg font-semibold mb-2">No Trend Data Yet</h3>
-                <p className="text-sm">Add measurements over time to see trend graphs here</p>
+              <div className="text-center text-slate-500 py-8">
+                <div className="text-4xl mb-2">📈</div>
+                <h3 className="text-md font-semibold mb-1">No Trend Data Yet</h3>
+                <p className="text-sm">Add measurements to see trend graphs here</p>
               </div>
             )}
-          </div>
-        )}
+          </section>
+        </div>
       </div>
     </div>
   );
