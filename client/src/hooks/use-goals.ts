@@ -94,13 +94,33 @@ export function useGoals() {
     if (meditationData) {
       try {
         const logs = JSON.parse(meditationData);
-        const last7Days = Object.keys(logs)
-          .sort()
-          .slice(-7)
-          .map(date => logs[date]?.reduce((total: number, session: any) => total + session.duration, 0) || 0);
+        // Meditation logs are stored as an array of log objects
+        let totalMinutes = 0;
+        let dayCount = 0;
         
-        if (last7Days.length > 0) {
-          const avgMinutes = last7Days.reduce((sum, minutes) => sum + minutes, 0) / last7Days.length;
+        if (Array.isArray(logs)) {
+          // Group sessions by date and calculate daily totals for last 7 days
+          const last7Days = new Date();
+          last7Days.setDate(last7Days.getDate() - 7);
+          
+          const dailyTotals: { [date: string]: number } = {};
+          
+          logs.forEach((session: any) => {
+            const sessionDate = new Date(session.completedAt || session.date);
+            if (sessionDate >= last7Days && session.duration) {
+              const dateKey = sessionDate.toISOString().split('T')[0];
+              dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
+            }
+          });
+          
+          // Calculate average across all days (including zero days)
+          const dailyValues = Object.values(dailyTotals);
+          totalMinutes = dailyValues.reduce((sum, minutes) => sum + minutes, 0);
+          dayCount = Math.max(7, dailyValues.length); // Always average over 7 days
+        }
+        
+        if (dayCount > 0) {
+          const avgMinutes = totalMinutes / 7; // Average over 7 days regardless of how many had sessions
           meditationProgress = Math.min((avgMinutes / goals.meditationMinutes) * 100, 100);
         }
       } catch (e) {
