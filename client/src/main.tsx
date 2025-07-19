@@ -1,7 +1,7 @@
 // src/main.tsx
 
 import { createRoot } from "react-dom/client";
-import App from "./App";
+import SimpleApp from "./simple-app";
 import "./index.css";
 import { Router } from "wouter";
 
@@ -109,6 +109,6 @@ document.head.appendChild(antiSwipeStyle);
 
 createRoot(document.getElementById("root")!).render(
   <Router>
-    <App />
+    <SimpleApp />
   </Router>
 );
