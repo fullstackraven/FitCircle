@@ -52,6 +52,8 @@ export function useMeasurements() {
     calfRight: []
   });
 
+  const [isInitialized, setIsInitialized] = useState(false);
+
   // Load data from localStorage on mount
   useEffect(() => {
     const savedData = localStorage.getItem(STORAGE_KEY);
@@ -63,12 +65,15 @@ export function useMeasurements() {
         console.error('Failed to parse measurements history:', error);
       }
     }
+    setIsInitialized(true);
   }, []);
 
-  // Save data to localStorage whenever it changes
+  // Save data to localStorage whenever it changes (but not on initial load)
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, [data]);
+    if (isInitialized) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+  }, [data, isInitialized]);
 
   const addMeasurement = (type: keyof MeasurementData, value: number, date?: string) => {
     const measurementDate = date || getTodayString();

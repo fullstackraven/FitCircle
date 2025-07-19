@@ -54,26 +54,44 @@ export default function MeasurementsPage() {
   };
 
   const handleSave = () => {
-    console.log('handleSave called, input values:', inputValues);
     let savedCount = 0;
+    let hasValidData = false;
+    
+    // Check if we have any valid input data first
+    measurementFields.forEach(field => {
+      const value = parseFloat(inputValues[field.key]);
+      if (!isNaN(value) && value > 0) {
+        hasValidData = true;
+      }
+    });
+    
+    if (!hasValidData) {
+      alert('Please enter at least one valid measurement before saving.');
+      return;
+    }
     
     // Save measurements with history
     measurementFields.forEach(field => {
       const value = parseFloat(inputValues[field.key]);
-      console.log(`Field ${field.key}: value = ${inputValues[field.key]}, parsed = ${value}`);
       if (!isNaN(value) && value > 0) {
-        console.log(`Saving ${field.key} = ${value}`);
-        addMeasurement(field.key, value);
-        savedCount++;
+        try {
+          addMeasurement(field.key, value);
+          savedCount++;
+        } catch (error) {
+          console.error(`Error saving ${field.key}:`, error);
+        }
       }
     });
     
-    console.log(`Saved ${savedCount} measurements`);
-    
-    // Add a small delay to ensure localStorage writes complete
-    setTimeout(() => {
-      navigate('/');
-    }, 100);
+    if (savedCount > 0) {
+      // Show success feedback and navigate after a brief delay
+      alert(`Successfully saved ${savedCount} measurement${savedCount > 1 ? 's' : ''}!`);
+      setTimeout(() => {
+        navigate('/');
+      }, 500);
+    } else {
+      alert('Failed to save measurements. Please try again.');
+    }
   };
 
   const getTrendIcon = (trend: 'up' | 'down' | 'neutral') => {
