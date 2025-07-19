@@ -162,10 +162,34 @@ export default function GoalsPage() {
         if (fastingLogs) {
           try {
             const logs = JSON.parse(fastingLogs);
-            const entries = Object.values(logs).filter((entry: any) => entry.duration > 0);
-            if (entries.length === 0) return 0;
-            const totalHours = entries.reduce((sum: number, entry: any) => sum + entry.duration, 0);
-            return Math.round((totalHours / entries.length) * 10) / 10;
+            const completedFasts: number[] = [];
+            
+            // The logs are stored as an array, not an object keyed by date
+            if (Array.isArray(logs)) {
+              logs.forEach((log: any) => {
+                if (log?.endDate && log?.startDate && log?.endTime && log?.startTime) {
+                  // Combine date and time for proper parsing
+                  const start = new Date(`${log.startDate}T${log.startTime}`);
+                  const end = new Date(`${log.endDate}T${log.endTime}`);
+                  const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+                  if (duration > 0 && duration < 48) { // Sanity check: ignore sessions longer than 48 hours
+                    completedFasts.push(duration);
+                  }
+                } else if (log?.duration) {
+                  // Fallback: use duration field if available (stored in minutes)
+                  const durationHours = log.duration / 60;
+                  if (durationHours > 0 && durationHours < 48) {
+                    completedFasts.push(durationHours);
+                  }
+                }
+              });
+            }
+            
+            if (completedFasts.length > 0) {
+              // Calculate all-time average
+              const averageHours = completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length;
+              return Math.round(averageHours * 10) / 10;
+            }
           } catch (e) {
             return 0;
           }
@@ -217,7 +241,7 @@ export default function GoalsPage() {
           {goalItems.map((item) => {
             const IconComponent = item.icon;
             const isEditing = editingGoal === item.key;
-            const displayValue = item.key === 'fastingHours' ? item.currentValue : goals[item.key];
+            const displayValue = goals[item.key];
             
             return (
               <div key={item.key} className="bg-slate-800 rounded-lg p-4 relative">
