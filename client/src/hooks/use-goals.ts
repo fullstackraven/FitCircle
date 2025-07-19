@@ -117,14 +117,26 @@ export function useGoals() {
         const completedFasts: number[] = [];
         
         // Collect all completed fasting sessions
-        Object.values(logs).forEach((log: any) => {
-          if (log?.endDate && log?.startDate) {
-            const duration = (new Date(log.endDate).getTime() - new Date(log.startDate).getTime()) / (1000 * 60 * 60);
-            if (duration > 0) {
-              completedFasts.push(duration);
+        // The logs are stored as an array, not an object keyed by date
+        if (Array.isArray(logs)) {
+          logs.forEach((log: any) => {
+            if (log?.endDate && log?.startDate && log?.endTime && log?.startTime) {
+              // Combine date and time for proper parsing
+              const start = new Date(`${log.startDate}T${log.startTime}`);
+              const end = new Date(`${log.endDate}T${log.endTime}`);
+              const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+              if (duration > 0 && duration < 48) { // Sanity check: ignore sessions longer than 48 hours
+                completedFasts.push(duration);
+              }
+            } else if (log?.duration) {
+              // Fallback: use duration field if available (stored in minutes)
+              const durationHours = log.duration / 60;
+              if (durationHours > 0 && durationHours < 48) {
+                completedFasts.push(durationHours);
+              }
             }
-          }
-        });
+          });
+        }
         
         if (completedFasts.length > 0) {
           // Calculate all-time average
