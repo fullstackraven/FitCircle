@@ -24,16 +24,25 @@ document.addEventListener('touchmove', function(e) {
   const deltaX = Math.abs(currentX - startX);
   const deltaY = Math.abs(currentY - startY);
   
-  // Check if user is trying to scroll vertically within content
+  // Check if user is trying to scroll within content
   const target = e.target as HTMLElement;
-  const scrollableElement = target.closest('[data-scrollable="true"]') || 
-                           target.closest('.overflow-y-auto') ||
-                           target.closest('.overflow-auto') ||
-                           target.closest('.scroll-container');
+  const verticalScrollableElement = target.closest('[data-scrollable="true"]') || 
+                                   target.closest('.overflow-y-auto') ||
+                                   target.closest('.overflow-auto') ||
+                                   target.closest('.scroll-container');
   
-  // Allow vertical scrolling but prevent ALL horizontal swipes
+  const horizontalScrollableElement = target.closest('.horizontal-scroll') ||
+                                     target.closest('.overflow-x-auto') ||
+                                     target.closest('[style*="overflow-x"]');
+  
+  // Allow horizontal scrolling within designated containers
+  if (deltaX > deltaY && horizontalScrollableElement) {
+    // This is horizontal scrolling within an allowed container
+    return;
+  }
+  
+  // Prevent all other horizontal swipes (browser navigation)
   if (deltaX > deltaY) {
-    // This is a horizontal swipe - always prevent it
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
@@ -41,7 +50,7 @@ document.addEventListener('touchmove', function(e) {
   }
   
   // For vertical scrolling, only allow if within scrollable content
-  if (deltaY > deltaX && scrollableElement) {
+  if (deltaY > deltaX && verticalScrollableElement) {
     isScrollable = true;
     // Allow vertical scrolling
     return;
