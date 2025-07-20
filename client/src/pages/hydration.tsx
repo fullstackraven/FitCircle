@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronLeft, Plus, ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronLeft, Plus, ChevronDown, ChevronRight, Target } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useHydration } from '@/hooks/use-hydration';
 import { Button } from '@/components/ui/button';
@@ -93,9 +93,10 @@ export default function HydrationPage() {
         <h1 className="text-xl font-semibold">Hydration</h1>
         <button
           onClick={() => setIsGoalModalOpen(true)}
-          className="text-slate-300 hover:text-white text-sm"
+          className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
         >
-          Goal
+          <Target className="w-5 h-5" />
+          <span>Goal</span>
         </button>
       </div>
 
