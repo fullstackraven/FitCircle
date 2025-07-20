@@ -21,7 +21,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
     if (stage === 'ring') {
       const interval = setInterval(() => {
         setProgress(prev => {
-          const newProgress = prev + 4; // Complete in ~25 steps (100ms each = 2.5s)
+          const newProgress = prev + 8; // Complete in ~12.5 steps (80ms each = 1s) - twice as fast
           if (newProgress >= 100) {
             clearInterval(interval);
             setTimeout(() => setStage('check'), 200);
@@ -29,7 +29,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           }
           return newProgress;
         });
-      }, 100);
+      }, 80);
 
       return () => clearInterval(interval);
     }
@@ -80,33 +80,42 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
               cy="100"
               r={radius}
               stroke="rgb(71, 85, 105)"
-              strokeWidth="8"
+              strokeWidth="12"
               fill="none"
             />
-            {/* Progress circle */}
+            {/* Progress circle - bright neon green */}
             <circle
               cx="100"
               cy="100"
               r={radius}
               stroke="rgb(34, 197, 94)"
-              strokeWidth="8"
+              strokeWidth="12"
               fill="none"
               strokeLinecap="round"
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
-              className="transition-all duration-100 ease-out"
+              className="transition-all duration-75 ease-out"
+              style={{ 
+                filter: 'drop-shadow(0 0 8px rgb(34, 197, 94))',
+                stroke: '#22c55e'
+              }}
             />
           </svg>
 
-          {/* Checkmark */}
+          {/* Checkmark - large neon green like workout completion */}
           <div 
             className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
               stage === 'check' ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
             }`}
           >
-            <div className="bg-green-500 rounded-full p-4">
-              <Check className="w-8 h-8 text-white" strokeWidth={3} />
-            </div>
+            <Check 
+              className="w-16 h-16 text-green-400" 
+              strokeWidth={4}
+              style={{ 
+                filter: 'drop-shadow(0 0 12px rgb(34, 197, 94))',
+                color: '#22c55e'
+              }}
+            />
           </div>
         </div>
       </div>
