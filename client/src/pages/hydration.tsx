@@ -159,7 +159,7 @@ export default function HydrationPage() {
                 <button
                   key={type}
                   onClick={() => setSelectedLiquidType(type)}
-                  className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                  className={`py-2 px-3 rounded-xl text-sm font-medium transition-colors ${
                     selectedLiquidType === type
                       ? 'bg-blue-600 text-white'
                       : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
