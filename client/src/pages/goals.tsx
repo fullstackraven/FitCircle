@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Droplet, Brain, Clock, Scale, Edit } from 'lucide-react';
+import { ChevronLeft, Droplet, Brain, Clock, Scale, Edit, Percent, Target } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useGoals } from '@/hooks/use-goals';
+import { useWorkouts } from '@/hooks/use-workouts';
+import { useMeasurements } from '@/hooks/use-measurements';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -74,6 +76,8 @@ export default function GoalsPage() {
   };
 
   const { goals, updateGoal, progress } = useGoals();
+  const { getTotalStats } = useWorkouts();
+  const { getLatestValue } = useMeasurements();
   
   // Force update goals when data changes
   const [refreshKey, setRefreshKey] = useState(0);
@@ -217,6 +221,40 @@ export default function GoalsPage() {
         }
         return 0;
       })()
+    },
+    {
+      key: 'targetBodyFat' as keyof typeof goals,
+      title: 'Target Body Fat',
+      unit: '%',
+      icon: Percent,
+      description: 'Current body fat vs target',
+      progress: (() => {
+        const currentBodyFat = getLatestValue('bodyFat') || 0;
+        const targetBodyFat = goals.targetBodyFat || 0;
+        if (targetBodyFat === 0) return 0;
+        
+        // Calculate progress - closer to target = higher percentage
+        // If current is higher than target, show progress as (target/current * 100)
+        // If current is lower than target, show 100%
+        if (currentBodyFat === 0) return 0;
+        if (currentBodyFat <= targetBodyFat) return 100;
+        return Math.min(100, (targetBodyFat / currentBodyFat) * 100);
+      })(),
+      color: 'rgb(239, 68, 68)', // red
+      currentValue: getLatestValue('bodyFat') || 0
+    },
+    {
+      key: 'workoutConsistency' as keyof typeof goals,
+      title: 'Workout Consistency',
+      unit: '%',
+      icon: Target,
+      description: 'Overall workout goal completion',
+      progress: (() => {
+        const totalStats = getTotalStats();
+        return totalStats.totalGoalPercentage || 0;
+      })(),
+      color: 'rgb(16, 185, 129)', // emerald
+      currentValue: Math.round((getTotalStats().totalGoalPercentage || 0) * 10) / 10
     }
   ];
 

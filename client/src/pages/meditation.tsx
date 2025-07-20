@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Play, Pause, Square, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Square, ChevronDown, ChevronUp, Target } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface MeditationLog {
@@ -35,6 +36,10 @@ export default function MeditationPage() {
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [showCompletion, setShowCompletion] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Goal state
+  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [goalMinutesInput, setGoalMinutesInput] = useState('');
 
   useEffect(() => {
     // Load saved meditation logs
@@ -44,6 +49,17 @@ export default function MeditationPage() {
         setLogs(JSON.parse(savedLogs));
       } catch (error) {
         console.error('Failed to parse meditation logs:', error);
+      }
+    }
+    
+    // Load saved goals
+    const savedGoals = localStorage.getItem('fitcircle_goals');
+    if (savedGoals) {
+      try {
+        const goals = JSON.parse(savedGoals);
+        setGoalMinutesInput(goals.meditationMinutes?.toString() || '');
+      } catch (error) {
+        console.error('Failed to parse goals:', error);
       }
     }
   }, []);
@@ -215,6 +231,35 @@ export default function MeditationPage() {
     return circumference - (progress / 100) * circumference;
   };
 
+  const handleSetGoal = () => {
+    const minutesGoal = parseFloat(goalMinutesInput);
+    
+    if (isNaN(minutesGoal) || minutesGoal <= 0) {
+      alert('Please enter a valid goal in minutes');
+      return;
+    }
+    
+    // Load existing goals and update
+    let goals = {};
+    const savedGoals = localStorage.getItem('fitcircle_goals');
+    if (savedGoals) {
+      try {
+        goals = JSON.parse(savedGoals);
+      } catch (error) {
+        console.error('Failed to parse existing goals:', error);
+      }
+    }
+    
+    const updatedGoals = {
+      ...goals,
+      meditationMinutes: minutesGoal
+    };
+    
+    localStorage.setItem('fitcircle_goals', JSON.stringify(updatedGoals));
+    setIsGoalModalOpen(false);
+    alert('Meditation goal saved successfully!');
+  };
+
   return (
     <div className="min-h-screen text-white" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="container mx-auto px-4 py-6 max-w-md">
@@ -228,7 +273,13 @@ export default function MeditationPage() {
             <span>Back</span>
           </button>
           <h1 className="text-xl font-semibold">Meditation</h1>
-          <div className="w-16"></div>
+          <button
+            onClick={() => setIsGoalModalOpen(true)}
+            className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
+          >
+            <Target className="w-5 h-5" />
+            <span>Goal</span>
+          </button>
         </div>
 
         {/* Completion Notification */}
@@ -387,6 +438,45 @@ export default function MeditationPage() {
           </CollapsibleContent>
         </Collapsible>
       </div>
+
+      {/* Goal Setting Modal */}
+      {isGoalModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-sm">
+            <h3 className="text-lg font-semibold mb-4">Set Daily Goal</h3>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="goalMinutes" className="text-slate-300">
+                  Daily Meditation Goal (minutes)
+                </Label>
+                <Input
+                  id="goalMinutes"
+                  type="number"
+                  value={goalMinutesInput}
+                  onChange={(e) => setGoalMinutesInput(e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  placeholder="Enter minutes (e.g., 10)"
+                />
+              </div>
+              <div className="flex space-x-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsGoalModalOpen(false)}
+                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSetGoal}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                >
+                  Set Goal
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

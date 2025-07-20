@@ -5,6 +5,9 @@ export interface Goals {
   meditationMinutes: number;
   fastingHours: number;
   weightLbs: number;
+  targetWeight: number;
+  targetBodyFat: number;
+  workoutConsistency: number;
 }
 
 export interface GoalProgress {
@@ -12,6 +15,9 @@ export interface GoalProgress {
   meditationProgress: number;
   fastingProgress: number;
   weightProgress: number;
+  targetWeightProgress: number;
+  targetBodyFatProgress: number;
+  workoutConsistencyProgress: number;
 }
 
 const STORAGE_PREFIX = 'fitcircle_goal_';
@@ -21,24 +27,45 @@ export function useGoals() {
     hydrationOz: 64,
     meditationMinutes: 10,
     fastingHours: 16,
-    weightLbs: 150
+    weightLbs: 150,
+    targetWeight: 150,
+    targetBodyFat: 15,
+    workoutConsistency: 80
   });
 
   // Load goals from localStorage on mount
   useEffect(() => {
     const loadedGoals: Partial<Goals> = {};
     
+    // Load from both old format and new unified format
+    const savedGoals = localStorage.getItem('fitcircle_goals');
+    if (savedGoals) {
+      try {
+        const goals = JSON.parse(savedGoals);
+        if (goals.hydrationOz) loadedGoals.hydrationOz = parseFloat(goals.hydrationOz);
+        if (goals.meditationMinutes) loadedGoals.meditationMinutes = parseFloat(goals.meditationMinutes);
+        if (goals.fastingHours) loadedGoals.fastingHours = parseFloat(goals.fastingHours);
+        if (goals.weightLbs) loadedGoals.weightLbs = parseFloat(goals.weightLbs);
+        if (goals.targetWeight) loadedGoals.targetWeight = parseFloat(goals.targetWeight);
+        if (goals.targetBodyFat) loadedGoals.targetBodyFat = parseFloat(goals.targetBodyFat);
+        if (goals.workoutConsistency) loadedGoals.workoutConsistency = parseFloat(goals.workoutConsistency);
+      } catch (error) {
+        console.error('Failed to parse goals:', error);
+      }
+    }
+    
+    // Fallback to old format if new format doesn't exist
     const hydration = localStorage.getItem(`${STORAGE_PREFIX}hydration`);
-    if (hydration) loadedGoals.hydrationOz = parseFloat(hydration);
+    if (hydration && !loadedGoals.hydrationOz) loadedGoals.hydrationOz = parseFloat(hydration);
     
     const meditation = localStorage.getItem(`${STORAGE_PREFIX}meditation`);
-    if (meditation) loadedGoals.meditationMinutes = parseFloat(meditation);
+    if (meditation && !loadedGoals.meditationMinutes) loadedGoals.meditationMinutes = parseFloat(meditation);
     
     const fasting = localStorage.getItem(`${STORAGE_PREFIX}fasting`);
-    if (fasting) loadedGoals.fastingHours = parseFloat(fasting);
+    if (fasting && !loadedGoals.fastingHours) loadedGoals.fastingHours = parseFloat(fasting);
     
     const weight = localStorage.getItem(`${STORAGE_PREFIX}weight`);
-    if (weight) loadedGoals.weightLbs = parseFloat(weight);
+    if (weight && !loadedGoals.weightLbs) loadedGoals.weightLbs = parseFloat(weight);
 
     setGoals(prev => ({ ...prev, ...loadedGoals }));
   }, []);
@@ -46,15 +73,37 @@ export function useGoals() {
   const updateGoal = (goalType: keyof Goals, value: number) => {
     setGoals(prev => ({ ...prev, [goalType]: value }));
     
-    // Save to localStorage
-    const keyMap = {
+    // Save to unified goals storage
+    const currentGoals = localStorage.getItem('fitcircle_goals');
+    let goalsData = {};
+    
+    if (currentGoals) {
+      try {
+        goalsData = JSON.parse(currentGoals);
+      } catch (error) {
+        console.error('Failed to parse existing goals:', error);
+      }
+    }
+    
+    const updatedGoals = {
+      ...goalsData,
+      [goalType]: value
+    };
+    
+    localStorage.setItem('fitcircle_goals', JSON.stringify(updatedGoals));
+    
+    // Keep backward compatibility with old storage format
+    const keyMap: { [K in keyof Goals]?: string } = {
       hydrationOz: 'hydration',
       meditationMinutes: 'meditation',
       fastingHours: 'fasting',
       weightLbs: 'weight'
     };
     
-    localStorage.setItem(`${STORAGE_PREFIX}${keyMap[goalType]}`, value.toString());
+    const oldKey = keyMap[goalType];
+    if (oldKey) {
+      localStorage.setItem(`${STORAGE_PREFIX}${oldKey}`, value.toString());
+    }
     
     // Special case: Also update hydration hook data if hydration goal is changed
     if (goalType === 'hydrationOz') {
@@ -180,11 +229,40 @@ export function useGoals() {
       weightProgress = Math.max(0, 100 - (difference / tolerance) * 100);
     }
 
+    // Target weight progress (based on current vs target weight from measurements)
+    let targetWeightProgress = 0;
+    const measurementsData = localStorage.getItem('fitcircle_measurements');
+    if (measurementsData && goals.targetWeight) {
+      try {
+        const data = JSON.parse(measurementsData);
+        const currentWeight = data.currentWeight || 0;
+        if (currentWeight > 0) {
+          // Calculate progress - closer to target = higher percentage
+          const tolerance = goals.targetWeight * 0.05; // 5% tolerance
+          const difference = Math.abs(currentWeight - goals.targetWeight);
+          targetWeightProgress = Math.max(0, 100 - (difference / tolerance) * 100);
+        }
+      } catch (e) {
+        targetWeightProgress = 0;
+      }
+    }
+
+    // Target body fat progress (calculated in Goals page component)
+    let targetBodyFatProgress = 0;
+    // This is calculated directly in the Goals page component using measurements hook
+
+    // Workout consistency progress (calculated in Goals page component)
+    let workoutConsistencyProgress = 0;
+    // This is calculated directly in the Goals page component using workouts hook
+
     return {
       hydrationProgress,
       meditationProgress,
       fastingProgress,
-      weightProgress
+      weightProgress,
+      targetWeightProgress,
+      targetBodyFatProgress,
+      workoutConsistencyProgress
     };
   };
 

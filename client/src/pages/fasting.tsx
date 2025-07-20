@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, Plus, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, Clock, Plus, Edit, Trash2, Target } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface FastingLog {
   id: string;
@@ -36,6 +37,10 @@ export default function FastingPage() {
   const [startTime, setStartTime] = useState('');
   const [endDate, setEndDate] = useState('');
   const [endTime, setEndTime] = useState('');
+  
+  // Goal state
+  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [goalHoursInput, setGoalHoursInput] = useState('');
 
   useEffect(() => {
     // Load saved fasting logs
@@ -45,6 +50,17 @@ export default function FastingPage() {
         setLogs(JSON.parse(savedLogs));
       } catch (error) {
         console.error('Failed to parse fasting logs:', error);
+      }
+    }
+    
+    // Load saved goals
+    const savedGoals = localStorage.getItem('fitcircle_goals');
+    if (savedGoals) {
+      try {
+        const goals = JSON.parse(savedGoals);
+        setGoalHoursInput(goals.fastingHours?.toString() || '');
+      } catch (error) {
+        console.error('Failed to parse goals:', error);
       }
     }
   }, []);
@@ -149,6 +165,35 @@ export default function FastingPage() {
     setIsLogging(false);
   };
 
+  const handleSetGoal = () => {
+    const hoursGoal = parseFloat(goalHoursInput);
+    
+    if (isNaN(hoursGoal) || hoursGoal <= 0) {
+      alert('Please enter a valid goal in hours');
+      return;
+    }
+    
+    // Load existing goals and update
+    let goals = {};
+    const savedGoals = localStorage.getItem('fitcircle_goals');
+    if (savedGoals) {
+      try {
+        goals = JSON.parse(savedGoals);
+      } catch (error) {
+        console.error('Failed to parse existing goals:', error);
+      }
+    }
+    
+    const updatedGoals = {
+      ...goals,
+      fastingHours: hoursGoal
+    };
+    
+    localStorage.setItem('fitcircle_goals', JSON.stringify(updatedGoals));
+    setIsGoalModalOpen(false);
+    alert('Fasting goal saved successfully!');
+  };
+
   const currentDuration = startDate && startTime && endDate && endTime 
     ? calculateDuration(startDate, startTime, endDate, endTime)
     : 0;
@@ -166,7 +211,13 @@ export default function FastingPage() {
             <span>Back</span>
           </button>
           <h1 className="text-xl font-semibold">Fasting Log</h1>
-          <div className="w-16"></div>
+          <button
+            onClick={() => setIsGoalModalOpen(true)}
+            className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
+          >
+            <Target className="w-5 h-5" />
+            <span>Goal</span>
+          </button>
         </div>
 
         {/* Add Fasting Log Button */}
@@ -345,6 +396,45 @@ export default function FastingPage() {
           </div>
         )}
       </div>
+
+      {/* Goal Setting Modal */}
+      {isGoalModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-sm">
+            <h3 className="text-lg font-semibold mb-4">Set Fasting Goal</h3>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="goalHours" className="text-slate-300">
+                  Goal Hours per Fast
+                </Label>
+                <Input
+                  id="goalHours"
+                  type="number"
+                  value={goalHoursInput}
+                  onChange={(e) => setGoalHoursInput(e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  placeholder="Enter hours (e.g., 16)"
+                />
+              </div>
+              <div className="flex space-x-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsGoalModalOpen(false)}
+                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSetGoal}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                >
+                  Set Goal
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

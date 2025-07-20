@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { ChevronLeft, TrendingUp, TrendingDown, Minus, Target } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,6 +48,9 @@ export default function MeasurementsPage() {
   const { addMeasurement, getLatestValue, getValueTrend, getChartData } = useMeasurements();
   
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
+  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [goalWeightInput, setGoalWeightInput] = useState('');
+  const [goalBodyFatInput, setGoalBodyFatInput] = useState('');
 
   useEffect(() => {
     // Load latest values
@@ -57,10 +60,54 @@ export default function MeasurementsPage() {
       initialValues[field.key] = latestValue?.toString() || '';
     });
     setInputValues(initialValues);
+    
+    // Load saved goals
+    const savedGoals = localStorage.getItem('fitcircle_goals');
+    if (savedGoals) {
+      try {
+        const goals = JSON.parse(savedGoals);
+        setGoalWeightInput(goals.targetWeight?.toString() || '');
+        setGoalBodyFatInput(goals.targetBodyFat?.toString() || '');
+      } catch (error) {
+        console.error('Failed to parse goals:', error);
+      }
+    }
   }, []);
 
   const handleInputChange = (key: string, value: string) => {
     setInputValues(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSetGoals = () => {
+    const weightGoal = parseFloat(goalWeightInput);
+    const bodyFatGoal = parseFloat(goalBodyFatInput);
+    
+    if (isNaN(weightGoal) && isNaN(bodyFatGoal)) {
+      alert('Please enter at least one valid goal');
+      return;
+    }
+    
+    // Load existing goals and update
+    let goals = {};
+    const savedGoals = localStorage.getItem('fitcircle_goals');
+    if (savedGoals) {
+      try {
+        goals = JSON.parse(savedGoals);
+      } catch (error) {
+        console.error('Failed to parse existing goals:', error);
+      }
+    }
+    
+    // Update goals
+    const updatedGoals = {
+      ...goals,
+      ...(weightGoal && !isNaN(weightGoal) && { targetWeight: weightGoal }),
+      ...(bodyFatGoal && !isNaN(bodyFatGoal) && { targetBodyFat: bodyFatGoal })
+    };
+    
+    localStorage.setItem('fitcircle_goals', JSON.stringify(updatedGoals));
+    setIsGoalModalOpen(false);
+    alert('Goals saved successfully!');
   };
 
   const handleSave = () => {
@@ -128,7 +175,13 @@ export default function MeasurementsPage() {
             <span>Back</span>
           </button>
           <h1 className="text-xl font-semibold">Measurements</h1>
-          <div className="w-20"></div> {/* Spacer for centered title */}
+          <button
+            onClick={() => setIsGoalModalOpen(true)}
+            className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
+          >
+            <Target className="w-5 h-5" />
+            <span>Goal</span>
+          </button>
         </div>
 
         {/* Input Section */}
@@ -239,6 +292,58 @@ export default function MeasurementsPage() {
           </section>
         </div>
       </div>
+
+      {/* Goal Setting Modal */}
+      {isGoalModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-sm">
+            <h3 className="text-lg font-semibold mb-4">Set Goals</h3>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="goalWeight" className="text-slate-300">
+                  Target Weight (lbs)
+                </Label>
+                <Input
+                  id="goalWeight"
+                  type="number"
+                  value={goalWeightInput}
+                  onChange={(e) => setGoalWeightInput(e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  placeholder="Enter target weight"
+                />
+              </div>
+              <div>
+                <Label htmlFor="goalBodyFat" className="text-slate-300">
+                  Target Body Fat (%)
+                </Label>
+                <Input
+                  id="goalBodyFat"
+                  type="number"
+                  value={goalBodyFatInput}
+                  onChange={(e) => setGoalBodyFatInput(e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  placeholder="Enter target body fat %"
+                />
+              </div>
+              <div className="flex space-x-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsGoalModalOpen(false)}
+                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSetGoals}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                >
+                  Set Goals
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
