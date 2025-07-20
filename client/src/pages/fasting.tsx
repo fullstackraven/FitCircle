@@ -184,7 +184,7 @@ export default function FastingPage() {
 
         {/* Log Fast Form */}
         {isLogging && (
-          <div className="mb-8 bg-slate-800 rounded-lg p-6">
+          <div className="mb-8 bg-slate-800 rounded-xl p-6">
             <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
               <Clock className="w-5 h-5" />
               <span>{editingLog ? 'Edit Fast' : 'Log Fast'}</span>
@@ -233,7 +233,7 @@ export default function FastingPage() {
               {currentDuration > 0 && (
                 <div className="text-center">
                   <label className="block text-sm font-medium text-slate-300 mb-2">Duration</label>
-                  <div className="bg-slate-700 rounded-lg p-4">
+                  <div className="bg-slate-700 rounded-xl p-4">
                     {/* Heat Bar */}
                     <div className="mb-2">
                       <div className="w-full bg-slate-600 rounded-full h-2">
@@ -288,7 +288,7 @@ export default function FastingPage() {
               });
               
               return (
-                <div key={log.id} className="bg-slate-800 rounded-lg p-4">
+                <div key={log.id} className="bg-slate-800 rounded-xl p-4">
                   <div className="flex justify-between items-start mb-2">
                     <div className="text-sm text-slate-300">
                       {loggedDate}

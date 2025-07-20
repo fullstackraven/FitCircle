@@ -134,7 +134,7 @@ export default function MeasurementsPage() {
         {/* Input Section */}
         <div className="space-y-6">
           {Object.entries(categorizedFields).map(([category, fields]) => (
-            <section key={category} className="bg-slate-800 rounded-lg p-6">
+            <section key={category} className="bg-slate-800 rounded-xl p-6">
               <h2 className="text-lg font-semibold mb-4 text-white">{category}</h2>
               
               <div className="grid grid-cols-2 gap-4">
@@ -165,13 +165,13 @@ export default function MeasurementsPage() {
           
           <Button
             onClick={handleSave}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-medium"
           >
             Save Measurements
           </Button>
           
           {/* Trend Graphs Section */}
-          <section className="bg-slate-800 rounded-lg p-6">
+          <section className="bg-slate-800 rounded-xl p-6">
             <h2 className="text-lg font-semibold mb-4 text-white">Trend Graphs</h2>
             
             <div className="flex overflow-x-auto space-x-4 pb-4 horizontal-scroll">
@@ -184,7 +184,7 @@ export default function MeasurementsPage() {
                   }));
 
                   return (
-                    <div key={field.key} className="flex-shrink-0 w-80 bg-slate-700 rounded-lg p-4">
+                    <div key={field.key} className="flex-shrink-0 w-80 bg-slate-700 rounded-xl p-4">
                       <h3 className="text-lg font-semibold mb-2 text-white flex items-center space-x-2">
                         <span>{field.label}</span>
                         {getTrendIcon(getValueTrend(field.key))}

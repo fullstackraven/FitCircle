@@ -197,7 +197,7 @@ export default function CalendarPage() {
       {/* Statistics Panel */}
       <div className="mt-8">
         <Collapsible open={isStatsOpen} onOpenChange={setIsStatsOpen}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors">
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors">
             <div className="flex items-center space-x-2">
               <BarChart3 className="w-5 h-5 text-blue-400" />
               <span className="text-white font-medium">Statistics</span>
@@ -209,7 +209,7 @@ export default function CalendarPage() {
             )}
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="mt-4 bg-slate-800 rounded-lg p-4 space-y-4">
+            <div className="mt-4 bg-slate-800 rounded-xl p-4 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-white">{totalStats.totalReps}</div>
@@ -232,7 +232,7 @@ export default function CalendarPage() {
               {/* Individual Workout Totals Panel */}
               <div className="mt-4">
                 <Collapsible open={isWorkoutTotalsOpen} onOpenChange={setIsWorkoutTotalsOpen}>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-slate-700 rounded-xl hover:bg-slate-600 transition-colors">
                     <div className="flex items-center space-x-2">
                       <TrendingUp className="w-4 h-4 text-amber-400" />
                       <span className="text-white font-medium text-sm">Individual Workout Totals</span>
@@ -247,7 +247,7 @@ export default function CalendarPage() {
                     <div className="mt-3 space-y-2">
                       {individualWorkoutTotals.length > 0 ? (
                         individualWorkoutTotals.map((workout) => (
-                          <div key={workout.id} className="flex items-center justify-between p-2 bg-slate-600 rounded">
+                          <div key={workout.id} className="flex items-center justify-between p-2 bg-slate-600 rounded-xl">
                             <div className="flex items-center space-x-2">
                               <div className={`w-3 h-3 rounded-full ${colorClassMap[workout.color]}`}></div>
                               <span className="text-sm font-medium text-white">{workout.name}</span>
@@ -272,7 +272,7 @@ export default function CalendarPage() {
       {/* Journal Panel */}
       <div className="mt-4">
         <Collapsible open={isJournalOpen} onOpenChange={setIsJournalOpen}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors">
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors">
             <div className="flex items-center space-x-2">
               <BookOpen className="w-5 h-5 text-purple-400" />
               <span className="text-white font-medium">Daily Journal</span>
@@ -284,7 +284,7 @@ export default function CalendarPage() {
             )}
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="mt-4 bg-slate-800 rounded-lg p-4">
+            <div className="mt-4 bg-slate-800 rounded-xl p-4">
               {selectedDate ? (
                 <div className="space-y-4">
                   <div className="text-center">
@@ -296,12 +296,12 @@ export default function CalendarPage() {
                     value={journalText}
                     onChange={(e) => setJournalText(e.target.value)}
                     placeholder="Write your daily journal entry here..."
-                    className="w-full h-32 p-3 bg-slate-700 text-white rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full h-32 p-3 bg-slate-700 text-white rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                   <div className="flex space-x-2">
                     <button
                       onClick={handleJournalSubmit}
-                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors"
                     >
                       Save Entry
                     </button>
@@ -310,7 +310,7 @@ export default function CalendarPage() {
                         setSelectedDate(null);
                         setJournalText('');
                       }}
-                      className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors"
+                      className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-xl transition-colors"
                     >
                       Cancel
                     </button>

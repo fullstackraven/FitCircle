@@ -496,7 +496,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Manage Data Section */}
-        <div className="bg-slate-800 rounded-lg p-6">
+        <div className="bg-slate-800 rounded-xl p-6">
           <h2 className="text-lg font-semibold mb-6 text-white">Manage Data</h2>
           
           <div className="space-y-4">
@@ -535,7 +535,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Auto Backup Toggle */}
-            <div className="border border-slate-600 rounded-lg p-4">
+            <div className="border border-slate-600 rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-white">Auto Backup</h3>
                 <button

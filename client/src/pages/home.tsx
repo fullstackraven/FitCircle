@@ -232,7 +232,7 @@ export default function Home() {
       {todaysTotals.some(w => w.count > 0) && (
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-4 text-center text-white">Today's Totals</h2>
-          <div className="bg-slate-800 rounded-lg p-4 space-y-3">
+          <div className="bg-slate-800 rounded-xl p-4 space-y-3">
             {todaysTotals.filter(w => w.count > 0).map((workout) => (
               <div key={workout.id} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
@@ -252,7 +252,7 @@ export default function Home() {
           <h2 className="text-xl font-semibold mb-4 text-center text-white">Recent Activity</h2>
           <div className="space-y-3">
             {recentActivity.map((day) => (
-              <div key={day.dateString} className="bg-slate-800 rounded-lg p-4">
+              <div key={day.dateString} className="bg-slate-800 rounded-xl p-4">
                 <div className="flex justify-between items-center mb-3">
                   <span className="font-medium text-slate-300">{day.date}</span>
                   <span className="text-sm text-slate-400">{day.totalReps} total reps</span>

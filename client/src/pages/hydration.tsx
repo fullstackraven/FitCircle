@@ -148,7 +148,7 @@ export default function HydrationPage() {
         </div>
 
         {/* Add Hydration Controls */}
-        <div className="bg-slate-800 rounded-lg p-6 space-y-4">
+        <div className="bg-slate-800 rounded-xl p-6 space-y-4">
           <h2 className="text-lg font-semibold">Add Liquid</h2>
           
           {/* Liquid Type Selection */}
@@ -159,7 +159,7 @@ export default function HydrationPage() {
                 <button
                   key={type}
                   onClick={() => setSelectedLiquidType(type)}
-                  className={`py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                  className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                     selectedLiquidType === type
                       ? 'bg-blue-600 text-white'
                       : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
@@ -220,7 +220,7 @@ export default function HydrationPage() {
 
         {/* Today's Entries */}
         {todayEntries.length > 0 && (
-          <div className="bg-slate-800 rounded-lg p-6">
+          <div className="bg-slate-800 rounded-xl p-6">
             <h3 className="text-lg font-semibold mb-3">Today's Intake</h3>
             <div className="space-y-2">
               {todayEntries.slice().reverse().map((entry, index) => (
@@ -247,7 +247,7 @@ export default function HydrationPage() {
           <CollapsibleContent className="space-y-2 mt-4">
             {recentLogs.length > 0 ? (
               recentLogs.map((log) => (
-                <div key={log.date} className="bg-slate-800 rounded-lg p-4">
+                <div key={log.date} className="bg-slate-800 rounded-xl p-4">
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-white font-medium">
                       {new Date(log.date).toLocaleDateString('en-US', { 
@@ -295,7 +295,7 @@ export default function HydrationPage() {
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-lg p-6 w-full max-w-sm">
+          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-sm">
             <h3 className="text-lg font-semibold mb-4">Set Daily Goal</h3>
             <div className="space-y-4">
               <div>

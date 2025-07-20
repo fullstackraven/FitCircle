@@ -234,7 +234,7 @@ export default function MeditationPage() {
         {/* Completion Notification */}
         {showCompletion && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-slate-800 rounded-lg p-8 text-center max-w-sm mx-4 border border-blue-500">
+            <div className="bg-slate-800 rounded-xl p-8 text-center max-w-sm mx-4 border border-blue-500">
               <div className="text-6xl mb-4">🧘‍♂️</div>
               <h2 className="text-2xl font-bold text-white mb-2">Session Complete!</h2>
               <p className="text-slate-300">Well done on completing your meditation</p>
@@ -246,7 +246,7 @@ export default function MeditationPage() {
         <div className="flex flex-col items-center mb-8">
           {!isActive ? (
             /* Start Session Form */
-            <div className="bg-slate-800 rounded-lg p-6 w-full max-w-sm">
+            <div className="bg-slate-800 rounded-xl p-6 w-full max-w-sm">
               <h2 className="text-lg font-semibold mb-4 text-center">Start Meditation</h2>
               <div className="space-y-4">
                 <div>
@@ -369,7 +369,7 @@ export default function MeditationPage() {
               </div>
             ) : (
               logs.map((log) => (
-                <div key={log.id} className="bg-slate-800 rounded-lg p-4">
+                <div key={log.id} className="bg-slate-800 rounded-xl p-4">
                   <div className="flex justify-between items-center">
                     <div>
                       <div className="text-sm text-slate-300">

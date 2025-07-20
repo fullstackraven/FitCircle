@@ -244,7 +244,7 @@ export default function GoalsPage() {
             const displayValue = goals[item.key];
             
             return (
-              <div key={item.key} className="bg-slate-800 rounded-lg p-4 relative">
+              <div key={item.key} className="bg-slate-800 rounded-xl p-4 relative">
                 {/* Edit Button */}
                 <button
                   onClick={() => handleEdit(item.key)}
@@ -282,7 +282,7 @@ export default function GoalsPage() {
                 {/* Edit Modal */}
                 {isEditing && (
                   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-slate-800 rounded-lg p-6 w-full max-w-sm">
+                    <div className="bg-slate-800 rounded-xl p-6 w-full max-w-sm">
                       <h3 className="text-lg font-semibold mb-4">Edit {item.title}</h3>
                       <div className="space-y-4">
                         <div>
