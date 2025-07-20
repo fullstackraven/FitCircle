@@ -4,6 +4,7 @@ import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
+import QuoteOfTheDay from '@/components/QuoteOfTheDay';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 const colorClassMap: { [key: string]: string } = {
@@ -110,14 +111,7 @@ export default function Home() {
     setIsModalOpen(true);
   };
 
-  const getCurrentDate = () => {
-    return new Date().toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+
 
   const minSlots = Math.max(4, workouts.length + (canAddMoreWorkouts() ? 1 : 0));
   const emptySlots = Math.max(0, minSlots - workouts.length);
@@ -140,8 +134,7 @@ export default function Home() {
           <Menu size={22} />
         </button>
 
-        <h1 className="text-2xl font-bold mb-2 text-white">FitCircle</h1>
-        <p className="text-slate-300 text-lg">{getCurrentDate()}</p>
+        <h1 className="text-2xl font-bold mb-4 text-white">FitCircle</h1>
 
         {/* Calendar View Icon */}
         <button
@@ -152,6 +145,9 @@ export default function Home() {
           <CalendarDays size={22} />
         </button>
       </header>
+
+      {/* Quote of the Day */}
+      <QuoteOfTheDay />
 
       {/* Workout Circles Grid */}
       <section className="mb-8">
