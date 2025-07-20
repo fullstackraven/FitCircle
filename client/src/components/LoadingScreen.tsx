@@ -21,7 +21,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
     if (stage === 'ring') {
       const interval = setInterval(() => {
         setProgress(prev => {
-          const newProgress = prev + 8; // Complete in ~12.5 steps (80ms each = 1s) - twice as fast
+          const newProgress = prev + 2; // Smaller increments for smoother animation
           if (newProgress >= 100) {
             clearInterval(interval);
             setTimeout(() => setStage('check'), 200);
@@ -29,7 +29,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           }
           return newProgress;
         });
-      }, 80);
+      }, 20); // Higher frequency updates (20ms = 50fps)
 
       return () => clearInterval(interval);
     }
@@ -94,7 +94,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
               strokeLinecap="round"
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
-              className="transition-all duration-75 ease-out"
+              className="transition-all duration-300 ease-out"
               style={{ 
                 filter: 'drop-shadow(0 0 8px rgb(34, 197, 94))',
                 stroke: '#22c55e'
