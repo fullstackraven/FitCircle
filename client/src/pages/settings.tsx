@@ -327,27 +327,37 @@ export default function SettingsPage() {
   };
 
   const refreshData = () => {
-    // Clear service worker cache and reload
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for(let registration of registrations) {
-          registration.unregister();
-        }
-        // Clear all caches
-        if ('caches' in window) {
-          caches.keys().then(function(names) {
-            return Promise.all(names.map(function(name) {
-              return caches.delete(name);
-            }));
-          }).then(function() {
-            window.location.reload();
-          });
-        } else {
-          window.location.reload();
+    try {
+      // Clear sessionStorage to force loading screen and reset app state
+      sessionStorage.clear();
+      
+      // Clear localStorage app state (but not user data)
+      const keysToKeep = [
+        'workout-tracker-data',
+        'fitcircle_profile',
+        'fitcircle_measurements',
+        'fitcircle_fasting_logs',
+        'fitcircle_meditation_sessions',
+        'fitcircle_hydration_data',
+        'fitcircle_goals_data',
+        'fitcircle_controls',
+        'fitcircle_auto_backup'
+      ];
+      
+      Object.keys(localStorage).forEach(key => {
+        if (!keysToKeep.includes(key) && !key.startsWith('fitcircle_')) {
+          localStorage.removeItem(key);
         }
       });
-    } else {
-      window.location.reload(true);
+      
+      // Force a complete page reload (bypass any cache)
+      const url = window.location.href.split('?')[0]; // Remove query params
+      window.location.replace(url + '?cache-bust=' + Date.now());
+      
+    } catch (error) {
+      console.error('Error clearing cache:', error);
+      // Fallback: just reload the page
+      window.location.reload();
     }
   };
 

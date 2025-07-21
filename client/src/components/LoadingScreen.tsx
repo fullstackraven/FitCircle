@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Check } from 'lucide-react';
 
 interface LoadingScreenProps {
   onComplete: () => void;
 }
 
-export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
   const [stage, setStage] = useState<'text' | 'ring' | 'check' | 'complete'>('text');
   const [progress, setProgress] = useState(0);
 
@@ -121,4 +121,6 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
       </div>
     </div>
   );
-}
+};
+
+export default LoadingScreen;

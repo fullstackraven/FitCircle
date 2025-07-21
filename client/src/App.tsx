@@ -10,7 +10,7 @@ import FastingPage from "@/pages/fasting";
 import MeditationPage from "@/pages/meditation";
 import HydrationPage from "@/pages/hydration";
 import GoalsPage from "@/pages/goals";
-import TrainerPage from "@/pages/trainer";
+// import TrainerPage from "@/pages/trainer";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -32,28 +32,29 @@ function Router() {
 }
 
 function App() {
-  const [showLoading, setShowLoading] = useState(true);
-  const [hasShownLoading, setHasShownLoading] = useState(false);
+  // Temporarily disable loading screen to fix PWA caching issues
+  // const [showLoading, setShowLoading] = useState(true);
+  // const [hasShownLoading, setHasShownLoading] = useState(false);
 
-  useEffect(() => {
-    // Check if we've already shown the loading screen in this session
-    const hasShown = sessionStorage.getItem('fitcircle_loading_shown');
-    if (hasShown) {
-      setShowLoading(false);
-      setHasShownLoading(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   // Check if we've already shown the loading screen in this session
+  //   const hasShown = sessionStorage.getItem('fitcircle_loading_shown');
+  //   if (hasShown) {
+  //     setShowLoading(false);
+  //     setHasShownLoading(true);
+  //   }
+  // }, []);
 
-  const handleLoadingComplete = () => {
-    setShowLoading(false);
-    setHasShownLoading(true);
-    // Mark that we've shown the loading screen for this session
-    sessionStorage.setItem('fitcircle_loading_shown', 'true');
-  };
+  // const handleLoadingComplete = () => {
+  //   setShowLoading(false);
+  //   setHasShownLoading(true);
+  //   // Mark that we've shown the loading screen for this session
+  //   sessionStorage.setItem('fitcircle_loading_shown', 'true');
+  // };
 
-  if (showLoading && !hasShownLoading) {
-    return <LoadingScreen onComplete={handleLoadingComplete} />;
-  }
+  // if (showLoading && !hasShownLoading) {
+  //   return <LoadingScreen onComplete={handleLoadingComplete} />;
+  // }
 
   return (
     <div>
