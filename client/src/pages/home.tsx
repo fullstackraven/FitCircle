@@ -363,7 +363,7 @@ export default function Home() {
                 <span className="text-white">Goals</span>
               </div>
 
-              {/* AI Trainer */}
+              {/* Trainer */}
               <div 
                 className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
                 onClick={() => {
@@ -371,8 +371,8 @@ export default function Home() {
                   navigate('/trainer?from=dashboard');
                 }}
               >
-                <Bot className="w-5 h-5 text-green-400" />
-                <span className="text-white">AI Trainer</span>
+                <Bot className="w-5 h-5 text-slate-400" />
+                <span className="text-white">Trainer</span>
               </div>
 
               {/* Settings */}
