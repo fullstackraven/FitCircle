@@ -359,7 +359,8 @@ export default function SettingsPage() {
           const values = line.split(',').map(val => val.replace(/"/g, ''));
           const [type, date, time, category, value, liquidType, notes] = values;
           
-          // For your format: DataType, Date, Time, Category, Value, LiquidType, Notes
+          // Debug each line being processed
+          console.log('🔍 Processing CSV line:', { type, date, time, category, value, liquidType, notes });
           
           if (type === 'Workout' && category && value) {
             // Create workout if it doesn't exist
@@ -468,8 +469,17 @@ export default function SettingsPage() {
         });
         
         // Debug: log the actual data being stored
-        console.log('Structured workout data:', { workouts: workoutList, dailyLogs });
-        console.log('Current localStorage workout data:', localStorage.getItem('workout-tracker-data'));
+        console.log('🔍 Debug - Raw parsed data:');
+        console.log('Hydration data:', hydrationData);
+        console.log('Fasting data:', fastingLogs);
+        console.log('Meditation sessions:', meditationSessions);
+        console.log('Goals data:', goalsData);
+        console.log('Current localStorage after import:', {
+          hydration: localStorage.getItem('fitcircle_hydration_data'),
+          fasting: localStorage.getItem('fitcircle_fasting_logs'),
+          meditation: localStorage.getItem('fitcircle_meditation_sessions'),
+          goals: localStorage.getItem('fitcircle_goals_data')
+        });
       }
       else {
         return { success: false, error: 'Unrecognized CSV format. Please use a FitCircle backup file.' };
@@ -571,7 +581,7 @@ export default function SettingsPage() {
         const deploymentUrl = 'https://fit-circle-fullstackraven.replit.app';
         const timestamp = Date.now();
         try {
-          window.location.replace(`${deploymentUrl}?v=${timestamp}&updated=true&restore=true`);
+          window.location.href = `${deploymentUrl}?v=${timestamp}&updated=true&restore=true`;
         } catch (e) {
           console.error('Fallback redirect failed:', e);
         }
