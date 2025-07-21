@@ -350,9 +350,35 @@ export default function SettingsPage() {
         }
       });
       
-      // Force a complete page reload (bypass any cache)
-      const url = window.location.href.split('?')[0]; // Remove query params
-      window.location.replace(url + '?cache-bust=' + Date.now());
+      // PWA cache clearing - more aggressive approach
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          registrations.forEach(registration => {
+            registration.unregister();
+          });
+        });
+      }
+      
+      // Clear all browser caches
+      if ('caches' in window) {
+        caches.keys().then(cacheNames => {
+          return Promise.all(
+            cacheNames.map(cacheName => caches.delete(cacheName))
+          );
+        }).then(() => {
+          // Force reload after clearing caches
+          const timestamp = Date.now();
+          window.location.href = window.location.origin + '?v=' + timestamp;
+        }).catch(() => {
+          // Fallback if cache clearing fails
+          const timestamp = Date.now();
+          window.location.href = window.location.origin + '?v=' + timestamp;
+        });
+      } else {
+        // No cache API support, just reload with timestamp
+        const timestamp = Date.now();
+        window.location.href = window.location.origin + '?v=' + timestamp;
+      }
       
     } catch (error) {
       console.error('Error clearing cache:', error);
