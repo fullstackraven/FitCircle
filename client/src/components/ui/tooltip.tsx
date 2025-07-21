@@ -10,7 +10,7 @@ export function TooltipTrigger({ children }: { children: React.ReactNode }) {
 }
 
 export function TooltipContent({ children }: { children: React.ReactNode }) {
-  return null;
+  return <>{children}</>;
 }
 
 export function TooltipProvider({ children }: { children: React.ReactNode }) {

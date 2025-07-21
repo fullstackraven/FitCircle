@@ -51,9 +51,10 @@ function App() {
     sessionStorage.setItem('fitcircle_loading_shown', 'true');
   };
 
-  if (showLoading && !hasShownLoading) {
-    return <LoadingScreen onComplete={handleLoadingComplete} />;
-  }
+  // Temporarily disable loading screen to fix React hook errors
+  // if (showLoading && !hasShownLoading) {
+  //   return <LoadingScreen onComplete={handleLoadingComplete} />;
+  // }
 
   return (
     <div>
