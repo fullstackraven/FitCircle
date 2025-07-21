@@ -350,34 +350,43 @@ export default function SettingsPage() {
         }
       });
       
-      // PWA cache clearing - more aggressive approach
+      // Direct PWA cache clearing - simplified approach
+      console.log('🔄 Starting PWA cache clear...');
+      
+      // Clear service workers
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(registrations => {
+          console.log(`Found ${registrations.length} service workers`);
           registrations.forEach(registration => {
             registration.unregister();
+            console.log('Unregistered SW:', registration.scope);
           });
         });
       }
       
-      // Clear all browser caches
+      // Clear all caches
       if ('caches' in window) {
-        caches.keys().then(cacheNames => {
-          return Promise.all(
-            cacheNames.map(cacheName => caches.delete(cacheName))
-          );
+        caches.keys().then(names => {
+          console.log(`Found ${names.length} caches:`, names);
+          return Promise.all(names.map(name => {
+            console.log('Deleting cache:', name);
+            return caches.delete(name);
+          }));
         }).then(() => {
-          // Force reload after clearing caches
-          const timestamp = Date.now();
-          window.location.href = window.location.origin + '?v=' + timestamp;
-        }).catch(() => {
-          // Fallback if cache clearing fails
-          const timestamp = Date.now();
-          window.location.href = window.location.origin + '?v=' + timestamp;
+          console.log('✅ All caches cleared');
+          // Force reload after short delay
+          setTimeout(() => {
+            const newUrl = window.location.origin + '/?clear=true&v=' + Date.now() + '&r=' + Math.random().toString(36).substring(7);
+            console.log('🔄 Reloading to:', newUrl);
+            window.location.replace(newUrl);
+          }, 500);
         });
       } else {
-        // No cache API support, just reload with timestamp
-        const timestamp = Date.now();
-        window.location.href = window.location.origin + '?v=' + timestamp;
+        // No cache API, just reload with parameters
+        setTimeout(() => {
+          const newUrl = window.location.origin + '/?clear=true&v=' + Date.now();
+          window.location.replace(newUrl);
+        }, 500);
       }
       
     } catch (error) {

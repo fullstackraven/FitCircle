@@ -19,8 +19,8 @@
       // Simplified PWA handling - disable aggressive caching for easier updates
       if ("serviceWorker" in navigator) {
         // Check for force update parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('v') || urlParams.get('force')) {
+        const forceParams = new URLSearchParams(window.location.search);
+        if (forceParams.get('v') || forceParams.get('force')) {
           // Clear service workers and caches on forced update
           navigator.serviceWorker.getRegistrations().then(registrations => {
             registrations.forEach(registration => {
@@ -35,6 +35,12 @@
               );
             });
           }
+        }
+        
+        // Check if this is a cache clearing request and skip SW registration
+        if (window.location.search.includes('clear=true')) {
+          console.log('⚡ Cache clearing mode - skipping service worker');
+          return;
         }
         
         navigator.serviceWorker.register("/sw.js")

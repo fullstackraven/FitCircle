@@ -6,8 +6,8 @@ interface LoadingScreenProps {
 }
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
-  const [stage, setStage] = useState<'text' | 'ring' | 'check' | 'complete'>('text');
-  const [progress, setProgress] = useState(0);
+  const [stage, setStage] = React.useState<'text' | 'ring' | 'check' | 'complete'>('text');
+  const [progress, setProgress] = React.useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => {
