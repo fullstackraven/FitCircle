@@ -363,8 +363,8 @@ export default function Home() {
                 <span className="text-white">Goals</span>
               </div>
 
-              {/* Trainer */}
-              <div 
+              {/* Trainer - Hidden for now, can be re-enabled by uncommenting */}
+              {/* <div 
                 className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
                 onClick={() => {
                   setIsSidebarOpen(false);
@@ -373,7 +373,7 @@ export default function Home() {
               >
                 <Bot className="w-5 h-5 text-slate-400" />
                 <span className="text-white">Trainer</span>
-              </div>
+              </div> */}
 
               {/* Settings */}
               <div 

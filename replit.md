@@ -131,7 +131,7 @@ Preferred communication style: Simple, everyday language.
 - **Data Migration**: Added automatic migration for existing hydration entries to include liquid type (defaults to "Water" for legacy data)
 - **Complete Rounded Corner Implementation**: Updated all UI components throughout the entire app to use rounded-xl styling instead of sharp edges - includes all boxes, graphs, buttons, containers, modals, and form elements for consistent modern appearance (January 2025)
 - **Controls Section**: Added comprehensive Controls section in Settings with toggle switches to hide/show Quote of the Day, Today's Totals, and Recent Activity sections on home page - includes real-time localStorage persistence and conditional rendering
-- **AI Trainer Chatbot**: Implemented intelligent AI trainer accessible via dashboard that analyzes user data and provides personalized fitness advice, nutrition recommendations, training modifications, and goal-setting guidance using Claude 4.0 Sonnet
+- **AI Trainer Chatbot**: Implemented intelligent AI trainer accessible via dashboard that analyzes user data and provides personalized fitness advice, nutrition recommendations, training modifications, and goal-setting guidance using Claude 4.0 Sonnet (currently hidden via comments - can be re-enabled by uncommenting relevant sections in home.tsx, App.tsx, and routes.ts)
 
 ### Data Persistence and iOS Considerations
 
@@ -161,3 +161,35 @@ Preferred communication style: Simple, everyday language.
 3. **Mobile-First Design**: Optimized for touch interactions with large, easily tappable elements
 4. **Component Modularity**: Shadcn/ui components for consistency and maintainability
 5. **TypeScript Throughout**: Full type safety across frontend, backend, and shared schemas
+
+## Cost-Free AI Trainer Alternatives (Future Implementation)
+
+For when you want to re-enable AI trainer functionality without API costs, here are researched open-source alternatives:
+
+### **Top Recommendations**:
+
+1. **Ollama + Open WebUI** (Most Popular)
+   - Local LLM runner with ChatGPT-like interface
+   - Models: Llama 3.1, Mistral, Code Llama, Gemma
+   - Setup: Docker deployment or native install
+   - Hardware: Works on CPU (slow) or GPU (fast)
+
+2. **Jan** (Best for Desktop)
+   - 100% offline ChatGPT desktop app
+   - Models: Llama 3, Gemma, Mistral
+   - Easy setup for non-technical users
+
+3. **LlamaGPT** (Fully Offline)
+   - Self-hosted, privacy-first ChatGPT clone
+   - One-click Docker install
+   - All data stays on device
+
+### **Integration Strategy**:
+- Replace Anthropic API calls with local Ollama API endpoints
+- Modify trainer route to call localhost:11434 instead of Claude API
+- Same conversation interface, just different backend
+- Estimated setup cost: $300-800 for GPU hardware vs $20/month API fees
+
+### **Hardware Requirements**:
+- **Minimal**: 8GB+ RAM, CPU-only (30-60s response)
+- **Optimal**: 16GB+ RAM, RTX 3060+ GPU (1-3s response)
