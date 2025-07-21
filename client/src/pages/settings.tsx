@@ -1,7 +1,8 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Download, Upload, RefreshCw, Trash2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Download, Upload, RefreshCw, Trash2, AlertTriangle, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { useControls } from '@/hooks/use-controls';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -17,6 +18,7 @@ import {
 
 export default function SettingsPage() {
   const [, navigate] = useLocation();
+  const { settings, updateSetting } = useControls();
   
   // Check if we came from dashboard
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
@@ -338,10 +340,10 @@ export default function SettingsPage() {
               return caches.delete(name);
             }));
           }).then(function() {
-            window.location.reload(true);
+            window.location.reload();
           });
         } else {
-          window.location.reload(true);
+          window.location.reload();
         }
       });
     } else {
@@ -614,11 +616,71 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Additional Settings can be added here */}
-        <div className="mt-8 text-center">
-          <p className="text-slate-500 text-sm">
-            More settings options coming soon...
-          </p>
+        {/* Controls Section */}
+        <div className="bg-slate-800 rounded-xl p-6 mt-6">
+          <h2 className="text-lg font-semibold mb-6 text-white">Controls</h2>
+          
+          <div className="space-y-4">
+            {/* Quote of the Day Toggle */}
+            <div className="flex items-center justify-between py-3">
+              <div>
+                <h3 className="text-sm font-medium text-white">Quote of the Day</h3>
+                <p className="text-xs text-slate-400">Hide the quote section on home page</p>
+              </div>
+              <button
+                onClick={() => updateSetting('hideQuoteOfTheDay', !settings.hideQuoteOfTheDay)}
+                className={`w-12 h-6 rounded-full transition-colors ${
+                  settings.hideQuoteOfTheDay ? 'bg-green-600' : 'bg-slate-600'
+                }`}
+              >
+                <div
+                  className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                    settings.hideQuoteOfTheDay ? 'translate-x-6' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Today's Totals Toggle */}
+            <div className="flex items-center justify-between py-3 border-t border-slate-700">
+              <div>
+                <h3 className="text-sm font-medium text-white">Today's Totals</h3>
+                <p className="text-xs text-slate-400">Hide the daily summary section</p>
+              </div>
+              <button
+                onClick={() => updateSetting('hideTodaysTotals', !settings.hideTodaysTotals)}
+                className={`w-12 h-6 rounded-full transition-colors ${
+                  settings.hideTodaysTotals ? 'bg-green-600' : 'bg-slate-600'
+                }`}
+              >
+                <div
+                  className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                    settings.hideTodaysTotals ? 'translate-x-6' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Recent Activity Toggle */}
+            <div className="flex items-center justify-between py-3 border-t border-slate-700">
+              <div>
+                <h3 className="text-sm font-medium text-white">Recent Activity</h3>
+                <p className="text-xs text-slate-400">Hide the activity feed section</p>
+              </div>
+              <button
+                onClick={() => updateSetting('hideRecentActivity', !settings.hideRecentActivity)}
+                className={`w-12 h-6 rounded-full transition-colors ${
+                  settings.hideRecentActivity ? 'bg-green-600' : 'bg-slate-600'
+                }`}
+              >
+                <div
+                  className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                    settings.hideRecentActivity ? 'translate-x-6' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

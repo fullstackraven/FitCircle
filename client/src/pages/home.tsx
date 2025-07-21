@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
+import { useControls } from '@/hooks/use-controls';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
@@ -24,6 +25,7 @@ const colorClassMap: { [key: string]: string } = {
 
 export default function Home() {
   const [, navigate] = useLocation();
+  const { isQuoteHidden, isTodaysTotalsHidden, isRecentActivityHidden } = useControls();
 
   const {
     addWorkout,
@@ -147,7 +149,7 @@ export default function Home() {
       </header>
 
       {/* Quote of the Day */}
-      <QuoteOfTheDay />
+      {!isQuoteHidden && <QuoteOfTheDay />}
 
       {/* Workout Circles Grid */}
       <section className="mb-8">
@@ -225,7 +227,7 @@ export default function Home() {
       </section>
 
       {/* Today's Totals Section */}
-      {todaysTotals.some(w => w.count > 0) && (
+      {!isTodaysTotalsHidden && todaysTotals.some(w => w.count > 0) && (
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-4 text-center text-white">Today's Totals</h2>
           <div className="bg-slate-800 rounded-xl p-4 space-y-3">
@@ -243,7 +245,7 @@ export default function Home() {
       )}
 
       {/* Recent Activity Section */}
-      {recentActivity.length > 0 && (
+      {!isRecentActivityHidden && recentActivity.length > 0 && (
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-4 text-center text-white">Recent Activity</h2>
           <div className="space-y-3">
