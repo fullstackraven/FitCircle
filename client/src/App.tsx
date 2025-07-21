@@ -10,6 +10,7 @@ import FastingPage from "@/pages/fasting";
 import MeditationPage from "@/pages/meditation";
 import HydrationPage from "@/pages/hydration";
 import GoalsPage from "@/pages/goals";
+import TrainerPage from "@/pages/trainer";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/meditation" component={MeditationPage} />
       <Route path="/hydration" component={HydrationPage} />
       <Route path="/goals" component={GoalsPage} />
+      <Route path="/trainer" component={TrainerPage} />
       <Route path="/settings" component={SettingsPage} />
       <Route component={NotFound} />
     </Switch>

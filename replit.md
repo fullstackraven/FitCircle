@@ -131,6 +131,7 @@ Preferred communication style: Simple, everyday language.
 - **Data Migration**: Added automatic migration for existing hydration entries to include liquid type (defaults to "Water" for legacy data)
 - **Complete Rounded Corner Implementation**: Updated all UI components throughout the entire app to use rounded-xl styling instead of sharp edges - includes all boxes, graphs, buttons, containers, modals, and form elements for consistent modern appearance (January 2025)
 - **Controls Section**: Added comprehensive Controls section in Settings with toggle switches to hide/show Quote of the Day, Today's Totals, and Recent Activity sections on home page - includes real-time localStorage persistence and conditional rendering
+- **AI Trainer Chatbot**: Implemented intelligent AI trainer accessible via dashboard that analyzes user data and provides personalized fitness advice, nutrition recommendations, training modifications, and goal-setting guidance using Claude 4.0 Sonnet
 
 ### Data Persistence and iOS Considerations
 
