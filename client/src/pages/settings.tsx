@@ -1,15 +1,105 @@
-import { useState, useRef } from 'react';
-import { ArrowLeft, Upload, Download } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { ArrowLeft, Upload, Download, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { useControls } from '@/hooks/use-controls';
 
 export default function SettingsPage() {
   const [, navigate] = useLocation();
   const [isImporting, setIsImporting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [status, setStatus] = useState<string>('');
+  const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { settings, updateSetting } = useControls();
+  
+  // Check if we came from dashboard
+  const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
 
-  const handleBack = () => navigate('/');
+  const handleBack = () => {
+    if (fromDashboard) {
+      navigate('/?dashboard=open');
+    } else {
+      navigate('/');
+    }
+  };
+
+  // Check auto backup status on mount and set up scheduling
+  useEffect(() => {
+    const autoBackup = localStorage.getItem('fitcircle_auto_backup');
+    const isEnabled = autoBackup === 'true';
+    setAutoBackupEnabled(isEnabled);
+    
+    // If auto backup is enabled, check if we need to perform a backup
+    if (isEnabled) {
+      checkAndPerformBackup();
+      scheduleAutoBackup();
+    }
+  }, []);
+
+  const checkAndPerformBackup = () => {
+    const now = new Date();
+    const lastBackupStr = localStorage.getItem('fitcircle_last_backup_date');
+    const today = now.toISOString().split('T')[0];
+    
+    // If we haven't backed up today and it's past 11:59 PM, perform backup
+    if (lastBackupStr !== today && now.getHours() === 23 && now.getMinutes() >= 59) {
+      performAutoBackup();
+      localStorage.setItem('fitcircle_last_backup_date', today);
+    }
+  };
+
+  const scheduleAutoBackup = () => {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(23, 59, 0, 0);
+    
+    const timeUntilBackup = tomorrow.getTime() - now.getTime();
+    
+    setTimeout(() => {
+      performAutoBackup();
+      localStorage.setItem('fitcircle_last_backup_date', new Date().toISOString().split('T')[0]);
+      // Schedule next backup
+      scheduleAutoBackup();
+    }, timeUntilBackup);
+  };
+
+  const performAutoBackup = () => {
+    try {
+      const snapshot: Record<string, string> = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          const value = localStorage.getItem(key);
+          if (value) snapshot[key] = value;
+        }
+      }
+      
+      const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `fitcircle-auto-backup-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      console.log('✅ Auto backup completed with', Object.keys(snapshot).length, 'items');
+    } catch (error) {
+      console.error('Auto backup failed:', error);
+    }
+  };
+
+  const toggleAutoBackup = () => {
+    const newState = !autoBackupEnabled;
+    setAutoBackupEnabled(newState);
+    localStorage.setItem('fitcircle_auto_backup', newState.toString());
+    
+    if (newState) {
+      scheduleAutoBackup();
+    }
+  };
 
   // Export complete localStorage as JSON
   const exportSnapshot = () => {
@@ -109,7 +199,8 @@ export default function SettingsPage() {
           <h1 className="text-xl font-semibold text-white">Settings</h1>
         </div>
 
-        <div className="bg-slate-800 rounded-xl p-6">
+        {/* Backup & Restore Section */}
+        <div className="bg-slate-800 rounded-xl p-6 mb-6">
           <h2 className="text-lg font-semibold text-white mb-4">Complete Data Backup</h2>
           
           <div className="space-y-4">
@@ -152,6 +243,97 @@ export default function SettingsPage() {
             <p className="text-xs text-slate-400 text-center">
               This creates a complete snapshot of all your FitCircle data. Restore replaces all current data.
             </p>
+          </div>
+        </div>
+
+        {/* Auto Backup Section */}
+        <div className="bg-slate-800 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-white mb-4">Auto Backup</h2>
+          
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-white font-medium">Daily Auto Backup</p>
+              <p className="text-sm text-slate-400">Automatically backup at 11:59 PM daily</p>
+            </div>
+            <button
+              onClick={toggleAutoBackup}
+              className={`w-12 h-6 rounded-full transition-colors ${
+                autoBackupEnabled ? 'bg-green-600' : 'bg-slate-600'
+              }`}
+            >
+              <div
+                className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                  autoBackupEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+
+        {/* Controls Section */}
+        <div className="bg-slate-800 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-white mb-4">Controls</h2>
+          
+          <div className="space-y-4">
+            {/* Hide Quote of the Day */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-white font-medium">Hide Quote of the Day</p>
+                <p className="text-sm text-slate-400">Remove inspirational quotes from home page</p>
+              </div>
+              <button
+                onClick={() => updateSetting('hideQuoteOfTheDay', !settings.hideQuoteOfTheDay)}
+                className={`w-12 h-6 rounded-full transition-colors ${
+                  settings.hideQuoteOfTheDay ? 'bg-green-600' : 'bg-slate-600'
+                }`}
+              >
+                <div
+                  className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                    settings.hideQuoteOfTheDay ? 'translate-x-6' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Hide Today's Totals */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-white font-medium">Hide Today's Totals</p>
+                <p className="text-sm text-slate-400">Remove workout summary from home page</p>
+              </div>
+              <button
+                onClick={() => updateSetting('hideTodaysTotals', !settings.hideTodaysTotals)}
+                className={`w-12 h-6 rounded-full transition-colors ${
+                  settings.hideTodaysTotals ? 'bg-green-600' : 'bg-slate-600'
+                }`}
+              >
+                <div
+                  className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                    settings.hideTodaysTotals ? 'translate-x-6' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Hide Recent Activity */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-white font-medium">Hide Recent Activity</p>
+                <p className="text-sm text-slate-400">Remove recent workouts from home page</p>
+              </div>
+              <button
+                onClick={() => updateSetting('hideRecentActivity', !settings.hideRecentActivity)}
+                className={`w-12 h-6 rounded-full transition-colors ${
+                  settings.hideRecentActivity ? 'bg-green-600' : 'bg-slate-600'
+                }`}
+              >
+                <div
+                  className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                    settings.hideRecentActivity ? 'translate-x-6' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
           </div>
         </div>
       </div>
