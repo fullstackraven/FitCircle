@@ -350,8 +350,24 @@ export default function SettingsPage() {
         }
       });
       
-      // Direct PWA cache clearing - simplified approach
-      console.log('🔄 Starting PWA cache clear...');
+      // Enhanced PWA cache clearing with data preservation
+      console.log('🔄 Starting comprehensive PWA update...');
+      
+      // First, create a backup of current data before clearing anything
+      const currentData = {
+        workouts: localStorage.getItem('fitcircle_workouts'),
+        profile: localStorage.getItem('fitcircle_profile'),
+        measurements: localStorage.getItem('fitcircle_measurements'),
+        fasting: localStorage.getItem('fitcircle_fasting_logs'),
+        meditation: localStorage.getItem('fitcircle_meditation_logs'),
+        hydration: localStorage.getItem('fitcircle_hydration_data'),
+        goals: localStorage.getItem('fitcircle_goals'),
+        controls: localStorage.getItem('fitcircle_controls'),
+        backup: localStorage.getItem('fitcircle_auto_backup')
+      };
+      
+      // Store backup temporarily
+      sessionStorage.setItem('fitcircle_update_backup', JSON.stringify(currentData));
       
       // Clear service workers
       if ('serviceWorker' in navigator) {
@@ -373,20 +389,24 @@ export default function SettingsPage() {
             return caches.delete(name);
           }));
         }).then(() => {
-          console.log('✅ All caches cleared');
-          // Force reload after short delay
-          setTimeout(() => {
-            const newUrl = window.location.origin + '/?clear=true&v=' + Date.now() + '&r=' + Math.random().toString(36).substring(7);
-            console.log('🔄 Reloading to:', newUrl);
-            window.location.replace(newUrl);
-          }, 500);
+          console.log('✅ All caches cleared, reloading with fresh version...');
+          
+          // Force hard reload to deployment URL to get latest version
+          const deploymentUrl = 'https://fit-circle-fullstackraven.replit.app';
+          const timestamp = Date.now();
+          const params = new URLSearchParams({
+            v: timestamp.toString(),
+            updated: 'true',
+            restore: 'true'
+          });
+          
+          window.location.replace(`${deploymentUrl}?${params.toString()}`);
         });
       } else {
-        // No cache API, just reload with parameters
-        setTimeout(() => {
-          const newUrl = window.location.origin + '/?clear=true&v=' + Date.now();
-          window.location.replace(newUrl);
-        }, 500);
+        // Fallback
+        const deploymentUrl = 'https://fit-circle-fullstackraven.replit.app';
+        const timestamp = Date.now();
+        window.location.replace(`${deploymentUrl}?v=${timestamp}&updated=true&restore=true`);
       }
       
     } catch (error) {

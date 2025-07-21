@@ -122,6 +122,35 @@ antiSwipeStyle.textContent = `
 `;
 document.head.appendChild(antiSwipeStyle);
 
+// Check if this is a post-update restoration
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('restore') === 'true' && urlParams.get('updated') === 'true') {
+  // Restore data from session storage backup
+  try {
+    const backup = sessionStorage.getItem('fitcircle_update_backup');
+    if (backup) {
+      const data = JSON.parse(backup);
+      console.log('🔄 Restoring data after PWA update...');
+      
+      // Restore all data
+      Object.keys(data).forEach(key => {
+        if (data[key]) {
+          localStorage.setItem(`fitcircle_${key}`, data[key]);
+        }
+      });
+      
+      // Clean up
+      sessionStorage.removeItem('fitcircle_update_backup');
+      console.log('✅ Data restored successfully');
+      
+      // Redirect to clean URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  } catch (error) {
+    console.error('Error restoring data:', error);
+  }
+}
+
 createRoot(document.getElementById("root")!).render(
   <Router>
     <App />
