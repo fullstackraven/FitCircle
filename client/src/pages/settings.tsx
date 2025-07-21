@@ -336,14 +336,14 @@ export default function SettingsPage() {
           }
         }
       }
-      // Check for workout data export format
-      else if (header.includes('type') || header.includes('date') || header.includes('workout')) {
+      // Check for workout data export format (supports both 'type' and 'datatype' columns)
+      else if (header.includes('type') || header.includes('datatype') || header.includes('date') || header.includes('workout')) {
         // This is a workout data export - convert to proper localStorage format
         const dailyLogs: any = {};
         const workoutList: any = {};
         const measurements: any = { history: {} };
         const fastingLogs: any = {};
-        const meditationSessions: any = [];
+        let meditationSessions: any = [];
         const hydrationData: any = { logs: {} };
         const goalsData: any = {};
         
@@ -355,9 +355,11 @@ export default function SettingsPage() {
           const line = lines[i].trim();
           if (!line) continue;
           
-          // Parse CSV line
+          // Parse CSV line - handle different column formats
           const values = line.split(',').map(val => val.replace(/"/g, ''));
-          const [type, date, time, category, value, notes, details] = values;
+          const [type, date, time, category, value, liquidType, notes] = values;
+          
+          // For your format: DataType, Date, Time, Category, Value, LiquidType, Notes
           
           if (type === 'Workout' && category && value) {
             // Create workout if it doesn't exist
@@ -386,18 +388,45 @@ export default function SettingsPage() {
             const duration = parseInt(value.replace('hrs', '')) || 0;
             fastingLogs[date] = { 
               duration, 
-              startTime: details?.split('Start: ')[1]?.split(',')[0] || '',
-              endTime: details?.split('End: ')[1] || '' 
+              startTime: notes?.split('Start: ')[1]?.split(',')[0] || '',
+              endTime: notes?.split('End: ')[1] || '' 
             };
             itemsRestored++;
           }
           else if (type === 'Hydration' && value) {
             if (!hydrationData.logs[date]) hydrationData.logs[date] = { total: 0, entries: [] };
-            hydrationData.logs[date].total += parseFloat(value) || 0;
+            const amount = parseFloat(value.replace('oz', '')) || 0;
+            hydrationData.logs[date].total += amount;
+            
+            // Add individual entry with liquid type
+            if (!hydrationData.logs[date].entries) hydrationData.logs[date].entries = [];
+            hydrationData.logs[date].entries.push({
+              amount: amount,
+              liquidType: liquidType || 'Water',
+              time: time || '12:00 PM'
+            });
             itemsRestored++;
           }
+          else if (type === 'Meditation' && value) {
+            const duration = parseInt(value.replace('min', '')) || 0;
+            if (duration > 0) {
+              if (!Array.isArray(meditationSessions)) meditationSessions = [];
+              meditationSessions.push({
+                date: date,
+                duration: duration,
+                completedAt: time || '12:00 PM',
+                notes: notes || ''
+              });
+              itemsRestored++;
+            }
+          }
           else if (type === 'Goal' && category && value) {
-            goalsData[category.toLowerCase()] = parseFloat(value.replace(/[^0-9.]/g, '')) || 0;
+            // Parse goal data
+            goalsData[category.toLowerCase()] = {
+              target: value,
+              current: 0,
+              unit: value.includes('oz') ? 'oz' : value.includes('hrs') ? 'hrs' : value.includes('lbs') ? 'lbs' : ''
+            };
             itemsRestored++;
           }
         }
@@ -424,6 +453,9 @@ export default function SettingsPage() {
         if (Object.keys(goalsData).length > 0) {
           localStorage.setItem('fitcircle_goals_data', JSON.stringify(goalsData));
         }
+        if (meditationSessions.length > 0) {
+          localStorage.setItem('fitcircle_meditation_sessions', JSON.stringify(meditationSessions));
+        }
         
         console.log('✅ Imported data stored to localStorage:', {
           workouts: Object.keys(workoutList).length,
@@ -431,6 +463,7 @@ export default function SettingsPage() {
           measurements: Object.keys(measurements.history).length,
           fasting: Object.keys(fastingLogs).length,
           hydration: Object.keys(hydrationData.logs || {}).length,
+          meditation: meditationSessions.length,
           goals: Object.keys(goalsData).length
         });
         
