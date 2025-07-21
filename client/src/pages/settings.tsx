@@ -256,9 +256,12 @@ export default function SettingsPage() {
         
         if (result.success) {
           setImportStatus(`Successfully imported ${result.itemsRestored} data items!`);
+          
+          // Force a complete app refresh to reload all data
           setTimeout(() => {
             setImportStatus('');
-            navigate('/'); // Go back to home to see the restored data
+            // Clear React Query cache if available and trigger full page reload
+            window.location.href = '/';
           }, 2000);
         } else {
           setImportStatus(`Import failed: ${result.error}`);
@@ -366,7 +369,7 @@ export default function SettingsPage() {
           }
         }
         
-        // Store the converted data
+        // Store the converted data with proper formatting
         if (Object.keys(workoutData).length > 0) {
           localStorage.setItem('workout-tracker-data', JSON.stringify(workoutData));
         }
@@ -382,6 +385,14 @@ export default function SettingsPage() {
         if (Object.keys(goalsData).length > 0) {
           localStorage.setItem('fitcircle_goals_data', JSON.stringify(goalsData));
         }
+        
+        console.log('✅ Imported data stored to localStorage:', {
+          workouts: Object.keys(workoutData).length,
+          measurements: Object.keys(measurements.history).length,
+          fasting: Object.keys(fastingLogs).length,
+          hydration: Object.keys(hydrationData.logs || {}).length,
+          goals: Object.keys(goalsData).length
+        });
       }
       else {
         return { success: false, error: 'Unrecognized CSV format. Please use a FitCircle backup file.' };

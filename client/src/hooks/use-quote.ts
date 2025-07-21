@@ -67,13 +67,13 @@ export function useQuote() {
     }
   };
 
-  const getTodaysQuote = async () => {
+  const getTodaysQuote = async (forceRefresh = false) => {
     const today = new Date().toISOString().split('T')[0];
     const savedDate = localStorage.getItem(QUOTE_DATE_KEY);
     const savedQuote = localStorage.getItem(QUOTE_STORAGE_KEY);
 
-    // If we have a quote for today, use it
-    if (savedDate === today && savedQuote) {
+    // If we have a quote for today and not forcing refresh, use it
+    if (!forceRefresh && savedDate === today && savedQuote) {
       try {
         const parsedQuote = JSON.parse(savedQuote);
         setQuote(parsedQuote);
@@ -119,10 +119,14 @@ export function useQuote() {
     getTodaysQuote();
   }, []);
 
+  const forceRefresh = () => {
+    getTodaysQuote(true);
+  };
+
   return {
     quote,
     loading,
     error,
-    refresh: getTodaysQuote
+    refresh: forceRefresh
   };
 }
