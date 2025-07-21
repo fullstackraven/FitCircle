@@ -284,45 +284,117 @@ export default function SettingsPage() {
 
   const parseCSVAndRestore = (csv: string) => {
     try {
-      const lines = csv.split('\n');
-      const header = lines[0].replace(/"/g, '');
+      const lines = csv.split('\n').filter(line => line.trim());
+      if (lines.length < 2) {
+        return { success: false, error: 'Invalid CSV format. File appears to be empty or corrupted.' };
+      }
       
-      // Verify it's our new CSV format
-      if (!header.includes('LocalStorageKey') || !header.includes('Value')) {
-        return { success: false, error: 'Invalid CSV format. Please use a FitCircle backup file.' };
+      const header = lines[0].replace(/"/g, '').toLowerCase();
+      let itemsRestored = 0;
+      
+      // Check for new format (LocalStorageKey,Value)
+      if (header.includes('localstoragekey') && header.includes('value')) {
+        // New format - parse key,value pairs
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+
+          const firstCommaIndex = line.indexOf(',');
+          if (firstCommaIndex === -1) continue;
+
+          let key = line.substring(0, firstCommaIndex).replace(/"/g, '');
+          let value = line.substring(firstCommaIndex + 1);
+          
+          // Remove surrounding quotes and unescape internal quotes
+          if (value.startsWith('"') && value.endsWith('"')) {
+            value = value.slice(1, -1);
+          }
+          value = value.replace(/""/g, '"');
+
+          // Only restore FitCircle data
+          if ((key.startsWith('fitcircle_') || key === 'workout-tracker-data') && value) {
+            localStorage.setItem(key, value);
+            itemsRestored++;
+          }
+        }
+      }
+      // Check for workout data export format
+      else if (header.includes('type') || header.includes('date') || header.includes('workout')) {
+        // This is a workout data export - convert to localStorage format
+        const workoutData: any = {};
+        const measurements: any = { history: {} };
+        const fastingLogs: any = {};
+        const meditationSessions: any = [];
+        const hydrationData: any = { logs: {} };
+        const goalsData: any = {};
+        
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          
+          // Parse CSV line
+          const values = line.split(',').map(val => val.replace(/"/g, ''));
+          const [type, date, time, category, value, notes, details] = values;
+          
+          if (type === 'Workout' && category && value) {
+            if (!workoutData[date]) workoutData[date] = {};
+            workoutData[date][category] = parseInt(value) || 0;
+            itemsRestored++;
+          }
+          else if (type === 'Measurement' && category && value) {
+            if (!measurements.history[date]) measurements.history[date] = {};
+            measurements.history[date][category] = parseFloat(value) || 0;
+            itemsRestored++;
+          }
+          else if (type === 'Fasting' && value) {
+            const duration = parseInt(value.replace('hrs', '')) || 0;
+            fastingLogs[date] = { 
+              duration, 
+              startTime: details?.split('Start: ')[1]?.split(',')[0] || '',
+              endTime: details?.split('End: ')[1] || '' 
+            };
+            itemsRestored++;
+          }
+          else if (type === 'Hydration' && value) {
+            if (!hydrationData.logs[date]) hydrationData.logs[date] = { total: 0, entries: [] };
+            hydrationData.logs[date].total += parseFloat(value) || 0;
+            itemsRestored++;
+          }
+          else if (type === 'Goal' && category && value) {
+            goalsData[category.toLowerCase()] = parseFloat(value.replace(/[^0-9.]/g, '')) || 0;
+            itemsRestored++;
+          }
+        }
+        
+        // Store the converted data
+        if (Object.keys(workoutData).length > 0) {
+          localStorage.setItem('workout-tracker-data', JSON.stringify(workoutData));
+        }
+        if (Object.keys(measurements.history).length > 0) {
+          localStorage.setItem('fitcircle_measurements', JSON.stringify(measurements));
+        }
+        if (Object.keys(fastingLogs).length > 0) {
+          localStorage.setItem('fitcircle_fasting_logs', JSON.stringify(fastingLogs));
+        }
+        if (hydrationData.logs && Object.keys(hydrationData.logs).length > 0) {
+          localStorage.setItem('fitcircle_hydration_data', JSON.stringify(hydrationData));
+        }
+        if (Object.keys(goalsData).length > 0) {
+          localStorage.setItem('fitcircle_goals_data', JSON.stringify(goalsData));
+        }
+      }
+      else {
+        return { success: false, error: 'Unrecognized CSV format. Please use a FitCircle backup file.' };
       }
 
-      let itemsRestored = 0;
-
-      // Parse each line
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-
-        // Parse CSV row - split on first comma only to handle complex JSON values
-        const firstCommaIndex = line.indexOf(',');
-        if (firstCommaIndex === -1) continue;
-
-        let key = line.substring(0, firstCommaIndex).replace(/"/g, '');
-        let value = line.substring(firstCommaIndex + 1);
-        
-        // Remove surrounding quotes and unescape internal quotes
-        if (value.startsWith('"') && value.endsWith('"')) {
-          value = value.slice(1, -1);
-        }
-        value = value.replace(/""/g, '"');
-
-        // Only restore FitCircle data
-        if ((key.startsWith('fitcircle_') || 
-             key === 'workout-tracker-data') && value) {
-          localStorage.setItem(key, value);
-          itemsRestored++;
-        }
+      if (itemsRestored === 0) {
+        return { success: false, error: 'No valid FitCircle data found in the CSV file.' };
       }
 
       return { success: true, itemsRestored };
     } catch (error) {
-      return { success: false, error: 'Failed to parse CSV data.' };
+      console.error('CSV parsing error:', error);
+      return { success: false, error: 'Failed to parse CSV data. Please check the file format.' };
     }
   };
 

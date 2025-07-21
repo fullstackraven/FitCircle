@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 import { Switch, Route } from "wouter";
-import LoadingScreen from "@/components/LoadingScreen";
+// import LoadingScreen from "@/components/LoadingScreen";
 import Home from "@/pages/home";
 import CalendarPage from "@/pages/calendar";
 import ProfilePage from "@/pages/profile";
@@ -32,30 +32,6 @@ function Router() {
 }
 
 function App() {
-  const [showLoading, setShowLoading] = useState(true);
-  const [hasShownLoading, setHasShownLoading] = useState(false);
-
-  useEffect(() => {
-    // Check if we've already shown the loading screen in this session
-    const hasShown = sessionStorage.getItem('fitcircle_loading_shown');
-    if (hasShown) {
-      setShowLoading(false);
-      setHasShownLoading(true);
-    }
-  }, []);
-
-  const handleLoadingComplete = () => {
-    setShowLoading(false);
-    setHasShownLoading(true);
-    // Mark that we've shown the loading screen for this session
-    sessionStorage.setItem('fitcircle_loading_shown', 'true');
-  };
-
-  // Temporarily disable loading screen to fix PWA caching issues
-  // if (showLoading && !hasShownLoading) {
-  //   return <LoadingScreen onComplete={handleLoadingComplete} />;
-  // }
-
   return (
     <div>
       <Router />
