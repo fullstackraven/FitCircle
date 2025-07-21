@@ -400,13 +400,21 @@ export default function SettingsPage() {
             restore: 'true'
           });
           
-          window.location.replace(`${deploymentUrl}?${params.toString()}`);
+          try {
+            window.location.replace(`${deploymentUrl}?${params.toString()}`);
+          } catch (e) {
+            console.error('Redirect failed:', e);
+          }
         });
       } else {
         // Fallback
         const deploymentUrl = 'https://fit-circle-fullstackraven.replit.app';
         const timestamp = Date.now();
-        window.location.replace(`${deploymentUrl}?v=${timestamp}&updated=true&restore=true`);
+        try {
+          window.location.replace(`${deploymentUrl}?v=${timestamp}&updated=true&restore=true`);
+        } catch (e) {
+          console.error('Fallback redirect failed:', e);
+        }
       }
       
     } catch (error) {
