@@ -130,6 +130,7 @@ Preferred communication style: Simple, everyday language.
 - **Improved Auto-Backup**: Fixed auto-backup scheduling with better persistence, status display, and daily 11:59pm trigger reliability
 - **Data Migration**: Added automatic migration for existing hydration entries to include liquid type (defaults to "Water" for legacy data)
 - **Complete Rounded Corner Implementation**: Updated all UI components throughout the entire app to use rounded-xl styling instead of sharp edges - includes all boxes, graphs, buttons, containers, modals, and form elements for consistent modern appearance (January 2025)
+- **Controls Section**: Added comprehensive Controls section in Settings with toggle switches to hide/show Quote of the Day, Today's Totals, and Recent Activity sections on home page - includes real-time localStorage persistence and conditional rendering
 
 ### Data Persistence and iOS Considerations
 
@@ -139,6 +140,13 @@ Preferred communication style: Simple, everyday language.
 - **Phone Restarts**: Regular restarts should not affect your data
 - **Storage Pressure**: If your device runs very low on storage, iOS may clear browser data including localStorage
 - **PWA Installation**: Installing the app as a PWA (Add to Home Screen) provides better data persistence than using it in Safari
+
+**PWA Caching Considerations**: When using the app as a PWA, changes may not appear immediately due to service worker caching:
+
+- **New Features**: After app updates, new features may not appear until cache is cleared
+- **Cache Clearing**: Use the "Force App Update" button in Settings to clear all caches and refresh the app
+- **Service Worker**: PWA caches HTML/CSS/JS files for offline use, which can delay showing new features
+- **Manual Refresh**: Force-refresh by closing the PWA completely and reopening it
 
 **Backup and Recovery Features**: 
 - **Export Data**: Create CSV backups of all your data (workouts, measurements, fasting logs, meditation sessions)
