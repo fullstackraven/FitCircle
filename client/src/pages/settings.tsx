@@ -260,7 +260,22 @@ export default function SettingsPage() {
           // Force a complete app refresh to reload all data
           setTimeout(() => {
             setImportStatus('');
-            // Clear React Query cache if available and trigger full page reload
+            
+            // Trigger storage event to force React components to reload
+            window.dispatchEvent(new StorageEvent('storage', {
+              key: 'workout-tracker-data',
+              newValue: localStorage.getItem('workout-tracker-data'),
+              storageArea: localStorage
+            }));
+            
+            // Also trigger for other data
+            window.dispatchEvent(new StorageEvent('storage', {
+              key: 'fitcircle_measurements',
+              newValue: localStorage.getItem('fitcircle_measurements'),
+              storageArea: localStorage
+            }));
+            
+            // Navigate to home and force reload
             window.location.href = '/';
           }, 2000);
         } else {
@@ -323,13 +338,18 @@ export default function SettingsPage() {
       }
       // Check for workout data export format
       else if (header.includes('type') || header.includes('date') || header.includes('workout')) {
-        // This is a workout data export - convert to localStorage format
-        const workoutData: any = {};
+        // This is a workout data export - convert to proper localStorage format
+        const dailyLogs: any = {};
+        const workoutList: any = {};
         const measurements: any = { history: {} };
         const fastingLogs: any = {};
         const meditationSessions: any = [];
         const hydrationData: any = { logs: {} };
         const goalsData: any = {};
+        
+        // Available colors for workouts
+        const colors = ['green', 'blue', 'purple', 'amber', 'red', 'pink', 'cyan', 'lime', 'orange', 'indigo', 'emerald', 'yellow'];
+        let colorIndex = 0;
         
         for (let i = 1; i < lines.length; i++) {
           const line = lines[i].trim();
@@ -340,8 +360,21 @@ export default function SettingsPage() {
           const [type, date, time, category, value, notes, details] = values;
           
           if (type === 'Workout' && category && value) {
-            if (!workoutData[date]) workoutData[date] = {};
-            workoutData[date][category] = parseInt(value) || 0;
+            // Create workout if it doesn't exist
+            if (!workoutList[category]) {
+              workoutList[category] = {
+                id: category,
+                name: category,
+                color: colors[colorIndex % colors.length],
+                count: 0,
+                dailyGoal: 10 // Default goal
+              };
+              colorIndex++;
+            }
+            
+            // Add to daily logs
+            if (!dailyLogs[date]) dailyLogs[date] = {};
+            dailyLogs[date][category] = parseInt(value) || 0;
             itemsRestored++;
           }
           else if (type === 'Measurement' && category && value) {
@@ -370,7 +403,13 @@ export default function SettingsPage() {
         }
         
         // Store the converted data with proper formatting
-        if (Object.keys(workoutData).length > 0) {
+        if (Object.keys(workoutList).length > 0 || Object.keys(dailyLogs).length > 0) {
+          const workoutData = {
+            workouts: workoutList,
+            dailyLogs: dailyLogs,
+            journalEntries: {},
+            lastDate: new Date().toISOString().split('T')[0]
+          };
           localStorage.setItem('workout-tracker-data', JSON.stringify(workoutData));
         }
         if (Object.keys(measurements.history).length > 0) {
@@ -387,12 +426,17 @@ export default function SettingsPage() {
         }
         
         console.log('✅ Imported data stored to localStorage:', {
-          workouts: Object.keys(workoutData).length,
+          workouts: Object.keys(workoutList).length,
+          dailyLogs: Object.keys(dailyLogs).length,
           measurements: Object.keys(measurements.history).length,
           fasting: Object.keys(fastingLogs).length,
           hydration: Object.keys(hydrationData.logs || {}).length,
           goals: Object.keys(goalsData).length
         });
+        
+        // Debug: log the actual data being stored
+        console.log('Structured workout data:', { workouts: workoutList, dailyLogs });
+        console.log('Current localStorage workout data:', localStorage.getItem('workout-tracker-data'));
       }
       else {
         return { success: false, error: 'Unrecognized CSV format. Please use a FitCircle backup file.' };

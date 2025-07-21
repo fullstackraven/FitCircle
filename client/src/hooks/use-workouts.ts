@@ -53,20 +53,32 @@ export function useWorkouts() {
     lastDate: getTodayString()
   });
 
-  // Load data from localStorage on mount
+  // Load data from localStorage on mount and when storage changes
   useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData);
-        setData(prev => ({
-          ...parsed,
-          lastDate: parsed.lastDate || getTodayString()
-        }));
-      } catch (error) {
-        console.error('Failed to parse workout data:', error);
+    const loadData = () => {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          setData(prev => ({
+            ...parsed,
+            lastDate: parsed.lastDate || getTodayString()
+          }));
+        } catch (error) {
+          console.error('Failed to parse workout data:', error);
+        }
       }
-    }
+    };
+
+    // Load initial data
+    loadData();
+
+    // Listen for storage changes (including from CSV import)
+    window.addEventListener('storage', loadData);
+    
+    return () => {
+      window.removeEventListener('storage', loadData);
+    };
   }, []);
 
   // Save data to localStorage whenever it changes
