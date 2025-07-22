@@ -1,10 +1,15 @@
 import React from 'react';
 import { ArrowLeft, Brain, TrendingUp, TrendingDown, Activity, RefreshCw, AlertCircle, Target, Lightbulb } from 'lucide-react';
-import { Link } from 'wouter';
+import { useLocation } from 'wouter';
 import { useWellnessPredictions } from '@/hooks/use-wellness-predictions';
 
 export function PredictionsPage() {
+  const [, navigate] = useLocation();
   const { predictions, isLoading, refreshPredictions } = useWellnessPredictions();
+
+  const handleBackClick = () => {
+    navigate('/?dashboard=open');
+  };
 
   const getTrendIcon = (trend: 'increasing' | 'decreasing' | 'stable') => {
     switch (trend) {
@@ -45,9 +50,9 @@ export function PredictionsPage() {
       <div style={{ background: "hsl(222, 47%, 11%)" }} className="min-h-screen text-white p-4">
         <div className="max-w-md mx-auto">
           <div className="flex items-center justify-between mb-6">
-            <Link href="/dashboard" className="p-2 hover:bg-slate-700 rounded-xl transition-colors">
+            <button onClick={handleBackClick} className="p-2 hover:bg-slate-700 rounded-xl transition-colors">
               <ArrowLeft className="w-6 h-6 text-white" />
-            </Link>
+            </button>
             <div className="flex items-center space-x-2">
               <Brain className="w-6 h-6 text-purple-400" />
               <h1 className="text-xl font-bold">Wellness Predictions</h1>
@@ -71,9 +76,9 @@ export function PredictionsPage() {
       <div style={{ background: "hsl(222, 47%, 11%)" }} className="min-h-screen text-white p-4">
         <div className="max-w-md mx-auto">
           <div className="flex items-center justify-between mb-6">
-            <Link href="/dashboard" className="p-2 hover:bg-slate-700 rounded-xl transition-colors">
+            <button onClick={handleBackClick} className="p-2 hover:bg-slate-700 rounded-xl transition-colors">
               <ArrowLeft className="w-6 h-6 text-white" />
-            </Link>
+            </button>
             <div className="flex items-center space-x-2">
               <Brain className="w-6 h-6 text-purple-400" />
               <h1 className="text-xl font-bold">Wellness Predictions</h1>
@@ -108,9 +113,9 @@ export function PredictionsPage() {
     <div style={{ background: "hsl(222, 47%, 11%)" }} className="min-h-screen text-white p-4">
       <div className="max-w-md mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <Link href="/dashboard" className="p-2 hover:bg-slate-700 rounded-xl transition-colors">
+          <button onClick={handleBackClick} className="p-2 hover:bg-slate-700 rounded-xl transition-colors">
             <ArrowLeft className="w-6 h-6 text-white" />
-          </Link>
+          </button>
           <div className="flex items-center space-x-2">
             <Brain className="w-6 h-6 text-purple-400" />
             <h1 className="text-xl font-bold">Wellness Predictions</h1>
