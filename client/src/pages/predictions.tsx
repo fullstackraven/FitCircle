@@ -1,11 +1,11 @@
 import React from 'react';
 import { ArrowLeft, TrendingUp, TrendingDown, Activity, RefreshCw, AlertCircle, Target, Lightbulb } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { useWellnessPredictionsV2 } from '@/hooks/use-wellness-predictions-v2';
+import { useWellnessPredictionsFinal } from '@/hooks/use-wellness-predictions-final';
 
 export function PredictionsPage() {
   const [, navigate] = useLocation();
-  const { predictions, isLoading, refreshPredictions } = useWellnessPredictionsV2();
+  const { predictions, isLoading, refreshPredictions } = useWellnessPredictionsFinal();
 
   const handleBackClick = () => {
     navigate('/?dashboard=open');
@@ -86,10 +86,7 @@ export function PredictionsPage() {
               <h1 className="text-xl font-bold">Wellness Predictions</h1>
             </div>
             <button
-              onClick={() => {
-                console.log('Debug - Refresh button clicked in error state');
-                refreshPredictions();
-              }}
+              onClick={refreshPredictions}
               className="p-2 hover:bg-slate-700 rounded-xl transition-colors"
             >
               <RefreshCw className="w-6 h-6 text-white" />
@@ -127,10 +124,7 @@ export function PredictionsPage() {
             <h1 className="text-xl font-bold">Wellness Predictions</h1>
           </div>
           <button
-            onClick={() => {
-              console.log('Debug - Refresh button clicked in main state');
-              refreshPredictions();
-            }}
+            onClick={refreshPredictions}
             className="p-2 hover:bg-slate-700 rounded-xl transition-colors"
             title="Refresh predictions"
           >
