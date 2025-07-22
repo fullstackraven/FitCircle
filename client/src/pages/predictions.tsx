@@ -1,11 +1,11 @@
 import React from 'react';
 import { ArrowLeft, TrendingUp, TrendingDown, Activity, RefreshCw, AlertCircle, Target, Lightbulb } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { useWellnessPredictionsFinal } from '@/hooks/use-wellness-predictions-final';
+import { useWellnessPredictionsCorrect } from '@/hooks/use-wellness-predictions-correct';
 
 export function PredictionsPage() {
   const [, navigate] = useLocation();
-  const { predictions, isLoading, refreshPredictions } = useWellnessPredictionsFinal();
+  const { predictions, isLoading, refreshPredictions } = useWellnessPredictionsCorrect();
 
   const handleBackClick = () => {
     navigate('/?dashboard=open');
