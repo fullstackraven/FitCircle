@@ -447,7 +447,7 @@ export default function GoalsPage() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
               <TrendingUp className="w-6 h-6 text-emerald-400" />
-              <h2 className="text-xl font-bold text-white">Overall Wellness Score</h2>
+              <h2 className="text-xl font-bold text-white">Wellness Score</h2>
             </div>
             <Dialog open={isWeightsDialogOpen} onOpenChange={setIsWeightsDialogOpen}>
               <DialogTrigger asChild>
@@ -458,7 +458,7 @@ export default function GoalsPage() {
                   onClick={() => setTempWeights(wellnessWeights)}
                 >
                   <Settings className="w-4 h-4 mr-2" />
-                  Adjust Priorities
+                
                 </Button>
               </DialogTrigger>
               <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-md">
@@ -545,10 +545,10 @@ export default function GoalsPage() {
               <div className="text-center">
                 <div className="text-3xl font-bold text-white">
                   {wellnessScore}
-                  <span className="text-lg text-slate-400">/100</span>
+                  <span className="text-lg text-slate-400"></span>
                 </div>
                 <div className="text-sm text-slate-400 mt-1">
-                  Wellness Score
+                  
                 </div>
               </div>
             </CircularProgress>
