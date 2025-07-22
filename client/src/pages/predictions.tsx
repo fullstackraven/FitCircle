@@ -86,7 +86,10 @@ export function PredictionsPage() {
               <h1 className="text-xl font-bold">Wellness Predictions</h1>
             </div>
             <button
-              onClick={refreshPredictions}
+              onClick={() => {
+                console.log('Debug - Refresh button clicked in error state');
+                refreshPredictions();
+              }}
               className="p-2 hover:bg-slate-700 rounded-xl transition-colors"
             >
               <RefreshCw className="w-6 h-6 text-white" />
@@ -124,7 +127,10 @@ export function PredictionsPage() {
             <h1 className="text-xl font-bold">Wellness Predictions</h1>
           </div>
           <button
-            onClick={refreshPredictions}
+            onClick={() => {
+              console.log('Debug - Refresh button clicked in main state');
+              refreshPredictions();
+            }}
             className="p-2 hover:bg-slate-700 rounded-xl transition-colors"
             title="Refresh predictions"
           >

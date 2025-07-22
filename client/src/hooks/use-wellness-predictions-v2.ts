@@ -35,8 +35,8 @@ export const useWellnessPredictionsV2 = () => {
       
       console.log('Debug - All localStorage keys found:', Object.keys(allData));
       
-      // Extract different data sources
-      const workoutData = allData['fitcircle_workouts'] || {};
+      // Extract different data sources - check actual localStorage structure
+      const workoutData = allData['workout-tracker-data'] || {};
       const dailyLogs = workoutData.dailyLogs || {};
       
       const energyLevels = allData['fitcircle_energy_levels'] || {};
@@ -44,6 +44,15 @@ export const useWellnessPredictionsV2 = () => {
       const meditationData = allData['fitcircle_meditation'] || {};
       const fastingData = allData['fitcircle_fasting'] || {};
       const measurementsData = allData['fitcircle_measurements'] || {};
+
+      console.log('Debug - Raw localStorage data structure:', {
+        allKeys: Object.keys(allData),
+        workoutDataKeys: Object.keys(workoutData),
+        dailyLogsKeys: Object.keys(dailyLogs),
+        energyKeys: Object.keys(energyLevels),
+        hydrationKeys: Object.keys(hydrationData),
+        sampleDailyLog: Object.keys(dailyLogs).length > 0 ? dailyLogs[Object.keys(dailyLogs)[0]] : null
+      });
 
       console.log('Debug - Data sources found:', {
         workouts: Object.keys(dailyLogs).length + ' days',
@@ -193,11 +202,13 @@ export const useWellnessPredictionsV2 = () => {
 
   // Generate predictions on mount
   useEffect(() => {
+    console.log('Debug - useEffect triggered, generating initial predictions');
     generatePredictions();
   }, []);
 
   // Manual refresh function
   const refreshPredictions = () => {
+    console.log('Debug - Refresh button clicked, regenerating predictions');
     generatePredictions();
   };
 
