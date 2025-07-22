@@ -137,7 +137,7 @@ Preferred communication style: Simple, everyday language.
 - **localStorage Snapshot Backup System**: Replaced CSV import with complete localStorage snapshot system - exports entire localStorage as JSON file and restores complete app state, providing perfect data migration between devices
 - **JSON Auto Backup**: Updated auto backup functionality to work with new JSON localStorage snapshot format, maintaining daily 11:59pm automatic backups
 - **Restored Controls Section**: Re-implemented Controls section in Settings with toggle switches for hiding Quote of the Day, Today's Totals, and Recent Activity sections on home page
-- **Energy Level Tracking**: Added comprehensive energy level feature to calendar page with circular drag interface (1-10 scale), daily logging, purple dot indicators on calendar days, and integration with journal entries for complete daily tracking
+- **Energy Level Tracking**: Added comprehensive energy level feature to calendar page with circular tap interface (1-10 scale), daily logging, purple dot indicators on calendar days, and integration with journal entries for complete daily tracking
 
 ### Data Persistence and iOS Considerations
 

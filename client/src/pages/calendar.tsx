@@ -9,7 +9,8 @@ import {
   ChevronDown,
   ChevronUp,
   TrendingUp,
-  Zap
+  Zap,
+  Undo2
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
@@ -138,91 +139,20 @@ export default function CalendarPage() {
     return getEnergyLevel(date) > 0;
   };
 
-  // Energy level drag functionality
-  const getAngleFromPoint = useCallback((x: number, y: number, centerX: number, centerY: number) => {
-    let angle = Math.atan2(y - centerY, x - centerX) * (180 / Math.PI);
-    // Adjust to start from top (12 o'clock) and go counter-clockwise
-    angle = (angle + 450) % 360;
-    return angle;
-  }, []);
+  // Energy level tap functionality
+  const handleEnergyTap = () => {
+    setEnergyLevel(prevLevel => {
+      const newLevel = prevLevel >= 10 ? 1 : prevLevel + 1;
+      return newLevel;
+    });
+  };
 
-  const getEnergyFromAngle = useCallback((angle: number) => {
-    // Convert angle to energy level (1-10)
-    // 0° = level 10, 36° = level 9, etc. (counter-clockwise)
-    const level = Math.max(1, Math.min(10, Math.round(10 - (angle / 36))));
-    return level;
-  }, []);
-
-  const handleEnergyDrag = useCallback((clientX: number, clientY: number) => {
-    if (!circleRef.current) return;
-    
-    const rect = circleRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    const angle = getAngleFromPoint(clientX, clientY, centerX, centerY);
-    const level = getEnergyFromAngle(angle);
-    setEnergyLevel(level);
-  }, [getAngleFromPoint, getEnergyFromAngle]);
-
-  const handleEnergyMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-    handleEnergyDrag(e.clientX, e.clientY);
-  }, [handleEnergyDrag]);
-
-  const handleEnergyMouseMove = useCallback((e: MouseEvent) => {
-    if (isDragging) {
-      handleEnergyDrag(e.clientX, e.clientY);
-    }
-  }, [isDragging, handleEnergyDrag]);
-
-  const handleEnergyMouseUp = useCallback(() => {
-    if (isDragging && selectedDate) {
-      setEnergyLevelForDate(selectedDate, energyLevel);
-      setIsDragging(false);
-    }
-  }, [isDragging, selectedDate, energyLevel]);
-
-  // Touch handlers for mobile
-  const handleEnergyTouchStart = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-    const touch = e.touches[0];
-    handleEnergyDrag(touch.clientX, touch.clientY);
-  }, [handleEnergyDrag]);
-
-  const handleEnergyTouchMove = useCallback((e: TouchEvent) => {
-    if (isDragging) {
-      e.preventDefault();
-      const touch = e.touches[0];
-      handleEnergyDrag(touch.clientX, touch.clientY);
-    }
-  }, [isDragging, handleEnergyDrag]);
-
-  const handleEnergyTouchEnd = useCallback(() => {
-    if (isDragging && selectedDate) {
-      setEnergyLevelForDate(selectedDate, energyLevel);
-      setIsDragging(false);
-    }
-  }, [isDragging, selectedDate, energyLevel]);
-
-  // Add event listeners for mouse and touch
-  React.useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleEnergyMouseMove);
-      document.addEventListener('mouseup', handleEnergyMouseUp);
-      document.addEventListener('touchmove', handleEnergyTouchMove, { passive: false });
-      document.addEventListener('touchend', handleEnergyTouchEnd);
-      
-      return () => {
-        document.removeEventListener('mousemove', handleEnergyMouseMove);
-        document.removeEventListener('mouseup', handleEnergyMouseUp);
-        document.removeEventListener('touchmove', handleEnergyTouchMove);
-        document.removeEventListener('touchend', handleEnergyTouchEnd);
-      };
-    }
-  }, [isDragging, handleEnergyMouseMove, handleEnergyMouseUp, handleEnergyTouchMove, handleEnergyTouchEnd]);
+  const handleEnergyUndo = () => {
+    setEnergyLevel(prevLevel => {
+      const newLevel = prevLevel <= 1 ? 10 : prevLevel - 1;
+      return newLevel;
+    });
+  };
 
   const monthlyStats = getMonthlyStats(currentMonth.getFullYear(), currentMonth.getMonth()) || {
     totalReps: 0,
@@ -467,62 +397,73 @@ export default function CalendarPage() {
                     <h3 className="text-lg font-medium text-white mb-2">
                       Energy Level for {format(selectedDate, "MMMM d, yyyy")}
                     </h3>
-                    <p className="text-sm text-slate-400">Drag around the circle to set your energy level (1-10)</p>
+                    <p className="text-sm text-slate-400">Tap the circle to increase energy level (1-10)</p>
                   </div>
                   
                   {/* Energy Circle */}
-                  <div className="flex justify-center">
+                  <div className="flex flex-col items-center space-y-4">
                     <div className="relative">
-                      <svg
-                        ref={circleRef}
-                        width="200"
-                        height="200"
-                        className="transform -rotate-90 cursor-pointer"
-                        onMouseDown={handleEnergyMouseDown}
-                        onTouchStart={handleEnergyTouchStart}
+                      <button
+                        onClick={handleEnergyTap}
+                        className="focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-full"
                       >
-                        {/* Background circle */}
-                        <circle
-                          cx="100"
-                          cy="100"
-                          r="80"
-                          fill="none"
-                          stroke="rgba(148, 163, 184, 0.3)"
-                          strokeWidth="12"
-                        />
+                        <svg
+                          width="200"
+                          height="200"
+                          className="transform -rotate-90"
+                        >
+                          {/* Background circle */}
+                          <circle
+                            cx="100"
+                            cy="100"
+                            r="80"
+                            fill="none"
+                            stroke="rgba(148, 163, 184, 0.3)"
+                            strokeWidth="12"
+                          />
+                          
+                          {/* Progress circle */}
+                          <circle
+                            cx="100"
+                            cy="100"
+                            r="80"
+                            fill="none"
+                            stroke="rgb(168, 85, 247)"
+                            strokeWidth="12"
+                            strokeLinecap="round"
+                            strokeDasharray={`${(energyLevel / 10) * 502.65} 502.65`}
+                            className="transition-all duration-300"
+                            style={{
+                              transformOrigin: '100px 100px',
+                            }}
+                          />
+                          
+                          {/* Center circle for number */}
+                          <circle
+                            cx="100"
+                            cy="100"
+                            r="45"
+                            fill="rgba(30, 41, 59, 0.8)"
+                            stroke="rgb(168, 85, 247)"
+                            strokeWidth="2"
+                          />
+                        </svg>
                         
-                        {/* Progress circle */}
-                        <circle
-                          cx="100"
-                          cy="100"
-                          r="80"
-                          fill="none"
-                          stroke="rgb(168, 85, 247)"
-                          strokeWidth="12"
-                          strokeLinecap="round"
-                          strokeDasharray={`${(energyLevel / 10) * 502.65} 502.65`}
-                          className="transition-all duration-200"
-                          style={{
-                            transformOrigin: '100px 100px',
-                          }}
-                        />
-                        
-                        {/* Center circle for number */}
-                        <circle
-                          cx="100"
-                          cy="100"
-                          r="45"
-                          fill="rgba(30, 41, 59, 0.8)"
-                          stroke="rgb(168, 85, 247)"
-                          strokeWidth="2"
-                        />
-                      </svg>
-                      
-                      {/* Energy level number */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-3xl font-bold text-white">{energyLevel}</span>
-                      </div>
+                        {/* Energy level number */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <span className="text-3xl font-bold text-white">{energyLevel}</span>
+                        </div>
+                      </button>
                     </div>
+                    
+                    {/* Undo Button */}
+                    <button
+                      onClick={handleEnergyUndo}
+                      className="flex items-center justify-center w-12 h-12 bg-slate-700 hover:bg-slate-600 rounded-full transition-colors"
+                      title="Undo (decrease energy level)"
+                    >
+                      <Undo2 className="w-5 h-5 text-white" />
+                    </button>
                   </div>
                   
                   <div className="flex space-x-2">
