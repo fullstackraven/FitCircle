@@ -270,7 +270,8 @@ export function useWorkouts() {
       return {
         workouts: remainingWorkouts,
         dailyLogs: cleanedDailyLogs,
-        lastDate: prev.lastDate
+        lastDate: prev.lastDate,
+        journalEntries: prev.journalEntries
       };
     });
   };
@@ -316,9 +317,14 @@ export function useWorkouts() {
       const dateStr = getDateString(date);
       const dayLog = data.dailyLogs?.[dateStr] || {};
       
+      // Only count workouts that actually have logged reps for this day
+      // This ensures that adding new workouts doesn't affect past statistics
+      const workoutsWithRepsOnThisDay = workoutArray.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
+      if (workoutsWithRepsOnThisDay.length === 0) continue;
+      
       let dayWorkoutsCompleted = 0;
       
-      workoutArray.forEach(workout => {
+      workoutsWithRepsOnThisDay.forEach(workout => {
         const count = dayLog[workout.id] || 0;
         totalReps += count;
         if (count >= workout.dailyGoal) {
@@ -328,7 +334,7 @@ export function useWorkouts() {
         totalPossibleGoals++;
       });
       
-      if (dayWorkoutsCompleted === workoutArray.length && workoutArray.length > 0) {
+      if (dayWorkoutsCompleted === workoutsWithRepsOnThisDay.length && workoutsWithRepsOnThisDay.length > 0) {
         workoutsCompleted++;
       }
     }
@@ -355,7 +361,10 @@ export function useWorkouts() {
     }
 
     Object.entries(data.dailyLogs).forEach(([, dayLog]) => {
-      workoutArray.forEach(workout => {
+      // Only count workouts that actually have logged reps for this day
+      const workoutsWithRepsOnThisDay = workoutArray.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
+      
+      workoutsWithRepsOnThisDay.forEach(workout => {
         const count = dayLog[workout.id] || 0;
         totalReps += count;
         if (count >= workout.dailyGoal) {

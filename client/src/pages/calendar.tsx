@@ -84,8 +84,15 @@ export default function CalendarPage() {
     const day = String(date.getDate()).padStart(2, '0');
     const dateStr = `${year}-${month}-${day}`;
     const dayLog = logs[dateStr];
-    if (!dayLog || !workouts.length) return false;
-    return workouts.every(w => dayLog[w.id] >= w.dailyGoal);
+    if (!dayLog) return false;
+    
+    // Only check workouts that actually have logged reps for this day
+    // This ensures that adding new workouts doesn't affect past completion status
+    const workoutsWithRepsOnThisDay = workouts.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
+    if (workoutsWithRepsOnThisDay.length === 0) return false;
+    
+    // Check if all workouts that were actively used on this day met their goals
+    return workoutsWithRepsOnThisDay.every(w => dayLog[w.id] >= w.dailyGoal);
   };
 
   const handleDayClick = (date: Date) => {
