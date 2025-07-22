@@ -342,7 +342,7 @@ export function useWorkouts() {
     return {
       totalReps,
       workoutsCompleted,
-      monthlyGoalPercentage: totalPossibleGoals > 0 ? (goalsHit / totalPossibleGoals) * 100 : 0,
+      monthlyGoalPercentage: workoutsCompleted > 0 ? (workoutsCompleted / daysInMonth) * 100 : 0,
       daysInMonth
     };
   };
