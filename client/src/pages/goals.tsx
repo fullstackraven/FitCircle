@@ -458,7 +458,6 @@ export default function GoalsPage() {
                   onClick={() => setTempWeights(wellnessWeights)}
                 >
                   <Settings className="w-4 h-4 mr-2" />
-                
                 </Button>
               </DialogTrigger>
               <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-md">
