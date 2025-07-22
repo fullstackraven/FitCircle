@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -8,7 +8,8 @@ import {
   BookOpen,
   ChevronDown,
   ChevronUp,
-  TrendingUp
+  TrendingUp,
+  Zap
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
@@ -58,8 +59,12 @@ export default function CalendarPage() {
   const [isStatsOpen, setIsStatsOpen] = useState(false);
   const [isWorkoutTotalsOpen, setIsWorkoutTotalsOpen] = useState(false);
   const [isJournalOpen, setIsJournalOpen] = useState(false);
+  const [isEnergyOpen, setIsEnergyOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [journalText, setJournalText] = useState('');
+  const [energyLevel, setEnergyLevel] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const circleRef = useRef<SVGSVGElement>(null);
 
   const startDate = startOfWeek(startOfMonth(currentMonth), { weekStartsOn: 0 });
   const endDate = endOfWeek(endOfMonth(currentMonth), { weekStartsOn: 0 });
@@ -93,7 +98,9 @@ export default function CalendarPage() {
     const dateStr = `${year}-${month}-${day}`;
     const existingEntry = getJournalEntry(dateStr);
     setJournalText(existingEntry);
+    setEnergyLevel(getEnergyLevel(date));
     setIsJournalOpen(true);
+    setIsEnergyOpen(true);
   };
 
   const handleJournalSubmit = () => {
@@ -108,6 +115,114 @@ export default function CalendarPage() {
     setSelectedDate(null);
     setJournalText('');
   };
+
+  const getEnergyLevel = (date: Date) => {
+    const dateKey = format(date, 'yyyy-MM-dd');
+    const energyData = localStorage.getItem('fitcircle_energy_levels');
+    if (energyData) {
+      const parsed = JSON.parse(energyData);
+      return parsed[dateKey] || 0;
+    }
+    return 0;
+  };
+
+  const setEnergyLevelForDate = (date: Date, level: number) => {
+    const dateKey = format(date, 'yyyy-MM-dd');
+    const energyData = localStorage.getItem('fitcircle_energy_levels');
+    const parsed = energyData ? JSON.parse(energyData) : {};
+    parsed[dateKey] = level;
+    localStorage.setItem('fitcircle_energy_levels', JSON.stringify(parsed));
+  };
+
+  const hasEnergyLevel = (date: Date) => {
+    return getEnergyLevel(date) > 0;
+  };
+
+  // Energy level drag functionality
+  const getAngleFromPoint = useCallback((x: number, y: number, centerX: number, centerY: number) => {
+    let angle = Math.atan2(y - centerY, x - centerX) * (180 / Math.PI);
+    // Adjust to start from top (12 o'clock) and go counter-clockwise
+    angle = (angle + 450) % 360;
+    return angle;
+  }, []);
+
+  const getEnergyFromAngle = useCallback((angle: number) => {
+    // Convert angle to energy level (1-10)
+    // 0° = level 10, 36° = level 9, etc. (counter-clockwise)
+    const level = Math.max(1, Math.min(10, Math.round(10 - (angle / 36))));
+    return level;
+  }, []);
+
+  const handleEnergyDrag = useCallback((clientX: number, clientY: number) => {
+    if (!circleRef.current) return;
+    
+    const rect = circleRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const angle = getAngleFromPoint(clientX, clientY, centerX, centerY);
+    const level = getEnergyFromAngle(angle);
+    setEnergyLevel(level);
+  }, [getAngleFromPoint, getEnergyFromAngle]);
+
+  const handleEnergyMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    handleEnergyDrag(e.clientX, e.clientY);
+  }, [handleEnergyDrag]);
+
+  const handleEnergyMouseMove = useCallback((e: MouseEvent) => {
+    if (isDragging) {
+      handleEnergyDrag(e.clientX, e.clientY);
+    }
+  }, [isDragging, handleEnergyDrag]);
+
+  const handleEnergyMouseUp = useCallback(() => {
+    if (isDragging && selectedDate) {
+      setEnergyLevelForDate(selectedDate, energyLevel);
+      setIsDragging(false);
+    }
+  }, [isDragging, selectedDate, energyLevel]);
+
+  // Touch handlers for mobile
+  const handleEnergyTouchStart = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    const touch = e.touches[0];
+    handleEnergyDrag(touch.clientX, touch.clientY);
+  }, [handleEnergyDrag]);
+
+  const handleEnergyTouchMove = useCallback((e: TouchEvent) => {
+    if (isDragging) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      handleEnergyDrag(touch.clientX, touch.clientY);
+    }
+  }, [isDragging, handleEnergyDrag]);
+
+  const handleEnergyTouchEnd = useCallback(() => {
+    if (isDragging && selectedDate) {
+      setEnergyLevelForDate(selectedDate, energyLevel);
+      setIsDragging(false);
+    }
+  }, [isDragging, selectedDate, energyLevel]);
+
+  // Add event listeners for mouse and touch
+  React.useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleEnergyMouseMove);
+      document.addEventListener('mouseup', handleEnergyMouseUp);
+      document.addEventListener('touchmove', handleEnergyTouchMove, { passive: false });
+      document.addEventListener('touchend', handleEnergyTouchEnd);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleEnergyMouseMove);
+        document.removeEventListener('mouseup', handleEnergyMouseUp);
+        document.removeEventListener('touchmove', handleEnergyTouchMove);
+        document.removeEventListener('touchend', handleEnergyTouchEnd);
+      };
+    }
+  }, [isDragging, handleEnergyMouseMove, handleEnergyMouseUp, handleEnergyTouchMove, handleEnergyTouchEnd]);
 
   const monthlyStats = getMonthlyStats(currentMonth.getFullYear(), currentMonth.getMonth()) || {
     totalReps: 0,
@@ -170,6 +285,7 @@ export default function CalendarPage() {
           const day = String(date.getDate()).padStart(2, '0');
           const dateStr = `${year}-${month}-${day}`;
           const hasJournal = (getJournalEntry(dateStr) || "").length > 0;
+          const hasEnergy = hasEnergyLevel(date);
 
           return (
             <div
@@ -187,7 +303,10 @@ export default function CalendarPage() {
             >
               {format(date, "d")}
               {hasJournal && (
-                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-400 rounded-full" />
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-x-1 w-1 h-1 bg-blue-400 rounded-full" />
+              )}
+              {hasEnergy && (
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-x-1 w-1 h-1 bg-purple-400 rounded-full" />
               )}
             </div>
           );
@@ -319,6 +438,118 @@ export default function CalendarPage() {
               ) : (
                 <div className="text-center py-8">
                   <p className="text-slate-400">Tap on a day in the calendar to add a journal entry</p>
+                </div>
+              )}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
+
+      {/* Energy Level Panel */}
+      <div className="mt-4">
+        <Collapsible open={isEnergyOpen} onOpenChange={setIsEnergyOpen}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors">
+            <div className="flex items-center space-x-2">
+              <Zap className="w-5 h-5 text-yellow-400" />
+              <span className="text-white font-medium">Energy Level</span>
+            </div>
+            {isEnergyOpen ? (
+              <ChevronUp className="w-5 h-5 text-slate-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400" />
+            )}
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-4 bg-slate-800 rounded-xl p-6">
+              {selectedDate ? (
+                <div className="space-y-6">
+                  <div className="text-center">
+                    <h3 className="text-lg font-medium text-white mb-2">
+                      Energy Level for {format(selectedDate, "MMMM d, yyyy")}
+                    </h3>
+                    <p className="text-sm text-slate-400">Drag around the circle to set your energy level (1-10)</p>
+                  </div>
+                  
+                  {/* Energy Circle */}
+                  <div className="flex justify-center">
+                    <div className="relative">
+                      <svg
+                        ref={circleRef}
+                        width="200"
+                        height="200"
+                        className="transform -rotate-90 cursor-pointer"
+                        onMouseDown={handleEnergyMouseDown}
+                        onTouchStart={handleEnergyTouchStart}
+                      >
+                        {/* Background circle */}
+                        <circle
+                          cx="100"
+                          cy="100"
+                          r="80"
+                          fill="none"
+                          stroke="rgba(148, 163, 184, 0.3)"
+                          strokeWidth="12"
+                        />
+                        
+                        {/* Progress circle */}
+                        <circle
+                          cx="100"
+                          cy="100"
+                          r="80"
+                          fill="none"
+                          stroke="rgb(168, 85, 247)"
+                          strokeWidth="12"
+                          strokeLinecap="round"
+                          strokeDasharray={`${(energyLevel / 10) * 502.65} 502.65`}
+                          className="transition-all duration-200"
+                          style={{
+                            transformOrigin: '100px 100px',
+                          }}
+                        />
+                        
+                        {/* Center circle for number */}
+                        <circle
+                          cx="100"
+                          cy="100"
+                          r="45"
+                          fill="rgba(30, 41, 59, 0.8)"
+                          stroke="rgb(168, 85, 247)"
+                          strokeWidth="2"
+                        />
+                      </svg>
+                      
+                      {/* Energy level number */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-3xl font-bold text-white">{energyLevel}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => {
+                        if (selectedDate) {
+                          setEnergyLevelForDate(selectedDate, energyLevel);
+                        }
+                      }}
+                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors"
+                    >
+                      Save Energy Level
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedDate(null);
+                        setEnergyLevel(0);
+                      }}
+                      className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-xl transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-slate-400">Tap on a day in the calendar to set your energy level</p>
                 </div>
               )}
             </div>
