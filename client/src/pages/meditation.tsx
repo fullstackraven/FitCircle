@@ -308,7 +308,6 @@ export default function MeditationPage() {
                     type="number"
                     value={inputMinutes}
                     onChange={(e) => setInputMinutes(e.target.value)}
-                    placeholder="e.g., 10"
                     className="bg-slate-700 border-slate-600 text-white text-center"
                     min="1"
                   />
