@@ -15,10 +15,10 @@ Since Git is already initialized, you just need to connect it to your GitHub rep
 
 ```bash
 # Set the remote repository URL
-git remote add origin https://github.com/fullstackraven/FitCircleApp.git
+git remote add origin https://github.com/fullstackraven/FitCircle.git
 
 # Or if origin already exists, update it:
-git remote set-url origin https://github.com/fullstackraven/FitCircleApp.git
+git remote set-url origin https://github.com/fullstackraven/FitCircle.git
 ```
 
 ### Step 2: Stage and Commit All Files
@@ -37,14 +37,14 @@ git push -u origin main
 ```
 
 ### Step 4: Enable GitHub Pages
-1. Go to your repository: https://github.com/fullstackraven/FitCircleApp
+1. Go to your repository: https://github.com/fullstackraven/FitCircle
 2. Click on the **Settings** tab
 3. Scroll down to **Pages** in the left sidebar
 4. Under **Source**, select **GitHub Actions**
 5. The deployment will start automatically!
 
 ### Step 5: Access Your Live App
-- Your app will be live at: **https://fullstackraven.github.io/FitCircleApp/**
+- Your app will be live at: **https://fullstackraven.github.io/FitCircle/**
 - First deployment takes 2-5 minutes
 - Check the **Actions** tab to see deployment progress
 
@@ -57,7 +57,7 @@ git push -u origin main
 - Deploys to GitHub Pages
 
 ### Static Build Configuration
-- **Base path**: Set to `/FitCircleApp/` to match your repository name
+- **Base path**: Set to `/FitCircle/` to match your repository name
 - **Output**: Optimized static files in `dist/` folder
 - **Assets**: All images and resources properly referenced
 
