@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Droplet, Brain, Clock, Scale, Edit, Percent, Target } from 'lucide-react';
+import { ChevronLeft, Droplet, Brain, Clock, Scale, Edit, Percent, Target, TrendingUp, Settings } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useGoals } from '@/hooks/use-goals';
 import { useWorkouts } from '@/hooks/use-workouts';
@@ -7,6 +7,7 @@ import { useMeasurements } from '@/hooks/use-measurements';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 // Circular Progress Component
 interface CircularProgressProps {
@@ -61,6 +62,16 @@ function CircularProgress({ percentage, color, size = 120, strokeWidth = 8, chil
   );
 }
 
+// Wellness score weights interface
+interface WellnessWeights {
+  hydrationOz: number;
+  meditationMinutes: number;
+  fastingHours: number;
+  weightLbs: number;
+  targetBodyFat: number;
+  workoutConsistency: number;
+}
+
 export default function GoalsPage() {
   const [, navigate] = useLocation();
   
@@ -92,6 +103,37 @@ export default function GoalsPage() {
   
   const [editingGoal, setEditingGoal] = useState<string | null>(null);
   const [tempValues, setTempValues] = useState(goals);
+
+  // Wellness Score State
+  const [wellnessWeights, setWellnessWeights] = useState<WellnessWeights>({
+    hydrationOz: 10,
+    meditationMinutes: 10,
+    fastingHours: 10,
+    weightLbs: 10,
+    targetBodyFat: 20,
+    workoutConsistency: 40
+  });
+  const [isWeightsDialogOpen, setIsWeightsDialogOpen] = useState(false);
+  const [tempWeights, setTempWeights] = useState(wellnessWeights);
+
+  // Load wellness weights from localStorage
+  useEffect(() => {
+    const savedWeights = localStorage.getItem('fitcircle_wellness_weights');
+    if (savedWeights) {
+      try {
+        const parsed = JSON.parse(savedWeights);
+        setWellnessWeights(parsed);
+      } catch (e) {
+        console.error('Failed to parse wellness weights:', e);
+      }
+    }
+  }, []);
+
+  // Save wellness weights to localStorage
+  const saveWellnessWeights = (weights: WellnessWeights) => {
+    setWellnessWeights(weights);
+    localStorage.setItem('fitcircle_wellness_weights', JSON.stringify(weights));
+  };
 
   const handleEdit = (goalType: string) => {
     setEditingGoal(goalType);
@@ -258,6 +300,39 @@ export default function GoalsPage() {
     }
   ];
 
+  // Calculate overall wellness score
+  const calculateWellnessScore = (): number => {
+    const totalWeight = Object.values(wellnessWeights).reduce((sum, weight) => sum + weight, 0);
+    if (totalWeight === 0) return 0;
+
+    let weightedScore = 0;
+    weightedScore += (progress.hydrationProgress * wellnessWeights.hydrationOz) / totalWeight;
+    weightedScore += (progress.meditationProgress * wellnessWeights.meditationMinutes) / totalWeight;
+    weightedScore += (progress.fastingProgress * wellnessWeights.fastingHours) / totalWeight;
+    weightedScore += (progress.weightProgress * wellnessWeights.weightLbs) / totalWeight;
+    
+    // Target body fat progress calculation
+    const currentBodyFat = getLatestValue('bodyFat') || 0;
+    const targetBodyFat = goals.targetBodyFat || 0;
+    let bodyFatProgress = 0;
+    if (targetBodyFat > 0 && currentBodyFat > 0) {
+      if (currentBodyFat <= targetBodyFat) {
+        bodyFatProgress = 100;
+      } else {
+        bodyFatProgress = Math.min(100, (targetBodyFat / currentBodyFat) * 100);
+      }
+    }
+    weightedScore += (bodyFatProgress * wellnessWeights.targetBodyFat) / totalWeight;
+    
+    // Workout consistency from total stats
+    const workoutConsistency = getTotalStats().totalGoalPercentage || 0;
+    weightedScore += (workoutConsistency * wellnessWeights.workoutConsistency) / totalWeight;
+
+    return Math.round(weightedScore);
+  };
+
+  const wellnessScore = calculateWellnessScore();
+
   return (
     <div className="min-h-screen text-white" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="container mx-auto px-4 py-6 max-w-md">
@@ -365,6 +440,125 @@ export default function GoalsPage() {
         {/* Description */}
         <div className="mt-6 text-center text-slate-400 text-sm">
           Track your daily wellness goals with visual progress indicators
+        </div>
+
+        {/* Overall Wellness Score Section */}
+        <div className="mt-8 bg-slate-800 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <TrendingUp className="w-6 h-6 text-emerald-400" />
+              <h2 className="text-xl font-bold text-white">Overall Wellness Score</h2>
+            </div>
+            <Dialog open={isWeightsDialogOpen} onOpenChange={setIsWeightsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  onClick={() => setTempWeights(wellnessWeights)}
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Adjust Priorities
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-white">Wellness Score Priorities</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 mt-4">
+                  <div className="text-sm text-slate-400 mb-4">
+                    Adjust the importance of each goal in your overall wellness score. Higher percentages have more impact.
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {[
+                      { key: 'workoutConsistency' as keyof WellnessWeights, label: 'Workout Consistency', icon: Target },
+                      { key: 'targetBodyFat' as keyof WellnessWeights, label: 'Target Body Fat', icon: Percent },
+                      { key: 'hydrationOz' as keyof WellnessWeights, label: 'Daily Hydration', icon: Droplet },
+                      { key: 'meditationMinutes' as keyof WellnessWeights, label: 'Daily Meditation', icon: Brain },
+                      { key: 'fastingHours' as keyof WellnessWeights, label: 'Intermittent Fasting', icon: Clock },
+                      { key: 'weightLbs' as keyof WellnessWeights, label: 'Target Weight', icon: Scale }
+                    ].map(item => (
+                      <div key={item.key} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <item.icon className="w-4 h-4 text-slate-400" />
+                          <Label className="text-sm text-slate-300">{item.label}</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Input
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={tempWeights[item.key]}
+                            onChange={(e) => setTempWeights(prev => ({
+                              ...prev,
+                              [item.key]: parseInt(e.target.value) || 0
+                            }))}
+                            className="w-16 h-8 text-center bg-slate-700 border-slate-600 text-white"
+                          />
+                          <span className="text-xs text-slate-400">%</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="text-xs text-slate-500 mt-4">
+                    Total: {Object.values(tempWeights).reduce((sum, val) => sum + val, 0)}% 
+                    {Object.values(tempWeights).reduce((sum, val) => sum + val, 0) !== 100 && 
+                      " (doesn't need to equal 100%)"
+                    }
+                  </div>
+                  
+                  <div className="flex space-x-2 pt-4">
+                    <Button
+                      onClick={() => {
+                        saveWellnessWeights(tempWeights);
+                        setIsWeightsDialogOpen(false);
+                      }}
+                      className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                    >
+                      Save Priorities
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setTempWeights(wellnessWeights);
+                        setIsWeightsDialogOpen(false);
+                      }}
+                      className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="flex justify-center">
+            <CircularProgress
+              percentage={wellnessScore}
+              color="rgb(16, 185, 129)" // emerald
+              size={160}
+              strokeWidth={12}
+            >
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white">
+                  {wellnessScore}
+                  <span className="text-lg text-slate-400">/100</span>
+                </div>
+                <div className="text-sm text-slate-400 mt-1">
+                  Wellness Score
+                </div>
+              </div>
+            </CircularProgress>
+          </div>
+          
+          <div className="text-center mt-4">
+            <div className="text-sm text-slate-400">
+              Weighted average based on your personal priorities
+            </div>
+          </div>
         </div>
       </div>
     </div>

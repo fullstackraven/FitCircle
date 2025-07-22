@@ -25,7 +25,7 @@ function Router() {
       <Route path="/meditation" component={MeditationPage} />
       <Route path="/hydration" component={HydrationPage} />
       <Route path="/goals" component={GoalsPage} />
-      <Route path="/predictions" component={PredictionsPage} />
+{/* <Route path="/predictions" component={PredictionsPage} /> */}
       {/* <Route path="/trainer" component={TrainerPage} /> */}
       <Route path="/settings" component={SettingsPage} />
       <Route component={NotFound} />
