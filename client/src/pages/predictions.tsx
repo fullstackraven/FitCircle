@@ -1,11 +1,11 @@
 import React from 'react';
-import { ArrowLeft, Brain, TrendingUp, TrendingDown, Activity, RefreshCw, AlertCircle, Target, Lightbulb } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Activity, RefreshCw, AlertCircle, Target, Lightbulb } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { useWellnessPredictions } from '@/hooks/use-wellness-predictions';
+import { useWellnessPredictionsV2 } from '@/hooks/use-wellness-predictions-v2';
 
 export function PredictionsPage() {
   const [, navigate] = useLocation();
-  const { predictions, isLoading, refreshPredictions } = useWellnessPredictions();
+  const { predictions, isLoading, refreshPredictions } = useWellnessPredictionsV2();
 
   const handleBackClick = () => {
     navigate('/?dashboard=open');
@@ -50,11 +50,12 @@ export function PredictionsPage() {
       <div style={{ background: "hsl(222, 47%, 11%)" }} className="min-h-screen text-white p-4">
         <div className="max-w-md mx-auto">
           <div className="flex items-center justify-between mb-6">
-            <button onClick={handleBackClick} className="p-2 hover:bg-slate-700 rounded-xl transition-colors">
-              <ArrowLeft className="w-6 h-6 text-white" />
+            <button onClick={handleBackClick} className="flex items-center space-x-2 px-3 py-2 hover:bg-slate-700 rounded-xl transition-colors">
+              <ArrowLeft className="w-5 h-5 text-white" />
+              <span className="text-white text-sm">Back</span>
             </button>
             <div className="flex items-center space-x-2">
-              <Brain className="w-6 h-6 text-purple-400" />
+              <TrendingUp className="w-6 h-6 text-purple-400" />
               <h1 className="text-xl font-bold">Wellness Predictions</h1>
             </div>
             <div className="w-10" />
@@ -76,11 +77,12 @@ export function PredictionsPage() {
       <div style={{ background: "hsl(222, 47%, 11%)" }} className="min-h-screen text-white p-4">
         <div className="max-w-md mx-auto">
           <div className="flex items-center justify-between mb-6">
-            <button onClick={handleBackClick} className="p-2 hover:bg-slate-700 rounded-xl transition-colors">
-              <ArrowLeft className="w-6 h-6 text-white" />
+            <button onClick={handleBackClick} className="flex items-center space-x-2 px-3 py-2 hover:bg-slate-700 rounded-xl transition-colors">
+              <ArrowLeft className="w-5 h-5 text-white" />
+              <span className="text-white text-sm">Back</span>
             </button>
             <div className="flex items-center space-x-2">
-              <Brain className="w-6 h-6 text-purple-400" />
+              <TrendingUp className="w-6 h-6 text-purple-400" />
               <h1 className="text-xl font-bold">Wellness Predictions</h1>
             </div>
             <button
@@ -113,11 +115,12 @@ export function PredictionsPage() {
     <div style={{ background: "hsl(222, 47%, 11%)" }} className="min-h-screen text-white p-4">
       <div className="max-w-md mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <button onClick={handleBackClick} className="p-2 hover:bg-slate-700 rounded-xl transition-colors">
-            <ArrowLeft className="w-6 h-6 text-white" />
+          <button onClick={handleBackClick} className="flex items-center space-x-2 px-3 py-2 hover:bg-slate-700 rounded-xl transition-colors">
+            <ArrowLeft className="w-5 h-5 text-white" />
+            <span className="text-white text-sm">Back</span>
           </button>
           <div className="flex items-center space-x-2">
-            <Brain className="w-6 h-6 text-purple-400" />
+            <TrendingUp className="w-6 h-6 text-purple-400" />
             <h1 className="text-xl font-bold">Wellness Predictions</h1>
           </div>
           <button
