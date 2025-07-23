@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Plus, Check, ChevronDown, ChevronRight, MoreHorizontal } from 'lucide-react';
+import { ArrowLeft, Plus, Check, ChevronDown, ChevronRight } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useReminders } from '@/hooks/use-reminders';
 
@@ -102,9 +102,10 @@ export default function RemindersPage() {
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={handleBack}
-            className="text-blue-400 hover:bg-white/10 px-3 py-2 rounded-xl text-base"
+            className="text-slate-500 hover:text-white transition-colors flex items-center space-x-1"
           >
-            Back
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm font-medium">Back</span>
           </button>
           <h1 className="text-2xl font-bold text-white">Reminders</h1>
           <div className="w-16"></div> {/* Spacer for centering */}
