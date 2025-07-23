@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Plus, Check, Edit3, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Check, ChevronDown, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useReminders } from '@/hooks/use-reminders';
 
@@ -11,6 +11,12 @@ export default function RemindersPage() {
   const [newReminderText, setNewReminderText] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
+  const [showCompleted, setShowCompleted] = useState(false);
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedCompleted, setSelectedCompleted] = useState<Set<string>>(new Set());
+
+  const activeReminders = reminders.filter(r => !r.completed);
+  const completedReminders = reminders.filter(r => r.completed);
 
   const handleBack = () => {
     navigate('/');
@@ -36,9 +42,40 @@ export default function RemindersPage() {
     setEditText(reminder.text);
   };
 
+  const deleteAllCompleted = () => {
+    completedReminders.forEach(reminder => deleteReminder(reminder.id));
+    setSelectMode(false);
+    setSelectedCompleted(new Set());
+  };
+
+  const deleteSelectedCompleted = () => {
+    selectedCompleted.forEach(id => deleteReminder(id));
+    setSelectMode(false);
+    setSelectedCompleted(new Set());
+  };
+
+  const toggleSelectCompleted = (id: string) => {
+    const newSelected = new Set(selectedCompleted);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedCompleted(newSelected);
+  };
+
+  const selectAllCompleted = () => {
+    setSelectedCompleted(new Set(completedReminders.map(r => r.id)));
+  };
+
   const saveEdit = () => {
-    if (editingId && editText.trim()) {
-      updateReminder(editingId, { text: editText.trim() });
+    if (editingId) {
+      if (editText.trim()) {
+        updateReminder(editingId, { text: editText.trim() });
+      } else {
+        // Delete reminder if text is empty
+        deleteReminder(editingId);
+      }
       setEditingId(null);
       setEditText('');
     }
@@ -63,33 +100,27 @@ export default function RemindersPage() {
       <div className="container mx-auto p-4 max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleBack}
-              className="p-2 text-blue-400 hover:bg-white/10 rounded-xl"
-            >
-              <ArrowLeft className="w-6 h-6" />
-            </button>
-            <h1 className="text-2xl font-bold text-blue-400">Reminders</h1>
-          </div>
+          <button
+            onClick={handleBack}
+            className="text-blue-400 hover:bg-white/10 px-3 py-2 rounded-xl text-base"
+          >
+            Back
+          </button>
+          <h1 className="text-2xl font-bold text-white">Reminders</h1>
+          <div className="w-16"></div> {/* Spacer for centering */}
         </div>
 
-        {/* Reminders List */}
+        {/* Active Reminders List */}
         <div className="space-y-1 mb-6">
-          {reminders.map((reminder) => (
+          {activeReminders.map((reminder) => (
             <div key={reminder.id} className="flex items-center py-3 px-1 group">
               {editingId === reminder.id ? (
                 // Edit Mode
                 <div className="flex items-center w-full gap-3">
                   <button
                     onClick={() => toggleReminder(reminder.id)}
-                    className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
-                      reminder.completed
-                        ? 'bg-blue-600 border-blue-600'
-                        : 'border-slate-500'
-                    }`}
+                    className="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center border-slate-500"
                   >
-                    {reminder.completed && <Check className="w-3 h-3 text-white" />}
                   </button>
                   
                   <input
@@ -99,6 +130,7 @@ export default function RemindersPage() {
                     onKeyDown={handleEditKeyPress}
                     onBlur={saveEdit}
                     className="flex-1 bg-transparent text-white text-base border-none outline-none"
+                    placeholder="Delete text to remove reminder"
                     autoFocus
                   />
                 </div>
@@ -107,41 +139,17 @@ export default function RemindersPage() {
                 <>
                   <button
                     onClick={() => toggleReminder(reminder.id)}
-                    className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center mr-3 ${
-                      reminder.completed
-                        ? 'bg-blue-600 border-blue-600'
-                        : 'border-slate-500 hover:border-blue-400'
-                    }`}
+                    className="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center mr-3 border-slate-500 hover:border-blue-400"
                   >
-                    {reminder.completed && <Check className="w-3 h-3 text-white" />}
                   </button>
                   
                   <div 
                     className="flex-1 min-w-0 cursor-pointer"
                     onClick={() => startEditing(reminder)}
                   >
-                    <p className={`text-base ${
-                      reminder.completed 
-                        ? 'line-through text-slate-500' 
-                        : 'text-white'
-                    }`}>
+                    <p className="text-base text-white">
                       {reminder.text}
                     </p>
-                  </div>
-                  
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={() => startEditing(reminder)}
-                      className="p-1 text-slate-400 hover:text-blue-400 rounded"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => deleteReminder(reminder.id)}
-                      className="p-1 text-slate-400 hover:text-red-400 rounded"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
                   </div>
                 </>
               )}
@@ -151,7 +159,7 @@ export default function RemindersPage() {
 
         {/* Add New Reminder */}
         {showAddForm ? (
-          <div className="flex items-center py-3 px-1 gap-3">
+          <div className="flex items-center py-3 px-1 gap-3 mb-6">
             <div className="w-5 h-5 rounded-full border-2 border-slate-500 flex-shrink-0"></div>
             <input
               type="text"
@@ -171,11 +179,123 @@ export default function RemindersPage() {
         ) : (
           <button
             onClick={() => setShowAddForm(true)}
-            className="flex items-center py-3 px-1 gap-3 text-blue-400 hover:bg-white/5 rounded-lg w-full"
+            className="flex items-center py-3 px-1 gap-3 text-blue-400 hover:bg-white/5 rounded-lg w-full mb-6"
           >
             <Plus className="w-5 h-5" />
             <span className="text-base">New Reminder</span>
           </button>
+        )}
+
+        {/* Completed Section */}
+        {completedReminders.length > 0 && (
+          <div className="border-t border-slate-700 pt-4">
+            <div className="flex items-center justify-between mb-4">
+              <button
+                onClick={() => setShowCompleted(!showCompleted)}
+                className="flex items-center gap-2 text-slate-400 hover:text-white"
+              >
+                {showCompleted ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+                <span className="text-base">Completed ({completedReminders.length})</span>
+              </button>
+              
+              {showCompleted && (
+                <button
+                  onClick={() => setSelectMode(!selectMode)}
+                  className="text-blue-400 hover:text-blue-300 text-sm"
+                >
+                  {selectMode ? 'Done' : 'Select'}
+                </button>
+              )}
+            </div>
+
+            {showCompleted && (
+              <>
+                {selectMode && (
+                  <div className="flex gap-2 mb-4">
+                    <button
+                      onClick={selectAllCompleted}
+                      className="text-blue-400 hover:text-blue-300 text-sm"
+                    >
+                      Select All
+                    </button>
+                    <span className="text-slate-500">•</span>
+                    <button
+                      onClick={deleteSelectedCompleted}
+                      className="text-red-400 hover:text-red-300 text-sm"
+                      disabled={selectedCompleted.size === 0}
+                    >
+                      Delete Selected ({selectedCompleted.size})
+                    </button>
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  {completedReminders.map((reminder) => (
+                    <div key={reminder.id} className="flex items-center py-3 px-1 group">
+                      {editingId === reminder.id ? (
+                        // Edit Mode
+                        <div className="flex items-center w-full gap-3">
+                          <button
+                            onClick={() => toggleReminder(reminder.id)}
+                            className="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center bg-blue-600 border-blue-600"
+                          >
+                            <Check className="w-3 h-3 text-white" />
+                          </button>
+                          
+                          <input
+                            type="text"
+                            value={editText}
+                            onChange={(e) => setEditText(e.target.value)}
+                            onKeyDown={handleEditKeyPress}
+                            onBlur={saveEdit}
+                            className="flex-1 bg-transparent text-slate-500 text-base border-none outline-none"
+                            placeholder="Delete text to remove reminder"
+                            autoFocus
+                          />
+                        </div>
+                      ) : (
+                        // View Mode
+                        <>
+                          {selectMode ? (
+                            <button
+                              onClick={() => toggleSelectCompleted(reminder.id)}
+                              className={`w-5 h-5 rounded border-2 flex-shrink-0 flex items-center justify-center mr-3 ${
+                                selectedCompleted.has(reminder.id)
+                                  ? 'bg-blue-600 border-blue-600'
+                                  : 'border-slate-500 hover:border-blue-400'
+                              }`}
+                            >
+                              {selectedCompleted.has(reminder.id) && <Check className="w-3 h-3 text-white" />}
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => toggleReminder(reminder.id)}
+                              className="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center mr-3 bg-blue-600 border-blue-600 hover:bg-blue-700"
+                            >
+                              <Check className="w-3 h-3 text-white" />
+                            </button>
+                          )}
+                          
+                          <div 
+                            className="flex-1 min-w-0 cursor-pointer"
+                            onClick={() => !selectMode && startEditing(reminder)}
+                          >
+                            <p className="text-base line-through text-slate-500">
+                              {reminder.text}
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         )}
       </div>
     </div>
