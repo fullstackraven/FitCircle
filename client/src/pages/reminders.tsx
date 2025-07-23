@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Plus, Check, ChevronDown, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Plus, Check, ChevronDown, ChevronRight, MoreHorizontal, Edit3, Trash2 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useReminders } from '@/hooks/use-reminders';
 
@@ -14,6 +14,7 @@ export default function RemindersPage() {
   const [showCompleted, setShowCompleted] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedCompleted, setSelectedCompleted] = useState<Set<string>>(new Set());
+  const [showMenuId, setShowMenuId] = useState<string | null>(null);
 
   const activeReminders = reminders.filter(r => !r.completed);
   const completedReminders = reminders.filter(r => r.completed);
@@ -40,6 +41,7 @@ export default function RemindersPage() {
   const startEditing = (reminder: any) => {
     setEditingId(reminder.id);
     setEditText(reminder.text);
+    setShowMenuId(null); // Close menu when editing
   };
 
   const deleteAllCompleted = () => {
@@ -66,6 +68,15 @@ export default function RemindersPage() {
 
   const selectAllCompleted = () => {
     setSelectedCompleted(new Set(completedReminders.map(r => r.id)));
+  };
+
+  const handleDeleteReminder = (id: string) => {
+    deleteReminder(id);
+    setShowMenuId(null);
+  };
+
+  const toggleMenu = (id: string) => {
+    setShowMenuId(showMenuId === id ? null : id);
   };
 
   const saveEdit = () => {
@@ -151,6 +162,39 @@ export default function RemindersPage() {
                     <p className="text-base text-white">
                       {reminder.text}
                     </p>
+                  </div>
+                  
+                  {/* Menu Button */}
+                  <div className="relative">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleMenu(reminder.id);
+                      }}
+                      className="p-1 text-slate-400 hover:text-white rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <MoreHorizontal className="w-4 h-4" />
+                    </button>
+                    
+                    {/* Dropdown Menu */}
+                    {showMenuId === reminder.id && (
+                      <div className="absolute right-0 top-8 bg-slate-700 rounded-xl shadow-lg border border-slate-600 py-1 z-10 min-w-[120px]">
+                        <button
+                          onClick={() => startEditing(reminder)}
+                          className="w-full px-3 py-2 text-left text-white hover:bg-slate-600 flex items-center gap-2 text-sm"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteReminder(reminder.id)}
+                          className="w-full px-3 py-2 text-left text-red-400 hover:bg-slate-600 flex items-center gap-2 text-sm"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                          Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </>
               )}
@@ -289,6 +333,41 @@ export default function RemindersPage() {
                               {reminder.text}
                             </p>
                           </div>
+                          
+                          {/* Menu Button for Completed Items */}
+                          {!selectMode && (
+                            <div className="relative">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleMenu(reminder.id);
+                                }}
+                                className="p-1 text-slate-400 hover:text-white rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <MoreHorizontal className="w-4 h-4" />
+                              </button>
+                              
+                              {/* Dropdown Menu */}
+                              {showMenuId === reminder.id && (
+                                <div className="absolute right-0 top-8 bg-slate-700 rounded-xl shadow-lg border border-slate-600 py-1 z-10 min-w-[120px]">
+                                  <button
+                                    onClick={() => startEditing(reminder)}
+                                    className="w-full px-3 py-2 text-left text-white hover:bg-slate-600 flex items-center gap-2 text-sm"
+                                  >
+                                    <Edit3 className="w-3 h-3" />
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteReminder(reminder.id)}
+                                    className="w-full px-3 py-2 text-left text-red-400 hover:bg-slate-600 flex items-center gap-2 text-sm"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                    Delete
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </>
                       )}
                     </div>
