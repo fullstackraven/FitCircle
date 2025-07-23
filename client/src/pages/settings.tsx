@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Upload, Download, ToggleLeft, ToggleRight } from 'lucide-react';
+import { ArrowLeft, Upload, Download, ToggleLeft, ToggleRight, History, FileText } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
 
@@ -9,6 +9,7 @@ export default function SettingsPage() {
   const [isExporting, setIsExporting] = useState(false);
   const [status, setStatus] = useState<string>('');
   const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
+  const [showBackupLog, setShowBackupLog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
   
@@ -100,6 +101,9 @@ export default function SettingsPage() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
+      // Track this automatic download
+      trackBackupDownload(dateKey);
+      
       // Clean up old backups (keep only last 7 days)
       cleanupOldBackups();
       
@@ -143,6 +147,49 @@ export default function SettingsPage() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      
+      // Track this download
+      trackBackupDownload(date);
+    }
+  };
+
+  const trackBackupDownload = (date: string) => {
+    const downloadLog = getBackupDownloadLog();
+    const downloadEntry = {
+      date,
+      downloadedAt: new Date().toISOString(),
+      timestamp: Date.now()
+    };
+    
+    // Add to the beginning of the array (most recent first)
+    downloadLog.unshift(downloadEntry);
+    
+    // Keep only the last 30 downloads
+    const trimmedLog = downloadLog.slice(0, 30);
+    
+    localStorage.setItem('fitcircle_backup_download_log', JSON.stringify(trimmedLog));
+  };
+
+  const getBackupDownloadLog = () => {
+    const logStr = localStorage.getItem('fitcircle_backup_download_log');
+    if (!logStr) return [];
+    
+    try {
+      return JSON.parse(logStr);
+    } catch {
+      return [];
+    }
+  };
+
+  const getLatestAvailableBackup = () => {
+    const backups = getStoredBackups();
+    return backups.length > 0 ? backups[0] : null;
+  };
+
+  const downloadLatestBackup = () => {
+    const latestBackup = getLatestAvailableBackup();
+    if (latestBackup) {
+      downloadStoredBackup(latestBackup);
     }
   };
 
@@ -303,9 +350,18 @@ export default function SettingsPage() {
 
         {/* Auto Backup Section */}
         <div className="bg-slate-800 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Auto Backup</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-white">Auto Backup</h2>
+            <button
+              onClick={() => setShowBackupLog(true)}
+              className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+              title="View backup download log"
+            >
+              <History className="w-5 h-5" />
+            </button>
+          </div>
           
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-white font-medium">Daily Auto Backup</p>
               <p className="text-sm text-slate-400">Automatically backup at 11:59 PM daily</p>
@@ -323,6 +379,22 @@ export default function SettingsPage() {
               />
             </button>
           </div>
+
+          {/* Download Latest Auto Backup Button */}
+          {getLatestAvailableBackup() && (
+            <div className="mb-4">
+              <button
+                onClick={downloadLatestBackup}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                Download Latest Auto Backup ({getLatestAvailableBackup()})
+              </button>
+              <p className="text-xs text-slate-400 text-center mt-2">
+                Latest auto backup available from {getLatestAvailableBackup()}
+              </p>
+            </div>
+          )}
 
           {/* Recent Auto Backups */}
           {getStoredBackups().length > 0 && (
@@ -415,6 +487,61 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Backup Download Log Modal */}
+      {showBackupLog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-800 rounded-xl max-w-md w-full max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-slate-600">
+              <h3 className="text-lg font-semibold text-white">Backup Download Log</h3>
+              <button
+                onClick={() => setShowBackupLog(false)}
+                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto max-h-96">
+              {getBackupDownloadLog().length === 0 ? (
+                <div className="text-center py-8">
+                  <FileText className="w-12 h-12 text-slate-500 mx-auto mb-3" />
+                  <p className="text-slate-400">No backups downloaded yet</p>
+                  <p className="text-sm text-slate-500 mt-1">
+                    Downloaded auto backups will appear here
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {getBackupDownloadLog().map((entry: any, index: number) => (
+                    <div key={index} className="bg-slate-700/50 rounded-lg p-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-white font-medium text-sm">
+                            Backup: {entry.date}
+                          </p>
+                          <p className="text-slate-400 text-xs">
+                            Downloaded: {new Date(entry.downloadedAt).toLocaleString()}
+                          </p>
+                        </div>
+                        <div className="text-green-400">
+                          <Download className="w-4 h-4" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <div className="p-6 border-t border-slate-600">
+              <p className="text-xs text-slate-500 text-center">
+                Shows the last 30 backup downloads
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
