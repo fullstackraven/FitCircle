@@ -145,7 +145,7 @@ Preferred communication style: Simple, everyday language.
 - **Energy Level Trend Visualization**: Added creative 14-day wave chart in calendar dropdown featuring gradient-filled SVG visualization, mini statistics (average energy, days logged, today's level), smart trend indicators with color-coded status (trending up/down/stable), and purple-themed design matching energy feature aesthetics
 - **Timezone Fix for Backups**: Fixed backup file naming to use local timezone instead of UTC, ensuring backup files are correctly dated according to user's local time zone rather than showing next day when created in evening hours
 - **Enhanced Auto Backup System**: Added ability to view and download previous auto backups from last 7 days, with automatic cleanup of old backups and localStorage storage for later access
-- **Floating Reminders & Notes Feature**: Added Apple Reminders/Notes-style hybrid page accessible via persistent floating gray button in bottom-right corner of all pages. Features combined reminders (checkable tasks) and notes (title/content) with full CRUD operations, localStorage persistence, chronological sorting, and automatic backup integration
+- **Floating Reminders Feature**: Added Apple Reminders-style page accessible via persistent floating gray button in bottom-right corner of all pages. Features clean reminder list interface with circular checkboxes, inline editing, hover controls, and blue accent colors matching iOS design. Includes localStorage persistence and automatic backup integration
 
 ### Data Persistence and iOS Considerations
 

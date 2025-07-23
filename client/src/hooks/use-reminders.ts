@@ -5,113 +5,70 @@ export interface Reminder {
   text: string;
   completed: boolean;
   createdAt: string;
-  type: 'reminder' | 'note';
 }
-
-export interface Note {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  type: 'reminder' | 'note';
-}
-
-export type ReminderItem = Reminder | Note;
 
 export function useReminders() {
-  const [items, setItems] = useState<ReminderItem[]>([]);
+  const [reminders, setReminders] = useState<Reminder[]>([]);
 
   // Load data from localStorage on mount
   useEffect(() => {
     const savedReminders = localStorage.getItem('fitcircle_reminders');
-    const savedNotes = localStorage.getItem('fitcircle_notes');
-    
-    const reminders: Reminder[] = savedReminders ? JSON.parse(savedReminders) : [];
-    const notes: Note[] = savedNotes ? JSON.parse(savedNotes) : [];
-    
-    // Combine and sort by creation date
-    const combined = [...reminders, ...notes].sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-    
-    setItems(combined);
+    if (savedReminders) {
+      const parsed = JSON.parse(savedReminders);
+      // Filter out any old notes data and keep only reminders
+      const reminderItems = parsed.filter((item: any) => 
+        !item.type || item.type === 'reminder'
+      ).map((item: any) => ({
+        id: item.id,
+        text: item.text,
+        completed: item.completed || false,
+        createdAt: item.createdAt
+      }));
+      setReminders(reminderItems);
+    }
   }, []);
 
-  // Save to localStorage whenever items change
+  // Save to localStorage whenever reminders change
   useEffect(() => {
-    const reminders = items.filter(item => item.type === 'reminder') as Reminder[];
-    const notes = items.filter(item => item.type === 'note') as Note[];
-    
     localStorage.setItem('fitcircle_reminders', JSON.stringify(reminders));
-    localStorage.setItem('fitcircle_notes', JSON.stringify(notes));
-  }, [items]);
+    // Clean up old notes data
+    localStorage.removeItem('fitcircle_notes');
+  }, [reminders]);
 
   const addReminder = (text: string) => {
     const newReminder: Reminder = {
       id: Date.now().toString(),
-      text,
+      text: text.trim(),
       completed: false,
-      createdAt: new Date().toISOString(),
-      type: 'reminder'
+      createdAt: new Date().toISOString()
     };
     
-    setItems(prev => [newReminder, ...prev]);
-  };
-
-  const addNote = (title: string, content: string) => {
-    const newNote: Note = {
-      id: Date.now().toString(),
-      title,
-      content,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      type: 'note'
-    };
-    
-    setItems(prev => [newNote, ...prev]);
+    setReminders(prev => [...prev, newReminder]);
   };
 
   const updateReminder = (id: string, updates: Partial<Reminder>) => {
-    setItems(prev => prev.map(item => 
-      item.id === id && item.type === 'reminder' 
-        ? { ...item, ...updates }
-        : item
+    setReminders(prev => prev.map(reminder => 
+      reminder.id === id ? { ...reminder, ...updates } : reminder
     ));
   };
 
-  const updateNote = (id: string, updates: Partial<Note>) => {
-    const updatedNote = {
-      ...updates,
-      updatedAt: new Date().toISOString()
-    };
-    
-    setItems(prev => prev.map(item => 
-      item.id === id && item.type === 'note' 
-        ? { ...item, ...updatedNote }
-        : item
-    ));
-  };
-
-  const deleteItem = (id: string) => {
-    setItems(prev => prev.filter(item => item.id !== id));
+  const deleteReminder = (id: string) => {
+    setReminders(prev => prev.filter(reminder => reminder.id !== id));
   };
 
   const toggleReminder = (id: string) => {
-    setItems(prev => prev.map(item => 
-      item.id === id && item.type === 'reminder' 
-        ? { ...item, completed: !(item as Reminder).completed }
-        : item
+    setReminders(prev => prev.map(reminder => 
+      reminder.id === id 
+        ? { ...reminder, completed: !reminder.completed }
+        : reminder
     ));
   };
 
   return {
-    items,
+    reminders,
     addReminder,
-    addNote,
     updateReminder,
-    updateNote,
-    deleteItem,
+    deleteReminder,
     toggleReminder
   };
 }
