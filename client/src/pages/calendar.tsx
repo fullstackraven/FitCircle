@@ -146,6 +146,154 @@ export default function CalendarPage() {
     return getEnergyLevel(date) > 0;
   };
 
+  // Energy Trend Visualization Component
+  const EnergyTrendVisualization = () => {
+    const energyData = localStorage.getItem('fitcircle_energy_levels');
+    const parsed = energyData ? JSON.parse(energyData) : {};
+    
+    // Get last 14 days of energy data
+    const last14Days = [];
+    const today = new Date();
+    for (let i = 13; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateKey = format(date, 'yyyy-MM-dd');
+      const energyLevel = parsed[dateKey] || 0;
+      last14Days.push({
+        date: format(date, 'MM/dd'),
+        energy: energyLevel,
+        dateKey
+      });
+    }
+
+    const maxEnergy = Math.max(...last14Days.map(d => d.energy), 10);
+    const avgEnergy = last14Days.filter(d => d.energy > 0).reduce((sum, d) => sum + d.energy, 0) / last14Days.filter(d => d.energy > 0).length || 0;
+
+    return (
+      <div className="space-y-4">
+        {/* Mini Stats */}
+        <div className="grid grid-cols-3 gap-3 text-center">
+          <div className="bg-purple-900/30 rounded-lg p-3">
+            <div className="text-lg font-bold text-purple-300">{avgEnergy.toFixed(1)}</div>
+            <div className="text-xs text-slate-400">Avg Energy</div>
+          </div>
+          <div className="bg-purple-900/30 rounded-lg p-3">
+            <div className="text-lg font-bold text-purple-300">{last14Days.filter(d => d.energy > 0).length}</div>
+            <div className="text-xs text-slate-400">Days Logged</div>
+          </div>
+          <div className="bg-purple-900/30 rounded-lg p-3">
+            <div className="text-lg font-bold text-purple-300">{last14Days[last14Days.length - 1]?.energy || 0}</div>
+            <div className="text-xs text-slate-400">Today</div>
+          </div>
+        </div>
+
+        {/* Creative Wave Chart */}
+        <div className="relative h-24 bg-slate-900/50 rounded-lg overflow-hidden">
+          <svg className="w-full h-full" viewBox="0 0 280 96" preserveAspectRatio="none">
+            {/* Grid lines */}
+            {[0, 2.5, 5, 7.5, 10].map(level => (
+              <line
+                key={level}
+                x1="0"
+                y1={96 - (level / 10) * 96}
+                x2="280"
+                y2={96 - (level / 10) * 96}
+                stroke="rgba(148, 163, 184, 0.1)"
+                strokeWidth="1"
+              />
+            ))}
+            
+            {/* Energy level path */}
+            <path
+              d={`M 0 ${96 - (last14Days[0]?.energy / 10) * 96} ${last14Days.map((d, i) => 
+                `L ${(i / 13) * 280} ${96 - (d.energy / 10) * 96}`
+              ).join(' ')}`}
+              fill="none"
+              stroke="rgb(168, 85, 247)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            
+            {/* Fill area under curve */}
+            <path
+              d={`M 0 96 L 0 ${96 - (last14Days[0]?.energy / 10) * 96} ${last14Days.map((d, i) => 
+                `L ${(i / 13) * 280} ${96 - (d.energy / 10) * 96}`
+              ).join(' ')} L 280 96 Z`}
+              fill="url(#energyGradient)"
+              opacity="0.3"
+            />
+            
+            {/* Energy points */}
+            {last14Days.map((d, i) => d.energy > 0 && (
+              <circle
+                key={i}
+                cx={(i / 13) * 280}
+                cy={96 - (d.energy / 10) * 96}
+                r="3"
+                fill="rgb(168, 85, 247)"
+                stroke="rgb(30, 41, 59)"
+                strokeWidth="2"
+              />
+            ))}
+            
+            {/* Gradient definition */}
+            <defs>
+              <linearGradient id="energyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="rgb(168, 85, 247)" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="rgb(168, 85, 247)" stopOpacity="0.1" />
+              </linearGradient>
+            </defs>
+          </svg>
+          
+          {/* Y-axis labels */}
+          <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-slate-500 -ml-8">
+            <span>10</span>
+            <span>5</span>
+            <span>0</span>
+          </div>
+        </div>
+
+        {/* Date labels */}
+        <div className="flex justify-between text-xs text-slate-500 px-1">
+          <span>{last14Days[0]?.date}</span>
+          <span>{last14Days[6]?.date}</span>
+          <span>{last14Days[13]?.date}</span>
+        </div>
+
+        {/* Trend indicator */}
+        {last14Days.filter(d => d.energy > 0).length >= 3 && (
+          <div className="text-center">
+            <div className="inline-flex items-center space-x-2 bg-purple-900/40 rounded-full px-3 py-1">
+              {(() => {
+                const recentAvg = last14Days.slice(-7).filter(d => d.energy > 0).reduce((sum, d) => sum + d.energy, 0) / last14Days.slice(-7).filter(d => d.energy > 0).length || 0;
+                const olderAvg = last14Days.slice(0, 7).filter(d => d.energy > 0).reduce((sum, d) => sum + d.energy, 0) / last14Days.slice(0, 7).filter(d => d.energy > 0).length || 0;
+                const trend = recentAvg - olderAvg;
+                
+                return trend > 0.5 ? (
+                  <>
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-green-400">Energy trending up</span>
+                  </>
+                ) : trend < -0.5 ? (
+                  <>
+                    <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-red-400">Energy trending down</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-yellow-400">Energy stable</span>
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Energy level tap functionality
   const handleEnergyTap = () => {
     setEnergyLevel(prevLevel => {
@@ -156,7 +304,7 @@ export default function CalendarPage() {
 
   const handleEnergyUndo = () => {
     setEnergyLevel(prevLevel => {
-      const newLevel = prevLevel <= 1 ? 10 : prevLevel - 1;
+      const newLevel = prevLevel <= 1 ? 0 : prevLevel - 1;
       return newLevel;
     });
   };
@@ -496,8 +644,16 @@ export default function CalendarPage() {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <p className="text-slate-400">Tap on a day in the calendar to set your energy level</p>
+                <div className="space-y-6">
+                  {/* Energy Level Trend Visualization */}
+                  <div className="bg-gradient-to-br from-purple-900/20 to-purple-800/10 rounded-xl p-6 border border-purple-500/20">
+                    <h3 className="text-lg font-medium text-white mb-4 text-center">Energy Level Trends</h3>
+                    <EnergyTrendVisualization />
+                  </div>
+                  
+                  <div className="text-center py-4">
+                    <p className="text-slate-400 text-sm">Tap on a day in the calendar to set your energy level</p>
+                  </div>
                 </div>
               )}
             </div>

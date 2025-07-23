@@ -98,6 +98,10 @@ export function useWorkouts() {
             Object.entries(prev.workouts).map(([id, workout]) => [id, { ...workout, count: 0 }])
           )
         }));
+        
+        // Force re-render of components that use getTotalStats
+        // This ensures statistics update immediately when workouts reset
+        window.dispatchEvent(new CustomEvent('workoutDataChanged'));
       }
     };
 

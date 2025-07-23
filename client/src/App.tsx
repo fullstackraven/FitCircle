@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Switch, Route } from "wouter";
-import LoadingScreen from "@/components/SimpleLoadingScreen";
+import SimpleLoadingScreen from "@/components/SimpleLoadingScreen";
 import Home from "@/pages/home";
 import CalendarPage from "@/pages/calendar";
 import ProfilePage from "@/pages/profile";
@@ -10,7 +10,7 @@ import FastingPage from "@/pages/fasting";
 import MeditationPage from "@/pages/meditation";
 import HydrationPage from "@/pages/hydration";
 import GoalsPage from "@/pages/goals";
-import { PredictionsPage } from "@/pages/predictions";
+
 // import TrainerPage from "@/pages/trainer";
 import NotFound from "@/pages/not-found";
 
@@ -25,7 +25,7 @@ function Router() {
       <Route path="/meditation" component={MeditationPage} />
       <Route path="/hydration" component={HydrationPage} />
       <Route path="/goals" component={GoalsPage} />
-{/* <Route path="/predictions" component={PredictionsPage} /> */}
+
       {/* <Route path="/trainer" component={TrainerPage} /> */}
       <Route path="/settings" component={SettingsPage} />
       <Route component={NotFound} />
@@ -55,7 +55,7 @@ function App() {
 
   // Temporarily disable loading screen to fix React hook errors
   // if (showLoading && !hasShownLoading) {
-  //   return <LoadingScreen onComplete={handleLoadingComplete} />;
+  //   return <SimpleLoadingScreen onComplete={handleLoadingComplete} />;
   // }
 
   return (
