@@ -84,19 +84,65 @@ export default function SettingsPage() {
         }
       }
       
-      const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' });
+      // Store the backup data in localStorage for later access
+      const backupData = JSON.stringify(snapshot, null, 2);
+      const dateKey = getLocalDateString();
+      localStorage.setItem(`fitcircle_auto_backup_${dateKey}`, backupData);
+      
+      // Also download immediately as before
+      const blob = new Blob([backupData], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `fitcircle-auto-backup-${getLocalDateString()}.json`;
+      link.download = `fitcircle-auto-backup-${dateKey}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
+      // Clean up old backups (keep only last 7 days)
+      cleanupOldBackups();
+      
       console.log('✅ Auto backup completed with', Object.keys(snapshot).length, 'items');
     } catch (error) {
       console.error('Auto backup failed:', error);
+    }
+  };
+
+  const cleanupOldBackups = () => {
+    const today = new Date();
+    for (let i = 8; i <= 30; i++) { // Remove backups older than 7 days
+      const oldDate = new Date(today);
+      oldDate.setDate(oldDate.getDate() - i);
+      const oldDateKey = `${oldDate.getFullYear()}-${String(oldDate.getMonth() + 1).padStart(2, '0')}-${String(oldDate.getDate()).padStart(2, '0')}`;
+      localStorage.removeItem(`fitcircle_auto_backup_${oldDateKey}`);
+    }
+  };
+
+  const getStoredBackups = () => {
+    const backups = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('fitcircle_auto_backup_')) {
+        const date = key.replace('fitcircle_auto_backup_', '');
+        backups.push(date);
+      }
+    }
+    return backups.sort().reverse(); // Most recent first
+  };
+
+  const downloadStoredBackup = (date: string) => {
+    const backupData = localStorage.getItem(`fitcircle_auto_backup_${date}`);
+    if (backupData) {
+      const blob = new Blob([backupData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `fitcircle-auto-backup-${date}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     }
   };
 
@@ -277,6 +323,29 @@ export default function SettingsPage() {
               />
             </button>
           </div>
+
+          {/* Recent Auto Backups */}
+          {getStoredBackups().length > 0 && (
+            <div className="mt-4 pt-4 border-t border-slate-600">
+              <div className="text-sm font-medium text-slate-300 mb-3">Recent Auto Backups</div>
+              <div className="space-y-2 max-h-32 overflow-y-auto">
+                {getStoredBackups().slice(0, 7).map((date) => (
+                  <div key={date} className="flex items-center justify-between bg-slate-700/50 rounded-lg p-3">
+                    <span className="text-sm text-slate-300">{date}</span>
+                    <button
+                      onClick={() => downloadStoredBackup(date)}
+                      className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                    >
+                      Download
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="text-xs text-slate-500 mt-2">
+                Auto backups are kept for 7 days
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Controls Section */}
