@@ -162,12 +162,15 @@ export default function CalendarPage() {
       last14Days.push({
         date: format(date, 'MM/dd'),
         energy: energyLevel,
-        dateKey
+        dateKey,
+        hasInput: parsed[dateKey] && parsed[dateKey] > 0
       });
     }
 
-    const maxEnergy = Math.max(...last14Days.map(d => d.energy), 10);
-    const avgEnergy = last14Days.filter(d => d.energy > 0).reduce((sum, d) => sum + d.energy, 0) / last14Days.filter(d => d.energy > 0).length || 0;
+    // Only include days with actual energy inputs for calculations
+    const daysWithInput = last14Days.filter(d => d.hasInput);
+    const maxEnergy = Math.max(...daysWithInput.map(d => d.energy), 10);
+    const avgEnergy = daysWithInput.length > 0 ? daysWithInput.reduce((sum, d) => sum + d.energy, 0) / daysWithInput.length : 0;
 
     return (
       <div className="space-y-4">
@@ -178,11 +181,11 @@ export default function CalendarPage() {
             <div className="text-xs text-slate-400">Avg Energy</div>
           </div>
           <div className="bg-purple-900/30 rounded-lg p-3">
-            <div className="text-lg font-bold text-purple-300">{last14Days.filter(d => d.energy > 0).length}</div>
+            <div className="text-lg font-bold text-purple-300">{daysWithInput.length}</div>
             <div className="text-xs text-slate-400">Days Logged</div>
           </div>
           <div className="bg-purple-900/30 rounded-lg p-3">
-            <div className="text-lg font-bold text-purple-300">{last14Days[last14Days.length - 1]?.energy || 0}</div>
+            <div className="text-lg font-bold text-purple-300">{last14Days[last14Days.length - 1]?.hasInput ? last14Days[last14Days.length - 1].energy : 0}</div>
             <div className="text-xs text-slate-400">Today</div>
           </div>
         </div>
@@ -203,29 +206,65 @@ export default function CalendarPage() {
               />
             ))}
             
-            {/* Energy level path */}
-            <path
-              d={`M 0 ${96 - (last14Days[0]?.energy / 10) * 96} ${last14Days.map((d, i) => 
-                `L ${(i / 13) * 280} ${96 - (d.energy / 10) * 96}`
-              ).join(' ')}`}
-              fill="none"
-              stroke="rgb(168, 85, 247)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+            {/* Energy level path - only connect points that have actual inputs */}
+            {daysWithInput.length > 1 && (
+              <>
+                <path
+                  d={(() => {
+                    const points = last14Days
+                      .map((d, i) => ({ ...d, index: i }))
+                      .filter(d => d.hasInput);
+                    
+                    if (points.length < 2) return '';
+                    
+                    const firstPoint = points[0];
+                    let pathData = `M ${(firstPoint.index / 13) * 280} ${96 - (firstPoint.energy / 10) * 96}`;
+                    
+                    for (let i = 1; i < points.length; i++) {
+                      const point = points[i];
+                      pathData += ` L ${(point.index / 13) * 280} ${96 - (point.energy / 10) * 96}`;
+                    }
+                    
+                    return pathData;
+                  })()}
+                  fill="none"
+                  stroke="rgb(168, 85, 247)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                
+                {/* Fill area under curve - only for days with inputs */}
+                <path
+                  d={(() => {
+                    const points = last14Days
+                      .map((d, i) => ({ ...d, index: i }))
+                      .filter(d => d.hasInput);
+                    
+                    if (points.length < 2) return '';
+                    
+                    const firstPoint = points[0];
+                    let pathData = `M ${(firstPoint.index / 13) * 280} 96`;
+                    pathData += ` L ${(firstPoint.index / 13) * 280} ${96 - (firstPoint.energy / 10) * 96}`;
+                    
+                    for (let i = 1; i < points.length; i++) {
+                      const point = points[i];
+                      pathData += ` L ${(point.index / 13) * 280} ${96 - (point.energy / 10) * 96}`;
+                    }
+                    
+                    const lastPoint = points[points.length - 1];
+                    pathData += ` L ${(lastPoint.index / 13) * 280} 96 Z`;
+                    
+                    return pathData;
+                  })()}
+                  fill="url(#energyGradient)"
+                  opacity="0.3"
+                />
+              </>
+            )}
             
-            {/* Fill area under curve */}
-            <path
-              d={`M 0 96 L 0 ${96 - (last14Days[0]?.energy / 10) * 96} ${last14Days.map((d, i) => 
-                `L ${(i / 13) * 280} ${96 - (d.energy / 10) * 96}`
-              ).join(' ')} L 280 96 Z`}
-              fill="url(#energyGradient)"
-              opacity="0.3"
-            />
-            
-            {/* Energy points */}
-            {last14Days.map((d, i) => d.energy > 0 && (
+            {/* Energy points - only show for days with actual inputs */}
+            {last14Days.map((d, i) => d.hasInput && (
               <circle
                 key={i}
                 cx={(i / 13) * 280}
@@ -261,13 +300,29 @@ export default function CalendarPage() {
           <span>{last14Days[13]?.date}</span>
         </div>
 
-        {/* Trend indicator */}
-        {last14Days.filter(d => d.energy > 0).length >= 3 && (
+        {/* Trend indicator - only show if we have enough data points */}
+        {daysWithInput.length >= 3 && (
           <div className="text-center">
             <div className="inline-flex items-center space-x-2 bg-purple-900/40 rounded-full px-3 py-1">
               {(() => {
-                const recentAvg = last14Days.slice(-7).filter(d => d.energy > 0).reduce((sum, d) => sum + d.energy, 0) / last14Days.slice(-7).filter(d => d.energy > 0).length || 0;
-                const olderAvg = last14Days.slice(0, 7).filter(d => d.energy > 0).reduce((sum, d) => sum + d.energy, 0) / last14Days.slice(0, 7).filter(d => d.energy > 0).length || 0;
+                const recentDaysWithInput = last14Days.slice(-7).filter(d => d.hasInput);
+                const olderDaysWithInput = last14Days.slice(0, 7).filter(d => d.hasInput);
+                
+                const recentAvg = recentDaysWithInput.length > 0 ? 
+                  recentDaysWithInput.reduce((sum, d) => sum + d.energy, 0) / recentDaysWithInput.length : 0;
+                const olderAvg = olderDaysWithInput.length > 0 ? 
+                  olderDaysWithInput.reduce((sum, d) => sum + d.energy, 0) / olderDaysWithInput.length : 0;
+                
+                // Only calculate trend if we have data from both periods
+                if (recentDaysWithInput.length === 0 || olderDaysWithInput.length === 0) {
+                  return (
+                    <>
+                      <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
+                      <span className="text-xs text-slate-400">Insufficient data</span>
+                    </>
+                  );
+                }
+                
                 const trend = recentAvg - olderAvg;
                 
                 return trend > 0.5 ? (
