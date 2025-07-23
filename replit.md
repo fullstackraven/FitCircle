@@ -143,6 +143,7 @@ Preferred communication style: Simple, everyday language.
 - **Major Codebase Refactor (July 2025)**: Completed comprehensive cleanup removing 12+ redundant files including duplicate wellness prediction files, broken settings files, old measurement components, and unused LoadingScreen components while preserving all functionality including AI trainer code (hidden but intact)
 - **Critical Bug Fixes**: Fixed energy level undo button to properly stop at 0 instead of cycling back to 10, and resolved workout reset detection bug ensuring "Goals Hit Total" percentage correctly updates when daily workouts reset at midnight
 - **Energy Level Trend Visualization**: Added creative 14-day wave chart in calendar dropdown featuring gradient-filled SVG visualization, mini statistics (average energy, days logged, today's level), smart trend indicators with color-coded status (trending up/down/stable), and purple-themed design matching energy feature aesthetics
+- **Timezone Fix for Backups**: Fixed backup file naming to use local timezone instead of UTC, ensuring backup files are correctly dated according to user's local time zone rather than showing next day when created in evening hours
 
 ### Data Persistence and iOS Considerations
 

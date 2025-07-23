@@ -12,6 +12,15 @@ export default function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
   
+  // Function to get local date string (not UTC)
+  const getLocalDateString = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
   // Check if we came from dashboard
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
 
@@ -39,7 +48,7 @@ export default function SettingsPage() {
   const checkAndPerformBackup = () => {
     const now = new Date();
     const lastBackupStr = localStorage.getItem('fitcircle_last_backup_date');
-    const today = now.toISOString().split('T')[0];
+    const today = getLocalDateString();
     
     // If we haven't backed up today and it's past 11:59 PM, perform backup
     if (lastBackupStr !== today && now.getHours() === 23 && now.getMinutes() >= 59) {
@@ -58,7 +67,7 @@ export default function SettingsPage() {
     
     setTimeout(() => {
       performAutoBackup();
-      localStorage.setItem('fitcircle_last_backup_date', new Date().toISOString().split('T')[0]);
+      localStorage.setItem('fitcircle_last_backup_date', getLocalDateString());
       // Schedule next backup
       scheduleAutoBackup();
     }, timeUntilBackup);
@@ -79,7 +88,7 @@ export default function SettingsPage() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `fitcircle-auto-backup-${new Date().toISOString().split('T')[0]}.json`;
+      link.download = `fitcircle-auto-backup-${getLocalDateString()}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -118,7 +127,7 @@ export default function SettingsPage() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `fitcircle-backup-${new Date().toISOString().split('T')[0]}.json`;
+      link.download = `fitcircle-backup-${getLocalDateString()}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
