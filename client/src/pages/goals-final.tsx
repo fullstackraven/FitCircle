@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ChevronLeft, Droplet, Brain, Clock, Scale, Percent, Target, Edit3, Check, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useHydration } from '@/hooks/use-hydration';
+import { useWorkouts } from '@/hooks/use-workouts';
 import { GoalCircle } from '@/components/GoalCircle';
 
 export default function GoalsPageFinal() {
@@ -188,34 +189,12 @@ export default function GoalsPageFinal() {
     return 0;
   };
 
+  // Use the working useWorkouts hook for workout consistency
+  const { getTotalStats } = useWorkouts();
+  
   const getWorkoutConsistency = () => {
-    // Copy exact logic from working calendar statistics panel
-    const workoutData = localStorage.getItem('workout-tracker-data');
-    if (!workoutData) return 0;
-
-    try {
-      const data = JSON.parse(workoutData);
-      const today = new Date().toISOString().split('T')[0];
-      
-      if (!data.workouts) return 0;
-      
-      let totalGoals = 0;
-      let goalsHit = 0;
-      
-      Object.values(data.workouts).forEach((workout: any) => {
-        if (workout.dailyGoal > 0) {
-          totalGoals++;
-          const todayCount = data.dailyLogs?.[today]?.[workout.id] || 0;
-          if (todayCount >= workout.dailyGoal) {
-            goalsHit++;
-          }
-        }
-      });
-      
-      return totalGoals > 0 ? Math.round((goalsHit / totalGoals) * 100) : 0;
-    } catch (e) {
-      return 0;
-    }
+    const stats = getTotalStats();
+    return Math.round(stats.totalGoalPercentage || 0);
   };
 
   // Calculate progress percentages
@@ -227,8 +206,9 @@ export default function GoalsPageFinal() {
 
   const meditationProgress = goals.meditationMinutes > 0 ? Math.min((meditationCurrent / goals.meditationMinutes) * 100, 100) : 0;
   const fastingProgress = goals.fastingHours > 0 ? Math.min((fastingCurrent / goals.fastingHours) * 100, 100) : 0;
-  // Simple weight calculation: current/goal * 100 (goal is 220, current is 222.2)
-  const weightProgress = goals.weightLbs > 0 ? Math.min((goals.weightLbs / Math.max(weightCurrent, goals.weightLbs)) * 100, 100) : 0;
+  // Weight progress: if current weight is at or below goal, 100%. If over goal, calculate deficit.
+  const weightProgress = goals.weightLbs > 0 && weightCurrent > 0 ? 
+    (weightCurrent <= goals.weightLbs ? 100 : Math.max(0, 100 - ((weightCurrent - goals.weightLbs) / goals.weightLbs * 20))) : 0;
   const bodyFatProgress = goals.targetBodyFat > 0 && bodyFatCurrent > 0 ? 
     (bodyFatCurrent <= goals.targetBodyFat ? 100 : Math.min((goals.targetBodyFat / bodyFatCurrent) * 100, 100)) : 0;
   
