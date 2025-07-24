@@ -211,6 +211,9 @@ export default function MeditationPage() {
       return;
     }
     
+    // Cross-page sync: Save to individual goal key for Goals page compatibility
+    localStorage.setItem('fitcircle_goal_meditation', minutesGoal.toString());
+    
     await updateGoal('meditationMinutes', minutesGoal);
     setIsGoalModalOpen(false);
     alert('Meditation goal saved successfully!');

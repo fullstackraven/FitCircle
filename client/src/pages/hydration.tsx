@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, Plus, ChevronDown, ChevronRight, Target, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useHydration } from '@/hooks/use-hydration';
@@ -39,6 +39,18 @@ export default function HydrationPage() {
   const [newGoal, setNewGoal] = useState(dailyGoalOz.toString());
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
+  // Load goal from Goals page when it changes
+  useEffect(() => {
+    const hydrationGoalFromGoalsPage = localStorage.getItem('fitcircle_goal_hydration');
+    if (hydrationGoalFromGoalsPage) {
+      const goalValue = parseFloat(hydrationGoalFromGoalsPage);
+      if (goalValue > 0 && goalValue !== dailyGoalOz) {
+        setDailyGoal(goalValue);
+        setNewGoal(goalValue.toString());
+      }
+    }
+  }, [dailyGoalOz, setDailyGoal]);
+
   const liquidTypes = ['Water', 'Coffee', 'Tea', 'Custom'];
 
   const handleAddHydration = () => {
@@ -66,8 +78,25 @@ export default function HydrationPage() {
     const goal = parseFloat(newGoal);
     if (goal > 0) {
       setDailyGoal(goal);
-      // Also update goals page to keep in sync
+      // Cross-page sync: Update Goals page storage
       localStorage.setItem('fitcircle_goal_hydration', goal.toString());
+      
+      // ALSO update any other hydration goal locations for full compatibility
+      const existingGoals = localStorage.getItem('fitcircle_goals');
+      let goalsObject = {};
+      if (existingGoals) {
+        try {
+          goalsObject = JSON.parse(existingGoals);
+        } catch (e) {
+          goalsObject = {};
+        }
+      }
+      goalsObject = {
+        ...goalsObject,
+        hydrationOz: goal
+      };
+      localStorage.setItem('fitcircle_goals', JSON.stringify(goalsObject));
+      
       setIsGoalModalOpen(false);
     }
   };

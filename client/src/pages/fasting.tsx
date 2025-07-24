@@ -135,6 +135,9 @@ export default function FastingPage() {
       return;
     }
     
+    // Cross-page sync: Save to individual goal key for Goals page compatibility
+    localStorage.setItem('fitcircle_goal_fasting', hoursGoal.toString());
+    
     await updateGoal('fastingHours', hoursGoal);
     setIsGoalModalOpen(false);
     alert('Fasting goal saved successfully!');

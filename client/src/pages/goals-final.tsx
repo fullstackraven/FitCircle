@@ -300,7 +300,10 @@ export default function GoalsPageFinal() {
       // Map goal keys to fitcircle_goals object properties
       const goalKeyMap: { [key: string]: string } = {
         'weightLbs': 'targetWeight',
-        'targetBodyFat': 'targetBodyFat'
+        'targetBodyFat': 'targetBodyFat',
+        'hydrationOz': 'hydrationOz',
+        'meditationMinutes': 'meditationMinutes',
+        'fastingHours': 'fastingHours'
       };
       
       if (goalKeyMap[goalKey]) {
