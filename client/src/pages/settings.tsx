@@ -89,46 +89,58 @@ export default function SettingsPage() {
     reader.onload = async (e) => {
       try {
         const content = e.target?.result as string;
+        console.log('File content length:', content.length);
+        
         const snapshot = JSON.parse(content);
+        console.log('Parsed snapshot keys:', Object.keys(snapshot));
         
         if (typeof snapshot !== 'object' || !snapshot) {
           throw new Error('Invalid file format');
         }
         
         // Clear IndexedDB first
+        console.log('Clearing IndexedDB...');
         await clear();
         
         // Separate essential localStorage items from IndexedDB data
         const essentialLocalStorageKeys = ['theme', 'storage_migration_completed'];
         let count = 0;
+        let errors = 0;
         
         for (const [key, value] of Object.entries(snapshot)) {
+          console.log(`Processing key: ${key}, type: ${typeof value}`);
+          
           if (essentialLocalStorageKeys.includes(key)) {
             // Restore to localStorage
             if (typeof value === 'string') {
               localStorage.setItem(key, value);
               count++;
+              console.log(`Restored localStorage key: ${key}`);
             }
           } else {
             // Restore to IndexedDB
             try {
               await setItem(key, value);
               count++;
+              console.log(`Restored IndexedDB key: ${key}`);
             } catch (error) {
               console.error(`Failed to restore key "${key}":`, error);
+              errors++;
             }
           }
         }
         
-        setStatus(`Successfully restored ${count} items!`);
+        console.log(`Restoration complete: ${count} items restored, ${errors} errors`);
+        setStatus(`Successfully restored ${count} items!${errors > 0 ? ` (${errors} errors)` : ''}`);
+        
         setTimeout(() => {
           setStatus('');
           window.location.href = '/';
         }, 2000);
       } catch (error) {
         console.error('Import failed:', error);
-        setStatus('Invalid backup file. Please select a valid FitCircle backup.');
-        setTimeout(() => setStatus(''), 3000);
+        setStatus(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        setTimeout(() => setStatus(''), 5000);
       } finally {
         setIsImporting(false);
         if (fileInputRef.current) fileInputRef.current.value = '';
