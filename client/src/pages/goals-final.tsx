@@ -540,22 +540,22 @@ export default function GoalsPageFinal() {
             <div className="space-y-4 mb-6">
               {Object.entries(tempWeights).map(([key, value]) => (
                 <div key={key} className="flex items-center justify-between">
-                  <span className="text-sm text-slate-300 capitalize">
+                  <label className="text-sm text-slate-300 capitalize">
                     {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                  </span>
+                  </label>
                   <div className="flex items-center space-x-2">
                     <input
-                      type="range"
+                      type="number"
                       min="0"
-                      max="50"
+                      max="100"
                       value={value}
                       onChange={(e) => setTempWeights({
                         ...tempWeights,
-                        [key]: parseInt(e.target.value)
+                        [key]: parseInt(e.target.value) || 0
                       })}
-                      className="w-20"
+                      className="w-16 bg-slate-700 border border-slate-600 rounded-lg px-2 py-1 text-white text-sm text-center"
                     />
-                    <span className="text-sm font-medium w-8 text-right">{value}%</span>
+                    <span className="text-sm text-slate-400">%</span>
                   </div>
                 </div>
               ))}
