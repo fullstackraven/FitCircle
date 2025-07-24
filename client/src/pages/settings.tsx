@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Upload, Download, ToggleLeft, ToggleRight, Folder, FileText } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { ArrowLeft, Upload, Download } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
 
@@ -9,13 +9,9 @@ export default function SettingsPage() {
   const [isImporting, setIsImporting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [status, setStatus] = useState<string>('');
-  const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
-  const [showBackupLog, setShowBackupLog] = useState(false);
-  const [showPathSelector, setShowPathSelector] = useState(false);
-  const [customBackupPath, setCustomBackupPath] = useState('');
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
-
 
   
   // Function to get local date string (not UTC)
@@ -35,178 +31,6 @@ export default function SettingsPage() {
       navigate('/?dashboard=open');
     } else {
       navigate('/');
-    }
-  };
-
-  // Enhanced backup checking that also responds to data changes
-  const checkAndPerformBackup = () => {
-    const now = new Date();
-    const lastBackupStr = localStorage.getItem('fitcircle_last_backup_date');
-    const today = getLocalDateString();
-    
-    // Perform backup if:
-    // 1. We haven't backed up today and it's past 11:00 PM, OR
-    // 2. Data has changed significantly since last backup (regardless of time)
-    const shouldBackupByTime = lastBackupStr !== today && now.getHours() >= 23;
-    
-    if (shouldBackupByTime) {
-      performAutoBackup();
-      localStorage.setItem('fitcircle_last_backup_date', today);
-    } else {
-      // Check for data changes even if it's not backup time
-      performAutoBackup(); // This function now has built-in change detection
-    }
-  };
-
-  const scheduleAutoBackup = () => {
-    const now = new Date();
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(23, 59, 0, 0);
-    
-    const timeUntilBackup = tomorrow.getTime() - now.getTime();
-    
-    setTimeout(() => {
-      performAutoBackup();
-      localStorage.setItem('fitcircle_last_backup_date', getLocalDateString());
-      // Schedule next backup
-      scheduleAutoBackup();
-    }, timeUntilBackup);
-  };
-
-  const performAutoBackup = () => {
-    try {
-      const snapshot: Record<string, string> = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key) {
-          const value = localStorage.getItem(key);
-          if (value) snapshot[key] = value;
-        }
-      }
-      
-      // Check if data has actually changed since last backup
-      const currentDataHash = btoa(JSON.stringify(snapshot)).slice(0, 16);
-      const lastBackupInfo = localStorage.getItem('fitcircle_last_auto_backup_info');
-      let shouldBackup = true;
-      
-      if (lastBackupInfo) {
-        try {
-          const info = JSON.parse(lastBackupInfo);
-          if (info.dataHash === currentDataHash) {
-            shouldBackup = false; // No changes detected
-          }
-        } catch {}
-      }
-      
-      if (shouldBackup) {
-        const backupData = JSON.stringify(snapshot, null, 2);
-        
-        // Download backup with consistent filename (overwrites previous)
-        const blob = new Blob([backupData], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        
-        // iOS Files app doesn't support custom paths in download attribute
-        // The file will always save to Downloads folder first
-        link.download = 'fitcircle-auto-backup.json';
-        
-        // Make download silent and iOS-compatible
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        
-        // Save backup info for change detection
-        const backupInfo = {
-          timestamp: new Date().toISOString(),
-          itemCount: Object.keys(snapshot).length,
-          dataHash: currentDataHash
-        };
-        localStorage.setItem('fitcircle_last_auto_backup_info', JSON.stringify(backupInfo));
-        
-        console.log('✅ Auto backup completed with', Object.keys(snapshot).length, 'items');
-        console.log('📱 File saved to Downloads - move to desired Files app location');
-      }
-    } catch (error) {
-      console.error('Auto backup failed:', error);
-    }
-  };
-
-  // Set up auto backup monitoring system
-  useEffect(() => {
-    const autoBackup = localStorage.getItem('fitcircle_auto_backup');
-    const isEnabled = autoBackup === 'true';
-    setAutoBackupEnabled(isEnabled);
-    
-    // Load custom backup path
-    const savedPath = localStorage.getItem('fitcircle_backup_path');
-    if (savedPath) setCustomBackupPath(savedPath);
-    
-    if (isEnabled) {
-      // Initial backup check when app loads
-      setTimeout(() => checkAndPerformBackup(), 2000);
-      
-      // Set up localStorage monitoring for data changes
-      const originalSetItem = localStorage.setItem;
-      localStorage.setItem = function(key: string, value: string) {
-        const result = originalSetItem.call(this, key, value);
-        
-        // Only trigger backup for actual app data (not backup metadata)
-        if (!key.startsWith('fitcircle_auto_backup') && 
-            !key.startsWith('fitcircle_last_backup') &&
-            isEnabled) {
-          // Debounce backup calls to avoid too many downloads
-          clearTimeout((window as any).backupTimeout);
-          (window as any).backupTimeout = setTimeout(() => {
-            checkAndPerformBackup();
-          }, 5000); // Wait 5 seconds after last data change
-        }
-        
-        return result;
-      };
-      
-      // Schedule daily backup
-      scheduleAutoBackup();
-      
-      // Check when app becomes visible (user returns to app)
-      const handleVisibilityChange = () => {
-        if (!document.hidden && isEnabled) {
-          setTimeout(() => checkAndPerformBackup(), 1000);
-        }
-      };
-      
-      document.addEventListener('visibilitychange', handleVisibilityChange);
-      
-      return () => {
-        // Restore original localStorage.setItem
-        localStorage.setItem = originalSetItem;
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-        if ((window as any).backupTimeout) {
-          clearTimeout((window as any).backupTimeout);
-        }
-      };
-    }
-  }, [autoBackupEnabled]);
-
-
-
-
-
-  const toggleAutoBackup = () => {
-    const newState = !autoBackupEnabled;
-    setAutoBackupEnabled(newState);
-    localStorage.setItem('fitcircle_auto_backup', newState.toString());
-    
-    if (newState) {
-      // Immediate backup when enabled
-      setTimeout(() => {
-        performAutoBackup();
-        localStorage.setItem('fitcircle_last_backup_date', getLocalDateString());
-      }, 500);
-      scheduleAutoBackup();
     }
   };
 
@@ -295,8 +119,6 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
-
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="container mx-auto p-4 max-w-md">
@@ -353,52 +175,6 @@ export default function SettingsPage() {
             
             <p className="text-xs text-slate-400 text-center">
               This creates a complete snapshot of all your FitCircle data. Restore replaces all current data.
-            </p>
-          </div>
-        </div>
-
-
-
-        {/* Auto Backup Section */}
-        <div className="bg-slate-800 rounded-xl p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white">Auto Backup</h2>
-            <button
-              onClick={() => setShowPathSelector(true)}
-              className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
-              title="Set backup file path"
-            >
-              <Folder className="w-5 h-5" />
-            </button>
-          </div>
-          
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-white font-medium">Smart Auto Backup</p>
-            </div>
-            <button
-              onClick={toggleAutoBackup}
-              className={`relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
-                autoBackupEnabled ? 'bg-green-600' : 'bg-slate-600'
-              }`}
-            >
-              <span
-                className={`inline-block w-5 h-5 bg-white rounded-full transition-transform ${
-                  autoBackupEnabled ? 'translate-x-6' : 'translate-x-0.5'
-                }`}
-              />
-            </button>
-          </div>
-
-
-          <div className="mt-4 p-3 bg-slate-700/30 rounded-lg">
-            <p className="text-xs text-slate-400 leading-relaxed">
-              <strong className="text-slate-300">How it works:</strong> When enabled, auto backup monitors for data changes and downloads updated JSON files to your device's Downloads folder. 
-              The backup file "fitcircle-auto-backup.json" will need to be manually moved to your desired Files app location for organization.
-            </p>
-            <p className="text-xs text-slate-400 leading-relaxed mt-2">
-              <strong className="text-slate-300">iOS Note:</strong> Due to iOS security restrictions, files cannot be directly saved to custom paths in the Files app. 
-              After download, you can move the file from Downloads to your preferred folder in the Files app.
             </p>
           </div>
         </div>
@@ -467,69 +243,6 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
-
-      {/* Path Selector Modal */}
-      {showPathSelector && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl max-w-md w-full">
-            <div className="flex items-center justify-between p-6 border-b border-slate-600">
-              <h3 className="text-lg font-semibold text-white">Set Backup Path</h3>
-              <button
-                onClick={() => setShowPathSelector(false)}
-                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="p-6">
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Custom File Path (optional)
-                </label>
-                <input
-                  type="text"
-                  value={customBackupPath}
-                  onChange={(e) => setCustomBackupPath(e.target.value)}
-                  placeholder="e.g., FitCircle/Backups"
-                  className="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none"
-                />
-                <p className="text-xs text-slate-400 mt-2">
-                  Leave empty to save directly to Files app root. Use forward slashes for folders.
-                </p>
-              </div>
-              
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    localStorage.setItem('fitcircle_backup_path', customBackupPath);
-                    setShowPathSelector(false);
-                  }}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-lg transition-colors"
-                >
-                  Save Path
-                </button>
-                <button
-                  onClick={() => {
-                    setCustomBackupPath('');
-                    localStorage.removeItem('fitcircle_backup_path');
-                    setShowPathSelector(false);
-                  }}
-                  className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-2.5 px-4 rounded-lg transition-colors"
-                >
-                  Clear Path
-                </button>
-              </div>
-              
-              <div className="mt-4 p-3 bg-slate-700/30 rounded-lg">
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  <strong className="text-slate-300">Current path:</strong> {customBackupPath || 'Files app root'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
