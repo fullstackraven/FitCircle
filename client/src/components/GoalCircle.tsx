@@ -61,12 +61,20 @@ export function GoalCircle({
         
         {/* Center content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div className="text-xl font-bold text-white">
-            {goalValue}{unit}
-          </div>
-          <div className="text-xs text-slate-400 text-center">
-            {Math.round(percentage)}%
-          </div>
+          {title === "Wellness Score" ? (
+            <div className="text-2xl font-bold text-white">
+              {Math.round(percentage)}
+            </div>
+          ) : (
+            <>
+              <div className="text-xl font-bold text-white">
+                {goalValue}{unit}
+              </div>
+              <div className="text-xs text-slate-400 text-center">
+                {Math.round(percentage)}%
+              </div>
+            </>
+          )}
         </div>
       </div>
       

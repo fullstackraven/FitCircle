@@ -203,13 +203,13 @@ export default function GoalsPageFinal() {
       let totalGoals = 0;
       let goalsHit = 0;
       
-      // Handle new data structure (object with workout objects)
+      // Handle your backup data structure from workout-tracker-data
       if (data.workouts && typeof data.workouts === 'object' && !Array.isArray(data.workouts)) {
         Object.values(data.workouts).forEach((workout: any) => {
           if (workout.dailyGoal && workout.dailyGoal > 0) {
             totalGoals++;
-            // Check daily logs for today
-            const todayCount = data.dailyLogs?.[today]?.[workout.id] || workout.count || 0;
+            // Check today's daily log vs goal
+            const todayCount = data.dailyLogs?.[today]?.[workout.id] || 0;
             if (todayCount >= workout.dailyGoal) {
               goalsHit++;
             }
@@ -245,7 +245,9 @@ export default function GoalsPageFinal() {
 
   const meditationProgress = goals.meditationMinutes > 0 ? Math.min((meditationCurrent / goals.meditationMinutes) * 100, 100) : 0;
   const fastingProgress = goals.fastingHours > 0 ? Math.min((fastingCurrent / goals.fastingHours) * 100, 100) : 0;
-  const weightProgress = goals.weightLbs > 0 && weightCurrent > 0 ? Math.min((goals.weightLbs / weightCurrent) * 100, 100) : 0;
+  // Fix weight progress calculation - should show progress toward goal weight
+  const weightProgress = goals.weightLbs > 0 && weightCurrent > 0 ? 
+    (weightCurrent <= goals.weightLbs ? 100 : Math.max(0, 100 - ((weightCurrent - goals.weightLbs) / goals.weightLbs * 100))) : 0;
   const bodyFatProgress = goals.targetBodyFat > 0 && bodyFatCurrent > 0 ? 
     (bodyFatCurrent <= goals.targetBodyFat ? 100 : Math.min((goals.targetBodyFat / bodyFatCurrent) * 100, 100)) : 0;
   
@@ -439,46 +441,38 @@ export default function GoalsPageFinal() {
                   <h3 className="text-sm font-medium text-white text-center">{item.title}</h3>
                 </div>
 
-                {/* Goal editing section */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-400">Goal:</span>
-                    <div className="flex items-center space-x-2">
-                      {isEditing ? (
-                        <div className="flex items-center space-x-1">
-                          <input
-                            type="number"
-                            value={tempValue}
-                            onChange={(e) => setTempValue(e.target.value)}
-                            className="w-16 px-2 py-1 text-xs bg-slate-700 text-white rounded border border-slate-600"
-                            step={item.key === 'fastingHours' ? "0.1" : "1"}
-                          />
-                          <button
-                            onClick={() => handleSave(item.key)}
-                            className="p-1 text-green-400 hover:text-green-300"
-                          >
-                            <Check className="w-3 h-3" />
-                          </button>
-                          <button
-                            onClick={handleCancel}
-                            className="p-1 text-red-400 hover:text-red-300"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center space-x-1">
-                          <span className="text-sm font-medium">{item.goalValue}{item.unit}</span>
-                          <button
-                            onClick={() => handleEdit(item.key, item.goalValue)}
-                            className="p-1 text-slate-400 hover:text-white"
-                          >
-                            <Edit3 className="w-3 h-3" />
-                          </button>
-                        </div>
-                      )}
+                {/* Edit button in top right corner */}
+                <div className="absolute top-2 right-2">
+                  {isEditing ? (
+                    <div className="flex items-center space-x-1">
+                      <input
+                        type="number"
+                        value={tempValue}
+                        onChange={(e) => setTempValue(e.target.value)}
+                        className="w-16 px-2 py-1 text-xs bg-slate-700 text-white rounded border border-slate-600"
+                        step={item.key === 'fastingHours' ? "0.1" : "1"}
+                      />
+                      <button
+                        onClick={() => handleSave(item.key)}
+                        className="p-1 text-green-400 hover:text-green-300"
+                      >
+                        <Check className="w-3 h-3" />
+                      </button>
+                      <button
+                        onClick={handleCancel}
+                        className="p-1 text-red-400 hover:text-red-300"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
                     </div>
-                  </div>
+                  ) : (
+                    <button
+                      onClick={() => handleEdit(item.key, item.goalValue)}
+                      className="p-1 text-slate-400 hover:text-white"
+                    >
+                      <Edit3 className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
               </div>
             );
