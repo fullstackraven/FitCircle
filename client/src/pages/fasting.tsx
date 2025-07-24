@@ -5,16 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GoalCircle } from '@/components/GoalCircle';
-
-interface FastingLog {
-  id: string;
-  startDate: string;
-  startTime: string;
-  endDate: string;
-  endTime: string;
-  duration: number; // in minutes
-  loggedAt: string;
-}
+import { useFasting, type FastingLog } from '@/hooks/use-fasting';
+import { useGoals } from '@/hooks/use-goals';
 
 export default function FastingPage() {
   const [, navigate] = useLocation();
@@ -29,7 +21,8 @@ export default function FastingPage() {
       navigate('/');
     }
   };
-  const [logs, setLogs] = useState<FastingLog[]>([]);
+  const { logs, addLog, updateLog, deleteLog } = useFasting();
+  const { goals, updateGoal } = useGoals();
   const [isLogging, setIsLogging] = useState(false);
   const [editingLog, setEditingLog] = useState<FastingLog | null>(null);
   
@@ -44,27 +37,9 @@ export default function FastingPage() {
   const [goalHoursInput, setGoalHoursInput] = useState('');
 
   useEffect(() => {
-    // Load saved fasting logs
-    const savedLogs = localStorage.getItem('fitcircle_fasting_logs');
-    if (savedLogs) {
-      try {
-        setLogs(JSON.parse(savedLogs));
-      } catch (error) {
-        console.error('Failed to parse fasting logs:', error);
-      }
-    }
-    
-    // Load saved goals
-    const savedGoals = localStorage.getItem('fitcircle_goals');
-    if (savedGoals) {
-      try {
-        const goals = JSON.parse(savedGoals);
-        setGoalHoursInput(goals.fastingHours?.toString() || '');
-      } catch (error) {
-        console.error('Failed to parse goals:', error);
-      }
-    }
-  }, []);
+    // Initialize goal input with current goal value
+    setGoalHoursInput(goals.fastingHours?.toString() || '');
+  }, [goals.fastingHours]);
 
   const calculateDuration = (startDate: string, startTime: string, endDate: string, endTime: string): number => {
     const start = new Date(`${startDate}T${startTime}`);
@@ -107,29 +82,17 @@ export default function FastingPage() {
 
     if (editingLog) {
       // Update existing log
-      const updatedLogs = logs.map(log => 
-        log.id === editingLog.id 
-          ? { ...log, startDate, startTime, endDate, endTime, duration }
-          : log
-      );
-      setLogs(updatedLogs);
-      localStorage.setItem('fitcircle_fasting_logs', JSON.stringify(updatedLogs));
+      updateLog(editingLog.id, { startDate, startTime, endDate, endTime, duration });
       setEditingLog(null);
     } else {
       // Create new log
-      const newLog: FastingLog = {
-        id: Date.now().toString(),
+      addLog({
         startDate,
         startTime,
         endDate,
         endTime,
-        duration,
-        loggedAt: new Date().toISOString()
-      };
-
-      const updatedLogs = [newLog, ...logs];
-      setLogs(updatedLogs);
-      localStorage.setItem('fitcircle_fasting_logs', JSON.stringify(updatedLogs));
+        duration
+      });
     }
 
     // Reset form
@@ -151,9 +114,7 @@ export default function FastingPage() {
 
   const handleDeleteLog = (logId: string) => {
     if (confirm('Are you sure you want to delete this fasting log?')) {
-      const updatedLogs = logs.filter(log => log.id !== logId);
-      setLogs(updatedLogs);
-      localStorage.setItem('fitcircle_fasting_logs', JSON.stringify(updatedLogs));
+      deleteLog(logId);
     }
   };
 
@@ -166,7 +127,7 @@ export default function FastingPage() {
     setIsLogging(false);
   };
 
-  const handleSetGoal = () => {
+  const handleSetGoal = async () => {
     const hoursGoal = parseFloat(goalHoursInput);
     
     if (isNaN(hoursGoal) || hoursGoal <= 0) {
@@ -174,23 +135,7 @@ export default function FastingPage() {
       return;
     }
     
-    // Load existing goals and update
-    let goals = {};
-    const savedGoals = localStorage.getItem('fitcircle_goals');
-    if (savedGoals) {
-      try {
-        goals = JSON.parse(savedGoals);
-      } catch (error) {
-        console.error('Failed to parse existing goals:', error);
-      }
-    }
-    
-    const updatedGoals = {
-      ...goals,
-      fastingHours: hoursGoal
-    };
-    
-    localStorage.setItem('fitcircle_goals', JSON.stringify(updatedGoals));
+    await updateGoal('fastingHours', hoursGoal);
     setIsGoalModalOpen(false);
     alert('Fasting goal saved successfully!');
   };

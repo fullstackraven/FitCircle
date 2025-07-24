@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useIndexedDB } from './use-indexed-db';
 
 export interface Goals {
   hydrationOz: number;
@@ -33,121 +34,125 @@ export function useGoals() {
     workoutConsistency: 80
   });
 
-  // Load goals from localStorage on mount
+  const { isReady, getItem, setItem } = useIndexedDB();
+
+  // Load goals from IndexedDB on mount
   useEffect(() => {
-    const loadedGoals: Partial<Goals> = {};
-    
-    // Load from both old format and new unified format
-    const savedGoals = localStorage.getItem('fitcircle_goals');
-    if (savedGoals) {
+    if (!isReady) return;
+
+    const loadGoals = async () => {
       try {
-        const goals = JSON.parse(savedGoals);
-        if (goals.hydrationOz) loadedGoals.hydrationOz = parseFloat(goals.hydrationOz);
-        if (goals.meditationMinutes) loadedGoals.meditationMinutes = parseFloat(goals.meditationMinutes);
-        if (goals.fastingHours) loadedGoals.fastingHours = parseFloat(goals.fastingHours);
-        if (goals.weightLbs) loadedGoals.weightLbs = parseFloat(goals.weightLbs);
-        if (goals.targetWeight) loadedGoals.targetWeight = parseFloat(goals.targetWeight);
-        if (goals.targetBodyFat) loadedGoals.targetBodyFat = parseFloat(goals.targetBodyFat);
-        if (goals.workoutConsistency) loadedGoals.workoutConsistency = parseFloat(goals.workoutConsistency);
+        const loadedGoals: Partial<Goals> = {};
+        
+        // Load from both old format and new unified format
+        const savedGoals = await getItem<Goals>('fitcircle_goals');
+        if (savedGoals) {
+          if (savedGoals.hydrationOz) loadedGoals.hydrationOz = parseFloat(savedGoals.hydrationOz.toString());
+          if (savedGoals.meditationMinutes) loadedGoals.meditationMinutes = parseFloat(savedGoals.meditationMinutes.toString());
+          if (savedGoals.fastingHours) loadedGoals.fastingHours = parseFloat(savedGoals.fastingHours.toString());
+          if (savedGoals.weightLbs) loadedGoals.weightLbs = parseFloat(savedGoals.weightLbs.toString());
+          if (savedGoals.targetWeight) loadedGoals.targetWeight = parseFloat(savedGoals.targetWeight.toString());
+          if (savedGoals.targetBodyFat) loadedGoals.targetBodyFat = parseFloat(savedGoals.targetBodyFat.toString());
+          if (savedGoals.workoutConsistency) loadedGoals.workoutConsistency = parseFloat(savedGoals.workoutConsistency.toString());
+        } else {
+          // Fallback to old format if new format doesn't exist
+          const hydration = await getItem<string>(`${STORAGE_PREFIX}hydration`);
+          if (hydration && !loadedGoals.hydrationOz) loadedGoals.hydrationOz = parseFloat(hydration);
+          
+          const meditation = await getItem<string>(`${STORAGE_PREFIX}meditation`);
+          if (meditation && !loadedGoals.meditationMinutes) loadedGoals.meditationMinutes = parseFloat(meditation);
+          
+          const fasting = await getItem<string>(`${STORAGE_PREFIX}fasting`);
+          if (fasting && !loadedGoals.fastingHours) loadedGoals.fastingHours = parseFloat(fasting);
+          
+          const weight = await getItem<string>(`${STORAGE_PREFIX}weight`);
+          if (weight && !loadedGoals.weightLbs) loadedGoals.weightLbs = parseFloat(weight);
+        }
+
+        setGoals(prev => ({ ...prev, ...loadedGoals }));
       } catch (error) {
-        console.error('Failed to parse goals:', error);
+        console.error('Failed to load goals:', error);
       }
-    }
-    
-    // Fallback to old format if new format doesn't exist
-    const hydration = localStorage.getItem(`${STORAGE_PREFIX}hydration`);
-    if (hydration && !loadedGoals.hydrationOz) loadedGoals.hydrationOz = parseFloat(hydration);
-    
-    const meditation = localStorage.getItem(`${STORAGE_PREFIX}meditation`);
-    if (meditation && !loadedGoals.meditationMinutes) loadedGoals.meditationMinutes = parseFloat(meditation);
-    
-    const fasting = localStorage.getItem(`${STORAGE_PREFIX}fasting`);
-    if (fasting && !loadedGoals.fastingHours) loadedGoals.fastingHours = parseFloat(fasting);
-    
-    const weight = localStorage.getItem(`${STORAGE_PREFIX}weight`);
-    if (weight && !loadedGoals.weightLbs) loadedGoals.weightLbs = parseFloat(weight);
+    };
 
-    setGoals(prev => ({ ...prev, ...loadedGoals }));
-  }, []);
+    loadGoals();
+  }, [isReady, getItem]);
 
-  const updateGoal = (goalType: keyof Goals, value: number) => {
+  const updateGoal = async (goalType: keyof Goals, value: number) => {
     setGoals(prev => ({ ...prev, [goalType]: value }));
     
-    // Save to unified goals storage
-    const currentGoals = localStorage.getItem('fitcircle_goals');
-    let goalsData = {};
+    if (!isReady) return;
     
-    if (currentGoals) {
-      try {
-        goalsData = JSON.parse(currentGoals);
-      } catch (error) {
-        console.error('Failed to parse existing goals:', error);
+    try {
+      // Save to unified goals storage
+      const currentGoals = await getItem<Goals>('fitcircle_goals');
+      let goalsData = {};
+      
+      if (currentGoals) {
+        goalsData = currentGoals;
       }
-    }
-    
-    const updatedGoals = {
-      ...goalsData,
-      [goalType]: value
-    };
-    
-    localStorage.setItem('fitcircle_goals', JSON.stringify(updatedGoals));
-    
-    // Keep backward compatibility with old storage format
-    const keyMap: { [K in keyof Goals]?: string } = {
-      hydrationOz: 'hydration',
-      meditationMinutes: 'meditation',
-      fastingHours: 'fasting',
-      weightLbs: 'weight'
-    };
-    
-    const oldKey = keyMap[goalType];
-    if (oldKey) {
-      localStorage.setItem(`${STORAGE_PREFIX}${oldKey}`, value.toString());
-    }
-    
-    // Special case: Also update hydration hook data if hydration goal is changed
-    if (goalType === 'hydrationOz') {
-      const hydrationData = localStorage.getItem('fitcircle_hydration_data');
-      if (hydrationData) {
-        try {
-          const parsed = JSON.parse(hydrationData);
-          parsed.dailyGoalOz = value;
-          localStorage.setItem('fitcircle_hydration_data', JSON.stringify(parsed));
-        } catch (e) {
-          console.error('Failed to sync hydration goal:', e);
+      
+      const updatedGoals = {
+        ...goalsData,
+        [goalType]: value
+      };
+      
+      await setItem('fitcircle_goals', updatedGoals);
+      
+      // Keep backward compatibility with old storage format
+      const keyMap: { [K in keyof Goals]?: string } = {
+        hydrationOz: 'hydration',
+        meditationMinutes: 'meditation',
+        fastingHours: 'fasting',
+        weightLbs: 'weight'
+      };
+      
+      const oldKey = keyMap[goalType];
+      if (oldKey) {
+        await setItem(`${STORAGE_PREFIX}${oldKey}`, value.toString());
+      }
+      
+      // Special case: Also update hydration hook data if hydration goal is changed
+      if (goalType === 'hydrationOz') {
+        const hydrationData = await getItem<any>('fitcircle_hydration_data');
+        if (hydrationData) {
+          try {
+            hydrationData.dailyGoalOz = value;
+            await setItem('fitcircle_hydration_data', hydrationData);
+          } catch (e) {
+            console.error('Failed to sync hydration goal:', e);
+          }
         }
       }
+    } catch (error) {
+      console.error('Failed to update goal:', error);
     }
   };
 
-  const calculateProgress = (): GoalProgress => {
+  const calculateProgress = async (): Promise<GoalProgress> => {
     // Get current data from other storage keys
     const today = new Date().toISOString().split('T')[0];
     
     // Hydration progress - use the goal from hydration data, not goals data
-    const hydrationData = localStorage.getItem('fitcircle_hydration_data');
     let hydrationProgress = 0;
-    if (hydrationData) {
+    if (isReady) {
       try {
-        const parsed = JSON.parse(hydrationData);
-        const actualGoal = parsed.dailyGoalOz || goals.hydrationOz; // Use hydration data's goal
-        hydrationProgress = Math.min((parsed.currentDayOz / actualGoal) * 100, 100);
+        const hydrationData = await getItem<any>('fitcircle_hydration_data');
+        if (hydrationData) {
+          const actualGoal = hydrationData.dailyGoalOz || goals.hydrationOz; // Use hydration data's goal
+          hydrationProgress = Math.min((hydrationData.currentDayOz / actualGoal) * 100, 100);
+        }
       } catch (e) {
         hydrationProgress = 0;
       }
     }
 
     // Meditation progress (average last 7 days)
-    const meditationData = localStorage.getItem('fitcircle_meditation_logs');
     let meditationProgress = 0;
-    if (meditationData) {
+    if (isReady) {
       try {
-        const logs = JSON.parse(meditationData);
-        // Meditation logs are stored as an array of log objects
-        let totalMinutes = 0;
-        let dayCount = 0;
-        
-        if (Array.isArray(logs)) {
+        const logs = await getItem<any[]>('fitcircle_meditation_logs');
+        if (logs && Array.isArray(logs)) {
           // Group sessions by date and calculate daily totals for last 7 days
           const last7Days = new Date();
           last7Days.setDate(last7Days.getDate() - 7);
@@ -164,11 +169,8 @@ export function useGoals() {
           
           // Calculate average across all days (including zero days)
           const dailyValues = Object.values(dailyTotals);
-          totalMinutes = dailyValues.reduce((sum, minutes) => sum + minutes, 0);
-          dayCount = Math.max(7, dailyValues.length); // Always average over 7 days
-        }
-        
-        if (dayCount > 0) {
+          const totalMinutes = dailyValues.reduce((sum, minutes) => sum + minutes, 0);
+          
           const avgMinutes = totalMinutes / 7; // Average over 7 days regardless of how many had sessions
           meditationProgress = Math.min((avgMinutes / goals.meditationMinutes) * 100, 100);
         }
@@ -178,16 +180,13 @@ export function useGoals() {
     }
 
     // Fasting progress (all-time average with 24hr max scale)
-    const fastingData = localStorage.getItem('fitcircle_fasting_logs');
     let fastingProgress = 0;
-    if (fastingData) {
+    if (isReady) {
       try {
-        const logs = JSON.parse(fastingData);
-        const completedFasts: number[] = [];
-        
-        // Collect all completed fasting sessions
-        // The logs are stored as an array, not an object keyed by date
-        if (Array.isArray(logs)) {
+        const logs = await getItem<any[]>('fitcircle_fasting_logs');
+        if (logs && Array.isArray(logs)) {
+          const completedFasts: number[] = [];
+          
           logs.forEach((log: any) => {
             if (log?.endDate && log?.startDate && log?.endTime && log?.startTime) {
               // Combine date and time for proper parsing
@@ -205,13 +204,13 @@ export function useGoals() {
               }
             }
           });
-        }
-        
-        if (completedFasts.length > 0) {
-          // Calculate all-time average
-          const averageHours = completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length;
-          // Scale against the fasting goal
-          fastingProgress = Math.min((averageHours / goals.fastingHours) * 100, 100);
+          
+          if (completedFasts.length > 0) {
+            // Calculate all-time average
+            const averageHours = completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length;
+            // Scale against the fasting goal
+            fastingProgress = Math.min((averageHours / goals.fastingHours) * 100, 100);
+          }
         }
       } catch (e) {
         fastingProgress = 0;
@@ -219,28 +218,35 @@ export function useGoals() {
     }
 
     // Weight progress (based on current vs target)
-    const currentWeight = localStorage.getItem('fitcircle_weight');
     let weightProgress = 0;
-    if (currentWeight) {
-      const current = parseFloat(currentWeight);
-      // For weight, we'll show 100% if within 5% of target
-      const tolerance = goals.weightLbs * 0.05;
-      const difference = Math.abs(current - goals.weightLbs);
-      weightProgress = Math.max(0, 100 - (difference / tolerance) * 100);
+    if (isReady) {
+      try {
+        const currentWeight = await getItem<string>('fitcircle_weight');
+        if (currentWeight) {
+          const current = parseFloat(currentWeight);
+          // For weight, we'll show 100% if within 5% of target
+          const tolerance = goals.weightLbs * 0.05;
+          const difference = Math.abs(current - goals.weightLbs);
+          weightProgress = Math.max(0, 100 - (difference / tolerance) * 100);
+        }
+      } catch (e) {
+        weightProgress = 0;
+      }
     }
 
     // Target weight progress (based on current vs target weight from measurements)
     let targetWeightProgress = 0;
-    const measurementsData = localStorage.getItem('fitcircle_measurements');
-    if (measurementsData && goals.targetWeight) {
+    if (isReady && goals.targetWeight) {
       try {
-        const data = JSON.parse(measurementsData);
-        const currentWeight = data.currentWeight || 0;
-        if (currentWeight > 0) {
-          // Calculate progress - closer to target = higher percentage
-          const tolerance = goals.targetWeight * 0.05; // 5% tolerance
-          const difference = Math.abs(currentWeight - goals.targetWeight);
-          targetWeightProgress = Math.max(0, 100 - (difference / tolerance) * 100);
+        const measurementsData = await getItem<any>('fitcircle_measurements');
+        if (measurementsData) {
+          const currentWeight = measurementsData.currentWeight || 0;
+          if (currentWeight > 0) {
+            // Calculate progress - closer to target = higher percentage
+            const tolerance = goals.targetWeight * 0.05; // 5% tolerance
+            const difference = Math.abs(currentWeight - goals.targetWeight);
+            targetWeightProgress = Math.max(0, 100 - (difference / tolerance) * 100);
+          }
         }
       } catch (e) {
         targetWeightProgress = 0;
@@ -269,6 +275,6 @@ export function useGoals() {
   return {
     goals,
     updateGoal,
-    progress: calculateProgress()
+    calculateProgress
   };
 }

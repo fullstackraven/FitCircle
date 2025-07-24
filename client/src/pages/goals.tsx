@@ -86,20 +86,39 @@ export default function GoalsPage() {
     }
   };
 
-  const { goals, updateGoal, progress } = useGoals();
+  const { goals, updateGoal, calculateProgress } = useGoals();
   const { getTotalStats } = useWorkouts();
   const { getLatestValue } = useMeasurements();
+  
+  // Progress state
+  const [progress, setProgress] = useState({
+    hydrationProgress: 0,
+    meditationProgress: 0,
+    fastingProgress: 0,
+    weightProgress: 0,
+    targetWeightProgress: 0,
+    targetBodyFatProgress: 0,
+    workoutConsistencyProgress: 0
+  });
   
   // Force update goals when data changes
   const [refreshKey, setRefreshKey] = useState(0);
   
   useEffect(() => {
+    const updateProgress = async () => {
+      const newProgress = await calculateProgress();
+      setProgress(newProgress);
+    };
+    
+    updateProgress();
+    
     const interval = setInterval(() => {
+      updateProgress();
       setRefreshKey(prev => prev + 1);
     }, 1000); // Update every second for real-time progress
     
     return () => clearInterval(interval);
-  }, []);
+  }, [calculateProgress]);
   
   const [editingGoal, setEditingGoal] = useState<string | null>(null);
   const [tempValues, setTempValues] = useState(goals);

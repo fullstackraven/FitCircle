@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { ChevronLeft, Upload, Download } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
+import { useIndexedDB } from '@/hooks/use-indexed-db';
 
 
 export default function SettingsPage() {
@@ -12,6 +13,7 @@ export default function SettingsPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
+  const { getAll, setItem, clear } = useIndexedDB();
 
   
   // Function to get local date string (not UTC)
@@ -34,20 +36,30 @@ export default function SettingsPage() {
     }
   };
 
-  // Export complete localStorage as JSON
-  const exportSnapshot = () => {
+  // Export complete IndexedDB data as JSON
+  const exportSnapshot = async () => {
     setIsExporting(true);
     try {
-      const snapshot: Record<string, string> = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key) {
-          const value = localStorage.getItem(key);
-          if (value) snapshot[key] = value;
-        }
-      }
+      // Get all data from IndexedDB
+      const snapshot = await getAll();
       
-      const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' });
+      // Also include any essential localStorage items (like theme)
+      const essentialLocalStorageKeys = ['theme'];
+      const localStorageData: Record<string, string> = {};
+      essentialLocalStorageKeys.forEach(key => {
+        const value = localStorage.getItem(key);
+        if (value !== null) {
+          localStorageData[key] = value;
+        }
+      });
+      
+      // Combine IndexedDB and essential localStorage data
+      const completeSnapshot = {
+        ...snapshot,
+        ...localStorageData
+      };
+      
+      const blob = new Blob([JSON.stringify(completeSnapshot, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -57,9 +69,10 @@ export default function SettingsPage() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      setStatus(`Exported ${Object.keys(snapshot).length} items successfully!`);
+      setStatus(`Exported ${Object.keys(completeSnapshot).length} items successfully!`);
       setTimeout(() => setStatus(''), 3000);
     } catch (error) {
+      console.error('Export failed:', error);
       setStatus('Export failed. Please try again.');
       setTimeout(() => setStatus(''), 3000);
     } finally {
@@ -67,13 +80,13 @@ export default function SettingsPage() {
     }
   };
 
-  // Import localStorage from JSON
+  // Import data to IndexedDB from JSON
   const importSnapshot = (file: File) => {
     setIsImporting(true);
     setStatus('Restoring data...');
     
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const content = e.target?.result as string;
         const snapshot = JSON.parse(content);
@@ -82,15 +95,30 @@ export default function SettingsPage() {
           throw new Error('Invalid file format');
         }
         
-        // Clear and restore localStorage
-        localStorage.clear();
+        // Clear IndexedDB first
+        await clear();
+        
+        // Separate essential localStorage items from IndexedDB data
+        const essentialLocalStorageKeys = ['theme', 'storage_migration_completed'];
         let count = 0;
-        Object.entries(snapshot).forEach(([key, value]) => {
-          if (typeof value === 'string') {
-            localStorage.setItem(key, value);
-            count++;
+        
+        for (const [key, value] of Object.entries(snapshot)) {
+          if (essentialLocalStorageKeys.includes(key)) {
+            // Restore to localStorage
+            if (typeof value === 'string') {
+              localStorage.setItem(key, value);
+              count++;
+            }
+          } else {
+            // Restore to IndexedDB
+            try {
+              await setItem(key, value);
+              count++;
+            } catch (error) {
+              console.error(`Failed to restore key "${key}":`, error);
+            }
           }
-        });
+        }
         
         setStatus(`Successfully restored ${count} items!`);
         setTimeout(() => {
@@ -98,6 +126,7 @@ export default function SettingsPage() {
           window.location.href = '/';
         }, 2000);
       } catch (error) {
+        console.error('Import failed:', error);
         setStatus('Invalid backup file. Please select a valid FitCircle backup.');
         setTimeout(() => setStatus(''), 3000);
       } finally {

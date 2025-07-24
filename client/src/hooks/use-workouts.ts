@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useIndexedDB } from './use-indexed-db';
 
 export interface Workout {
   id: string;
@@ -53,38 +54,43 @@ export function useWorkouts() {
     lastDate: getTodayString()
   });
 
-  // Load data from localStorage on mount and when storage changes
+  const { isReady, getItem, setItem } = useIndexedDB();
+
+  // Load data from IndexedDB on mount
   useEffect(() => {
-    const loadData = () => {
-      const savedData = localStorage.getItem(STORAGE_KEY);
-      if (savedData) {
-        try {
-          const parsed = JSON.parse(savedData);
+    if (!isReady) return;
+
+    const loadData = async () => {
+      try {
+        const savedData = await getItem<WorkoutData>(STORAGE_KEY);
+        if (savedData) {
           setData(prev => ({
-            ...parsed,
-            lastDate: parsed.lastDate || getTodayString()
+            ...savedData,
+            lastDate: savedData.lastDate || getTodayString()
           }));
-        } catch (error) {
-          console.error('Failed to parse workout data:', error);
         }
+      } catch (error) {
+        console.error('Failed to load workout data:', error);
       }
     };
 
-    // Load initial data
     loadData();
+  }, [isReady, getItem]);
 
-    // Listen for storage changes (including from CSV import)
-    window.addEventListener('storage', loadData);
-    
-    return () => {
-      window.removeEventListener('storage', loadData);
-    };
-  }, []);
-
-  // Save data to localStorage whenever it changes
+  // Save data to IndexedDB whenever it changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, [data]);
+    if (!isReady) return;
+
+    const saveData = async () => {
+      try {
+        await setItem(STORAGE_KEY, data);
+      } catch (error) {
+        console.error('Failed to save workout data:', error);
+      }
+    };
+
+    saveData();
+  }, [data, isReady, setItem]);
 
   // Reset daily data if date has changed
   useEffect(() => {

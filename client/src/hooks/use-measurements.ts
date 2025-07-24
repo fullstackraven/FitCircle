@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useIndexedDB } from './use-indexed-db';
 
 export interface MeasurementEntry {
   date: string;
@@ -54,26 +55,42 @@ export function useMeasurements() {
 
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Load data from localStorage on mount
-  useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData);
-        setData(parsed);
-      } catch (error) {
-        console.error('Failed to parse measurements history:', error);
-      }
-    }
-    setIsInitialized(true);
-  }, []);
+  const { isReady, getItem, setItem } = useIndexedDB();
 
-  // Save data to localStorage whenever it changes (but not on initial load)
+  // Load data from IndexedDB on mount
   useEffect(() => {
-    if (isInitialized) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    if (!isReady) return;
+
+    const loadData = async () => {
+      try {
+        const savedData = await getItem<MeasurementData>(STORAGE_KEY);
+        if (savedData) {
+          setData(savedData);
+        }
+        setIsInitialized(true);
+      } catch (error) {
+        console.error('Failed to load measurements history:', error);
+        setIsInitialized(true);
+      }
+    };
+
+    loadData();
+  }, [isReady, getItem]);
+
+  // Save data to IndexedDB whenever it changes (but not on initial load)
+  useEffect(() => {
+    if (isInitialized && isReady) {
+      const saveData = async () => {
+        try {
+          await setItem(STORAGE_KEY, data);
+        } catch (error) {
+          console.error('Failed to save measurements data:', error);
+        }
+      };
+
+      saveData();
     }
-  }, [data, isInitialized]);
+  }, [data, isInitialized, isReady, setItem]);
 
   const addMeasurement = (type: keyof MeasurementData, value: number, date?: string) => {
     const measurementDate = date || getTodayString();

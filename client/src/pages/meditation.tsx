@@ -6,14 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { GoalCircle } from '@/components/GoalCircle';
-
-interface MeditationLog {
-  id: string;
-  date: string;
-  time: string;
-  duration: number; // in minutes
-  completedAt: string;
-}
+import { useMeditation, type MeditationLog } from '@/hooks/use-meditation';
+import { useGoals } from '@/hooks/use-goals';
 
 export default function MeditationPage() {
   const [, navigate] = useLocation();
@@ -28,12 +22,13 @@ export default function MeditationPage() {
       navigate('/');
     }
   };
+  const { logs, addLog } = useMeditation();
+  const { goals, updateGoal } = useGoals();
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0); // in seconds
   const [totalDuration, setTotalDuration] = useState(0); // in seconds
   const [inputMinutes, setInputMinutes] = useState('');
-  const [logs, setLogs] = useState<MeditationLog[]>([]);
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [showCompletion, setShowCompletion] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -43,27 +38,9 @@ export default function MeditationPage() {
   const [goalMinutesInput, setGoalMinutesInput] = useState('');
 
   useEffect(() => {
-    // Load saved meditation logs
-    const savedLogs = localStorage.getItem('fitcircle_meditation_logs');
-    if (savedLogs) {
-      try {
-        setLogs(JSON.parse(savedLogs));
-      } catch (error) {
-        console.error('Failed to parse meditation logs:', error);
-      }
-    }
-    
-    // Load saved goals
-    const savedGoals = localStorage.getItem('fitcircle_goals');
-    if (savedGoals) {
-      try {
-        const goals = JSON.parse(savedGoals);
-        setGoalMinutesInput(goals.meditationMinutes?.toString() || '');
-      } catch (error) {
-        console.error('Failed to parse goals:', error);
-      }
-    }
-  }, []);
+    // Initialize goal input with current goal value
+    setGoalMinutesInput(goals.meditationMinutes?.toString() || '');
+  }, [goals.meditationMinutes]);
 
   useEffect(() => {
     if (isActive && !isPaused && timeLeft > 0) {
@@ -161,17 +138,11 @@ export default function MeditationPage() {
     
     // Create meditation log entry
     const now = new Date();
-    const newLog: MeditationLog = {
-      id: Date.now().toString(),
+    addLog({
       date: now.toLocaleDateString(),
       time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      duration: Math.floor(totalDuration / 60),
-      completedAt: now.toISOString()
-    };
-
-    const updatedLogs = [newLog, ...logs];
-    setLogs(updatedLogs);
-    localStorage.setItem('fitcircle_meditation_logs', JSON.stringify(updatedLogs));
+      duration: Math.floor(totalDuration / 60)
+    });
   };
 
   const startMeditation = async () => {
@@ -232,7 +203,7 @@ export default function MeditationPage() {
     return circumference - (progress / 100) * circumference;
   };
 
-  const handleSetGoal = () => {
+  const handleSetGoal = async () => {
     const minutesGoal = parseFloat(goalMinutesInput);
     
     if (isNaN(minutesGoal) || minutesGoal <= 0) {
@@ -240,23 +211,7 @@ export default function MeditationPage() {
       return;
     }
     
-    // Load existing goals and update
-    let goals = {};
-    const savedGoals = localStorage.getItem('fitcircle_goals');
-    if (savedGoals) {
-      try {
-        goals = JSON.parse(savedGoals);
-      } catch (error) {
-        console.error('Failed to parse existing goals:', error);
-      }
-    }
-    
-    const updatedGoals = {
-      ...goals,
-      meditationMinutes: minutesGoal
-    };
-    
-    localStorage.setItem('fitcircle_goals', JSON.stringify(updatedGoals));
+    await updateGoal('meditationMinutes', minutesGoal);
     setIsGoalModalOpen(false);
     alert('Meditation goal saved successfully!');
   };
