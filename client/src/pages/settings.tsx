@@ -156,10 +156,7 @@ export default function SettingsPage() {
       }
       
       if (shouldBackup) {
-        // Store the backup data in localStorage for later access
         const backupData = JSON.stringify(snapshot, null, 2);
-        const dateKey = getLocalDateString();
-        localStorage.setItem(`fitcircle_auto_backup_${dateKey}`, backupData);
         
         // Download backup with consistent filename (overwrites previous)
         const blob = new Blob([backupData], { type: 'application/json' });
@@ -187,11 +184,8 @@ export default function SettingsPage() {
         };
         localStorage.setItem('fitcircle_last_auto_backup_info', JSON.stringify(backupInfo));
         
-        // Track this automatic download
-        trackBackupDownload(dateKey);
-        
-        // Clean up old backups (keep only last 7 days)
-        cleanupOldBackups();
+
+
         
         console.log('✅ Auto backup completed with', Object.keys(snapshot).length, 'items');
       }
@@ -200,85 +194,9 @@ export default function SettingsPage() {
     }
   };
 
-  const cleanupOldBackups = () => {
-    const today = new Date();
-    for (let i = 8; i <= 30; i++) { // Remove backups older than 7 days
-      const oldDate = new Date(today);
-      oldDate.setDate(oldDate.getDate() - i);
-      const oldDateKey = `${oldDate.getFullYear()}-${String(oldDate.getMonth() + 1).padStart(2, '0')}-${String(oldDate.getDate()).padStart(2, '0')}`;
-      localStorage.removeItem(`fitcircle_auto_backup_${oldDateKey}`);
-    }
-  };
 
-  const getStoredBackups = () => {
-    const backups = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('fitcircle_auto_backup_')) {
-        const date = key.replace('fitcircle_auto_backup_', '');
-        backups.push(date);
-      }
-    }
-    return backups.sort().reverse(); // Most recent first
-  };
 
-  const downloadStoredBackup = (date: string) => {
-    const backupData = localStorage.getItem(`fitcircle_auto_backup_${date}`);
-    if (backupData) {
-      const blob = new Blob([backupData], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `fitcircle-auto-backup-${date}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      // Track this download
-      trackBackupDownload(date);
-    }
-  };
 
-  const trackBackupDownload = (date: string) => {
-    const downloadLog = getBackupDownloadLog();
-    const downloadEntry = {
-      date,
-      downloadedAt: new Date().toISOString(),
-      timestamp: Date.now()
-    };
-    
-    // Add to the beginning of the array (most recent first)
-    downloadLog.unshift(downloadEntry);
-    
-    // Keep only the last 30 downloads
-    const trimmedLog = downloadLog.slice(0, 30);
-    
-    localStorage.setItem('fitcircle_backup_download_log', JSON.stringify(trimmedLog));
-  };
-
-  const getBackupDownloadLog = () => {
-    const logStr = localStorage.getItem('fitcircle_backup_download_log');
-    if (!logStr) return [];
-    
-    try {
-      return JSON.parse(logStr);
-    } catch {
-      return [];
-    }
-  };
-
-  const getLatestAvailableBackup = () => {
-    const backups = getStoredBackups();
-    return backups.length > 0 ? backups[0] : null;
-  };
-
-  const downloadLatestBackup = () => {
-    const latestBackup = getLatestAvailableBackup();
-    if (latestBackup) {
-      downloadStoredBackup(latestBackup);
-    }
-  };
 
   const toggleAutoBackup = () => {
     const newState = !autoBackupEnabled;
@@ -469,52 +387,14 @@ export default function SettingsPage() {
               }`}
             >
               <div
-                className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                  autoBackupEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                  autoBackupEnabled ? 'translate-x-5' : 'translate-x-0'
                 }`}
               />
             </button>
           </div>
 
-          {/* Download Latest Auto Backup Button */}
-          {getLatestAvailableBackup() && (
-            <div className="mb-4">
-              <button
-                onClick={downloadLatestBackup}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
-              >
-                <Download className="w-4 h-4" />
-                Download Latest Auto Backup ({getLatestAvailableBackup()})
-              </button>
-              <p className="text-xs text-slate-400 text-center mt-2">
-                Latest auto backup available from {getLatestAvailableBackup()}
-              </p>
-            </div>
-          )}
 
-          {/* Recent Auto Backups */}
-          {getStoredBackups().length > 0 && (
-            <div className="mt-4 pt-4 border-t border-slate-600">
-              <div className="text-sm font-medium text-slate-300 mb-3">Recent Auto Backups</div>
-              <div className="space-y-2 max-h-32 overflow-y-auto">
-                {getStoredBackups().slice(0, 7).map((date) => (
-                  <div key={date} className="flex items-center justify-between bg-slate-700/50 rounded-lg p-3">
-                    <span className="text-sm text-slate-300">{date}</span>
-                    <button
-                      onClick={() => downloadStoredBackup(date)}
-                      className="text-blue-400 hover:text-blue-300 text-sm font-medium"
-                    >
-                      Download
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <div className="text-xs text-slate-500 mt-2">
-                Auto backups are kept for 7 days
-              </div>
-            </div>
-          )}
-          
           <div className="mt-4 p-3 bg-slate-700/30 rounded-lg">
             <p className="text-xs text-slate-400 leading-relaxed">
               <strong className="text-slate-300">How it works:</strong> When enabled, auto backup monitors for data changes and quietly downloads updated JSON files to your Files app. 
@@ -541,8 +421,8 @@ export default function SettingsPage() {
                 }`}
               >
                 <div
-                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                    settings.hideQuoteOfTheDay ? 'translate-x-6' : 'translate-x-0.5'
+                  className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                    settings.hideQuoteOfTheDay ? 'translate-x-5' : 'translate-x-0'
                   }`}
                 />
               </button>
@@ -561,8 +441,8 @@ export default function SettingsPage() {
                 }`}
               >
                 <div
-                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                    settings.hideTodaysTotals ? 'translate-x-6' : 'translate-x-0.5'
+                  className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                    settings.hideTodaysTotals ? 'translate-x-5' : 'translate-x-0'
                   }`}
                 />
               </button>
@@ -581,8 +461,8 @@ export default function SettingsPage() {
                 }`}
               >
                 <div
-                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                    settings.hideRecentActivity ? 'translate-x-6' : 'translate-x-0.5'
+                  className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                    settings.hideRecentActivity ? 'translate-x-5' : 'translate-x-0'
                   }`}
                 />
               </button>
