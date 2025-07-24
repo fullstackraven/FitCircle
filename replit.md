@@ -149,6 +149,7 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Goal Modals with Progress Visualization**: Upgraded goal setting buttons in Measurements, Hydration, Fasting, and Meditation pages to display goal completion circles alongside editing forms. Each modal now shows current progress vs target goals with color-coded circular progress indicators, providing users immediate visual feedback on their goal achievement status directly within the page-specific goal interface (January 27, 2025)
 - **Body Fat Goal Calculation Fix**: Fixed body fat percentage goal circle to properly handle null values when no body fat measurements exist yet, ensuring accurate progress visualization
 - **Fasting Goal Color Consistency**: Updated fasting goal ring color to amber (rgb(245, 158, 11)) to match the color scheme used in the main Goals page for consistent visual branding
+- **Apple Authentication Fix (July 2025)**: Resolved Apple Sign In authentication errors by replacing Apple ID dependency with device-based secure backup system. Fixed "Sign Up Not Completed" errors by implementing local device fingerprinting for encryption keys instead of requiring Apple Developer credentials. Updated all UI components and maintained full AES-256 encryption functionality with device-specific authentication.
 
 ### Data Persistence and iOS Considerations
 
