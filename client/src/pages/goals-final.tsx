@@ -206,9 +206,9 @@ export default function GoalsPageFinal() {
 
   const meditationProgress = goals.meditationMinutes > 0 ? Math.min((meditationCurrent / goals.meditationMinutes) * 100, 100) : 0;
   const fastingProgress = goals.fastingHours > 0 ? Math.min((fastingCurrent / goals.fastingHours) * 100, 100) : 0;
-  // Weight progress: if current weight is at or below goal, 100%. If over goal, calculate deficit.
+  // Weight progress: similar to body fat - you're working DOWN to target weight (losing weight)
   const weightProgress = goals.weightLbs > 0 && weightCurrent > 0 ? 
-    (weightCurrent <= goals.weightLbs ? 100 : Math.max(0, 100 - ((weightCurrent - goals.weightLbs) / goals.weightLbs * 20))) : 0;
+    (weightCurrent <= goals.weightLbs ? 100 : Math.max(0, (goals.weightLbs / weightCurrent) * 100)) : 0;
   const bodyFatProgress = goals.targetBodyFat > 0 && bodyFatCurrent > 0 ? 
     (bodyFatCurrent <= goals.targetBodyFat ? 100 : Math.min((goals.targetBodyFat / bodyFatCurrent) * 100, 100)) : 0;
   
