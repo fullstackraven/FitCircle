@@ -26,7 +26,8 @@ export default function GoalsPageFinal() {
     fastingHours: 16,
     weightLbs: 150,
     targetBodyFat: 15,
-    workoutConsistency: 100
+    workoutConsistency: 100,
+    weightGoalType: 'lose' // 'lose' or 'gain'
   });
 
   // Load goals from localStorage
@@ -37,6 +38,7 @@ export default function GoalsPageFinal() {
       const fastingGoal = localStorage.getItem('fitcircle_goal_fasting');
       const weightGoal = localStorage.getItem('fitcircle_goal_weight');
       const bodyFatGoal = localStorage.getItem('fitcircle_goal_bodyfat');
+      const weightGoalType = localStorage.getItem('fitcircle_weight_goal_type');
 
       // Check for goals in multiple locations
       let measurementGoals = { targetWeight: 150, targetBodyFat: 15 };
@@ -72,7 +74,8 @@ export default function GoalsPageFinal() {
         fastingHours: fastingGoal ? parseFloat(fastingGoal) : 16,
         weightLbs: weightGoal ? parseFloat(weightGoal) : measurementGoals.targetWeight,
         targetBodyFat: bodyFatGoal ? parseFloat(bodyFatGoal) : measurementGoals.targetBodyFat,
-        workoutConsistency: 100
+        workoutConsistency: 100,
+        weightGoalType: weightGoalType || 'lose'
       }));
     };
 
@@ -206,9 +209,12 @@ export default function GoalsPageFinal() {
 
   const meditationProgress = goals.meditationMinutes > 0 ? Math.min((meditationCurrent / goals.meditationMinutes) * 100, 100) : 0;
   const fastingProgress = goals.fastingHours > 0 ? Math.min((fastingCurrent / goals.fastingHours) * 100, 100) : 0;
-  // Weight progress: similar to body fat - you're working DOWN to target weight (losing weight)
+  // Weight progress: depends on whether goal is to gain or lose weight
   const weightProgress = goals.weightLbs > 0 && weightCurrent > 0 ? 
-    (weightCurrent <= goals.weightLbs ? 100 : Math.max(0, (goals.weightLbs / weightCurrent) * 100)) : 0;
+    (goals.weightGoalType === 'gain' 
+      ? (weightCurrent >= goals.weightLbs ? 100 : Math.min((weightCurrent / goals.weightLbs) * 100, 100))
+      : (weightCurrent <= goals.weightLbs ? 100 : Math.max(0, (goals.weightLbs / weightCurrent) * 100))
+    ) : 0;
   const bodyFatProgress = goals.targetBodyFat > 0 && bodyFatCurrent > 0 ? 
     (bodyFatCurrent <= goals.targetBodyFat ? 100 : Math.min((goals.targetBodyFat / bodyFatCurrent) * 100, 100)) : 0;
   
@@ -234,6 +240,7 @@ export default function GoalsPageFinal() {
   // Editing state
   const [editingGoal, setEditingGoal] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState<string>('');
+  const [isWeightGoalTypeDialogOpen, setIsWeightGoalTypeDialogOpen] = useState(false);
 
   // Wellness Score State
   const [wellnessWeights, setWellnessWeights] = useState({
@@ -293,6 +300,15 @@ export default function GoalsPageFinal() {
     setEditingGoal(null);
     setTempValue('');
   };
+  
+  const handleWeightGoalTypeChange = (type: 'gain' | 'lose') => {
+    localStorage.setItem('fitcircle_weight_goal_type', type);
+    setGoals(prev => ({
+      ...prev,
+      weightGoalType: type
+    }));
+    setIsWeightGoalTypeDialogOpen(false);
+  };
 
   // Define goal items using working pattern
   const goalItems = [
@@ -334,7 +350,8 @@ export default function GoalsPageFinal() {
       color: 'rgb(34, 197, 94)',
       currentValue: weightCurrent,
       goalValue: goals.weightLbs,
-      progress: weightProgress
+      progress: weightProgress,
+      hasSpecialEdit: true // Weight has special goal type setting
     },
     {
       key: 'targetBodyFat',
@@ -428,7 +445,9 @@ export default function GoalsPageFinal() {
                     </div>
                   ) : (
                     <button
-                      onClick={() => handleEdit(item.key, item.goalValue)}
+                      onClick={() => item.hasSpecialEdit && item.key === 'weightLbs' ? 
+                        setIsWeightGoalTypeDialogOpen(true) : 
+                        handleEdit(item.key, item.goalValue)}
                       className="p-1 text-slate-400 hover:text-white"
                     >
                       <Edit3 className="w-3 h-3" />
@@ -515,6 +534,74 @@ export default function GoalsPageFinal() {
                 className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
               >
                 Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Weight Goal Type Dialog */}
+      {isWeightGoalTypeDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Weight Goal Setting</h3>
+            
+            <div className="space-y-4 mb-6">
+              <div className="flex flex-col space-y-3">
+                <label className="text-sm text-slate-300">Goal Type:</label>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => handleWeightGoalTypeChange('lose')}
+                    className={`flex-1 py-3 px-4 rounded-xl border-2 transition-colors ${
+                      goals.weightGoalType === 'lose' 
+                        ? 'border-green-500 bg-green-500/20 text-green-400' 
+                        : 'border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500'
+                    }`}
+                  >
+                    Lose Weight
+                  </button>
+                  <button
+                    onClick={() => handleWeightGoalTypeChange('gain')}
+                    className={`flex-1 py-3 px-4 rounded-xl border-2 transition-colors ${
+                      goals.weightGoalType === 'gain' 
+                        ? 'border-green-500 bg-green-500/20 text-green-400' 
+                        : 'border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500'
+                    }`}
+                  >
+                    Gain Weight
+                  </button>
+                </div>
+              </div>
+              
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm text-slate-300">Target Weight (lbs):</label>
+                <input
+                  type="number"
+                  value={goals.weightLbs}
+                  onChange={(e) => {
+                    const value = parseFloat(e.target.value);
+                    if (value > 0) {
+                      localStorage.setItem('fitcircle_goal_weight', value.toString());
+                      setGoals(prev => ({ ...prev, weightLbs: value }));
+                    }
+                  }}
+                  className="w-full px-3 py-2 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-green-500"
+                  step="0.1"
+                />
+              </div>
+              
+              <div className="text-xs text-slate-400 bg-slate-700 rounded-xl p-3">
+                <strong>Current:</strong> {weightCurrent}lbs<br/>
+                <strong>Target:</strong> {goals.weightLbs}lbs ({goals.weightGoalType === 'lose' ? 'Lose' : 'Gain'} {Math.abs(weightCurrent - goals.weightLbs).toFixed(1)}lbs)
+              </div>
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setIsWeightGoalTypeDialogOpen(false)}
+                className="flex-1 py-2 px-4 bg-slate-700 text-white rounded-xl hover:bg-slate-600"
+              >
+                Done
               </button>
             </div>
           </div>
