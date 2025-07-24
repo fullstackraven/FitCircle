@@ -37,13 +37,26 @@ export default function GoalsPageFinal() {
       const weightGoal = localStorage.getItem('fitcircle_goal_weight');
       const bodyFatGoal = localStorage.getItem('fitcircle_goal_bodyfat');
 
+      // Also check measurements for weight/body fat goals
+      const measurements = localStorage.getItem('fitcircle_measurements');
+      let measurementGoals = { targetWeight: 150, targetBodyFat: 15 };
+      if (measurements) {
+        try {
+          const data = JSON.parse(measurements);
+          measurementGoals.targetWeight = data.targetWeight || 150;
+          measurementGoals.targetBodyFat = data.targetBodyFat || 15;
+        } catch (e) {
+          console.error('Error parsing measurements:', e);
+        }
+      }
+
       setGoals(prev => ({
         ...prev,
         hydrationOz: hydrationGoal ? parseFloat(hydrationGoal) : 64,
         meditationMinutes: meditationGoal ? parseFloat(meditationGoal) : 10,
         fastingHours: fastingGoal ? parseFloat(fastingGoal) : 16,
-        weightLbs: weightGoal ? parseFloat(weightGoal) : 150,
-        targetBodyFat: bodyFatGoal ? parseFloat(bodyFatGoal) : 15,
+        weightLbs: weightGoal ? parseFloat(weightGoal) : measurementGoals.targetWeight,
+        targetBodyFat: bodyFatGoal ? parseFloat(bodyFatGoal) : measurementGoals.targetBodyFat,
         workoutConsistency: 100
       }));
     };
@@ -127,32 +140,33 @@ export default function GoalsPageFinal() {
   };
 
   const getWorkoutConsistency = () => {
-    const workouts = localStorage.getItem('fitcircle_workouts');
-    if (workouts) {
-      try {
-        const data = JSON.parse(workouts);
-        if (data.workouts && Array.isArray(data.workouts)) {
-          const today = new Date().toISOString().split('T')[0];
-          let totalGoals = 0;
-          let goalsHit = 0;
-          
-          data.workouts.forEach((workout: any) => {
-            if (workout.dailyGoal && workout.dailyGoal > 0) {
-              totalGoals++;
-              const todayCount = workout.dailyLogs?.[today] || 0;
-              if (todayCount >= workout.dailyGoal) {
-                goalsHit++;
-              }
-            }
-          });
-          
-          return totalGoals > 0 ? Math.round((goalsHit / totalGoals) * 100) : 0;
+    // Get workout data from localStorage 
+    const workoutData = localStorage.getItem('fitcircle_workouts');
+    if (!workoutData) return 0;
+    
+    try {
+      const data = JSON.parse(workoutData);
+      if (!data.workouts || !Array.isArray(data.workouts)) return 0;
+      
+      const today = new Date().toISOString().split('T')[0];
+      let totalGoals = 0;
+      let goalsHit = 0;
+      
+      data.workouts.forEach((workout: any) => {
+        if (workout.dailyGoal && workout.dailyGoal > 0) {
+          totalGoals++;
+          const todayCount = workout.dailyLogs?.[today] || 0;
+          if (todayCount >= workout.dailyGoal) {
+            goalsHit++;
+          }
         }
-      } catch (e) {
-        return 0;
-      }
+      });
+      
+      return totalGoals > 0 ? Math.round((goalsHit / totalGoals) * 100) : 0;
+    } catch (e) {
+      console.error('Error getting workout consistency:', e);
+      return 0;
     }
-    return 0;
   };
 
   // Calculate progress percentages
