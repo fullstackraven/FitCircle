@@ -147,6 +147,8 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Auto Backup System**: Added ability to view and download previous auto backups from last 7 days, with automatic cleanup of old backups and localStorage storage for later access
 - **Floating Reminders Feature**: Added Apple Reminders-style page accessible via persistent floating gray button in bottom-right corner of all pages. Features clean reminder list interface with circular checkboxes, inline editing, hover controls, and blue accent colors matching iOS design. Includes localStorage persistence and automatic backup integration
 - **Enhanced Goal Modals with Progress Visualization**: Upgraded goal setting buttons in Measurements, Hydration, Fasting, and Meditation pages to display goal completion circles alongside editing forms. Each modal now shows current progress vs target goals with color-coded circular progress indicators, providing users immediate visual feedback on their goal achievement status directly within the page-specific goal interface (January 27, 2025)
+- **Body Fat Goal Calculation Fix**: Fixed body fat percentage goal circle to properly handle null values when no body fat measurements exist yet, ensuring accurate progress visualization
+- **Fasting Goal Color Consistency**: Updated fasting goal ring color to amber (rgb(245, 158, 11)) to match the color scheme used in the main Goals page for consistent visual branding
 
 ### Data Persistence and iOS Considerations
 
