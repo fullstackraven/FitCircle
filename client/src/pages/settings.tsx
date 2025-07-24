@@ -378,7 +378,6 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-white font-medium">Smart Auto Backup</p>
-              <p className="text-sm text-slate-400">Auto-downloads backup to Files app when data changes</p>
             </div>
             <button
               onClick={toggleAutoBackup}
@@ -412,7 +411,6 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-white font-medium">Hide Quote of the Day</p>
-                <p className="text-sm text-slate-400">Remove inspirational quotes from home page</p>
               </div>
               <button
                 onClick={() => updateSetting('hideQuoteOfTheDay', !settings.hideQuoteOfTheDay)}
@@ -432,7 +430,6 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-white font-medium">Hide Today's Totals</p>
-                <p className="text-sm text-slate-400">Remove workout summary from home page</p>
               </div>
               <button
                 onClick={() => updateSetting('hideTodaysTotals', !settings.hideTodaysTotals)}
@@ -452,7 +449,6 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-white font-medium">Hide Recent Activity</p>
-                <p className="text-sm text-slate-400">Remove recent workouts from home page</p>
               </div>
               <button
                 onClick={() => updateSetting('hideRecentActivity', !settings.hideRecentActivity)}
