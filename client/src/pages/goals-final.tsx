@@ -37,14 +37,28 @@ export default function GoalsPageFinal() {
       const weightGoal = localStorage.getItem('fitcircle_goal_weight');
       const bodyFatGoal = localStorage.getItem('fitcircle_goal_bodyfat');
 
+      // Check for goals in multiple locations
+      let measurementGoals = { targetWeight: 150, targetBodyFat: 15 };
+      
+      // Check fitcircle_goals first
+      const goalsData = localStorage.getItem('fitcircle_goals');
+      if (goalsData) {
+        try {
+          const parsed = JSON.parse(goalsData);
+          measurementGoals.targetWeight = parsed.targetWeight || 150;
+          measurementGoals.targetBodyFat = parsed.targetBodyFat || 15;
+        } catch (e) {
+          console.error('Error parsing goals data:', e);
+        }
+      }
+      
       // Also check measurements for weight/body fat goals
       const measurements = localStorage.getItem('fitcircle_measurements');
-      let measurementGoals = { targetWeight: 150, targetBodyFat: 15 };
       if (measurements) {
         try {
           const data = JSON.parse(measurements);
-          measurementGoals.targetWeight = data.targetWeight || 150;
-          measurementGoals.targetBodyFat = data.targetBodyFat || 15;
+          measurementGoals.targetWeight = data.targetWeight || measurementGoals.targetWeight;
+          measurementGoals.targetBodyFat = data.targetBodyFat || measurementGoals.targetBodyFat;
         } catch (e) {
           console.error('Error parsing measurements:', e);
         }
@@ -66,6 +80,27 @@ export default function GoalsPageFinal() {
 
   // Get current values using same logic as working modals
   const { currentDayOz, dailyGoalOz, progressPercentage: hydrationProgress } = useHydration();
+  
+  // Also get hydration from direct localStorage if hook fails
+  const getHydrationData = () => {
+    const hydrationData = localStorage.getItem('fitcircle_hydration_data');
+    if (hydrationData) {
+      try {
+        const data = JSON.parse(hydrationData);
+        return {
+          currentDayOz: data.currentDayOz || 0,
+          dailyGoalOz: data.dailyGoalOz || 64
+        };
+      } catch (e) {
+        return { currentDayOz: 0, dailyGoalOz: 64 };
+      }
+    }
+    return { currentDayOz: 0, dailyGoalOz: 64 };
+  };
+  
+  const hydrationBackup = getHydrationData();
+  const actualCurrentOz = currentDayOz || hydrationBackup.currentDayOz;
+  const actualGoalOz = dailyGoalOz || hydrationBackup.dailyGoalOz;
 
   const getCurrentMeditation = () => {
     const meditationLogs = localStorage.getItem('fitcircle_meditation_logs');
@@ -114,6 +149,13 @@ export default function GoalsPageFinal() {
   };
 
   const getCurrentWeight = () => {
+    // Check direct weight value first
+    const weight = localStorage.getItem('fitcircle_weight');
+    if (weight) {
+      return parseFloat(weight) || 0;
+    }
+    
+    // Fallback to measurements object
     const measurements = localStorage.getItem('fitcircle_measurements');
     if (measurements) {
       try {
@@ -127,6 +169,13 @@ export default function GoalsPageFinal() {
   };
 
   const getCurrentBodyFat = () => {
+    // Check direct body fat value first
+    const bodyFat = localStorage.getItem('fitcircle_body_fat');
+    if (bodyFat) {
+      return parseFloat(bodyFat) || 0;
+    }
+    
+    // Fallback to measurements object
     const measurements = localStorage.getItem('fitcircle_measurements');
     if (measurements) {
       try {
@@ -140,27 +189,45 @@ export default function GoalsPageFinal() {
   };
 
   const getWorkoutConsistency = () => {
-    // Get workout data from localStorage 
-    const workoutData = localStorage.getItem('fitcircle_workouts');
+    // Check both possible workout data locations
+    let workoutData = localStorage.getItem('fitcircle_workouts');
+    if (!workoutData) {
+      workoutData = localStorage.getItem('workout-tracker-data');
+    }
+    
     if (!workoutData) return 0;
     
     try {
       const data = JSON.parse(workoutData);
-      if (!data.workouts || !Array.isArray(data.workouts)) return 0;
-      
       const today = new Date().toISOString().split('T')[0];
       let totalGoals = 0;
       let goalsHit = 0;
       
-      data.workouts.forEach((workout: any) => {
-        if (workout.dailyGoal && workout.dailyGoal > 0) {
-          totalGoals++;
-          const todayCount = workout.dailyLogs?.[today] || 0;
-          if (todayCount >= workout.dailyGoal) {
-            goalsHit++;
+      // Handle new data structure (object with workout objects)
+      if (data.workouts && typeof data.workouts === 'object' && !Array.isArray(data.workouts)) {
+        Object.values(data.workouts).forEach((workout: any) => {
+          if (workout.dailyGoal && workout.dailyGoal > 0) {
+            totalGoals++;
+            // Check daily logs for today
+            const todayCount = data.dailyLogs?.[today]?.[workout.id] || workout.count || 0;
+            if (todayCount >= workout.dailyGoal) {
+              goalsHit++;
+            }
           }
-        }
-      });
+        });
+      }
+      // Handle old data structure (array of workouts)
+      else if (data.workouts && Array.isArray(data.workouts)) {
+        data.workouts.forEach((workout: any) => {
+          if (workout.dailyGoal && workout.dailyGoal > 0) {
+            totalGoals++;
+            const todayCount = workout.dailyLogs?.[today] || 0;
+            if (todayCount >= workout.dailyGoal) {
+              goalsHit++;
+            }
+          }
+        });
+      }
       
       return totalGoals > 0 ? Math.round((goalsHit / totalGoals) * 100) : 0;
     } catch (e) {
@@ -181,6 +248,9 @@ export default function GoalsPageFinal() {
   const weightProgress = goals.weightLbs > 0 && weightCurrent > 0 ? Math.min((goals.weightLbs / weightCurrent) * 100, 100) : 0;
   const bodyFatProgress = goals.targetBodyFat > 0 && bodyFatCurrent > 0 ? 
     (bodyFatCurrent <= goals.targetBodyFat ? 100 : Math.min((goals.targetBodyFat / bodyFatCurrent) * 100, 100)) : 0;
+  
+  // Fix hydration progress to use actual values
+  const actualHydrationProgress = actualGoalOz > 0 ? Math.min((actualCurrentOz / actualGoalOz) * 100, 100) : 0;
 
   // Calculate overall wellness score
   const calculateWellnessScore = (): number => {
@@ -188,7 +258,7 @@ export default function GoalsPageFinal() {
     if (totalWeight === 0) return 0;
 
     let weightedScore = 0;
-    weightedScore += (hydrationProgress * wellnessWeights.hydrationOz) / totalWeight;
+    weightedScore += (actualHydrationProgress * wellnessWeights.hydrationOz) / totalWeight;
     weightedScore += (meditationProgress * wellnessWeights.meditationMinutes) / totalWeight;
     weightedScore += (fastingProgress * wellnessWeights.fastingHours) / totalWeight;
     weightedScore += (weightProgress * wellnessWeights.weightLbs) / totalWeight;
@@ -269,9 +339,9 @@ export default function GoalsPageFinal() {
       unit: 'oz',
       icon: Droplet,
       color: 'rgb(59, 130, 246)',
-      currentValue: Math.round(currentDayOz),
-      goalValue: goals.hydrationOz,
-      progress: hydrationProgress
+      currentValue: Math.round(actualCurrentOz),
+      goalValue: actualGoalOz,
+      progress: actualHydrationProgress
     },
     {
       key: 'meditationMinutes',
