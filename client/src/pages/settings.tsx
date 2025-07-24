@@ -1,28 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Upload, Download, ToggleLeft, ToggleRight, History, FileText, Cloud, Shield, User, LogOut, Lock } from 'lucide-react';
+import { ArrowLeft, Upload, Download, ToggleLeft, ToggleRight, History, FileText } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
-import { 
-  initializeSecureBackup, 
-  signInWithDevice, 
-  isSignedIn, 
-  getCurrentUser, 
-  signOut,
-  getUserIdForEncryption,
-  type SecureUser 
-} from '@/lib/apple-auth';
-import { 
-  isEncryptionSupported,
-  createEncryptedBackupFile,
-  parseEncryptedBackupFile 
-} from '@/lib/backup-encryption';
-import { 
-  saveToiCloudDrive,
-  openCloudFilePicker,
-  supportsCloudIntegration,
-  getCloudInstructionText,
-  createBackupFilename 
-} from '@/lib/icloud-backup';
+
 
 export default function SettingsPage() {
   const [, navigate] = useLocation();
@@ -34,13 +14,7 @@ export default function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
 
-  // Secure backup states
-  const [secureUser, setSecureUser] = useState<SecureUser | null>(null);
-  const [secureSignedIn, setSecureSignedIn] = useState(false);
-  const [isInitializingSecure, setIsInitializingSecure] = useState(false);
-  const [isCreatingSecureBackup, setIsCreatingSecureBackup] = useState(false);
-  const [isRestoringSecureBackup, setIsRestoringSecureBackup] = useState(false);
-  const [secureBackupStatus, setSecureBackupStatus] = useState<string>('');
+
   
   // Function to get local date string (not UTC)
   const getLocalDateString = () => {
@@ -62,49 +36,75 @@ export default function SettingsPage() {
     }
   };
 
-  // Check auto backup status on mount and set up scheduling
+  // Set up auto backup monitoring system
   useEffect(() => {
     const autoBackup = localStorage.getItem('fitcircle_auto_backup');
     const isEnabled = autoBackup === 'true';
     setAutoBackupEnabled(isEnabled);
     
-    // Check secure backup status
-    setSecureSignedIn(isSignedIn());
-    setSecureUser(getCurrentUser());
-    
-    // If auto backup is enabled, check if we need to perform a backup
     if (isEnabled) {
-      checkAndPerformBackup();
+      // Initial backup check when app loads
+      setTimeout(() => checkAndPerformBackup(), 2000);
+      
+      // Set up localStorage monitoring for data changes
+      const originalSetItem = localStorage.setItem;
+      localStorage.setItem = function(key: string, value: string) {
+        const result = originalSetItem.call(this, key, value);
+        
+        // Only trigger backup for actual app data (not backup metadata)
+        if (!key.startsWith('fitcircle_auto_backup') && 
+            !key.startsWith('fitcircle_last_backup') &&
+            isEnabled) {
+          // Debounce backup calls to avoid too many downloads
+          clearTimeout((window as any).backupTimeout);
+          (window as any).backupTimeout = setTimeout(() => {
+            checkAndPerformBackup();
+          }, 5000); // Wait 5 seconds after last data change
+        }
+        
+        return result;
+      };
+      
+      // Schedule daily backup
       scheduleAutoBackup();
       
-      // Check every minute when the page is active
-      const interval = setInterval(checkAndPerformBackup, 60000);
-      
-      // Also check when the page becomes visible again
+      // Check when app becomes visible (user returns to app)
       const handleVisibilityChange = () => {
-        if (!document.hidden) {
-          checkAndPerformBackup();
+        if (!document.hidden && isEnabled) {
+          setTimeout(() => checkAndPerformBackup(), 1000);
         }
       };
       
       document.addEventListener('visibilitychange', handleVisibilityChange);
       
       return () => {
-        clearInterval(interval);
+        // Restore original localStorage.setItem
+        localStorage.setItem = originalSetItem;
         document.removeEventListener('visibilitychange', handleVisibilityChange);
+        if ((window as any).backupTimeout) {
+          clearTimeout((window as any).backupTimeout);
+        }
       };
     }
-  }, []);
+  }, [autoBackupEnabled]);
 
+  // Enhanced backup checking that also responds to data changes
   const checkAndPerformBackup = () => {
     const now = new Date();
     const lastBackupStr = localStorage.getItem('fitcircle_last_backup_date');
     const today = getLocalDateString();
     
-    // If we haven't backed up today and it's past 11:00 PM (more flexible window), perform backup
-    if (lastBackupStr !== today && now.getHours() >= 23) {
+    // Perform backup if:
+    // 1. We haven't backed up today and it's past 11:00 PM, OR
+    // 2. Data has changed significantly since last backup (regardless of time)
+    const shouldBackupByTime = lastBackupStr !== today && now.getHours() >= 23;
+    
+    if (shouldBackupByTime) {
       performAutoBackup();
       localStorage.setItem('fitcircle_last_backup_date', today);
+    } else {
+      // Check for data changes even if it's not backup time
+      performAutoBackup(); // This function now has built-in change detection
     }
   };
 
@@ -135,29 +135,58 @@ export default function SettingsPage() {
         }
       }
       
-      // Store the backup data in localStorage for later access
-      const backupData = JSON.stringify(snapshot, null, 2);
-      const dateKey = getLocalDateString();
-      localStorage.setItem(`fitcircle_auto_backup_${dateKey}`, backupData);
+      // Check if data has actually changed since last backup
+      const currentDataHash = btoa(JSON.stringify(snapshot)).slice(0, 16);
+      const lastBackupInfo = localStorage.getItem('fitcircle_last_auto_backup_info');
+      let shouldBackup = true;
       
-      // Also download immediately as before
-      const blob = new Blob([backupData], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `fitcircle-auto-backup-${dateKey}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      if (lastBackupInfo) {
+        try {
+          const info = JSON.parse(lastBackupInfo);
+          if (info.dataHash === currentDataHash) {
+            shouldBackup = false; // No changes detected
+          }
+        } catch {}
+      }
       
-      // Track this automatic download
-      trackBackupDownload(dateKey);
-      
-      // Clean up old backups (keep only last 7 days)
-      cleanupOldBackups();
-      
-      console.log('✅ Auto backup completed with', Object.keys(snapshot).length, 'items');
+      if (shouldBackup) {
+        // Store the backup data in localStorage for later access
+        const backupData = JSON.stringify(snapshot, null, 2);
+        const dateKey = getLocalDateString();
+        localStorage.setItem(`fitcircle_auto_backup_${dateKey}`, backupData);
+        
+        // Download backup with consistent filename (overwrites previous)
+        const blob = new Blob([backupData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        
+        // Use consistent filename so it overwrites in Downloads/Files
+        link.download = 'fitcircle-auto-backup.json';
+        
+        // Make download silent and iOS-compatible
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        // Save backup info for change detection
+        const backupInfo = {
+          timestamp: new Date().toISOString(),
+          itemCount: Object.keys(snapshot).length,
+          dataHash: currentDataHash
+        };
+        localStorage.setItem('fitcircle_last_auto_backup_info', JSON.stringify(backupInfo));
+        
+        // Track this automatic download
+        trackBackupDownload(dateKey);
+        
+        // Clean up old backups (keep only last 7 days)
+        cleanupOldBackups();
+        
+        console.log('✅ Auto backup completed with', Object.keys(snapshot).length, 'items');
+      }
     } catch (error) {
       console.error('Auto backup failed:', error);
     }
@@ -249,6 +278,11 @@ export default function SettingsPage() {
     localStorage.setItem('fitcircle_auto_backup', newState.toString());
     
     if (newState) {
+      // Immediate backup when enabled
+      setTimeout(() => {
+        performAutoBackup();
+        localStorage.setItem('fitcircle_last_backup_date', getLocalDateString());
+      }, 500);
       scheduleAutoBackup();
     }
   };
@@ -338,129 +372,7 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
-  // Secure Backup Functions
-  const handleSecureSignIn = async () => {
-    setIsInitializingSecure(true);
-    setSecureBackupStatus('Setting up secure backup...');
-    
-    try {
-      await initializeSecureBackup();
-      const result = await signInWithDevice();
-      
-      setSecureSignedIn(true);
-      setSecureUser(result.user || null);
-      setSecureBackupStatus('Secure backup ready!');
-      
-      setTimeout(() => setSecureBackupStatus(''), 3000);
-    } catch (error) {
-      setSecureBackupStatus('Failed to set up secure backup. Please try again.');
-      setTimeout(() => setSecureBackupStatus(''), 3000);
-    } finally {
-      setIsInitializingSecure(false);
-    }
-  };
 
-  const handleSecureSignOut = () => {
-    signOut();
-    setSecureSignedIn(false);
-    setSecureUser(null);
-    setSecureBackupStatus('Signed out successfully');
-    setTimeout(() => setSecureBackupStatus(''), 3000);
-  };
-
-  const createSecureBackup = async () => {
-    if (!secureSignedIn) {
-      setSecureBackupStatus('Please set up secure backup first');
-      setTimeout(() => setSecureBackupStatus(''), 3000);
-      return;
-    }
-
-    const userId = getUserIdForEncryption();
-    if (!userId) {
-      setSecureBackupStatus('No encryption key available');
-      setTimeout(() => setSecureBackupStatus(''), 3000);
-      return;
-    }
-
-    setIsCreatingSecureBackup(true);
-    setSecureBackupStatus('Creating encrypted backup...');
-
-    try {
-      // Create snapshot of all localStorage data
-      const snapshot: Record<string, string> = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key) {
-          const value = localStorage.getItem(key);
-          if (value) snapshot[key] = value;
-        }
-      }
-
-      // Create encrypted backup file
-      const encryptedBlob = await createEncryptedBackupFile(snapshot, userId);
-      const filename = createBackupFilename(true);
-
-      // Save to iCloud Drive
-      const success = await saveToiCloudDrive(encryptedBlob, filename);
-      
-      if (success) {
-        setSecureBackupStatus(`Secure backup created! ${Object.keys(snapshot).length} items encrypted.`);
-      } else {
-        setSecureBackupStatus('Backup created but failed to save to iCloud Drive');
-      }
-      
-      setTimeout(() => setSecureBackupStatus(''), 4000);
-    } catch (error) {
-      setSecureBackupStatus('Failed to create secure backup. Please try again.');
-      setTimeout(() => setSecureBackupStatus(''), 3000);
-    } finally {
-      setIsCreatingSecureBackup(false);
-    }
-  };
-
-  const restoreSecureBackup = async () => {
-    if (!secureSignedIn) {
-      setSecureBackupStatus('Please set up secure backup first');
-      setTimeout(() => setSecureBackupStatus(''), 3000);
-      return;
-    }
-
-    const userId = getUserIdForEncryption();
-    if (!userId) {
-      setSecureBackupStatus('No decryption key available');
-      setTimeout(() => setSecureBackupStatus(''), 3000);
-      return;
-    }
-
-    setIsRestoringSecureBackup(true);
-    setSecureBackupStatus('Choose encrypted backup file...');
-
-    try {
-      const file = await openCloudFilePicker();
-      setSecureBackupStatus('Decrypting backup...');
-      
-      const decryptedData = await parseEncryptedBackupFile(file, userId);
-      
-      // Clear and restore localStorage
-      localStorage.clear();
-      let count = 0;
-      Object.entries(decryptedData).forEach(([key, value]) => {
-        localStorage.setItem(key, value);
-        count++;
-      });
-      
-      setSecureBackupStatus(`Successfully restored ${count} items from secure backup!`);
-      setTimeout(() => {
-        setSecureBackupStatus('');
-        window.location.href = '/';
-      }, 2000);
-    } catch (error) {
-      setSecureBackupStatus('Failed to restore backup. Check that the file is valid.');
-      setTimeout(() => setSecureBackupStatus(''), 4000);
-    } finally {
-      setIsRestoringSecureBackup(false);
-    }
-  };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
@@ -522,96 +434,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Apple iCloud Secure Backup Section */}
-        {isEncryptionSupported() && supportsCloudIntegration() && (
-          <div className="bg-slate-800 rounded-xl p-6 mb-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Shield className="w-6 h-6 text-blue-400" />
-              <h2 className="text-lg font-semibold text-white">Secure Cloud Backup</h2>
-            </div>
-            
-            <p className="text-sm text-slate-400 mb-6">
-              Set up secure backup to create encrypted backups that only you can access. 
-              {getCloudInstructionText()}
-            </p>
-            
-            {/* Secure Backup Status */}
-            <div className="bg-slate-700/50 rounded-xl p-4 mb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <User className="w-5 h-5 text-slate-400" />
-                  <div>
-                    <p className="font-medium text-white">
-                      {secureSignedIn ? 'Secure backup enabled' : 'Secure backup not set up'}
-                    </p>
-                    <p className="text-xs text-slate-400">
-                      {secureSignedIn ? 'Ready for secure backups' : 'Set up to enable encrypted backups'}
-                    </p>
-                  </div>
-                </div>
-                
-                {secureSignedIn ? (
-                  <button
-                    onClick={handleSecureSignOut}
-                    className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg flex items-center gap-1.5 transition-colors"
-                  >
-                    <LogOut className="w-3 h-3" />
-                    Reset
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleSecureSignIn}
-                    disabled={isInitializingSecure}
-                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg flex items-center gap-1.5 transition-colors disabled:opacity-50"
-                  >
-                    <Shield className="w-3 h-3" />
-                    {isInitializingSecure ? 'Setting up...' : 'Set Up'}
-                  </button>
-                )}
-              </div>
-            </div>
-            
-            {/* Secure Backup Actions */}
-            <div className="space-y-3">
-              <button
-                onClick={createSecureBackup}
-                disabled={!secureSignedIn || isCreatingSecureBackup}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:opacity-50 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors"
-              >
-                <Lock className="w-5 h-5" />
-                {isCreatingSecureBackup ? 'Creating Encrypted Backup...' : 'Create Secure Backup'}
-              </button>
-              
-              <button
-                onClick={restoreSecureBackup}
-                disabled={!secureSignedIn || isRestoringSecureBackup}
-                className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-slate-600 disabled:opacity-50 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors"
-              >
-                <Upload className="w-5 h-5" />
-                {isRestoringSecureBackup ? 'Restoring from Backup...' : 'Restore Secure Backup'}
-              </button>
-            </div>
-            
-            {secureBackupStatus && (
-              <div className={`mt-4 p-3 rounded-xl text-sm text-center ${
-                secureBackupStatus.includes('Success') || secureBackupStatus.includes('created') || secureBackupStatus.includes('restored')
-                  ? 'bg-green-900/50 text-green-300 border border-green-700' 
-                  : secureBackupStatus.includes('Failed') || secureBackupStatus.includes('Error')
-                  ? 'bg-red-900/50 text-red-300 border border-red-700'
-                  : 'bg-blue-900/50 text-blue-300 border border-blue-700'
-              }`}>
-                {secureBackupStatus}
-              </div>
-            )}
-            
-            <div className="mt-4 p-3 bg-slate-700/30 rounded-lg">
-              <p className="text-xs text-slate-400 leading-relaxed">
-                <strong className="text-slate-300">Security:</strong> Your data is encrypted with AES-256 using your device as the key. 
-                Only your device can decrypt your backups. We never store your encryption keys or have access to your unencrypted data.
-              </p>
-            </div>
-          </div>
-        )}
+
 
         {/* Auto Backup Section */}
         <div className="bg-slate-800 rounded-xl p-6 mb-6">
@@ -628,8 +451,8 @@ export default function SettingsPage() {
           
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-white font-medium">Daily Auto Backup</p>
-              <p className="text-sm text-slate-400">Automatically backup at 11:59 PM daily</p>
+              <p className="text-white font-medium">Smart Auto Backup</p>
+              <p className="text-sm text-slate-400">Auto-downloads backup to Files app when data changes</p>
             </div>
             <button
               onClick={toggleAutoBackup}
@@ -683,6 +506,13 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
+          
+          <div className="mt-4 p-3 bg-slate-700/30 rounded-lg">
+            <p className="text-xs text-slate-400 leading-relaxed">
+              <strong className="text-slate-300">How it works:</strong> When enabled, auto backup monitors for data changes and quietly downloads updated JSON files to your Files app. 
+              The backup file "fitcircle-auto-backup.json" will overwrite the previous version, keeping your Files app organized.
+            </p>
+          </div>
         </div>
 
         {/* Controls Section */}
