@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, Plus, Edit, Trash2, Target } from 'lucide-react';
+import { ArrowLeft, Clock, Plus, Edit, Trash2, Target, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { GoalCircle } from '@/components/GoalCircle';
 
 interface FastingLog {
   id: string;
@@ -400,8 +401,47 @@ export default function FastingPage() {
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-4">Set Fasting Goal</h3>
+          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-lg">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-white">Fasting Goal</h3>
+              <button
+                onClick={() => setIsGoalModalOpen(false)}
+                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Goal Progress Circle */}
+            <div className="flex justify-center mb-8">
+              <GoalCircle
+                percentage={(() => {
+                  const goalHours = parseFloat(goalHoursInput) || 0;
+                  if (goalHours === 0 || logs.length === 0) return 0;
+                  
+                  // Calculate average fasting hours from recent logs
+                  const recentLogs = logs.slice(-7); // Last 7 fasts
+                  const totalHours = recentLogs.reduce((sum, log) => sum + (log.duration / 60), 0);
+                  const averageHours = totalHours / recentLogs.length;
+                  
+                  return Math.min(100, (averageHours / goalHours) * 100);
+                })()}
+                color="rgb(168, 85, 247)"
+                size={120}
+                currentValue={(() => {
+                  if (logs.length === 0) return 0;
+                  const recentLogs = logs.slice(-7);
+                  const totalHours = recentLogs.reduce((sum, log) => sum + (log.duration / 60), 0);
+                  return Math.round((totalHours / recentLogs.length) * 10) / 10;
+                })()}
+                goalValue={parseFloat(goalHoursInput) || 0}
+                unit="hrs"
+                title="Average Fast Duration"
+                description="Last 7 fasts average"
+              />
+            </div>
+
+            {/* Goal Input Form */}
             <div className="space-y-4">
               <div>
                 <Label htmlFor="goalHours" className="text-slate-300">
@@ -416,7 +456,7 @@ export default function FastingPage() {
                   placeholder="Enter hours (e.g., 16)"
                 />
               </div>
-              <div className="flex space-x-3">
+              <div className="flex space-x-3 pt-4">
                 <Button
                   variant="outline"
                   onClick={() => setIsGoalModalOpen(false)}

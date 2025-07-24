@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Play, Pause, Square, ChevronDown, ChevronUp, Target } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Square, ChevronDown, ChevronUp, Target, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { GoalCircle } from '@/components/GoalCircle';
 
 interface MeditationLog {
   id: string;
@@ -441,8 +442,47 @@ export default function MeditationPage() {
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-4">Set Daily Goal</h3>
+          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-lg">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-white">Meditation Goal</h3>
+              <button
+                onClick={() => setIsGoalModalOpen(false)}
+                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Goal Progress Circle */}
+            <div className="flex justify-center mb-8">
+              <GoalCircle
+                percentage={(() => {
+                  const goalMinutes = parseFloat(goalMinutesInput) || 0;
+                  if (goalMinutes === 0 || logs.length === 0) return 0;
+                  
+                  // Calculate 7-day average meditation time
+                  const last7Days = logs.slice(-7);
+                  const totalMinutes = last7Days.reduce((sum, session) => sum + session.duration, 0);
+                  const averageMinutes = totalMinutes / Math.max(last7Days.length, 1);
+                  
+                  return Math.min(100, (averageMinutes / goalMinutes) * 100);
+                })()}
+                color="rgb(147, 51, 234)"
+                size={120}
+                currentValue={(() => {
+                  if (logs.length === 0) return 0;
+                  const last7Days = logs.slice(-7);
+                  const totalMinutes = last7Days.reduce((sum, session) => sum + session.duration, 0);
+                  return Math.round(totalMinutes / Math.max(last7Days.length, 1));
+                })()}
+                goalValue={parseFloat(goalMinutesInput) || 0}
+                unit="min"
+                title="Daily Meditation"
+                description="7-day average"
+              />
+            </div>
+
+            {/* Goal Input Form */}
             <div className="space-y-4">
               <div>
                 <Label htmlFor="goalMinutes" className="text-slate-300">
@@ -454,9 +494,10 @@ export default function MeditationPage() {
                   value={goalMinutesInput}
                   onChange={(e) => setGoalMinutesInput(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
+                  placeholder="Enter daily goal in minutes"
                 />
               </div>
-              <div className="flex space-x-3">
+              <div className="flex space-x-3 pt-4">
                 <Button
                   variant="outline"
                   onClick={() => setIsGoalModalOpen(false)}

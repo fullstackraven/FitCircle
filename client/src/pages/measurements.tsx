@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, TrendingUp, TrendingDown, Minus, Target } from 'lucide-react';
+import { ChevronLeft, TrendingUp, TrendingDown, Minus, Target, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useMeasurements } from '@/hooks/use-measurements';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { GoalCircle } from '@/components/GoalCircle';
 
 interface MeasurementFieldConfig {
   key: keyof import('@/hooks/use-measurements').MeasurementData;
@@ -296,8 +297,59 @@ export default function MeasurementsPage() {
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-4">Set Goals</h3>
+          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-lg">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-white">Measurement Goals</h3>
+              <button
+                onClick={() => setIsGoalModalOpen(false)}
+                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Goal Progress Circles */}
+            <div className="flex justify-center space-x-8 mb-8">
+              {/* Weight Goal Circle */}
+              <GoalCircle
+                percentage={(() => {
+                  const currentWeight = getLatestValue('weight') || 0;
+                  const targetWeight = parseFloat(goalWeightInput) || 0;
+                  if (targetWeight === 0 || currentWeight === 0) return 0;
+                  const tolerance = targetWeight * 0.05; // 5% tolerance
+                  const difference = Math.abs(currentWeight - targetWeight);
+                  return Math.max(0, Math.min(100, 100 - (difference / tolerance) * 100));
+                })()}
+                color="rgb(34, 197, 94)"
+                size={100}
+                currentValue={getLatestValue('weight') || 0}
+                goalValue={parseFloat(goalWeightInput) || 0}
+                unit="lbs"
+                title="Weight"
+                description="Current vs target"
+              />
+              
+              {/* Body Fat Goal Circle */}
+              <GoalCircle
+                percentage={(() => {
+                  const currentBodyFat = getLatestValue('bodyFat') || 0;
+                  const targetBodyFat = parseFloat(goalBodyFatInput) || 0;
+                  if (targetBodyFat === 0 || currentBodyFat === 0) return 0;
+                  const tolerance = targetBodyFat * 0.1; // 10% tolerance
+                  const difference = Math.abs(currentBodyFat - targetBodyFat);
+                  return Math.max(0, Math.min(100, 100 - (difference / tolerance) * 100));
+                })()}
+                color="rgb(168, 85, 247)"
+                size={100}
+                currentValue={getLatestValue('bodyFat') || 0}
+                goalValue={parseFloat(goalBodyFatInput) || 0}
+                unit="%"
+                title="Body Fat"
+                description="Current vs target"
+              />
+            </div>
+
+            {/* Goal Input Forms */}
             <div className="space-y-4">
               <div>
                 <Label htmlFor="goalWeight" className="text-slate-300">
@@ -325,7 +377,7 @@ export default function MeasurementsPage() {
                   placeholder="Enter target body fat %"
                 />
               </div>
-              <div className="flex space-x-3">
+              <div className="flex space-x-3 pt-4">
                 <Button
                   variant="outline"
                   onClick={() => setIsGoalModalOpen(false)}

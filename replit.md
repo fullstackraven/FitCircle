@@ -146,6 +146,7 @@ Preferred communication style: Simple, everyday language.
 - **Timezone Fix for Backups**: Fixed backup file naming to use local timezone instead of UTC, ensuring backup files are correctly dated according to user's local time zone rather than showing next day when created in evening hours
 - **Enhanced Auto Backup System**: Added ability to view and download previous auto backups from last 7 days, with automatic cleanup of old backups and localStorage storage for later access
 - **Floating Reminders Feature**: Added Apple Reminders-style page accessible via persistent floating gray button in bottom-right corner of all pages. Features clean reminder list interface with circular checkboxes, inline editing, hover controls, and blue accent colors matching iOS design. Includes localStorage persistence and automatic backup integration
+- **Enhanced Goal Modals with Progress Visualization**: Upgraded goal setting buttons in Measurements, Hydration, Fasting, and Meditation pages to display goal completion circles alongside editing forms. Each modal now shows current progress vs target goals with color-coded circular progress indicators, providing users immediate visual feedback on their goal achievement status directly within the page-specific goal interface (January 27, 2025)
 
 ### Data Persistence and iOS Considerations
 

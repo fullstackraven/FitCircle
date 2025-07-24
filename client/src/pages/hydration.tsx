@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { ChevronLeft, Plus, ChevronDown, ChevronRight, Target } from 'lucide-react';
+import { ChevronLeft, Plus, ChevronDown, ChevronRight, Target, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useHydration } from '@/hooks/use-hydration';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { GoalCircle } from '@/components/GoalCircle';
 
 export default function HydrationPage() {
   const [, navigate] = useLocation();
@@ -296,8 +297,32 @@ export default function HydrationPage() {
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-4">Set Daily Goal</h3>
+          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-lg">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-white">Hydration Goal</h3>
+              <button
+                onClick={() => setIsGoalModalOpen(false)}
+                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Goal Progress Circle */}
+            <div className="flex justify-center mb-8">
+              <GoalCircle
+                percentage={progressPercentage}
+                color="rgb(59, 130, 246)"
+                size={120}
+                currentValue={Math.round(currentDayOz)}
+                goalValue={parseFloat(newGoal) || dailyGoalOz}
+                unit="oz"
+                title="Daily Hydration"
+                description="Today's progress"
+              />
+            </div>
+
+            {/* Goal Input Form */}
             <div className="space-y-4">
               <div>
                 <Label htmlFor="goal" className="text-slate-300">
@@ -309,9 +334,10 @@ export default function HydrationPage() {
                   value={newGoal}
                   onChange={(e) => setNewGoal(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
+                  placeholder="Enter daily hydration goal"
                 />
               </div>
-              <div className="flex space-x-3">
+              <div className="flex space-x-3 pt-4">
                 <Button
                   variant="outline"
                   onClick={() => setIsGoalModalOpen(false)}
