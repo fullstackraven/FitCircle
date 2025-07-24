@@ -290,19 +290,29 @@ export default function GoalsPage() {
       icon: Percent,
       description: 'Current body fat vs target',
       progress: (() => {
-        const currentBodyFat = getLatestValue('bodyFat') || 0;
-        const targetBodyFat = goals.targetBodyFat || 0;
-        if (targetBodyFat === 0) return 0;
-        
-        // Calculate progress - closer to target = higher percentage
-        // If current is higher than target, show progress as (target/current * 100)
-        // If current is lower than target, show 100%
-        if (currentBodyFat === 0) return 0;
-        if (currentBodyFat <= targetBodyFat) return 100;
-        return Math.min(100, (targetBodyFat / currentBodyFat) * 100);
+        try {
+          const currentBodyFat = getLatestValue('bodyFat') || 0;
+          const targetBodyFat = goals.targetBodyFat || 0;
+          if (targetBodyFat === 0) return 0;
+          
+          // Calculate progress - closer to target = higher percentage
+          // If current is higher than target, show progress as (target/current * 100)
+          // If current is lower than target, show 100%
+          if (currentBodyFat === 0) return 0;
+          if (currentBodyFat <= targetBodyFat) return 100;
+          return Math.min(100, (targetBodyFat / currentBodyFat) * 100);
+        } catch (e) {
+          return 0;
+        }
       })(),
       color: 'rgb(239, 68, 68)', // red
-      currentValue: getLatestValue('bodyFat') || 0
+      currentValue: (() => {
+        try {
+          return getLatestValue('bodyFat') || 0;
+        } catch (e) {
+          return 0;
+        }
+      })()
     },
     {
       key: 'workoutConsistency' as keyof typeof goals,
@@ -311,11 +321,21 @@ export default function GoalsPage() {
       icon: Target,
       description: 'Overall workout goal completion',
       progress: (() => {
-        const totalStats = getTotalStats();
-        return totalStats.totalGoalPercentage || 0;
+        try {
+          const totalStats = getTotalStats();
+          return totalStats.totalGoalPercentage || 0;
+        } catch (e) {
+          return 0;
+        }
       })(),
       color: 'rgb(16, 185, 129)', // emerald
-      currentValue: Math.round((getTotalStats().totalGoalPercentage || 0) * 10) / 10
+      currentValue: (() => {
+        try {
+          return Math.round((getTotalStats().totalGoalPercentage || 0) * 10) / 10;
+        } catch (e) {
+          return 0;
+        }
+      })()
     }
   ];
 
@@ -331,21 +351,29 @@ export default function GoalsPage() {
     weightedScore += (progress.weightProgress * wellnessWeights.weightLbs) / totalWeight;
     
     // Target body fat progress calculation
-    const currentBodyFat = getLatestValue('bodyFat') || 0;
-    const targetBodyFat = goals.targetBodyFat || 0;
-    let bodyFatProgress = 0;
-    if (targetBodyFat > 0 && currentBodyFat > 0) {
-      if (currentBodyFat <= targetBodyFat) {
-        bodyFatProgress = 100;
-      } else {
-        bodyFatProgress = Math.min(100, (targetBodyFat / currentBodyFat) * 100);
+    try {
+      const currentBodyFat = getLatestValue('bodyFat') || 0;
+      const targetBodyFat = goals.targetBodyFat || 0;
+      let bodyFatProgress = 0;
+      if (targetBodyFat > 0 && currentBodyFat > 0) {
+        if (currentBodyFat <= targetBodyFat) {
+          bodyFatProgress = 100;
+        } else {
+          bodyFatProgress = Math.min(100, (targetBodyFat / currentBodyFat) * 100);
+        }
       }
+      weightedScore += (bodyFatProgress * wellnessWeights.targetBodyFat) / totalWeight;
+    } catch (e) {
+      console.warn('Error calculating body fat progress:', e);
     }
-    weightedScore += (bodyFatProgress * wellnessWeights.targetBodyFat) / totalWeight;
     
     // Workout consistency from total stats
-    const workoutConsistency = getTotalStats().totalGoalPercentage || 0;
-    weightedScore += (workoutConsistency * wellnessWeights.workoutConsistency) / totalWeight;
+    try {
+      const workoutConsistency = getTotalStats().totalGoalPercentage || 0;
+      weightedScore += (workoutConsistency * wellnessWeights.workoutConsistency) / totalWeight;
+    } catch (e) {
+      console.warn('Error calculating workout consistency:', e);
+    }
 
     return Math.round(weightedScore);
   };
