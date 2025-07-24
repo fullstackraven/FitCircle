@@ -169,6 +169,84 @@ export default function GoalsPage() {
     setEditingGoal(null);
   };
 
+  // Helper functions for current values
+  const getCurrentHydration = () => {
+    const hydrationData = localStorage.getItem('fitcircle_hydration_data');
+    if (hydrationData) {
+      try {
+        const parsed = JSON.parse(hydrationData);
+        return Math.round(parsed.currentDayOz || 0);
+      } catch (e) {
+        return 0;
+      }
+    }
+    return 0;
+  };
+
+  const getCurrentMeditation = () => {
+    const meditationLogs = localStorage.getItem('fitcircle_meditation_logs');
+    if (meditationLogs) {
+      try {
+        const logs = JSON.parse(meditationLogs);
+        const last7Days = logs.slice(-7);
+        const totalMinutes = last7Days.reduce((sum: number, session: any) => sum + session.duration, 0);
+        return Math.round(totalMinutes / Math.max(last7Days.length, 1));
+      } catch (e) {
+        return 0;
+      }
+    }
+    return 0;
+  };
+
+  const getCurrentFasting = () => {
+    const fastingLogs = localStorage.getItem('fitcircle_fasting_logs');
+    if (fastingLogs) {
+      try {
+        const logs = JSON.parse(fastingLogs);
+        const completedFasts: number[] = [];
+        
+        if (Array.isArray(logs)) {
+          logs.forEach((log: any) => {
+            if (log?.endDate && log?.startDate && log?.endTime && log?.startTime) {
+              const start = new Date(`${log.startDate}T${log.startTime}`);
+              const end = new Date(`${log.endDate}T${log.endTime}`);
+              const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+              if (duration > 0 && duration < 48) {
+                completedFasts.push(duration);
+              }
+            } else if (log?.duration) {
+              const durationHours = log.duration / 60;
+              if (durationHours > 0 && durationHours < 48) {
+                completedFasts.push(durationHours);
+              }
+            }
+          });
+        }
+        
+        if (completedFasts.length > 0) {
+          const averageHours = completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length;
+          return Math.round(averageHours * 10) / 10;
+        }
+      } catch (e) {
+        return 0;
+      }
+    }
+    return 0;
+  };
+
+  const getCurrentWeight = () => {
+    const measurements = localStorage.getItem('fitcircle_measurements');
+    if (measurements) {
+      try {
+        const data = JSON.parse(measurements);
+        return data.currentWeight || 0;
+      } catch (e) {
+        return 0;
+      }
+    }
+    return 0;
+  };
+
   const goalItems = [
     {
       key: 'hydrationOz' as keyof typeof goals,
@@ -178,18 +256,7 @@ export default function GoalsPage() {
       description: 'Daily water intake goal',
       progress: progress.hydrationProgress,
       color: 'rgb(59, 130, 246)', // blue
-      currentValue: (() => {
-        const hydrationData = localStorage.getItem('fitcircle_hydration_data');
-        if (hydrationData) {
-          try {
-            const parsed = JSON.parse(hydrationData);
-            return Math.round(parsed.currentDayOz || 0);
-          } catch (e) {
-            return 0;
-          }
-        }
-        return 0;
-      })()
+      currentValue: getCurrentHydration()
     },
     {
       key: 'meditationMinutes' as keyof typeof goals,
@@ -199,20 +266,7 @@ export default function GoalsPage() {
       description: '7-day average meditation time',
       progress: progress.meditationProgress,
       color: 'rgb(147, 51, 234)', // purple
-      currentValue: (() => {
-        const meditationLogs = localStorage.getItem('fitcircle_meditation_logs');
-        if (meditationLogs) {
-          try {
-            const logs = JSON.parse(meditationLogs);
-            const last7Days = logs.slice(-7);
-            const totalMinutes = last7Days.reduce((sum: number, session: any) => sum + session.duration, 0);
-            return Math.round(totalMinutes / Math.max(last7Days.length, 1));
-          } catch (e) {
-            return 0;
-          }
-        }
-        return 0;
-      })()
+      currentValue: getCurrentMeditation()
     },
     {
       key: 'fastingHours' as keyof typeof goals,
@@ -222,45 +276,7 @@ export default function GoalsPage() {
       description: 'All-time average fasting duration',
       progress: progress.fastingProgress,
       color: 'rgb(245, 158, 11)', // amber
-      currentValue: (() => {
-        const fastingLogs = localStorage.getItem('fitcircle_fasting_logs');
-        if (fastingLogs) {
-          try {
-            const logs = JSON.parse(fastingLogs);
-            const completedFasts: number[] = [];
-            
-            // The logs are stored as an array, not an object keyed by date
-            if (Array.isArray(logs)) {
-              logs.forEach((log: any) => {
-                if (log?.endDate && log?.startDate && log?.endTime && log?.startTime) {
-                  // Combine date and time for proper parsing
-                  const start = new Date(`${log.startDate}T${log.startTime}`);
-                  const end = new Date(`${log.endDate}T${log.endTime}`);
-                  const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-                  if (duration > 0 && duration < 48) { // Sanity check: ignore sessions longer than 48 hours
-                    completedFasts.push(duration);
-                  }
-                } else if (log?.duration) {
-                  // Fallback: use duration field if available (stored in minutes)
-                  const durationHours = log.duration / 60;
-                  if (durationHours > 0 && durationHours < 48) {
-                    completedFasts.push(durationHours);
-                  }
-                }
-              });
-            }
-            
-            if (completedFasts.length > 0) {
-              // Calculate all-time average
-              const averageHours = completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length;
-              return Math.round(averageHours * 10) / 10;
-            }
-          } catch (e) {
-            return 0;
-          }
-        }
-        return 0;
-      })()
+      currentValue: getCurrentFasting()
     },
     {
       key: 'weightLbs' as keyof typeof goals,
@@ -270,18 +286,7 @@ export default function GoalsPage() {
       description: 'Current weight vs target',
       progress: progress.weightProgress,
       color: 'rgb(34, 197, 94)', // green
-      currentValue: (() => {
-        const measurements = localStorage.getItem('fitcircle_measurements');
-        if (measurements) {
-          try {
-            const data = JSON.parse(measurements);
-            return data.currentWeight || 0;
-          } catch (e) {
-            return 0;
-          }
-        }
-        return 0;
-      })()
+      currentValue: getCurrentWeight()
     },
     {
       key: 'targetBodyFat' as keyof typeof goals,
@@ -289,18 +294,7 @@ export default function GoalsPage() {
       unit: '%',
       icon: Percent,
       description: 'Current body fat vs target',
-      progress: (() => {
-        const currentBodyFat = getLatestValue('bodyFat') || 0;
-        const targetBodyFat = goals.targetBodyFat || 0;
-        if (targetBodyFat === 0) return 0;
-        
-        // Calculate progress - closer to target = higher percentage
-        // If current is higher than target, show progress as (target/current * 100)
-        // If current is lower than target, show 100%
-        if (currentBodyFat === 0) return 0;
-        if (currentBodyFat <= targetBodyFat) return 100;
-        return Math.min(100, (targetBodyFat / currentBodyFat) * 100);
-      })(),
+      progress: progress.targetBodyFatProgress,
       color: 'rgb(239, 68, 68)', // red
       currentValue: getLatestValue('bodyFat') || 0
     },
@@ -310,10 +304,7 @@ export default function GoalsPage() {
       unit: '%',
       icon: Target,
       description: 'Overall workout goal completion',
-      progress: (() => {
-        const totalStats = getTotalStats();
-        return totalStats.totalGoalPercentage || 0;
-      })(),
+      progress: progress.workoutConsistencyProgress,
       color: 'rgb(16, 185, 129)', // emerald
       currentValue: Math.round((getTotalStats().totalGoalPercentage || 0) * 10) / 10
     }

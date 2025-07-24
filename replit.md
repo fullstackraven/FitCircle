@@ -102,7 +102,8 @@ Preferred communication style: Simple, everyday language.
 - **Dependencies**: Removed React Query client - app works purely with localStorage
 - **Deployment Target**: Set to static in Replit deployment configuration
 
-### Recent Changes (January 2025)
+### Recent Changes
+- **Goals Page Data Retrieval Fix (July 24, 2025)**: Fixed critical issue where Goals page wasn't pulling data from Hydration, Meditation, Fasting and Measurements pages due to IndexedDB references being replaced with localStorage. Updated useGoals hook to use synchronous localStorage access instead of async IndexedDB operations. Resolved JavaScript syntax errors caused by IIFE patterns in goalItems array calculations. (January 2025)
 
 - **Delete Functionality**: Added trash can icon next to undo button for workout deletion
 - **Icon-Based Controls**: Replaced text "UNDO" button with backward arrow (Undo2) icon
