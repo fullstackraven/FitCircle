@@ -1,7 +1,28 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Upload, Download, ToggleLeft, ToggleRight, History, FileText } from 'lucide-react';
+import { ArrowLeft, Upload, Download, ToggleLeft, ToggleRight, History, FileText, Cloud, Shield, User, LogOut, Lock } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
+import { 
+  initializeAppleSignIn, 
+  signInWithApple, 
+  isSignedIn, 
+  getCurrentUser, 
+  signOut,
+  getUserIdForEncryption,
+  type AppleUser 
+} from '@/lib/apple-auth';
+import { 
+  isEncryptionSupported,
+  createEncryptedBackupFile,
+  parseEncryptedBackupFile 
+} from '@/lib/backup-encryption';
+import { 
+  saveToiCloudDrive,
+  openCloudFilePicker,
+  supportsCloudIntegration,
+  getCloudInstructionText,
+  createBackupFilename 
+} from '@/lib/icloud-backup';
 
 export default function SettingsPage() {
   const [, navigate] = useLocation();
@@ -12,6 +33,14 @@ export default function SettingsPage() {
   const [showBackupLog, setShowBackupLog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
+
+  // Apple iCloud backup states
+  const [appleUser, setAppleUser] = useState<AppleUser | null>(null);
+  const [appleSignedIn, setAppleSignedIn] = useState(false);
+  const [isInitializingApple, setIsInitializingApple] = useState(false);
+  const [isCreatingSecureBackup, setIsCreatingSecureBackup] = useState(false);
+  const [isRestoringSecureBackup, setIsRestoringSecureBackup] = useState(false);
+  const [secureBackupStatus, setSecureBackupStatus] = useState<string>('');
   
   // Function to get local date string (not UTC)
   const getLocalDateString = () => {
@@ -39,10 +68,31 @@ export default function SettingsPage() {
     const isEnabled = autoBackup === 'true';
     setAutoBackupEnabled(isEnabled);
     
+    // Check Apple Sign In status
+    setAppleSignedIn(isSignedIn());
+    setAppleUser(getCurrentUser());
+    
     // If auto backup is enabled, check if we need to perform a backup
     if (isEnabled) {
       checkAndPerformBackup();
       scheduleAutoBackup();
+      
+      // Check every minute when the page is active
+      const interval = setInterval(checkAndPerformBackup, 60000);
+      
+      // Also check when the page becomes visible again
+      const handleVisibilityChange = () => {
+        if (!document.hidden) {
+          checkAndPerformBackup();
+        }
+      };
+      
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      
+      return () => {
+        clearInterval(interval);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
     }
   }, []);
 
@@ -51,8 +101,8 @@ export default function SettingsPage() {
     const lastBackupStr = localStorage.getItem('fitcircle_last_backup_date');
     const today = getLocalDateString();
     
-    // If we haven't backed up today and it's past 11:59 PM, perform backup
-    if (lastBackupStr !== today && now.getHours() === 23 && now.getMinutes() >= 59) {
+    // If we haven't backed up today and it's past 11:00 PM (more flexible window), perform backup
+    if (lastBackupStr !== today && now.getHours() >= 23) {
       performAutoBackup();
       localStorage.setItem('fitcircle_last_backup_date', today);
     }
@@ -288,6 +338,130 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
+  // Apple iCloud Backup Functions
+  const handleAppleSignIn = async () => {
+    setIsInitializingApple(true);
+    setSecureBackupStatus('Initializing Apple Sign In...');
+    
+    try {
+      await initializeAppleSignIn();
+      const result = await signInWithApple();
+      
+      setAppleSignedIn(true);
+      setAppleUser(result.user || null);
+      setSecureBackupStatus('Successfully signed in with Apple ID!');
+      
+      setTimeout(() => setSecureBackupStatus(''), 3000);
+    } catch (error) {
+      setSecureBackupStatus('Failed to sign in. Please try again.');
+      setTimeout(() => setSecureBackupStatus(''), 3000);
+    } finally {
+      setIsInitializingApple(false);
+    }
+  };
+
+  const handleAppleSignOut = () => {
+    signOut();
+    setAppleSignedIn(false);
+    setAppleUser(null);
+    setSecureBackupStatus('Signed out successfully');
+    setTimeout(() => setSecureBackupStatus(''), 3000);
+  };
+
+  const createSecureBackup = async () => {
+    if (!appleSignedIn) {
+      setSecureBackupStatus('Please sign in with Apple ID first');
+      setTimeout(() => setSecureBackupStatus(''), 3000);
+      return;
+    }
+
+    const userId = getUserIdForEncryption();
+    if (!userId) {
+      setSecureBackupStatus('No encryption key available');
+      setTimeout(() => setSecureBackupStatus(''), 3000);
+      return;
+    }
+
+    setIsCreatingSecureBackup(true);
+    setSecureBackupStatus('Creating encrypted backup...');
+
+    try {
+      // Create snapshot of all localStorage data
+      const snapshot: Record<string, string> = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          const value = localStorage.getItem(key);
+          if (value) snapshot[key] = value;
+        }
+      }
+
+      // Create encrypted backup file
+      const encryptedBlob = await createEncryptedBackupFile(snapshot, userId);
+      const filename = createBackupFilename(true);
+
+      // Save to iCloud Drive
+      const success = await saveToiCloudDrive(encryptedBlob, filename);
+      
+      if (success) {
+        setSecureBackupStatus(`Secure backup created! ${Object.keys(snapshot).length} items encrypted.`);
+      } else {
+        setSecureBackupStatus('Backup created but failed to save to iCloud Drive');
+      }
+      
+      setTimeout(() => setSecureBackupStatus(''), 4000);
+    } catch (error) {
+      setSecureBackupStatus('Failed to create secure backup. Please try again.');
+      setTimeout(() => setSecureBackupStatus(''), 3000);
+    } finally {
+      setIsCreatingSecureBackup(false);
+    }
+  };
+
+  const restoreSecureBackup = async () => {
+    if (!appleSignedIn) {
+      setSecureBackupStatus('Please sign in with Apple ID first');
+      setTimeout(() => setSecureBackupStatus(''), 3000);
+      return;
+    }
+
+    const userId = getUserIdForEncryption();
+    if (!userId) {
+      setSecureBackupStatus('No decryption key available');
+      setTimeout(() => setSecureBackupStatus(''), 3000);
+      return;
+    }
+
+    setIsRestoringSecureBackup(true);
+    setSecureBackupStatus('Choose encrypted backup file...');
+
+    try {
+      const file = await openCloudFilePicker();
+      setSecureBackupStatus('Decrypting backup...');
+      
+      const decryptedData = await parseEncryptedBackupFile(file, userId);
+      
+      // Clear and restore localStorage
+      localStorage.clear();
+      let count = 0;
+      Object.entries(decryptedData).forEach(([key, value]) => {
+        localStorage.setItem(key, value);
+        count++;
+      });
+      
+      setSecureBackupStatus(`Successfully restored ${count} items from secure backup!`);
+      setTimeout(() => {
+        setSecureBackupStatus('');
+        window.location.href = '/';
+      }, 2000);
+    } catch (error) {
+      setSecureBackupStatus('Failed to restore backup. Check that you used the correct Apple ID.');
+      setTimeout(() => setSecureBackupStatus(''), 4000);
+    } finally {
+      setIsRestoringSecureBackup(false);
+    }
+  };
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="container mx-auto p-4 max-w-md">
@@ -347,6 +521,97 @@ export default function SettingsPage() {
             </p>
           </div>
         </div>
+
+        {/* Apple iCloud Secure Backup Section */}
+        {isEncryptionSupported() && supportsCloudIntegration() && (
+          <div className="bg-slate-800 rounded-xl p-6 mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Shield className="w-6 h-6 text-blue-400" />
+              <h2 className="text-lg font-semibold text-white">Secure Cloud Backup</h2>
+            </div>
+            
+            <p className="text-sm text-slate-400 mb-6">
+              Sign in with Apple to create encrypted backups that only you can access. 
+              {getCloudInstructionText()}
+            </p>
+            
+            {/* Apple Sign In Status */}
+            <div className="bg-slate-700/50 rounded-xl p-4 mb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <User className="w-5 h-5 text-slate-400" />
+                  <div>
+                    <p className="font-medium text-white">
+                      {appleSignedIn ? `Signed in${appleUser?.email ? ` as ${appleUser.email}` : ''}` : 'Not signed in'}
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      {appleSignedIn ? 'Ready for secure backups' : 'Sign in to enable encrypted backups'}
+                    </p>
+                  </div>
+                </div>
+                
+                {appleSignedIn ? (
+                  <button
+                    onClick={handleAppleSignOut}
+                    className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg flex items-center gap-1.5 transition-colors"
+                  >
+                    <LogOut className="w-3 h-3" />
+                    Sign Out
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleAppleSignIn}
+                    disabled={isInitializingApple}
+                    className="px-3 py-1.5 bg-black hover:bg-gray-900 text-white text-sm rounded-lg flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                  >
+                    <Cloud className="w-3 h-3" />
+                    {isInitializingApple ? 'Connecting...' : 'Sign In'}
+                  </button>
+                )}
+              </div>
+            </div>
+            
+            {/* Secure Backup Actions */}
+            <div className="space-y-3">
+              <button
+                onClick={createSecureBackup}
+                disabled={!appleSignedIn || isCreatingSecureBackup}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:opacity-50 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors"
+              >
+                <Lock className="w-5 h-5" />
+                {isCreatingSecureBackup ? 'Creating Encrypted Backup...' : 'Create Secure Backup'}
+              </button>
+              
+              <button
+                onClick={restoreSecureBackup}
+                disabled={!appleSignedIn || isRestoringSecureBackup}
+                className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-slate-600 disabled:opacity-50 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors"
+              >
+                <Upload className="w-5 h-5" />
+                {isRestoringSecureBackup ? 'Restoring from Backup...' : 'Restore Secure Backup'}
+              </button>
+            </div>
+            
+            {secureBackupStatus && (
+              <div className={`mt-4 p-3 rounded-xl text-sm text-center ${
+                secureBackupStatus.includes('Success') || secureBackupStatus.includes('created') || secureBackupStatus.includes('restored')
+                  ? 'bg-green-900/50 text-green-300 border border-green-700' 
+                  : secureBackupStatus.includes('Failed') || secureBackupStatus.includes('Error')
+                  ? 'bg-red-900/50 text-red-300 border border-red-700'
+                  : 'bg-blue-900/50 text-blue-300 border border-blue-700'
+              }`}>
+                {secureBackupStatus}
+              </div>
+            )}
+            
+            <div className="mt-4 p-3 bg-slate-700/30 rounded-lg">
+              <p className="text-xs text-slate-400 leading-relaxed">
+                <strong className="text-slate-300">Security:</strong> Your data is encrypted with AES-256 using your Apple ID as the key. 
+                Only you can decrypt your backups. We never store your encryption keys or have access to your unencrypted data.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Auto Backup Section */}
         <div className="bg-slate-800 rounded-xl p-6 mb-6">
