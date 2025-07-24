@@ -5,7 +5,7 @@ import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
-// import QuoteOfTheDay from '@/components/QuoteOfTheDay';
+import QuoteOfTheDay from '@/components/QuoteOfTheDay';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 const colorClassMap: { [key: string]: string } = {
@@ -149,7 +149,7 @@ export default function Home() {
       </header>
 
       {/* Quote of the Day */}
-      {/* !isQuoteHidden && <QuoteOfTheDay /> */}
+      {!isQuoteHidden && <QuoteOfTheDay />}
 
       {/* Workout Circles Grid */}
       <section className="mb-8">
