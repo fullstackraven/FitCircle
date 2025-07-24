@@ -332,14 +332,18 @@ export default function MeasurementsPage() {
               {/* Body Fat Goal Circle */}
               <GoalCircle
                 percentage={(() => {
-                  const currentBodyFat = getLatestValue('bodyFat');
+                  const currentBodyFat = getLatestValue('bodyFat') || 0;
                   const targetBodyFat = parseFloat(goalBodyFatInput) || 0;
-                  if (targetBodyFat === 0 || currentBodyFat === null) return 0;
-                  const tolerance = targetBodyFat * 0.1; // 10% tolerance
-                  const difference = Math.abs(currentBodyFat - targetBodyFat);
-                  return Math.max(0, Math.min(100, 100 - (difference / tolerance) * 100));
+                  if (targetBodyFat === 0) return 0;
+                  
+                  // Match Goals page logic: closer to target = higher percentage
+                  // If current is higher than target, show progress as (target/current * 100)  
+                  // If current is lower than target, show 100%
+                  if (currentBodyFat === 0) return 0;
+                  if (currentBodyFat <= targetBodyFat) return 100;
+                  return Math.min(100, (targetBodyFat / currentBodyFat) * 100);
                 })()}
-                color="rgb(168, 85, 247)"
+                color="rgb(239, 68, 68)"
                 size={100}
                 currentValue={getLatestValue('bodyFat') || 0}
                 goalValue={parseFloat(goalBodyFatInput) || 0}
