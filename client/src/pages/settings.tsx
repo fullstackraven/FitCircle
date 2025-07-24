@@ -43,6 +43,21 @@ export default function SettingsPage() {
       // Get all data from IndexedDB
       const snapshot = await getAll();
       
+      // Filter out invalid keys that might contain functions or non-serializable data
+      const filteredSnapshot: Record<string, any> = {};
+      for (const [key, value] of Object.entries(snapshot)) {
+        // Skip keys that contain functions or are clearly invalid
+        if (typeof value === 'function' || key === 'setItem' || key.includes('function')) {
+          console.log(`Skipping invalid key during export: ${key}`);
+          continue;
+        }
+        
+        // Only include data keys that start with 'fitcircle_' or 'workout-tracker-data'
+        if (key.startsWith('fitcircle_') || key === 'workout-tracker-data') {
+          filteredSnapshot[key] = value;
+        }
+      }
+      
       // Also include any essential localStorage items (like theme)
       const essentialLocalStorageKeys = ['theme'];
       const localStorageData: Record<string, string> = {};
@@ -55,7 +70,7 @@ export default function SettingsPage() {
       
       // Combine IndexedDB and essential localStorage data
       const completeSnapshot = {
-        ...snapshot,
+        ...filteredSnapshot,
         ...localStorageData
       };
       
@@ -109,6 +124,12 @@ export default function SettingsPage() {
         
         for (const [key, value] of Object.entries(snapshot)) {
           console.log(`Processing key: ${key}, type: ${typeof value}`);
+          
+          // Skip invalid keys that contain functions or are clearly invalid
+          if (typeof value === 'function' || key === 'setItem' || key.includes('function')) {
+            console.log(`Skipping invalid key during restore: ${key}`);
+            continue;
+          }
           
           if (essentialLocalStorageKeys.includes(key)) {
             // Restore to localStorage

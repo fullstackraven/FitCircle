@@ -199,7 +199,7 @@ export function useWorkouts() {
     const today = getTodayString();
     const todayLog = data.dailyLogs[today] || {};
 
-    return Object.values(data.workouts).map(workout => ({
+    return Object.values(data.workouts || {}).map(workout => ({
       ...workout,
       count: todayLog[workout.id] || 0
     }));
@@ -231,13 +231,13 @@ export function useWorkouts() {
         year: 'numeric'
       });
 
-      const totalReps = Object.values(dayLog).reduce((sum, count) => sum + count, 0);
+      const totalReps = Object.values(dayLog || {}).reduce((sum, count) => sum + count, 0);
 
       return {
         date: formattedDate,
         dateString,
         totalReps,
-        workouts: Object.values(data.workouts).map(workout => ({
+        workouts: Object.values(data.workouts || {}).map(workout => ({
           ...workout,
           count: dayLog[workout.id] || 0
         }))
@@ -250,7 +250,7 @@ export function useWorkouts() {
   };
 
   const getWorkoutArray = () => {
-    return Object.values(data.workouts);
+    return Object.values(data.workouts || {});
   };
 
   const updateWorkoutGoal = (workoutId: string, newGoal: number) => {
@@ -287,7 +287,7 @@ export function useWorkouts() {
   };
 
   const canAddMoreWorkouts = () => {
-    return Object.keys(data.workouts).length < 10;
+    return Object.keys(data.workouts || {}).length < 10;
   };
 
   const addJournalEntry = (date: string, entry: string) => {
