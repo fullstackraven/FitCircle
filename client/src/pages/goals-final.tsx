@@ -189,49 +189,31 @@ export default function GoalsPageFinal() {
   };
 
   const getWorkoutConsistency = () => {
-    // Check both possible workout data locations
-    let workoutData = localStorage.getItem('fitcircle_workouts');
-    if (!workoutData) {
-      workoutData = localStorage.getItem('workout-tracker-data');
-    }
-    
+    // Copy exact logic from working calendar statistics panel
+    const workoutData = localStorage.getItem('workout-tracker-data');
     if (!workoutData) return 0;
-    
+
     try {
       const data = JSON.parse(workoutData);
       const today = new Date().toISOString().split('T')[0];
+      
+      if (!data.workouts) return 0;
+      
       let totalGoals = 0;
       let goalsHit = 0;
       
-      // Handle your backup data structure from workout-tracker-data
-      if (data.workouts && typeof data.workouts === 'object' && !Array.isArray(data.workouts)) {
-        Object.values(data.workouts).forEach((workout: any) => {
-          if (workout.dailyGoal && workout.dailyGoal > 0) {
-            totalGoals++;
-            // Check today's daily log vs goal
-            const todayCount = data.dailyLogs?.[today]?.[workout.id] || 0;
-            if (todayCount >= workout.dailyGoal) {
-              goalsHit++;
-            }
+      Object.values(data.workouts).forEach((workout: any) => {
+        if (workout.dailyGoal > 0) {
+          totalGoals++;
+          const todayCount = data.dailyLogs?.[today]?.[workout.id] || 0;
+          if (todayCount >= workout.dailyGoal) {
+            goalsHit++;
           }
-        });
-      }
-      // Handle old data structure (array of workouts)
-      else if (data.workouts && Array.isArray(data.workouts)) {
-        data.workouts.forEach((workout: any) => {
-          if (workout.dailyGoal && workout.dailyGoal > 0) {
-            totalGoals++;
-            const todayCount = workout.dailyLogs?.[today] || 0;
-            if (todayCount >= workout.dailyGoal) {
-              goalsHit++;
-            }
-          }
-        });
-      }
+        }
+      });
       
       return totalGoals > 0 ? Math.round((goalsHit / totalGoals) * 100) : 0;
     } catch (e) {
-      console.error('Error getting workout consistency:', e);
       return 0;
     }
   };
@@ -245,9 +227,8 @@ export default function GoalsPageFinal() {
 
   const meditationProgress = goals.meditationMinutes > 0 ? Math.min((meditationCurrent / goals.meditationMinutes) * 100, 100) : 0;
   const fastingProgress = goals.fastingHours > 0 ? Math.min((fastingCurrent / goals.fastingHours) * 100, 100) : 0;
-  // Fix weight progress calculation - should show progress toward goal weight
-  const weightProgress = goals.weightLbs > 0 && weightCurrent > 0 ? 
-    (weightCurrent <= goals.weightLbs ? 100 : Math.max(0, 100 - ((weightCurrent - goals.weightLbs) / goals.weightLbs * 100))) : 0;
+  // Simple weight calculation: current/goal * 100 (goal is 220, current is 222.2)
+  const weightProgress = goals.weightLbs > 0 ? Math.min((goals.weightLbs / Math.max(weightCurrent, goals.weightLbs)) * 100, 100) : 0;
   const bodyFatProgress = goals.targetBodyFat > 0 && bodyFatCurrent > 0 ? 
     (bodyFatCurrent <= goals.targetBodyFat ? 100 : Math.min((goals.targetBodyFat / bodyFatCurrent) * 100, 100)) : 0;
   
