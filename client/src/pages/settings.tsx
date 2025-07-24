@@ -388,7 +388,7 @@ export default function SettingsPage() {
             >
               <div
                 className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                  autoBackupEnabled ? 'translate-x-5' : 'translate-x-0'
+                  autoBackupEnabled ? 'translate-x-5.5' : 'translate-x-0'
                 }`}
               />
             </button>
@@ -422,7 +422,7 @@ export default function SettingsPage() {
               >
                 <div
                   className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                    settings.hideQuoteOfTheDay ? 'translate-x-5' : 'translate-x-0'
+                    settings.hideQuoteOfTheDay ? 'translate-x-5.5' : 'translate-x-0'
                   }`}
                 />
               </button>
@@ -442,7 +442,7 @@ export default function SettingsPage() {
               >
                 <div
                   className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                    settings.hideTodaysTotals ? 'translate-x-5' : 'translate-x-0'
+                    settings.hideTodaysTotals ? 'translate-x-5.5' : 'translate-x-0'
                   }`}
                 />
               </button>
@@ -462,7 +462,7 @@ export default function SettingsPage() {
               >
                 <div
                   className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                    settings.hideRecentActivity ? 'translate-x-5' : 'translate-x-0'
+                    settings.hideRecentActivity ? 'translate-x-5.5' : 'translate-x-0'
                   }`}
                 />
               </button>
