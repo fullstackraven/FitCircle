@@ -426,7 +426,7 @@ export default function FastingPage() {
                   
                   return Math.min(100, (averageHours / goalHours) * 100);
                 })()}
-                color="rgb(168, 85, 247)"
+                color="rgb(245, 158, 11)"
                 size={120}
                 currentValue={(() => {
                   if (logs.length === 0) return 0;

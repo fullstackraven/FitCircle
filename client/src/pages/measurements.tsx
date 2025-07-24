@@ -332,9 +332,9 @@ export default function MeasurementsPage() {
               {/* Body Fat Goal Circle */}
               <GoalCircle
                 percentage={(() => {
-                  const currentBodyFat = getLatestValue('bodyFat') || 0;
+                  const currentBodyFat = getLatestValue('bodyFat');
                   const targetBodyFat = parseFloat(goalBodyFatInput) || 0;
-                  if (targetBodyFat === 0 || currentBodyFat === 0) return 0;
+                  if (targetBodyFat === 0 || currentBodyFat === null) return 0;
                   const tolerance = targetBodyFat * 0.1; // 10% tolerance
                   const difference = Math.abs(currentBodyFat - targetBodyFat);
                   return Math.max(0, Math.min(100, 100 - (difference / tolerance) * 100));
