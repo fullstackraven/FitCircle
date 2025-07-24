@@ -38,62 +38,6 @@ export default function SettingsPage() {
     }
   };
 
-  // Set up auto backup monitoring system
-  useEffect(() => {
-    const autoBackup = localStorage.getItem('fitcircle_auto_backup');
-    const isEnabled = autoBackup === 'true';
-    setAutoBackupEnabled(isEnabled);
-    
-    // Load custom backup path
-    const savedPath = localStorage.getItem('fitcircle_backup_path');
-    if (savedPath) setCustomBackupPath(savedPath);
-    
-    if (isEnabled) {
-      // Initial backup check when app loads
-      setTimeout(() => checkAndPerformBackup(), 2000);
-      
-      // Set up localStorage monitoring for data changes
-      const originalSetItem = localStorage.setItem;
-      localStorage.setItem = function(key: string, value: string) {
-        const result = originalSetItem.call(this, key, value);
-        
-        // Only trigger backup for actual app data (not backup metadata)
-        if (!key.startsWith('fitcircle_auto_backup') && 
-            !key.startsWith('fitcircle_last_backup') &&
-            isEnabled) {
-          // Debounce backup calls to avoid too many downloads
-          clearTimeout((window as any).backupTimeout);
-          (window as any).backupTimeout = setTimeout(() => {
-            checkAndPerformBackup();
-          }, 5000); // Wait 5 seconds after last data change
-        }
-        
-        return result;
-      };
-      
-      // Schedule daily backup
-      scheduleAutoBackup();
-      
-      // Check when app becomes visible (user returns to app)
-      const handleVisibilityChange = () => {
-        if (!document.hidden && isEnabled) {
-          setTimeout(() => checkAndPerformBackup(), 1000);
-        }
-      };
-      
-      document.addEventListener('visibilitychange', handleVisibilityChange);
-      
-      return () => {
-        // Restore original localStorage.setItem
-        localStorage.setItem = originalSetItem;
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-        if ((window as any).backupTimeout) {
-          clearTimeout((window as any).backupTimeout);
-        }
-      };
-    }
-  }, [autoBackupEnabled]);
-
   // Enhanced backup checking that also responds to data changes
   const checkAndPerformBackup = () => {
     const now = new Date();
@@ -164,10 +108,9 @@ export default function SettingsPage() {
         const link = document.createElement('a');
         link.href = url;
         
-        // Use custom path if set, otherwise default filename
-        const savedPath = localStorage.getItem('fitcircle_backup_path');
-        const filename = savedPath ? `${savedPath}/fitcircle-auto-backup.json` : 'fitcircle-auto-backup.json';
-        link.download = filename;
+        // iOS Files app doesn't support custom paths in download attribute
+        // The file will always save to Downloads folder first
+        link.download = 'fitcircle-auto-backup.json';
         
         // Make download silent and iOS-compatible
         link.style.display = 'none';
@@ -184,15 +127,69 @@ export default function SettingsPage() {
         };
         localStorage.setItem('fitcircle_last_auto_backup_info', JSON.stringify(backupInfo));
         
-
-
-        
         console.log('✅ Auto backup completed with', Object.keys(snapshot).length, 'items');
+        console.log('📱 File saved to Downloads - move to desired Files app location');
       }
     } catch (error) {
       console.error('Auto backup failed:', error);
     }
   };
+
+  // Set up auto backup monitoring system
+  useEffect(() => {
+    const autoBackup = localStorage.getItem('fitcircle_auto_backup');
+    const isEnabled = autoBackup === 'true';
+    setAutoBackupEnabled(isEnabled);
+    
+    // Load custom backup path
+    const savedPath = localStorage.getItem('fitcircle_backup_path');
+    if (savedPath) setCustomBackupPath(savedPath);
+    
+    if (isEnabled) {
+      // Initial backup check when app loads
+      setTimeout(() => checkAndPerformBackup(), 2000);
+      
+      // Set up localStorage monitoring for data changes
+      const originalSetItem = localStorage.setItem;
+      localStorage.setItem = function(key: string, value: string) {
+        const result = originalSetItem.call(this, key, value);
+        
+        // Only trigger backup for actual app data (not backup metadata)
+        if (!key.startsWith('fitcircle_auto_backup') && 
+            !key.startsWith('fitcircle_last_backup') &&
+            isEnabled) {
+          // Debounce backup calls to avoid too many downloads
+          clearTimeout((window as any).backupTimeout);
+          (window as any).backupTimeout = setTimeout(() => {
+            checkAndPerformBackup();
+          }, 5000); // Wait 5 seconds after last data change
+        }
+        
+        return result;
+      };
+      
+      // Schedule daily backup
+      scheduleAutoBackup();
+      
+      // Check when app becomes visible (user returns to app)
+      const handleVisibilityChange = () => {
+        if (!document.hidden && isEnabled) {
+          setTimeout(() => checkAndPerformBackup(), 1000);
+        }
+      };
+      
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      
+      return () => {
+        // Restore original localStorage.setItem
+        localStorage.setItem = originalSetItem;
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        if ((window as any).backupTimeout) {
+          clearTimeout((window as any).backupTimeout);
+        }
+      };
+    }
+  }, [autoBackupEnabled]);
 
 
 
@@ -396,8 +393,12 @@ export default function SettingsPage() {
 
           <div className="mt-4 p-3 bg-slate-700/30 rounded-lg">
             <p className="text-xs text-slate-400 leading-relaxed">
-              <strong className="text-slate-300">How it works:</strong> When enabled, auto backup monitors for data changes and quietly downloads updated JSON files to your Files app. 
-              The backup file "fitcircle-auto-backup.json" will overwrite the previous version, keeping your Files app organized.
+              <strong className="text-slate-300">How it works:</strong> When enabled, auto backup monitors for data changes and downloads updated JSON files to your device's Downloads folder. 
+              The backup file "fitcircle-auto-backup.json" will need to be manually moved to your desired Files app location for organization.
+            </p>
+            <p className="text-xs text-slate-400 leading-relaxed mt-2">
+              <strong className="text-slate-300">iOS Note:</strong> Due to iOS security restrictions, files cannot be directly saved to custom paths in the Files app. 
+              After download, you can move the file from Downloads to your preferred folder in the Files app.
             </p>
           </div>
         </div>
