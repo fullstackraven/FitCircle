@@ -9,7 +9,7 @@ import SettingsPage from "@/pages/settings";
 import FastingPage from "@/pages/fasting";
 import MeditationPage from "@/pages/meditation";
 import HydrationPage from "@/pages/hydration";
-import GoalsPage from "@/pages/goals-hydration-test";
+import GoalsPage from "@/pages/goals-final";
 import RemindersPage from "@/pages/reminders";
 import TestBasic from "@/pages/test-basic";
 
