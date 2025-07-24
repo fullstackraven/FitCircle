@@ -282,9 +282,34 @@ export default function GoalsPageFinal() {
   const handleSave = (goalKey: string) => {
     const value = parseFloat(tempValue);
     if (value > 0) {
-      // Update localStorage
+      // Update localStorage with individual goal keys
       const storageKey = `fitcircle_goal_${goalKey.replace(/([A-Z])/g, '').toLowerCase()}`;
       localStorage.setItem(storageKey, value.toString());
+      
+      // ALSO update the fitcircle_goals object for cross-compatibility with other pages
+      const existingGoals = localStorage.getItem('fitcircle_goals');
+      let goalsObject = {};
+      if (existingGoals) {
+        try {
+          goalsObject = JSON.parse(existingGoals);
+        } catch (e) {
+          goalsObject = {};
+        }
+      }
+      
+      // Map goal keys to fitcircle_goals object properties
+      const goalKeyMap: { [key: string]: string } = {
+        'weightLbs': 'targetWeight',
+        'targetBodyFat': 'targetBodyFat'
+      };
+      
+      if (goalKeyMap[goalKey]) {
+        goalsObject = {
+          ...goalsObject,
+          [goalKeyMap[goalKey]]: value
+        };
+        localStorage.setItem('fitcircle_goals', JSON.stringify(goalsObject));
+      }
       
       // Update state
       setGoals(prev => ({
@@ -303,6 +328,23 @@ export default function GoalsPageFinal() {
   
   const handleWeightGoalTypeChange = (type: 'gain' | 'lose') => {
     localStorage.setItem('fitcircle_weight_goal_type', type);
+    
+    // ALSO update fitcircle_goals for cross-compatibility
+    const existingGoals = localStorage.getItem('fitcircle_goals');
+    let goalsObject = {};
+    if (existingGoals) {
+      try {
+        goalsObject = JSON.parse(existingGoals);
+      } catch (e) {
+        goalsObject = {};
+      }
+    }
+    goalsObject = {
+      ...goalsObject,
+      weightGoalType: type
+    };
+    localStorage.setItem('fitcircle_goals', JSON.stringify(goalsObject));
+    
     setGoals(prev => ({
       ...prev,
       weightGoalType: type

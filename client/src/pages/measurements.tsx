@@ -52,6 +52,7 @@ export default function MeasurementsPage() {
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [goalWeightInput, setGoalWeightInput] = useState('');
   const [goalBodyFatInput, setGoalBodyFatInput] = useState('');
+  const [weightGoalType, setWeightGoalType] = useState<'gain' | 'lose'>('lose');
 
   useEffect(() => {
     // Load latest values
@@ -62,16 +63,26 @@ export default function MeasurementsPage() {
     });
     setInputValues(initialValues);
     
-    // Load saved goals
+    // Load saved goals from multiple sources for cross-compatibility
     const savedGoals = localStorage.getItem('fitcircle_goals');
+    const weightGoal = localStorage.getItem('fitcircle_goal_weight');
+    const bodyFatGoal = localStorage.getItem('fitcircle_goal_bodyfat');
+    const weightGoalTypeStored = localStorage.getItem('fitcircle_weight_goal_type');
+    
     if (savedGoals) {
       try {
         const goals = JSON.parse(savedGoals);
-        setGoalWeightInput(goals.targetWeight?.toString() || '');
-        setGoalBodyFatInput(goals.targetBodyFat?.toString() || '');
+        setGoalWeightInput(weightGoal || goals.targetWeight?.toString() || '');
+        setGoalBodyFatInput(bodyFatGoal || goals.targetBodyFat?.toString() || '');
+        setWeightGoalType(weightGoalTypeStored as 'gain' | 'lose' || goals.weightGoalType || 'lose');
       } catch (error) {
         console.error('Failed to parse goals:', error);
       }
+    } else {
+      // Load from individual goal keys if fitcircle_goals doesn't exist
+      setGoalWeightInput(weightGoal || '');
+      setGoalBodyFatInput(bodyFatGoal || '');
+      setWeightGoalType(weightGoalTypeStored as 'gain' | 'lose' || 'lose');
     }
   }, []);
 
@@ -88,7 +99,18 @@ export default function MeasurementsPage() {
       return;
     }
     
-    // Load existing goals and update
+    // Save to individual goal keys for cross-compatibility with Goals page
+    if (!isNaN(weightGoal)) {
+      localStorage.setItem('fitcircle_goal_weight', weightGoal.toString());
+    }
+    if (!isNaN(bodyFatGoal)) {
+      localStorage.setItem('fitcircle_goal_bodyfat', bodyFatGoal.toString());
+    }
+    
+    // Save weight goal type
+    localStorage.setItem('fitcircle_weight_goal_type', weightGoalType);
+    
+    // Load existing goals and update fitcircle_goals object
     let goals = {};
     const savedGoals = localStorage.getItem('fitcircle_goals');
     if (savedGoals) {
@@ -99,11 +121,12 @@ export default function MeasurementsPage() {
       }
     }
     
-    // Update goals
+    // Update goals object
     const updatedGoals = {
       ...goals,
       ...(weightGoal && !isNaN(weightGoal) && { targetWeight: weightGoal }),
-      ...(bodyFatGoal && !isNaN(bodyFatGoal) && { targetBodyFat: bodyFatGoal })
+      ...(bodyFatGoal && !isNaN(bodyFatGoal) && { targetBodyFat: bodyFatGoal }),
+      weightGoalType: weightGoalType
     };
     
     localStorage.setItem('fitcircle_goals', JSON.stringify(updatedGoals));
@@ -316,9 +339,13 @@ export default function MeasurementsPage() {
                   const currentWeight = getLatestValue('weight') || 0;
                   const targetWeight = parseFloat(goalWeightInput) || 0;
                   if (targetWeight === 0 || currentWeight === 0) return 0;
-                  const tolerance = targetWeight * 0.05; // 5% tolerance
-                  const difference = Math.abs(currentWeight - targetWeight);
-                  return Math.max(0, Math.min(100, 100 - (difference / tolerance) * 100));
+                  
+                  // Match Goals page logic: depends on whether goal is to gain or lose weight
+                  if (weightGoalType === 'gain') {
+                    return currentWeight >= targetWeight ? 100 : Math.min((currentWeight / targetWeight) * 100, 100);
+                  } else {
+                    return currentWeight <= targetWeight ? 100 : Math.max(0, (targetWeight / currentWeight) * 100);
+                  }
                 })()}
                 color="rgb(34, 197, 94)"
                 size={100}
@@ -356,6 +383,31 @@ export default function MeasurementsPage() {
             {/* Goal Input Forms */}
             <div className="space-y-4">
               <div>
+                <Label className="text-slate-300">Weight Goal Type</Label>
+                <div className="flex space-x-3 mt-2">
+                  <button
+                    onClick={() => setWeightGoalType('lose')}
+                    className={`flex-1 py-2 px-4 rounded-xl border-2 transition-colors ${
+                      weightGoalType === 'lose' 
+                        ? 'border-green-500 bg-green-500/20 text-green-400' 
+                        : 'border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500'
+                    }`}
+                  >
+                    Lose Weight
+                  </button>
+                  <button
+                    onClick={() => setWeightGoalType('gain')}
+                    className={`flex-1 py-2 px-4 rounded-xl border-2 transition-colors ${
+                      weightGoalType === 'gain' 
+                        ? 'border-green-500 bg-green-500/20 text-green-400' 
+                        : 'border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500'
+                    }`}
+                  >
+                    Gain Weight
+                  </button>
+                </div>
+              </div>
+              <div>
                 <Label htmlFor="goalWeight" className="text-slate-300">
                   Target Weight (lbs)
                 </Label>
@@ -366,6 +418,7 @@ export default function MeasurementsPage() {
                   onChange={(e) => setGoalWeightInput(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
                   placeholder="Enter target weight"
+                  step="0.1"
                 />
               </div>
               <div>
