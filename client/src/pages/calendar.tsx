@@ -459,7 +459,7 @@ export default function CalendarPage() {
           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors">
             <div className="flex items-center space-x-2">
               <BarChart3 className="w-5 h-5 text-blue-400" />
-              <span className="text-white font-medium">Statistics</span>
+              <span className="text-white font-medium">Workout Statistics</span>
             </div>
             {isStatsOpen ? (
               <ChevronUp className="w-5 h-5 text-slate-400" />
@@ -480,11 +480,11 @@ export default function CalendarPage() {
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-400">{monthlyStats.monthlyGoalPercentage.toFixed(1)}%</div>
-                  <div className="text-sm text-slate-400">Goals Hit This Month</div>
+                  <div className="text-sm text-slate-400">Workouts Completed This Month</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-400">{totalStats.totalGoalPercentage.toFixed(1)}%</div>
-                  <div className="text-sm text-slate-400">Goals Hit Total</div>
+                  <div className="text-sm text-slate-400">Workout Consistency</div>
                 </div>
               </div>
 
