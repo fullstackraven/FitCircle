@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { ArrowLeft, Upload, Download } from 'lucide-react';
+import { ChevronLeft, Upload, Download } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
 
@@ -120,17 +120,21 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+    <div className="min-h-screen text-white" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-slate-700">
+        <button
+          onClick={handleBack}
+          className="flex items-center space-x-2 text-slate-300 hover:text-white"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          <span>Back</span>
+        </button>
+        <h1 className="text-xl font-semibold">Settings</h1>
+        <div className="w-16"></div> {/* Spacer for centering */}
+      </div>
+
       <div className="container mx-auto p-4 max-w-md">
-        <div className="flex items-center gap-4 mb-6">
-          <button
-            onClick={handleBack}
-            className="p-2 text-white hover:bg-white/10 rounded-xl"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-          <h1 className="text-xl font-semibold text-white">Settings</h1>
-        </div>
 
         {/* Backup & Restore Section */}
         <div className="bg-slate-800 rounded-xl p-6 mb-6">
