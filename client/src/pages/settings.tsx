@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Upload, Download, ToggleLeft, ToggleRight, History, FileText } from 'lucide-react';
+import { ArrowLeft, Upload, Download, ToggleLeft, ToggleRight, Folder, FileText } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
 
@@ -11,6 +11,8 @@ export default function SettingsPage() {
   const [status, setStatus] = useState<string>('');
   const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
   const [showBackupLog, setShowBackupLog] = useState(false);
+  const [showPathSelector, setShowPathSelector] = useState(false);
+  const [customBackupPath, setCustomBackupPath] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
 
@@ -41,6 +43,10 @@ export default function SettingsPage() {
     const autoBackup = localStorage.getItem('fitcircle_auto_backup');
     const isEnabled = autoBackup === 'true';
     setAutoBackupEnabled(isEnabled);
+    
+    // Load custom backup path
+    const savedPath = localStorage.getItem('fitcircle_backup_path');
+    if (savedPath) setCustomBackupPath(savedPath);
     
     if (isEnabled) {
       // Initial backup check when app loads
@@ -161,8 +167,10 @@ export default function SettingsPage() {
         const link = document.createElement('a');
         link.href = url;
         
-        // Use consistent filename so it overwrites in Downloads/Files
-        link.download = 'fitcircle-auto-backup.json';
+        // Use custom path if set, otherwise default filename
+        const savedPath = localStorage.getItem('fitcircle_backup_path');
+        const filename = savedPath ? `${savedPath}/fitcircle-auto-backup.json` : 'fitcircle-auto-backup.json';
+        link.download = filename;
         
         // Make download silent and iOS-compatible
         link.style.display = 'none';
@@ -441,11 +449,11 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-white">Auto Backup</h2>
             <button
-              onClick={() => setShowBackupLog(true)}
+              onClick={() => setShowPathSelector(true)}
               className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
-              title="View backup download log"
+              title="Set backup file path"
             >
-              <History className="w-5 h-5" />
+              <Folder className="w-5 h-5" />
             </button>
           </div>
           
@@ -456,12 +464,12 @@ export default function SettingsPage() {
             </div>
             <button
               onClick={toggleAutoBackup}
-              className={`w-12 h-6 rounded-full transition-colors ${
+              className={`relative w-12 h-6 rounded-full transition-colors ${
                 autoBackupEnabled ? 'bg-green-600' : 'bg-slate-600'
               }`}
             >
               <div
-                className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
                   autoBackupEnabled ? 'translate-x-6' : 'translate-x-0.5'
                 }`}
               />
@@ -528,12 +536,12 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => updateSetting('hideQuoteOfTheDay', !settings.hideQuoteOfTheDay)}
-                className={`w-12 h-6 rounded-full transition-colors ${
+                className={`relative w-12 h-6 rounded-full transition-colors ${
                   settings.hideQuoteOfTheDay ? 'bg-green-600' : 'bg-slate-600'
                 }`}
               >
                 <div
-                  className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
                     settings.hideQuoteOfTheDay ? 'translate-x-6' : 'translate-x-0.5'
                   }`}
                 />
@@ -548,12 +556,12 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => updateSetting('hideTodaysTotals', !settings.hideTodaysTotals)}
-                className={`w-12 h-6 rounded-full transition-colors ${
+                className={`relative w-12 h-6 rounded-full transition-colors ${
                   settings.hideTodaysTotals ? 'bg-green-600' : 'bg-slate-600'
                 }`}
               >
                 <div
-                  className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
                     settings.hideTodaysTotals ? 'translate-x-6' : 'translate-x-0.5'
                   }`}
                 />
@@ -568,12 +576,12 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => updateSetting('hideRecentActivity', !settings.hideRecentActivity)}
-                className={`w-12 h-6 rounded-full transition-colors ${
+                className={`relative w-12 h-6 rounded-full transition-colors ${
                   settings.hideRecentActivity ? 'bg-green-600' : 'bg-slate-600'
                 }`}
               >
                 <div
-                  className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
                     settings.hideRecentActivity ? 'translate-x-6' : 'translate-x-0.5'
                   }`}
                 />
@@ -583,56 +591,64 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Backup Download Log Modal */}
-      {showBackupLog && (
+      {/* Path Selector Modal */}
+      {showPathSelector && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl max-w-md w-full max-h-[80vh] overflow-hidden">
+          <div className="bg-slate-800 rounded-xl max-w-md w-full">
             <div className="flex items-center justify-between p-6 border-b border-slate-600">
-              <h3 className="text-lg font-semibold text-white">Backup Download Log</h3>
+              <h3 className="text-lg font-semibold text-white">Set Backup Path</h3>
               <button
-                onClick={() => setShowBackupLog(false)}
+                onClick={() => setShowPathSelector(false)}
                 className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
               >
                 ×
               </button>
             </div>
             
-            <div className="p-6 overflow-y-auto max-h-96">
-              {getBackupDownloadLog().length === 0 ? (
-                <div className="text-center py-8">
-                  <FileText className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-                  <p className="text-slate-400">No backups downloaded yet</p>
-                  <p className="text-sm text-slate-500 mt-1">
-                    Downloaded auto backups will appear here
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {getBackupDownloadLog().map((entry: any, index: number) => (
-                    <div key={index} className="bg-slate-700/50 rounded-lg p-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-white font-medium text-sm">
-                            Backup: {entry.date}
-                          </p>
-                          <p className="text-slate-400 text-xs">
-                            Downloaded: {new Date(entry.downloadedAt).toLocaleString()}
-                          </p>
-                        </div>
-                        <div className="text-green-400">
-                          <Download className="w-4 h-4" />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <div className="p-6 border-t border-slate-600">
-              <p className="text-xs text-slate-500 text-center">
-                Shows the last 30 backup downloads
-              </p>
+            <div className="p-6">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Custom File Path (optional)
+                </label>
+                <input
+                  type="text"
+                  value={customBackupPath}
+                  onChange={(e) => setCustomBackupPath(e.target.value)}
+                  placeholder="e.g., FitCircle/Backups"
+                  className="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none"
+                />
+                <p className="text-xs text-slate-400 mt-2">
+                  Leave empty to save directly to Files app root. Use forward slashes for folders.
+                </p>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    localStorage.setItem('fitcircle_backup_path', customBackupPath);
+                    setShowPathSelector(false);
+                  }}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-lg transition-colors"
+                >
+                  Save Path
+                </button>
+                <button
+                  onClick={() => {
+                    setCustomBackupPath('');
+                    localStorage.removeItem('fitcircle_backup_path');
+                    setShowPathSelector(false);
+                  }}
+                  className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-2.5 px-4 rounded-lg transition-colors"
+                >
+                  Clear Path
+                </button>
+              </div>
+              
+              <div className="mt-4 p-3 bg-slate-700/30 rounded-lg">
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  <strong className="text-slate-300">Current path:</strong> {customBackupPath || 'Files app root'}
+                </p>
+              </div>
             </div>
           </div>
         </div>
