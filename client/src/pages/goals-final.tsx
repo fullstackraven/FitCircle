@@ -168,9 +168,57 @@ export default function GoalsPageFinal() {
   const bodyFatProgress = goals.targetBodyFat > 0 && bodyFatCurrent > 0 ? 
     (bodyFatCurrent <= goals.targetBodyFat ? 100 : Math.min((goals.targetBodyFat / bodyFatCurrent) * 100, 100)) : 0;
 
+  // Calculate overall wellness score
+  const calculateWellnessScore = (): number => {
+    const totalWeight = Object.values(wellnessWeights).reduce((sum, weight) => sum + weight, 0);
+    if (totalWeight === 0) return 0;
+
+    let weightedScore = 0;
+    weightedScore += (hydrationProgress * wellnessWeights.hydrationOz) / totalWeight;
+    weightedScore += (meditationProgress * wellnessWeights.meditationMinutes) / totalWeight;
+    weightedScore += (fastingProgress * wellnessWeights.fastingHours) / totalWeight;
+    weightedScore += (weightProgress * wellnessWeights.weightLbs) / totalWeight;
+    weightedScore += (bodyFatProgress * wellnessWeights.targetBodyFat) / totalWeight;
+    weightedScore += (workoutCurrent * wellnessWeights.workoutConsistency) / totalWeight;
+
+    return Math.round(weightedScore);
+  };
+
   // Editing state
   const [editingGoal, setEditingGoal] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState<string>('');
+
+  // Wellness Score State
+  const [wellnessWeights, setWellnessWeights] = useState({
+    hydrationOz: 10,
+    meditationMinutes: 10,
+    fastingHours: 10,
+    weightLbs: 10,
+    targetBodyFat: 20,
+    workoutConsistency: 40
+  });
+  const [isWeightsDialogOpen, setIsWeightsDialogOpen] = useState(false);
+  const [tempWeights, setTempWeights] = useState(wellnessWeights);
+
+  // Load wellness weights from localStorage
+  useEffect(() => {
+    const savedWeights = localStorage.getItem('fitcircle_wellness_weights');
+    if (savedWeights) {
+      try {
+        const parsed = JSON.parse(savedWeights);
+        setWellnessWeights(parsed);
+        setTempWeights(parsed);
+      } catch (e) {
+        console.error('Failed to parse wellness weights:', e);
+      }
+    }
+  }, []);
+
+  // Save wellness weights to localStorage
+  const saveWellnessWeights = (weights: typeof wellnessWeights) => {
+    setWellnessWeights(weights);
+    localStorage.setItem('fitcircle_wellness_weights', JSON.stringify(weights));
+  };
 
   const handleEdit = (goalKey: string, currentValue: number) => {
     setEditingGoal(goalKey);
@@ -266,7 +314,7 @@ export default function GoalsPageFinal() {
   return (
     <div className="min-h-screen text-white" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-slate-700">
+      <div className="flex items-center justify-between p-4">
         <button
           onClick={handleBack}
           className="flex items-center space-x-2 text-slate-300 hover:text-white"
@@ -352,7 +400,87 @@ export default function GoalsPageFinal() {
             );
           })}
         </div>
+
+        {/* Wellness Score Section */}
+        <div className="bg-slate-800 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Overall Wellness Score</h2>
+            <button
+              onClick={() => setIsWeightsDialogOpen(true)}
+              className="text-slate-400 hover:text-white"
+            >
+              <Edit3 className="w-4 h-4" />
+            </button>
+          </div>
+          
+          <div className="flex flex-col items-center">
+            <GoalCircle
+              percentage={calculateWellnessScore()}
+              color="rgb(34, 197, 94)"
+              size={140}
+              currentValue={calculateWellnessScore()}
+              goalValue={100}
+              unit=""
+              title="Wellness Score"
+              description="Based on your goal progress and priority weights"
+            />
+          </div>
+        </div>
       </div>
+
+      {/* Wellness Weights Dialog */}
+      {isWeightsDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Customize Priority Weights</h3>
+            
+            <div className="space-y-4 mb-6">
+              {Object.entries(tempWeights).map(([key, value]) => (
+                <div key={key} className="flex items-center justify-between">
+                  <span className="text-sm text-slate-300 capitalize">
+                    {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                  </span>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="range"
+                      min="0"
+                      max="50"
+                      value={value}
+                      onChange={(e) => setTempWeights({
+                        ...tempWeights,
+                        [key]: parseInt(e.target.value)
+                      })}
+                      className="w-20"
+                    />
+                    <span className="text-sm font-medium w-8 text-right">{value}%</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={() => {
+                  saveWellnessWeights(tempWeights);
+                  setIsWeightsDialogOpen(false);
+                }}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-xl"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => {
+                  setTempWeights(wellnessWeights);
+                  setIsWeightsDialogOpen(false);
+                }}
+                className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
