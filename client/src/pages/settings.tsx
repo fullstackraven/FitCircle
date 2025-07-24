@@ -382,13 +382,13 @@ export default function SettingsPage() {
             </div>
             <button
               onClick={toggleAutoBackup}
-              className={`relative w-12 h-6 rounded-full transition-colors ${
+              className={`relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
                 autoBackupEnabled ? 'bg-green-600' : 'bg-slate-600'
               }`}
             >
-              <div
-                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                  autoBackupEnabled ? 'translate-x-5.5' : 'translate-x-0'
+              <span
+                className={`inline-block w-5 h-5 bg-white rounded-full transition-transform ${
+                  autoBackupEnabled ? 'translate-x-6' : 'translate-x-0.5'
                 }`}
               />
             </button>
@@ -416,13 +416,13 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => updateSetting('hideQuoteOfTheDay', !settings.hideQuoteOfTheDay)}
-                className={`relative w-12 h-6 rounded-full transition-colors ${
+                className={`relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
                   settings.hideQuoteOfTheDay ? 'bg-green-600' : 'bg-slate-600'
                 }`}
               >
-                <div
-                  className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                    settings.hideQuoteOfTheDay ? 'translate-x-5.5' : 'translate-x-0'
+                <span
+                  className={`inline-block w-5 h-5 bg-white rounded-full transition-transform ${
+                    settings.hideQuoteOfTheDay ? 'translate-x-6' : 'translate-x-0.5'
                   }`}
                 />
               </button>
@@ -436,13 +436,13 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => updateSetting('hideTodaysTotals', !settings.hideTodaysTotals)}
-                className={`relative w-12 h-6 rounded-full transition-colors ${
+                className={`relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
                   settings.hideTodaysTotals ? 'bg-green-600' : 'bg-slate-600'
                 }`}
               >
-                <div
-                  className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                    settings.hideTodaysTotals ? 'translate-x-5.5' : 'translate-x-0'
+                <span
+                  className={`inline-block w-5 h-5 bg-white rounded-full transition-transform ${
+                    settings.hideTodaysTotals ? 'translate-x-6' : 'translate-x-0.5'
                   }`}
                 />
               </button>
@@ -456,13 +456,13 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => updateSetting('hideRecentActivity', !settings.hideRecentActivity)}
-                className={`relative w-12 h-6 rounded-full transition-colors ${
+                className={`relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
                   settings.hideRecentActivity ? 'bg-green-600' : 'bg-slate-600'
                 }`}
               >
-                <div
-                  className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                    settings.hideRecentActivity ? 'translate-x-5.5' : 'translate-x-0'
+                <span
+                  className={`inline-block w-5 h-5 bg-white rounded-full transition-transform ${
+                    settings.hideRecentActivity ? 'translate-x-6' : 'translate-x-0.5'
                   }`}
                 />
               </button>
