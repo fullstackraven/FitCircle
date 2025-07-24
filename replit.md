@@ -103,7 +103,8 @@ Preferred communication style: Simple, everyday language.
 - **Deployment Target**: Set to static in Replit deployment configuration
 
 ### Recent Changes
-- **Goals Page Data Retrieval Fix (July 24, 2025)**: Fixed critical issue where Goals page wasn't pulling data from Hydration, Meditation, Fasting and Measurements pages due to IndexedDB references being replaced with localStorage. Updated useGoals hook to use synchronous localStorage access instead of async IndexedDB operations. Resolved JavaScript syntax errors caused by IIFE patterns in goalItems array calculations. (January 2025)
+- **Erase All Data Feature (July 24, 2025)**: Added comprehensive data deletion feature to Settings page with red warning styling, two-step confirmation dialog, and complete localStorage clearing functionality. Includes safety messaging recommending backup creation before data erasure.
+- **Goals Page Data Retrieval Fix (July 24, 2025)**: Fixed critical issue where Goals page wasn't pulling data from Hydration, Meditation, Fasting and Measurements pages due to IndexedDB references being replaced with localStorage. Updated useGoals hook to use synchronous localStorage access instead of async IndexedDB operations. Resolved JavaScript syntax errors caused by IIFE patterns in goalItems array calculations.
 
 - **Delete Functionality**: Added trash can icon next to undo button for workout deletion
 - **Icon-Based Controls**: Replaced text "UNDO" button with backward arrow (Undo2) icon
