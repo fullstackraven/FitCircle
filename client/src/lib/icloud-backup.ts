@@ -88,8 +88,10 @@ export function supportsCloudIntegration(): boolean {
   // Web Share API with files support (iOS Safari)
   let hasWebShareFiles = false;
   try {
-    if (navigator.share && navigator.canShare) {
-      hasWebShareFiles = !!navigator.canShare({ files: [new File([''], 'test.json')] });
+    if (typeof navigator !== 'undefined' && 
+        typeof navigator.share === 'function' && 
+        typeof navigator.canShare === 'function') {
+      hasWebShareFiles = navigator.canShare({ files: [new File([''], 'test.json')] });
     }
   } catch {
     hasWebShareFiles = false;
@@ -105,7 +107,7 @@ export function supportsCloudIntegration(): boolean {
 // Get appropriate instruction text based on device capabilities
 export function getCloudInstructionText(): string {
   if (isIOS()) {
-    if (typeof navigator !== 'undefined' && navigator.share) {
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       return 'This will let you save your encrypted backup directly to iCloud Drive or Files app.';
     } else {
       return 'Download the backup file and save it to your Files app > iCloud Drive folder.';

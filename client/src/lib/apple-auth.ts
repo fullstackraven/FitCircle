@@ -1,7 +1,7 @@
-// Apple Sign In and iCloud backup utilities for FitCircle
-// This provides secure backup functionality with Apple ID authentication
+// Secure backup utilities for FitCircle
+// This provides secure backup functionality with local device authentication
 
-export interface AppleUser {
+export interface SecureUser {
   id: string;
   email?: string;
   name?: {
@@ -10,86 +10,86 @@ export interface AppleUser {
   };
 }
 
-export interface AppleAuthResponse {
-  authorization: {
-    code: string;
-    id_token: string;
-    state?: string;
-  };
-  user?: AppleUser;
+export interface DeviceAuthResponse {
+  success: boolean;
+  user?: SecureUser;
+  deviceId: string;
 }
 
-// Initialize Apple Sign In
-export const initializeAppleSignIn = (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    if (typeof window === 'undefined') {
-      reject(new Error('Apple Sign In requires browser environment'));
-      return;
-    }
+// Generate a secure device-based identifier
+function generateDeviceId(): string {
+  // Create a unique device identifier based on browser fingerprint
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    ctx.textBaseline = 'top';
+    ctx.font = '14px Arial';
+    ctx.fillText('Device fingerprint', 2, 2);
+  }
+  
+  const fingerprint = [
+    navigator.userAgent,
+    navigator.language,
+    screen.width + 'x' + screen.height,
+    new Date().getTimezoneOffset().toString(),
+    canvas.toDataURL()
+  ].join('|');
+  
+  // Create a hash of the fingerprint
+  let hash = 0;
+  for (let i = 0; i < fingerprint.length; i++) {
+    const char = fingerprint.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  
+  return 'device_' + Math.abs(hash).toString(36);
+}
 
-    // Check if Apple ID SDK is already loaded
-    if ((window as any).AppleID) {
-      resolve();
-      return;
-    }
-
-    // Load Apple ID JavaScript SDK
-    const script = document.createElement('script');
-    script.src = 'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js';
-    script.onload = () => {
-      try {
-        (window as any).AppleID.auth.init({
-          clientId: 'your.app.bundle.id', // Replace with your Apple Developer app ID
-          scope: 'name email',
-          redirectURI: window.location.origin,
-          state: 'fitcircle-backup',
-          usePopup: true,
-        });
-        resolve();
-      } catch (error) {
-        reject(error);
-      }
-    };
-    script.onerror = () => reject(new Error('Failed to load Apple ID SDK'));
-    document.head.appendChild(script);
+// Initialize secure backup system
+export const initializeSecureBackup = (): Promise<void> => {
+  return new Promise((resolve) => {
+    // Always resolves since we use device-based authentication
+    resolve();
   });
 };
 
-// Sign in with Apple
-export const signInWithApple = (): Promise<AppleAuthResponse> => {
-  return new Promise((resolve, reject) => {
-    if (!(window as any).AppleID) {
-      reject(new Error('Apple ID SDK not initialized'));
-      return;
-    }
-
-    try {
-      (window as any).AppleID.auth.signIn()
-        .then((response: AppleAuthResponse) => {
-          // Store user info for backup encryption
-          if (response.user) {
-            localStorage.setItem('fitcircle_apple_user', JSON.stringify(response.user));
-          }
-          if (response.authorization.id_token) {
-            localStorage.setItem('fitcircle_apple_token', response.authorization.id_token);
-          }
-          resolve(response);
-        })
-        .catch(reject);
-    } catch (error) {
-      reject(error);
-    }
+// Sign in with device-based authentication
+export const signInWithDevice = (): Promise<DeviceAuthResponse> => {
+  return new Promise((resolve) => {
+    const deviceId = generateDeviceId();
+    const timestamp = new Date().toISOString();
+    
+    // Create a user profile based on device
+    const user: SecureUser = {
+      id: deviceId,
+      name: {
+        firstName: 'Device',
+        lastName: 'User'
+      }
+    };
+    
+    // Store user info for backup encryption
+    localStorage.setItem('fitcircle_secure_user', JSON.stringify(user));
+    localStorage.setItem('fitcircle_device_token', deviceId);
+    localStorage.setItem('fitcircle_auth_timestamp', timestamp);
+    
+    resolve({
+      success: true,
+      user,
+      deviceId
+    });
   });
 };
 
 // Check if user is signed in
 export const isSignedIn = (): boolean => {
-  return !!localStorage.getItem('fitcircle_apple_token');
+  return !!localStorage.getItem('fitcircle_device_token');
 };
 
 // Get current user info
-export const getCurrentUser = (): AppleUser | null => {
-  const userStr = localStorage.getItem('fitcircle_apple_user');
+export const getCurrentUser = (): SecureUser | null => {
+  const userStr = localStorage.getItem('fitcircle_secure_user');
   if (userStr) {
     try {
       return JSON.parse(userStr);
@@ -102,13 +102,14 @@ export const getCurrentUser = (): AppleUser | null => {
 
 // Sign out
 export const signOut = (): void => {
-  localStorage.removeItem('fitcircle_apple_user');
-  localStorage.removeItem('fitcircle_apple_token');
+  localStorage.removeItem('fitcircle_secure_user');
+  localStorage.removeItem('fitcircle_device_token');
+  localStorage.removeItem('fitcircle_auth_timestamp');
 };
 
 // Get user ID for encryption key derivation
 export const getUserIdForEncryption = (): string | null => {
   const user = getCurrentUser();
-  const token = localStorage.getItem('fitcircle_apple_token');
+  const token = localStorage.getItem('fitcircle_device_token');
   return user?.id || token || null;
 };

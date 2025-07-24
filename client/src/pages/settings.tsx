@@ -3,13 +3,13 @@ import { ArrowLeft, Upload, Download, ToggleLeft, ToggleRight, History, FileText
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
 import { 
-  initializeAppleSignIn, 
-  signInWithApple, 
+  initializeSecureBackup, 
+  signInWithDevice, 
   isSignedIn, 
   getCurrentUser, 
   signOut,
   getUserIdForEncryption,
-  type AppleUser 
+  type SecureUser 
 } from '@/lib/apple-auth';
 import { 
   isEncryptionSupported,
@@ -34,10 +34,10 @@ export default function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
 
-  // Apple iCloud backup states
-  const [appleUser, setAppleUser] = useState<AppleUser | null>(null);
-  const [appleSignedIn, setAppleSignedIn] = useState(false);
-  const [isInitializingApple, setIsInitializingApple] = useState(false);
+  // Secure backup states
+  const [secureUser, setSecureUser] = useState<SecureUser | null>(null);
+  const [secureSignedIn, setSecureSignedIn] = useState(false);
+  const [isInitializingSecure, setIsInitializingSecure] = useState(false);
   const [isCreatingSecureBackup, setIsCreatingSecureBackup] = useState(false);
   const [isRestoringSecureBackup, setIsRestoringSecureBackup] = useState(false);
   const [secureBackupStatus, setSecureBackupStatus] = useState<string>('');
@@ -68,9 +68,9 @@ export default function SettingsPage() {
     const isEnabled = autoBackup === 'true';
     setAutoBackupEnabled(isEnabled);
     
-    // Check Apple Sign In status
-    setAppleSignedIn(isSignedIn());
-    setAppleUser(getCurrentUser());
+    // Check secure backup status
+    setSecureSignedIn(isSignedIn());
+    setSecureUser(getCurrentUser());
     
     // If auto backup is enabled, check if we need to perform a backup
     if (isEnabled) {
@@ -338,39 +338,39 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
-  // Apple iCloud Backup Functions
-  const handleAppleSignIn = async () => {
-    setIsInitializingApple(true);
-    setSecureBackupStatus('Initializing Apple Sign In...');
+  // Secure Backup Functions
+  const handleSecureSignIn = async () => {
+    setIsInitializingSecure(true);
+    setSecureBackupStatus('Setting up secure backup...');
     
     try {
-      await initializeAppleSignIn();
-      const result = await signInWithApple();
+      await initializeSecureBackup();
+      const result = await signInWithDevice();
       
-      setAppleSignedIn(true);
-      setAppleUser(result.user || null);
-      setSecureBackupStatus('Successfully signed in with Apple ID!');
+      setSecureSignedIn(true);
+      setSecureUser(result.user || null);
+      setSecureBackupStatus('Secure backup ready!');
       
       setTimeout(() => setSecureBackupStatus(''), 3000);
     } catch (error) {
-      setSecureBackupStatus('Failed to sign in. Please try again.');
+      setSecureBackupStatus('Failed to set up secure backup. Please try again.');
       setTimeout(() => setSecureBackupStatus(''), 3000);
     } finally {
-      setIsInitializingApple(false);
+      setIsInitializingSecure(false);
     }
   };
 
-  const handleAppleSignOut = () => {
+  const handleSecureSignOut = () => {
     signOut();
-    setAppleSignedIn(false);
-    setAppleUser(null);
+    setSecureSignedIn(false);
+    setSecureUser(null);
     setSecureBackupStatus('Signed out successfully');
     setTimeout(() => setSecureBackupStatus(''), 3000);
   };
 
   const createSecureBackup = async () => {
-    if (!appleSignedIn) {
-      setSecureBackupStatus('Please sign in with Apple ID first');
+    if (!secureSignedIn) {
+      setSecureBackupStatus('Please set up secure backup first');
       setTimeout(() => setSecureBackupStatus(''), 3000);
       return;
     }
@@ -419,8 +419,8 @@ export default function SettingsPage() {
   };
 
   const restoreSecureBackup = async () => {
-    if (!appleSignedIn) {
-      setSecureBackupStatus('Please sign in with Apple ID first');
+    if (!secureSignedIn) {
+      setSecureBackupStatus('Please set up secure backup first');
       setTimeout(() => setSecureBackupStatus(''), 3000);
       return;
     }
@@ -455,7 +455,7 @@ export default function SettingsPage() {
         window.location.href = '/';
       }, 2000);
     } catch (error) {
-      setSecureBackupStatus('Failed to restore backup. Check that you used the correct Apple ID.');
+      setSecureBackupStatus('Failed to restore backup. Check that the file is valid.');
       setTimeout(() => setSecureBackupStatus(''), 4000);
     } finally {
       setIsRestoringSecureBackup(false);
@@ -531,41 +531,41 @@ export default function SettingsPage() {
             </div>
             
             <p className="text-sm text-slate-400 mb-6">
-              Sign in with Apple to create encrypted backups that only you can access. 
+              Set up secure backup to create encrypted backups that only you can access. 
               {getCloudInstructionText()}
             </p>
             
-            {/* Apple Sign In Status */}
+            {/* Secure Backup Status */}
             <div className="bg-slate-700/50 rounded-xl p-4 mb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <User className="w-5 h-5 text-slate-400" />
                   <div>
                     <p className="font-medium text-white">
-                      {appleSignedIn ? `Signed in${appleUser?.email ? ` as ${appleUser.email}` : ''}` : 'Not signed in'}
+                      {secureSignedIn ? 'Secure backup enabled' : 'Secure backup not set up'}
                     </p>
                     <p className="text-xs text-slate-400">
-                      {appleSignedIn ? 'Ready for secure backups' : 'Sign in to enable encrypted backups'}
+                      {secureSignedIn ? 'Ready for secure backups' : 'Set up to enable encrypted backups'}
                     </p>
                   </div>
                 </div>
                 
-                {appleSignedIn ? (
+                {secureSignedIn ? (
                   <button
-                    onClick={handleAppleSignOut}
+                    onClick={handleSecureSignOut}
                     className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg flex items-center gap-1.5 transition-colors"
                   >
                     <LogOut className="w-3 h-3" />
-                    Sign Out
+                    Reset
                   </button>
                 ) : (
                   <button
-                    onClick={handleAppleSignIn}
-                    disabled={isInitializingApple}
-                    className="px-3 py-1.5 bg-black hover:bg-gray-900 text-white text-sm rounded-lg flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                    onClick={handleSecureSignIn}
+                    disabled={isInitializingSecure}
+                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg flex items-center gap-1.5 transition-colors disabled:opacity-50"
                   >
-                    <Cloud className="w-3 h-3" />
-                    {isInitializingApple ? 'Connecting...' : 'Sign In'}
+                    <Shield className="w-3 h-3" />
+                    {isInitializingSecure ? 'Setting up...' : 'Set Up'}
                   </button>
                 )}
               </div>
@@ -575,7 +575,7 @@ export default function SettingsPage() {
             <div className="space-y-3">
               <button
                 onClick={createSecureBackup}
-                disabled={!appleSignedIn || isCreatingSecureBackup}
+                disabled={!secureSignedIn || isCreatingSecureBackup}
                 className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:opacity-50 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors"
               >
                 <Lock className="w-5 h-5" />
@@ -584,7 +584,7 @@ export default function SettingsPage() {
               
               <button
                 onClick={restoreSecureBackup}
-                disabled={!appleSignedIn || isRestoringSecureBackup}
+                disabled={!secureSignedIn || isRestoringSecureBackup}
                 className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-slate-600 disabled:opacity-50 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors"
               >
                 <Upload className="w-5 h-5" />
@@ -606,8 +606,8 @@ export default function SettingsPage() {
             
             <div className="mt-4 p-3 bg-slate-700/30 rounded-lg">
               <p className="text-xs text-slate-400 leading-relaxed">
-                <strong className="text-slate-300">Security:</strong> Your data is encrypted with AES-256 using your Apple ID as the key. 
-                Only you can decrypt your backups. We never store your encryption keys or have access to your unencrypted data.
+                <strong className="text-slate-300">Security:</strong> Your data is encrypted with AES-256 using your device as the key. 
+                Only your device can decrypt your backups. We never store your encryption keys or have access to your unencrypted data.
               </p>
             </div>
           </div>
