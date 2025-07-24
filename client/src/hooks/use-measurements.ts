@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useIndexedDB } from './use-indexed-db';
 
 export interface MeasurementEntry {
   date: string;
@@ -35,62 +34,38 @@ function getTodayString(): string {
 }
 
 export function useMeasurements() {
-  const [data, setData] = useState<MeasurementData>({
-    weight: [],
-    height: [],
-    bodyFat: [],
-    neck: [],
-    chest: [],
-    waist: [],
-    hips: [],
-    bicepLeft: [],
-    bicepRight: [],
-    forearmLeft: [],
-    forearmRight: [],
-    thighLeft: [],
-    thighRight: [],
-    calfLeft: [],
-    calfRight: []
+  const [data, setData] = useState<MeasurementData>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error('Failed to parse measurements history:', error);
+      }
+    }
+    return {
+      weight: [],
+      height: [],
+      bodyFat: [],
+      neck: [],
+      chest: [],
+      waist: [],
+      hips: [],
+      bicepLeft: [],
+      bicepRight: [],
+      forearmLeft: [],
+      forearmRight: [],
+      thighLeft: [],
+      thighRight: [],
+      calfLeft: [],
+      calfRight: []
+    };
   });
 
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  const { isReady, getItem, setItem } = useIndexedDB();
-
-  // Load data from IndexedDB on mount
+  // Save to localStorage whenever data changes
   useEffect(() => {
-    if (!isReady) return;
-
-    const loadData = async () => {
-      try {
-        const savedData = await getItem<MeasurementData>(STORAGE_KEY);
-        if (savedData) {
-          setData(savedData);
-        }
-        setIsInitialized(true);
-      } catch (error) {
-        console.error('Failed to load measurements history:', error);
-        setIsInitialized(true);
-      }
-    };
-
-    loadData();
-  }, [isReady, getItem]);
-
-  // Save data to IndexedDB whenever it changes (but not on initial load)
-  useEffect(() => {
-    if (isInitialized && isReady) {
-      const saveData = async () => {
-        try {
-          await setItem(STORAGE_KEY, data);
-        } catch (error) {
-          console.error('Failed to save measurements data:', error);
-        }
-      };
-
-      saveData();
-    }
-  }, [data, isInitialized, isReady, setItem]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }, [data]);
 
   const addMeasurement = (type: keyof MeasurementData, value: number, date?: string) => {
     const measurementDate = date || getTodayString();

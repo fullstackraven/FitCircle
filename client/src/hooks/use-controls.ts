@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useIndexedDB } from './use-indexed-db';
 
 interface ControlSettings {
   hideQuoteOfTheDay: boolean;
@@ -16,39 +15,23 @@ const defaultSettings: ControlSettings = {
 };
 
 export function useControls() {
-  const [settings, setSettings] = useState<ControlSettings>(defaultSettings);
-  const { isReady, getItem, setItem } = useIndexedDB();
-
-  // Load settings from IndexedDB on mount
-  useEffect(() => {
-    if (!isReady) return;
-
-    const loadSettings = async () => {
+  const [settings, setSettings] = useState<ControlSettings>(() => {
+    const saved = localStorage.getItem(CONTROLS_STORAGE_KEY);
+    if (saved) {
       try {
-        const savedSettings = await getItem<ControlSettings>(CONTROLS_STORAGE_KEY);
-        if (savedSettings) {
-          setSettings({ ...defaultSettings, ...savedSettings });
-        }
+        return { ...defaultSettings, ...JSON.parse(saved) };
       } catch (error) {
         console.error('Failed to parse control settings:', error);
       }
-    };
+    }
+    return defaultSettings;
+  });
 
-    loadSettings();
-  }, [isReady, getItem]);
-
-  // Save settings to IndexedDB whenever they change
-  const updateSetting = async (key: keyof ControlSettings, value: boolean) => {
+  // Save settings to localStorage whenever they change
+  const updateSetting = (key: keyof ControlSettings, value: boolean) => {
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
-    
-    if (isReady) {
-      try {
-        await setItem(CONTROLS_STORAGE_KEY, newSettings);
-      } catch (error) {
-        console.error('Failed to save control settings:', error);
-      }
-    }
+    localStorage.setItem(CONTROLS_STORAGE_KEY, JSON.stringify(newSettings));
   };
 
   return {

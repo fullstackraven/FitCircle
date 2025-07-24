@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useIndexedDB } from './use-indexed-db';
 
 export interface HydrationEntry {
   time: string;
@@ -39,73 +38,47 @@ function getCurrentTime(): string {
 }
 
 export function useHydration() {
-  const [data, setData] = useState<HydrationData>({
-    dailyGoalOz: 64, // Default 64oz goal
-    currentDayOz: 0,
-    logs: {},
-    lastDate: getTodayString()
+  const [data, setData] = useState<HydrationData>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const goalFromGoalsPage = localStorage.getItem('fitcircle_goal_hydration');
+    
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Migrate liquid type if not present
+        if (parsed.logs) {
+          Object.values(parsed.logs).forEach((dayLog: any) => {
+            if (dayLog.entries) {
+              dayLog.entries.forEach((entry: any) => {
+                if (!entry.liquidType) {
+                  entry.liquidType = 'Water';
+                }
+              });
+            }
+          });
+        }
+        // Sync goal from Goals page if it exists and is different
+        if (goalFromGoalsPage) {
+          parsed.dailyGoalOz = parseFloat(goalFromGoalsPage);
+        }
+        return parsed;
+      } catch (error) {
+        console.error('Failed to parse hydration data:', error);
+      }
+    }
+    
+    return {
+      dailyGoalOz: goalFromGoalsPage ? parseFloat(goalFromGoalsPage) : 64,
+      currentDayOz: 0,
+      logs: {},
+      lastDate: getTodayString()
+    };
   });
 
-  const { isReady, getItem, setItem } = useIndexedDB();
-
-  // Load data from IndexedDB on mount
+  // Save to localStorage whenever data changes
   useEffect(() => {
-    if (!isReady) return;
-
-    const loadData = async () => {
-      try {
-        const savedData = await getItem<HydrationData>(STORAGE_KEY);
-        const goalFromGoalsPage = await getItem<string>('fitcircle_goal_hydration');
-        
-        if (savedData) {
-          // Migrate old data format - add liquidType to entries that don't have it
-          const migratedLogs: { [date: string]: HydrationLog } = {};
-          Object.entries(savedData.logs || {}).forEach(([date, log]: [string, any]) => {
-            migratedLogs[date] = {
-              ...log,
-              entries: log.entries.map((entry: any) => ({
-                ...entry,
-                liquidType: entry.liquidType || 'Water' // Default to Water for old entries
-              }))
-            };
-          });
-          
-          setData(prev => ({
-            ...savedData,
-            logs: migratedLogs,
-            lastDate: savedData.lastDate || getTodayString(),
-            // Sync goal from Goals page if it exists and is different
-            dailyGoalOz: goalFromGoalsPage ? parseFloat(goalFromGoalsPage) : savedData.dailyGoalOz || 64
-          }));
-        } else if (goalFromGoalsPage) {
-          // If no hydration data but goal exists, use it
-          setData(prev => ({
-            ...prev,
-            dailyGoalOz: parseFloat(goalFromGoalsPage)
-          }));
-        }
-      } catch (error) {
-        console.error('Failed to load hydration data:', error);
-      }
-    };
-
-    loadData();
-  }, [isReady, getItem]);
-
-  // Save data to IndexedDB whenever it changes
-  useEffect(() => {
-    if (!isReady) return;
-
-    const saveData = async () => {
-      try {
-        await setItem(STORAGE_KEY, data);
-      } catch (error) {
-        console.error('Failed to save hydration data:', error);
-      }
-    };
-
-    saveData();
-  }, [data, isReady, setItem]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }, [data]);
 
   // Reset daily data if date has changed
   useEffect(() => {

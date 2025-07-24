@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useIndexedDB } from './use-indexed-db';
 
 export interface Reminder {
   id: string;
@@ -9,19 +8,14 @@ export interface Reminder {
 }
 
 export function useReminders() {
-  const [reminders, setReminders] = useState<Reminder[]>([]);
-  const { isReady, getItem, setItem, removeItem } = useIndexedDB();
-
-  // Load data from IndexedDB on mount
-  useEffect(() => {
-    if (!isReady) return;
-
-    const loadReminders = async () => {
+  const [reminders, setReminders] = useState<Reminder[]>(() => {
+    const saved = localStorage.getItem('fitcircle_reminders');
+    if (saved) {
       try {
-        const savedReminders = await getItem<any[]>('fitcircle_reminders');
-        if (savedReminders) {
-          // Filter out any old notes data and keep only reminders
-          const reminderItems = savedReminders.filter((item: any) => 
+        const parsed = JSON.parse(saved);
+        // Filter out any old notes data and keep only reminders
+        if (Array.isArray(parsed)) {
+          return parsed.filter((item: any) => 
             !item.type || item.type === 'reminder'
           ).map((item: any) => ({
             id: item.id,
@@ -29,32 +23,20 @@ export function useReminders() {
             completed: item.completed || false,
             createdAt: item.createdAt
           }));
-          setReminders(reminderItems);
         }
       } catch (error) {
-        console.error('Failed to load reminders:', error);
+        console.error('Failed to parse reminders:', error);
       }
-    };
+    }
+    return [];
+  });
 
-    loadReminders();
-  }, [isReady, getItem]);
-
-  // Save to IndexedDB whenever reminders change
+  // Save to localStorage whenever reminders change
   useEffect(() => {
-    if (!isReady) return;
-
-    const saveReminders = async () => {
-      try {
-        await setItem('fitcircle_reminders', reminders);
-        // Clean up old notes data
-        await removeItem('fitcircle_notes');
-      } catch (error) {
-        console.error('Failed to save reminders:', error);
-      }
-    };
-
-    saveReminders();
-  }, [reminders, isReady, setItem, removeItem]);
+    localStorage.setItem('fitcircle_reminders', JSON.stringify(reminders));
+    // Clean up old notes data
+    localStorage.removeItem('fitcircle_notes');
+  }, [reminders]);
 
   const addReminder = (text: string) => {
     const newReminder: Reminder = {

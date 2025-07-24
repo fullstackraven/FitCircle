@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useIndexedDB } from './use-indexed-db';
 
 export interface Goals {
   hydrationOz: number;
@@ -24,108 +23,74 @@ export interface GoalProgress {
 const STORAGE_PREFIX = 'fitcircle_goal_';
 
 export function useGoals() {
-  const [goals, setGoals] = useState<Goals>({
-    hydrationOz: 64,
-    meditationMinutes: 10,
-    fastingHours: 16,
-    weightLbs: 150,
-    targetWeight: 150,
-    targetBodyFat: 15,
-    workoutConsistency: 80
+  const [goals, setGoals] = useState<Goals>(() => {
+    const saved = localStorage.getItem('fitcircle_goals');
+    const defaultGoals = {
+      hydrationOz: 64,
+      meditationMinutes: 10,
+      fastingHours: 16,
+      weightLbs: 150,
+      targetWeight: 150,
+      targetBodyFat: 15,
+      workoutConsistency: 80
+    };
+    
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return { ...defaultGoals, ...parsed };
+      } catch (error) {
+        console.error('Failed to parse goals:', error);
+      }
+    }
+    
+    // Fallback to old format if new format doesn't exist
+    const loadedGoals: Partial<Goals> = {};
+    const hydration = localStorage.getItem(`${STORAGE_PREFIX}hydration`);
+    if (hydration) loadedGoals.hydrationOz = parseFloat(hydration);
+    
+    const meditation = localStorage.getItem(`${STORAGE_PREFIX}meditation`);
+    if (meditation) loadedGoals.meditationMinutes = parseFloat(meditation);
+    
+    const fasting = localStorage.getItem(`${STORAGE_PREFIX}fasting`);
+    if (fasting) loadedGoals.fastingHours = parseFloat(fasting);
+    
+    const weight = localStorage.getItem(`${STORAGE_PREFIX}weight`);
+    if (weight) loadedGoals.weightLbs = parseFloat(weight);
+    
+    return { ...defaultGoals, ...loadedGoals };
   });
 
-  const { isReady, getItem, setItem } = useIndexedDB();
-
-  // Load goals from IndexedDB on mount
-  useEffect(() => {
-    if (!isReady) return;
-
-    const loadGoals = async () => {
-      try {
-        const loadedGoals: Partial<Goals> = {};
-        
-        // Load from both old format and new unified format
-        const savedGoals = await getItem<Goals>('fitcircle_goals');
-        if (savedGoals) {
-          if (savedGoals.hydrationOz) loadedGoals.hydrationOz = parseFloat(savedGoals.hydrationOz.toString());
-          if (savedGoals.meditationMinutes) loadedGoals.meditationMinutes = parseFloat(savedGoals.meditationMinutes.toString());
-          if (savedGoals.fastingHours) loadedGoals.fastingHours = parseFloat(savedGoals.fastingHours.toString());
-          if (savedGoals.weightLbs) loadedGoals.weightLbs = parseFloat(savedGoals.weightLbs.toString());
-          if (savedGoals.targetWeight) loadedGoals.targetWeight = parseFloat(savedGoals.targetWeight.toString());
-          if (savedGoals.targetBodyFat) loadedGoals.targetBodyFat = parseFloat(savedGoals.targetBodyFat.toString());
-          if (savedGoals.workoutConsistency) loadedGoals.workoutConsistency = parseFloat(savedGoals.workoutConsistency.toString());
-        } else {
-          // Fallback to old format if new format doesn't exist
-          const hydration = await getItem<string>(`${STORAGE_PREFIX}hydration`);
-          if (hydration && !loadedGoals.hydrationOz) loadedGoals.hydrationOz = parseFloat(hydration);
-          
-          const meditation = await getItem<string>(`${STORAGE_PREFIX}meditation`);
-          if (meditation && !loadedGoals.meditationMinutes) loadedGoals.meditationMinutes = parseFloat(meditation);
-          
-          const fasting = await getItem<string>(`${STORAGE_PREFIX}fasting`);
-          if (fasting && !loadedGoals.fastingHours) loadedGoals.fastingHours = parseFloat(fasting);
-          
-          const weight = await getItem<string>(`${STORAGE_PREFIX}weight`);
-          if (weight && !loadedGoals.weightLbs) loadedGoals.weightLbs = parseFloat(weight);
-        }
-
-        setGoals(prev => ({ ...prev, ...loadedGoals }));
-      } catch (error) {
-        console.error('Failed to load goals:', error);
-      }
+  const updateGoal = (goalType: keyof Goals, value: number) => {
+    const updatedGoals = { ...goals, [goalType]: value };
+    setGoals(updatedGoals);
+    localStorage.setItem('fitcircle_goals', JSON.stringify(updatedGoals));
+    
+    // Keep backward compatibility with old storage format
+    const keyMap: { [K in keyof Goals]?: string } = {
+      hydrationOz: 'hydration',
+      meditationMinutes: 'meditation',
+      fastingHours: 'fasting',
+      weightLbs: 'weight'
     };
-
-    loadGoals();
-  }, [isReady, getItem]);
-
-  const updateGoal = async (goalType: keyof Goals, value: number) => {
-    setGoals(prev => ({ ...prev, [goalType]: value }));
     
-    if (!isReady) return;
+    const oldKey = keyMap[goalType];
+    if (oldKey) {
+      localStorage.setItem(`${STORAGE_PREFIX}${oldKey}`, value.toString());
+    }
     
-    try {
-      // Save to unified goals storage
-      const currentGoals = await getItem<Goals>('fitcircle_goals');
-      let goalsData = {};
-      
-      if (currentGoals) {
-        goalsData = currentGoals;
-      }
-      
-      const updatedGoals = {
-        ...goalsData,
-        [goalType]: value
-      };
-      
-      await setItem('fitcircle_goals', updatedGoals);
-      
-      // Keep backward compatibility with old storage format
-      const keyMap: { [K in keyof Goals]?: string } = {
-        hydrationOz: 'hydration',
-        meditationMinutes: 'meditation',
-        fastingHours: 'fasting',
-        weightLbs: 'weight'
-      };
-      
-      const oldKey = keyMap[goalType];
-      if (oldKey) {
-        await setItem(`${STORAGE_PREFIX}${oldKey}`, value.toString());
-      }
-      
-      // Special case: Also update hydration hook data if hydration goal is changed
-      if (goalType === 'hydrationOz') {
-        const hydrationData = await getItem<any>('fitcircle_hydration_data');
-        if (hydrationData) {
-          try {
-            hydrationData.dailyGoalOz = value;
-            await setItem('fitcircle_hydration_data', hydrationData);
-          } catch (e) {
-            console.error('Failed to sync hydration goal:', e);
-          }
+    // Special case: Also update hydration hook data if hydration goal is changed
+    if (goalType === 'hydrationOz') {
+      const hydrationData = localStorage.getItem('fitcircle_hydration_data');
+      if (hydrationData) {
+        try {
+          const parsed = JSON.parse(hydrationData);
+          parsed.dailyGoalOz = value;
+          localStorage.setItem('fitcircle_hydration_data', JSON.stringify(parsed));
+        } catch (e) {
+          console.error('Failed to sync hydration goal:', e);
         }
       }
-    } catch (error) {
-      console.error('Failed to update goal:', error);
     }
   };
 

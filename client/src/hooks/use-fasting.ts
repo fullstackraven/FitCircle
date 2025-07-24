@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useIndexedDB } from './use-indexed-db';
 
 export interface FastingLog {
   id: string;
@@ -14,41 +13,22 @@ export interface FastingLog {
 const STORAGE_KEY = 'fitcircle_fasting_logs';
 
 export function useFasting() {
-  const [logs, setLogs] = useState<FastingLog[]>([]);
-  const { isReady, getItem, setItem } = useIndexedDB();
-
-  // Load data from IndexedDB on mount
-  useEffect(() => {
-    if (!isReady) return;
-
-    const loadLogs = async () => {
+  const [logs, setLogs] = useState<FastingLog[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
       try {
-        const savedLogs = await getItem<FastingLog[]>(STORAGE_KEY);
-        if (savedLogs) {
-          setLogs(savedLogs);
-        }
+        return JSON.parse(saved);
       } catch (error) {
-        console.error('Failed to load fasting logs:', error);
+        console.error('Failed to parse fasting logs:', error);
       }
-    };
+    }
+    return [];
+  });
 
-    loadLogs();
-  }, [isReady, getItem]);
-
-  // Save data to IndexedDB whenever it changes
+  // Save to localStorage whenever data changes
   useEffect(() => {
-    if (!isReady) return;
-
-    const saveLogs = async () => {
-      try {
-        await setItem(STORAGE_KEY, logs);
-      } catch (error) {
-        console.error('Failed to save fasting logs:', error);
-      }
-    };
-
-    saveLogs();
-  }, [logs, isReady, setItem]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+  }, [logs]);
 
   const addLog = (log: Omit<FastingLog, 'id' | 'loggedAt'>) => {
     const newLog: FastingLog = {

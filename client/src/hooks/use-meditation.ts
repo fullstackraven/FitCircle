@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useIndexedDB } from './use-indexed-db';
 
 export interface MeditationLog {
   id: string;
@@ -12,41 +11,22 @@ export interface MeditationLog {
 const STORAGE_KEY = 'fitcircle_meditation_logs';
 
 export function useMeditation() {
-  const [logs, setLogs] = useState<MeditationLog[]>([]);
-  const { isReady, getItem, setItem } = useIndexedDB();
-
-  // Load data from IndexedDB on mount
-  useEffect(() => {
-    if (!isReady) return;
-
-    const loadLogs = async () => {
+  const [logs, setLogs] = useState<MeditationLog[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
       try {
-        const savedLogs = await getItem<MeditationLog[]>(STORAGE_KEY);
-        if (savedLogs) {
-          setLogs(savedLogs);
-        }
+        return JSON.parse(saved);
       } catch (error) {
-        console.error('Failed to load meditation logs:', error);
+        console.error('Failed to parse meditation logs:', error);
       }
-    };
+    }
+    return [];
+  });
 
-    loadLogs();
-  }, [isReady, getItem]);
-
-  // Save data to IndexedDB whenever it changes
+  // Save to localStorage whenever data changes
   useEffect(() => {
-    if (!isReady) return;
-
-    const saveLogs = async () => {
-      try {
-        await setItem(STORAGE_KEY, logs);
-      } catch (error) {
-        console.error('Failed to save meditation logs:', error);
-      }
-    };
-
-    saveLogs();
-  }, [logs, isReady, setItem]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+  }, [logs]);
 
   const addLog = (log: Omit<MeditationLog, 'id' | 'completedAt'>) => {
     const newLog: MeditationLog = {

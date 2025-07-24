@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useIndexedDB } from './use-indexed-db';
 
 export interface Workout {
   id: string;
@@ -47,50 +46,27 @@ function getDateString(date: Date): string {
 }
 
 export function useWorkouts() {
-  const [data, setData] = useState<WorkoutData>({
-    workouts: {},
-    dailyLogs: {},
-    journalEntries: {},
-    lastDate: getTodayString()
+  const [data, setData] = useState<WorkoutData>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error('Failed to parse workout data:', error);
+      }
+    }
+    return {
+      workouts: {},
+      dailyLogs: {},
+      lastDate: getTodayString(),
+      journalEntries: {}
+    };
   });
 
-  const { isReady, getItem, setItem } = useIndexedDB();
-
-  // Load data from IndexedDB on mount
+  // Save to localStorage whenever data changes
   useEffect(() => {
-    if (!isReady) return;
-
-    const loadData = async () => {
-      try {
-        const savedData = await getItem<WorkoutData>(STORAGE_KEY);
-        if (savedData) {
-          setData(prev => ({
-            ...savedData,
-            lastDate: savedData.lastDate || getTodayString()
-          }));
-        }
-      } catch (error) {
-        console.error('Failed to load workout data:', error);
-      }
-    };
-
-    loadData();
-  }, [isReady, getItem]);
-
-  // Save data to IndexedDB whenever it changes
-  useEffect(() => {
-    if (!isReady) return;
-
-    const saveData = async () => {
-      try {
-        await setItem(STORAGE_KEY, data);
-      } catch (error) {
-        console.error('Failed to save workout data:', error);
-      }
-    };
-
-    saveData();
-  }, [data, isReady, setItem]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }, [data]);
 
   // Reset daily data if date has changed
   useEffect(() => {

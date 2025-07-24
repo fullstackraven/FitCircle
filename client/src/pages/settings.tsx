@@ -2,7 +2,6 @@ import { useState, useRef } from 'react';
 import { ChevronLeft, Upload, Download } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
-import { useIndexedDB } from '@/hooks/use-indexed-db';
 
 
 export default function SettingsPage() {
@@ -13,7 +12,6 @@ export default function SettingsPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
-  const { getAll, setItem, clear } = useIndexedDB();
 
   
   // Function to get local date string (not UTC)
@@ -36,43 +34,27 @@ export default function SettingsPage() {
     }
   };
 
-  // Export complete IndexedDB data as JSON
-  const exportSnapshot = async () => {
+  // Export complete localStorage data as JSON
+  const exportSnapshot = () => {
     setIsExporting(true);
     try {
-      // Get all data from IndexedDB
-      const snapshot = await getAll();
+      // Get all localStorage data
+      const completeSnapshot: Record<string, any> = {};
       
-      // Filter out invalid keys that might contain functions or non-serializable data
-      const filteredSnapshot: Record<string, any> = {};
-      for (const [key, value] of Object.entries(snapshot)) {
-        // Skip keys that contain functions or are clearly invalid
-        if (typeof value === 'function' || key === 'setItem' || key.includes('function')) {
-          console.log(`Skipping invalid key during export: ${key}`);
-          continue;
-        }
-        
-        // Only include data keys that start with 'fitcircle_' or 'workout-tracker-data'
-        if (key.startsWith('fitcircle_') || key === 'workout-tracker-data') {
-          filteredSnapshot[key] = value;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          const value = localStorage.getItem(key);
+          if (value !== null) {
+            try {
+              // Try to parse JSON values, keep strings as-is
+              completeSnapshot[key] = JSON.parse(value);
+            } catch {
+              completeSnapshot[key] = value;
+            }
+          }
         }
       }
-      
-      // Also include any essential localStorage items (like theme)
-      const essentialLocalStorageKeys = ['theme'];
-      const localStorageData: Record<string, string> = {};
-      essentialLocalStorageKeys.forEach(key => {
-        const value = localStorage.getItem(key);
-        if (value !== null) {
-          localStorageData[key] = value;
-        }
-      });
-      
-      // Combine IndexedDB and essential localStorage data
-      const completeSnapshot = {
-        ...filteredSnapshot,
-        ...localStorageData
-      };
       
       const blob = new Blob([JSON.stringify(completeSnapshot, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -95,13 +77,13 @@ export default function SettingsPage() {
     }
   };
 
-  // Import data to IndexedDB from JSON
+  // Import data to localStorage from JSON
   const importSnapshot = (file: File) => {
     setIsImporting(true);
     setStatus('Restoring data...');
     
     const reader = new FileReader();
-    reader.onload = async (e) => {
+    reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
         console.log('File content length:', content.length);
@@ -113,12 +95,10 @@ export default function SettingsPage() {
           throw new Error('Invalid file format');
         }
         
-        // Clear IndexedDB first
-        console.log('Clearing IndexedDB...');
-        await clear();
+        // Clear localStorage first
+        console.log('Clearing localStorage...');
+        localStorage.clear();
         
-        // Separate essential localStorage items from IndexedDB data
-        const essentialLocalStorageKeys = ['theme', 'storage_migration_completed'];
         let count = 0;
         let errors = 0;
         
@@ -131,23 +111,15 @@ export default function SettingsPage() {
             continue;
           }
           
-          if (essentialLocalStorageKeys.includes(key)) {
-            // Restore to localStorage
-            if (typeof value === 'string') {
-              localStorage.setItem(key, value);
-              count++;
-              console.log(`Restored localStorage key: ${key}`);
-            }
-          } else {
-            // Restore to IndexedDB
-            try {
-              await setItem(key, value);
-              count++;
-              console.log(`Restored IndexedDB key: ${key}`);
-            } catch (error) {
-              console.error(`Failed to restore key "${key}":`, error);
-              errors++;
-            }
+          try {
+            // Store all data in localStorage
+            const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
+            localStorage.setItem(key, stringValue);
+            count++;
+            console.log(`Restored localStorage key: ${key}`);
+          } catch (error) {
+            console.error(`Failed to restore key "${key}":`, error);
+            errors++;
           }
         }
         
