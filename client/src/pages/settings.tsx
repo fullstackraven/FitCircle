@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { ChevronLeft, Upload, Download } from 'lucide-react';
+import { ChevronLeft, Upload, Download, Trash2 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
 
@@ -9,6 +9,7 @@ export default function SettingsPage() {
   const [isImporting, setIsImporting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [status, setStatus] = useState<string>('');
+  const [showEraseConfirm, setShowEraseConfirm] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
@@ -153,6 +154,26 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
+  // Erase all data function
+  const eraseAllData = () => {
+    try {
+      // Clear all localStorage data
+      localStorage.clear();
+      setStatus('All data has been erased successfully!');
+      setShowEraseConfirm(false);
+      
+      // Redirect to home page after a short delay
+      setTimeout(() => {
+        setStatus('');
+        window.location.href = '/';
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to erase data:', error);
+      setStatus('Failed to erase data. Please try again.');
+      setTimeout(() => setStatus(''), 3000);
+    }
+  };
+
   return (
     <div className="min-h-screen text-white" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       {/* Header */}
@@ -278,6 +299,54 @@ export default function SettingsPage() {
                 />
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* Erase All Data Section */}
+        <div className="bg-red-900/20 border border-red-700 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-red-300 mb-4">Erase All Data</h2>
+          
+          <div className="space-y-4">
+            {!showEraseConfirm ? (
+              <>
+                <p className="text-red-200 text-sm mb-4">
+                  This will permanently delete all your FitCircle data including workouts, measurements, 
+                  goals, hydration logs, meditation sessions, fasting logs, and all other app data.
+                </p>
+                <button
+                  onClick={() => setShowEraseConfirm(true)}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+                >
+                  <Trash2 className="w-5 h-5" />
+                  Erase All Data
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-red-200 text-sm font-medium mb-4">
+                  ⚠️ Are you absolutely sure? This action cannot be undone!
+                </p>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={eraseAllData}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                    Yes, Erase Everything
+                  </button>
+                  <button
+                    onClick={() => setShowEraseConfirm(false)}
+                    className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-3 px-4 rounded-xl"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )}
+            
+            <p className="text-xs text-red-300 text-center">
+              Make sure to download a backup before erasing if you want to keep your data.
+            </p>
           </div>
         </div>
       </div>
