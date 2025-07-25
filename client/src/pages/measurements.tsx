@@ -226,8 +226,7 @@ export default function MeasurementsPage() {
                       type="number"
                       value={inputValues[field.key] || ''}
                       onChange={(e) => handleInputChange(field.key, e.target.value)}
-                      placeholder={`${field.unit}`}
-                      className="bg-slate-700 border-slate-600 text-white mt-1"
+                      placeholder= "test"                      className="bg-slate-700 border-slate-600 text-white mt-1"
                     />
                     {getLatestValue(field.key) && (
                       <div className="text-xs text-slate-400 mt-1">

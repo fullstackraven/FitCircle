@@ -240,18 +240,18 @@ export default function SettingsPage() {
 
         {/* Controls Section */}
         <div className="bg-slate-800 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Controls</h2>
+          <h2 className="text-lg font-semibold text-white mb-6">Controls</h2>
           
           <div className="space-y-4">
             {/* Hide Quote of the Day */}
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white font-medium">Hide Quote of the Day</p>
+                <p className="text-white font-small">Hide Quote of the Day</p>
               </div>
               <button
                 onClick={() => updateSetting('hideQuoteOfTheDay', !settings.hideQuoteOfTheDay)}
                 className={`relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
-                  settings.hideQuoteOfTheDay ? 'bg-green-600' : 'bg-slate-600'
+                  settings.hideQuoteOfTheDay ? 'bg-green-400' : 'bg-slate-600'
                 }`}
               >
                 <span
@@ -265,12 +265,12 @@ export default function SettingsPage() {
             {/* Hide Today's Totals */}
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white font-medium">Hide Today's Totals</p>
+                <p className="text-white font-small">Hide Today's Totals</p>
               </div>
               <button
                 onClick={() => updateSetting('hideTodaysTotals', !settings.hideTodaysTotals)}
                 className={`relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
-                  settings.hideTodaysTotals ? 'bg-green-600' : 'bg-slate-600'
+                  settings.hideTodaysTotals ? 'bg-green-400' : 'bg-slate-600'
                 }`}
               >
                 <span
@@ -284,12 +284,12 @@ export default function SettingsPage() {
             {/* Hide Recent Activity */}
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white font-medium">Hide Recent Activity</p>
+                <p className="text-white font-small">Hide Recent Activity</p>
               </div>
               <button
                 onClick={() => updateSetting('hideRecentActivity', !settings.hideRecentActivity)}
                 className={`relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
-                  settings.hideRecentActivity ? 'bg-green-600' : 'bg-slate-600'
+                  settings.hideRecentActivity ? 'bg-green-400' : 'bg-slate-600'
                 }`}
               >
                 <span
@@ -304,15 +304,10 @@ export default function SettingsPage() {
 
         {/* Erase All Data Section */}
         <div className="bg-red-900/20 border border-red-700 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-red-300 mb-4">Erase All Data</h2>
           
           <div className="space-y-4">
             {!showEraseConfirm ? (
               <>
-                <p className="text-red-200 text-sm mb-4">
-                  This will permanently delete all your FitCircle data including workouts, measurements, 
-                  goals, hydration logs, meditation sessions, fasting logs, and all other app data.
-                </p>
                 <button
                   onClick={() => setShowEraseConfirm(true)}
                   className="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2"
@@ -343,10 +338,6 @@ export default function SettingsPage() {
                 </div>
               </>
             )}
-            
-            <p className="text-xs text-red-300 text-center">
-              Make sure to download a backup before erasing if you want to keep your data.
-            </p>
           </div>
         </div>
       </div>
