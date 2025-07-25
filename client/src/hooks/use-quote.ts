@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface Quote {
   text: string;
@@ -22,10 +22,38 @@ const FALLBACK_QUOTES: Quote[] = [
   { text: "Champions aren't made in the gyms. Champions are made from something deep inside them - a desire, a dream, a vision.", author: "Muhammad Ali" }
 ];
 
+// Helper function to get current date in EST/EDT timezone
+const getESTDate = (): string => {
+  const now = new Date();
+  // Use America/New_York timezone to handle DST automatically
+  const estDate = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
+  const year = estDate.getFullYear();
+  const month = String(estDate.getMonth() + 1).padStart(2, '0');
+  const day = String(estDate.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+// Helper function to calculate milliseconds until next midnight EST/EDT
+const getMillisecondsUntilMidnightEST = (): number => {
+  const now = new Date();
+  
+  // Get current time in EST/EDT
+  const currentEstTime = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
+  
+  // Create tomorrow's date at midnight in EST
+  const tomorrowEst = new Date(currentEstTime);
+  tomorrowEst.setDate(tomorrowEst.getDate() + 1);
+  tomorrowEst.setHours(0, 0, 0, 0);
+  
+  // Calculate the difference
+  return tomorrowEst.getTime() - currentEstTime.getTime();
+};
+
 export function useQuote() {
   const [quote, setQuote] = useState<Quote | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const midnightTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const getRandomFallbackQuote = (): Quote => {
     const randomIndex = Math.floor(Math.random() * FALLBACK_QUOTES.length);
@@ -68,9 +96,11 @@ export function useQuote() {
   };
 
   const getTodaysQuote = async (forceRefresh = false) => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getESTDate();
     const savedDate = localStorage.getItem(QUOTE_DATE_KEY);
     const savedQuote = localStorage.getItem(QUOTE_STORAGE_KEY);
+
+    console.log('Quote system:', { today, savedDate, forceRefresh, hasSavedQuote: !!savedQuote });
 
     // If we have a quote for today and not forcing refresh, use it
     if (!forceRefresh && savedDate === today && savedQuote) {
@@ -115,8 +145,31 @@ export function useQuote() {
     }
   };
 
+  // Setup midnight refresh timer
+  const setupMidnightRefresh = () => {
+    // Clear existing timeout
+    if (midnightTimeoutRef.current) {
+      clearTimeout(midnightTimeoutRef.current);
+    }
+
+    const msUntilMidnight = getMillisecondsUntilMidnightEST();
+    
+    midnightTimeoutRef.current = setTimeout(() => {
+      getTodaysQuote(true); // Force refresh at midnight
+      setupMidnightRefresh(); // Setup next day's timer
+    }, msUntilMidnight);
+  };
+
   useEffect(() => {
     getTodaysQuote();
+    setupMidnightRefresh();
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (midnightTimeoutRef.current) {
+        clearTimeout(midnightTimeoutRef.current);
+      }
+    };
   }, []);
 
   const forceRefresh = () => {
