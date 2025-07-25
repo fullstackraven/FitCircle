@@ -62,12 +62,16 @@ export function useQuote() {
 
   const fetchQuoteFromAPI = async (): Promise<Quote | null> => {
     try {
+      console.log('Attempting to fetch quote from ZenQuotes API...');
       // Try ZenQuotes API first
       const response = await fetch('https://zenquotes.io/api/today');
+      console.log('ZenQuotes response status:', response.status, response.statusText);
       
       if (response.ok) {
         const data = await response.json();
+        console.log('ZenQuotes data:', data);
         if (data && data[0] && data[0].q && data[0].a) {
+          console.log('Successfully got quote from ZenQuotes');
           return {
             text: data[0].q,
             author: data[0].a
@@ -75,19 +79,24 @@ export function useQuote() {
         }
       }
       
-      // Fallback to quotable.io API
-      const fallbackResponse = await fetch('https://api.quotable.io/random?tags=motivational|inspirational|wisdom');
+      console.log('Falling back to ZenQuotes random API...');
+      // Fallback to ZenQuotes random endpoint
+      const fallbackResponse = await fetch('https://zenquotes.io/api/random');
+      console.log('ZenQuotes random response status:', fallbackResponse.status, fallbackResponse.statusText);
       
       if (fallbackResponse.ok) {
         const fallbackData = await fallbackResponse.json();
-        if (fallbackData && fallbackData.content && fallbackData.author) {
+        console.log('ZenQuotes random data:', fallbackData);
+        if (fallbackData && fallbackData[0] && fallbackData[0].q && fallbackData[0].a) {
+          console.log('Successfully got quote from ZenQuotes random API');
           return {
-            text: fallbackData.content,
-            author: fallbackData.author
+            text: fallbackData[0].q,
+            author: fallbackData[0].a
           };
         }
       }
       
+      console.log('Both APIs failed to return valid quotes');
       return null;
     } catch (error) {
       console.error('Error fetching quote from API:', error);
@@ -119,12 +128,16 @@ export function useQuote() {
     setError(null);
 
     try {
+      console.log('Fetching new quote from API...');
       const apiQuote = await fetchQuoteFromAPI();
       let todaysQuote: Quote;
 
       if (apiQuote) {
+        console.log('Using API quote:', apiQuote);
         todaysQuote = apiQuote;
+        setError(null); // Clear any previous error
       } else {
+        console.log('API failed, using fallback quote');
         // Use fallback quote if API fails
         todaysQuote = getRandomFallbackQuote();
         setError('Using offline quote');
@@ -173,6 +186,9 @@ export function useQuote() {
   }, []);
 
   const forceRefresh = () => {
+    // Clear saved quote to force API fetch
+    localStorage.removeItem(QUOTE_STORAGE_KEY);
+    localStorage.removeItem(QUOTE_DATE_KEY);
     getTodaysQuote(true);
   };
 
