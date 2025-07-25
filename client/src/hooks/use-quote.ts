@@ -8,8 +8,8 @@ interface Quote {
 const QUOTE_STORAGE_KEY = 'fitcircle_daily_quote';
 const QUOTE_DATE_KEY = 'fitcircle_quote_date';
 
-// Fallback quotes in case API fails
-const FALLBACK_QUOTES: Quote[] = [
+// Inspirational quotes for daily motivation
+const DAILY_QUOTES: Quote[] = [
   { text: "The groundwork for all happiness is good health.", author: "Leigh Hunt" },
   { text: "Strength does not come from physical capacity. It comes from an indomitable will.", author: "Mahatma Gandhi" },
   { text: "The only impossible journey is the one you never begin.", author: "Tony Robbins" },
@@ -19,7 +19,46 @@ const FALLBACK_QUOTES: Quote[] = [
   { text: "Discipline is the soul of an army.", author: "George Washington" },
   { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
   { text: "The body achieves what the mind believes.", author: "Napoleon Hill" },
-  { text: "Champions aren't made in the gyms. Champions are made from something deep inside them - a desire, a dream, a vision.", author: "Muhammad Ali" }
+  { text: "Champions aren't made in the gyms. Champions are made from something deep inside them - a desire, a dream, a vision.", author: "Muhammad Ali" },
+  { text: "Pain is temporary. It may last a minute, or an hour, or a day, or a year, but eventually it will subside and something else will take its place. If I quit, however, it lasts forever.", author: "Lance Armstrong" },
+  { text: "The fear of death follows from the fear of life. A man who lives fully is prepared to die at any time.", author: "Mark Twain" },
+  { text: "The world ain't all sunshine and rainbows. It is a very mean and nasty place and it will beat you to your knees and keep you there permanently if you let it. You, me, or nobody is gonna hit as hard as life. But it ain't how hard you hit; it's about how hard you can get hit, and keep moving forward.", author: "Rocky Balboa" },
+  { text: "You have enemies? Good. That means you've stood up for something, sometime in your life.", author: "Winston S. Churchill" },
+  { text: "The question isn't who is going to let me: it's who is going to stop me.", author: "Ayn Rand" },
+  { text: "It wasn't raining when Noah built the ark.", author: "Howard Ruff" },
+  { text: "I would rather have questions that can't be answered than answers that can't be questioned.", author: "Richard Feynman" },
+  { text: "Do today what others won't and achieve tomorrow what others can't.", author: "Jerry Rice" },
+  { text: "Either write something worth reading or do something worth writing.", author: "Benjamin Franklin" },
+  { text: "You create opportunities by performing, not complaining.", author: "Muriel Siebert" },
+  { text: "Train yourself to let go of everything you fear to lose.", author: "Yoda" },
+  { text: "A ship in harbor is safe, but that is not what ships are built for.", author: "John A. Shedd" },
+  { text: "Push that snooze button and you'll end up working for someone who didn't.", author: "Eric Thomas" },
+  { text: "The characteristic feature of the loser is to bemoan, in general terms, mankind's flaws, biases, contradictions, and irrationality-without exploiting them for fun and profit.", author: "Nassim Nicholas Taleb" },
+  { text: "The people who are crazy enough to think they can change the world, are the ones who do.", author: "Steve Jobs" },
+  { text: "The best is the enemy of the good.", author: "Voltaire" },
+  { text: "The three most harmful addictions are heroin, carbohydrates, and a monthly salary.", author: "Nassim Nicholas Taleb" },
+  { text: "If you hear a voice within you say 'you cannot paint,' then by all means paint, and that voice will be silenced.", author: "Van Gogh" },
+  { text: "Build your own dreams, or someone else will hire you to build theirs.", author: "Farrah Gray" },
+  { text: "Limitations live only in our minds. But if we use our imaginations, our possibilities become limitless.", author: "Jamie Paolinetti" },
+  { text: "There is only one way to avoid criticism: do nothing, say nothing, and be nothing.", author: "Aristotle" },
+  { text: "The best revenge is massive success.", author: "Frank Sinatra" },
+  { text: "I am thankful for all of those who said NO to me. Its because of them I'm doing it myself.", author: "Albert Einstein" },
+  { text: "Nobody ever wrote down a plan to be broke, fat, lazy, or stupid. Those things are what happen when you don't have a plan.", author: "Larry Winget" },
+  { text: "Tough times never last, but tough people do.", author: "Dr. Robert Schuller" },
+  { text: "The best way out is always through.", author: "Robert Frost" },
+  { text: "Don't count the days, make the days count.", author: "Muhammad Ali" },
+  { text: "Obsessed is just a word the lazy use to describe the dedicated.", author: "Russell Warren" },
+  { text: "Someday is not a day of the week.", author: "Denise Brennan-Nelson" },
+  { text: "If you can't outplay them, outwork them.", author: "Ben Hogan" },
+  { text: "Champions keep playing until they get it right.", author: "Billie Jean King" },
+  { text: "Change your thoughts and you change your world.", author: "Norman Vincent Peale" },
+  { text: "I will go anywhere as long as it is forward.", author: "David Livingston" },
+  { text: "If you aren't going all the way, why go at all?", author: "Joe Namath" },
+  { text: "Don't wish it were easier, wish you were better.", author: "Jim Rohn" },
+  { text: "You are in danger of living a life so comfortable and soft that you will die without ever realizing your true potential.", author: "David Goggins" },
+  { text: "It's a lot more than mind over matter. It takes relentless self-discipline to schedule suffering into your day, every day.", author: "David Goggins" },
+  { text: "Denial is the ultimate comfort zone.", author: "David Goggins" },
+  { text: "The most important conversations you'll ever have are the ones you'll have with yourself.", author: "David Goggins" }
 ];
 
 // Helper function to get current date in EST/EDT timezone
@@ -55,44 +94,24 @@ export function useQuote() {
   const [error, setError] = useState<string | null>(null);
   const midnightTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const getRandomFallbackQuote = (): Quote => {
-    const randomIndex = Math.floor(Math.random() * FALLBACK_QUOTES.length);
-    return FALLBACK_QUOTES[randomIndex];
+  const getDailyQuote = (date: string): Quote => {
+    // Use date to create a deterministic but seemingly random selection
+    const dateHash = date.split('-').reduce((acc, part) => acc + parseInt(part), 0);
+    const quoteIndex = dateHash % DAILY_QUOTES.length;
+    return DAILY_QUOTES[quoteIndex];
   };
 
-  const fetchQuoteFromAPI = async (): Promise<Quote | null> => {
-    try {
-      console.log('Attempting to fetch quote from backend API...');
-      // Use our backend endpoint to bypass CORS issues
-      const response = await fetch('/api/quote');
-      console.log('Backend API response status:', response.status, response.statusText);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Backend API data:', data);
-        if (data && data.text && data.author) {
-          console.log('Successfully got quote from backend API, source:', data.source);
-          return {
-            text: data.text,
-            author: data.author
-          };
-        }
-      }
-      
-      console.log('Backend API failed to return valid quote');
-      return null;
-    } catch (error) {
-      console.error('Error fetching quote from backend API:', error);
-      return null;
-    }
+  const getRandomQuote = (): Quote => {
+    const randomIndex = Math.floor(Math.random() * DAILY_QUOTES.length);
+    return DAILY_QUOTES[randomIndex];
   };
 
-  const getTodaysQuote = async (forceRefresh = false) => {
+  const getTodaysQuote = (forceRefresh = false) => {
     const today = getESTDate();
     const savedDate = localStorage.getItem(QUOTE_DATE_KEY);
     const savedQuote = localStorage.getItem(QUOTE_STORAGE_KEY);
 
-    console.log('Quote system:', { today, savedDate, forceRefresh, hasSavedQuote: !!savedQuote });
+
 
     // If we have a quote for today and not forcing refresh, use it
     if (!forceRefresh && savedDate === today && savedQuote) {
@@ -106,39 +125,26 @@ export function useQuote() {
       }
     }
 
-    // Otherwise, fetch a new quote
+    // Get a new quote
     setLoading(true);
     setError(null);
 
-    try {
-      console.log('Fetching new quote from API...');
-      const apiQuote = await fetchQuoteFromAPI();
-      let todaysQuote: Quote;
+    let todaysQuote: Quote;
 
-      if (apiQuote) {
-        console.log('Using API quote:', apiQuote);
-        todaysQuote = apiQuote;
-        setError(null); // Clear any previous error
-      } else {
-        console.log('API failed, using fallback quote');
-        // Use fallback quote if API fails
-        todaysQuote = getRandomFallbackQuote();
-        setError('Using offline quote');
-      }
-
-      // Save the quote for today
-      localStorage.setItem(QUOTE_STORAGE_KEY, JSON.stringify(todaysQuote));
-      localStorage.setItem(QUOTE_DATE_KEY, today);
-      
-      setQuote(todaysQuote);
-    } catch (error) {
-      console.error('Error getting quote:', error);
-      const fallbackQuote = getRandomFallbackQuote();
-      setQuote(fallbackQuote);
-      setError('Using offline quote');
-    } finally {
-      setLoading(false);
+    if (forceRefresh) {
+      // For manual refresh, get a random quote
+      todaysQuote = getRandomQuote();
+    } else {
+      // For daily refresh, get deterministic daily quote
+      todaysQuote = getDailyQuote(today);
     }
+
+    // Save the quote for today
+    localStorage.setItem(QUOTE_STORAGE_KEY, JSON.stringify(todaysQuote));
+    localStorage.setItem(QUOTE_DATE_KEY, today);
+    
+    setQuote(todaysQuote);
+    setLoading(false);
   };
 
   // Setup midnight refresh timer
@@ -151,7 +157,7 @@ export function useQuote() {
     const msUntilMidnight = getMillisecondsUntilMidnightEST();
     
     midnightTimeoutRef.current = setTimeout(() => {
-      getTodaysQuote(true); // Force refresh at midnight
+      getTodaysQuote(false); // Get new daily quote at midnight (not force refresh)
       setupMidnightRefresh(); // Setup next day's timer
     }, msUntilMidnight);
   };
