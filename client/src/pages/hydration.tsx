@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { GoalCircle } from '@/components/GoalCircle';
 
+
+
 export default function HydrationPage() {
   const [, navigate] = useLocation();
   
@@ -233,9 +235,12 @@ export default function HydrationPage() {
             <div className="flex-1">
               <Input
                 type="number"
-                value={addAmount}
+                /*value={addAmount}*/
                 onChange={(e) => setAddAmount(e.target.value)}
-                placeholder="Enter amount"
+                step="0.1"
+                min= "0"
+                /*placeholder="Enter amount"*/
+                onFocus={() => setIsFocused(true)}
                 className="bg-slate-700 border-slate-600 text-white"
               />
             </div>
