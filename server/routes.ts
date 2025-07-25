@@ -71,6 +71,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Quote API endpoint to bypass CORS
+  app.get('/api/quote', async (req, res) => {
+    try {
+      // Try ZenQuotes API first
+      const response = await fetch('https://zenquotes.io/api/today');
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data[0] && data[0].q && data[0].a) {
+          return res.json({
+            text: data[0].q,
+            author: data[0].a,
+            source: 'zenquotes'
+          });
+        }
+      }
+      
+      // Fallback to ZenQuotes random endpoint
+      const fallbackResponse = await fetch('https://zenquotes.io/api/random');
+      
+      if (fallbackResponse.ok) {
+        const fallbackData = await fallbackResponse.json();
+        if (fallbackData && fallbackData[0] && fallbackData[0].q && fallbackData[0].a) {
+          return res.json({
+            text: fallbackData[0].q,
+            author: fallbackData[0].a,
+            source: 'zenquotes-random'
+          });
+        }
+      }
+      
+      // If all APIs fail, return error (frontend will use fallback quotes)
+      res.status(503).json({ error: 'Quote services unavailable' });
+    } catch (error) {
+      console.error('Error fetching quote from APIs:', error);
+      res.status(503).json({ error: 'Quote services unavailable' });
+    }
+  });
+
   // AI Trainer routes - Hidden for now, can be re-enabled by uncommenting
   /*
   const anthropic = new Anthropic({

@@ -62,44 +62,27 @@ export function useQuote() {
 
   const fetchQuoteFromAPI = async (): Promise<Quote | null> => {
     try {
-      console.log('Attempting to fetch quote from ZenQuotes API...');
-      // Try ZenQuotes API first
-      const response = await fetch('https://zenquotes.io/api/today');
-      console.log('ZenQuotes response status:', response.status, response.statusText);
+      console.log('Attempting to fetch quote from backend API...');
+      // Use our backend endpoint to bypass CORS issues
+      const response = await fetch('/api/quote');
+      console.log('Backend API response status:', response.status, response.statusText);
       
       if (response.ok) {
         const data = await response.json();
-        console.log('ZenQuotes data:', data);
-        if (data && data[0] && data[0].q && data[0].a) {
-          console.log('Successfully got quote from ZenQuotes');
+        console.log('Backend API data:', data);
+        if (data && data.text && data.author) {
+          console.log('Successfully got quote from backend API, source:', data.source);
           return {
-            text: data[0].q,
-            author: data[0].a
+            text: data.text,
+            author: data.author
           };
         }
       }
       
-      console.log('Falling back to ZenQuotes random API...');
-      // Fallback to ZenQuotes random endpoint
-      const fallbackResponse = await fetch('https://zenquotes.io/api/random');
-      console.log('ZenQuotes random response status:', fallbackResponse.status, fallbackResponse.statusText);
-      
-      if (fallbackResponse.ok) {
-        const fallbackData = await fallbackResponse.json();
-        console.log('ZenQuotes random data:', fallbackData);
-        if (fallbackData && fallbackData[0] && fallbackData[0].q && fallbackData[0].a) {
-          console.log('Successfully got quote from ZenQuotes random API');
-          return {
-            text: fallbackData[0].q,
-            author: fallbackData[0].a
-          };
-        }
-      }
-      
-      console.log('Both APIs failed to return valid quotes');
+      console.log('Backend API failed to return valid quote');
       return null;
     } catch (error) {
-      console.error('Error fetching quote from API:', error);
+      console.error('Error fetching quote from backend API:', error);
       return null;
     }
   };
