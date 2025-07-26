@@ -4,6 +4,13 @@ import { useLocation } from 'wouter';
 import { useHydration } from '@/hooks/use-hydration';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { GoalCircle } from '@/components/GoalCircle';
+import { 
+  calculateMeditation7DayAverage, 
+  calculateMeditationProgress, 
+  getMeditationGoal, 
+  setMeditationGoal,
+  getMeditationLogs 
+} from '@/utils/meditation-calc';
 
 export default function GoalsPageFinal() {
   const [, navigate] = useLocation();
@@ -86,10 +93,19 @@ export default function GoalsPageFinal() {
       loadGoals();
     };
     
+    // Listen for storage changes to sync goals between pages
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'fitcircle_goal_meditation') {
+        loadGoals();
+      }
+    };
+    
     window.addEventListener('focus', handleFocus);
+    window.addEventListener('storage', handleStorageChange);
     
     return () => {
       window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
@@ -117,39 +133,9 @@ export default function GoalsPageFinal() {
   const actualCurrentOz = currentDayOz || hydrationBackup.currentDayOz;
   const actualGoalOz = dailyGoalOz || hydrationBackup.dailyGoalOz;
 
-  const getCurrentMeditation = () => {
-    const meditationLogs = localStorage.getItem('fitcircle_meditation_logs');
-    if (meditationLogs) {
-      try {
-        const logs = JSON.parse(meditationLogs);
-        if (logs && Array.isArray(logs)) {
-          // Group sessions by date and calculate daily totals for last 7 days
-          const last7Days = new Date();
-          last7Days.setDate(last7Days.getDate() - 7);
-          
-          const dailyTotals: { [date: string]: number } = {};
-          
-          logs.forEach((session: any) => {
-            const sessionDate = new Date(session.completedAt || session.date);
-            if (sessionDate >= last7Days && session.duration) {
-              const dateKey = sessionDate.toISOString().split('T')[0];
-              dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
-            }
-          });
-          
-          // Calculate average across all days (including zero days)
-          const dailyValues = Object.values(dailyTotals);
-          const totalMinutes = dailyValues.reduce((sum, minutes) => sum + minutes, 0);
-          
-          const avgMinutes = totalMinutes / 7; // Average over 7 days regardless of how many had sessions
-          return Math.round(avgMinutes);
-        }
-      } catch (e) {
-        return 0;
-      }
-    }
-    return 0;
-  };
+  // Use shared meditation calculation
+  const meditationLogs = getMeditationLogs();
+  const meditationCurrent = Math.round(calculateMeditation7DayAverage(meditationLogs));
 
   const getCurrentFasting = () => {
     const fastingLogs = localStorage.getItem('fitcircle_fasting_logs');
@@ -231,13 +217,13 @@ export default function GoalsPageFinal() {
   };
 
   // Calculate progress percentages
-  const meditationCurrent = getCurrentMeditation();
   const fastingCurrent = getCurrentFasting();
   const weightCurrent = getCurrentWeight();
   const bodyFatCurrent = getCurrentBodyFat();
   const workoutCurrent = getWorkoutConsistency();
 
-  const meditationProgress = goals.meditationMinutes > 0 ? Math.min((meditationCurrent / goals.meditationMinutes) * 100, 100) : 0;
+  // Use shared meditation calculation for progress
+  const meditationProgress = calculateMeditationProgress(meditationLogs, getMeditationGoal());
   const fastingProgress = goals.fastingHours > 0 ? Math.min((fastingCurrent / goals.fastingHours) * 100, 100) : 0;
   // Weight progress: depends on whether goal is to gain or lose weight
   const weightProgress = goals.weightLbs > 0 && weightCurrent > 0 ? 
@@ -312,9 +298,14 @@ export default function GoalsPageFinal() {
   const handleSave = (goalKey: string) => {
     const value = parseFloat(tempValue);
     if (value > 0) {
-      // Update localStorage with individual goal keys
-      const storageKey = `fitcircle_goal_${goalKey.replace(/([A-Z])/g, '').toLowerCase()}`;
-      localStorage.setItem(storageKey, value.toString());
+      // Special handling for meditation goal using shared utility
+      if (goalKey === 'meditationMinutes') {
+        setMeditationGoal(value);
+      } else {
+        // Update localStorage with individual goal keys
+        const storageKey = `fitcircle_goal_${goalKey.replace(/([A-Z])/g, '').toLowerCase()}`;
+        localStorage.setItem(storageKey, value.toString());
+      }
       
       // ALSO update the fitcircle_goals object for cross-compatibility with other pages
       const existingGoals = localStorage.getItem('fitcircle_goals');
@@ -404,7 +395,7 @@ export default function GoalsPageFinal() {
       icon: Brain,
       color: 'rgb(147, 51, 234)',
       currentValue: meditationCurrent,
-      goalValue: goals.meditationMinutes,
+      goalValue: getMeditationGoal(),
       progress: meditationProgress
     },
     {

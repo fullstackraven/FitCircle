@@ -8,6 +8,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { GoalCircle } from '@/components/GoalCircle';
 import { useMeditation, type MeditationLog } from '@/hooks/use-meditation';
 import { useGoals } from '@/hooks/use-goals';
+import { 
+  calculateMeditation7DayAverage, 
+  calculateMeditationProgress, 
+  getMeditationGoal, 
+  setMeditationGoal 
+} from '@/utils/meditation-calc';
 
 export default function MeditationPage() {
   const [, navigate] = useLocation();
@@ -38,9 +44,24 @@ export default function MeditationPage() {
   const [goalMinutesInput, setGoalMinutesInput] = useState('');
 
   useEffect(() => {
-    // Initialize goal input with current goal value
-    setGoalMinutesInput(goals.meditationMinutes?.toString() || '');
-  }, [goals.meditationMinutes]);
+    // Initialize goal input with current goal value from shared utility
+    setGoalMinutesInput(getMeditationGoal().toString());
+  }, []);
+  
+  // Listen for goal changes from other pages
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'fitcircle_goal_meditation') {
+        setGoalMinutesInput(getMeditationGoal().toString());
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (isActive && !isPaused && timeLeft > 0) {
@@ -211,8 +232,8 @@ export default function MeditationPage() {
       return;
     }
     
-    // Cross-page sync: Save to individual goal key for Goals page compatibility
-    localStorage.setItem('fitcircle_goal_meditation', minutesGoal.toString());
+    // Use shared utility for goal saving with cross-page sync
+    setMeditationGoal(minutesGoal);
     
     await updateGoal('meditationMinutes', minutesGoal);
     setIsGoalModalOpen(false);
@@ -414,57 +435,10 @@ export default function MeditationPage() {
             {/* Goal Progress Circle */}
             <div className="flex justify-center mb-8">
               <GoalCircle
-                percentage={(() => {
-                  const goalMinutes = parseFloat(goalMinutesInput) || 0;
-                  if (goalMinutes === 0 || logs.length === 0) return 0;
-                  
-                  // Calculate 7-day average meditation time using same logic as Goals page
-                  const last7Days = new Date();
-                  last7Days.setDate(last7Days.getDate() - 7);
-                  
-                  const dailyTotals: { [date: string]: number } = {};
-                  
-                  logs.forEach((session) => {
-                    const sessionDate = new Date(session.completedAt || session.date);
-                    if (sessionDate >= last7Days && session.duration) {
-                      const dateKey = sessionDate.toISOString().split('T')[0];
-                      dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
-                    }
-                  });
-                  
-                  // Calculate average across all days (including zero days)
-                  const dailyValues = Object.values(dailyTotals);
-                  const totalMinutes = dailyValues.reduce((sum, minutes) => sum + minutes, 0);
-                  
-                  const averageMinutes = totalMinutes / 7; // Average over 7 days regardless of how many had sessions
-                  
-                  return Math.min(100, (averageMinutes / goalMinutes) * 100);
-                })()}
+                percentage={calculateMeditationProgress(logs, parseFloat(goalMinutesInput) || 0)}
                 color="rgb(147, 51, 234)"
                 size={120}
-                currentValue={(() => {
-                  if (logs.length === 0) return 0;
-                  
-                  // Calculate 7-day average using same logic as Goals page
-                  const last7Days = new Date();
-                  last7Days.setDate(last7Days.getDate() - 7);
-                  
-                  const dailyTotals: { [date: string]: number } = {};
-                  
-                  logs.forEach((session) => {
-                    const sessionDate = new Date(session.completedAt || session.date);
-                    if (sessionDate >= last7Days && session.duration) {
-                      const dateKey = sessionDate.toISOString().split('T')[0];
-                      dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
-                    }
-                  });
-                  
-                  // Calculate average across all days (including zero days)
-                  const dailyValues = Object.values(dailyTotals);
-                  const totalMinutes = dailyValues.reduce((sum, minutes) => sum + minutes, 0);
-                  
-                  return Math.round(totalMinutes / 7); // Average over 7 days regardless of how many had sessions
-                })()}
+                currentValue={Math.round(calculateMeditation7DayAverage(logs))}
                 goalValue={parseFloat(goalMinutesInput) || 0}
                 unit="min"
                 title="Daily Meditation"
