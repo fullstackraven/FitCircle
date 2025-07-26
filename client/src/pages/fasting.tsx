@@ -291,7 +291,7 @@ export default function FastingPage() {
                 <div key={log.id} className="bg-slate-800 rounded-xl p-4">
                   <div className="flex justify-between items-start mb-2">
                     <div className="text-sm text-slate-300">
-                      {loggedDate}
+                      {loggedDate} at {loggedTime}
                     </div>
                     <div className="flex space-x-2">
                       <button
