@@ -275,7 +275,9 @@ export default function FastingPage() {
         {logs.length > 0 && (
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">Fasting History</h2>
-            {logs.map((log) => {
+            {logs
+              .sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime())
+              .map((log) => {
               const hours = log.duration / 60;
               const loggedDate = new Date(log.loggedAt).toLocaleDateString('en-US', {
                 month: 'short',
