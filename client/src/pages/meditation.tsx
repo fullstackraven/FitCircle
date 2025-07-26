@@ -418,10 +418,25 @@ export default function MeditationPage() {
                   const goalMinutes = parseFloat(goalMinutesInput) || 0;
                   if (goalMinutes === 0 || logs.length === 0) return 0;
                   
-                  // Calculate 7-day average meditation time
-                  const last7Days = logs.slice(-7);
-                  const totalMinutes = last7Days.reduce((sum, session) => sum + session.duration, 0);
-                  const averageMinutes = totalMinutes / Math.max(last7Days.length, 1);
+                  // Calculate 7-day average meditation time using same logic as Goals page
+                  const last7Days = new Date();
+                  last7Days.setDate(last7Days.getDate() - 7);
+                  
+                  const dailyTotals: { [date: string]: number } = {};
+                  
+                  logs.forEach((session) => {
+                    const sessionDate = new Date(session.completedAt || session.date);
+                    if (sessionDate >= last7Days && session.duration) {
+                      const dateKey = sessionDate.toISOString().split('T')[0];
+                      dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
+                    }
+                  });
+                  
+                  // Calculate average across all days (including zero days)
+                  const dailyValues = Object.values(dailyTotals);
+                  const totalMinutes = dailyValues.reduce((sum, minutes) => sum + minutes, 0);
+                  
+                  const averageMinutes = totalMinutes / 7; // Average over 7 days regardless of how many had sessions
                   
                   return Math.min(100, (averageMinutes / goalMinutes) * 100);
                 })()}
@@ -429,9 +444,26 @@ export default function MeditationPage() {
                 size={120}
                 currentValue={(() => {
                   if (logs.length === 0) return 0;
-                  const last7Days = logs.slice(-7);
-                  const totalMinutes = last7Days.reduce((sum, session) => sum + session.duration, 0);
-                  return Math.round(totalMinutes / Math.max(last7Days.length, 1));
+                  
+                  // Calculate 7-day average using same logic as Goals page
+                  const last7Days = new Date();
+                  last7Days.setDate(last7Days.getDate() - 7);
+                  
+                  const dailyTotals: { [date: string]: number } = {};
+                  
+                  logs.forEach((session) => {
+                    const sessionDate = new Date(session.completedAt || session.date);
+                    if (sessionDate >= last7Days && session.duration) {
+                      const dateKey = sessionDate.toISOString().split('T')[0];
+                      dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
+                    }
+                  });
+                  
+                  // Calculate average across all days (including zero days)
+                  const dailyValues = Object.values(dailyTotals);
+                  const totalMinutes = dailyValues.reduce((sum, minutes) => sum + minutes, 0);
+                  
+                  return Math.round(totalMinutes / 7); // Average over 7 days regardless of how many had sessions
                 })()}
                 goalValue={parseFloat(goalMinutesInput) || 0}
                 unit="min"

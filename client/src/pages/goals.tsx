@@ -80,6 +80,17 @@ export default function GoalsPageFinal() {
     };
 
     loadGoals();
+    
+    // Also reload goals when the window gains focus (user navigates back to this page)
+    const handleFocus = () => {
+      loadGoals();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   // Get current values using same logic as working modals
@@ -111,9 +122,28 @@ export default function GoalsPageFinal() {
     if (meditationLogs) {
       try {
         const logs = JSON.parse(meditationLogs);
-        const last7Days = logs.slice(-7);
-        const totalMinutes = last7Days.reduce((sum: number, session: any) => sum + session.duration, 0);
-        return Math.round(totalMinutes / Math.max(last7Days.length, 1));
+        if (logs && Array.isArray(logs)) {
+          // Group sessions by date and calculate daily totals for last 7 days
+          const last7Days = new Date();
+          last7Days.setDate(last7Days.getDate() - 7);
+          
+          const dailyTotals: { [date: string]: number } = {};
+          
+          logs.forEach((session: any) => {
+            const sessionDate = new Date(session.completedAt || session.date);
+            if (sessionDate >= last7Days && session.duration) {
+              const dateKey = sessionDate.toISOString().split('T')[0];
+              dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
+            }
+          });
+          
+          // Calculate average across all days (including zero days)
+          const dailyValues = Object.values(dailyTotals);
+          const totalMinutes = dailyValues.reduce((sum, minutes) => sum + minutes, 0);
+          
+          const avgMinutes = totalMinutes / 7; // Average over 7 days regardless of how many had sessions
+          return Math.round(avgMinutes);
+        }
       } catch (e) {
         return 0;
       }
