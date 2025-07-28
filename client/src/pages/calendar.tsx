@@ -77,6 +77,7 @@ export default function CalendarPage() {
   const [journalText, setJournalText] = useState('');
   const [energyLevel, setEnergyLevel] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [supplementsRefresh, setSupplementsRefresh] = useState(0);
   const circleRef = useRef<SVGSVGElement>(null);
 
   const startDate = startOfWeek(startOfMonth(currentMonth), { weekStartsOn: 0 });
@@ -812,7 +813,7 @@ export default function CalendarPage() {
 
                   {/* Add Supplement Button */}
                   <div className="flex justify-end">
-                    <AddSupplementDialog />
+                    <AddSupplementDialog onSupplementAdded={() => setSupplementsRefresh(prev => prev + 1)} />
                   </div>
 
                   {/* Daily Supplements List */}
@@ -856,7 +857,7 @@ export default function CalendarPage() {
                       <div className="text-center py-8">
                         <Pill className="w-12 h-12 text-slate-600 mx-auto mb-3" />
                         <p className="text-slate-400 mb-4">No supplements added yet</p>
-                        <AddSupplementDialog />
+                        <AddSupplementDialog onSupplementAdded={() => setSupplementsRefresh(prev => prev + 1)} />
                       </div>
                     )}
                   </div>

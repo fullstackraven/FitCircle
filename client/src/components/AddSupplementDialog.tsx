@@ -18,7 +18,7 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
   const [measurementType, setMeasurementType] = useState('');
   const [amount, setAmount] = useState('');
   
-  const { createSupplement, isCreatingSupplement } = useSupplements();
+  const { createSupplement } = useSupplements();
 
   const measurementTypes = [
     { value: 'pills', label: 'Pills/Capsules' },
@@ -46,15 +46,12 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
       amount: parseInt(amount, 10) || 1,
     };
 
-    createSupplement(supplementData, {
-      onSuccess: () => {
-        setName('');
-        setMeasurementType('');
-        setAmount('');
-        setIsOpen(false);
-        onSupplementAdded?.();
-      },
-    });
+    createSupplement(supplementData);
+    setName('');
+    setMeasurementType('');
+    setAmount('');
+    setIsOpen(false);
+    onSupplementAdded?.();
   };
 
   const handleCancel = () => {
@@ -132,9 +129,9 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
             <Button 
               type="submit" 
               className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
-              disabled={isCreatingSupplement || !name.trim() || !measurementType || !amount.trim()}
+              disabled={!name.trim() || !measurementType || !amount.trim()}
             >
-              {isCreatingSupplement ? 'Adding...' : 'Add Supplement'}
+              Add Supplement
             </Button>
             <Button 
               type="button" 

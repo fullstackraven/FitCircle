@@ -1,38 +1,38 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
-import type { Supplement, SupplementLog, InsertSupplement } from '@shared/schema';
+import type { Supplement } from '@shared/schema';
+
+interface LocalSupplement {
+  id: number;
+  name: string;
+  measurementType: string;
+  amount: number;
+  createdAt: string;
+}
 
 export function useSupplements() {
-  const queryClient = useQueryClient();
+  // Get supplements from localStorage
+  const getSupplements = (): LocalSupplement[] => {
+    const stored = localStorage.getItem('fitcircle_supplements');
+    return stored ? JSON.parse(stored) : [];
+  };
 
-  // Fetch all supplements
-  const { data: supplements = [], isLoading: supplementsLoading } = useQuery<Supplement[]>({
-    queryKey: ['/api/supplements'],
-  });
+  // Create supplement
+  const createSupplement = (supplement: { name: string; measurementType: string; amount: number }) => {
+    const supplements = getSupplements();
+    const newId = supplements.length > 0 ? Math.max(...supplements.map(s => s.id)) + 1 : 1;
+    const newSupplement: LocalSupplement = {
+      id: newId,
+      name: supplement.name,
+      measurementType: supplement.measurementType,
+      amount: supplement.amount,
+      createdAt: new Date().toISOString(),
+    };
+    
+    const updatedSupplements = [...supplements, newSupplement];
+    localStorage.setItem('fitcircle_supplements', JSON.stringify(updatedSupplements));
+    return newSupplement;
+  };
 
-  // Create supplement mutation
-  const createSupplementMutation = useMutation({
-    mutationFn: async (supplement: InsertSupplement) => {
-      const res = await apiRequest('POST', '/api/supplements', supplement);
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/supplements'] });
-    },
-  });
-
-  // Supplement log mutations
-  const logSupplementMutation = useMutation({
-    mutationFn: async ({ supplementId, date, taken }: { supplementId: number; date: string; taken: boolean }) => {
-      const res = await apiRequest('POST', '/api/supplement-logs', { supplementId, date, taken });
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/supplement-logs'] });
-    },
-  });
-
-  // Helper functions for local storage based operations (similar to workouts)
+  // Helper functions for supplement logs
   const getSupplementLogs = (): Record<string, Record<number, boolean>> => {
     const stored = localStorage.getItem('fitcircle_supplement_logs');
     return stored ? JSON.parse(stored) : {};
@@ -70,8 +70,6 @@ export function useSupplements() {
     }
 
     const firstLogDate = allDates[0];
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
     
     // Calculate total supplements taken
     let totalTaken = 0;
@@ -113,14 +111,8 @@ export function useSupplements() {
   };
 
   return {
-    supplements,
-    supplementsLoading,
-    createSupplement: createSupplementMutation.mutate,
-    isCreatingSupplement: createSupplementMutation.isPending,
-    logSupplement: logSupplementMutation.mutate,
-    isLoggingSupplement: logSupplementMutation.isPending,
-    
-    // Local storage helpers
+    supplements: getSupplements(),
+    createSupplement,
     getSupplementLogs,
     setSupplementLog,
     getSupplementLogsForDate,
