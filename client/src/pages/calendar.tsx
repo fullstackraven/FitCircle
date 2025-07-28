@@ -10,11 +10,15 @@ import {
   ChevronUp,
   TrendingUp,
   Zap,
-  Undo2
+  Undo2,
+  Pill,
+  Plus
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
+import { useSupplements } from "@/hooks/use-supplements";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { AddSupplementDialog } from "@/components/AddSupplementDialog";
 import {
   format,
   startOfMonth,
@@ -53,6 +57,13 @@ export default function CalendarPage() {
     getTotalStats,
     getIndividualWorkoutTotals
   } = useWorkouts();
+  const {
+    supplements,
+    getSupplementLogsForDate,
+    setSupplementLog,
+    hasSupplementsForDate,
+    getSupplementStats
+  } = useSupplements();
   const workouts = getWorkoutArray() || [];
   const logs = getDailyLogs() || {};
 
@@ -61,6 +72,7 @@ export default function CalendarPage() {
   const [isWorkoutTotalsOpen, setIsWorkoutTotalsOpen] = useState(false);
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isEnergyOpen, setIsEnergyOpen] = useState(false);
+  const [isSupplementsOpen, setIsSupplementsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [journalText, setJournalText] = useState('');
   const [energyLevel, setEnergyLevel] = useState(0);
@@ -109,6 +121,7 @@ export default function CalendarPage() {
     setEnergyLevel(getEnergyLevel(date));
     setIsJournalOpen(true);
     setIsEnergyOpen(true);
+    setIsSupplementsOpen(true);
   };
 
   const handleJournalSubmit = () => {
@@ -426,6 +439,7 @@ export default function CalendarPage() {
           const dateStr = `${year}-${month}-${day}`;
           const hasJournal = (getJournalEntry(dateStr) || "").length > 0;
           const hasEnergy = hasEnergyLevel(date);
+          const hasSupplements = hasSupplementsForDate(dateStr);
 
           return (
             <div
@@ -443,10 +457,13 @@ export default function CalendarPage() {
             >
               {format(date, "d")}
               {hasJournal && (
-                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-x-1 w-1 h-1 bg-blue-400 rounded-full" />
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-x-2 w-1 h-1 bg-blue-400 rounded-full" />
               )}
               {hasEnergy && (
-                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-x-1 w-1 h-1 bg-purple-400 rounded-full" />
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-purple-400 rounded-full" />
+              )}
+              {hasSupplements && (
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-x-2 w-1 h-1 bg-orange-400 rounded-full" />
               )}
             </div>
           );
@@ -708,6 +725,220 @@ export default function CalendarPage() {
                   
                   <div className="text-center py-4">
                     <p className="text-slate-400 text-sm">Tap on a day in the calendar to set your energy level</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
+
+      {/* Supplements Panel */}
+      <div className="mt-4">
+        <Collapsible open={isSupplementsOpen} onOpenChange={setIsSupplementsOpen}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors">
+            <div className="flex items-center space-x-2">
+              <Pill className="w-5 h-5 text-orange-400" />
+              <span className="text-white font-medium">Supplements</span>
+            </div>
+            {isSupplementsOpen ? (
+              <ChevronUp className="w-5 h-5 text-slate-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400" />
+            )}
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-4 bg-slate-800 rounded-xl p-6">
+              {selectedDate ? (
+                <div className="space-y-6">
+                  <div className="text-center">
+                    <h3 className="text-lg font-medium text-white mb-2">
+                      Supplements for {format(selectedDate, "MMMM d, yyyy")}
+                    </h3>
+                  </div>
+                  
+                  {/* Supplement Stats Boxes */}
+                  <div className="grid grid-cols-3 gap-3">
+                    {(() => {
+                      const stats = getSupplementStats();
+                      return (
+                        <>
+                          {/* Adherence Ring */}
+                          <div className="bg-slate-700 rounded-xl p-4 text-center">
+                            <div className="relative w-16 h-16 mx-auto mb-2">
+                              <svg width="64" height="64" className="transform -rotate-90">
+                                <circle
+                                  cx="32"
+                                  cy="32"
+                                  r="28"
+                                  fill="none"
+                                  stroke="rgba(148, 163, 184, 0.3)"
+                                  strokeWidth="4"
+                                />
+                                <circle
+                                  cx="32"
+                                  cy="32"
+                                  r="28"
+                                  fill="none"
+                                  stroke="rgb(251, 146, 60)"
+                                  strokeWidth="4"
+                                  strokeLinecap="round"
+                                  strokeDasharray={`${(stats.adherencePercentage / 100) * 175.93} 175.93`}
+                                  className="transition-all duration-300"
+                                />
+                              </svg>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-sm font-bold text-white">{stats.adherencePercentage}%</span>
+                              </div>
+                            </div>
+                            <div className="text-xs text-slate-400">Adherence</div>
+                          </div>
+
+                          {/* Current Streak */}
+                          <div className="bg-slate-700 rounded-xl p-4 text-center">
+                            <div className="text-2xl font-bold text-orange-400 mb-1">{stats.currentStreak}</div>
+                            <div className="text-xs text-slate-400">Current Streak</div>
+                          </div>
+
+                          {/* Total Taken */}
+                          <div className="bg-slate-700 rounded-xl p-4 text-center">
+                            <div className="text-2xl font-bold text-orange-400 mb-1">{stats.totalTaken}</div>
+                            <div className="text-xs text-slate-400">Total Taken</div>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Add Supplement Button */}
+                  <div className="flex justify-end">
+                    <AddSupplementDialog />
+                  </div>
+
+                  {/* Daily Supplements List */}
+                  <div className="space-y-3">
+                    {supplements.length > 0 ? (
+                      supplements.map((supplement) => {
+                        const dateStr = format(selectedDate, 'yyyy-MM-dd');
+                        const supplementLogs = getSupplementLogsForDate(dateStr);
+                        const isTaken = supplementLogs[supplement.id] || false;
+
+                        return (
+                          <div
+                            key={supplement.id}
+                            className="flex items-center justify-between p-4 bg-slate-700 rounded-xl"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <Pill className="w-5 h-5 text-orange-400" />
+                              <div>
+                                <div className="text-white font-medium">{supplement.name}</div>
+                                <div className="text-sm text-slate-400">
+                                  {supplement.amount} {supplement.measurementType}
+                                </div>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setSupplementLog(dateStr, supplement.id, !isTaken);
+                              }}
+                              className={`w-12 h-12 rounded-full transition-colors ${
+                                isTaken
+                                  ? 'bg-green-500 hover:bg-green-600'
+                                  : 'bg-slate-600 hover:bg-slate-500 border-2 border-slate-500'
+                              }`}
+                            >
+                              {isTaken && <CheckCircle className="w-6 h-6 text-white mx-auto" />}
+                            </button>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="text-center py-8">
+                        <Pill className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                        <p className="text-slate-400 mb-4">No supplements added yet</p>
+                        <AddSupplementDialog />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => {
+                        setSelectedDate(null);
+                      }}
+                      className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-xl transition-colors"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Supplement Overview Stats */}
+                  <div className="bg-gradient-to-br from-orange-900/20 to-orange-800/10 rounded-xl p-6 border border-orange-500/20">
+                    <h3 className="text-lg font-medium text-white mb-4 text-center">Supplement Overview</h3>
+                    
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-3 gap-3 mb-4">
+                      {(() => {
+                        const stats = getSupplementStats();
+                        return (
+                          <>
+                            {/* Adherence Ring */}
+                            <div className="bg-orange-900/30 rounded-lg p-3 text-center">
+                              <div className="relative w-12 h-12 mx-auto mb-2">
+                                <svg width="48" height="48" className="transform -rotate-90">
+                                  <circle
+                                    cx="24"
+                                    cy="24"
+                                    r="20"
+                                    fill="none"
+                                    stroke="rgba(148, 163, 184, 0.3)"
+                                    strokeWidth="3"
+                                  />
+                                  <circle
+                                    cx="24"
+                                    cy="24"
+                                    r="20"
+                                    fill="none"
+                                    stroke="rgb(251, 146, 60)"
+                                    strokeWidth="3"
+                                    strokeLinecap="round"
+                                    strokeDasharray={`${(stats.adherencePercentage / 100) * 125.66} 125.66`}
+                                    className="transition-all duration-300"
+                                  />
+                                </svg>
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <span className="text-xs font-bold text-orange-300">{stats.adherencePercentage}%</span>
+                                </div>
+                              </div>
+                              <div className="text-xs text-slate-400">Adherence</div>
+                            </div>
+
+                            {/* Current Streak */}
+                            <div className="bg-orange-900/30 rounded-lg p-3 text-center">
+                              <div className="text-lg font-bold text-orange-300 mb-1">{stats.currentStreak}</div>
+                              <div className="text-xs text-slate-400">Current Streak</div>
+                            </div>
+
+                            {/* Total Taken */}
+                            <div className="bg-orange-900/30 rounded-lg p-3 text-center">
+                              <div className="text-lg font-bold text-orange-300 mb-1">{stats.totalTaken}</div>
+                              <div className="text-xs text-slate-400">Total Taken</div>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Add Supplement Button */}
+                    <div className="flex justify-center">
+                      <AddSupplementDialog />
+                    </div>
+                  </div>
+
+                  <div className="text-center py-4">
+                    <p className="text-slate-400 text-sm">Tap on a day in the calendar to log your supplements</p>
                   </div>
                 </div>
               )}

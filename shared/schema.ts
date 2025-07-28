@@ -22,6 +22,21 @@ export const workoutLogs = pgTable("workout_logs", {
   count: integer("count").default(0).notNull(),
 });
 
+export const supplements = pgTable("supplements", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  measurementType: text("measurement_type").notNull(), // grams, oz, mg, pills, etc.
+  amount: integer("amount").notNull(), // number of pills or amount
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const supplementLogs = pgTable("supplement_logs", {
+  id: serial("id").primaryKey(),
+  supplementId: integer("supplement_id").references(() => supplements.id).notNull(),
+  date: text("date").notNull(), // YYYY-MM-DD format
+  taken: boolean("taken").default(false).notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -38,9 +53,25 @@ export const insertWorkoutLogSchema = createInsertSchema(workoutLogs).pick({
   count: true,
 });
 
+export const insertSupplementSchema = createInsertSchema(supplements).pick({
+  name: true,
+  measurementType: true,
+  amount: true,
+});
+
+export const insertSupplementLogSchema = createInsertSchema(supplementLogs).pick({
+  supplementId: true,
+  date: true,
+  taken: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Workout = typeof workouts.$inferSelect;
 export type WorkoutLog = typeof workoutLogs.$inferSelect;
 export type InsertWorkout = z.infer<typeof insertWorkoutSchema>;
 export type InsertWorkoutLog = z.infer<typeof insertWorkoutLogSchema>;
+export type Supplement = typeof supplements.$inferSelect;
+export type SupplementLog = typeof supplementLogs.$inferSelect;
+export type InsertSupplement = z.infer<typeof insertSupplementSchema>;
+export type InsertSupplementLog = z.infer<typeof insertSupplementLogSchema>;

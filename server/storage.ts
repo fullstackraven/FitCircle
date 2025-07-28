@@ -1,4 +1,4 @@
-import { users, workouts, workoutLogs, type User, type InsertUser, type Workout, type WorkoutLog, type InsertWorkout, type InsertWorkoutLog } from "@shared/schema";
+import { users, workouts, workoutLogs, supplements, supplementLogs, type User, type InsertUser, type Workout, type WorkoutLog, type InsertWorkout, type InsertWorkoutLog, type Supplement, type SupplementLog, type InsertSupplement, type InsertSupplementLog } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
 
@@ -16,6 +16,16 @@ export interface IStorage {
   createWorkoutLog(log: InsertWorkoutLog): Promise<WorkoutLog>;
   updateWorkoutLog(workoutId: number, date: string, count: number): Promise<WorkoutLog>;
   getWorkoutLogsByDateRange(startDate: string, endDate: string): Promise<WorkoutLog[]>;
+  
+  // Supplement management
+  getSupplements(): Promise<Supplement[]>;
+  createSupplement(supplement: InsertSupplement): Promise<Supplement>;
+  
+  // Supplement log management
+  getSupplementLog(supplementId: number, date: string): Promise<SupplementLog | undefined>;
+  createSupplementLog(log: InsertSupplementLog): Promise<SupplementLog>;
+  updateSupplementLog(supplementId: number, date: string, taken: boolean): Promise<SupplementLog>;
+  getSupplementLogsByDateRange(startDate: string, endDate: string): Promise<SupplementLog[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -80,6 +90,52 @@ export class DatabaseStorage implements IStorage {
       .from(workoutLogs)
       .where(and(
         eq(workoutLogs.date, startDate) // For now, we'll implement simple date filtering
+      ));
+  }
+
+  async getSupplements(): Promise<Supplement[]> {
+    return await db.select().from(supplements);
+  }
+
+  async createSupplement(supplement: InsertSupplement): Promise<Supplement> {
+    const [newSupplement] = await db
+      .insert(supplements)
+      .values(supplement)
+      .returning();
+    return newSupplement;
+  }
+
+  async getSupplementLog(supplementId: number, date: string): Promise<SupplementLog | undefined> {
+    const [log] = await db
+      .select()
+      .from(supplementLogs)
+      .where(and(eq(supplementLogs.supplementId, supplementId), eq(supplementLogs.date, date)));
+    return log || undefined;
+  }
+
+  async createSupplementLog(log: InsertSupplementLog): Promise<SupplementLog> {
+    const [newLog] = await db
+      .insert(supplementLogs)
+      .values(log)
+      .returning();
+    return newLog;
+  }
+
+  async updateSupplementLog(supplementId: number, date: string, taken: boolean): Promise<SupplementLog> {
+    const [updatedLog] = await db
+      .update(supplementLogs)
+      .set({ taken })
+      .where(and(eq(supplementLogs.supplementId, supplementId), eq(supplementLogs.date, date)))
+      .returning();
+    return updatedLog;
+  }
+
+  async getSupplementLogsByDateRange(startDate: string, endDate: string): Promise<SupplementLog[]> {
+    return await db
+      .select()
+      .from(supplementLogs)
+      .where(and(
+        eq(supplementLogs.date, startDate) // For now, we'll implement simple date filtering
       ));
   }
 }

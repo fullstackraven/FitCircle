@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertWorkoutSchema, insertWorkoutLogSchema } from "@shared/schema";
+import { insertWorkoutSchema, insertWorkoutLogSchema, insertSupplementSchema, insertSupplementLogSchema } from "@shared/schema";
 import Anthropic from '@anthropic-ai/sdk';
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -71,7 +71,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Supplement routes
+  app.get('/api/supplements', async (req, res) => {
+    try {
+      const supplements = await storage.getSupplements();
+      res.json(supplements);
+    } catch (error) {
+      console.error('Error fetching supplements:', error);
+      res.status(500).json({ error: 'Failed to fetch supplements' });
+    }
+  });
 
+  app.post('/api/supplements', async (req, res) => {
+    try {
+      const validatedData = insertSupplementSchema.parse(req.body);
+      const supplement = await storage.createSupplement(validatedData);
+      res.json(supplement);
+    } catch (error) {
+      console.error('Error creating supplement:', error);
+      res.status(400).json({ error: 'Failed to create supplement' });
+    }
+  });
+
+  // Supplement logs routes
+  app.get('/api/supplement-logs/:supplementId/:date', async (req, res) => {
+    try {
+      const { supplementId, date } = req.params;
+      const log = await storage.getSupplementLog(parseInt(supplementId), date);
+      res.json(log || { supplementId: parseInt(supplementId), date, taken: false });
+    } catch (error) {
+      console.error('Error fetching supplement log:', error);
+      res.status(500).json({ error: 'Failed to fetch supplement log' });
+    }
+  });
+
+  app.post('/api/supplement-logs', async (req, res) => {
+    try {
+      const validatedData = insertSupplementLogSchema.parse(req.body);
+      
+      // Check if log already exists
+      const existingLog = await storage.getSupplementLog(validatedData.supplementId, validatedData.date);
+      
+      let log;
+      if (existingLog) {
+        log = await storage.updateSupplementLog(validatedData.supplementId, validatedData.date, validatedData.taken || false);
+      } else {
+        log = await storage.createSupplementLog(validatedData);
+      }
+      
+      res.json(log);
+    } catch (error) {
+      console.error('Error creating/updating supplement log:', error);
+      res.status(400).json({ error: 'Failed to create/update supplement log' });
+    }
+  });
+
+  app.get('/api/supplement-logs/range/:startDate/:endDate', async (req, res) => {
+    try {
+      const { startDate, endDate } = req.params;
+      const logs = await storage.getSupplementLogsByDateRange(startDate, endDate);
+      res.json(logs);
+    } catch (error) {
+      console.error('Error fetching supplement logs by date range:', error);
+      res.status(500).json({ error: 'Failed to fetch supplement logs' });
+    }
+  });
 
   // AI Trainer routes - Hidden for now, can be re-enabled by uncommenting
   /*
