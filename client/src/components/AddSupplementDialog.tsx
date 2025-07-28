@@ -85,7 +85,7 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., Vitamin D3, Fish Oil"
+              placeholder={name ? "" : "e.g., Vitamin D3, Fish Oil"}
               className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
               required
             />
@@ -97,7 +97,7 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
             </Label>
             <Select value={measurementType} onValueChange={setMeasurementType} required>
               <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                <SelectValue placeholder="Select measurement type" />
+                <SelectValue placeholder={measurementType ? "" : "Select measurement type"} />
               </SelectTrigger>
               <SelectContent className="bg-slate-700 border-slate-600">
                 {measurementTypes.map((type) => (
@@ -118,7 +118,7 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder="e.g., 2 (for 2 pills), 1000 (for 1000mg)"
+              placeholder={amount ? "" : "e.g., 2 (for 2 pills), 1000 (for 1000mg)"}
               className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
               min="1"
               required

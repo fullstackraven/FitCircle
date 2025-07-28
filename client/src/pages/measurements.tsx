@@ -224,8 +224,8 @@ export default function MeasurementsPage() {
                     <Input
                       id={field.key}
                       type="number"
-                      /* value={inputValues[field.key] || ''} */
-                      /*placeholder= "0"*/
+                      value={inputValues[field.key] || ''}
+                      placeholder={inputValues[field.key] ? "" : "0"}
                       step="0.1"
                       onChange={(e) => handleInputChange(field.key, e.target.value)}
                       className="bg-slate-700 border-slate-600 text-white mt-1"
@@ -418,7 +418,7 @@ export default function MeasurementsPage() {
                   value={goalWeightInput}
                   onChange={(e) => setGoalWeightInput(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder="Enter target weight"
+                  placeholder={goalWeightInput ? "" : "Enter target weight"}
                   step="0.1"
                 />
               </div>
@@ -432,7 +432,7 @@ export default function MeasurementsPage() {
                   value={goalBodyFatInput}
                   onChange={(e) => setGoalBodyFatInput(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder="Enter target body fat %"
+                  placeholder={goalBodyFatInput ? "" : "Enter target body fat %"}
                 />
               </div>
               <div className="flex space-x-3 pt-4">

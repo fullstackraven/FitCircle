@@ -209,7 +209,7 @@ export default function HydrationPage() {
                 type="text"
                 value={customLiquidType}
                 onChange={(e) => setCustomLiquidType(e.target.value)}
-                placeholder="Enter liquid type"
+                placeholder={customLiquidType ? "" : "Enter liquid type"}
                 className="bg-slate-700 border-slate-600 text-white"
               />
             )}
@@ -235,12 +235,11 @@ export default function HydrationPage() {
             <div className="flex-1">
               <Input
                 type="number"
-                /*value={addAmount}*/
+                value={addAmount}
                 onChange={(e) => setAddAmount(e.target.value)}
                 step="0.1"
-                min= "0"
-                /*placeholder="Enter amount"*/
-                onFocus={() => setIsFocused(true)}
+                min="0"
+                placeholder={addAmount ? "" : "Enter amount"}
                 className="bg-slate-700 border-slate-600 text-white"
               />
             </div>
@@ -368,7 +367,7 @@ export default function HydrationPage() {
                   value={newGoal}
                   onChange={(e) => setNewGoal(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder="Enter daily hydration goal"
+                  placeholder={newGoal ? "" : "Enter daily hydration goal"}
                 />
               </div>
               <div className="flex space-x-3 pt-4">

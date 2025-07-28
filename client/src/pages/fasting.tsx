@@ -403,7 +403,7 @@ export default function FastingPage() {
                   value={goalHoursInput}
                   onChange={(e) => setGoalHoursInput(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder="Enter hours (e.g., 16)"
+                  placeholder={goalHoursInput ? "" : "Enter hours (e.g., 16)"}
                 />
               </div>
               <div className="flex space-x-3 pt-4">

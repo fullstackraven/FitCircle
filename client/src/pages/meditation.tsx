@@ -288,6 +288,7 @@ export default function MeditationPage() {
                     type="number"
                     value={inputMinutes}
                     onChange={(e) => setInputMinutes(e.target.value)}
+                    placeholder={inputMinutes ? "" : "5"}
                     className="bg-slate-700 border-slate-600 text-white text-center"
                     min="1"
                   />
@@ -458,7 +459,7 @@ export default function MeditationPage() {
                   value={goalMinutesInput}
                   onChange={(e) => setGoalMinutesInput(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder="Enter daily goal in minutes"
+                  placeholder={goalMinutesInput ? "" : "Enter daily goal in minutes"}
                 />
               </div>
               <div className="flex space-x-3 pt-4">

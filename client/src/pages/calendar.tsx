@@ -572,7 +572,7 @@ export default function CalendarPage() {
                   <textarea
                     value={journalText}
                     onChange={(e) => setJournalText(e.target.value)}
-                    placeholder="Write your daily journal entry here..."
+                    placeholder={journalText ? "" : "Write your daily journal entry here..."}
                     className="w-full h-32 p-3 bg-slate-700 text-white rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                   <div className="flex space-x-2">

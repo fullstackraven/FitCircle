@@ -81,7 +81,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
             <Input
               id="workout-name"
               type="text"
-              placeholder="e.g., Pull-ups, Lunges, Planks"
+              placeholder={workoutName ? "" : "e.g., Pull-ups, Lunges, Planks"}
               value={workoutName}
               onChange={(e) => setWorkoutName(e.target.value)}
               className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"

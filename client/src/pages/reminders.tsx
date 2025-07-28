@@ -216,7 +216,7 @@ export default function RemindersPage() {
                   setShowAddForm(false);
                 }
               }}
-              placeholder="New Reminder"
+              placeholder={newReminderText ? "" : "New Reminder"}
               className="flex-1 bg-transparent text-white text-base border-none outline-none placeholder-slate-500"
               autoFocus
             />
@@ -298,7 +298,7 @@ export default function RemindersPage() {
                             onKeyDown={handleEditKeyPress}
                             onBlur={saveEdit}
                             className="flex-1 bg-transparent text-slate-500 text-base border-none outline-none"
-                            placeholder="Delete text to remove reminder"
+                            placeholder={editText ? "" : "Delete text to remove reminder"}
                             autoFocus
                           />
                         </div>
