@@ -203,12 +203,12 @@ export default function FitnessCalculator() {
                 <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sedentary">Sedentary (little/no exercise)</SelectItem>
-                  <SelectItem value="light">Light (1-3 days/week)</SelectItem>
-                  <SelectItem value="moderate">Moderate (3-5 days/week)</SelectItem>
-                  <SelectItem value="very">Very Active (6-7 days/week)</SelectItem>
-                  <SelectItem value="extremely">Extremely Active (2x/day)</SelectItem>
+                <SelectContent className="bg-slate-700 border-slate-600">
+                  <SelectItem value="sedentary" className="text-white hover:bg-slate-600">Sedentary (little/no exercise)</SelectItem>
+                  <SelectItem value="light" className="text-white hover:bg-slate-600">Light (1-3 days/week)</SelectItem>
+                  <SelectItem value="moderate" className="text-white hover:bg-slate-600">Moderate (3-5 days/week)</SelectItem>
+                  <SelectItem value="very" className="text-white hover:bg-slate-600">Very Active (6-7 days/week)</SelectItem>
+                  <SelectItem value="extremely" className="text-white hover:bg-slate-600">Extremely Active (2x/day)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -241,11 +241,11 @@ export default function FitnessCalculator() {
                   <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0.5">0.5 lbs/week</SelectItem>
-                    <SelectItem value="1">1 lb/week</SelectItem>
-                    <SelectItem value="1.5">1.5 lbs/week</SelectItem>
-                    <SelectItem value="2">2 lbs/week</SelectItem>
+                  <SelectContent className="bg-slate-700 border-slate-600">
+                    <SelectItem value="0.5" className="text-white hover:bg-slate-600">0.5 lbs/week</SelectItem>
+                    <SelectItem value="1" className="text-white hover:bg-slate-600">1 lb/week</SelectItem>
+                    <SelectItem value="1.5" className="text-white hover:bg-slate-600">1.5 lbs/week</SelectItem>
+                    <SelectItem value="2" className="text-white hover:bg-slate-600">2 lbs/week</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
