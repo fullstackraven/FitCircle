@@ -993,7 +993,7 @@ export default function CalendarPage() {
                                 </button>
                                 <button
                                   onClick={() => handleDeleteSupplement(supplement.id)}
-                                  className="w-10 h-10 rounded-full bg-red-600 hover:bg-red-700 flex items-center justify-center transition-colors"
+                                  className="w-10 h-10 rounded-full bg-slate-600 hover:bg-slate-500 flex items-center justify-center transition-colors"
                                   title="Delete supplement"
                                 >
                                   <Trash2 className="w-4 h-4 text-white" />
