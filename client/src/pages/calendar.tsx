@@ -12,7 +12,11 @@ import {
   Zap,
   Undo2,
   Pill,
-  Plus
+  Plus,
+  Edit2,
+  Trash2,
+  Save,
+  X
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
@@ -62,7 +66,9 @@ export default function CalendarPage() {
     getSupplementLogsForDate,
     setSupplementLog,
     hasSupplementsForDate,
-    getSupplementStats
+    getSupplementStats,
+    editSupplement,
+    deleteSupplement
   } = useSupplements();
   const workouts = getWorkoutArray() || [];
   const logs = getDailyLogs() || {};
@@ -73,6 +79,11 @@ export default function CalendarPage() {
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isEnergyOpen, setIsEnergyOpen] = useState(false);
   const [isSupplementsOpen, setIsSupplementsOpen] = useState(false);
+  const [addSupplementDialogOpen, setAddSupplementDialogOpen] = useState(false);
+  const [editingSupplementId, setEditingSupplementId] = useState<number | null>(null);
+  const [editSupplementName, setEditSupplementName] = useState('');
+  const [editSupplementAmount, setEditSupplementAmount] = useState('');
+  const [editSupplementType, setEditSupplementType] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [journalText, setJournalText] = useState('');
   const [energyLevel, setEnergyLevel] = useState(0);
@@ -80,6 +91,43 @@ export default function CalendarPage() {
   const [supplementsRefresh, setSupplementsRefresh] = useState(0);
   const [journalFocused, setJournalFocused] = useState(false);
   const circleRef = useRef<SVGSVGElement>(null);
+
+  // Supplement editing functions
+  const handleEditSupplement = (supplement: any) => {
+    setEditingSupplementId(supplement.id);
+    setEditSupplementName(supplement.name);
+    setEditSupplementAmount(supplement.amount.toString());
+    setEditSupplementType(supplement.measurementType);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingSupplementId && editSupplementName.trim() && editSupplementAmount.trim() && editSupplementType.trim()) {
+      editSupplement(editingSupplementId, {
+        name: editSupplementName.trim(),
+        amount: parseFloat(editSupplementAmount),
+        measurementType: editSupplementType.trim()
+      });
+      setEditingSupplementId(null);
+      setEditSupplementName('');
+      setEditSupplementAmount('');
+      setEditSupplementType('');
+      setSupplementsRefresh(prev => prev + 1);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingSupplementId(null);
+    setEditSupplementName('');
+    setEditSupplementAmount('');
+    setEditSupplementType('');
+  };
+
+  const handleDeleteSupplement = (supplementId: number) => {
+    if (window.confirm('Are you sure you want to delete this supplement? This will remove all historical data for this supplement.')) {
+      deleteSupplement(supplementId);
+      setSupplementsRefresh(prev => prev + 1);
+    }
+  };
 
   // Initialize with today's data on component mount
   useEffect(() => {
@@ -875,30 +923,98 @@ export default function CalendarPage() {
                       return (
                         <div
                           key={supplement.id}
-                          className="flex items-center justify-between p-4 bg-slate-700 rounded-xl"
+                          className="p-4 bg-slate-700 rounded-xl"
                         >
-                          <div className="flex items-center space-x-3">
-                            <Pill className="w-5 h-5 text-orange-400" />
-                            <div>
-                              <div className="text-white font-medium">{supplement.name}</div>
-                              <div className="text-sm text-slate-400">
-                                {supplement.amount} {supplement.measurementType}
+                          {editingSupplementId === supplement.id ? (
+                            // Edit mode
+                            <div className="space-y-3">
+                              <div className="flex items-center space-x-2">
+                                <Pill className="w-5 h-5 text-orange-400" />
+                                <input
+                                  type="text"
+                                  value={editSupplementName}
+                                  onChange={(e) => setEditSupplementName(e.target.value)}
+                                  className="flex-1 bg-slate-600 text-white px-3 py-2 rounded-xl border border-slate-500 focus:border-orange-400 focus:outline-none"
+                                  placeholder="Supplement name"
+                                />
+                              </div>
+                              <div className="flex space-x-2">
+                                <input
+                                  type="number"
+                                  value={editSupplementAmount}
+                                  onChange={(e) => setEditSupplementAmount(e.target.value)}
+                                  className="w-20 bg-slate-600 text-white px-3 py-2 rounded-xl border border-slate-500 focus:border-orange-400 focus:outline-none"
+                                  placeholder="Amount"
+                                />
+                                <input
+                                  type="text"
+                                  value={editSupplementType}
+                                  onChange={(e) => setEditSupplementType(e.target.value)}
+                                  className="flex-1 bg-slate-600 text-white px-3 py-2 rounded-xl border border-slate-500 focus:border-orange-400 focus:outline-none"
+                                  placeholder="Unit (mg, g, etc.)"
+                                />
+                              </div>
+                              <div className="flex space-x-2 justify-end">
+                                <button
+                                  onClick={handleSaveEdit}
+                                  className="flex items-center space-x-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors"
+                                >
+                                  <Save className="w-4 h-4" />
+                                  <span>Save</span>
+                                </button>
+                                <button
+                                  onClick={handleCancelEdit}
+                                  className="flex items-center space-x-1 px-3 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded-xl transition-colors"
+                                >
+                                  <X className="w-4 h-4" />
+                                  <span>Cancel</span>
+                                </button>
                               </div>
                             </div>
-                          </div>
-                          <button
-                            onClick={() => {
-                              setSupplementLog(dateStr, supplement.id, !isTaken);
-                              setSupplementsRefresh(prev => prev + 1); // Force re-render
-                            }}
-                            className={`w-12 h-12 rounded-full transition-colors ${
-                              isTaken
-                                ? 'bg-green-500 hover:bg-green-600'
-                                : 'bg-slate-600 hover:bg-slate-500 border-2 border-slate-500'
-                            }`}
-                          >
-                            {isTaken && <CheckCircle className="w-6 h-6 text-white mx-auto" />}
-                          </button>
+                          ) : (
+                            // View mode
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <Pill className="w-5 h-5 text-orange-400" />
+                                <div>
+                                  <div className="text-white font-medium">{supplement.name}</div>
+                                  <div className="text-sm text-slate-400">
+                                    {supplement.amount} {supplement.measurementType}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <button
+                                  onClick={() => handleEditSupplement(supplement)}
+                                  className="w-10 h-10 rounded-full bg-slate-600 hover:bg-slate-500 flex items-center justify-center transition-colors"
+                                  title="Edit supplement"
+                                >
+                                  <Edit2 className="w-4 h-4 text-white" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteSupplement(supplement.id)}
+                                  className="w-10 h-10 rounded-full bg-red-600 hover:bg-red-700 flex items-center justify-center transition-colors"
+                                  title="Delete supplement"
+                                >
+                                  <Trash2 className="w-4 h-4 text-white" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setSupplementLog(dateStr, supplement.id, !isTaken);
+                                    setSupplementsRefresh(prev => prev + 1); // Force re-render
+                                  }}
+                                  className={`w-12 h-12 rounded-full transition-colors ${
+                                    isTaken
+                                      ? 'bg-green-500 hover:bg-green-600'
+                                      : 'bg-slate-600 hover:bg-slate-500 border-2 border-slate-500'
+                                  }`}
+                                  title="Mark as taken/not taken"
+                                >
+                                  {isTaken && <CheckCircle className="w-6 h-6 text-white mx-auto" />}
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                         );
                       })

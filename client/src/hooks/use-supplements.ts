@@ -32,6 +32,40 @@ export function useSupplements() {
     return newSupplement;
   };
 
+  // Edit supplement
+  const editSupplement = (id: number, updates: { name?: string; measurementType?: string; amount?: number }) => {
+    const supplements = getSupplements();
+    const updatedSupplements = supplements.map(supplement => 
+      supplement.id === id ? { ...supplement, ...updates } : supplement
+    );
+    localStorage.setItem('fitcircle_supplements', JSON.stringify(updatedSupplements));
+    return updatedSupplements.find(s => s.id === id);
+  };
+
+  // Delete supplement
+  const deleteSupplement = (id: number) => {
+    const supplements = getSupplements();
+    const updatedSupplements = supplements.filter(supplement => supplement.id !== id);
+    localStorage.setItem('fitcircle_supplements', JSON.stringify(updatedSupplements));
+    
+    // Also remove all logs for this supplement to clean up data
+    const logs = getSupplementLogs();
+    const updatedLogs = { ...logs };
+    
+    Object.keys(updatedLogs).forEach(date => {
+      if (updatedLogs[date][id] !== undefined) {
+        delete updatedLogs[date][id];
+        // If no supplements left for this date, remove the date entry
+        if (Object.keys(updatedLogs[date]).length === 0) {
+          delete updatedLogs[date];
+        }
+      }
+    });
+    
+    localStorage.setItem('fitcircle_supplement_logs', JSON.stringify(updatedLogs));
+    return true;
+  };
+
   // Helper functions for supplement logs
   const getSupplementLogs = (): Record<string, Record<number, boolean>> => {
     const stored = localStorage.getItem('fitcircle_supplement_logs');
@@ -69,7 +103,20 @@ export function useSupplements() {
       };
     }
 
-    const firstLogDate = allDates[0];
+    // Find the first date where any supplement was actually logged (not just created)
+    const firstLogDate = allDates.find(date => {
+      const dayLogs = logs[date];
+      return Object.values(dayLogs).some(taken => taken);
+    });
+
+    if (!firstLogDate) {
+      return {
+        adherencePercentage: 0,
+        currentStreak: 0,
+        totalTaken: 0,
+        firstLogDate: null,
+      };
+    }
     
     // Calculate total supplements taken
     let totalTaken = 0;
@@ -77,27 +124,36 @@ export function useSupplements() {
     
     // Calculate current streak (consecutive days with at least one supplement)
     let currentStreak = 0;
-    const reversedDates = [...allDates].reverse();
+    const today = new Date().toISOString().split('T')[0];
+    let checkDate = today;
     
-    for (const date of reversedDates) {
-      const dayLogs = logs[date];
-      const hasTakenAny = Object.values(dayLogs).some(taken => taken);
-      
-      if (hasTakenAny) {
+    // Count backwards from today to find current streak
+    while (true) {
+      const dayLogs = logs[checkDate];
+      if (dayLogs && Object.values(dayLogs).some(taken => taken)) {
         currentStreak++;
+        // Go to previous day
+        const date = new Date(checkDate);
+        date.setDate(date.getDate() - 1);
+        checkDate = date.toISOString().split('T')[0];
       } else {
         break;
       }
     }
 
-    // Calculate adherence from first log date
-    for (const date of allDates) {
+    // Calculate adherence from first actual logging date (not creation date)
+    const firstLogIndex = allDates.indexOf(firstLogDate);
+    const relevantDates = allDates.slice(firstLogIndex);
+    
+    for (const date of relevantDates) {
       const dayLogs = logs[date];
-      const supplementsForDay = Object.keys(dayLogs).length;
-      const takenForDay = Object.values(dayLogs).filter(taken => taken).length;
-      
-      totalTaken += takenForDay;
-      totalExpected += supplementsForDay;
+      if (dayLogs && Object.keys(dayLogs).length > 0) {
+        const supplementsForDay = Object.keys(dayLogs).length;
+        const takenForDay = Object.values(dayLogs).filter(taken => taken).length;
+        
+        totalTaken += takenForDay;
+        totalExpected += supplementsForDay;
+      }
     }
 
     const adherencePercentage = totalExpected > 0 ? (totalTaken / totalExpected) * 100 : 0;
@@ -113,6 +169,8 @@ export function useSupplements() {
   return {
     supplements: getSupplements(),
     createSupplement,
+    editSupplement,
+    deleteSupplement,
     getSupplementLogs,
     setSupplementLog,
     getSupplementLogsForDate,
