@@ -81,6 +81,22 @@ export default function CalendarPage() {
   const [journalFocused, setJournalFocused] = useState(false);
   const circleRef = useRef<SVGSVGElement>(null);
 
+  // Initialize with today's data on component mount
+  useEffect(() => {
+    const today = new Date();
+    const energy = getEnergyLevel(today);
+    setEnergyLevel(energy);
+    
+    // Load today's journal entry
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    
+    const entry = getJournalEntry(dateStr);
+    setJournalText(entry || '');
+  }, []);
+
   const startDate = startOfWeek(startOfMonth(currentMonth), { weekStartsOn: 0 });
   const endDate = endOfWeek(endOfMonth(currentMonth), { weekStartsOn: 0 });
 
@@ -127,16 +143,23 @@ export default function CalendarPage() {
   };
 
   const handleJournalSubmit = () => {
-    if (!selectedDate) return;
+    const targetDate = selectedDate || new Date(); // Use today if no date selected
     
     // Use local timezone date formatting to match workout data
-    const year = selectedDate.getFullYear();
-    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const year = targetDate.getFullYear();
+    const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+    const day = String(targetDate.getDate()).padStart(2, '0');
     const dateStr = `${year}-${month}-${day}`;
     addJournalEntry(dateStr, journalText);
-    setSelectedDate(null);
-    setJournalText('');
+    
+    // Only clear selected date if we had one, otherwise keep today's data
+    if (selectedDate) {
+      setSelectedDate(null);
+      // Reload today's data
+      const today = new Date();
+      const todayStr = format(today, 'yyyy-MM-dd');
+      setJournalText(getJournalEntry(todayStr) || '');
+    }
   };
 
   const getEnergyLevel = (date: Date) => {
@@ -379,6 +402,19 @@ export default function CalendarPage() {
     });
   };
 
+  const handleEnergySave = () => {
+    const targetDate = selectedDate || new Date(); // Use today if no date selected
+    setEnergyLevelForDate(targetDate, energyLevel);
+    
+    // Only clear selected date if we had one
+    if (selectedDate) {
+      setSelectedDate(null);
+      // Reload today's data
+      const today = new Date();
+      setEnergyLevel(getEnergyLevel(today));
+    }
+  };
+
   const monthlyStats = getMonthlyStats(currentMonth.getFullYear(), currentMonth.getMonth()) || {
     totalReps: 0,
     workoutsCompleted: 0,
@@ -563,44 +599,48 @@ export default function CalendarPage() {
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className="mt-4 bg-slate-800 rounded-xl p-4">
-              {selectedDate ? (
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <h3 className="text-lg font-medium text-white">
-                      Journal Entry for {format(selectedDate, "MMMM d, yyyy")}
-                    </h3>
-                  </div>
-                  <textarea
-                    value={journalText}
-                    onChange={(e) => setJournalText(e.target.value)}
-                    onFocus={() => setJournalFocused(true)}
-                    onBlur={() => setJournalFocused(false)}
-                    placeholder={journalFocused ? "" : "Write your daily journal entry here..."}
-                    className="w-full h-32 p-3 bg-slate-700 text-white rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={handleJournalSubmit}
-                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors"
-                    >
-                      Save Entry
-                    </button>
+              <div className="space-y-4">
+                <div className="text-center">
+                  <h3 className="text-lg font-medium text-white">
+                    Journal Entry for {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "Today"}
+                  </h3>
+                  {selectedDate && (
+                    <p className="text-sm text-slate-400 mt-1">
+                      Viewing past entry - tap calendar to return to today
+                    </p>
+                  )}
+                </div>
+                <textarea
+                  value={journalText}
+                  onChange={(e) => setJournalText(e.target.value)}
+                  onFocus={() => setJournalFocused(true)}
+                  onBlur={() => setJournalFocused(false)}
+                  placeholder={journalFocused ? "" : "Write your daily journal entry here..."}
+                  className="w-full h-32 p-3 bg-slate-700 text-white rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+                <div className="flex space-x-2">
+                  <button
+                    onClick={handleJournalSubmit}
+                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors"
+                  >
+                    Save Entry
+                  </button>
+                  {selectedDate && (
                     <button
                       onClick={() => {
                         setSelectedDate(null);
-                        setJournalText('');
+                        // Reload today's data
+                        const today = new Date();
+                        const todayStr = format(today, 'yyyy-MM-dd');
+                        setJournalText(getJournalEntry(todayStr) || '');
                       }}
                       className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-xl transition-colors"
                     >
-                      Cancel
+                      Back to Today
                     </button>
-                  </div>
+                  )}
                 </div>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-slate-400">Tap on a day in the calendar to add a journal entry</p>
-                </div>
-              )}
+              </div>
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -622,13 +662,25 @@ export default function CalendarPage() {
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className="mt-4 bg-slate-800 rounded-xl p-6">
-              {selectedDate ? (
-                <div className="space-y-6">
+              <div className="space-y-6">
+                {/* Energy Level Trend Visualization */}
+                <div className="bg-gradient-to-br from-purple-900/20 to-purple-800/10 rounded-xl p-6 border border-purple-500/20">
+                  <h3 className="text-lg font-medium text-white mb-4 text-center">Energy Level Trends</h3>
+                  <EnergyTrendVisualization />
+                </div>
+                
+                {/* Today's Energy Level Input */}
+                <div className="space-y-4">
                   <div className="text-center">
                     <h3 className="text-lg font-medium text-white mb-2">
-                      Energy Level for {format(selectedDate, "MMMM d, yyyy")}
+                      Energy Level for {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "Today"}
                     </h3>
                     <p className="text-sm text-slate-400">Tap the circle to increase energy level (1-10)</p>
+                    {selectedDate && (
+                      <p className="text-sm text-slate-400 mt-1">
+                        Viewing past entry - tap calendar to return to today
+                      </p>
+                    )}
                   </div>
                   
                   {/* Energy Circle */}
@@ -699,39 +751,27 @@ export default function CalendarPage() {
                   
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => {
-                        if (selectedDate) {
-                          setEnergyLevelForDate(selectedDate, energyLevel);
-                        }
-                      }}
+                      onClick={handleEnergySave}
                       className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors"
                     >
                       Save Energy Level
                     </button>
-                    <button
-                      onClick={() => {
-                        setSelectedDate(null);
-                        setEnergyLevel(0);
-                      }}
-                      className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-xl transition-colors"
-                    >
-                      Cancel
-                    </button>
+                    {selectedDate && (
+                      <button
+                        onClick={() => {
+                          setSelectedDate(null);
+                          // Reload today's data
+                          const today = new Date();
+                          setEnergyLevel(getEnergyLevel(today));
+                        }}
+                        className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-xl transition-colors"
+                      >
+                        Back to Today
+                      </button>
+                    )}
                   </div>
                 </div>
-              ) : (
-                <div className="space-y-6">
-                  {/* Energy Level Trend Visualization */}
-                  <div className="bg-gradient-to-br from-purple-900/20 to-purple-800/10 rounded-xl p-6 border border-purple-500/20">
-                    <h3 className="text-lg font-medium text-white mb-4 text-center">Energy Level Trends</h3>
-                    <EnergyTrendVisualization />
-                  </div>
-                  
-                  <div className="text-center py-4">
-                    <p className="text-slate-400 text-sm">Tap on a day in the calendar to set your energy level</p>
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -753,96 +793,101 @@ export default function CalendarPage() {
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className="mt-4 bg-slate-800 rounded-xl p-6">
-              {selectedDate ? (
-                <div className="space-y-6">
-                  <div className="text-center">
-                    <h3 className="text-lg font-medium text-white mb-2">
-                      Supplements for {format(selectedDate, "MMMM d, yyyy")}
-                    </h3>
-                  </div>
-                  
-                  {/* Supplement Stats Boxes */}
-                  <div className="grid grid-cols-3 gap-3">
-                    {(() => {
-                      const stats = getSupplementStats();
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-medium text-white mb-2">
+                    Supplements for {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "Today"}
+                  </h3>
+                  {selectedDate && (
+                    <p className="text-sm text-slate-400 mt-1">
+                      Viewing past entry - tap calendar to return to today
+                    </p>
+                  )}
+                </div>
+                
+                {/* Supplement Stats Boxes */}
+                <div className="grid grid-cols-3 gap-3">
+                  {(() => {
+                    const stats = getSupplementStats();
+                    return (
+                      <>
+                        {/* Adherence Ring */}
+                        <div className="bg-slate-700 rounded-xl p-4 text-center">
+                          <div className="relative w-16 h-16 mx-auto mb-2">
+                            <svg width="64" height="64" className="transform -rotate-90">
+                              <circle
+                                cx="32"
+                                cy="32"
+                                r="28"
+                                fill="none"
+                                stroke="rgba(148, 163, 184, 0.3)"
+                                strokeWidth="4"
+                              />
+                              <circle
+                                cx="32"
+                                cy="32"
+                                r="28"
+                                fill="none"
+                                stroke="rgb(251, 146, 60)"
+                                strokeWidth="4"
+                                strokeLinecap="round"
+                                strokeDasharray={`${(stats.adherencePercentage / 100) * 175.93} 175.93`}
+                                className="transition-all duration-300"
+                              />
+                            </svg>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="text-sm font-bold text-white">{stats.adherencePercentage}%</span>
+                            </div>
+                          </div>
+                          <div className="text-xs text-slate-400">Adherence</div>
+                        </div>
+
+                        {/* Current Streak */}
+                        <div className="bg-slate-700 rounded-xl p-4 text-center">
+                          <div className="text-2xl font-bold text-orange-400 mb-1">{stats.currentStreak}</div>
+                          <div className="text-xs text-slate-400">Current Streak</div>
+                        </div>
+
+                        {/* Total Taken */}
+                        <div className="bg-slate-700 rounded-xl p-4 text-center">
+                          <div className="text-2xl font-bold text-orange-400 mb-1">{stats.totalTaken}</div>
+                          <div className="text-xs text-slate-400">Total Taken</div>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+
+                {/* Add Supplement Button */}
+                <div className="flex justify-end">
+                  <AddSupplementDialog onSupplementAdded={() => setSupplementsRefresh(prev => prev + 1)} />
+                </div>
+
+                {/* Daily Supplements List */}
+                <div className="space-y-3">
+                  {supplements.length > 0 ? (
+                    supplements.map((supplement) => {
+                      const targetDate = selectedDate || new Date();
+                      const dateStr = format(targetDate, 'yyyy-MM-dd');
+                      const supplementLogs = getSupplementLogsForDate(dateStr);
+                      const isTaken = supplementLogs[supplement.id] || false;
+
                       return (
-                        <>
-                          {/* Adherence Ring */}
-                          <div className="bg-slate-700 rounded-xl p-4 text-center">
-                            <div className="relative w-16 h-16 mx-auto mb-2">
-                              <svg width="64" height="64" className="transform -rotate-90">
-                                <circle
-                                  cx="32"
-                                  cy="32"
-                                  r="28"
-                                  fill="none"
-                                  stroke="rgba(148, 163, 184, 0.3)"
-                                  strokeWidth="4"
-                                />
-                                <circle
-                                  cx="32"
-                                  cy="32"
-                                  r="28"
-                                  fill="none"
-                                  stroke="rgb(251, 146, 60)"
-                                  strokeWidth="4"
-                                  strokeLinecap="round"
-                                  strokeDasharray={`${(stats.adherencePercentage / 100) * 175.93} 175.93`}
-                                  className="transition-all duration-300"
-                                />
-                              </svg>
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-sm font-bold text-white">{stats.adherencePercentage}%</span>
+                        <div
+                          key={supplement.id}
+                          className="flex items-center justify-between p-4 bg-slate-700 rounded-xl"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Pill className="w-5 h-5 text-orange-400" />
+                            <div>
+                              <div className="text-white font-medium">{supplement.name}</div>
+                              <div className="text-sm text-slate-400">
+                                {supplement.amount} {supplement.measurementType}
                               </div>
                             </div>
-                            <div className="text-xs text-slate-400">Adherence</div>
                           </div>
-
-                          {/* Current Streak */}
-                          <div className="bg-slate-700 rounded-xl p-4 text-center">
-                            <div className="text-2xl font-bold text-orange-400 mb-1">{stats.currentStreak}</div>
-                            <div className="text-xs text-slate-400">Current Streak</div>
-                          </div>
-
-                          {/* Total Taken */}
-                          <div className="bg-slate-700 rounded-xl p-4 text-center">
-                            <div className="text-2xl font-bold text-orange-400 mb-1">{stats.totalTaken}</div>
-                            <div className="text-xs text-slate-400">Total Taken</div>
-                          </div>
-                        </>
-                      );
-                    })()}
-                  </div>
-
-                  {/* Add Supplement Button */}
-                  <div className="flex justify-end">
-                    <AddSupplementDialog onSupplementAdded={() => setSupplementsRefresh(prev => prev + 1)} />
-                  </div>
-
-                  {/* Daily Supplements List */}
-                  <div className="space-y-3">
-                    {supplements.length > 0 ? (
-                      supplements.map((supplement) => {
-                        const dateStr = format(selectedDate, 'yyyy-MM-dd');
-                        const supplementLogs = getSupplementLogsForDate(dateStr);
-                        const isTaken = supplementLogs[supplement.id] || false;
-
-                        return (
-                          <div
-                            key={supplement.id}
-                            className="flex items-center justify-between p-4 bg-slate-700 rounded-xl"
-                          >
-                            <div className="flex items-center space-x-3">
-                              <Pill className="w-5 h-5 text-orange-400" />
-                              <div>
-                                <div className="text-white font-medium">{supplement.name}</div>
-                                <div className="text-sm text-slate-400">
-                                  {supplement.amount} {supplement.measurementType}
-                                </div>
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => {
+                          <button
+                            onClick={() => {
                                 setSupplementLog(dateStr, supplement.id, !isTaken);
                               }}
                               className={`w-12 h-12 rounded-full transition-colors ${
@@ -865,87 +910,20 @@ export default function CalendarPage() {
                     )}
                   </div>
 
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => {
-                        setSelectedDate(null);
-                      }}
-                      className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-xl transition-colors"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {/* Supplement Overview Stats */}
-                  <div className="bg-gradient-to-br from-orange-900/20 to-orange-800/10 rounded-xl p-6 border border-orange-500/20">
-                    <h3 className="text-lg font-medium text-white mb-4 text-center">Supplement Overview</h3>
-                    
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-3 gap-3 mb-4">
-                      {(() => {
-                        const stats = getSupplementStats();
-                        return (
-                          <>
-                            {/* Adherence Ring */}
-                            <div className="bg-orange-900/30 rounded-lg p-3 text-center">
-                              <div className="relative w-12 h-12 mx-auto mb-2">
-                                <svg width="48" height="48" className="transform -rotate-90">
-                                  <circle
-                                    cx="24"
-                                    cy="24"
-                                    r="20"
-                                    fill="none"
-                                    stroke="rgba(148, 163, 184, 0.3)"
-                                    strokeWidth="3"
-                                  />
-                                  <circle
-                                    cx="24"
-                                    cy="24"
-                                    r="20"
-                                    fill="none"
-                                    stroke="rgb(251, 146, 60)"
-                                    strokeWidth="3"
-                                    strokeLinecap="round"
-                                    strokeDasharray={`${(stats.adherencePercentage / 100) * 125.66} 125.66`}
-                                    className="transition-all duration-300"
-                                  />
-                                </svg>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                  <span className="text-xs font-bold text-orange-300">{stats.adherencePercentage}%</span>
-                                </div>
-                              </div>
-                              <div className="text-xs text-slate-400">Adherence</div>
-                            </div>
-
-                            {/* Current Streak */}
-                            <div className="bg-orange-900/30 rounded-lg p-3 text-center">
-                              <div className="text-lg font-bold text-orange-300 mb-1">{stats.currentStreak}</div>
-                              <div className="text-xs text-slate-400">Current Streak</div>
-                            </div>
-
-                            {/* Total Taken */}
-                            <div className="bg-orange-900/30 rounded-lg p-3 text-center">
-                              <div className="text-lg font-bold text-orange-300 mb-1">{stats.totalTaken}</div>
-                              <div className="text-xs text-slate-400">Total Taken</div>
-                            </div>
-                          </>
-                        );
-                      })()}
+                  {selectedDate && (
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => {
+                          setSelectedDate(null);
+                          // No need to refresh as this will automatically show today's data
+                        }}
+                        className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-xl transition-colors"
+                      >
+                        Back to Today
+                      </button>
                     </div>
-
-                    {/* Add Supplement Button */}
-                    <div className="flex justify-center">
-                      <AddSupplementDialog />
-                    </div>
-                  </div>
-
-                  <div className="text-center py-4">
-                    <p className="text-slate-400 text-sm">Tap on a day in the calendar to log your supplements</p>
-                  </div>
+                  )}
                 </div>
-              )}
             </div>
           </CollapsibleContent>
         </Collapsible>
