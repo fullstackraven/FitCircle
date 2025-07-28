@@ -37,27 +37,53 @@ export default function FitnessCalculator() {
   const [customFat, setCustomFat] = useState<string>('30');
 
   useEffect(() => {
-    // Load user data from measurements localStorage
-    const profileData = JSON.parse(localStorage.getItem('fitcircle_profile') || '{}');
-    const measurementData = JSON.parse(localStorage.getItem('fitcircle_measurements') || '{}');
-    
-    let height = 0;
-    let weight = 0;
-    
-    // Get latest height and weight from measurements
-    if (measurementData.height && measurementData.height.length > 0) {
-      height = measurementData.height[measurementData.height.length - 1].value;
-    }
-    if (measurementData.weight && measurementData.weight.length > 0) {
-      weight = measurementData.weight[measurementData.weight.length - 1].value;
-    }
+    const loadUserData = () => {
+      // Load user data from measurements localStorage - using the correct key 'fitcircle_measurements_history'
+      const profileData = JSON.parse(localStorage.getItem('fitcircle_profile') || '{}');
+      const measurementData = JSON.parse(localStorage.getItem('fitcircle_measurements_history') || '{}');
+      
+      let height = 0;
+      let weight = 0;
+      
+      // Get latest height and weight from measurements using the correct data structure
+      if (measurementData.height && measurementData.height.length > 0) {
+        // Get the most recent height measurement
+        const latestHeight = measurementData.height[measurementData.height.length - 1];
+        height = latestHeight.value;
+      }
+      if (measurementData.weight && measurementData.weight.length > 0) {
+        // Get the most recent weight measurement
+        const latestWeight = measurementData.weight[measurementData.weight.length - 1];
+        weight = latestWeight.value;
+      }
 
-    setUserData({
-      height: height || 70, // default 5'10"
-      weight: weight || 170, // default 170 lbs
-      age: profileData.age || 25,
-      gender: profileData.gender || 'male'
-    });
+      setUserData({
+        height: height || 70, // default 5'10" only if no data exists
+        weight: weight || 170, // default 170 lbs only if no data exists
+        age: profileData.age || 25,
+        gender: profileData.gender || 'male'
+      });
+    };
+
+    // Load data initially
+    loadUserData();
+
+    // Set up an interval to check for data updates every 2 seconds for real-time sync
+    const interval = setInterval(loadUserData, 2000);
+
+    // Listen for localStorage changes (when user updates measurements in another tab/page)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'fitcircle_measurements_history' || e.key === 'fitcircle_profile') {
+        loadUserData();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const handleBack = () => {
