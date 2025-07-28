@@ -3,6 +3,7 @@ import { Switch, Route } from "wouter";
 
 import Home from "@/pages/home";
 import CalendarPage from "@/pages/calendar";
+import FitnessCalculatorPage from "@/pages/fitness-calculator";
 import ProfilePage from "@/pages/profile";
 import MeasurementsPage from "@/pages/measurements";
 import SettingsPage from "@/pages/settings";
@@ -28,6 +29,7 @@ function Router() {
       <Route path="/meditation" component={MeditationPage} />
       <Route path="/hydration" component={HydrationPage} />
       <Route path="/goals" component={GoalsPage} />
+      <Route path="/fitness-calculator" component={FitnessCalculatorPage} />
 
       <Route path="/reminders" component={RemindersPage} />
 

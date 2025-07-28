@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
@@ -313,6 +313,18 @@ export default function Home() {
               >
                 <User className="w-5 h-5 text-slate-400" />
                 <span className="text-white">Measurements</span>
+              </div>
+
+              {/* Fitness Calculator */}
+              <div 
+                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  navigate('/fitness-calculator?from=dashboard');
+                }}
+              >
+                <Calculator className="w-5 h-5 text-slate-400" />
+                <span className="text-white">Fitness Calculator</span>
               </div>
 
               {/* Intermittent Fasting */}

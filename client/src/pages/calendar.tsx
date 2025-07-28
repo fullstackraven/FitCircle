@@ -899,7 +899,7 @@ export default function CalendarPage() {
                           >
                             {isTaken && <CheckCircle className="w-6 h-6 text-white mx-auto" />}
                           </button>
-                          </div>
+                        </div>
                         );
                       })
                     ) : (
