@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -888,16 +888,16 @@ export default function CalendarPage() {
                           </div>
                           <button
                             onClick={() => {
-                                setSupplementLog(dateStr, supplement.id, !isTaken);
-                              }}
-                              className={`w-12 h-12 rounded-full transition-colors ${
-                                isTaken
-                                  ? 'bg-green-500 hover:bg-green-600'
-                                  : 'bg-slate-600 hover:bg-slate-500 border-2 border-slate-500'
-                              }`}
-                            >
-                              {isTaken && <CheckCircle className="w-6 h-6 text-white mx-auto" />}
-                            </button>
+                              setSupplementLog(dateStr, supplement.id, !isTaken);
+                            }}
+                            className={`w-12 h-12 rounded-full transition-colors ${
+                              isTaken
+                                ? 'bg-green-500 hover:bg-green-600'
+                                : 'bg-slate-600 hover:bg-slate-500 border-2 border-slate-500'
+                            }`}
+                          >
+                            {isTaken && <CheckCircle className="w-6 h-6 text-white mx-auto" />}
+                          </button>
                           </div>
                         );
                       })
