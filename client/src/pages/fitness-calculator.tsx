@@ -27,14 +27,28 @@ export default function FitnessCalculator() {
     gender: 'male'
   });
 
-  // Calculator states
-  const [activityLevel, setActivityLevel] = useState<string>('moderate');
-  const [goalType, setGoalType] = useState<string>('maintain');
-  const [goalRate, setGoalRate] = useState<string>('1');
-  const [macroStyle, setMacroStyle] = useState<string>('standard');
-  const [customCarbs, setCustomCarbs] = useState<string>('40');
-  const [customProtein, setCustomProtein] = useState<string>('30');
-  const [customFat, setCustomFat] = useState<string>('30');
+  // Calculator states with localStorage persistence
+  const [activityLevel, setActivityLevel] = useState<string>(() => {
+    return localStorage.getItem('fitness_calc_activity_level') || 'moderate';
+  });
+  const [goalType, setGoalType] = useState<string>(() => {
+    return localStorage.getItem('fitness_calc_goal_type') || 'maintain';
+  });
+  const [goalRate, setGoalRate] = useState<string>(() => {
+    return localStorage.getItem('fitness_calc_goal_rate') || '1';
+  });
+  const [macroStyle, setMacroStyle] = useState<string>(() => {
+    return localStorage.getItem('fitness_calc_macro_style') || 'standard';
+  });
+  const [customCarbs, setCustomCarbs] = useState<string>(() => {
+    return localStorage.getItem('fitness_calc_custom_carbs') || '40';
+  });
+  const [customProtein, setCustomProtein] = useState<string>(() => {
+    return localStorage.getItem('fitness_calc_custom_protein') || '30';
+  });
+  const [customFat, setCustomFat] = useState<string>(() => {
+    return localStorage.getItem('fitness_calc_custom_fat') || '30';
+  });
 
   useEffect(() => {
     const loadUserData = () => {
@@ -85,6 +99,35 @@ export default function FitnessCalculator() {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
+
+  // Save calculator settings to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('fitness_calc_activity_level', activityLevel);
+  }, [activityLevel]);
+
+  useEffect(() => {
+    localStorage.setItem('fitness_calc_goal_type', goalType);
+  }, [goalType]);
+
+  useEffect(() => {
+    localStorage.setItem('fitness_calc_goal_rate', goalRate);
+  }, [goalRate]);
+
+  useEffect(() => {
+    localStorage.setItem('fitness_calc_macro_style', macroStyle);
+  }, [macroStyle]);
+
+  useEffect(() => {
+    localStorage.setItem('fitness_calc_custom_carbs', customCarbs);
+  }, [customCarbs]);
+
+  useEffect(() => {
+    localStorage.setItem('fitness_calc_custom_protein', customProtein);
+  }, [customProtein]);
+
+  useEffect(() => {
+    localStorage.setItem('fitness_calc_custom_fat', customFat);
+  }, [customFat]);
 
   const handleBack = () => {
     if (fromDashboard) {
