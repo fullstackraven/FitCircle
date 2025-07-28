@@ -31,6 +31,8 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
   const [workoutName, setWorkoutName] = useState('');
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || 'green');
   const [dailyGoal, setDailyGoal] = useState<number | string>(10);
+  const [workoutNameFocused, setWorkoutNameFocused] = useState(false);
+  const [dailyGoalFocused, setDailyGoalFocused] = useState(false);
 
   // Initialize form when editing
   useEffect(() => {
@@ -81,7 +83,9 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
             <Input
               id="workout-name"
               type="text"
-              placeholder={workoutName ? "" : "e.g., Pull-ups, Lunges, Planks"}
+              placeholder={workoutNameFocused ? "" : "e.g., Pull-ups, Lunges, Planks"}
+              onFocus={() => setWorkoutNameFocused(true)}
+              onBlur={() => setWorkoutNameFocused(false)}
               value={workoutName}
               onChange={(e) => setWorkoutName(e.target.value)}
               className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"

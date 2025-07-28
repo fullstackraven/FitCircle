@@ -15,6 +15,8 @@ export default function RemindersPage() {
   const [selectMode, setSelectMode] = useState(false);
   const [selectedCompleted, setSelectedCompleted] = useState<Set<string>>(new Set());
   const [showMenuId, setShowMenuId] = useState<string | null>(null);
+  const [newReminderFocused, setNewReminderFocused] = useState(false);
+  const [editFocused, setEditFocused] = useState(false);
 
   const activeReminders = reminders.filter(r => !r.completed);
   const completedReminders = reminders.filter(r => r.completed);
@@ -140,9 +142,13 @@ export default function RemindersPage() {
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
                     onKeyDown={handleEditKeyPress}
-                    onBlur={saveEdit}
+                    onBlur={(e) => {
+                      setEditFocused(false);
+                      saveEdit();
+                    }}
+                    onFocus={() => setEditFocused(true)}
                     className="flex-1 bg-transparent text-white text-base border-none outline-none"
-                    placeholder="Delete text to remove reminder"
+                    placeholder={editFocused ? "" : "Delete text to remove reminder"}
                     autoFocus
                   />
                 </div>
@@ -212,11 +218,13 @@ export default function RemindersPage() {
               onChange={(e) => setNewReminderText(e.target.value)}
               onKeyDown={handleKeyPress}
               onBlur={() => {
+                setNewReminderFocused(false);
                 if (!newReminderText.trim()) {
                   setShowAddForm(false);
                 }
               }}
-              placeholder={newReminderText ? "" : "New Reminder"}
+              placeholder={newReminderFocused ? "" : "New Reminder"}
+              onFocus={() => setNewReminderFocused(true)}
               className="flex-1 bg-transparent text-white text-base border-none outline-none placeholder-slate-500"
               autoFocus
             />
@@ -296,9 +304,13 @@ export default function RemindersPage() {
                             value={editText}
                             onChange={(e) => setEditText(e.target.value)}
                             onKeyDown={handleEditKeyPress}
-                            onBlur={saveEdit}
+                            onBlur={(e) => {
+                              setEditFocused(false);
+                              saveEdit();
+                            }}
+                            onFocus={() => setEditFocused(true)}
                             className="flex-1 bg-transparent text-slate-500 text-base border-none outline-none"
-                            placeholder={editText ? "" : "Delete text to remove reminder"}
+                            placeholder={editFocused ? "" : "Delete text to remove reminder"}
                             autoFocus
                           />
                         </div>

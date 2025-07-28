@@ -42,6 +42,8 @@ export default function MeditationPage() {
   // Goal state
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [goalMinutesInput, setGoalMinutesInput] = useState('');
+  const [inputMinutesFocused, setInputMinutesFocused] = useState(false);
+  const [goalMinutesFocused, setGoalMinutesFocused] = useState(false);
 
   useEffect(() => {
     // Initialize goal input with current goal value from shared utility
@@ -288,7 +290,9 @@ export default function MeditationPage() {
                     type="number"
                     value={inputMinutes}
                     onChange={(e) => setInputMinutes(e.target.value)}
-                    placeholder={inputMinutes ? "" : "5"}
+                    onFocus={() => setInputMinutesFocused(true)}
+                    onBlur={() => setInputMinutesFocused(false)}
+                    placeholder={inputMinutesFocused ? "" : "5"}
                     className="bg-slate-700 border-slate-600 text-white text-center"
                     min="1"
                   />
@@ -458,8 +462,10 @@ export default function MeditationPage() {
                   type="number"
                   value={goalMinutesInput}
                   onChange={(e) => setGoalMinutesInput(e.target.value)}
+                  onFocus={() => setGoalMinutesFocused(true)}
+                  onBlur={() => setGoalMinutesFocused(false)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder={goalMinutesInput ? "" : "Enter daily goal in minutes"}
+                  placeholder={goalMinutesFocused ? "" : "Enter daily goal in minutes"}
                 />
               </div>
               <div className="flex space-x-3 pt-4">

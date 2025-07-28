@@ -53,6 +53,9 @@ export default function MeasurementsPage() {
   const [goalWeightInput, setGoalWeightInput] = useState('');
   const [goalBodyFatInput, setGoalBodyFatInput] = useState('');
   const [weightGoalType, setWeightGoalType] = useState<'gain' | 'lose'>('lose');
+  const [focusedInputs, setFocusedInputs] = useState<{ [key: string]: boolean }>({});
+  const [goalWeightFocused, setGoalWeightFocused] = useState(false);
+  const [goalBodyFatFocused, setGoalBodyFatFocused] = useState(false);
 
   useEffect(() => {
     // Load latest values
@@ -225,8 +228,10 @@ export default function MeasurementsPage() {
                       id={field.key}
                       type="number"
                       value={inputValues[field.key] || ''}
-                      placeholder={inputValues[field.key] ? "" : "0"}
+                      placeholder={focusedInputs[field.key] ? "" : "0"}
                       step="0.1"
+                      onFocus={() => setFocusedInputs(prev => ({ ...prev, [field.key]: true }))}
+                      onBlur={() => setFocusedInputs(prev => ({ ...prev, [field.key]: false }))}
                       onChange={(e) => handleInputChange(field.key, e.target.value)}
                       className="bg-slate-700 border-slate-600 text-white mt-1"
                     />
@@ -418,7 +423,9 @@ export default function MeasurementsPage() {
                   value={goalWeightInput}
                   onChange={(e) => setGoalWeightInput(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder={goalWeightInput ? "" : "Enter target weight"}
+                  placeholder={goalWeightFocused ? "" : "Enter target weight"}
+                  onFocus={() => setGoalWeightFocused(true)}
+                  onBlur={() => setGoalWeightFocused(false)}
                   step="0.1"
                 />
               </div>
@@ -432,7 +439,9 @@ export default function MeasurementsPage() {
                   value={goalBodyFatInput}
                   onChange={(e) => setGoalBodyFatInput(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder={goalBodyFatInput ? "" : "Enter target body fat %"}
+                  placeholder={goalBodyFatFocused ? "" : "Enter target body fat %"}
+                  onFocus={() => setGoalBodyFatFocused(true)}
+                  onBlur={() => setGoalBodyFatFocused(false)}
                 />
               </div>
               <div className="flex space-x-3 pt-4">

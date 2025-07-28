@@ -40,6 +40,9 @@ export default function HydrationPage() {
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [newGoal, setNewGoal] = useState(dailyGoalOz.toString());
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [customLiquidFocused, setCustomLiquidFocused] = useState(false);
+  const [addAmountFocused, setAddAmountFocused] = useState(false);
+  const [goalFocused, setGoalFocused] = useState(false);
 
   // Load goal from Goals page when it changes
   useEffect(() => {
@@ -209,7 +212,9 @@ export default function HydrationPage() {
                 type="text"
                 value={customLiquidType}
                 onChange={(e) => setCustomLiquidType(e.target.value)}
-                placeholder={customLiquidType ? "" : "Enter liquid type"}
+                onFocus={() => setCustomLiquidFocused(true)}
+                onBlur={() => setCustomLiquidFocused(false)}
+                placeholder={customLiquidFocused ? "" : "Enter liquid type"}
                 className="bg-slate-700 border-slate-600 text-white"
               />
             )}
@@ -237,9 +242,11 @@ export default function HydrationPage() {
                 type="number"
                 value={addAmount}
                 onChange={(e) => setAddAmount(e.target.value)}
+                onFocus={() => setAddAmountFocused(true)}
+                onBlur={() => setAddAmountFocused(false)}
                 step="0.1"
                 min="0"
-                placeholder={addAmount ? "" : "Enter amount"}
+                placeholder={addAmountFocused ? "" : "Enter amount"}
                 className="bg-slate-700 border-slate-600 text-white"
               />
             </div>
@@ -366,8 +373,10 @@ export default function HydrationPage() {
                   type="number"
                   value={newGoal}
                   onChange={(e) => setNewGoal(e.target.value)}
+                  onFocus={() => setGoalFocused(true)}
+                  onBlur={() => setGoalFocused(false)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder={newGoal ? "" : "Enter daily hydration goal"}
+                  placeholder={goalFocused ? "" : "Enter daily hydration goal"}
                 />
               </div>
               <div className="flex space-x-3 pt-4">

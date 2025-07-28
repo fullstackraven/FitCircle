@@ -78,6 +78,7 @@ export default function CalendarPage() {
   const [energyLevel, setEnergyLevel] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [supplementsRefresh, setSupplementsRefresh] = useState(0);
+  const [journalFocused, setJournalFocused] = useState(false);
   const circleRef = useRef<SVGSVGElement>(null);
 
   const startDate = startOfWeek(startOfMonth(currentMonth), { weekStartsOn: 0 });
@@ -572,7 +573,9 @@ export default function CalendarPage() {
                   <textarea
                     value={journalText}
                     onChange={(e) => setJournalText(e.target.value)}
-                    placeholder={journalText ? "" : "Write your daily journal entry here..."}
+                    onFocus={() => setJournalFocused(true)}
+                    onBlur={() => setJournalFocused(false)}
+                    placeholder={journalFocused ? "" : "Write your daily journal entry here..."}
                     className="w-full h-32 p-3 bg-slate-700 text-white rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                   <div className="flex space-x-2">

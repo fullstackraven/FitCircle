@@ -35,6 +35,7 @@ export default function FastingPage() {
   // Goal state
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [goalHoursInput, setGoalHoursInput] = useState('');
+  const [goalHoursFocused, setGoalHoursFocused] = useState(false);
 
   useEffect(() => {
     // Initialize goal input with current goal value
@@ -402,8 +403,10 @@ export default function FastingPage() {
                   type="number"
                   value={goalHoursInput}
                   onChange={(e) => setGoalHoursInput(e.target.value)}
+                  onFocus={() => setGoalHoursFocused(true)}
+                  onBlur={() => setGoalHoursFocused(false)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder={goalHoursInput ? "" : "Enter hours (e.g., 16)"}
+                  placeholder={goalHoursFocused ? "" : "Enter hours (e.g., 16)"}
                 />
               </div>
               <div className="flex space-x-3 pt-4">

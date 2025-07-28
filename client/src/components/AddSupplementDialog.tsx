@@ -17,6 +17,8 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
   const [name, setName] = useState('');
   const [measurementType, setMeasurementType] = useState('');
   const [amount, setAmount] = useState('');
+  const [nameFocused, setNameFocused] = useState(false);
+  const [amountFocused, setAmountFocused] = useState(false);
   
   const { createSupplement } = useSupplements();
 
@@ -85,7 +87,9 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={name ? "" : "e.g., Vitamin D3, Fish Oil"}
+              onFocus={() => setNameFocused(true)}
+              onBlur={() => setNameFocused(false)}
+              placeholder={nameFocused ? "" : "e.g., Vitamin D3, Fish Oil"}
               className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
               required
             />
@@ -118,7 +122,9 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder={amount ? "" : "e.g., 2 (for 2 pills), 1000 (for 1000mg)"}
+              onFocus={() => setAmountFocused(true)}
+              onBlur={() => setAmountFocused(false)}
+              placeholder={amountFocused ? "" : "e.g., 2 (for 2 pills), 1000 (for 1000mg)"}
               className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
               min="1"
               required
