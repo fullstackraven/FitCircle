@@ -428,7 +428,7 @@ export default function CalendarPage() {
   const individualWorkoutTotals = getIndividualWorkoutTotals() || [];
 
   return (
-    <div className="p-4 max-w-3xl mx-auto min-h-screen" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+    <div className="p-4 max-w-3xl mx-auto min-h-screen pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => navigate("/")}
@@ -889,6 +889,7 @@ export default function CalendarPage() {
                           <button
                             onClick={() => {
                               setSupplementLog(dateStr, supplement.id, !isTaken);
+                              setSupplementsRefresh(prev => prev + 1); // Force re-render
                             }}
                             className={`w-12 h-12 rounded-full transition-colors ${
                               isTaken
@@ -910,8 +911,18 @@ export default function CalendarPage() {
                     )}
                   </div>
 
-                  {selectedDate && (
-                    <div className="flex space-x-2">
+                  {/* Save Button and Navigation */}
+                  <div className="flex space-x-2 justify-center">
+                    <button
+                      onClick={() => {
+                        // Supplements are automatically saved when clicked, so this just provides feedback
+                        alert('Supplement log updated successfully!');
+                      }}
+                      className="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl transition-colors"
+                    >
+                      Save Supplements
+                    </button>
+                    {selectedDate && (
                       <button
                         onClick={() => {
                           setSelectedDate(null);
@@ -921,8 +932,8 @@ export default function CalendarPage() {
                       >
                         Back to Today
                       </button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
             </div>
           </CollapsibleContent>

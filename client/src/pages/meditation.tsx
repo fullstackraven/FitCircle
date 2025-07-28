@@ -243,7 +243,7 @@ export default function MeditationPage() {
   };
 
   return (
-    <div className="min-h-screen text-white" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+    <div className="min-h-screen text-white pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="container mx-auto px-4 py-6 max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

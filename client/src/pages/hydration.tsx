@@ -115,7 +115,7 @@ export default function HydrationPage() {
   const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
 
   return (
-    <div className="min-h-screen text-white" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+    <div className="min-h-screen text-white pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-slate-700">
         <button
