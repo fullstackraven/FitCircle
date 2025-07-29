@@ -240,7 +240,7 @@ export default function HydrationPage() {
             <div className="flex-1">
               <Input
                 type="number"
-                value={addAmount}
+                /*value={addAmount}*/
                 onChange={(e) => setAddAmount(e.target.value)}
                 onFocus={() => setAddAmountFocused(true)}
                 onBlur={() => setAddAmountFocused(false)}

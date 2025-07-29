@@ -292,7 +292,7 @@ export default function MeditationPage() {
                     onChange={(e) => setInputMinutes(e.target.value)}
                     onFocus={() => setInputMinutesFocused(true)}
                     onBlur={() => setInputMinutesFocused(false)}
-                    placeholder={inputMinutesFocused ? "" : "5"}
+                    placeholder={inputMinutesFocused ? "" : "Enter Duration"}
                     className="bg-slate-700 border-slate-600 text-white text-center"
                     min="1"
                   />
