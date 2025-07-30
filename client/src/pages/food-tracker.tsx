@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronLeft, Plus, Trash2, ChevronDown, ChevronUp, Search, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 interface FoodEntry {
   id: string;
@@ -48,6 +49,12 @@ export default function FoodTrackerPage() {
   const [lunchOpen, setLunchOpen] = useState(false);
   const [dinnerOpen, setDinnerOpen] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
+  
+  // Search states
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchMeal, setSearchMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
+  const [allFoodHistory, setAllFoodHistory] = useState<FoodEntry[]>([]);
 
   // Check if we came from dashboard
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
@@ -105,6 +112,41 @@ export default function FoodTrackerPage() {
     localStorage.setItem(`fitcircle_food_${today}`, JSON.stringify(foodEntries));
   }, [foodEntries]);
 
+  // Load all food history for search functionality
+  useEffect(() => {
+    const loadAllFoodHistory = () => {
+      const allFoods: FoodEntry[] = [];
+      const seenFoods = new Set<string>(); // Track unique food names to avoid duplicates
+      
+      // Get all localStorage keys that start with 'fitcircle_food_'
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('fitcircle_food_')) {
+          const savedEntries = localStorage.getItem(key);
+          if (savedEntries) {
+            const entries: FoodEntry[] = JSON.parse(savedEntries);
+            entries.forEach(entry => {
+              const foodKey = `${entry.name}-${entry.calories}-${entry.carbs}-${entry.protein}-${entry.fat}`;
+              if (!seenFoods.has(foodKey)) {
+                seenFoods.add(foodKey);
+                // Create a new entry without meal specification for search
+                allFoods.push({
+                  ...entry,
+                  id: `search-${entry.id}`,
+                  meal: 'breakfast' // Default value, will be overridden when adding
+                });
+              }
+            });
+          }
+        }
+      }
+      
+      setAllFoodHistory(allFoods);
+    };
+    
+    loadAllFoodHistory();
+  }, [foodEntries]); // Reload when food entries change
+
   const handleAddFood = () => {
     if (!foodName.trim() || !calories || !carbs || !protein || !fat) return;
 
@@ -131,6 +173,31 @@ export default function FoodTrackerPage() {
 
   const handleDeleteFood = (id: string) => {
     setFoodEntries(prev => prev.filter(entry => entry.id !== id));
+  };
+
+  // Search functions
+  const filteredFoodHistory = allFoodHistory.filter(food =>
+    food.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleAddFromSearch = (food: FoodEntry) => {
+    const newEntry: FoodEntry = {
+      id: Date.now().toString(),
+      name: food.name,
+      calories: food.calories,
+      carbs: food.carbs,
+      protein: food.protein,
+      fat: food.fat,
+      meal: searchMeal,
+      timestamp: new Date().toISOString()
+    };
+
+    setFoodEntries(prev => [...prev, newEntry]);
+    
+    // Close search modal and reset states
+    setSearchOpen(false);
+    setSearchQuery('');
+    setSearchMeal('breakfast');
   };
 
   // Calculate totals
@@ -310,10 +377,91 @@ export default function FoodTrackerPage() {
 
         {/* Add Food Form */}
         <div className="bg-gray-800 rounded-xl p-4 mb-6">
-          <h2 className="text-lg font-semibold mb-4 flex items-center">
-            <Plus className="h-5 w-5 mr-2" />
-            Add Food
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold flex items-center">
+              <Plus className="h-5 w-5 mr-2" />
+              Add Food
+            </h2>
+            <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl">
+                  <Search className="h-5 w-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-md">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold">Search Foods</h3>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setSearchOpen(false)}
+                      className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="searchQuery" className="text-sm text-gray-300">Search for food</Label>
+                    <Input
+                      id="searchQuery"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Type food name..."
+                      className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="searchMeal" className="text-sm text-gray-300">Add to meal</Label>
+                    <Select value={searchMeal} onValueChange={(value: 'breakfast' | 'lunch' | 'dinner' | 'snack') => setSearchMeal(value)}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl">
+                        <SelectValue placeholder="Select meal" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-700 border-gray-600">
+                        <SelectItem value="breakfast" className="text-white hover:bg-gray-600">Breakfast</SelectItem>
+                        <SelectItem value="lunch" className="text-white hover:bg-gray-600">Lunch</SelectItem>
+                        <SelectItem value="dinner" className="text-white hover:bg-gray-600">Dinner</SelectItem>
+                        <SelectItem value="snack" className="text-white hover:bg-gray-600">Snack</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="max-h-60 overflow-y-auto space-y-2">
+                    {filteredFoodHistory.length > 0 ? (
+                      filteredFoodHistory.map((food) => (
+                        <div key={food.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-white text-sm">{food.name}</h4>
+                            <div className="text-xs text-gray-400 mt-1">
+                              {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleAddFromSearch(food)}
+                            className="text-green-400 hover:text-green-300 hover:bg-gray-600 rounded-xl ml-2 text-xs px-2 py-1"
+                          >
+                            Add
+                          </Button>
+                        </div>
+                      ))
+                    ) : searchQuery ? (
+                      <div className="text-center text-gray-500 py-4 text-sm">
+                        No foods found matching "{searchQuery}"
+                      </div>
+                    ) : (
+                      <div className="text-center text-gray-500 py-4 text-sm">
+                        {allFoodHistory.length === 0 ? 'No food history available' : 'Start typing to search foods'}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
           
           <div className="space-y-4">
             <div>
