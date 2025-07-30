@@ -562,13 +562,13 @@ export default function CalendarPage() {
                   {hasSupplements && (
                     <div className="w-1 h-1 bg-orange-400 rounded-full" />
                   )}
+                </div>
+              )}
             </div>
-         )}
+          );
+        })}
       </div>
-      );
-    })
-          
-            
+
       {/* Statistics Panel */}
       <div className="mt-8">
         <Collapsible open={isStatsOpen} onOpenChange={setIsStatsOpen}>
