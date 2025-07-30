@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Plus, Trash2 } from 'lucide-react';
+import { ChevronLeft, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface FoodEntry {
   id: string;
@@ -12,6 +14,7 @@ interface FoodEntry {
   carbs: number;
   protein: number;
   fat: number;
+  meal: 'breakfast' | 'lunch' | 'dinner';
   timestamp: string;
 }
 
@@ -38,6 +41,12 @@ export default function FoodTrackerPage() {
   const [carbs, setCarbs] = useState('');
   const [protein, setProtein] = useState('');
   const [fat, setFat] = useState('');
+  const [selectedMeal, setSelectedMeal] = useState<'breakfast' | 'lunch' | 'dinner'>('breakfast');
+  
+  // Collapsible states
+  const [breakfastOpen, setBreakfastOpen] = useState(true);
+  const [lunchOpen, setLunchOpen] = useState(false);
+  const [dinnerOpen, setDinnerOpen] = useState(false);
 
   // Check if we came from dashboard
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
@@ -105,6 +114,7 @@ export default function FoodTrackerPage() {
       carbs: parseFloat(carbs),
       protein: parseFloat(protein),
       fat: parseFloat(fat),
+      meal: selectedMeal,
       timestamp: new Date().toISOString()
     };
 
@@ -138,6 +148,23 @@ export default function FoodTrackerPage() {
   const carbsProgress = Math.min((totals.carbs / macroTargets.carbs) * 100, 100);
   const proteinProgress = Math.min((totals.protein / macroTargets.protein) * 100, 100);
   const fatProgress = Math.min((totals.fat / macroTargets.fat) * 100, 100);
+
+  // Calculate meal totals
+  const getMealEntries = (meal: 'breakfast' | 'lunch' | 'dinner') => 
+    foodEntries.filter(entry => entry.meal === meal);
+
+  const getMealTotals = (meal: 'breakfast' | 'lunch' | 'dinner') => {
+    const mealEntries = getMealEntries(meal);
+    return mealEntries.reduce(
+      (acc, entry) => ({
+        calories: acc.calories + entry.calories,
+        carbs: acc.carbs + entry.carbs,
+        protein: acc.protein + entry.protein,
+        fat: acc.fat + entry.fat
+      }),
+      { calories: 0, carbs: 0, protein: 0, fat: 0 }
+    );
+  };
 
   // Circular progress component
   const CircularProgress = ({ 
@@ -347,6 +374,19 @@ export default function FoodTrackerPage() {
                   className="bg-gray-700 border-gray-600 text-white rounded-xl"
                 />
               </div>
+              <div>
+                <Label htmlFor="meal" className="text-sm text-gray-300">Meal</Label>
+                <Select value={selectedMeal} onValueChange={(value: 'breakfast' | 'lunch' | 'dinner') => setSelectedMeal(value)}>
+                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl">
+                    <SelectValue placeholder="Select meal" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-700 border-gray-600">
+                    <SelectItem value="breakfast" className="text-white hover:bg-gray-600">Breakfast</SelectItem>
+                    <SelectItem value="lunch" className="text-white hover:bg-gray-600">Lunch</SelectItem>
+                    <SelectItem value="dinner" className="text-white hover:bg-gray-600">Dinner</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
             <Button 
@@ -359,37 +399,146 @@ export default function FoodTrackerPage() {
           </div>
         </div>
 
-        {/* Food Entries List */}
-        {foodEntries.length > 0 && (
-          <div className="space-y-3">
-            <h2 className="text-lg font-semibold">Today's Foods</h2>
-            {foodEntries.map((entry) => (
-              <div key={entry.id} className="bg-gray-800 rounded-xl p-4 flex justify-between items-start">
-                <div className="flex-1">
-                  <h3 className="font-medium text-white">{entry.name}</h3>
-                  <div className="text-sm text-gray-400 mt-1">
-                    {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDeleteFood(entry.id)}
-                  className="text-red-400 hover:text-red-300 hover:bg-gray-700 rounded-xl ml-2"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+        {/* Meal Sections */}
+        <div className="space-y-4">
+          {/* Breakfast */}
+          <Collapsible open={breakfastOpen} onOpenChange={setBreakfastOpen}>
+            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
+              <div className="flex items-center space-x-3">
+                <span className="text-lg font-semibold text-white">Breakfast</span>
               </div>
-            ))}
-          </div>
-        )}
-        
-        {foodEntries.length === 0 && (
-          <div className="text-center text-gray-500 py-8">
-            <p>No foods logged today</p>
-            <p className="text-sm">Add your first meal above</p>
-          </div>
-        )}
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-gray-400">
+                  {Math.round(getMealTotals('breakfast').calories)} cal
+                </span>
+                {breakfastOpen ? (
+                  <ChevronUp className="w-5 h-5 text-gray-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                )}
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="mt-2 space-y-2">
+                {getMealEntries('breakfast').map((entry) => (
+                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-white text-sm">{entry.name}</h3>
+                      <div className="text-xs text-gray-400 mt-1">
+                        {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteFood(entry.id)}
+                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl ml-2 p-1"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+                {getMealEntries('breakfast').length === 0 && (
+                  <div className="text-center text-gray-500 py-4 text-sm">
+                    No breakfast items logged
+                  </div>
+                )}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* Lunch */}
+          <Collapsible open={lunchOpen} onOpenChange={setLunchOpen}>
+            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
+              <div className="flex items-center space-x-3">
+                <span className="text-lg font-semibold text-white">Lunch</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-gray-400">
+                  {Math.round(getMealTotals('lunch').calories)} cal
+                </span>
+                {lunchOpen ? (
+                  <ChevronUp className="w-5 h-5 text-gray-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                )}
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="mt-2 space-y-2">
+                {getMealEntries('lunch').map((entry) => (
+                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-white text-sm">{entry.name}</h3>
+                      <div className="text-xs text-gray-400 mt-1">
+                        {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteFood(entry.id)}
+                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl ml-2 p-1"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+                {getMealEntries('lunch').length === 0 && (
+                  <div className="text-center text-gray-500 py-4 text-sm">
+                    No lunch items logged
+                  </div>
+                )}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* Dinner */}
+          <Collapsible open={dinnerOpen} onOpenChange={setDinnerOpen}>
+            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
+              <div className="flex items-center space-x-3">
+                <span className="text-lg font-semibold text-white">Dinner</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-gray-400">
+                  {Math.round(getMealTotals('dinner').calories)} cal
+                </span>
+                {dinnerOpen ? (
+                  <ChevronUp className="w-5 h-5 text-gray-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                )}
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="mt-2 space-y-2">
+                {getMealEntries('dinner').map((entry) => (
+                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-white text-sm">{entry.name}</h3>
+                      <div className="text-xs text-gray-400 mt-1">
+                        {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteFood(entry.id)}
+                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl ml-2 p-1"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+                {getMealEntries('dinner').length === 0 && (
+                  <div className="text-center text-gray-500 py-4 text-sm">
+                    No dinner items logged
+                  </div>
+                )}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
       </div>
     </div>
   );
