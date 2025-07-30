@@ -262,7 +262,7 @@ export default function HydrationPage() {
               />
             </div>
             <Button
-              onClick= {handleAddHydration}
+              onClick={handleAddHydration}
               className="bg-blue-600 hover:bg-blue-700"
             >
               <Plus className="w-4 h-4 mr-1" />

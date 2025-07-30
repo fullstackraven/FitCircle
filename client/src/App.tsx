@@ -4,6 +4,8 @@ import { Switch, Route } from "wouter";
 import Home from "@/pages/home";
 import CalendarPage from "@/pages/calendar";
 import FitnessCalculatorPage from "@/pages/fitness-calculator";
+import FoodTrackerPage from "@/pages/food-tracker";
+import ReportBugPage from "@/pages/report-bug";
 import ProfilePage from "@/pages/profile";
 import MeasurementsPage from "@/pages/measurements";
 import SettingsPage from "@/pages/settings";
@@ -30,6 +32,8 @@ function Router() {
       <Route path="/hydration" component={HydrationPage} />
       <Route path="/goals" component={GoalsPage} />
       <Route path="/fitness-calculator" component={FitnessCalculatorPage} />
+      <Route path="/food-tracker" component={FoodTrackerPage} />
+      <Route path="/report-bug" component={ReportBugPage} />
 
       <Route path="/reminders" component={RemindersPage} />
 
