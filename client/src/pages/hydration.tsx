@@ -34,7 +34,7 @@ export default function HydrationPage() {
     isGoalReached 
   } = useHydration();
 
-  const [addAmount, setAddAmount] = useState('8');
+  const [addAmount, setAddAmount] = useState('');
   const [selectedLiquidType, setSelectedLiquidType] = useState('Water');
   const [customLiquidType, setCustomLiquidType] = useState('');
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
@@ -106,7 +106,7 @@ export default function HydrationPage() {
     }
   };
 
-  const quickAddAmounts = [4, 8, 12, 16, 20];
+  const quickAddAmounts = [12, 16, 24, 34, 36];
   const recentLogs = getRecentLogs();
   const todayEntries = getTodayEntries();
 
@@ -240,18 +240,17 @@ export default function HydrationPage() {
             <div className="flex-1">
               <Input
                 type="number"
-                /*value={addAmount}*/
+                value={addAmount}
                 onChange={(e) => setAddAmount(e.target.value)}
                 onFocus={() => setAddAmountFocused(true)}
                 onBlur={() => setAddAmountFocused(false)}
-                step="0.1"
-                min="0"
                 placeholder={addAmountFocused ? "" : "Enter amount"}
                 className="bg-slate-700 border-slate-600 text-white"
               />
             </div>
             <Button
-              onClick={handleAddHydration}
+              onClick= {handleAddHydration} 
+              setAddAmount
               className="bg-blue-600 hover:bg-blue-700"
             >
               <Plus className="w-4 h-4 mr-1" />
