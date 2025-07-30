@@ -542,7 +542,7 @@ export default function CalendarPage() {
               } : {}}
             >
               {format(date, "d")}
-              {hasJournal && (
+              {/* {hasJournal && (
                 <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-x-2 w-1 h-1 bg-blue-400 rounded-full" />
               )}
               {hasEnergy && (
@@ -550,12 +550,25 @@ export default function CalendarPage() {
               )}
               {hasSupplements && (
                 <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-x-2 w-1 h-1 bg-orange-400 rounded-full" />
-              )}
+              )} */}
+            {(hasJournal || hasEnergy || hasSupplements) && (
+                <div className="absolute bottom-1 left-0 w-full flex justify-center space-x-1">
+                  {hasJournal && (
+                    <div className="w-1 h-1 bg-blue-400 rounded-full" />
+                  )}
+                  {hasEnergy && (
+                    <div className="w-1 h-1 bg-purple-400 rounded-full" />
+                  )}
+                  {hasSupplements && (
+                    <div className="w-1 h-1 bg-orange-400 rounded-full" />
+                  )}
             </div>
-          );
-        })}
+         )}
       </div>
-
+      );
+    })
+          
+            
       {/* Statistics Panel */}
       <div className="mt-8">
         <Collapsible open={isStatsOpen} onOpenChange={setIsStatsOpen}>
