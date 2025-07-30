@@ -58,15 +58,28 @@ export default function HydrationPage() {
 
   const liquidTypes = ['Water', 'Coffee', 'Tea', 'Custom'];
 
+  // const handleAddHydration = () => {
+  //   const amount = parseFloat(addAmount);
+  //   if (amount > 0) {
+  //     const liquidType = selectedLiquidType === 'Custom' ? customLiquidType || 'Custom' : selectedLiquidType;
+  //     addHydration(amount, liquidType);
+  //     // Reset custom input after adding
+  //     if (selectedLiquidType === 'Custom') {
+  //       setCustomLiquidType('');
+  //     }
+  //   }
+  // };
   const handleAddHydration = () => {
     const amount = parseFloat(addAmount);
     if (amount > 0) {
       const liquidType = selectedLiquidType === 'Custom' ? customLiquidType || 'Custom' : selectedLiquidType;
       addHydration(amount, liquidType);
-      // Reset custom input after adding
+
+      // Reset custom input and entered amount after adding
       if (selectedLiquidType === 'Custom') {
         setCustomLiquidType('');
       }
+      setAddAmount(''); // ← this resets the input field
     }
   };
 
@@ -249,8 +262,7 @@ export default function HydrationPage() {
               />
             </div>
             <Button
-              onClick= {handleAddHydration} 
-              setAddAmount
+              onClick= {handleAddHydration}
               className="bg-blue-600 hover:bg-blue-700"
             >
               <Plus className="w-4 h-4 mr-1" />
