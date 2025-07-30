@@ -59,102 +59,27 @@ export default function FoodTrackerPage() {
       setFoodEntries(JSON.parse(stored));
     }
 
-    // Load macro targets from fitness calculator - using EXACT same logic
+    // Load macro targets directly from what fitness calculator displays/stores
     const loadMacroTargets = () => {
-      // Load user data exactly like fitness calculator
-      const profileData = JSON.parse(localStorage.getItem('fitcircle_profile') || '{}');
-      const measurementData = JSON.parse(localStorage.getItem('fitcircle_measurements_history') || '{}');
+      // Try to get the calculated values directly from fitness calculator's localStorage
+      const storedCalories = localStorage.getItem('fitness_calc_target_calories');
+      const storedCarbs = localStorage.getItem('fitness_calc_target_carbs');
+      const storedProtein = localStorage.getItem('fitness_calc_target_protein');
+      const storedFat = localStorage.getItem('fitness_calc_target_fat');
       
-      let height = 0;
-      let weight = 0;
-      
-      // Get latest height and weight from measurements using EXACT same structure as fitness calculator
-      if (measurementData.height && measurementData.height.length > 0) {
-        const latestHeight = measurementData.height[measurementData.height.length - 1];
-        height = latestHeight.value;
-      }
-      if (measurementData.weight && measurementData.weight.length > 0) {
-        const latestWeight = measurementData.weight[measurementData.weight.length - 1];
-        weight = latestWeight.value;
-      }
-
-      // Use same defaults as fitness calculator
-      height = height || 70; // default 5'10"
-      weight = weight || 170; // default 170 lbs
-      const age = profileData.age || 25;
-      const gender = profileData.gender || 'male';
-      
-      // Calculate BMR using EXACT same formula as fitness calculator
-      let bmr;
-      if (gender === 'male') {
-        bmr = 88.362 + (13.397 * (weight / 2.205)) + (4.799 * (height * 2.54)) - (5.677 * age);
+      if (storedCalories && storedCarbs && storedProtein && storedFat) {
+        // Use the exact values the fitness calculator calculated and stored
+        setMacroTargets({
+          calories: parseInt(storedCalories),
+          carbs: parseInt(storedCarbs),
+          protein: parseInt(storedProtein),
+          fat: parseInt(storedFat)
+        });
       } else {
-        bmr = 447.593 + (9.247 * (weight / 2.205)) + (3.098 * (height * 2.54)) - (4.330 * age);
+        // Fallback: keep current values if nothing stored yet
+        // This happens when user hasn't visited fitness calculator yet
+        console.log('No fitness calculator data found, keeping current values');
       }
-      
-      // Activity multipliers - EXACT same as fitness calculator
-      const activityLevel = localStorage.getItem('fitness_calc_activity_level') || 'moderate';
-      const activityMultipliers = {
-        sedentary: 1.2,
-        light: 1.375,
-        moderate: 1.55,
-        very: 1.725,
-        extremely: 1.9
-      };
-      
-      const tdee = bmr * (activityMultipliers[activityLevel as keyof typeof activityMultipliers] || 1.55);
-      
-      // Goal adjustment - EXACT same as fitness calculator
-      const goalType = localStorage.getItem('fitness_calc_goal_type') || 'maintain';
-      const goalRate = localStorage.getItem('fitness_calc_goal_rate') || '1';
-      
-      let dailyCalories = tdee;
-      if (goalType === 'lose') {
-        dailyCalories = tdee - (parseFloat(goalRate) * 500);
-      } else if (goalType === 'gain') {
-        dailyCalories = tdee + (parseFloat(goalRate) * 500);
-      }
-      
-      // Macro calculation - EXACT same as fitness calculator
-      const macroStyle = localStorage.getItem('fitness_calc_macro_style') || 'standard';
-      const customCarbs = localStorage.getItem('fitness_calc_custom_carbs') || '40';
-      const customProtein = localStorage.getItem('fitness_calc_custom_protein') || '30';
-      const customFat = localStorage.getItem('fitness_calc_custom_fat') || '30';
-      
-      let carbsPercent, proteinPercent, fatPercent;
-      
-      // Use EXACT same logic as fitness calculator
-      switch (macroStyle) {
-        case 'high-protein':
-          carbsPercent = 45; proteinPercent = 30; fatPercent = 25;
-          break;
-        case 'low-carb':
-          carbsPercent = 40; proteinPercent = 30; fatPercent = 30;
-          break;
-        case 'tailored':
-          carbsPercent = parseInt(customCarbs);
-          proteinPercent = parseInt(customProtein);
-          fatPercent = parseInt(customFat);
-          break;
-        default: // standard
-          carbsPercent = 50; proteinPercent = 30; fatPercent = 20;
-      }
-
-      // Calculate macro grams - EXACT same as fitness calculator
-      const carbCalories = dailyCalories * (carbsPercent / 100);
-      const proteinCalories = dailyCalories * (proteinPercent / 100);
-      const fatCalories = dailyCalories * (fatPercent / 100);
-
-      const carbsGrams = Math.round(carbCalories / 4);
-      const proteinGrams = Math.round(proteinCalories / 4);
-      const fatGrams = Math.round(fatCalories / 9);
-
-      setMacroTargets({
-        calories: Math.round(dailyCalories),
-        carbs: carbsGrams,
-        protein: proteinGrams,
-        fat: fatGrams
-      });
     };
 
     loadMacroTargets();

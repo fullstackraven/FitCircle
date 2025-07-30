@@ -228,6 +228,14 @@ export default function FitnessCalculator() {
   const calorieTarget = getCalorieTarget();
   const macros = calculateMacros();
 
+  // Store calculated values for Food Tracker to use
+  useEffect(() => {
+    localStorage.setItem('fitness_calc_target_calories', calorieTarget.toString());
+    localStorage.setItem('fitness_calc_target_carbs', macros.carbs.grams.toString());
+    localStorage.setItem('fitness_calc_target_protein', macros.protein.grams.toString());
+    localStorage.setItem('fitness_calc_target_fat', macros.fat.grams.toString());
+  }, [calorieTarget, macros]);
+
   return (
     <div className="min-h-screen text-white pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       {/* Header */}
