@@ -98,8 +98,8 @@ export default function FoodTrackerPage() {
         sedentary: 1.2,
         light: 1.375,
         moderate: 1.55,
-        active: 1.725,
-        very_active: 1.9
+        very: 1.725,
+        extremely: 1.9
       };
       
       const tdee = bmr * (activityMultipliers[activityLevel as keyof typeof activityMultipliers] || 1.55);
@@ -123,30 +123,31 @@ export default function FoodTrackerPage() {
       
       let carbsPercent, proteinPercent, fatPercent;
       
-      if (macroStyle === 'custom') {
-        carbsPercent = parseFloat(customCarbs);
-        proteinPercent = parseFloat(customProtein);
-        fatPercent = parseFloat(customFat);
-      } else {
-        const macroPresets = {
-          standard: { carbs: 45, protein: 25, fat: 30 },
-          keto: { carbs: 5, protein: 25, fat: 70 },
-          low_carb: { carbs: 20, protein: 35, fat: 45 },
-          high_protein: { carbs: 30, protein: 40, fat: 30 },
-          mediterranean: { carbs: 45, protein: 20, fat: 35 },
-          paleo: { carbs: 25, protein: 30, fat: 45 }
-        };
-        
-        const preset = macroPresets[macroStyle as keyof typeof macroPresets] || macroPresets.standard;
-        carbsPercent = preset.carbs;
-        proteinPercent = preset.protein;
-        fatPercent = preset.fat;
+      // Use EXACT same logic as fitness calculator
+      switch (macroStyle) {
+        case 'high-protein':
+          carbsPercent = 45; proteinPercent = 30; fatPercent = 25;
+          break;
+        case 'low-carb':
+          carbsPercent = 40; proteinPercent = 30; fatPercent = 30;
+          break;
+        case 'tailored':
+          carbsPercent = parseInt(customCarbs);
+          proteinPercent = parseInt(customProtein);
+          fatPercent = parseInt(customFat);
+          break;
+        default: // standard
+          carbsPercent = 50; proteinPercent = 30; fatPercent = 20;
       }
-      
+
       // Calculate macro grams - EXACT same as fitness calculator
-      const carbsGrams = Math.round((dailyCalories * carbsPercent / 100) / 4);
-      const proteinGrams = Math.round((dailyCalories * proteinPercent / 100) / 4);
-      const fatGrams = Math.round((dailyCalories * fatPercent / 100) / 9);
+      const carbCalories = dailyCalories * (carbsPercent / 100);
+      const proteinCalories = dailyCalories * (proteinPercent / 100);
+      const fatCalories = dailyCalories * (fatPercent / 100);
+
+      const carbsGrams = Math.round(carbCalories / 4);
+      const proteinGrams = Math.round(proteinCalories / 4);
+      const fatGrams = Math.round(fatCalories / 9);
 
       setMacroTargets({
         calories: Math.round(dailyCalories),
