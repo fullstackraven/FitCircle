@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Plus, Trash2, ChevronDown, ChevronUp, Search, X } from 'lucide-react';
+import { ChevronLeft, Plus, Trash2, ChevronDown, ChevronUp, Search, X, Edit2, Save, X as Cancel } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,6 +55,14 @@ export default function FoodTrackerPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchMeal, setSearchMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
   const [allFoodHistory, setAllFoodHistory] = useState<FoodEntry[]>([]);
+  
+  // Edit states
+  const [editingFood, setEditingFood] = useState<FoodEntry | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editCalories, setEditCalories] = useState('');
+  const [editCarbs, setEditCarbs] = useState('');
+  const [editProtein, setEditProtein] = useState('');
+  const [editFat, setEditFat] = useState('');
 
   // Check if we came from dashboard
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
@@ -198,6 +206,55 @@ export default function FoodTrackerPage() {
     setSearchOpen(false);
     setSearchQuery('');
     setSearchMeal('breakfast');
+  };
+
+  // Edit functions
+  const handleEditFood = (food: FoodEntry) => {
+    setEditingFood(food);
+    setEditName(food.name);
+    setEditCalories(food.calories.toString());
+    setEditCarbs(food.carbs.toString());
+    setEditProtein(food.protein.toString());
+    setEditFat(food.fat.toString());
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingFood || !editName.trim() || !editCalories || !editCarbs || !editProtein || !editFat) return;
+
+    const updatedEntry: FoodEntry = {
+      ...editingFood,
+      name: editName.trim(),
+      calories: parseFloat(editCalories),
+      carbs: parseFloat(editCarbs),
+      protein: parseFloat(editProtein),
+      fat: parseFloat(editFat)
+    };
+
+    setFoodEntries(prev => prev.map(entry => 
+      entry.id === editingFood.id ? updatedEntry : entry
+    ));
+
+    // Reset edit state
+    setEditingFood(null);
+    setEditName('');
+    setEditCalories('');
+    setEditCarbs('');
+    setEditProtein('');
+    setEditFat('');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingFood(null);
+    setEditName('');
+    setEditCalories('');
+    setEditCarbs('');
+    setEditProtein('');
+    setEditFat('');
+  };
+
+  const handleEditFromSearch = (food: FoodEntry) => {
+    handleEditFood(food);
+    setSearchOpen(false);
   };
 
   // Calculate totals
@@ -390,16 +447,8 @@ export default function FoodTrackerPage() {
               </DialogTrigger>
               <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-md">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div>
                     <h3 className="text-lg font-semibold">Search Foods</h3>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => setSearchOpen(false)}
-                      className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
                   </div>
                   
                   <div>
@@ -438,14 +487,24 @@ export default function FoodTrackerPage() {
                               {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
                             </div>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleAddFromSearch(food)}
-                            className="text-green-400 hover:text-green-300 hover:bg-gray-600 rounded-xl ml-2 text-xs px-2 py-1"
-                          >
-                            Add
-                          </Button>
+                          <div className="flex flex-col space-y-1 ml-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleAddFromSearch(food)}
+                              className="text-green-400 hover:text-green-300 hover:bg-gray-600 rounded-xl text-xs px-2 py-1"
+                            >
+                              Add
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditFromSearch(food)}
+                              className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-xl text-xs px-2 py-1"
+                            >
+                              Edit
+                            </Button>
+                          </div>
                         </div>
                       ))
                     ) : searchQuery ? (
@@ -578,14 +637,24 @@ export default function FoodTrackerPage() {
                         {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteFood(entry.id)}
-                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl ml-2 p-1"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
+                    <div className="flex space-x-1 ml-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditFood(entry)}
+                        className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-xl p-1"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteFood(entry.id)}
+                        className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
                 {getMealEntries('breakfast').length === 0 && (
@@ -624,14 +693,24 @@ export default function FoodTrackerPage() {
                         {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteFood(entry.id)}
-                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl ml-2 p-1"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
+                    <div className="flex space-x-1 ml-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditFood(entry)}
+                        className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-xl p-1"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteFood(entry.id)}
+                        className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
                 {getMealEntries('lunch').length === 0 && (
@@ -670,14 +749,24 @@ export default function FoodTrackerPage() {
                         {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteFood(entry.id)}
-                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl ml-2 p-1"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
+                    <div className="flex space-x-1 ml-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditFood(entry)}
+                        className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-xl p-1"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteFood(entry.id)}
+                        className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
                 {getMealEntries('dinner').length === 0 && (
@@ -716,14 +805,24 @@ export default function FoodTrackerPage() {
                         {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteFood(entry.id)}
-                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl ml-2 p-1"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
+                    <div className="flex space-x-1 ml-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditFood(entry)}
+                        className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-xl p-1"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteFood(entry.id)}
+                        className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
                 {getMealEntries('snack').length === 0 && (
@@ -735,6 +834,97 @@ export default function FoodTrackerPage() {
             </CollapsibleContent>
           </Collapsible>
         </div>
+
+        {/* Edit Food Modal */}
+        {editingFood && (
+          <Dialog open={!!editingFood} onOpenChange={() => setEditingFood(null)}>
+            <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-md">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Edit Food</h3>
+                
+                <div>
+                  <Label htmlFor="editName" className="text-sm text-gray-300">Food Name</Label>
+                  <Input
+                    id="editName"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="e.g., Grilled Chicken Breast"
+                    className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="editCalories" className="text-sm text-gray-300">Calories</Label>
+                    <Input
+                      id="editCalories"
+                      type="number"
+                      value={editCalories}
+                      onChange={(e) => setEditCalories(e.target.value)}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="editCarbs" className="text-sm text-gray-300">Carbs (g)</Label>
+                    <Input
+                      id="editCarbs"
+                      type="number"
+                      value={editCarbs}
+                      onChange={(e) => setEditCarbs(e.target.value)}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="editProtein" className="text-sm text-gray-300">Protein (g)</Label>
+                    <Input
+                      id="editProtein"
+                      type="number"
+                      value={editProtein}
+                      onChange={(e) => setEditProtein(e.target.value)}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="editFat" className="text-sm text-gray-300">Fat (g)</Label>
+                    <Input
+                      id="editFat"
+                      type="number"
+                      value={editFat}
+                      onChange={(e) => setEditFat(e.target.value)}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex space-x-3 pt-2">
+                  <Button 
+                    onClick={handleSaveEdit}
+                    disabled={!editName.trim() || !editCalories || !editCarbs || !editProtein || !editFat}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl"
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Changes
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={handleCancelEdit}
+                    className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 rounded-xl"
+                  >
+                    <Cancel className="h-4 w-4 mr-2" />
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </div>
   );
