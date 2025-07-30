@@ -44,7 +44,7 @@ export default function FoodTrackerPage() {
   const [selectedMeal, setSelectedMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
   
   // Collapsible states
-  const [breakfastOpen, setBreakfastOpen] = useState(true);
+  const [breakfastOpen, setBreakfastOpen] = useState(false);
   const [lunchOpen, setLunchOpen] = useState(false);
   const [dinnerOpen, setDinnerOpen] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
