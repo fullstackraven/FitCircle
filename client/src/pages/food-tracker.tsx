@@ -14,7 +14,7 @@ interface FoodEntry {
   carbs: number;
   protein: number;
   fat: number;
-  meal: 'breakfast' | 'lunch' | 'dinner';
+  meal: 'breakfast' | 'lunch' | 'dinner' | 'snack';
   timestamp: string;
 }
 
@@ -41,12 +41,13 @@ export default function FoodTrackerPage() {
   const [carbs, setCarbs] = useState('');
   const [protein, setProtein] = useState('');
   const [fat, setFat] = useState('');
-  const [selectedMeal, setSelectedMeal] = useState<'breakfast' | 'lunch' | 'dinner'>('breakfast');
+  const [selectedMeal, setSelectedMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
   
   // Collapsible states
   const [breakfastOpen, setBreakfastOpen] = useState(true);
   const [lunchOpen, setLunchOpen] = useState(false);
   const [dinnerOpen, setDinnerOpen] = useState(false);
+  const [snackOpen, setSnackOpen] = useState(false);
 
   // Check if we came from dashboard
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
@@ -150,10 +151,10 @@ export default function FoodTrackerPage() {
   const fatProgress = Math.min((totals.fat / macroTargets.fat) * 100, 100);
 
   // Calculate meal totals
-  const getMealEntries = (meal: 'breakfast' | 'lunch' | 'dinner') => 
+  const getMealEntries = (meal: 'breakfast' | 'lunch' | 'dinner' | 'snack') => 
     foodEntries.filter(entry => entry.meal === meal);
 
-  const getMealTotals = (meal: 'breakfast' | 'lunch' | 'dinner') => {
+  const getMealTotals = (meal: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
     const mealEntries = getMealEntries(meal);
     return mealEntries.reduce(
       (acc, entry) => ({
@@ -376,7 +377,7 @@ export default function FoodTrackerPage() {
               </div>
               <div>
                 <Label htmlFor="meal" className="text-sm text-gray-300">Meal</Label>
-                <Select value={selectedMeal} onValueChange={(value: 'breakfast' | 'lunch' | 'dinner') => setSelectedMeal(value)}>
+                <Select value={selectedMeal} onValueChange={(value: 'breakfast' | 'lunch' | 'dinner' | 'snack') => setSelectedMeal(value)}>
                   <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl">
                     <SelectValue placeholder="Select meal" />
                   </SelectTrigger>
@@ -384,6 +385,7 @@ export default function FoodTrackerPage() {
                     <SelectItem value="breakfast" className="text-white hover:bg-gray-600">Breakfast</SelectItem>
                     <SelectItem value="lunch" className="text-white hover:bg-gray-600">Lunch</SelectItem>
                     <SelectItem value="dinner" className="text-white hover:bg-gray-600">Dinner</SelectItem>
+                    <SelectItem value="snack" className="text-white hover:bg-gray-600">Snack</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -533,6 +535,52 @@ export default function FoodTrackerPage() {
                 {getMealEntries('dinner').length === 0 && (
                   <div className="text-center text-gray-500 py-4 text-sm">
                     No dinner items logged
+                  </div>
+                )}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* Snack */}
+          <Collapsible open={snackOpen} onOpenChange={setSnackOpen}>
+            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
+              <div className="flex items-center space-x-3">
+                <span className="text-lg font-semibold text-white">Snack</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-gray-400">
+                  {Math.round(getMealTotals('snack').calories)} cal
+                </span>
+                {snackOpen ? (
+                  <ChevronUp className="w-5 h-5 text-gray-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                )}
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="mt-2 space-y-2">
+                {getMealEntries('snack').map((entry) => (
+                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-white text-sm">{entry.name}</h3>
+                      <div className="text-xs text-gray-400 mt-1">
+                        {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteFood(entry.id)}
+                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl ml-2 p-1"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+                {getMealEntries('snack').length === 0 && (
+                  <div className="text-center text-gray-500 py-4 text-sm">
+                    No snacks logged
                   </div>
                 )}
               </div>
