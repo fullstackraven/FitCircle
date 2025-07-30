@@ -41,28 +41,25 @@ export default function ReportBugPage() {
         url: window.location.href
       };
 
-      // Send the bug report via email (this would need a backend service)
+      // Send the bug report to local file system
       const response = await fetch('/api/report-bug', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          to: 'fullstackraven@gmail.com',
-          subject: `Bug Report: ${summary.slice(0, 50)}${summary.length > 50 ? '...' : ''}`,
-          bugReport
-        }),
+        body: JSON.stringify({ bugReport }),
       });
 
       if (response.ok) {
-        alert('Bug report sent successfully! Thank you for helping improve the app.');
+        const result = await response.json();
+        alert('Bug report submitted successfully! Thank you for helping improve the app. Your report ID: ' + result.reportId);
         navigate('/settings');
       } else {
-        throw new Error('Failed to send bug report');
+        throw new Error('Failed to submit bug report');
       }
     } catch (error) {
-      console.error('Error sending bug report:', error);
-      alert('Failed to send bug report. Please try again later.');
+      console.error('Error submitting bug report:', error);
+      alert('Failed to submit bug report. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }

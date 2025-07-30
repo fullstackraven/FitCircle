@@ -3,12 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertWorkoutSchema, insertWorkoutLogSchema, insertSupplementSchema, insertSupplementLogSchema } from "@shared/schema";
 import Anthropic from '@anthropic-ai/sdk';
-import sgMail from '@sendgrid/mail';
-
-// Set SendGrid API key if available
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-}
+import fs from 'fs';
+import path from 'path';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Workout routes
@@ -235,111 +231,61 @@ Always base your advice on evidence-based fitness principles and encourage users
   });
   */
 
-  // Bug report endpoint
+  // Bug report endpoint - saves reports as JSON files locally
   app.post('/api/report-bug', async (req, res) => {
     try {
-      if (!process.env.SENDGRID_API_KEY) {
-        console.error('SENDGRID_API_KEY not configured');
-        return res.status(500).json({ 
-          error: 'Email service not configured. Please contact support directly.' 
-        });
-      }
-
-      const { to, subject, bugReport } = req.body;
+      const { bugReport } = req.body;
 
       // Validate required fields
-      if (!to || !subject || !bugReport) {
-        return res.status(400).json({ error: 'Missing required fields' });
+      if (!bugReport || !bugReport.summary) {
+        return res.status(400).json({ error: 'Bug report summary is required' });
       }
 
-      // Format the bug report as HTML
-      const htmlContent = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #333;">FitCircle Bug Report</h2>
-          
-          <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0;">
-            <h3 style="margin-top: 0; color: #555;">Summary</h3>
-            <p>${bugReport.summary}</p>
-          </div>
+      // Ensure bug-reports directory exists
+      const reportsDir = path.join(process.cwd(), 'bug-reports');
+      if (!fs.existsSync(reportsDir)) {
+        fs.mkdirSync(reportsDir, { recursive: true });
+      }
 
-          <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0;">
-            <h3 style="margin-top: 0; color: #555;">Has happened more than once</h3>
-            <p>${bugReport.hasHappenedMoreThanOnce}</p>
-          </div>
+      // Create filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `bug-report-${timestamp}.json`;
+      const filepath = path.join(reportsDir, filename);
 
-          ${bugReport.stepsToReproduce ? `
-          <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0;">
-            <h3 style="margin-top: 0; color: #555;">Steps to Reproduce</h3>
-            <p style="white-space: pre-wrap;">${bugReport.stepsToReproduce}</p>
-          </div>
-          ` : ''}
-
-          ${bugReport.expectedResult ? `
-          <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0;">
-            <h3 style="margin-top: 0; color: #555;">Expected Result</h3>
-            <p style="white-space: pre-wrap;">${bugReport.expectedResult}</p>
-          </div>
-          ` : ''}
-
-          ${bugReport.actualResult ? `
-          <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0;">
-            <h3 style="margin-top: 0; color: #555;">Actual Result</h3>
-            <p style="white-space: pre-wrap;">${bugReport.actualResult}</p>
-          </div>
-          ` : ''}
-
-          ${bugReport.comments ? `
-          <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0;">
-            <h3 style="margin-top: 0; color: #555;">Comments</h3>
-            <p style="white-space: pre-wrap;">${bugReport.comments}</p>
-          </div>
-          ` : ''}
-
-          <div style="background: #e8f4fd; padding: 15px; border-radius: 5px; margin: 10px 0; border-left: 4px solid #0066cc;">
-            <h3 style="margin-top: 0; color: #0066cc;">Technical Information</h3>
-            <p><strong>Include Logs:</strong> ${bugReport.includeLogs ? 'Yes' : 'No'}</p>
-            <p><strong>Timestamp:</strong> ${new Date(bugReport.timestamp).toLocaleString()}</p>
-            <p><strong>User Agent:</strong> ${bugReport.userAgent}</p>
-            <p><strong>URL:</strong> ${bugReport.url}</p>
-          </div>
-        </div>
-      `;
-
-      // Create plain text version
-      const textContent = `
-FitCircle Bug Report
-
-Summary: ${bugReport.summary}
-
-Has happened more than once: ${bugReport.hasHappenedMoreThanOnce}
-
-${bugReport.stepsToReproduce ? `Steps to Reproduce:\n${bugReport.stepsToReproduce}\n` : ''}
-${bugReport.expectedResult ? `Expected Result:\n${bugReport.expectedResult}\n` : ''}
-${bugReport.actualResult ? `Actual Result:\n${bugReport.actualResult}\n` : ''}
-${bugReport.comments ? `Comments:\n${bugReport.comments}\n` : ''}
-
-Technical Information:
-- Include Logs: ${bugReport.includeLogs ? 'Yes' : 'No'}
-- Timestamp: ${new Date(bugReport.timestamp).toLocaleString()}
-- User Agent: ${bugReport.userAgent}
-- URL: ${bugReport.url}
-      `;
-
-      const msg = {
-        to: to,
-        from: 'noreply@fitcircle.app', // This would need to be a verified sender
-        subject: subject,
-        text: textContent,
-        html: htmlContent,
+      // Prepare the complete bug report data
+      const completeReport = {
+        id: `bug-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        summary: bugReport.summary,
+        hasHappenedMoreThanOnce: bugReport.hasHappenedMoreThanOnce,
+        stepsToReproduce: bugReport.stepsToReproduce || '',
+        expectedResult: bugReport.expectedResult || '',
+        actualResult: bugReport.actualResult || '',
+        comments: bugReport.comments || '',
+        includeLogs: bugReport.includeLogs || false,
+        technicalInfo: {
+          userAgent: bugReport.userAgent || '',
+          url: bugReport.url || '',
+          timestamp: bugReport.timestamp || new Date().toISOString()
+        },
+        status: 'new'
       };
 
-      await sgMail.send(msg);
+      // Write the bug report to file
+      fs.writeFileSync(filepath, JSON.stringify(completeReport, null, 2));
 
-      res.json({ success: true, message: 'Bug report sent successfully' });
+      console.log(`Bug report saved: ${filename}`);
+      console.log(`Summary: ${bugReport.summary}`);
+
+      res.json({ 
+        success: true, 
+        message: 'Bug report submitted successfully',
+        reportId: completeReport.id
+      });
     } catch (error) {
-      console.error('Error sending bug report:', error);
+      console.error('Error saving bug report:', error);
       res.status(500).json({ 
-        error: 'Failed to send bug report. Please try again later.' 
+        error: 'Failed to save bug report. Please try again later.' 
       });
     }
   });

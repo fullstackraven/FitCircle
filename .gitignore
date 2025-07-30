@@ -4,3 +4,6 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# Bug reports (optional - you may want to commit these to track user feedback)
+# bug-reports/*.json
