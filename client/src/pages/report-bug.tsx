@@ -107,14 +107,33 @@ export default function ReportBugPage() {
         </div>
 
         {/* Multiple Occurrence */}
-        <div className="flex items-center justify-between">
-          <Label className="text-white font-medium">Has the issue happened more than once:</Label>
-          <div className="flex items-center space-x-2">
-            <span className="text-slate-400 text-sm">{multipleOccurrence ? 'yes' : 'no'}</span>
-            <Switch
-              checked={multipleOccurrence}
-              onCheckedChange={setMultipleOccurrence}
-            />
+        <div className="space-y-3">
+          <Label className="text-white font-medium">Has the issue happened more than once?</Label>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setMultipleOccurrence(false)}
+              className={`
+                px-4 py-2 rounded-xl border-2 font-medium transition-all duration-200
+                ${!multipleOccurrence 
+                  ? 'bg-green-500 border-green-500 text-white shadow-lg' 
+                  : 'bg-transparent border-slate-600 text-slate-400 hover:border-slate-500'
+                }
+              `}
+            >
+              No
+            </button>
+            <button
+              onClick={() => setMultipleOccurrence(true)}
+              className={`
+                px-4 py-2 rounded-xl border-2 font-medium transition-all duration-200
+                ${multipleOccurrence 
+                  ? 'bg-red-500 border-red-500 text-white shadow-lg' 
+                  : 'bg-transparent border-slate-600 text-slate-400 hover:border-slate-500'
+                }
+              `}
+            >
+              Yes
+            </button>
           </div>
         </div>
 
