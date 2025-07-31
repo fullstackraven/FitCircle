@@ -66,15 +66,15 @@ export default function SettingsPage() {
     return deviceId;
   };
 
-  // Function to perform auto-backup (localStorage-based)
-  const performAutoBackup = () => {
+  // Function to perform auto-backup (writes to codebase like bug reports)
+  const performAutoBackup = async () => {
     try {
       // Get all localStorage data (same as manual export)
       const completeSnapshot: Record<string, any> = {};
       
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && !key.startsWith('fitcircle_auto_backup_')) {
+        if (key) {
           const value = localStorage.getItem(key);
           if (value !== null) {
             try {
@@ -86,47 +86,32 @@ export default function SettingsPage() {
         }
       }
 
-      // Store backup in localStorage with device ID and date
+      // Send backup to server with device ID (same pattern as bug reports)
       const deviceId = getDeviceId();
-      const today = getLocalDateString();
-      const backupKey = `fitcircle_auto_backup_${deviceId}_${today}`;
-      
-      const backupData = {
-        id: `backup-${Date.now()}`,
-        timestamp: new Date().toISOString(),
-        localDate: today,
-        deviceId: deviceId,
-        type: 'auto-backup',
-        data: completeSnapshot,
-        itemCount: Object.keys(completeSnapshot).length
-      };
+      const response = await fetch('/api/save-backup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          backupData: completeSnapshot,
+          deviceId: deviceId 
+        }),
+      });
 
-      localStorage.setItem(backupKey, JSON.stringify(backupData));
-      localStorage.setItem('fitcircle_last_auto_backup', new Date().toISOString());
-      setLastAutoBackup(new Date().toISOString());
-      
-      // Clean up old auto-backups (keep last 7 days)
-      cleanupOldBackups(deviceId);
-      
-      console.log(`Auto-backup saved to localStorage: ${backupKey}`);
-      return true;
+      if (response.ok) {
+        const result = await response.json();
+        const now = new Date().toISOString();
+        localStorage.setItem('fitcircle_last_auto_backup', now);
+        setLastAutoBackup(now);
+        console.log('Auto-backup completed successfully:', result.filename);
+        return true;
+      } else {
+        throw new Error('Failed to save auto-backup');
+      }
     } catch (error) {
       console.error('Auto-backup failed:', error);
       return false;
-    }
-  };
-
-  // Clean up old auto-backups
-  const cleanupOldBackups = (deviceId: string) => {
-    const keys = Object.keys(localStorage);
-    const backupKeys = keys.filter(key => key.startsWith(`fitcircle_auto_backup_${deviceId}_`));
-    
-    // Sort by date and keep only the last 7
-    backupKeys.sort().reverse();
-    if (backupKeys.length > 7) {
-      backupKeys.slice(7).forEach(key => {
-        localStorage.removeItem(key);
-      });
     }
   };
 
@@ -170,7 +155,7 @@ export default function SettingsPage() {
     
     if (enabled) {
       scheduleAutoBackup();
-      setStatus('Auto-backup enabled! Daily backups stored locally.');
+      setStatus('Auto-backup enabled! Daily backups saved to codebase.');
     } else {
       setStatus('Auto-backup disabled.');
     }
@@ -178,34 +163,7 @@ export default function SettingsPage() {
     setTimeout(() => setStatus(''), 3000);
   };
 
-  // Get stored auto-backups
-  const getStoredAutoBackups = () => {
-    const deviceId = getDeviceId();
-    const keys = Object.keys(localStorage);
-    const backupKeys = keys.filter(key => key.startsWith(`fitcircle_auto_backup_${deviceId}_`));
-    
-    return backupKeys.map(key => {
-      try {
-        const backup = JSON.parse(localStorage.getItem(key) || '{}');
-        return { key, ...backup };
-      } catch {
-        return null;
-      }
-    }).filter(backup => backup !== null).sort((a, b) => b.localDate.localeCompare(a.localDate));
-  };
 
-  // Download auto-backup
-  const downloadAutoBackup = (backup: any) => {
-    const blob = new Blob([JSON.stringify(backup.data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `fitcircle-auto-backup-${backup.localDate}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
 
   // Initialize auto-backup scheduling on component mount
   useEffect(() => {
@@ -459,31 +417,9 @@ export default function SettingsPage() {
                 </div>
               )}
               
-              <button
-                onClick={() => setShowAutoBackups(!showAutoBackups)}
-                className="text-xs text-blue-400 hover:text-blue-300"
-              >
-                {showAutoBackups ? 'Hide' : 'View'} stored backups
-              </button>
-
-              {showAutoBackups && (
-                <div className="bg-slate-700 rounded-lg p-3 space-y-2 max-h-32 overflow-y-auto">
-                  {getStoredAutoBackups().map((backup) => (
-                    <div key={backup.key} className="flex items-center justify-between text-xs">
-                      <span className="text-slate-300">{backup.localDate}</span>
-                      <button
-                        onClick={() => downloadAutoBackup(backup)}
-                        className="text-blue-400 hover:text-blue-300"
-                      >
-                        Download
-                      </button>
-                    </div>
-                  ))}
-                  {getStoredAutoBackups().length === 0 && (
-                    <div className="text-xs text-slate-500 text-center">No backups yet</div>
-                  )}
-                </div>
-              )}
+              <div className="text-xs text-slate-400">
+                Backups are saved to the /backups folder in your codebase.
+              </div>
             </div>
           )}
         </div>
