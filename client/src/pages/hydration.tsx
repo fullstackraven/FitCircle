@@ -159,7 +159,7 @@ export default function HydrationPage() {
                 cy="140"
                 r="120"
                 stroke="rgb(71, 85, 105)"
-                strokeWidth="12"
+                strokeWidth="24"
                 fill="none"
               />
               {/* Progress circle */}
@@ -168,7 +168,7 @@ export default function HydrationPage() {
                 cy="140"
                 r="120"
                 stroke="rgb(59, 130, 246)"
-                strokeWidth="12"
+                strokeWidth="24"
                 fill="none"
                 strokeLinecap="round"
                 strokeDasharray={circumference}

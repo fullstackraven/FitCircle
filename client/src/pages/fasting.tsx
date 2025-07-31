@@ -249,7 +249,7 @@ export default function FastingPage() {
                       r={radius}
                       fill="none"
                       stroke="rgba(148, 163, 184, 0.3)"
-                      strokeWidth="8"
+                      strokeWidth="16"
                     />
                     <circle
                       cx="128"
@@ -257,7 +257,7 @@ export default function FastingPage() {
                       r={radius}
                       fill="none"
                       stroke={ringColor}
-                      strokeWidth="8"
+                      strokeWidth="16"
                       strokeLinecap="round"
                       strokeDasharray={strokeDasharray}
                       strokeDashoffset={strokeDashoffset}
