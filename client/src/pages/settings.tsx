@@ -32,6 +32,39 @@ export default function SettingsPage() {
     return `${year}-${month}-${day}`;
   };
 
+  // Generate or get unique device identifier
+  const getDeviceId = () => {
+    let deviceId = localStorage.getItem('fitcircle_device_id');
+    if (!deviceId) {
+      // Create unique ID based on multiple device characteristics
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      ctx!.textBaseline = 'top';
+      ctx!.font = '14px Arial';
+      ctx!.fillText('Device fingerprint', 2, 2);
+      
+      const fingerprint = [
+        navigator.userAgent,
+        navigator.language,
+        screen.width + 'x' + screen.height,
+        new Date().getTimezoneOffset(),
+        canvas.toDataURL()
+      ].join('|');
+      
+      // Create hash of fingerprint
+      let hash = 0;
+      for (let i = 0; i < fingerprint.length; i++) {
+        const char = fingerprint.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32-bit integer
+      }
+      
+      deviceId = Math.abs(hash).toString(36).substring(0, 8);
+      localStorage.setItem('fitcircle_device_id', deviceId);
+    }
+    return deviceId;
+  };
+
   // Function to perform auto-backup
   const performAutoBackup = async () => {
     try {
@@ -52,13 +85,17 @@ export default function SettingsPage() {
         }
       }
 
-      // Send backup to server
+      // Send backup to server with device ID
+      const deviceId = getDeviceId();
       const response = await fetch('/api/save-backup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ backupData: completeSnapshot }),
+        body: JSON.stringify({ 
+          backupData: completeSnapshot,
+          deviceId: deviceId 
+        }),
       });
 
       if (response.ok) {

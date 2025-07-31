@@ -234,10 +234,14 @@ Always base your advice on evidence-based fitness principles and encourage users
   // Auto-backup endpoint - saves complete app state as JSON files locally
   app.post('/api/save-backup', async (req, res) => {
     try {
-      const { backupData } = req.body;
+      const { backupData, deviceId } = req.body;
 
       if (!backupData) {
         return res.status(400).json({ error: 'Backup data is required' });
+      }
+
+      if (!deviceId) {
+        return res.status(400).json({ error: 'Device ID is required' });
       }
 
       // Ensure backups directory exists
@@ -253,7 +257,7 @@ Always base your advice on evidence-based fitness principles and encourage users
       const day = String(now.getDate()).padStart(2, '0');
       const localDate = `${year}-${month}-${day}`;
       
-      const filename = `fitcircle-auto-backup-${localDate}.json`;
+      const filename = `fitcircle-auto-backup-${deviceId}-${localDate}.json`;
       const filepath = path.join(backupsDir, filename);
 
       // Prepare the complete backup data
@@ -261,6 +265,7 @@ Always base your advice on evidence-based fitness principles and encourage users
         id: `backup-${Date.now()}`,
         timestamp: new Date().toISOString(),
         localDate: localDate,
+        deviceId: deviceId,
         type: 'auto-backup',
         data: backupData,
         itemCount: Object.keys(backupData).length
@@ -270,6 +275,7 @@ Always base your advice on evidence-based fitness principles and encourage users
       fs.writeFileSync(filepath, JSON.stringify(completeBackup, null, 2));
 
       console.log(`Auto-backup saved: ${filename}`);
+      console.log(`Device ID: ${deviceId}`);
       console.log(`Items backed up: ${Object.keys(backupData).length}`);
 
       res.json({ 
