@@ -1,7 +1,9 @@
-import { useState, useRef } from 'react';
-import { ChevronLeft, Upload, Download, Trash2, Bug } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { ChevronLeft, Upload, Download, Trash2, Bug, Clock, Shield } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 
 export default function SettingsPage() {
@@ -10,6 +12,12 @@ export default function SettingsPage() {
   const [isExporting, setIsExporting] = useState(false);
   const [status, setStatus] = useState<string>('');
   const [showEraseConfirm, setShowEraseConfirm] = useState(false);
+  const [autoBackupEnabled, setAutoBackupEnabled] = useState(() => {
+    return localStorage.getItem('fitcircle_auto_backup_enabled') === 'true';
+  });
+  const [lastAutoBackup, setLastAutoBackup] = useState(() => {
+    return localStorage.getItem('fitcircle_last_auto_backup') || null;
+  });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
@@ -23,6 +31,106 @@ export default function SettingsPage() {
     const day = String(now.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
+
+  // Function to perform auto-backup
+  const performAutoBackup = async () => {
+    try {
+      // Get all localStorage data (same as manual export)
+      const completeSnapshot: Record<string, any> = {};
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          const value = localStorage.getItem(key);
+          if (value !== null) {
+            try {
+              completeSnapshot[key] = JSON.parse(value);
+            } catch {
+              completeSnapshot[key] = value;
+            }
+          }
+        }
+      }
+
+      // Send backup to server
+      const response = await fetch('/api/save-backup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ backupData: completeSnapshot }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        const now = new Date().toISOString();
+        localStorage.setItem('fitcircle_last_auto_backup', now);
+        setLastAutoBackup(now);
+        console.log('Auto-backup completed successfully:', result.filename);
+        return true;
+      } else {
+        throw new Error('Failed to save auto-backup');
+      }
+    } catch (error) {
+      console.error('Auto-backup failed:', error);
+      return false;
+    }
+  };
+
+  // Check if backup needed and schedule next one
+  const scheduleAutoBackup = () => {
+    if (!autoBackupEnabled) return;
+
+    const now = new Date();
+    const today = getLocalDateString();
+    const lastBackupDate = lastAutoBackup ? new Date(lastAutoBackup).toLocaleDateString('en-CA') : null;
+
+    // If we haven't backed up today, do it now
+    if (lastBackupDate !== today) {
+      performAutoBackup();
+    }
+
+    // Calculate time until next midnight
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    const msUntilMidnight = tomorrow.getTime() - now.getTime();
+
+    // Schedule next backup
+    setTimeout(() => {
+      if (localStorage.getItem('fitcircle_auto_backup_enabled') === 'true') {
+        performAutoBackup();
+        // Schedule recurring daily backups
+        setInterval(() => {
+          if (localStorage.getItem('fitcircle_auto_backup_enabled') === 'true') {
+            performAutoBackup();
+          }
+        }, 24 * 60 * 60 * 1000); // 24 hours
+      }
+    }, msUntilMidnight);
+  };
+
+  // Toggle auto-backup
+  const handleAutoBackupToggle = (enabled: boolean) => {
+    setAutoBackupEnabled(enabled);
+    localStorage.setItem('fitcircle_auto_backup_enabled', enabled.toString());
+    
+    if (enabled) {
+      scheduleAutoBackup();
+      setStatus('Auto-backup enabled! Nightly backups will save to your codebase.');
+    } else {
+      setStatus('Auto-backup disabled.');
+    }
+    
+    setTimeout(() => setStatus(''), 3000);
+  };
+
+  // Initialize auto-backup scheduling on component mount
+  useEffect(() => {
+    if (autoBackupEnabled) {
+      scheduleAutoBackup();
+    }
+  }, [autoBackupEnabled]);
   
   // Check if we came from dashboard
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
@@ -235,6 +343,55 @@ export default function SettingsPage() {
             <p className="text-xs text-slate-400 text-center">
               This creates a complete snapshot of all your FitCircle data. Restore replaces all current data.
             </p>
+          </div>
+        </div>
+
+        {/* Auto-Backup Section */}
+        <div className="bg-slate-800 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <Shield className="w-5 h-5" />
+            Auto-Backup to Codebase
+          </h2>
+          
+          <div className="space-y-4">
+            {/* Auto-backup toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <Label className="text-white font-medium">Nightly Auto-Backup</Label>
+                <p className="text-xs text-slate-400 mt-1">
+                  Automatically saves complete app data to your codebase every night at midnight
+                </p>
+              </div>
+              <Switch
+                checked={autoBackupEnabled}
+                onCheckedChange={handleAutoBackupToggle}
+                className="ml-4"
+              />
+            </div>
+
+            {/* Last backup info */}
+            {autoBackupEnabled && lastAutoBackup && (
+              <div className="bg-slate-700 rounded-lg p-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="w-4 h-4 text-green-400" />
+                  <span className="text-slate-300">Last backup:</span>
+                  <span className="text-green-400">
+                    {new Date(lastAutoBackup).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-3">
+              <p className="text-xs text-blue-300">
+                <strong>How it works:</strong> When enabled, your complete app data will be automatically saved as JSON files in the /backups folder of your codebase each night. This provides a safety net if your browser data is ever lost.
+              </p>
+            </div>
           </div>
         </div>
 

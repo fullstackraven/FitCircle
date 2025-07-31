@@ -231,6 +231,61 @@ Always base your advice on evidence-based fitness principles and encourage users
   });
   */
 
+  // Auto-backup endpoint - saves complete app state as JSON files locally
+  app.post('/api/save-backup', async (req, res) => {
+    try {
+      const { backupData } = req.body;
+
+      if (!backupData) {
+        return res.status(400).json({ error: 'Backup data is required' });
+      }
+
+      // Ensure backups directory exists
+      const backupsDir = path.join(process.cwd(), 'backups');
+      if (!fs.existsSync(backupsDir)) {
+        fs.mkdirSync(backupsDir, { recursive: true });
+      }
+
+      // Create filename with local date (not UTC)
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const localDate = `${year}-${month}-${day}`;
+      
+      const filename = `fitcircle-auto-backup-${localDate}.json`;
+      const filepath = path.join(backupsDir, filename);
+
+      // Prepare the complete backup data
+      const completeBackup = {
+        id: `backup-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        localDate: localDate,
+        type: 'auto-backup',
+        data: backupData,
+        itemCount: Object.keys(backupData).length
+      };
+
+      // Write the backup to file
+      fs.writeFileSync(filepath, JSON.stringify(completeBackup, null, 2));
+
+      console.log(`Auto-backup saved: ${filename}`);
+      console.log(`Items backed up: ${Object.keys(backupData).length}`);
+
+      res.json({ 
+        success: true, 
+        message: 'Auto-backup saved successfully',
+        backupId: completeBackup.id,
+        filename: filename
+      });
+    } catch (error) {
+      console.error('Error saving auto-backup:', error);
+      res.status(500).json({ 
+        error: 'Failed to save auto-backup. Please try again later.' 
+      });
+    }
+  });
+
   // Bug report endpoint - saves reports as JSON files locally
   app.post('/api/report-bug', async (req, res) => {
     try {
