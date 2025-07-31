@@ -302,9 +302,26 @@ export default function SettingsPage() {
           </div>
         </div>
 
+        {/* Report Bug Section */}
+        <div className="bg-slate-800 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-white mb-4">Help & Feedback</h2>
+          
+          <button
+            onClick={() => navigate('/report-bug')}
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+          >
+            <Bug className="w-5 h-5" />
+            Report a Problem
+          </button>
+          
+          <p className="text-xs text-slate-400 text-center mt-3">
+            Found an issue? Help us improve the app by reporting bugs and problems.
+          </p>
+        </div>
         {/* Erase All Data Section */}
         <div className="bg-red-900/20 border border-red-700 rounded-xl p-6 mb-6">
-          
+          <h2 className="text-lg font-semibold text-red-400 mb-4">Danger Zone</h2>
+
           <div className="space-y-4">
             {!showEraseConfirm ? (
               <>
@@ -339,23 +356,6 @@ export default function SettingsPage() {
               </>
             )}
           </div>
-        </div>
-
-        {/* Report Bug Section */}
-        <div className="bg-slate-800 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Help & Feedback</h2>
-          
-          <button
-            onClick={() => navigate('/report-bug')}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2"
-          >
-            <Bug className="w-5 h-5" />
-            Report a Problem
-          </button>
-          
-          <p className="text-xs text-slate-400 text-center mt-3">
-            Found an issue? Help us improve the app by reporting bugs and problems.
-          </p>
         </div>
       </div>
     </div>
