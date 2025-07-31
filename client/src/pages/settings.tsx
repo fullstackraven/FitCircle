@@ -348,50 +348,12 @@ export default function SettingsPage() {
 
         {/* Auto-Backup Section */}
         <div className="bg-slate-800 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Shield className="w-5 h-5" />
-            Auto-Backup to Codebase
-          </h2>
-          
-          <div className="space-y-4">
-            {/* Auto-backup toggle */}
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <Label className="text-white font-medium">Nightly Auto-Backup</Label>
-                <p className="text-xs text-slate-400 mt-1">
-                  Automatically saves complete app data to your codebase every night at midnight
-                </p>
-              </div>
-              <Switch
-                checked={autoBackupEnabled}
-                onCheckedChange={handleAutoBackupToggle}
-                className="ml-4"
-              />
-            </div>
-
-            {/* Last backup info */}
-            {autoBackupEnabled && lastAutoBackup && (
-              <div className="bg-slate-700 rounded-lg p-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="w-4 h-4 text-green-400" />
-                  <span className="text-slate-300">Last backup:</span>
-                  <span className="text-green-400">
-                    {new Date(lastAutoBackup).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-3">
-              <p className="text-xs text-blue-300">
-                <strong>How it works:</strong> When enabled, your complete app data will be automatically saved as JSON files in the /backups folder of your codebase each night. This provides a safety net if your browser data is ever lost.
-              </p>
-            </div>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white">Auto-Backup</h2>
+            <Switch
+              checked={autoBackupEnabled}
+              onCheckedChange={handleAutoBackupToggle}
+            />
           </div>
         </div>
 
