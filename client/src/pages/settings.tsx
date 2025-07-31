@@ -18,6 +18,7 @@ export default function SettingsPage() {
   const [lastAutoBackup, setLastAutoBackup] = useState(() => {
     return localStorage.getItem('fitcircle_last_auto_backup') || null;
   });
+  const [showAutoBackups, setShowAutoBackups] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
@@ -65,15 +66,15 @@ export default function SettingsPage() {
     return deviceId;
   };
 
-  // Function to perform auto-backup
-  const performAutoBackup = async () => {
+  // Function to perform auto-backup (localStorage-based)
+  const performAutoBackup = () => {
     try {
       // Get all localStorage data (same as manual export)
       const completeSnapshot: Record<string, any> = {};
       
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key) {
+        if (key && !key.startsWith('fitcircle_auto_backup_')) {
           const value = localStorage.getItem(key);
           if (value !== null) {
             try {
@@ -85,32 +86,47 @@ export default function SettingsPage() {
         }
       }
 
-      // Send backup to server with device ID
+      // Store backup in localStorage with device ID and date
       const deviceId = getDeviceId();
-      const response = await fetch('/api/save-backup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          backupData: completeSnapshot,
-          deviceId: deviceId 
-        }),
-      });
+      const today = getLocalDateString();
+      const backupKey = `fitcircle_auto_backup_${deviceId}_${today}`;
+      
+      const backupData = {
+        id: `backup-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        localDate: today,
+        deviceId: deviceId,
+        type: 'auto-backup',
+        data: completeSnapshot,
+        itemCount: Object.keys(completeSnapshot).length
+      };
 
-      if (response.ok) {
-        const result = await response.json();
-        const now = new Date().toISOString();
-        localStorage.setItem('fitcircle_last_auto_backup', now);
-        setLastAutoBackup(now);
-        console.log('Auto-backup completed successfully:', result.filename);
-        return true;
-      } else {
-        throw new Error('Failed to save auto-backup');
-      }
+      localStorage.setItem(backupKey, JSON.stringify(backupData));
+      localStorage.setItem('fitcircle_last_auto_backup', new Date().toISOString());
+      setLastAutoBackup(new Date().toISOString());
+      
+      // Clean up old auto-backups (keep last 7 days)
+      cleanupOldBackups(deviceId);
+      
+      console.log(`Auto-backup saved to localStorage: ${backupKey}`);
+      return true;
     } catch (error) {
       console.error('Auto-backup failed:', error);
       return false;
+    }
+  };
+
+  // Clean up old auto-backups
+  const cleanupOldBackups = (deviceId: string) => {
+    const keys = Object.keys(localStorage);
+    const backupKeys = keys.filter(key => key.startsWith(`fitcircle_auto_backup_${deviceId}_`));
+    
+    // Sort by date and keep only the last 7
+    backupKeys.sort().reverse();
+    if (backupKeys.length > 7) {
+      backupKeys.slice(7).forEach(key => {
+        localStorage.removeItem(key);
+      });
     }
   };
 
@@ -133,7 +149,7 @@ export default function SettingsPage() {
     tomorrow.setHours(0, 0, 0, 0);
     const msUntilMidnight = tomorrow.getTime() - now.getTime();
 
-    // Schedule next backup
+    // Schedule next backup  
     setTimeout(() => {
       if (localStorage.getItem('fitcircle_auto_backup_enabled') === 'true') {
         performAutoBackup();
@@ -154,12 +170,41 @@ export default function SettingsPage() {
     
     if (enabled) {
       scheduleAutoBackup();
-      setStatus('Auto-backup enabled! Nightly backups will save to your codebase.');
+      setStatus('Auto-backup enabled! Daily backups stored locally.');
     } else {
       setStatus('Auto-backup disabled.');
     }
     
     setTimeout(() => setStatus(''), 3000);
+  };
+
+  // Get stored auto-backups
+  const getStoredAutoBackups = () => {
+    const deviceId = getDeviceId();
+    const keys = Object.keys(localStorage);
+    const backupKeys = keys.filter(key => key.startsWith(`fitcircle_auto_backup_${deviceId}_`));
+    
+    return backupKeys.map(key => {
+      try {
+        const backup = JSON.parse(localStorage.getItem(key) || '{}');
+        return { key, ...backup };
+      } catch {
+        return null;
+      }
+    }).filter(backup => backup !== null).sort((a, b) => b.localDate.localeCompare(a.localDate));
+  };
+
+  // Download auto-backup
+  const downloadAutoBackup = (backup: any) => {
+    const blob = new Blob([JSON.stringify(backup.data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `fitcircle-auto-backup-${backup.localDate}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   // Initialize auto-backup scheduling on component mount
@@ -385,7 +430,7 @@ export default function SettingsPage() {
 
         {/* Auto-Backup Section */}
         <div className="bg-slate-800 rounded-xl p-6 mb-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-white">Auto-Backup</h2>
             <button
               onClick={() => handleAutoBackupToggle(!autoBackupEnabled)}
@@ -400,6 +445,47 @@ export default function SettingsPage() {
               />
             </button>
           </div>
+
+          {autoBackupEnabled && (
+            <div className="space-y-3">
+              {lastAutoBackup && (
+                <div className="text-xs text-slate-400">
+                  Last backup: {new Date(lastAutoBackup).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </div>
+              )}
+              
+              <button
+                onClick={() => setShowAutoBackups(!showAutoBackups)}
+                className="text-xs text-blue-400 hover:text-blue-300"
+              >
+                {showAutoBackups ? 'Hide' : 'View'} stored backups
+              </button>
+
+              {showAutoBackups && (
+                <div className="bg-slate-700 rounded-lg p-3 space-y-2 max-h-32 overflow-y-auto">
+                  {getStoredAutoBackups().map((backup) => (
+                    <div key={backup.key} className="flex items-center justify-between text-xs">
+                      <span className="text-slate-300">{backup.localDate}</span>
+                      <button
+                        onClick={() => downloadAutoBackup(backup)}
+                        className="text-blue-400 hover:text-blue-300"
+                      >
+                        Download
+                      </button>
+                    </div>
+                  ))}
+                  {getStoredAutoBackups().length === 0 && (
+                    <div className="text-xs text-slate-500 text-center">No backups yet</div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Controls Section */}
