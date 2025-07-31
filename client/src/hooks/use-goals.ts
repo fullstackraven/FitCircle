@@ -4,6 +4,7 @@ export interface Goals {
   hydrationOz: number;
   meditationMinutes: number;
   fastingHours: number;
+  maxFastingHours: number;
   weightLbs: number;
   targetWeight: number;
   targetBodyFat: number;
@@ -29,6 +30,7 @@ export function useGoals() {
       hydrationOz: 64,
       meditationMinutes: 10,
       fastingHours: 16,
+      maxFastingHours: 24,
       weightLbs: 150,
       targetWeight: 150,
       targetBodyFat: 15,

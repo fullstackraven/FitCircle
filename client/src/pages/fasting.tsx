@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, Plus, Edit, Trash2, Target, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Clock, Plus, Edit, Trash2, Target, X, ChevronDown, ChevronUp, Settings } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,6 +38,11 @@ export default function FastingPage() {
   const [goalHoursInput, setGoalHoursInput] = useState('');
   const [goalHoursFocused, setGoalHoursFocused] = useState(false);
   
+  // Settings state
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [maxHoursInput, setMaxHoursInput] = useState('');
+  const [maxHoursFocused, setMaxHoursFocused] = useState(false);
+  
   // UI state
   const [isLogHistoryOpen, setIsLogHistoryOpen] = useState(false);
 
@@ -63,32 +68,17 @@ export default function FastingPage() {
   const getTodayFastingHours = (): number => {
     const today = new Date().toISOString().split('T')[0];
     const todayLogs = logs.filter(log => {
-      // Check if the fast was logged today (for recent entries)
-      const loggedDate = new Date(log.loggedAt).toISOString().split('T')[0];
-      if (loggedDate === today) {
-        return true;
-      }
-      
-      // Also check if the fast started today OR ended today OR spans across today
+      // Only show fasts that started today OR ended today (actual fast dates, not log dates)
       const startDate = log.startDate;
       const endDate = log.endDate;
       
-      // Direct match for start or end date
-      if (startDate === today || endDate === today) {
-        return true;
-      }
-      
-      // Check if today falls between start and end dates
-      const todayDate = new Date(today);
-      const fastStartDate = new Date(startDate);
-      const fastEndDate = new Date(endDate);
-      
-      return todayDate >= fastStartDate && todayDate <= fastEndDate;
+      // Direct match for start or end date being today
+      return startDate === today || endDate === today;
     });
     
     if (todayLogs.length === 0) return 0;
     
-    // Return the longest fast that relates to today in hours
+    // Return the longest fast that actually involves today in hours
     const longestFast = Math.max(...todayLogs.map(log => log.duration / 60));
     return Math.round(longestFast * 10) / 10; // Round to 1 decimal place
   };
@@ -102,7 +92,8 @@ export default function FastingPage() {
   };
 
   const getProgressPercentage = (hours: number): number => {
-    return Math.min((hours / 24) * 100, 100);
+    const maxHours = goals.maxFastingHours || 24;
+    return Math.min((hours / maxHours) * 100, 100);
   };
 
   // Backward compatibility functions for existing code
@@ -115,7 +106,8 @@ export default function FastingPage() {
   };
 
   const getHeatBarWidth = (hours: number): string => {
-    const percentage = Math.min((hours / 24) * 100, 100);
+    const maxHours = goals.maxFastingHours || 24;
+    const percentage = Math.min((hours / maxHours) * 100, 100);
     return `${percentage}%`;
   };
 
@@ -195,6 +187,19 @@ export default function FastingPage() {
     alert('Fasting goal saved successfully!');
   };
 
+  const handleSetMaxHours = async () => {
+    const maxHours = parseFloat(maxHoursInput);
+    
+    if (isNaN(maxHours) || maxHours <= 0) {
+      alert('Please enter a valid maximum in hours');
+      return;
+    }
+    
+    await updateGoal('maxFastingHours', maxHours);
+    setIsSettingsModalOpen(false);
+    alert('Maximum fasting hours updated successfully!');
+  };
+
   const currentDuration = startDate && startTime && endDate && endTime 
     ? calculateDuration(startDate, startTime, endDate, endTime)
     : 0;
@@ -212,13 +217,21 @@ export default function FastingPage() {
             <span>Back</span>
           </button>
           <h1 className="text-xl font-semibold">Fasting Log</h1>
-          <button
-            onClick={() => setIsGoalModalOpen(true)}
-            className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
-          >
-            <Target className="w-5 h-5" />
-            <span>Goal</span>
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setIsSettingsModalOpen(true)}
+              className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
+            >
+              <Settings className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setIsGoalModalOpen(true)}
+              className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
+            >
+              <Target className="w-5 h-5" />
+              <span>Goal</span>
+            </button>
+          </div>
         </div>
 
         {/* Today's Fasting Progress Circle */}
@@ -228,6 +241,7 @@ export default function FastingPage() {
           <div className="relative w-64 h-64 mx-auto mb-4">
             {(() => {
               const todayHours = getTodayFastingHours();
+              const maxHours = goals.maxFastingHours || 24;
               const progressPercentage = getProgressPercentage(todayHours);
               const ringColor = getHeatRingColor(todayHours);
               const radius = 110;
@@ -267,7 +281,7 @@ export default function FastingPage() {
                     <div className="text-4xl font-bold text-white">
                       {todayHours}<span className="text-lg text-slate-400">h</span>
                     </div>
-                    <div className="text-sm text-slate-400">of 24h max</div>
+                    <div className="text-sm text-slate-400">of {maxHours}h max</div>
                     <div className="text-xs text-slate-500 mt-1">
                       {Math.round(progressPercentage)}% complete
                     </div>
@@ -550,6 +564,63 @@ export default function FastingPage() {
                   className="flex-1 bg-blue-600 hover:bg-blue-700"
                 >
                   Set Goal
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Max Fasting Hours Settings Modal */}
+      {isSettingsModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-800 rounded-xl p-6 max-w-sm w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Fasting Settings</h3>
+              <button
+                onClick={() => setIsSettingsModalOpen(false)}
+                className="text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="maxHours" className="text-slate-300">
+                  Maximum Fasting Hours
+                </Label>
+                <Input
+                  id="maxHours"
+                  type="number"
+                  value={maxHoursInput}
+                  onChange={(e) => setMaxHoursInput(e.target.value)}
+                  onFocus={() => {
+                    setMaxHoursFocused(true);
+                    if (!maxHoursInput) {
+                      setMaxHoursInput(goals.maxFastingHours?.toString() || '24');
+                    }
+                  }}
+                  onBlur={() => setMaxHoursFocused(false)}
+                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  placeholder={maxHoursFocused ? "" : "Enter max hours (e.g., 24, 48, 72)"}
+                />
+                <p className="text-xs text-slate-400 mt-1">
+                  Set your maximum fasting duration for progress tracking
+                </p>
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsSettingsModalOpen(false)}
+                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSetMaxHours}
+                  className="flex-1 bg-amber-600 hover:bg-amber-700"
+                >
+                  Save
                 </Button>
               </div>
             </div>
