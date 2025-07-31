@@ -303,7 +303,7 @@ export default function HydrationPage() {
                 <div key={log.date} className="bg-slate-800 rounded-xl p-4">
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-white font-medium">
-                      {new Date(log.date).toLocaleDateString('en-US', { 
+                      {new Date(log.date + 'T00:00:00').toLocaleDateString('en-US', { 
                         weekday: 'short', 
                         month: 'short', 
                         day: 'numeric' 
