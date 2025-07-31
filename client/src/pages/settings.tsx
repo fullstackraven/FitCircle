@@ -350,10 +350,18 @@ export default function SettingsPage() {
         <div className="bg-slate-800 rounded-xl p-6 mb-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white">Auto-Backup</h2>
-            <Switch
-              checked={autoBackupEnabled}
-              onCheckedChange={handleAutoBackupToggle}
-            />
+            <button
+              onClick={() => handleAutoBackupToggle(!autoBackupEnabled)}
+              className={`relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
+                autoBackupEnabled ? 'bg-green-400' : 'bg-slate-600'
+              }`}
+            >
+              <span
+                className={`inline-block w-5 h-5 bg-white rounded-full transition-transform ${
+                  autoBackupEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                }`}
+              />
+            </button>
           </div>
         </div>
 
