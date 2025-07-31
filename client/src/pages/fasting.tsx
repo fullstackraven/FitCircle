@@ -461,7 +461,12 @@ export default function FastingPage() {
                       
                       {/* Fast Period */}
                       <div className="text-sm text-slate-400">
-                        {new Date(log.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(log.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        {(() => {
+                          // Format dates directly from stored values to avoid timezone conversion
+                          const startDate = new Date(log.startDate + 'T12:00:00');
+                          const endDate = new Date(log.endDate + 'T12:00:00');
+                          return `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+                        })()}
                       </div>
                     </div>
                   </div>
