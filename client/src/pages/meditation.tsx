@@ -403,7 +403,9 @@ export default function MeditationPage() {
                 <p className="text-sm mt-2">Complete a meditation session to see your log here.</p>
               </div>
             ) : (
-              logs.map((log) => (
+              logs
+                .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+                .map((log) => (
                 <div key={log.id} className="bg-slate-800 rounded-xl p-4">
                   <div className="flex justify-between items-center">
                     <div>
