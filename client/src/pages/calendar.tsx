@@ -90,6 +90,7 @@ export default function CalendarPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [supplementsRefresh, setSupplementsRefresh] = useState(0);
   const [journalFocused, setJournalFocused] = useState(false);
+  const [tempSupplementLogs, setTempSupplementLogs] = useState<Record<number, boolean>>({});
   const circleRef = useRef<SVGSVGElement>(null);
 
   // Supplement editing functions
@@ -143,6 +144,10 @@ export default function CalendarPage() {
     
     const entry = getJournalEntry(dateStr);
     setJournalText(entry || '');
+    
+    // Load today's supplement logs into temporary state
+    const currentLogs = getSupplementLogsForDate(dateStr);
+    setTempSupplementLogs(currentLogs);
   }, []);
 
   const startDate = startOfWeek(startOfMonth(currentMonth), { weekStartsOn: 0 });
@@ -185,6 +190,11 @@ export default function CalendarPage() {
     const existingEntry = getJournalEntry(dateStr);
     setJournalText(existingEntry);
     setEnergyLevel(getEnergyLevel(date));
+    
+    // Load supplement logs for this date into temporary state
+    const currentLogs = getSupplementLogsForDate(dateStr);
+    setTempSupplementLogs(currentLogs);
+    
     setIsJournalOpen(true);
     setIsEnergyOpen(true);
     setIsSupplementsOpen(true);
@@ -866,58 +876,7 @@ export default function CalendarPage() {
                   )}
                 </div>
                 
-                {/* Supplement Stats Boxes */}
-                <div className="grid grid-cols-3 gap-3">
-                  {(() => {
-                    const stats = getSupplementStats();
-                    return (
-                      <>
-                        {/* Adherence Ring */}
-                        <div className="bg-slate-700 rounded-xl p-4 text-center">
-                          <div className="relative w-16 h-16 mx-auto mb-2">
-                            <svg width="64" height="64" className="transform -rotate-90">
-                              <circle
-                                cx="32"
-                                cy="32"
-                                r="28"
-                                fill="none"
-                                stroke="rgba(148, 163, 184, 0.3)"
-                                strokeWidth="4"
-                              />
-                              <circle
-                                cx="32"
-                                cy="32"
-                                r="28"
-                                fill="none"
-                                stroke="rgb(251, 146, 60)"
-                                strokeWidth="4"
-                                strokeLinecap="round"
-                                strokeDasharray={`${(stats.adherencePercentage / 100) * 175.93} 175.93`}
-                                className="transition-all duration-300"
-                              />
-                            </svg>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <span className="text-sm font-bold text-white">{stats.adherencePercentage}%</span>
-                            </div>
-                          </div>
-                          <div className="text-xs text-slate-400">Adherence</div>
-                        </div>
 
-                        {/* Current Streak */}
-                        <div className="bg-slate-700 rounded-xl p-4 text-center">
-                          <div className="text-2xl font-bold text-orange-400 mb-1">{stats.currentStreak}</div>
-                          <div className="text-xs text-slate-400">Current Streak</div>
-                        </div>
-
-                        {/* Total Taken */}
-                        <div className="bg-slate-700 rounded-xl p-4 text-center">
-                          <div className="text-2xl font-bold text-orange-400 mb-1">{stats.totalTaken}</div>
-                          <div className="text-xs text-slate-400">Total Taken</div>
-                        </div>
-                      </>
-                    );
-                  })()}
-                </div>
 
                 {/* Add Supplement Button */}
                 <div className="flex justify-end">
@@ -930,8 +889,8 @@ export default function CalendarPage() {
                     supplements.map((supplement) => {
                       const targetDate = selectedDate || new Date();
                       const dateStr = format(targetDate, 'yyyy-MM-dd');
-                      const supplementLogs = getSupplementLogsForDate(dateStr);
-                      const isTaken = supplementLogs[supplement.id] || false;
+                      // Use temporary state instead of saved logs
+                      const isTaken = tempSupplementLogs[supplement.id] || false;
 
                       return (
                         <div
@@ -1013,8 +972,11 @@ export default function CalendarPage() {
                                 </button>
                                 <button
                                   onClick={() => {
-                                    setSupplementLog(dateStr, supplement.id, !isTaken);
-                                    setSupplementsRefresh(prev => prev + 1); // Force re-render
+                                    // Update temporary state instead of saving immediately
+                                    setTempSupplementLogs(prev => ({
+                                      ...prev,
+                                      [supplement.id]: !isTaken
+                                    }));
                                   }}
                                   className={`w-12 h-12 rounded-full transition-colors ${
                                     isTaken
@@ -1044,8 +1006,17 @@ export default function CalendarPage() {
                   <div className="flex space-x-2 justify-center">
                     <button
                       onClick={() => {
-                        // Supplements are automatically saved when clicked, so this just provides feedback
-                        alert('Supplement log updated successfully!');
+                        // Save all temporary supplement logs to actual storage
+                        const targetDate = selectedDate || new Date();
+                        const dateStr = format(targetDate, 'yyyy-MM-dd');
+                        
+                        // Save each supplement state
+                        Object.entries(tempSupplementLogs).forEach(([supplementId, taken]) => {
+                          setSupplementLog(dateStr, parseInt(supplementId), taken);
+                        });
+                        
+                        setSupplementsRefresh(prev => prev + 1); // Force re-render to show updated dots
+                        alert('Supplement log saved successfully!');
                       }}
                       className="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl transition-colors"
                     >
@@ -1055,7 +1026,11 @@ export default function CalendarPage() {
                       <button
                         onClick={() => {
                           setSelectedDate(null);
-                          // No need to refresh as this will automatically show today's data
+                          // Load today's supplement logs into temporary state
+                          const today = new Date();
+                          const todayStr = format(today, 'yyyy-MM-dd');
+                          const todayLogs = getSupplementLogsForDate(todayStr);
+                          setTempSupplementLogs(todayLogs);
                         }}
                         className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-xl transition-colors"
                       >
