@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, Plus, Edit, Trash2, Target, X } from 'lucide-react';
+import { ArrowLeft, Clock, Plus, Edit, Trash2, Target, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GoalCircle } from '@/components/GoalCircle';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useFasting, type FastingLog } from '@/hooks/use-fasting';
 import { useGoals } from '@/hooks/use-goals';
 
@@ -36,6 +37,9 @@ export default function FastingPage() {
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [goalHoursInput, setGoalHoursInput] = useState('');
   const [goalHoursFocused, setGoalHoursFocused] = useState(false);
+  
+  // UI state
+  const [isLogHistoryOpen, setIsLogHistoryOpen] = useState(false);
 
   useEffect(() => {
     // Initialize goal input with current goal value
@@ -55,6 +59,34 @@ export default function FastingPage() {
     return `${hours.toString().padStart(2, '0')}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
   };
 
+  // Get today's fasting data for circular display
+  const getTodayFastingHours = (): number => {
+    const today = new Date().toISOString().split('T')[0];
+    const todayLogs = logs.filter(log => {
+      const logDate = log.startDate || log.endDate;
+      return logDate === today;
+    });
+    
+    if (todayLogs.length === 0) return 0;
+    
+    // Return the longest fast of the day in hours
+    const longestFast = Math.max(...todayLogs.map(log => log.duration / 60));
+    return Math.round(longestFast * 10) / 10; // Round to 1 decimal place
+  };
+
+  const getHeatRingColor = (hours: number): string => {
+    if (hours <= 1) return 'rgb(59, 130, 246)'; // blue-500
+    if (hours <= 6) return 'rgb(34, 197, 94)'; // green-500  
+    if (hours <= 12) return 'rgb(234, 179, 8)'; // yellow-500
+    if (hours <= 18) return 'rgb(249, 115, 22)'; // orange-500
+    return 'rgb(239, 68, 68)'; // red-500
+  };
+
+  const getProgressPercentage = (hours: number): number => {
+    return Math.min((hours / 24) * 100, 100);
+  };
+
+  // Backward compatibility functions for existing code
   const getHeatBarColor = (hours: number): string => {
     if (hours <= 1) return 'bg-blue-500';
     if (hours <= 6) return 'bg-green-500';
@@ -170,15 +202,81 @@ export default function FastingPage() {
           </button>
         </div>
 
+        {/* Today's Fasting Progress Circle */}
+        <div className="bg-slate-800 rounded-xl p-8 mb-8">
+          <h2 className="text-lg font-semibold text-center mb-6">Today's Fasting Progress</h2>
+          
+          <div className="relative w-64 h-64 mx-auto mb-4">
+            {(() => {
+              const todayHours = getTodayFastingHours();
+              const progressPercentage = getProgressPercentage(todayHours);
+              const ringColor = getHeatRingColor(todayHours);
+              const radius = 110;
+              const circumference = 2 * Math.PI * radius;
+              const strokeDasharray = circumference;
+              const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
+              
+              return (
+                <>
+                  {/* Background circle */}
+                  <svg width="256" height="256" className="absolute inset-0">
+                    <circle
+                      cx="128"
+                      cy="128"
+                      r={radius}
+                      fill="none"
+                      stroke="rgba(148, 163, 184, 0.3)"
+                      strokeWidth="8"
+                    />
+                    <circle
+                      cx="128"
+                      cy="128"
+                      r={radius}
+                      fill="none"
+                      stroke={ringColor}
+                      strokeWidth="8"
+                      strokeLinecap="round"
+                      strokeDasharray={strokeDasharray}
+                      strokeDashoffset={strokeDashoffset}
+                      className="transition-all duration-500 ease-out"
+                      style={{ transformOrigin: '50% 50%', transform: 'rotate(-90deg)' }}
+                    />
+                  </svg>
+                  
+                  {/* Center content */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <div className="text-4xl font-bold text-white">
+                      {todayHours}<span className="text-lg text-slate-400">h</span>
+                    </div>
+                    <div className="text-sm text-slate-400">of 24h max</div>
+                    <div className="text-xs text-slate-500 mt-1">
+                      {Math.round(progressPercentage)}% complete
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+          
+          <div className="text-center text-sm text-slate-400">
+            Heat level: <span style={{ color: getHeatRingColor(getTodayFastingHours()) }}>
+              {getTodayFastingHours() <= 1 ? 'Cool' : 
+               getTodayFastingHours() <= 6 ? 'Warm' :
+               getTodayFastingHours() <= 12 ? 'Hot' :
+               getTodayFastingHours() <= 18 ? 'Very Hot' : 'Extreme'}
+            </span>
+          </div>
+        </div>
+
         {/* Add Fasting Log Button */}
         {!isLogging && (
           <div className="mb-8">
             <Button
               onClick={() => setIsLogging(true)}
-              className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center space-x-2"
+              className="w-full bg-amber-600 hover:bg-amber-700 flex items-center justify-center space-x-2"
             >
               <Plus className="w-4 h-4" />
-              <span>Add Fasting Log</span>
+              <span>Add Fast</span>
             </Button>
           </div>
         )}
@@ -272,81 +370,87 @@ export default function FastingPage() {
           </div>
         )}
 
-        {/* Fasting Logs */}
-        {logs.length > 0 && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Fasting History</h2>
-            {logs
-              .sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime())
-              .map((log) => {
-              const hours = log.duration / 60;
-              const loggedDate = new Date(log.loggedAt).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric'
-              });
-              const loggedTime = new Date(log.loggedAt).toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit'
-              });
-              
-              return (
-                <div key={log.id} className="bg-slate-800 rounded-xl p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="text-sm text-slate-300">
-                      {loggedDate} at {loggedTime}
-                    </div>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleEditLog(log)}
-                        className="text-slate-400 hover:text-blue-400 transition-colors"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteLog(log.id)}
-                        className="text-slate-400 hover:text-red-400 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className="text-center">
-                    {/* Heat Bar */}
-                    <div className="mb-2">
-                      <div className="w-full bg-slate-600 rounded-full h-2">
-                        <div 
-                          className={`h-2 rounded-full ${getHeatBarColor(hours)}`}
-                          style={{ width: getHeatBarWidth(hours) }}
-                        ></div>
+        {/* Fasting Log History */}
+        <Collapsible open={isLogHistoryOpen} onOpenChange={setIsLogHistoryOpen}>
+          <CollapsibleTrigger asChild>
+            <Button 
+              variant="ghost" 
+              className="w-full justify-between text-slate-300 hover:text-white hover:bg-slate-800"
+            >
+              <span className="text-lg font-semibold">Fasting Log History</span>
+              {isLogHistoryOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-2 mt-4">
+            {logs.length === 0 ? (
+              <div className="text-center py-8 text-slate-400">
+                <p>No fasting logs yet.</p>
+                <p className="text-sm mt-2">Start tracking your intermittent fasting journey!</p>
+              </div>
+            ) : (
+              logs
+                .sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime())
+                .map((log) => {
+                const hours = log.duration / 60;
+                const loggedDate = new Date(log.loggedAt).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                });
+                const loggedTime = new Date(log.loggedAt).toLocaleTimeString('en-US', {
+                  hour: 'numeric',
+                  minute: '2-digit'
+                });
+                
+                return (
+                  <div key={log.id} className="bg-slate-800 rounded-xl p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="text-sm text-slate-300">
+                        {loggedDate} at {loggedTime}
+                      </div>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleEditLog(log)}
+                          className="text-slate-400 hover:text-blue-400 transition-colors"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteLog(log.id)}
+                          className="text-slate-400 hover:text-red-400 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                     
-                    {/* Duration */}
-                    <div className="text-xl font-bold text-white font-mono mb-2">
-                      {formatDuration(log.duration)}
-                    </div>
-                    
-                    {/* Fast Period */}
-                    <div className="text-sm text-slate-400">
-                      {new Date(log.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(log.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    <div className="text-center">
+                      {/* Heat Bar */}
+                      <div className="mb-2">
+                        <div className="w-full bg-slate-600 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full ${getHeatBarColor(hours)}`}
+                            style={{ width: getHeatBarWidth(hours) }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      {/* Duration */}
+                      <div className="text-xl font-bold text-amber-400 font-mono mb-2">
+                        {formatDuration(log.duration)}
+                      </div>
+                      
+                      {/* Fast Period */}
+                      <div className="text-sm text-slate-400">
+                        {new Date(log.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(log.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {logs.length === 0 && !isLogging && (
-          <div className="text-center py-12">
-            <Clock className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-            <p className="text-slate-400 text-lg mb-2">No fasting logs yet</p>
-            <p className="text-slate-500 text-sm">Start tracking your intermittent fasting journey!</p>
-          </div>
-        )}
+                );
+              })
+            )}
+          </CollapsibleContent>
+        </Collapsible>
       </div>
 
       {/* Goal Setting Modal */}
