@@ -63,13 +63,32 @@ export default function FastingPage() {
   const getTodayFastingHours = (): number => {
     const today = new Date().toISOString().split('T')[0];
     const todayLogs = logs.filter(log => {
-      const logDate = log.startDate || log.endDate;
-      return logDate === today;
+      // Check if the fast was logged today (for recent entries)
+      const loggedDate = new Date(log.loggedAt).toISOString().split('T')[0];
+      if (loggedDate === today) {
+        return true;
+      }
+      
+      // Also check if the fast started today OR ended today OR spans across today
+      const startDate = log.startDate;
+      const endDate = log.endDate;
+      
+      // Direct match for start or end date
+      if (startDate === today || endDate === today) {
+        return true;
+      }
+      
+      // Check if today falls between start and end dates
+      const todayDate = new Date(today);
+      const fastStartDate = new Date(startDate);
+      const fastEndDate = new Date(endDate);
+      
+      return todayDate >= fastStartDate && todayDate <= fastEndDate;
     });
     
     if (todayLogs.length === 0) return 0;
     
-    // Return the longest fast of the day in hours
+    // Return the longest fast that relates to today in hours
     const longestFast = Math.max(...todayLogs.map(log => log.duration / 60));
     return Math.round(longestFast * 10) / 10; // Round to 1 decimal place
   };
