@@ -253,7 +253,6 @@ export function useWorkouts() {
     
     let monthlyReps = 0;
     let monthlyCompletedDays = 0;
-    let daysElapsedThisMonth = 0;
 
     if (workoutArray.length === 0) {
       return {
@@ -263,21 +262,53 @@ export function useWorkouts() {
       };
     }
 
-    // Get current month date range
+    // Find first workout date in this specific month
+    let firstWorkoutDateInMonth: string | null = null;
+    let lastWorkoutDateInMonth: string | null = null;
+
+    // Get all dates in this month with workout data
+    Object.keys(data.dailyLogs || {}).forEach(dateStr => {
+      const date = new Date(dateStr + 'T00:00:00');
+      if (date.getFullYear() === year && date.getMonth() === month) {
+        const dayLog = data.dailyLogs[dateStr];
+        const hasAnyReps = workoutArray.some(w => dayLog[w.id] && dayLog[w.id] > 0);
+        if (hasAnyReps) {
+          if (!firstWorkoutDateInMonth || dateStr < firstWorkoutDateInMonth) {
+            firstWorkoutDateInMonth = dateStr;
+          }
+          if (!lastWorkoutDateInMonth || dateStr > lastWorkoutDateInMonth) {
+            lastWorkoutDateInMonth = dateStr;
+          }
+        }
+      }
+    });
+
+    if (!firstWorkoutDateInMonth) {
+      return {
+        monthlyReps: 0,
+        monthlyCompletedDays: 0,
+        monthlyConsistency: 0
+      };
+    }
+
+    // Count days from first workout in month to last day of month (or today if current month)
     const todayDate = new Date();
     const isCurrentMonth = (todayDate.getFullYear() === year && todayDate.getMonth() === month);
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const lastDayToCheck = isCurrentMonth ? todayDate.getDate() : daysInMonth;
+    
+    const firstDate = new Date(firstWorkoutDateInMonth + 'T00:00:00');
+    const lastDate = isCurrentMonth ? 
+      new Date(today + 'T00:00:00') : 
+      new Date(year, month + 1, 0); // Last day of month
+      
+    const daysInRange = Math.floor((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
-    // Count only days in this specific month
-    for (let day = 1; day <= lastDayToCheck; day++) {
-      const date = new Date(year, month, day);
-      const dateStr = getDateString(date);
+    // Count only completed days and reps in this specific month
+    Object.entries(data.dailyLogs || {}).forEach(([dateStr, dayLog]) => {
+      const date = new Date(dateStr + 'T00:00:00');
       
-      if (dateStr > today) continue; // Skip future days
-      
-      daysElapsedThisMonth++;
-      const dayLog = data.dailyLogs?.[dateStr] || {};
+      // Only count days in this specific month
+      if (date.getFullYear() !== year || date.getMonth() !== month) return;
+      if (dateStr > today) return; // Skip future days
       
       const workoutsWithReps = workoutArray.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
       if (workoutsWithReps.length > 0) {
@@ -295,9 +326,9 @@ export function useWorkouts() {
           monthlyCompletedDays++;
         }
       }
-    }
+    });
 
-    const monthlyConsistency = daysElapsedThisMonth > 0 ? (monthlyCompletedDays / daysElapsedThisMonth) * 100 : 0;
+    const monthlyConsistency = daysInRange > 0 ? (monthlyCompletedDays / daysInRange) * 100 : 0;
 
     return {
       monthlyReps,
