@@ -8,6 +8,7 @@ import { GoalCircle } from '@/components/GoalCircle';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useFasting, type FastingLog } from '@/hooks/use-fasting';
 import { useGoals } from '@/hooks/use-goals';
+import { getTodayString, getCurrentTime24, getDisplayDate, isToday, isYesterday } from '@/lib/date-utils';
 
 export default function FastingPage() {
   const [, navigate] = useLocation();
@@ -63,16 +64,16 @@ export default function FastingPage() {
     return `${hours.toString().padStart(2, '0')}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
   };
 
-  // Get today's fasting data for circular display
+  // Get today's fasting data for circular display (FIXED TIMEZONE LOGIC)
   const getTodayFastingHours = (): number => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayString(); // Use master date utility
     const todayLogs = logs.filter(log => {
-      // Only show fasts that started today OR ended today (actual fast dates, not log dates)
+      // Show fasts that started today OR ended today (actual fast dates, not log dates)
       const startDate = log.startDate;
       const endDate = log.endDate;
       
-      // Direct match for start or end date being today
-      return startDate === today || endDate === today;
+      // Direct match for start or end date being today using master date utility
+      return isToday(startDate) || isToday(endDate);
     });
     
     if (todayLogs.length === 0) return 0;
@@ -295,7 +296,16 @@ export default function FastingPage() {
         {!isLogging && (
           <div className="mb-8">
             <Button
-              onClick={() => setIsLogging(true)}
+              onClick={() => {
+                // Initialize form with current date/time using master timezone utilities
+                const currentDate = getTodayString();
+                const currentTime = getCurrentTime24();
+                setStartDate(currentDate);
+                setStartTime(currentTime);
+                setEndDate(currentDate);
+                setEndTime(currentTime);
+                setIsLogging(true);
+              }}
               className="w-full bg-amber-600 hover:bg-amber-700 flex items-center justify-center space-x-2"
             >
               <Plus className="w-4 h-4" />
@@ -465,12 +475,7 @@ export default function FastingPage() {
                       
                       {/* Fast Period */}
                       <div className="text-sm text-slate-400">
-                        {(() => {
-                          // Format dates directly from stored values to avoid timezone conversion
-                          const startDate = new Date(log.startDate + 'T12:00:00');
-                          const endDate = new Date(log.endDate + 'T12:00:00');
-                          return `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-                        })()}
+                        {getDisplayDate(log.startDate)} - {getDisplayDate(log.endDate)}
                       </div>
                     </div>
                   </div>
