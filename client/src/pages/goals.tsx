@@ -215,7 +215,7 @@ export default function GoalsPageFinal() {
   
   const getWorkoutConsistency = () => {
     const stats = getTotalStats();
-    return Math.round(stats.totalGoalPercentage || 0);
+    return Math.round(stats.totalConsistency || 0);
   };
 
   // Calculate progress percentages
