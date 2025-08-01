@@ -249,13 +249,37 @@ export function useWorkouts() {
   const getMonthlyStats = (year: number, month: number) => {
     const workoutArray = Object.values(data.workouts || {});
     const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = getTodayString();
     
     let totalReps = 0;
     let workoutsCompleted = 0;
-    let daysWithWorkouts = 0;
     let daysWithAllGoalsMet = 0;
+    let expectedWorkoutDays = 0;
 
     if (workoutArray.length === 0) {
+      return {
+        totalReps: 0,
+        workoutsCompleted: 0,
+        workoutConsistency: 0,
+        daysInMonth
+      };
+    }
+
+    // Find the first day any workout was ever logged
+    let firstWorkoutDate: Date | null = null;
+    Object.keys(data.dailyLogs || {}).forEach(dateStr => {
+      const dayLog = data.dailyLogs[dateStr];
+      const hasAnyReps = workoutArray.some(w => dayLog[w.id] && dayLog[w.id] > 0);
+      if (hasAnyReps) {
+        const dateArray = dateStr.split('-').map(Number);
+        const date = new Date(dateArray[0], dateArray[1] - 1, dateArray[2]);
+        if (!firstWorkoutDate || date < firstWorkoutDate) {
+          firstWorkoutDate = date;
+        }
+      }
+    });
+
+    if (!firstWorkoutDate) {
       return {
         totalReps: 0,
         workoutsCompleted: 0,
@@ -269,12 +293,13 @@ export function useWorkouts() {
       const dateStr = getDateString(date);
       const dayLog = data.dailyLogs?.[dateStr] || {};
       
-      // Only count days with actual reps logged
-      const workoutsWithRepsOnThisDay = workoutArray.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
-      if (workoutsWithRepsOnThisDay.length === 0) continue;
+      // Only consider days from first workout onwards, up to today
+      if (date < firstWorkoutDate || dateStr > today) continue;
       
-      daysWithWorkouts++; // Count days where at least one workout was done
-      let allGoalsMet = true;
+      expectedWorkoutDays++; // Count every day since first workout as expected
+      
+      const workoutsWithRepsOnThisDay = workoutArray.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
+      let allGoalsMet = workoutsWithRepsOnThisDay.length > 0;
       
       workoutsWithRepsOnThisDay.forEach(workout => {
         const count = dayLog[workout.id] || 0;
@@ -284,8 +309,12 @@ export function useWorkouts() {
         }
       });
       
-      // Only count as "workout completed" if ALL active workouts met their goals on this day
-      if (allGoalsMet && workoutsWithRepsOnThisDay.length > 0) {
+      // If no workouts were logged today, consider it incomplete
+      if (workoutsWithRepsOnThisDay.length === 0) {
+        allGoalsMet = false;
+      }
+      
+      if (allGoalsMet) {
         workoutsCompleted++;
         daysWithAllGoalsMet++;
       }
@@ -294,7 +323,7 @@ export function useWorkouts() {
     return {
       totalReps,
       workoutsCompleted,
-      workoutConsistency: daysWithWorkouts > 0 ? (daysWithAllGoalsMet / daysWithWorkouts) * 100 : 0,
+      workoutConsistency: expectedWorkoutDays > 0 ? (daysWithAllGoalsMet / expectedWorkoutDays) * 100 : 0,
       daysInMonth
     };
   };
