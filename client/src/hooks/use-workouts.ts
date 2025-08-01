@@ -318,7 +318,6 @@ export function useWorkouts() {
     const today = getTodayString();
     let totalReps = 0;
     let completedDays = 0;
-    let totalExpectedDays = 0;
 
     if (workoutArray.length === 0 || !data.dailyLogs) {
       return {
@@ -344,28 +343,25 @@ export function useWorkouts() {
       };
     }
 
-    // Count days from first workout to today
-    const startDate = new Date(firstWorkoutDate);
-    const todayDate = new Date(today);
-    const daysDiff = Math.floor((todayDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-    totalExpectedDays = daysDiff;
+    // Count total days from first workout to today (inclusive)
+    const firstDate = new Date(firstWorkoutDate + 'T00:00:00');
+    const todayDate = new Date(today + 'T00:00:00');
+    const totalExpectedDays = Math.floor((todayDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
-    // Count completed days and total reps
+    // Count completed days and total reps across ALL time
     Object.entries(data.dailyLogs).forEach(([dateStr, dayLog]) => {
-      if (dateStr >= firstWorkoutDate && dateStr <= today) {
-        const workoutsWithReps = workoutArray.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
-        if (workoutsWithReps.length > 0) {
-          let allGoalsMet = true;
-          workoutsWithReps.forEach(workout => {
-            const count = dayLog[workout.id] || 0;
-            totalReps += count;
-            if (count < workout.dailyGoal) {
-              allGoalsMet = false;
-            }
-          });
-          if (allGoalsMet) {
-            completedDays++;
+      const workoutsWithReps = workoutArray.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
+      if (workoutsWithReps.length > 0) {
+        let allGoalsMet = true;
+        workoutsWithReps.forEach(workout => {
+          const count = dayLog[workout.id] || 0;
+          totalReps += count;
+          if (count < workout.dailyGoal) {
+            allGoalsMet = false;
           }
+        });
+        if (allGoalsMet) {
+          completedDays++;
         }
       }
     });
