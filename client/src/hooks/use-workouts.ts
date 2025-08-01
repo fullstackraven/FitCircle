@@ -252,14 +252,14 @@ export function useWorkouts() {
     
     let totalReps = 0;
     let workoutsCompleted = 0;
-    let goalsHit = 0;
-    let totalPossibleGoals = 0;
+    let daysWithWorkouts = 0;
+    let daysWithAllGoalsMet = 0;
 
     if (workoutArray.length === 0) {
       return {
         totalReps: 0,
         workoutsCompleted: 0,
-        monthlyGoalPercentage: 0,
+        workoutConsistency: 0,
         daysInMonth
       };
     }
@@ -269,31 +269,32 @@ export function useWorkouts() {
       const dateStr = getDateString(date);
       const dayLog = data.dailyLogs?.[dateStr] || {};
       
-      // Only count workouts with actual reps logged
+      // Only count days with actual reps logged
       const workoutsWithRepsOnThisDay = workoutArray.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
       if (workoutsWithRepsOnThisDay.length === 0) continue;
       
-      let dayWorkoutsCompleted = 0;
+      daysWithWorkouts++; // Count days where at least one workout was done
+      let allGoalsMet = true;
       
       workoutsWithRepsOnThisDay.forEach(workout => {
         const count = dayLog[workout.id] || 0;
         totalReps += count;
-        if (count >= workout.dailyGoal) {
-          goalsHit++;
-          dayWorkoutsCompleted++;
+        if (count < workout.dailyGoal) {
+          allGoalsMet = false;
         }
-        totalPossibleGoals++;
       });
       
-      if (dayWorkoutsCompleted === workoutsWithRepsOnThisDay.length && workoutsWithRepsOnThisDay.length > 0) {
+      // Only count as "workout completed" if ALL active workouts met their goals on this day
+      if (allGoalsMet && workoutsWithRepsOnThisDay.length > 0) {
         workoutsCompleted++;
+        daysWithAllGoalsMet++;
       }
     }
 
     return {
       totalReps,
       workoutsCompleted,
-      monthlyGoalPercentage: workoutsCompleted > 0 ? (workoutsCompleted / daysInMonth) * 100 : 0,
+      workoutConsistency: daysWithWorkouts > 0 ? (daysWithAllGoalsMet / daysWithWorkouts) * 100 : 0,
       daysInMonth
     };
   };

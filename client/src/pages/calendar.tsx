@@ -476,7 +476,7 @@ export default function CalendarPage() {
   const monthlyStats = getMonthlyStats(currentMonth.getFullYear(), currentMonth.getMonth()) || {
     totalReps: 0,
     workoutsCompleted: 0,
-    monthlyGoalPercentage: 0,
+    workoutConsistency: 0,
     daysInMonth: 0
   };
   const totalStats = getTotalStats() || {
@@ -605,11 +605,11 @@ export default function CalendarPage() {
                   <div className="text-sm text-slate-400">Workouts Completed</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400">{monthlyStats.monthlyGoalPercentage.toFixed(1)}%</div>
+                  <div className="text-2xl font-bold text-green-400">{monthlyStats.workoutConsistency.toFixed(1)}%</div>
                   <div className="text-sm text-slate-400">Workouts Completed This Month</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-400">{totalStats.totalGoalPercentage.toFixed(1)}%</div>
+                  <div className="text-2xl font-bold text-blue-400">{monthlyStats.workoutConsistency.toFixed(1)}%</div>
                   <div className="text-sm text-slate-400">Workout Consistency</div>
                 </div>
               </div>
