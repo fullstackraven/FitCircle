@@ -474,14 +474,14 @@ export default function CalendarPage() {
   };
 
   const monthlyStats = getMonthlyStats(currentMonth.getFullYear(), currentMonth.getMonth()) || {
-    totalReps: 0,
-    workoutsCompleted: 0,
-    workoutConsistency: 0,
-    daysInMonth: 0
+    monthlyReps: 0,
+    monthlyCompletedDays: 0,
+    monthlyConsistency: 0
   };
   const totalStats = getTotalStats() || {
     totalReps: 0,
-    totalGoalPercentage: 0
+    totalCompletedDays: 0,
+    totalConsistency: 0
   };
   const individualWorkoutTotals = getIndividualWorkoutTotals() || [];
 
@@ -594,23 +594,42 @@ export default function CalendarPage() {
             )}
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="mt-4 bg-slate-800 rounded-xl p-4 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{totalStats.totalReps}</div>
-                  <div className="text-sm text-slate-400">Total Reps All Time</div>
+            <div className="mt-4 bg-slate-800 rounded-xl p-4 space-y-6">
+              {/* Total All Time Section */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium text-slate-300 text-center">Total All Time</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="text-center p-3 bg-slate-700 rounded-xl">
+                    <div className="text-xl font-bold text-white">{totalStats.totalReps}</div>
+                    <div className="text-xs text-slate-400">Total Reps</div>
+                  </div>
+                  <div className="text-center p-3 bg-slate-700 rounded-xl">
+                    <div className="text-xl font-bold text-white">{totalStats.totalCompletedDays}</div>
+                    <div className="text-xs text-slate-400">Days Completed</div>
+                  </div>
+                  <div className="text-center p-3 bg-slate-700 rounded-xl">
+                    <div className="text-xl font-bold text-blue-400">{totalStats.totalConsistency.toFixed(1)}%</div>
+                    <div className="text-xs text-slate-400">Consistency</div>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{monthlyStats.workoutsCompleted}</div>
-                  <div className="text-sm text-slate-400">Workouts Completed</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400">{monthlyStats.workoutConsistency.toFixed(1)}%</div>
-                  <div className="text-sm text-slate-400">Workouts Completed This Month</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-400">{monthlyStats.workoutConsistency.toFixed(1)}%</div>
-                  <div className="text-sm text-slate-400">Workout Consistency</div>
+              </div>
+
+              {/* Totals for This Month Section */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium text-slate-300 text-center">Totals for This Month</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="text-center p-3 bg-slate-700 rounded-xl">
+                    <div className="text-xl font-bold text-white">{monthlyStats.monthlyReps}</div>
+                    <div className="text-xs text-slate-400">Monthly Reps</div>
+                  </div>
+                  <div className="text-center p-3 bg-slate-700 rounded-xl">
+                    <div className="text-xl font-bold text-white">{monthlyStats.monthlyCompletedDays}</div>
+                    <div className="text-xs text-slate-400">Days Completed</div>
+                  </div>
+                  <div className="text-center p-3 bg-slate-700 rounded-xl">
+                    <div className="text-xl font-bold text-green-400">{monthlyStats.monthlyConsistency.toFixed(1)}%</div>
+                    <div className="text-xs text-slate-400">Consistency</div>
+                  </div>
                 </div>
               </div>
 
