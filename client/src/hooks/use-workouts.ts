@@ -263,10 +263,16 @@ export function useWorkouts() {
       };
     }
 
-    // Count completed days in this month only
+    // Count completed days in this specific month only
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day);
       const dateStr = getDateString(date);
+      
+      // Double-check this date belongs to the correct month to avoid boundary issues
+      const parsedYear = parseInt(dateStr.split('-')[0]);
+      const parsedMonth = parseInt(dateStr.split('-')[1]) - 1; // Convert to 0-based
+      if (parsedYear !== year || parsedMonth !== month) continue;
+      
       const dayLog = data.dailyLogs?.[dateStr] || {};
       
       // Skip future days
