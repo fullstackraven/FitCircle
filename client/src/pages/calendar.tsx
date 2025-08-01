@@ -179,8 +179,7 @@ export default function CalendarPage() {
   };
 
   const handleDayClick = (date: Date) => {
-    if (!isSameMonth(date, currentMonth)) return;
-    
+    // Allow clicking on any date, even if it's in a different month (for cross-month viewing)
     setSelectedDate(date);
     // Use local timezone date formatting to match workout data
     const year = date.getFullYear();
