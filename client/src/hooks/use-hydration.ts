@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { getTodayString, getCurrentTime } from '@/lib/date-utils';
+import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 export interface HydrationEntry {
   time: string;
@@ -19,65 +21,42 @@ export interface HydrationData {
   lastDate: string;
 }
 
-const STORAGE_KEY = 'fitcircle_hydration_data';
-
-function getTodayString(): string {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function getCurrentTime(): string {
-  return new Date().toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit',
-    hour12: true 
-  });
-}
-
 export function useHydration() {
   const [data, setData] = useState<HydrationData>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
     const goalFromGoalsPage = localStorage.getItem('fitcircle_goal_hydration');
-    
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        // Migrate liquid type if not present
-        if (parsed.logs) {
-          Object.values(parsed.logs).forEach((dayLog: any) => {
-            if (dayLog.entries) {
-              dayLog.entries.forEach((entry: any) => {
-                if (!entry.liquidType) {
-                  entry.liquidType = 'Water';
-                }
-              });
-            }
-          });
-        }
-        // Sync goal from Goals page if it exists and is different
-        if (goalFromGoalsPage) {
-          parsed.dailyGoalOz = parseFloat(goalFromGoalsPage);
-        }
-        return parsed;
-      } catch (error) {
-        console.error('Failed to parse hydration data:', error);
-      }
-    }
-    
-    return {
+    const defaultData = {
       dailyGoalOz: goalFromGoalsPage ? parseFloat(goalFromGoalsPage) : 64,
       currentDayOz: 0,
       logs: {},
       lastDate: getTodayString()
     };
+    
+    const saved = safeParseJSON(localStorage.getItem(STORAGE_KEYS.HYDRATION), defaultData);
+    
+    // Migrate liquid type if not present
+    if (saved.logs) {
+      Object.values(saved.logs).forEach((dayLog: any) => {
+        if (dayLog.entries) {
+          dayLog.entries.forEach((entry: any) => {
+            if (!entry.liquidType) {
+              entry.liquidType = 'Water';
+            }
+          });
+        }
+      });
+    }
+    
+    // Sync goal from Goals page if it exists and is different
+    if (goalFromGoalsPage) {
+      saved.dailyGoalOz = parseFloat(goalFromGoalsPage);
+    }
+    
+    return saved;
   });
 
   // Save to localStorage whenever data changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(STORAGE_KEYS.HYDRATION, JSON.stringify(data));
   }, [data]);
 
   // Reset daily data if date has changed
@@ -126,8 +105,7 @@ export function useHydration() {
 
   const setDailyGoal = (goalOz: number) => {
     setData(prev => ({ ...prev, dailyGoalOz: goalOz }));
-    
-    // Also update the goals page - keep both in sync
+    // Sync with goals page
     localStorage.setItem('fitcircle_goal_hydration', goalOz.toString());
   };
 

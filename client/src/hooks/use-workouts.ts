@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { getTodayString, getDateString } from '@/lib/date-utils';
+import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 export interface Workout {
   id: string;
@@ -12,11 +14,6 @@ export interface DailyLog {
   [workoutId: string]: number;
 }
 
-export interface JournalEntry {
-  date: string;
-  entry: string;
-}
-
 export interface WorkoutData {
   workouts: { [id: string]: Workout };
   dailyLogs: { [date: string]: DailyLog };
@@ -28,44 +25,19 @@ const WORKOUT_COLORS = [
   'green', 'blue', 'purple', 'amber', 'red', 'pink', 'cyan', 'lime', 'orange', 'indigo', 'emerald', 'yellow'
 ];
 
-const STORAGE_KEY = 'workout-tracker-data';
-
-function getTodayString(): string {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function getDateString(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
 export function useWorkouts() {
-  const [data, setData] = useState<WorkoutData>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (error) {
-        console.error('Failed to parse workout data:', error);
-      }
-    }
-    return {
+  const [data, setData] = useState<WorkoutData>(() => 
+    safeParseJSON(localStorage.getItem(STORAGE_KEYS.WORKOUTS), {
       workouts: {},
       dailyLogs: {},
       lastDate: getTodayString(),
       journalEntries: {}
-    };
-  });
+    })
+  );
 
   // Save to localStorage whenever data changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(data));
   }, [data]);
 
   // Reset daily data if date has changed
@@ -81,8 +53,7 @@ export function useWorkouts() {
           )
         }));
         
-        // Force re-render of components that use getTotalStats
-        // This ensures statistics update immediately when workouts reset
+        // Force re-render for statistics update
         window.dispatchEvent(new CustomEvent('workoutDataChanged'));
       }
     };
@@ -195,17 +166,12 @@ export function useWorkouts() {
       const dateString = getDateString(date);
       const dayLog = data.dailyLogs[dateString] || {};
 
-      // Calculate yesterday properly using date strings instead of getDate() comparison
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayString = getDateString(yesterday);
-      const isYesterday = dateString === yesterdayString;
+      const isYesterday = dateString === getDateString(yesterday);
       
-      const formattedDate = isYesterday ? 'Yesterday' : date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      });
+      const formattedDate = isYesterday ? 'Yesterday' : 
+        date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
       const totalReps = Object.values(dayLog || {}).reduce((sum, count) => sum + count, 0);
 
@@ -303,8 +269,7 @@ export function useWorkouts() {
       const dateStr = getDateString(date);
       const dayLog = data.dailyLogs?.[dateStr] || {};
       
-      // Only count workouts that actually have logged reps for this day
-      // This ensures that adding new workouts doesn't affect past statistics
+      // Only count workouts with actual reps logged
       const workoutsWithRepsOnThisDay = workoutArray.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
       if (workoutsWithRepsOnThisDay.length === 0) continue;
       
@@ -346,16 +311,12 @@ export function useWorkouts() {
       };
     }
 
-    Object.entries(data.dailyLogs).forEach(([, dayLog]) => {
-      // Only count workouts that actually have logged reps for this day
-      const workoutsWithRepsOnThisDay = workoutArray.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
-      
-      workoutsWithRepsOnThisDay.forEach(workout => {
-        const count = dayLog[workout.id] || 0;
+    Object.values(data.dailyLogs).forEach(dayLog => {
+      const workoutsWithReps = workoutArray.filter(w => dayLog[w.id] > 0);
+      workoutsWithReps.forEach(workout => {
+        const count = dayLog[workout.id];
         totalReps += count;
-        if (count >= workout.dailyGoal) {
-          totalGoalsHit++;
-        }
+        if (count >= workout.dailyGoal) totalGoalsHit++;
         totalPossibleGoals++;
       });
     });
@@ -373,22 +334,13 @@ export function useWorkouts() {
       return [];
     }
     
-    return workoutArray.map(workout => {
-      let totalReps = 0;
-      
-      if (data.dailyLogs) {
-        Object.entries(data.dailyLogs).forEach(([, dayLog]) => {
-          totalReps += dayLog[workout.id] || 0;
-        });
-      }
-      
-      return {
-        id: workout.id,
-        name: workout.name,
-        color: workout.color,
-        totalReps
-      };
-    });
+    return workoutArray.map(workout => ({
+      id: workout.id,
+      name: workout.name,
+      color: workout.color,
+      totalReps: Object.values(data.dailyLogs || {})
+        .reduce((total, dayLog) => total + (dayLog[workout.id] || 0), 0)
+    }));
   };
 
   return {

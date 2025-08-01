@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 export interface Goals {
   hydrationOz: number;
@@ -24,29 +25,25 @@ export interface GoalProgress {
 const STORAGE_PREFIX = 'fitcircle_goal_';
 
 export function useGoals() {
+  const defaultGoals = {
+    hydrationOz: 64,
+    meditationMinutes: 10,
+    fastingHours: 16,
+    maxFastingHours: 24,
+    weightLbs: 150,
+    targetWeight: 150,
+    targetBodyFat: 15,
+    workoutConsistency: 80
+  };
+
   const [goals, setGoals] = useState<Goals>(() => {
-    const saved = localStorage.getItem('fitcircle_goals');
-    const defaultGoals = {
-      hydrationOz: 64,
-      meditationMinutes: 10,
-      fastingHours: 16,
-      maxFastingHours: 24,
-      weightLbs: 150,
-      targetWeight: 150,
-      targetBodyFat: 15,
-      workoutConsistency: 80
-    };
+    const saved = safeParseJSON(localStorage.getItem(STORAGE_KEYS.GOALS), null);
     
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        return { ...defaultGoals, ...parsed };
-      } catch (error) {
-        console.error('Failed to parse goals:', error);
-      }
+    if (saved && typeof saved === 'object') {
+      return { ...defaultGoals, ...saved };
     }
     
-    // Fallback to old format if new format doesn't exist
+    // Fallback to old format migration
     const loadedGoals: Partial<Goals> = {};
     const hydration = localStorage.getItem(`${STORAGE_PREFIX}hydration`);
     if (hydration) loadedGoals.hydrationOz = parseFloat(hydration);
@@ -66,7 +63,7 @@ export function useGoals() {
   const updateGoal = (goalType: keyof Goals, value: number) => {
     const updatedGoals = { ...goals, [goalType]: value };
     setGoals(updatedGoals);
-    localStorage.setItem('fitcircle_goals', JSON.stringify(updatedGoals));
+    localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(updatedGoals));
     
     // Keep backward compatibility with old storage format
     const keyMap: { [K in keyof Goals]?: string } = {
@@ -81,152 +78,101 @@ export function useGoals() {
       localStorage.setItem(`${STORAGE_PREFIX}${oldKey}`, value.toString());
     }
     
-    // Special case: Also update hydration hook data if hydration goal is changed
+    // Sync hydration goal with hydration hook
     if (goalType === 'hydrationOz') {
-      const hydrationData = localStorage.getItem('fitcircle_hydration_data');
-      if (hydrationData) {
-        try {
-          const parsed = JSON.parse(hydrationData);
-          parsed.dailyGoalOz = value;
-          localStorage.setItem('fitcircle_hydration_data', JSON.stringify(parsed));
-        } catch (e) {
-          console.error('Failed to sync hydration goal:', e);
-        }
+      const hydrationData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.HYDRATION), {}) as any;
+      if (hydrationData && typeof hydrationData === 'object') {
+        hydrationData.dailyGoalOz = value;
+        localStorage.setItem(STORAGE_KEYS.HYDRATION, JSON.stringify(hydrationData));
       }
     }
   };
 
   const calculateProgress = (): Promise<GoalProgress> => {
-    // Get current data from other storage keys
-    const today = new Date().toISOString().split('T')[0];
     
-    // Hydration progress - use the goal from hydration data, not goals data
+    // Hydration progress
     let hydrationProgress = 0;
-    try {
-      const hydrationDataString = localStorage.getItem('fitcircle_hydration_data');
-      if (hydrationDataString) {
-        const hydrationData = JSON.parse(hydrationDataString);
-        const actualGoal = hydrationData.dailyGoalOz || goals.hydrationOz; // Use hydration data's goal
-        hydrationProgress = Math.min((hydrationData.currentDayOz / actualGoal) * 100, 100);
-      }
-    } catch (e) {
-      hydrationProgress = 0;
+    const hydrationData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.HYDRATION), {}) as any;
+    if (hydrationData && typeof hydrationData === 'object') {
+      const actualGoal = hydrationData.dailyGoalOz || goals.hydrationOz;
+      hydrationProgress = Math.min((hydrationData.currentDayOz / actualGoal) * 100, 100);
     }
 
     // Meditation progress (average last 7 days)
     let meditationProgress = 0;
-    try {
-      const logsString = localStorage.getItem('fitcircle_meditation_logs');
-      if (logsString) {
-        const logs = JSON.parse(logsString);
-        if (logs && Array.isArray(logs)) {
-          // Group sessions by date and calculate daily totals for last 7 days
-          const last7Days = new Date();
-          last7Days.setDate(last7Days.getDate() - 7);
-          
-          const dailyTotals: { [date: string]: number } = {};
-          
-          logs.forEach((session: any) => {
-            const sessionDate = new Date(session.completedAt || session.date);
-            if (sessionDate >= last7Days && session.duration) {
-              const dateKey = sessionDate.toISOString().split('T')[0];
-              dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
-            }
-          });
-          
-          // Calculate average across all days (including zero days)
-          const dailyValues = Object.values(dailyTotals);
-          const totalMinutes = dailyValues.reduce((sum, minutes) => sum + minutes, 0);
-          
-          const avgMinutes = totalMinutes / 7; // Average over 7 days regardless of how many had sessions
-          meditationProgress = Math.min((avgMinutes / goals.meditationMinutes) * 100, 100);
+    const meditationLogs = safeParseJSON(localStorage.getItem('fitcircle_meditation_logs'), []);
+    if (Array.isArray(meditationLogs)) {
+      const last7Days = new Date();
+      last7Days.setDate(last7Days.getDate() - 7);
+      
+      const dailyTotals: { [date: string]: number } = {};
+      
+      meditationLogs.forEach((session: any) => {
+        const sessionDate = new Date(session.completedAt || session.date);
+        if (sessionDate >= last7Days && session.duration) {
+          const dateKey = sessionDate.toISOString().split('T')[0];
+          dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
         }
-      }
-    } catch (e) {
-      meditationProgress = 0;
+      });
+      
+      const totalMinutes = Object.values(dailyTotals).reduce((sum, minutes) => sum + minutes, 0);
+      const avgMinutes = totalMinutes / 7;
+      meditationProgress = Math.min((avgMinutes / goals.meditationMinutes) * 100, 100);
     }
 
-    // Fasting progress (all-time average with 24hr max scale)
+    // Fasting progress (all-time average)
     let fastingProgress = 0;
-    try {
-      const logsString = localStorage.getItem('fitcircle_fasting_logs');
-      if (logsString) {
-        const logs = JSON.parse(logsString);
-        if (logs && Array.isArray(logs)) {
-          const completedFasts: number[] = [];
-          
-          logs.forEach((log: any) => {
-            if (log?.endDate && log?.startDate && log?.endTime && log?.startTime) {
-              // Combine date and time for proper parsing
-              const start = new Date(`${log.startDate}T${log.startTime}`);
-              const end = new Date(`${log.endDate}T${log.endTime}`);
-              const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-              if (duration > 0 && duration < 48) { // Sanity check: ignore sessions longer than 48 hours
-                completedFasts.push(duration);
-              }
-            } else if (log?.duration) {
-              // Fallback: use duration field if available (stored in minutes)
-              const durationHours = log.duration / 60;
-              if (durationHours > 0 && durationHours < 48) {
-                completedFasts.push(durationHours);
-              }
-            }
-          });
-          
-          if (completedFasts.length > 0) {
-            // Calculate all-time average
-            const averageHours = completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length;
-            // Scale against the fasting goal
-            fastingProgress = Math.min((averageHours / goals.fastingHours) * 100, 100);
+    const fastingLogs = safeParseJSON(localStorage.getItem('fitcircle_fasting_logs'), []);
+    if (Array.isArray(fastingLogs)) {
+      const completedFasts: number[] = [];
+      
+      fastingLogs.forEach((log: any) => {
+        if (log?.endDate && log?.startDate && log?.endTime && log?.startTime) {
+          const start = new Date(`${log.startDate}T${log.startTime}`);
+          const end = new Date(`${log.endDate}T${log.endTime}`);
+          const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+          if (duration > 0 && duration < 48) {
+            completedFasts.push(duration);
+          }
+        } else if (log?.duration) {
+          const durationHours = log.duration / 60;
+          if (durationHours > 0 && durationHours < 48) {
+            completedFasts.push(durationHours);
           }
         }
+      });
+      
+      if (completedFasts.length > 0) {
+        const averageHours = completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length;
+        fastingProgress = Math.min((averageHours / goals.fastingHours) * 100, 100);
       }
-    } catch (e) {
-      fastingProgress = 0;
     }
 
     // Weight progress (based on current vs target)
     let weightProgress = 0;
-    try {
-      const currentWeightString = localStorage.getItem('fitcircle_weight');
-      if (currentWeightString) {
-        const current = parseFloat(currentWeightString);
-        // For weight, we'll show 100% if within 5% of target
-        const tolerance = goals.weightLbs * 0.05;
-        const difference = Math.abs(current - goals.weightLbs);
-        weightProgress = Math.max(0, 100 - (difference / tolerance) * 100);
-      }
-    } catch (e) {
-      weightProgress = 0;
+    const currentWeightString = localStorage.getItem('fitcircle_weight');
+    if (currentWeightString) {
+      const current = parseFloat(currentWeightString);
+      const tolerance = goals.weightLbs * 0.05;
+      const difference = Math.abs(current - goals.weightLbs);
+      weightProgress = Math.max(0, 100 - (difference / tolerance) * 100);
     }
 
     // Target weight progress (based on current vs target weight from measurements)
     let targetWeightProgress = 0;
     if (goals.targetWeight) {
-      try {
-        const measurementsDataString = localStorage.getItem('fitcircle_measurements');
-        if (measurementsDataString) {
-          const measurementsData = JSON.parse(measurementsDataString);
-          const currentWeight = measurementsData.currentWeight || 0;
-          if (currentWeight > 0) {
-            // Calculate progress - closer to target = higher percentage
-            const tolerance = goals.targetWeight * 0.05; // 5% tolerance
-            const difference = Math.abs(currentWeight - goals.targetWeight);
-            targetWeightProgress = Math.max(0, 100 - (difference / tolerance) * 100);
-          }
-        }
-      } catch (e) {
-        targetWeightProgress = 0;
+      const measurementsData = safeParseJSON(localStorage.getItem('fitcircle_measurements'), {}) as any;
+      const currentWeight = measurementsData.currentWeight || 0;
+      if (currentWeight > 0) {
+        const tolerance = goals.targetWeight * 0.05;
+        const difference = Math.abs(currentWeight - goals.targetWeight);
+        targetWeightProgress = Math.max(0, 100 - (difference / tolerance) * 100);
       }
     }
 
-    // Target body fat progress (calculated in Goals page component)
+    // Target body fat and workout consistency calculated in Goals page
     let targetBodyFatProgress = 0;
-    // This is calculated directly in the Goals page component using measurements hook
-
-    // Workout consistency progress (calculated in Goals page component)
     let workoutConsistencyProgress = 0;
-    // This is calculated directly in the Goals page component using workouts hook
 
     return Promise.resolve({
       hydrationProgress,

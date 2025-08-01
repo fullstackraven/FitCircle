@@ -4,6 +4,8 @@ import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { getTodayString } from '@/lib/date-utils';
+import { STORAGE_KEYS } from '@/lib/storage-utils';
 
 
 export default function SettingsPage() {
@@ -13,10 +15,10 @@ export default function SettingsPage() {
   const [status, setStatus] = useState<string>('');
   const [showEraseConfirm, setShowEraseConfirm] = useState(false);
   const [autoBackupEnabled, setAutoBackupEnabled] = useState(() => {
-    return localStorage.getItem('fitcircle_auto_backup_enabled') === 'true';
+    return localStorage.getItem(STORAGE_KEYS.AUTO_BACKUP_ENABLED) === 'true';
   });
   const [lastAutoBackup, setLastAutoBackup] = useState(() => {
-    return localStorage.getItem('fitcircle_last_auto_backup') || null;
+    return localStorage.getItem(STORAGE_KEYS.LAST_AUTO_BACKUP) || null;
   });
   const [showAutoBackups, setShowAutoBackups] = useState(false);
 
@@ -24,18 +26,9 @@ export default function SettingsPage() {
   const { settings, updateSetting } = useControls();
 
   
-  // Function to get local date string (not UTC)
-  const getLocalDateString = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
   // Generate or get unique device identifier
   const getDeviceId = () => {
-    let deviceId = localStorage.getItem('fitcircle_device_id');
+    let deviceId = localStorage.getItem(STORAGE_KEYS.DEVICE_ID);
     if (!deviceId) {
       // Create unique ID based on multiple device characteristics
       const canvas = document.createElement('canvas');
@@ -61,7 +54,7 @@ export default function SettingsPage() {
       }
       
       deviceId = Math.abs(hash).toString(36).substring(0, 8);
-      localStorage.setItem('fitcircle_device_id', deviceId);
+      localStorage.setItem(STORAGE_KEYS.DEVICE_ID, deviceId);
     }
     return deviceId;
   };
@@ -102,7 +95,7 @@ export default function SettingsPage() {
       if (response.ok) {
         const result = await response.json();
         const now = new Date().toISOString();
-        localStorage.setItem('fitcircle_last_auto_backup', now);
+        localStorage.setItem(STORAGE_KEYS.LAST_AUTO_BACKUP, now);
         setLastAutoBackup(now);
         console.log('Auto-backup completed successfully:', result.filename);
         return true;
@@ -120,7 +113,7 @@ export default function SettingsPage() {
     if (!autoBackupEnabled) return;
 
     const now = new Date();
-    const today = getLocalDateString();
+    const today = getTodayString();
     const lastBackupDate = lastAutoBackup ? new Date(lastAutoBackup).toLocaleDateString('en-CA') : null;
 
     // If we haven't backed up today, do it now
@@ -151,7 +144,7 @@ export default function SettingsPage() {
   // Toggle auto-backup
   const handleAutoBackupToggle = (enabled: boolean) => {
     setAutoBackupEnabled(enabled);
-    localStorage.setItem('fitcircle_auto_backup_enabled', enabled.toString());
+    localStorage.setItem(STORAGE_KEYS.AUTO_BACKUP_ENABLED, enabled.toString());
     
     if (enabled) {
       scheduleAutoBackup();
@@ -209,7 +202,7 @@ export default function SettingsPage() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `fitcircle-backup-${getLocalDateString()}.json`;
+      link.download = `fitcircle-backup-${getTodayString()}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

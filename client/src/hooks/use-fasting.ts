@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 export interface FastingLog {
   id: string;
@@ -10,24 +11,14 @@ export interface FastingLog {
   loggedAt: string;
 }
 
-const STORAGE_KEY = 'fitcircle_fasting_logs';
-
 export function useFasting() {
-  const [logs, setLogs] = useState<FastingLog[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (error) {
-        console.error('Failed to parse fasting logs:', error);
-      }
-    }
-    return [];
-  });
+  const [logs, setLogs] = useState<FastingLog[]>(() => 
+    safeParseJSON(localStorage.getItem(STORAGE_KEYS.FASTING), [])
+  );
 
   // Save to localStorage whenever data changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+    localStorage.setItem(STORAGE_KEYS.FASTING, JSON.stringify(logs));
   }, [logs]);
 
   const addLog = (log: Omit<FastingLog, 'id' | 'loggedAt'>) => {

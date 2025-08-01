@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { getTodayString } from '@/lib/date-utils';
+import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 export interface MeasurementEntry {
   date: string;
@@ -23,27 +25,9 @@ export interface MeasurementData {
   calfRight: MeasurementEntry[];
 }
 
-const STORAGE_KEY = 'fitcircle_measurements_history';
-
-function getTodayString(): string {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
 export function useMeasurements() {
-  const [data, setData] = useState<MeasurementData>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (error) {
-        console.error('Failed to parse measurements history:', error);
-      }
-    }
-    return {
+  const [data, setData] = useState<MeasurementData>(() => 
+    safeParseJSON(localStorage.getItem(STORAGE_KEYS.MEASUREMENTS), {
       weight: [],
       height: [],
       bodyFat: [],
@@ -59,12 +43,12 @@ export function useMeasurements() {
       thighRight: [],
       calfLeft: [],
       calfRight: []
-    };
-  });
+    })
+  );
 
   // Save to localStorage whenever data changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(STORAGE_KEYS.MEASUREMENTS, JSON.stringify(data));
   }, [data]);
 
   const addMeasurement = (type: keyof MeasurementData, value: number, date?: string) => {

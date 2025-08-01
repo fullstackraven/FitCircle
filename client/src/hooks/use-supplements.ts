@@ -1,4 +1,5 @@
 import type { Supplement } from '@shared/schema';
+import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 interface LocalSupplement {
   id: number;
@@ -10,10 +11,8 @@ interface LocalSupplement {
 
 export function useSupplements() {
   // Get supplements from localStorage
-  const getSupplements = (): LocalSupplement[] => {
-    const stored = localStorage.getItem('fitcircle_supplements');
-    return stored ? JSON.parse(stored) : [];
-  };
+  const getSupplements = (): LocalSupplement[] => 
+    safeParseJSON(localStorage.getItem(STORAGE_KEYS.SUPPLEMENTS), []);
 
   // Create supplement
   const createSupplement = (supplement: { name: string; measurementType: string; amount: number }) => {
@@ -28,7 +27,7 @@ export function useSupplements() {
     };
     
     const updatedSupplements = [...supplements, newSupplement];
-    localStorage.setItem('fitcircle_supplements', JSON.stringify(updatedSupplements));
+    localStorage.setItem(STORAGE_KEYS.SUPPLEMENTS, JSON.stringify(updatedSupplements));
     return newSupplement;
   };
 
@@ -38,7 +37,7 @@ export function useSupplements() {
     const updatedSupplements = supplements.map(supplement => 
       supplement.id === id ? { ...supplement, ...updates } : supplement
     );
-    localStorage.setItem('fitcircle_supplements', JSON.stringify(updatedSupplements));
+    localStorage.setItem(STORAGE_KEYS.SUPPLEMENTS, JSON.stringify(updatedSupplements));
     return updatedSupplements.find(s => s.id === id);
   };
 
@@ -46,7 +45,7 @@ export function useSupplements() {
   const deleteSupplement = (id: number) => {
     const supplements = getSupplements();
     const updatedSupplements = supplements.filter(supplement => supplement.id !== id);
-    localStorage.setItem('fitcircle_supplements', JSON.stringify(updatedSupplements));
+    localStorage.setItem(STORAGE_KEYS.SUPPLEMENTS, JSON.stringify(updatedSupplements));
     
     // Also remove all logs for this supplement to clean up data
     const logs = getSupplementLogs();
