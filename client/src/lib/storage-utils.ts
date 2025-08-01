@@ -23,6 +23,8 @@ export const STORAGE_KEYS = {
   HYDRATION: 'fitcircle_hydration_data',
   GOALS: 'fitcircle_goals',
   MEASUREMENTS: 'fitcircle_measurements_history',
+  PROFILE: 'fitcircle_profile',
+  FOOD_TRACKER_DATA: 'fitcircle_food_tracker_data',
   MEDITATION: 'fitcircle_meditation_logs',
   FASTING: 'fitcircle_fasting_logs',
   SUPPLEMENTS: 'fitcircle_supplements',

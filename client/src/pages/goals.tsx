@@ -11,6 +11,8 @@ import {
   setMeditationGoal,
   getMeditationLogs 
 } from '@/utils/meditation-calc';
+import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
+import { getTodayString } from '@/lib/date-utils';
 
 export default function GoalsPageFinal() {
   const [, navigate] = useLocation();

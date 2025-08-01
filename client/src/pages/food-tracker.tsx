@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { getTodayString } from '@/lib/date-utils';
+import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 interface FoodEntry {
   id: string;
@@ -78,11 +80,9 @@ export default function FoodTrackerPage() {
   // Load data on component mount
   useEffect(() => {
     // Load today's food entries
-    const today = new Date().toISOString().split('T')[0];
-    const stored = localStorage.getItem(`fitcircle_food_${today}`);
-    if (stored) {
-      setFoodEntries(JSON.parse(stored));
-    }
+    const today = getTodayString();
+    const stored = safeParseJSON(localStorage.getItem(`fitcircle_food_${today}`), []);
+    setFoodEntries(stored);
 
     // Load macro targets directly from what fitness calculator displays/stores
     const loadMacroTargets = () => {
@@ -116,7 +116,7 @@ export default function FoodTrackerPage() {
 
   // Save food entries whenever they change
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayString();
     localStorage.setItem(`fitcircle_food_${today}`, JSON.stringify(foodEntries));
   }, [foodEntries]);
 
@@ -130,22 +130,19 @@ export default function FoodTrackerPage() {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key && key.startsWith('fitcircle_food_')) {
-          const savedEntries = localStorage.getItem(key);
-          if (savedEntries) {
-            const entries: FoodEntry[] = JSON.parse(savedEntries);
-            entries.forEach(entry => {
-              const foodKey = `${entry.name}-${entry.calories}-${entry.carbs}-${entry.protein}-${entry.fat}`;
-              if (!seenFoods.has(foodKey)) {
-                seenFoods.add(foodKey);
-                // Create a new entry without meal specification for search
-                allFoods.push({
-                  ...entry,
-                  id: `search-${entry.id}`,
-                  meal: 'breakfast' // Default value, will be overridden when adding
-                });
-              }
-            });
-          }
+          const entries = safeParseJSON(localStorage.getItem(key), []) as FoodEntry[];
+          entries.forEach(entry => {
+            const foodKey = `${entry.name}-${entry.calories}-${entry.carbs}-${entry.protein}-${entry.fat}`;
+            if (!seenFoods.has(foodKey)) {
+              seenFoods.add(foodKey);
+              // Create a new entry without meal specification for search
+              allFoods.push({
+                ...entry,
+                id: `search-${entry.id}`,
+                meal: 'breakfast' // Default value, will be overridden when adding
+              });
+            }
+          });
         }
       }
       

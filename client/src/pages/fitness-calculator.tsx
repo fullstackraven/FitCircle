@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 interface UserData {
   height: number; // inches
@@ -28,45 +29,43 @@ export default function FitnessCalculator() {
   });
 
   // Calculator states with localStorage persistence
-  const [activityLevel, setActivityLevel] = useState<string>(() => {
-    return localStorage.getItem('fitness_calc_activity_level') || 'moderate';
-  });
-  const [goalType, setGoalType] = useState<string>(() => {
-    return localStorage.getItem('fitness_calc_goal_type') || 'maintain';
-  });
-  const [goalRate, setGoalRate] = useState<string>(() => {
-    return localStorage.getItem('fitness_calc_goal_rate') || '1';
-  });
-  const [macroStyle, setMacroStyle] = useState<string>(() => {
-    return localStorage.getItem('fitness_calc_macro_style') || 'standard';
-  });
-  const [customCarbs, setCustomCarbs] = useState<string>(() => {
-    return localStorage.getItem('fitness_calc_custom_carbs') || '40';
-  });
-  const [customProtein, setCustomProtein] = useState<string>(() => {
-    return localStorage.getItem('fitness_calc_custom_protein') || '30';
-  });
-  const [customFat, setCustomFat] = useState<string>(() => {
-    return localStorage.getItem('fitness_calc_custom_fat') || '30';
-  });
+  const [activityLevel, setActivityLevel] = useState<string>(() => 
+    localStorage.getItem('fitness_calc_activity_level') || 'moderate'
+  );
+  const [goalType, setGoalType] = useState<string>(() => 
+    localStorage.getItem('fitness_calc_goal_type') || 'maintain'
+  );
+  const [goalRate, setGoalRate] = useState<string>(() => 
+    localStorage.getItem('fitness_calc_goal_rate') || '1'
+  );
+  const [macroStyle, setMacroStyle] = useState<string>(() => 
+    localStorage.getItem('fitness_calc_macro_style') || 'standard'
+  );
+  const [customCarbs, setCustomCarbs] = useState<string>(() => 
+    localStorage.getItem('fitness_calc_custom_carbs') || '40'
+  );
+  const [customProtein, setCustomProtein] = useState<string>(() => 
+    localStorage.getItem('fitness_calc_custom_protein') || '30'
+  );
+  const [customFat, setCustomFat] = useState<string>(() => 
+    localStorage.getItem('fitness_calc_custom_fat') || '30'
+  );
 
   useEffect(() => {
     const loadUserData = () => {
-      // Load user data from measurements localStorage - using the correct key 'fitcircle_measurements_history'
-      const profileData = JSON.parse(localStorage.getItem('fitcircle_profile') || '{}');
-      const measurementData = JSON.parse(localStorage.getItem('fitcircle_measurements_history') || '{}');
+      // Load user data from measurements localStorage
+      const profileData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.PROFILE), {}) as any;
+      const measurementData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.MEASUREMENTS), {}) as any;
       
       let height = 0;
       let weight = 0;
       
       // Get latest height and weight from measurements using the correct data structure
       if (measurementData.height && measurementData.height.length > 0) {
-        // Get the most recent height measurement
         const latestHeight = measurementData.height[measurementData.height.length - 1];
         height = latestHeight.value;
       }
       if (measurementData.weight && measurementData.weight.length > 0) {
-        // Get the most recent weight measurement
         const latestWeight = measurementData.weight[measurementData.weight.length - 1];
         weight = latestWeight.value;
       }
