@@ -229,13 +229,13 @@ export default function GoalsPageFinal() {
   const { getLast7DaysAverage, updateGoal, data: cardioData } = useCardio();
   const cardio7DayAverage = getLast7DaysAverage();
 
-  // Cardio goal form state
+  // Cardio goal form state - Initialize with empty state and update when data loads
   const [cardioGoalForm, setCardioGoalForm] = useState({
-    type: cardioData.goal.type,
-    target: cardioData.goal.target.toString()
+    type: 'duration' as 'duration' | 'distance',
+    target: '150'
   });
 
-  // Update cardio goal form when data changes
+  // Update cardio goal form when data changes (this ensures form reflects actual stored data)
   useEffect(() => {
     setCardioGoalForm({
       type: cardioData.goal.type,
