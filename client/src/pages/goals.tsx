@@ -226,7 +226,7 @@ export default function GoalsPageFinal() {
   const workoutCurrent = getWorkoutConsistency();
 
   // Get cardio data
-  const { getLast7DaysAverage, updateGoal, data: cardioData } = useCardio();
+  const { getLast7DaysAverage, getWeeklyProgress, updateGoal, data: cardioData } = useCardio();
   const cardio7DayAverage = getLast7DaysAverage();
 
   // Note: Cardio goal now updates directly through cardio hook, no separate form state needed
@@ -792,16 +792,24 @@ export default function GoalsPageFinal() {
             
             {/* Goal Circle showing overall goal */}
             <div className="flex justify-center mb-6">
-              <GoalCircle
-                percentage={cardio7DayAverage.progressToGoal || 0}
-                color={goalColors.cardio}
-                size={120}
-                currentValue={Math.round(cardio7DayAverage.average * 7)}
-                goalValue={cardioData.goal.target}
-                unit={cardioData.goal.type === 'duration' ? 'min' : 'mi'}
-                title="Weekly Goal"
-                description=""
-              />
+              {(() => {
+                const weeklyProgress = getWeeklyProgress();
+                const currentWeekTotal = cardioData.goal.type === 'duration' ? weeklyProgress.duration : weeklyProgress.distance;
+                const progressPercentage = cardioData.goal.target > 0 ? Math.min((currentWeekTotal / cardioData.goal.target) * 100, 100) : 0;
+                
+                return (
+                  <GoalCircle
+                    percentage={progressPercentage}
+                    color={goalColors.cardio}
+                    size={120}
+                    currentValue={Math.round(currentWeekTotal)}
+                    goalValue={cardioData.goal.target}
+                    unit={cardioData.goal.type === 'duration' ? 'min' : 'mi'}
+                    title="This Week"
+                    description=""
+                  />
+                );
+              })()}
             </div>
             
             <div className="space-y-4 mb-6">
@@ -851,10 +859,17 @@ export default function GoalsPageFinal() {
                 />
               </div>
               
-              <div className="text-xs text-slate-400 bg-slate-700 rounded-xl p-3">
-                <strong>Current Week:</strong> {Math.round(cardio7DayAverage.average * 7)}{cardioData.goal.type === 'duration' ? ' min' : ' mi'}<br/>
-                <strong>Target:</strong> {cardioData.goal.target}{cardioData.goal.type === 'duration' ? ' min' : ' mi'} per week
-              </div>
+              {(() => {
+                const weeklyProgress = getWeeklyProgress();
+                const currentWeekTotal = cardioData.goal.type === 'duration' ? weeklyProgress.duration : weeklyProgress.distance;
+                
+                return (
+                  <div className="text-xs text-slate-400 bg-slate-700 rounded-xl p-3">
+                    <strong>Current Week:</strong> {Math.round(currentWeekTotal)}{cardioData.goal.type === 'duration' ? ' min' : ' mi'}<br/>
+                    <strong>Target:</strong> {cardioData.goal.target}{cardioData.goal.type === 'duration' ? ' min' : ' mi'} per week
+                  </div>
+                );
+              })()}
             </div>
             
             <div className="flex space-x-3">
