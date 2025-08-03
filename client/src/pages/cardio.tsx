@@ -65,6 +65,15 @@ export default function CardioPage() {
   const dailyGoalTarget = data.goal.target / 7; // Weekly goal divided by 7 days
   const todaysValue = data.goal.type === 'duration' ? todaysProgress.duration : todaysProgress.distance;
   const progressPercentage = dailyGoalTarget > 0 ? Math.min((todaysValue / dailyGoalTarget) * 100, 100) : 0;
+  
+  // Debug logging
+  console.log('DEBUG Cardio:', {
+    goalType: data.goal.type,
+    todaysProgress,
+    todaysValue,
+    dailyGoalTarget,
+    progressPercentage
+  });
 
   const resetAddForm = () => {
     setNewEntry({
