@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
@@ -337,6 +337,18 @@ export default function Home() {
               >
                 <UtensilsCrossed className="w-5 h-5 text-slate-400" />
                 <span className="text-white">Food Tracker</span>
+              </div>
+
+              {/* Cardio */}
+              <div 
+                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  navigate('/cardio?from=dashboard');
+                }}
+              >
+                <Activity className="w-5 h-5 text-slate-400" />
+                <span className="text-white">Cardio</span>
               </div>
 
               {/* Intermittent Fasting */}

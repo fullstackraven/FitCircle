@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Droplet, Brain, Clock, Scale, Percent, Target, Edit3, Check, X } from 'lucide-react';
+import { ChevronLeft, Droplet, Brain, Clock, Scale, Percent, Target, Edit3, Check, X, Activity } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useHydration } from '@/hooks/use-hydration';
 import { useWorkouts } from '@/hooks/use-workouts';
+import { useCardio } from '@/hooks/use-cardio';
 import { GoalCircle } from '@/components/GoalCircle';
 import { 
   calculateMeditation7DayAverage, 
@@ -224,6 +225,10 @@ export default function GoalsPageFinal() {
   const bodyFatCurrent = getCurrentBodyFat();
   const workoutCurrent = getWorkoutConsistency();
 
+  // Get cardio data
+  const { getLast7DaysAverage } = useCardio();
+  const cardio7DayAverage = getLast7DaysAverage();
+
   // Use shared meditation calculation for progress
   const meditationProgress = calculateMeditationProgress(meditationLogs, getMeditationGoal());
   const fastingProgress = goals.fastingHours > 0 ? Math.min((fastingCurrent / goals.fastingHours) * 100, 100) : 0;
@@ -251,6 +256,7 @@ export default function GoalsPageFinal() {
     weightedScore += (weightProgress * wellnessWeights.weightLbs) / totalWeight;
     weightedScore += (bodyFatProgress * wellnessWeights.targetBodyFat) / totalWeight;
     weightedScore += (workoutCurrent * wellnessWeights.workoutConsistency) / totalWeight;
+    weightedScore += (cardio7DayAverage.progressToGoal * wellnessWeights.cardio) / totalWeight;
 
     return Math.round(weightedScore);
   };
@@ -267,7 +273,8 @@ export default function GoalsPageFinal() {
     fastingHours: 10,
     weightLbs: 10,
     targetBodyFat: 20,
-    workoutConsistency: 40
+    workoutConsistency: 30,
+    cardio: 10
   });
   const [isWeightsDialogOpen, setIsWeightsDialogOpen] = useState(false);
   const [tempWeights, setTempWeights] = useState(wellnessWeights);
@@ -440,6 +447,17 @@ export default function GoalsPageFinal() {
       currentValue: workoutCurrent,
       goalValue: 100,
       progress: workoutCurrent
+    },
+    {
+      key: 'cardio',
+      title: 'Cardio Goal',
+      unit: 'min',
+      icon: Activity,
+      color: 'rgb(34, 197, 94)',
+      currentValue: Math.round(cardio7DayAverage.average * 10) / 10,
+      goalValue: Math.round(cardio7DayAverage.dailyTarget * 10) / 10,
+      progress: cardio7DayAverage.progressToGoal,
+      isReadOnly: true // Cardio goal is managed from Cardio page
     }
   ];
 
@@ -489,7 +507,11 @@ export default function GoalsPageFinal() {
 
                 {/* Edit button in top right corner */}
                 <div className="absolute top-2 right-2">
-                  {isEditing ? (
+                  {item.isReadOnly ? (
+                    <div className="text-xs text-slate-500 p-1">
+                      Set in Cardio
+                    </div>
+                  ) : isEditing ? (
                     <div className="flex items-center space-x-1">
                       <input
                         type="number"

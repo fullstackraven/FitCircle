@@ -14,6 +14,7 @@ import MeditationPage from "@/pages/meditation";
 import HydrationPage from "@/pages/hydration";
 import GoalsPage from "@/pages/goals";
 import RemindersPage from "@/pages/reminders";
+import CardioPage from "@/pages/cardio";
 
 
 // import TrainerPage from "@/pages/trainer";
@@ -33,6 +34,7 @@ function Router() {
       <Route path="/goals" component={GoalsPage} />
       <Route path="/fitness-calculator" component={FitnessCalculatorPage} />
       <Route path="/food-tracker" component={FoodTrackerPage} />
+      <Route path="/cardio" component={CardioPage} />
       <Route path="/report-bug" component={ReportBugPage} />
 
       <Route path="/reminders" component={RemindersPage} />
