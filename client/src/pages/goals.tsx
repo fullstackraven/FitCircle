@@ -226,8 +226,22 @@ export default function GoalsPageFinal() {
   const workoutCurrent = getWorkoutConsistency();
 
   // Get cardio data
-  const { getLast7DaysAverage } = useCardio();
+  const { getLast7DaysAverage, updateGoal, data: cardioData } = useCardio();
   const cardio7DayAverage = getLast7DaysAverage();
+
+  // Cardio goal form state
+  const [cardioGoalForm, setCardioGoalForm] = useState({
+    type: cardioData.goal.type,
+    target: cardioData.goal.target.toString()
+  });
+
+  // Update cardio goal form when data changes
+  useEffect(() => {
+    setCardioGoalForm({
+      type: cardioData.goal.type,
+      target: cardioData.goal.target.toString()
+    });
+  }, [cardioData.goal.type, cardioData.goal.target]);
 
   // Use shared meditation calculation for progress
   const meditationProgress = calculateMeditationProgress(meditationLogs, getMeditationGoal());
@@ -265,6 +279,7 @@ export default function GoalsPageFinal() {
   const [editingGoal, setEditingGoal] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState<string>('');
   const [isWeightGoalTypeDialogOpen, setIsWeightGoalTypeDialogOpen] = useState(false);
+  const [isCardioGoalDialogOpen, setIsCardioGoalDialogOpen] = useState(false);
 
   // Wellness Score State
   const [wellnessWeights, setWellnessWeights] = useState({
@@ -385,6 +400,18 @@ export default function GoalsPageFinal() {
     setIsWeightGoalTypeDialogOpen(false);
   };
 
+  const handleUpdateCardioGoal = () => {
+    if (!cardioGoalForm.target) return;
+    
+    updateGoal({
+      type: cardioGoalForm.type as 'duration' | 'distance',
+      target: parseFloat(cardioGoalForm.target),
+      period: 'week'
+    });
+    
+    setIsCardioGoalDialogOpen(false);
+  };
+
   // Define goal items using working pattern
   const goalItems = [
     {
@@ -451,13 +478,12 @@ export default function GoalsPageFinal() {
     {
       key: 'cardio',
       title: 'Cardio Goal',
-      unit: 'min',
+      unit: cardioData.goal.type === 'duration' ? 'min' : 'mi',
       icon: Activity,
       color: 'rgb(34, 197, 94)',
       currentValue: Math.round(cardio7DayAverage.average * 10) / 10,
       goalValue: Math.round(cardio7DayAverage.dailyTarget * 10) / 10,
-      progress: cardio7DayAverage.progressToGoal,
-      isReadOnly: true // Cardio goal is managed from Cardio page
+      progress: cardio7DayAverage.progressToGoal || 0
     }
   ];
 
@@ -507,11 +533,7 @@ export default function GoalsPageFinal() {
 
                 {/* Edit button in top right corner */}
                 <div className="absolute top-2 right-2">
-                  {item.isReadOnly ? (
-                    <div className="text-xs text-slate-500 p-1">
-                      Set in Cardio
-                    </div>
-                  ) : isEditing ? (
+                  {isEditing ? (
                     <div className="flex items-center space-x-1">
                       <input
                         type="number"
@@ -535,9 +557,15 @@ export default function GoalsPageFinal() {
                     </div>
                   ) : (
                     <button
-                      onClick={() => item.hasSpecialEdit && item.key === 'weightLbs' ? 
-                        setIsWeightGoalTypeDialogOpen(true) : 
-                        handleEdit(item.key, item.goalValue)}
+                      onClick={() => {
+                        if (item.hasSpecialEdit && item.key === 'weightLbs') {
+                          setIsWeightGoalTypeDialogOpen(true);
+                        } else if (item.key === 'cardio') {
+                          setIsCardioGoalDialogOpen(true);
+                        } else {
+                          handleEdit(item.key, item.goalValue);
+                        }
+                      }}
                       className="p-1 text-slate-400 hover:text-white"
                     >
                       <Edit3 className="w-3 h-3" />
@@ -692,6 +720,69 @@ export default function GoalsPageFinal() {
                 className="flex-1 py-2 px-4 bg-slate-700 text-white rounded-xl hover:bg-slate-600"
               >
                 Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cardio Goal Dialog */}
+      {isCardioGoalDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Cardio Goal</h3>
+            
+            {/* Goal Circle */}
+            <div className="flex justify-center mb-4">
+              <GoalCircle
+                percentage={cardio7DayAverage.progressToGoal || 0}
+                color="rgb(34, 197, 94)"
+                size={80}
+                currentValue={Math.round(cardio7DayAverage.average)}
+                goalValue={Math.round(cardio7DayAverage.dailyTarget)}
+                unit={cardioData.goal.type === 'duration' ? 'min' : 'mi'}
+                title="7-Day Average"
+                description=""
+              />
+            </div>
+            
+            <div className="space-y-4 mb-6">
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm text-slate-300">Goal Type:</label>
+                <select 
+                  value={cardioGoalForm.type} 
+                  onChange={(e) => setCardioGoalForm({...cardioGoalForm, type: e.target.value})}
+                  className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-white"
+                >
+                  <option value="duration">Minutes per week</option>
+                  <option value="distance">Miles per week</option>
+                </select>
+              </div>
+              
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm text-slate-300">Weekly Target:</label>
+                <input
+                  type="number"
+                  value={cardioGoalForm.target}
+                  onChange={(e) => setCardioGoalForm({...cardioGoalForm, target: e.target.value})}
+                  className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-white"
+                  placeholder={cardioGoalForm.type === 'duration' ? 'Minutes' : 'Miles'}
+                />
+              </div>
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={handleUpdateCardioGoal}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-xl"
+              >
+                Update Goal
+              </button>
+              <button
+                onClick={() => setIsCardioGoalDialogOpen(false)}
+                className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
+              >
+                Cancel
               </button>
             </div>
           </div>

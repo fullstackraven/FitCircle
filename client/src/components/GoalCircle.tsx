@@ -25,7 +25,8 @@ export function GoalCircle({
 }: GoalCircleProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+  const safePercentage = isNaN(percentage) ? 0 : Math.max(0, Math.min(100, percentage));
+  const strokeDashoffset = circumference - (safePercentage / 100) * circumference;
 
   return (
     <div className="flex flex-col items-center">
@@ -63,15 +64,15 @@ export function GoalCircle({
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           {title === "Wellness Score" ? (
             <div className="text-2xl font-bold text-white">
-              {Math.round(percentage)}
+              {isNaN(percentage) ? 0 : Math.round(percentage)}
             </div>
           ) : (
             <>
               <div className="text-xl font-bold text-white">
-                {goalValue}{unit}
+                {isNaN(goalValue) ? 0 : goalValue}{unit}
               </div>
               <div className="text-xs text-slate-400 text-center">
-                {Math.round(percentage)}%
+                {isNaN(percentage) ? 0 : Math.round(percentage)}%
               </div>
             </>
           )}
