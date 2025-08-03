@@ -283,13 +283,13 @@ export default function GoalsPageFinal() {
 
   // Wellness Score State
   const [wellnessWeights, setWellnessWeights] = useState({
-    hydrationOz: 10,
+    hydrationOz: 20,
     meditationMinutes: 10,
     fastingHours: 10,
     weightLbs: 10,
-    targetBodyFat: 20,
-    workoutConsistency: 30,
-    cardio: 10
+    targetBodyFat: 10,
+    workoutConsistency: 40,
+    cardio: 0
   });
   const [isWeightsDialogOpen, setIsWeightsDialogOpen] = useState(false);
   const [tempWeights, setTempWeights] = useState(wellnessWeights);
@@ -751,7 +751,7 @@ export default function GoalsPageFinal() {
                 <label className="text-sm text-slate-300">Goal Type:</label>
                 <select 
                   value={cardioGoalForm.type} 
-                  onChange={(e) => setCardioGoalForm({...cardioGoalForm, type: e.target.value})}
+                  onChange={(e) => setCardioGoalForm({...cardioGoalForm, type: e.target.value as 'duration' | 'distance'})}
                   className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-white"
                 >
                   <option value="duration">Minutes per week</option>
