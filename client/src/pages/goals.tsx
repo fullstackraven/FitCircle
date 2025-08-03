@@ -235,15 +235,13 @@ export default function GoalsPageFinal() {
     target: '150'
   });
 
-  // Update cardio goal form when dialog opens to ensure it reflects current data
+  // Update cardio goal form when data changes to ensure it reflects current stored data
   useEffect(() => {
-    if (isCardioGoalDialogOpen) {
-      setCardioGoalForm({
-        type: cardioData.goal.type,
-        target: cardioData.goal.target.toString()
-      });
-    }
-  }, [isCardioGoalDialogOpen, cardioData.goal.type, cardioData.goal.target]);
+    setCardioGoalForm({
+      type: cardioData.goal.type,
+      target: cardioData.goal.target.toString()
+    });
+  }, [cardioData.goal.type, cardioData.goal.target]);
 
   // Use shared meditation calculation for progress
   const meditationProgress = calculateMeditationProgress(meditationLogs, getMeditationGoal());
@@ -821,7 +819,7 @@ export default function GoalsPageFinal() {
                 color={goalColors.cardio}
                 size={80}
                 currentValue={Math.round(cardio7DayAverage.average)}
-                goalValue={Math.round(cardio7DayAverage.dailyTarget)}
+                goalValue={cardioData.goal.target}
                 unit={cardioData.goal.type === 'duration' ? 'min' : 'mi'}
                 title="7-Day Average"
                 description=""
@@ -832,7 +830,7 @@ export default function GoalsPageFinal() {
               <div className="flex flex-col space-y-2">
                 <label className="text-sm text-slate-300">Goal Type:</label>
                 <select 
-                  value={cardioGoalForm.type} 
+                  value={cardioData.goal.type} 
                   onChange={(e) => setCardioGoalForm({...cardioGoalForm, type: e.target.value as 'duration' | 'distance'})}
                   className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-white"
                 >
@@ -845,10 +843,10 @@ export default function GoalsPageFinal() {
                 <label className="text-sm text-slate-300">Weekly Target:</label>
                 <input
                   type="number"
-                  value={cardioGoalForm.target}
+                  value={cardioData.goal.target}
                   onChange={(e) => setCardioGoalForm({...cardioGoalForm, target: e.target.value})}
                   className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-white"
-                  placeholder={cardioGoalForm.type === 'duration' ? 'Minutes' : 'Miles'}
+                  placeholder={cardioData.goal.type === 'duration' ? 'Minutes' : 'Miles'}
                 />
               </div>
             </div>
