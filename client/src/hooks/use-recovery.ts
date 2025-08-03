@@ -47,12 +47,28 @@ export const useRecovery = () => {
   const getRecoveryStats = useCallback(() => {
     const totalRecoveryDays = data.recoveryDays.length;
     
-    // Get total workout days from localStorage
-    const workoutLogs = localStorage.getItem(WORKOUT_LOGS_STORAGE_KEY);
-    const logs = workoutLogs ? safeParseJSON(workoutLogs, {}) : {};
+    // Get all workout data from the correct storage key across all time
+    const workoutData = localStorage.getItem('fitcircle_workouts');
+    const workouts = workoutData ? safeParseJSON(workoutData, { workouts: {}, dailyLogs: {} }) : { workouts: {}, dailyLogs: {} };
+    const workoutArray = Object.values(workouts.workouts || {});
     
-    // Count all days that have workout logs
-    const totalWorkoutDays = Object.keys(logs).length;
+    if (workoutArray.length === 0) {
+      return {
+        totalRecoveryDays,
+        totalWorkoutDays: 0,
+        totalActiveDays: totalRecoveryDays,
+        recoveryPercentage: totalRecoveryDays > 0 ? 100 : 0
+      };
+    }
+    
+    // Count all days with actual workout activity across entire history
+    let totalWorkoutDays = 0;
+    Object.entries(workouts.dailyLogs || {}).forEach(([dateStr, dayLog]) => {
+      const hasWorkouts = workoutArray.some((w: any) => dayLog && (dayLog as any)[w.id] && (dayLog as any)[w.id] > 0);
+      if (hasWorkouts) {
+        totalWorkoutDays++;
+      }
+    });
     
     // Total active days = workout days + recovery days
     const totalActiveDays = totalWorkoutDays + totalRecoveryDays;

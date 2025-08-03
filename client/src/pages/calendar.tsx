@@ -586,7 +586,7 @@ export default function CalendarPage() {
                     <div className="w-1 h-1 bg-purple-400 rounded-full" />
                   )}
                   {hasSupplements && (
-                    <div className="w-1 h-1 bg-orange-400 rounded-full" />
+                    <div className="w-1 h-1 bg-green-400 rounded-full" />
                   )}
                 </div>
               )}
@@ -925,7 +925,7 @@ export default function CalendarPage() {
                         size={160}
                         currentValue={stats.totalRecoveryDays}
                         goalValue={stats.totalActiveDays}
-                        unit="days"
+                        unit="Days"
                         title="Recovery Rate"
                         description={`${stats.totalRecoveryDays} recovery of ${stats.totalActiveDays} active days`}
                       />
@@ -984,7 +984,7 @@ export default function CalendarPage() {
         <Collapsible open={isSupplementsOpen} onOpenChange={setIsSupplementsOpen}>
           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors">
             <div className="flex items-center space-x-2">
-              <Pill className="w-5 h-5 text-orange-400" />
+              <Pill className="w-5 h-5 text-green-400" />
               <span className="text-white font-medium">Supplements</span>
             </div>
             {isSupplementsOpen ? (
@@ -1032,12 +1032,12 @@ export default function CalendarPage() {
                             // Edit mode
                             <div className="space-y-3">
                               <div className="flex items-center space-x-2">
-                                <Pill className="w-5 h-5 text-orange-400" />
+                                <Pill className="w-5 h-5 text-green-400" />
                                 <input
                                   type="text"
                                   value={editSupplementName}
                                   onChange={(e) => setEditSupplementName(e.target.value)}
-                                  className="flex-1 bg-slate-600 text-white px-3 py-2 rounded-xl border border-slate-500 focus:border-orange-400 focus:outline-none"
+                                  className="flex-1 bg-slate-600 text-white px-3 py-2 rounded-xl border border-slate-500 focus:border-green-400 focus:outline-none"
                                   placeholder="Supplement name"
                                 />
                               </div>
@@ -1046,14 +1046,14 @@ export default function CalendarPage() {
                                   type="number"
                                   value={editSupplementAmount}
                                   onChange={(e) => setEditSupplementAmount(e.target.value)}
-                                  className="w-20 bg-slate-600 text-white px-3 py-2 rounded-xl border border-slate-500 focus:border-orange-400 focus:outline-none"
+                                  className="w-20 bg-slate-600 text-white px-3 py-2 rounded-xl border border-slate-500 focus:border-green-400 focus:outline-none"
                                   placeholder="Amount"
                                 />
                                 <input
                                   type="text"
                                   value={editSupplementType}
                                   onChange={(e) => setEditSupplementType(e.target.value)}
-                                  className="flex-1 bg-slate-600 text-white px-3 py-2 rounded-xl border border-slate-500 focus:border-orange-400 focus:outline-none"
+                                  className="flex-1 bg-slate-600 text-white px-3 py-2 rounded-xl border border-slate-500 focus:border-green-400 focus:outline-none"
                                   placeholder="Unit (mg, g, etc.)"
                                 />
                               </div>
@@ -1078,7 +1078,7 @@ export default function CalendarPage() {
                             // View mode
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-3">
-                                <Pill className="w-5 h-5 text-orange-400" />
+                                <Pill className="w-5 h-5 text-green-400" />
                                 <div>
                                   <div className="text-white font-medium">{supplement.name}</div>
                                   <div className="text-sm text-slate-400">
