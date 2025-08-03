@@ -53,13 +53,7 @@ export default function CardioPage() {
     notes: ''
   });
   const [newCustomType, setNewCustomType] = useState('');
-  const [goalForm, setGoalForm] = useState<{
-    type: 'duration' | 'distance';
-    target: string;
-  }>({
-    type: data.goal.type,
-    target: data.goal.target.toString()
-  });
+  // Removed goalForm state - now updates directly
 
   const todaysProgress = getTodaysProgress();
   const weeklyProgress = getWeeklyProgress();
@@ -127,17 +121,7 @@ export default function CardioPage() {
     }
   };
 
-  const handleUpdateGoal = () => {
-    if (!goalForm.target) return;
-    
-    updateGoal({
-      type: goalForm.type,
-      target: parseFloat(goalForm.target),
-      period: 'week'
-    });
-    
-    setIsGoalDialogOpen(false);
-  };
+  // handleUpdateGoal removed - goal updates now happen directly in UI
 
   const handleAddCustomType = () => {
     if (!newCustomType.trim()) return;
@@ -177,48 +161,83 @@ export default function CardioPage() {
             <DialogHeader>
               <DialogTitle>Cardio Goal</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
-              {/* Goal Circle */}
+            <div className="space-y-6">
               <div className="flex justify-center">
                 <GoalCircle
-                  percentage={last7DaysAverage.progressToGoal}
+                  percentage={weeklyProgress.goalProgress || 0}
                   color="rgb(34, 197, 94)"
-                  size={80}
-                  currentValue={Math.round(last7DaysAverage.average)}
-                  goalValue={Math.round(last7DaysAverage.dailyTarget)}
+                  size={120}
+                  currentValue={Math.round(data.goal.type === 'duration' ? weeklyProgress.duration : weeklyProgress.distance)}
+                  goalValue={data.goal.target}
                   unit={data.goal.type === 'duration' ? 'min' : 'mi'}
-                  title="7-Day Average"
+                  title="This Week"
                   description=""
                 />
               </div>
               
-              <div className="space-y-3">
-                <Label>Goal Type</Label>
-                <Select value={goalForm.type} onValueChange={(value: 'duration' | 'distance') => setGoalForm({...goalForm, type: value})}>
-                  <SelectTrigger className="bg-slate-700 border-slate-600">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-700 border-slate-600">
-                    <SelectItem value="duration">Minutes per week</SelectItem>
-                    <SelectItem value="distance">Miles per week</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="space-y-4">
+                <div className="space-y-3">
+                  <Label className="text-sm text-slate-300">Goal Type:</Label>
+                  <div className="flex space-x-3">
+                    <Button
+                      onClick={() => updateGoal({ type: 'distance', target: data.goal.target, period: 'week' })}
+                      variant={data.goal.type === 'distance' ? 'default' : 'outline'}
+                      className={`flex-1 ${
+                        data.goal.type === 'distance' 
+                          ? 'bg-green-600 hover:bg-green-700 text-white' 
+                          : 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600'
+                      }`}
+                    >
+                      Miles per week
+                    </Button>
+                    <Button
+                      onClick={() => updateGoal({ type: 'duration', target: data.goal.target, period: 'week' })}
+                      variant={data.goal.type === 'duration' ? 'default' : 'outline'}
+                      className={`flex-1 ${
+                        data.goal.type === 'duration' 
+                          ? 'bg-green-600 hover:bg-green-700 text-white' 
+                          : 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600'
+                      }`}
+                    >
+                      Minutes per week
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <Label className="text-sm text-slate-300">Weekly Target:</Label>
+                  <Input
+                    type="number"
+                    value={data.goal.target}
+                    onChange={(e) => {
+                      const value = parseFloat(e.target.value);
+                      if (value > 0) {
+                        updateGoal({
+                          type: data.goal.type,
+                          target: value,
+                          period: 'week'
+                        });
+                      }
+                    }}
+                    className="bg-slate-700 border-slate-600 text-white"
+                    step="0.1"
+                  />
+                </div>
+                
+                <div className="text-xs text-slate-400 bg-slate-700 rounded-xl p-3">
+                  <strong>Current Week:</strong> {Math.round(data.goal.type === 'duration' ? weeklyProgress.duration : weeklyProgress.distance)}{data.goal.type === 'duration' ? ' min' : ' mi'}<br/>
+                  <strong>Target:</strong> {data.goal.target}{data.goal.type === 'duration' ? ' min' : ' mi'} per week
+                </div>
               </div>
               
-              <div className="space-y-3">
-                <Label>Weekly Target</Label>
-                <Input
-                  type="number"
-                  value={goalForm.target}
-                  onChange={(e) => setGoalForm({...goalForm, target: e.target.value})}
-                  className="bg-slate-700 border-slate-600"
-                  placeholder={goalForm.type === 'duration' ? 'Minutes' : 'Miles'}
-                />
+              <div className="flex space-x-3">
+                <Button
+                  onClick={() => setIsGoalDialogOpen(false)}
+                  className="flex-1 bg-slate-600 hover:bg-slate-700 text-white"
+                >
+                  Done
+                </Button>
               </div>
-              
-              <Button onClick={handleUpdateGoal} className="w-full bg-green-600 hover:bg-green-700">
-                Update Goal
-              </Button>
             </div>
           </DialogContent>
         </Dialog>
