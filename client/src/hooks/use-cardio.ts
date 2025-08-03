@@ -139,9 +139,13 @@ export function useCardio() {
     startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday start
     startOfWeek.setHours(0, 0, 0, 0);
     
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday end
+    endOfWeek.setHours(23, 59, 59, 999);
+    
     const weekEntries = data.entries.filter(entry => {
       const entryDate = new Date(entry.date + 'T00:00:00');
-      return entryDate >= startOfWeek && entryDate <= today;
+      return entryDate >= startOfWeek && entryDate <= endOfWeek;
     });
 
     const totalDuration = weekEntries.reduce((sum, entry) => sum + entry.duration, 0);

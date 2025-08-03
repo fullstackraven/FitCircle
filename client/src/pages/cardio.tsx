@@ -53,7 +53,10 @@ export default function CardioPage() {
     notes: ''
   });
   const [newCustomType, setNewCustomType] = useState('');
-  const [goalForm, setGoalForm] = useState({
+  const [goalForm, setGoalForm] = useState<{
+    type: 'duration' | 'distance';
+    target: string;
+  }>({
     type: data.goal.type,
     target: data.goal.target.toString()
   });
@@ -128,7 +131,7 @@ export default function CardioPage() {
     if (!goalForm.target) return;
     
     updateGoal({
-      type: goalForm.type as 'duration' | 'distance',
+      type: goalForm.type,
       target: parseFloat(goalForm.target),
       period: 'week'
     });
@@ -191,7 +194,7 @@ export default function CardioPage() {
               
               <div className="space-y-3">
                 <Label>Goal Type</Label>
-                <Select value={goalForm.type} onValueChange={(value) => setGoalForm({...goalForm, type: value})}>
+                <Select value={goalForm.type} onValueChange={(value: 'duration' | 'distance') => setGoalForm({...goalForm, type: value})}>
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue />
                   </SelectTrigger>
@@ -237,7 +240,7 @@ export default function CardioPage() {
         </div>
 
         {/* Weekly Progress Stats */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className="bg-slate-800 border-slate-700 rounded-xl">
           <CardContent className="p-4">
             <h3 className="text-lg font-semibold mb-3 text-center">This Week</h3>
             <div className="grid grid-cols-2 gap-4 text-center">
@@ -369,7 +372,7 @@ export default function CardioPage() {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Recent Activity</h3>
           {data.entries.length === 0 ? (
-            <Card className="bg-slate-800 border-slate-700">
+            <Card className="bg-slate-800 border-slate-700 rounded-xl">
               <CardContent className="p-6 text-center text-slate-400">
                 <Activity className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>No cardio entries yet</p>
@@ -379,7 +382,7 @@ export default function CardioPage() {
           ) : (
             <div className="space-y-3">
               {data.entries.slice(0, 10).map((entry) => (
-                <Card key={entry.id} className="bg-slate-800 border-slate-700">
+                <Card key={entry.id} className="bg-slate-800 border-slate-700 rounded-xl">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
