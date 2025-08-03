@@ -543,7 +543,7 @@ export default function GoalsPageFinal() {
       icon: Activity,
       color: goalColors.cardio,
       currentValue: Math.round(cardio7DayAverage.average * 10) / 10,
-      goalValue: Math.round(cardio7DayAverage.dailyTarget * 10) / 10,
+      goalValue: cardioData.goal.target,
       progress: cardio7DayAverage.progressToGoal || 0
     }
   ];
