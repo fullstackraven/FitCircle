@@ -924,7 +924,7 @@ export default function CalendarPage() {
                         color="rgb(255, 140, 0)"
                         size={160}
                         currentValue={stats.totalRecoveryDays}
-                        goalValue={stats.totalActiveDays}
+                        goalValue={stats.totalRecoveryDays}
                         unit="Days"
                         title="Recovery Rate"
                         description={`${stats.totalRecoveryDays} recovery of ${stats.totalActiveDays} active days`}

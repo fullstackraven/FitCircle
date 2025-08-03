@@ -793,16 +793,19 @@ export default function GoalsPageFinal() {
           <div className="bg-slate-800 rounded-xl p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Cardio Goal</h3>
             
-            {/* Goal Circle */}
+            {/* Goal Circle - Show current week progress vs overall goal */}
             <div className="flex justify-center mb-4">
               <GoalCircle
-                percentage={cardio7DayAverage.progressToGoal || 0}
+                percentage={(() => {
+                  const weekTotal = cardio7DayAverage.total || 0;
+                  return cardioData.goal.target > 0 ? Math.min((weekTotal / cardioData.goal.target) * 100, 100) : 0;
+                })()}
                 color={goalColors.cardio}
                 size={80}
-                currentValue={Math.round(cardio7DayAverage.average)}
+                currentValue={Math.round(cardio7DayAverage.total || 0)}
                 goalValue={cardioData.goal.target}
                 unit={cardioData.goal.type === 'duration' ? 'min' : 'mi'}
-                title="7-Day Average"
+                title="Current Week Progress"
                 description=""
               />
             </div>
