@@ -1149,7 +1149,7 @@ export default function CalendarPage() {
                         setSupplementsRefresh(prev => prev + 1); // Force re-render to show updated dots
                         alert('Supplement log saved successfully!');
                       }}
-                      className="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl transition-colors"
+                      className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors"
                     >
                       Save Supplements
                     </button>

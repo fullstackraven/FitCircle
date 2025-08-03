@@ -68,7 +68,7 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
       <DialogTrigger asChild>
         <Button 
           size="sm" 
-          className="bg-orange-500 hover:bg-orange-600 text-white rounded-full w-8 h-8 p-0"
+          className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 p-0"
         >
           <Plus className="w-4 h-4" />
         </Button>
@@ -134,7 +134,7 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
           <div className="flex space-x-2 pt-4">
             <Button 
               type="submit" 
-              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+              className="flex-1 bg-green-500 hover:bg-green-600 text-white"
               disabled={!name.trim() || !measurementType || !amount.trim()}
             >
               Add Supplement

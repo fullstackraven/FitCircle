@@ -61,25 +61,33 @@ export const useRecovery = () => {
       };
     }
     
-    // Count all days with actual workout activity across entire history
-    let totalWorkoutDays = 0;
+    // Count only completed days (where all workout goals were met) across entire history
+    let totalCompletedDays = 0;
     Object.entries(workouts.dailyLogs || {}).forEach(([dateStr, dayLog]) => {
-      const hasWorkouts = workoutArray.some((w: any) => dayLog && (dayLog as any)[w.id] && (dayLog as any)[w.id] > 0);
-      if (hasWorkouts) {
-        totalWorkoutDays++;
+      const workoutsWithReps = workoutArray.filter((w: any) => dayLog && (dayLog as any)[w.id] && (dayLog as any)[w.id] > 0);
+      if (workoutsWithReps.length > 0) {
+        let allGoalsMet = true;
+        
+        workoutsWithReps.forEach((workout: any) => {
+          const count = (dayLog as any)[workout.id] || 0;
+          if (count < workout.dailyGoal) {
+            allGoalsMet = false;
+          }
+        });
+        
+        if (allGoalsMet) {
+          totalCompletedDays++;
+        }
       }
     });
     
-    // Total active days = workout days + recovery days
-    const totalActiveDays = totalWorkoutDays + totalRecoveryDays;
-    
-    // Recovery percentage = recovery days / total active days
-    const recoveryPercentage = totalActiveDays > 0 ? (totalRecoveryDays / totalActiveDays) * 100 : 0;
+    // Recovery percentage = recovery days / total completed days (matching statistics panel)
+    const recoveryPercentage = totalCompletedDays > 0 ? (totalRecoveryDays / totalCompletedDays) * 100 : 0;
     
     return {
       totalRecoveryDays,
-      totalWorkoutDays,
-      totalActiveDays,
+      totalWorkoutDays: totalCompletedDays, // Using completed days for consistency with stats panel
+      totalActiveDays: totalCompletedDays,
       recoveryPercentage: Math.round(recoveryPercentage * 10) / 10 // Round to 1 decimal
     };
   }, [data.recoveryDays]);
