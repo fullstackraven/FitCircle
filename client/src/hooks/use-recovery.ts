@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { safeParseJSON } from '@/lib/storage-utils';
+import { safeParseJSON, STORAGE_KEYS } from '@/lib/storage-utils';
 import { getTodayString } from '@/lib/date-utils';
 
 interface RecoveryData {
@@ -47,8 +47,8 @@ export const useRecovery = () => {
   const getRecoveryStats = useCallback(() => {
     const totalRecoveryDays = data.recoveryDays.length;
     
-    // Get all workout data from the correct storage key across all time
-    const workoutData = localStorage.getItem('fitcircle_workouts');
+    // Get all workout data using the same storage key as the workout hook
+    const workoutData = localStorage.getItem(STORAGE_KEYS.WORKOUTS);
     const workouts = workoutData ? safeParseJSON(workoutData, { workouts: {}, dailyLogs: {} }) : { workouts: {}, dailyLogs: {} };
     const workoutArray = Object.values(workouts.workouts || {});
     
