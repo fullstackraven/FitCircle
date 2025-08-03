@@ -229,19 +229,7 @@ export default function GoalsPageFinal() {
   const { getLast7DaysAverage, updateGoal, data: cardioData } = useCardio();
   const cardio7DayAverage = getLast7DaysAverage();
 
-  // Cardio goal form state - Initialize with actual cardio data when dialog opens
-  const [cardioGoalForm, setCardioGoalForm] = useState({
-    type: 'duration' as 'duration' | 'distance',
-    target: '150'
-  });
-
-  // Update cardio goal form when data changes to ensure it reflects current stored data
-  useEffect(() => {
-    setCardioGoalForm({
-      type: cardioData.goal.type,
-      target: cardioData.goal.target.toString()
-    });
-  }, [cardioData.goal.type, cardioData.goal.target]);
+  // Note: Cardio goal now updates directly through cardio hook, no separate form state needed
 
   // Use shared meditation calculation for progress
   const meditationProgress = calculateMeditationProgress(meditationLogs, getMeditationGoal());
@@ -462,14 +450,7 @@ export default function GoalsPageFinal() {
   };
 
   const handleUpdateCardioGoal = () => {
-    if (!cardioGoalForm.target) return;
-    
-    updateGoal({
-      type: cardioGoalForm.type as 'duration' | 'distance',
-      target: parseFloat(cardioGoalForm.target),
-      period: 'week'
-    });
-    
+    // Goal is already updated directly through form inputs
     setIsCardioGoalDialogOpen(false);
   };
 
@@ -831,7 +812,14 @@ export default function GoalsPageFinal() {
                 <label className="text-sm text-slate-300">Goal Type:</label>
                 <select 
                   value={cardioData.goal.type} 
-                  onChange={(e) => setCardioGoalForm({...cardioGoalForm, type: e.target.value as 'duration' | 'distance'})}
+                  onChange={(e) => {
+                    const newType = e.target.value as 'duration' | 'distance';
+                    updateGoal({
+                      type: newType,
+                      target: cardioData.goal.target,
+                      period: 'week'
+                    });
+                  }}
                   className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-white"
                 >
                   <option value="duration">Minutes per week</option>
@@ -844,7 +832,16 @@ export default function GoalsPageFinal() {
                 <input
                   type="number"
                   value={cardioData.goal.target}
-                  onChange={(e) => setCardioGoalForm({...cardioGoalForm, target: e.target.value})}
+                  onChange={(e) => {
+                    const newTarget = parseFloat(e.target.value) || 0;
+                    if (newTarget > 0) {
+                      updateGoal({
+                        type: cardioData.goal.type,
+                        target: newTarget,
+                        period: 'week'
+                      });
+                    }
+                  }}
                   className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-white"
                   placeholder={cardioData.goal.type === 'duration' ? 'Minutes' : 'Miles'}
                 />
