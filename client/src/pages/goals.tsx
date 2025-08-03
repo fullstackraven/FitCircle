@@ -553,6 +553,32 @@ export default function GoalsPageFinal() {
       </div>
 
       <div className="p-4 space-y-6">
+        {/* Wellness Score Section - Moved to top */}
+        <div className="bg-slate-800 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Overall Wellness Score</h2>
+            <button
+              onClick={() => setIsWeightsDialogOpen(true)}
+              className="text-slate-400 hover:text-white"
+            >
+              <Edit3 className="w-4 h-4" />
+            </button>
+          </div>
+          
+          <div className="flex flex-col items-center">
+            <GoalCircle
+              percentage={calculateWellnessScore()}
+              color="rgb(34, 197, 94)"
+              size={140}
+              currentValue={calculateWellnessScore()}
+              goalValue={100}
+              unit=""
+              title="Wellness Score"
+              description="Based on your goal progress and priority weights"
+            />
+          </div>
+        </div>
+
         {/* Goals Grid */}
         <div className="grid grid-cols-2 gap-4">
           {goalItems.map((item) => {
@@ -640,31 +666,7 @@ export default function GoalsPageFinal() {
           })}
         </div>
 
-        {/* Wellness Score Section */}
-        <div className="bg-slate-800 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Overall Wellness Score</h2>
-            <button
-              onClick={() => setIsWeightsDialogOpen(true)}
-              className="text-slate-400 hover:text-white"
-            >
-              <Edit3 className="w-4 h-4" />
-            </button>
-          </div>
-          
-          <div className="flex flex-col items-center">
-            <GoalCircle
-              percentage={calculateWellnessScore()}
-              color="rgb(34, 197, 94)"
-              size={140}
-              currentValue={calculateWellnessScore()}
-              goalValue={100}
-              unit=""
-              title="Wellness Score"
-              description="Based on your goal progress and priority weights"
-            />
-          </div>
-        </div>
+
       </div>
 
       {/* Wellness Weights Dialog */}
@@ -674,10 +676,13 @@ export default function GoalsPageFinal() {
             <h3 className="text-lg font-semibold mb-4">Customize Priority Weights</h3>
             
             <div className="space-y-4 mb-6">
-              {Object.entries(tempWeights).map(([key, value]) => (
+              {Object.entries(tempWeights).map(([key, value]) => {
+                const displayName = key === 'cardio' ? 'Cardio' : 
+                  key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                return (
                 <div key={key} className="flex items-center justify-between">
-                  <label className="text-sm text-slate-300 capitalize">
-                    {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                  <label className="text-sm text-slate-300">
+                    {displayName}
                   </label>
                   <div className="flex items-center space-x-2">
                     <input
@@ -694,7 +699,8 @@ export default function GoalsPageFinal() {
                     <span className="text-sm text-slate-400">%</span>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
             
             <div className="flex space-x-3">
