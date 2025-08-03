@@ -229,19 +229,21 @@ export default function GoalsPageFinal() {
   const { getLast7DaysAverage, updateGoal, data: cardioData } = useCardio();
   const cardio7DayAverage = getLast7DaysAverage();
 
-  // Cardio goal form state - Initialize with empty state and update when data loads
+  // Cardio goal form state - Initialize with actual cardio data when dialog opens
   const [cardioGoalForm, setCardioGoalForm] = useState({
     type: 'duration' as 'duration' | 'distance',
     target: '150'
   });
 
-  // Update cardio goal form when data changes (this ensures form reflects actual stored data)
+  // Update cardio goal form when dialog opens to ensure it reflects current data
   useEffect(() => {
-    setCardioGoalForm({
-      type: cardioData.goal.type,
-      target: cardioData.goal.target.toString()
-    });
-  }, [cardioData.goal.type, cardioData.goal.target]);
+    if (isCardioGoalDialogOpen) {
+      setCardioGoalForm({
+        type: cardioData.goal.type,
+        target: cardioData.goal.target.toString()
+      });
+    }
+  }, [isCardioGoalDialogOpen, cardioData.goal.type, cardioData.goal.target]);
 
   // Use shared meditation calculation for progress
   const meditationProgress = calculateMeditationProgress(meditationLogs, getMeditationGoal());
