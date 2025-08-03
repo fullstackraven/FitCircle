@@ -470,7 +470,7 @@ export default function GoalsPageFinal() {
       title: 'Workout Consistency',
       unit: '%',
       icon: Target,
-      color: 'rgb(16, 185, 129)',
+      color: 'rgb(147, 51, 234)', // Purple
       currentValue: workoutCurrent,
       goalValue: 100,
       progress: workoutCurrent
@@ -480,7 +480,7 @@ export default function GoalsPageFinal() {
       title: 'Cardio Goal',
       unit: cardioData.goal.type === 'duration' ? 'min' : 'mi',
       icon: Activity,
-      color: 'rgb(34, 197, 94)',
+      color: 'rgb(59, 130, 246)', // Blue
       currentValue: Math.round(cardio7DayAverage.average * 10) / 10,
       goalValue: Math.round(cardio7DayAverage.dailyTarget * 10) / 10,
       progress: cardio7DayAverage.progressToGoal || 0
@@ -736,7 +736,7 @@ export default function GoalsPageFinal() {
             <div className="flex justify-center mb-4">
               <GoalCircle
                 percentage={cardio7DayAverage.progressToGoal || 0}
-                color="rgb(34, 197, 94)"
+                color="rgb(59, 130, 246)" // Blue to match cardio ring
                 size={80}
                 currentValue={Math.round(cardio7DayAverage.average)}
                 goalValue={Math.round(cardio7DayAverage.dailyTarget)}
