@@ -280,6 +280,7 @@ export default function GoalsPageFinal() {
   const [tempValue, setTempValue] = useState<string>('');
   const [isWeightGoalTypeDialogOpen, setIsWeightGoalTypeDialogOpen] = useState(false);
   const [isCardioGoalDialogOpen, setIsCardioGoalDialogOpen] = useState(false);
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState<string | null>(null);
 
   // Wellness Score State
   const [wellnessWeights, setWellnessWeights] = useState({
@@ -291,10 +292,37 @@ export default function GoalsPageFinal() {
     workoutConsistency: 40,
     cardio: 0
   });
+
+  // Goal ring colors state
+  const [goalColors, setGoalColors] = useState({
+    hydrationOz: 'rgb(59, 130, 246)',
+    meditationMinutes: 'rgb(168, 85, 247)',
+    fastingHours: 'rgb(251, 146, 60)',
+    weightLbs: 'rgb(34, 197, 94)',
+    targetBodyFat: 'rgb(239, 68, 68)',
+    workoutConsistency: 'rgb(147, 51, 234)',
+    cardio: 'rgb(59, 130, 246)'
+  });
+
+  // Available color options
+  const colorOptions = [
+    { name: 'Blue', value: 'rgb(59, 130, 246)' },
+    { name: 'Green', value: 'rgb(34, 197, 94)' },
+    { name: 'Purple', value: 'rgb(147, 51, 234)' },
+    { name: 'Pink', value: 'rgb(236, 72, 153)' },
+    { name: 'Yellow', value: 'rgb(234, 179, 8)' },
+    { name: 'Red', value: 'rgb(239, 68, 68)' },
+    { name: 'Orange', value: 'rgb(251, 146, 60)' },
+    { name: 'Indigo', value: 'rgb(99, 102, 241)' },
+    { name: 'Teal', value: 'rgb(20, 184, 166)' },
+    { name: 'Cyan', value: 'rgb(6, 182, 212)' },
+    { name: 'Lime', value: 'rgb(132, 204, 22)' },
+    { name: 'Emerald', value: 'rgb(16, 185, 129)' }
+  ];
   const [isWeightsDialogOpen, setIsWeightsDialogOpen] = useState(false);
   const [tempWeights, setTempWeights] = useState(wellnessWeights);
 
-  // Load wellness weights from localStorage
+  // Load wellness weights and goal colors from localStorage
   useEffect(() => {
     const savedWeights = localStorage.getItem('fitcircle_wellness_weights');
     if (savedWeights) {
@@ -306,12 +334,34 @@ export default function GoalsPageFinal() {
         console.error('Failed to parse wellness weights:', e);
       }
     }
+
+    const savedColors = localStorage.getItem('fitcircle_goal_colors');
+    if (savedColors) {
+      try {
+        const parsed = JSON.parse(savedColors);
+        setGoalColors(parsed);
+      } catch (e) {
+        console.error('Failed to parse goal colors:', e);
+      }
+    }
   }, []);
 
   // Save wellness weights to localStorage
   const saveWellnessWeights = (weights: typeof wellnessWeights) => {
     setWellnessWeights(weights);
     localStorage.setItem('fitcircle_wellness_weights', JSON.stringify(weights));
+  };
+
+  // Save goal colors to localStorage
+  const saveGoalColors = (colors: typeof goalColors) => {
+    setGoalColors(colors);
+    localStorage.setItem('fitcircle_goal_colors', JSON.stringify(colors));
+  };
+
+  const handleColorChange = (goalKey: string, color: string) => {
+    const newColors = { ...goalColors, [goalKey]: color };
+    saveGoalColors(newColors);
+    setIsColorPickerOpen(null);
   };
 
   const handleEdit = (goalKey: string, currentValue: number) => {
@@ -419,7 +469,7 @@ export default function GoalsPageFinal() {
       title: 'Daily Hydration',
       unit: 'oz',
       icon: Droplet,
-      color: 'rgb(59, 130, 246)',
+      color: goalColors.hydrationOz,
       currentValue: Math.round(actualCurrentOz),
       goalValue: actualGoalOz,
       progress: actualHydrationProgress
@@ -429,7 +479,7 @@ export default function GoalsPageFinal() {
       title: 'Daily Meditation',
       unit: 'min',
       icon: Brain,
-      color: 'rgb(147, 51, 234)',
+      color: goalColors.meditationMinutes,
       currentValue: meditationCurrent,
       goalValue: getMeditationGoal(),
       progress: meditationProgress
@@ -439,7 +489,7 @@ export default function GoalsPageFinal() {
       title: 'Intermittent Fasting',
       unit: 'hrs',
       icon: Clock,
-      color: 'rgb(245, 158, 11)',
+      color: goalColors.fastingHours,
       currentValue: fastingCurrent,
       goalValue: goals.fastingHours,
       progress: fastingProgress
@@ -449,7 +499,7 @@ export default function GoalsPageFinal() {
       title: 'Target Weight',
       unit: 'lbs',
       icon: Scale,
-      color: 'rgb(34, 197, 94)',
+      color: goalColors.weightLbs,
       currentValue: weightCurrent,
       goalValue: goals.weightLbs,
       progress: weightProgress,
@@ -460,7 +510,7 @@ export default function GoalsPageFinal() {
       title: 'Target Body Fat',
       unit: '%',
       icon: Percent,
-      color: 'rgb(239, 68, 68)',
+      color: goalColors.targetBodyFat,
       currentValue: bodyFatCurrent,
       goalValue: goals.targetBodyFat,
       progress: bodyFatProgress
@@ -470,7 +520,7 @@ export default function GoalsPageFinal() {
       title: 'Workout Consistency',
       unit: '%',
       icon: Target,
-      color: 'rgb(147, 51, 234)', // Purple
+      color: goalColors.workoutConsistency,
       currentValue: workoutCurrent,
       goalValue: 100,
       progress: workoutCurrent
@@ -480,7 +530,7 @@ export default function GoalsPageFinal() {
       title: 'Cardio Goal',
       unit: cardioData.goal.type === 'duration' ? 'min' : 'mi',
       icon: Activity,
-      color: 'rgb(59, 130, 246)', // Blue
+      color: goalColors.cardio,
       currentValue: Math.round(cardio7DayAverage.average * 10) / 10,
       goalValue: Math.round(cardio7DayAverage.dailyTarget * 10) / 10,
       progress: cardio7DayAverage.progressToGoal || 0
@@ -531,8 +581,8 @@ export default function GoalsPageFinal() {
                   <h3 className="text-sm font-medium text-white text-center">{item.title}</h3>
                 </div>
 
-                {/* Edit button in top right corner */}
-                <div className="absolute top-2 right-2">
+                {/* Edit and Color picker buttons in top right corner */}
+                <div className="absolute top-2 right-2 flex items-center space-x-1">
                   {isEditing ? (
                     <div className="flex items-center space-x-1">
                       <input
@@ -556,20 +606,33 @@ export default function GoalsPageFinal() {
                       </button>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => {
-                        if (item.hasSpecialEdit && item.key === 'weightLbs') {
-                          setIsWeightGoalTypeDialogOpen(true);
-                        } else if (item.key === 'cardio') {
-                          setIsCardioGoalDialogOpen(true);
-                        } else {
-                          handleEdit(item.key, item.goalValue);
-                        }
-                      }}
-                      className="p-1 text-slate-400 hover:text-white"
-                    >
-                      <Edit3 className="w-3 h-3" />
-                    </button>
+                    <>
+                      <button
+                        onClick={() => setIsColorPickerOpen(item.key)}
+                        className="p-1 text-slate-400 hover:text-white"
+                        title="Change color"
+                      >
+                        <div 
+                          className="w-3 h-3 rounded-full border border-slate-500" 
+                          style={{ backgroundColor: item.color }}
+                        />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (item.hasSpecialEdit && item.key === 'weightLbs') {
+                            setIsWeightGoalTypeDialogOpen(true);
+                          } else if (item.key === 'cardio') {
+                            setIsCardioGoalDialogOpen(true);
+                          } else {
+                            handleEdit(item.key, item.goalValue);
+                          }
+                        }}
+                        className="p-1 text-slate-400 hover:text-white"
+                        title="Edit goal"
+                      >
+                        <Edit3 className="w-3 h-3" />
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -736,7 +799,7 @@ export default function GoalsPageFinal() {
             <div className="flex justify-center mb-4">
               <GoalCircle
                 percentage={cardio7DayAverage.progressToGoal || 0}
-                color="rgb(59, 130, 246)" // Blue to match cardio ring
+                color={goalColors.cardio}
                 size={80}
                 currentValue={Math.round(cardio7DayAverage.average)}
                 goalValue={Math.round(cardio7DayAverage.dailyTarget)}
@@ -783,6 +846,40 @@ export default function GoalsPageFinal() {
                 className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
               >
                 Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Color Picker Dialog */}
+      {isColorPickerOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-sm">
+            <h3 className="text-lg font-semibold mb-4">Choose Ring Color</h3>
+            
+            <div className="grid grid-cols-4 gap-3 mb-6">
+              {colorOptions.map((color) => (
+                <button
+                  key={color.value}
+                  onClick={() => handleColorChange(isColorPickerOpen, color.value)}
+                  className="w-12 h-12 rounded-xl border-2 border-slate-600 hover:border-slate-400 transition-colors flex items-center justify-center"
+                  style={{ backgroundColor: color.value }}
+                  title={color.name}
+                >
+                  {goalColors[isColorPickerOpen as keyof typeof goalColors] === color.value && (
+                    <Check className="w-4 h-4 text-white drop-shadow-lg" />
+                  )}
+                </button>
+              ))}
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setIsColorPickerOpen(null)}
+                className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
+              >
+                Close
               </button>
             </div>
           </div>
