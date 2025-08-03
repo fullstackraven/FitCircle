@@ -135,17 +135,19 @@ export function useCardio() {
 
   const getWeeklyProgress = () => {
     const today = new Date();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday start
-    startOfWeek.setHours(0, 0, 0, 0);
     
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday end
-    endOfWeek.setHours(23, 59, 59, 999);
+    // For "This Week" calculation, use rolling 7 days ending today
+    // This ensures we always show recent progress, not empty weeks
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6); // Go back 6 days (today + 6 = 7 days total)
+    sevenDaysAgo.setHours(0, 0, 0, 0);
+    
+    const endOfPeriod = new Date(today);
+    endOfPeriod.setHours(23, 59, 59, 999);
     
     const weekEntries = data.entries.filter(entry => {
       const entryDate = new Date(entry.date + 'T00:00:00');
-      return entryDate >= startOfWeek && entryDate <= endOfWeek;
+      return entryDate >= sevenDaysAgo && entryDate <= endOfPeriod;
     });
 
     const totalDuration = weekEntries.reduce((sum, entry) => sum + entry.duration, 0);

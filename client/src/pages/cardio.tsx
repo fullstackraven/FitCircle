@@ -242,7 +242,7 @@ export default function CardioPage() {
         {/* Weekly Progress Stats */}
         <Card className="bg-slate-800 border-slate-700 rounded-xl">
           <CardContent className="p-4">
-            <h3 className="text-lg font-semibold mb-3 text-center">This Week</h3>
+            <h3 className="text-lg font-semibold mb-3 text-center">Last 7 Days</h3>
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-green-400">
