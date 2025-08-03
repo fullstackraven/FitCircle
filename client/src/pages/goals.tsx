@@ -449,10 +449,7 @@ export default function GoalsPageFinal() {
     setIsWeightGoalTypeDialogOpen(false);
   };
 
-  const handleUpdateCardioGoal = () => {
-    // Goal is already updated directly through form inputs
-    setIsCardioGoalDialogOpen(false);
-  };
+
 
   // Define goal items using working pattern
   const goalItems = [
@@ -791,43 +788,47 @@ export default function GoalsPageFinal() {
       {isCardioGoalDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-slate-800 rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Cardio Goal</h3>
+            <h3 className="text-lg font-semibold mb-4">Cardio Goal Setting</h3>
             
-            {/* Goal Circle - Show current week progress vs overall goal */}
-            <div className="flex justify-center mb-4">
+            {/* Goal Circle showing overall goal */}
+            <div className="flex justify-center mb-6">
               <GoalCircle
-                percentage={(() => {
-                  const weekTotal = cardio7DayAverage.total || 0;
-                  return cardioData.goal.target > 0 ? Math.min((weekTotal / cardioData.goal.target) * 100, 100) : 0;
-                })()}
+                percentage={cardio7DayAverage.progressToGoal || 0}
                 color={goalColors.cardio}
-                size={80}
-                currentValue={Math.round(cardio7DayAverage.total || 0)}
+                size={120}
+                currentValue={Math.round(cardio7DayAverage.average * 7)}
                 goalValue={cardioData.goal.target}
                 unit={cardioData.goal.type === 'duration' ? 'min' : 'mi'}
-                title="Current Week Progress"
+                title="Weekly Goal"
                 description=""
               />
             </div>
             
             <div className="space-y-4 mb-6">
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col space-y-3">
                 <label className="text-sm text-slate-300">Goal Type:</label>
-                <select 
-                  value={cardioData.goal.type} 
-                  onChange={(e) => {
-                    const newType = e.target.value as 'duration' | 'distance';
-                    updateGoal({
-                      type: newType,
-                      target: cardioData.goal.target,
-                      period: 'week'
-                    });
-                  }}
-                  className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-white"
-                >
-                  <option value="duration">Minutes per week</option>
-                  <option value="distance">Miles per week</option>
-                </select>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => updateGoal({ type: 'distance', target: cardioData.goal.target, period: 'week' })}
+                    className={`flex-1 py-3 px-4 rounded-xl border-2 transition-colors ${
+                      cardioData.goal.type === 'distance' 
+                        ? 'border-blue-500 bg-blue-500/20 text-blue-400' 
+                        : 'border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500'
+                    }`}
+                  >
+                    Miles per week
+                  </button>
+                  <button
+                    onClick={() => updateGoal({ type: 'duration', target: cardioData.goal.target, period: 'week' })}
+                    className={`flex-1 py-3 px-4 rounded-xl border-2 transition-colors ${
+                      cardioData.goal.type === 'duration' 
+                        ? 'border-blue-500 bg-blue-500/20 text-blue-400' 
+                        : 'border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500'
+                    }`}
+                  >
+                    Minutes per week
+                  </button>
+                </div>
               </div>
               
               <div className="flex flex-col space-y-2">
@@ -836,33 +837,32 @@ export default function GoalsPageFinal() {
                   type="number"
                   value={cardioData.goal.target}
                   onChange={(e) => {
-                    const newTarget = parseFloat(e.target.value) || 0;
-                    if (newTarget > 0) {
+                    const value = parseFloat(e.target.value);
+                    if (value > 0) {
                       updateGoal({
                         type: cardioData.goal.type,
-                        target: newTarget,
+                        target: value,
                         period: 'week'
                       });
                     }
                   }}
-                  className="bg-slate-700 border border-slate-600 rounded-lg p-2 text-white"
-                  placeholder={cardioData.goal.type === 'duration' ? 'Minutes' : 'Miles'}
+                  className="w-full px-3 py-2 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-blue-500"
+                  step="0.1"
                 />
+              </div>
+              
+              <div className="text-xs text-slate-400 bg-slate-700 rounded-xl p-3">
+                <strong>Current Week:</strong> {Math.round(cardio7DayAverage.average * 7)}{cardioData.goal.type === 'duration' ? ' min' : ' mi'}<br/>
+                <strong>Target:</strong> {cardioData.goal.target}{cardioData.goal.type === 'duration' ? ' min' : ' mi'} per week
               </div>
             </div>
             
             <div className="flex space-x-3">
               <button
-                onClick={handleUpdateCardioGoal}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-xl"
-              >
-                Update Goal
-              </button>
-              <button
                 onClick={() => setIsCardioGoalDialogOpen(false)}
-                className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
+                className="flex-1 py-2 px-4 bg-slate-700 text-white rounded-xl hover:bg-slate-600"
               >
-                Cancel
+                Done
               </button>
             </div>
           </div>
