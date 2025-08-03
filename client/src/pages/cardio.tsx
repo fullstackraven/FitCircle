@@ -66,14 +66,7 @@ export default function CardioPage() {
   const todaysValue = data.goal.type === 'duration' ? todaysProgress.duration : todaysProgress.distance;
   const progressPercentage = dailyGoalTarget > 0 ? Math.min((todaysValue / dailyGoalTarget) * 100, 100) : 0;
   
-  // Debug logging
-  console.log('DEBUG Cardio:', {
-    goalType: data.goal.type,
-    todaysProgress,
-    todaysValue,
-    dailyGoalTarget,
-    progressPercentage
-  });
+  // Removed debug logging
 
   const resetAddForm = () => {
     setNewEntry({
