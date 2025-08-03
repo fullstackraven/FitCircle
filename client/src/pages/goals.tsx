@@ -289,8 +289,8 @@ export default function GoalsPageFinal() {
     fastingHours: 10,
     weightLbs: 10,
     targetBodyFat: 10,
-    workoutConsistency: 40,
-    cardio: 0
+    workoutConsistency: 30,
+    cardio: 10
   });
 
   // Goal ring colors state
@@ -328,8 +328,19 @@ export default function GoalsPageFinal() {
     if (savedWeights) {
       try {
         const parsed = JSON.parse(savedWeights);
-        setWellnessWeights(parsed);
-        setTempWeights(parsed);
+        // Ensure cardio is included if missing from saved data
+        const updatedWeights = {
+          hydrationOz: 20,
+          meditationMinutes: 10,
+          fastingHours: 10,
+          weightLbs: 10,
+          targetBodyFat: 10,
+          workoutConsistency: 30,
+          cardio: 10,
+          ...parsed
+        };
+        setWellnessWeights(updatedWeights);
+        setTempWeights(updatedWeights);
       } catch (e) {
         console.error('Failed to parse wellness weights:', e);
       }
