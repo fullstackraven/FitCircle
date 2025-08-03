@@ -33,5 +33,7 @@ export const STORAGE_KEYS = {
   AUTO_BACKUP_ENABLED: 'fitcircle_auto_backup_enabled',
   LAST_AUTO_BACKUP: 'fitcircle_last_auto_backup',
   DEVICE_ID: 'fitcircle_device_id',
-  CARDIO: 'fitcircle_cardio_data'
+  CARDIO: 'fitcircle_cardio_data',
+  RECOVERY: 'fitcircle_recovery_data',
+  WORKOUT_LOGS: 'workout-tracker-logs'
 } as const;

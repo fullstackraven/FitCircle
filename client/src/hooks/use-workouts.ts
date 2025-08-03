@@ -302,6 +302,10 @@ export function useWorkouts() {
       
     const daysInRange = Math.floor((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
+    // Get recovery days from localStorage to include in consistency calculation
+    const recoveryData = localStorage.getItem('fitcircle_recovery_data');
+    const recoveryDays = recoveryData ? JSON.parse(recoveryData).recoveryDays || [] : [];
+
     // Count only completed days and reps in this specific month
     Object.entries(data.dailyLogs || {}).forEach(([dateStr, dayLog]) => {
       const date = new Date(dateStr + 'T00:00:00');
@@ -323,6 +327,19 @@ export function useWorkouts() {
         });
         
         if (allGoalsMet) {
+          monthlyCompletedDays++;
+        }
+      }
+    });
+
+    // Add recovery days as completed days (for consistency calculation only)
+    recoveryDays.forEach((dateStr: string) => {
+      const date = new Date(dateStr + 'T00:00:00');
+      if (date.getFullYear() === year && date.getMonth() === month && dateStr <= today) {
+        // Only count recovery days if there's no workout logged for that day
+        const dayLog = data.dailyLogs[dateStr] || {};
+        const hasWorkouts = workoutArray.some(w => dayLog[w.id] && dayLog[w.id] > 0);
+        if (!hasWorkouts) {
           monthlyCompletedDays++;
         }
       }
@@ -376,6 +393,10 @@ export function useWorkouts() {
     const todayDate = new Date(today + 'T00:00:00');
     totalExpectedDays = Math.floor((todayDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
+    // Get recovery days from localStorage to include in consistency calculation
+    const recoveryData = localStorage.getItem('fitcircle_recovery_data');
+    const recoveryDays = recoveryData ? JSON.parse(recoveryData).recoveryDays || [] : [];
+
     // Count all completed days and total reps across entire history
     Object.entries(data.dailyLogs).forEach(([dateStr, dayLog]) => {
       const workoutsWithReps = workoutArray.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
@@ -391,6 +412,18 @@ export function useWorkouts() {
         });
         
         if (allGoalsMet) {
+          totalCompletedDays++;
+        }
+      }
+    });
+
+    // Add recovery days as completed days (for consistency calculation only)
+    recoveryDays.forEach((dateStr: string) => {
+      if (dateStr <= today) {
+        // Only count recovery days if there's no workout logged for that day
+        const dayLog = data.dailyLogs[dateStr] || {};
+        const hasWorkouts = workoutArray.some(w => dayLog[w.id] && dayLog[w.id] > 0);
+        if (!hasWorkouts) {
           totalCompletedDays++;
         }
       }

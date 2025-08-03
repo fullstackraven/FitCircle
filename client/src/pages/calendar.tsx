@@ -16,13 +16,16 @@ import {
   Edit2,
   Trash2,
   Save,
-  X
+  X,
+  Heart
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { useSupplements } from "@/hooks/use-supplements";
+import { useRecovery } from "@/hooks/use-recovery";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { AddSupplementDialog } from "@/components/AddSupplementDialog";
+import { GoalCircle } from "@/components/GoalCircle";
 import {
   format,
   startOfMonth,
@@ -70,6 +73,12 @@ export default function CalendarPage() {
     editSupplement,
     deleteSupplement
   } = useSupplements();
+  const {
+    addRecoveryDay,
+    removeRecoveryDay,
+    isRecoveryDay,
+    getRecoveryStats
+  } = useRecovery();
   const workouts = getWorkoutArray() || [];
   const logs = getDailyLogs() || {};
 
@@ -79,6 +88,7 @@ export default function CalendarPage() {
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isEnergyOpen, setIsEnergyOpen] = useState(false);
   const [isSupplementsOpen, setIsSupplementsOpen] = useState(false);
+  const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
   const [addSupplementDialogOpen, setAddSupplementDialogOpen] = useState(false);
   const [editingSupplementId, setEditingSupplementId] = useState<number | null>(null);
   const [editSupplementName, setEditSupplementName] = useState('');
@@ -535,6 +545,7 @@ export default function CalendarPage() {
           const hasJournal = (getJournalEntry(dateStr) || "").length > 0;
           const hasEnergy = hasEnergyLevel(date);
           const hasSupplements = hasSupplementsForDate(dateStr);
+          const isRecovery = isRecoveryDay(dateStr);
 
           return (
             <div
@@ -542,10 +553,16 @@ export default function CalendarPage() {
               onClick={() => handleDayClick(date)}
               className={`aspect-square rounded-xl flex items-center justify-center relative text-sm font-medium cursor-pointer transition-all hover:opacity-80
                 ${isCurrent ? "bg-slate-800 text-white" : "bg-slate-700 text-slate-500"} 
-                ${complete ? "bg-green-500 text-white shadow-lg shadow-green-500/50" : ""}`}
-              style={complete ? {
+                ${complete && !isRecovery ? "bg-green-500 text-white shadow-lg shadow-green-500/50" : ""}
+                ${isRecovery ? "bg-orange-500 text-white shadow-lg shadow-orange-500/50" : ""}`}
+              style={complete && !isRecovery ? {
                 backgroundColor: '#00ff41',
                 boxShadow: '0 0 8px rgba(0, 255, 65, 0.4), 0 0 16px rgba(0, 255, 65, 0.2)',
+                color: '#000000',
+                fontWeight: 'bold'
+              } : isRecovery ? {
+                backgroundColor: '#ff8c00',
+                boxShadow: '0 0 8px rgba(255, 140, 0, 0.4), 0 0 16px rgba(255, 140, 0, 0.2)',
                 color: '#000000',
                 fontWeight: 'bold'
               } : {}}
@@ -860,6 +877,102 @@ export default function CalendarPage() {
                     )}
                   </div>
                 </div>
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
+
+      {/* Recovery Panel */}
+      <div className="mt-4">
+        <Collapsible open={isRecoveryOpen} onOpenChange={setIsRecoveryOpen}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors">
+            <div className="flex items-center space-x-2">
+              <Heart className="w-5 h-5 text-orange-400" />
+              <span className="text-white font-medium">Recovery</span>
+            </div>
+            {isRecoveryOpen ? (
+              <ChevronUp className="w-5 h-5 text-slate-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400" />
+            )}
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-4 bg-slate-800 rounded-xl p-6">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-medium text-white mb-2">
+                    Recovery for {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "Today"}
+                  </h3>
+                  <p className="text-sm text-slate-400">
+                    Recovery days help maintain consistency without skipping workouts
+                  </p>
+                  {selectedDate && (
+                    <p className="text-sm text-slate-400 mt-1">
+                      Viewing past entry - tap calendar to return to today
+                    </p>
+                  )}
+                </div>
+
+                {/* Recovery Statistics Circle */}
+                <div className="flex justify-center">
+                  {(() => {
+                    const stats = getRecoveryStats();
+                    return (
+                      <GoalCircle
+                        percentage={stats.recoveryPercentage}
+                        color="rgb(255, 140, 0)"
+                        size={160}
+                        currentValue={stats.totalRecoveryDays}
+                        goalValue={stats.totalActiveDays}
+                        unit="days"
+                        title="Recovery Rate"
+                        description={`${stats.totalRecoveryDays} recovery of ${stats.totalActiveDays} active days`}
+                      />
+                    );
+                  })()}
+                </div>
+
+                {/* Add/Remove Recovery Day Button */}
+                <div className="flex justify-center">
+                  {(() => {
+                    const targetDate = selectedDate || new Date();
+                    const dateStr = format(targetDate, 'yyyy-MM-dd');
+                    const isCurrentlyRecovery = isRecoveryDay(dateStr);
+                    
+                    return (
+                      <button
+                        onClick={() => {
+                          if (isCurrentlyRecovery) {
+                            removeRecoveryDay(dateStr);
+                          } else {
+                            addRecoveryDay(dateStr);
+                          }
+                        }}
+                        className={`px-6 py-3 rounded-xl font-medium transition-colors ${
+                          isCurrentlyRecovery
+                            ? 'bg-red-600 hover:bg-red-700 text-white'
+                            : 'bg-orange-600 hover:bg-orange-700 text-white'
+                        }`}
+                      >
+                        {isCurrentlyRecovery ? 'Remove Recovery Day' : 'Add Recovery Day'}
+                      </button>
+                    );
+                  })()}
+                </div>
+
+                {selectedDate && (
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => {
+                        setSelectedDate(null);
+                      }}
+                      className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-xl transition-colors"
+                    >
+                      Back to Today
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </CollapsibleContent>
