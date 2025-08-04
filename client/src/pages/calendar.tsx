@@ -179,13 +179,22 @@ export default function CalendarPage() {
     const dayLog = logs[dateStr];
     if (!dayLog) return false;
     
-    // Only check workouts that actually have logged reps for this day
-    // This ensures that adding new workouts doesn't affect past completion status
-    const workoutsWithRepsOnThisDay = workouts.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
-    if (workoutsWithRepsOnThisDay.length === 0) return false;
+    const today = new Date();
+    const isToday = dateStr === `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     
-    // Check if all workouts that were actively used on this day met their goals
-    return workoutsWithRepsOnThisDay.every(w => dayLog[w.id] >= w.dailyGoal);
+    if (isToday) {
+      // For today, check ALL current workouts (including newly added ones)
+      if (workouts.length === 0) return false;
+      return workouts.every(w => (dayLog[w.id] || 0) >= w.dailyGoal);
+    } else {
+      // For past days, only check workouts that actually have logged reps for this day
+      // This ensures that adding new workouts doesn't affect past completion status
+      const workoutsWithRepsOnThisDay = workouts.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
+      if (workoutsWithRepsOnThisDay.length === 0) return false;
+      
+      // Check if all workouts that were actively used on this day met their goals
+      return workoutsWithRepsOnThisDay.every(w => dayLog[w.id] >= w.dailyGoal);
+    }
   };
 
   const handleDayClick = (date: Date) => {
