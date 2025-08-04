@@ -471,7 +471,7 @@ export default function Home() {
 
             {/* Version */}
             <div className="p-4 border-t border-slate-700">
-              <div className="text-slate-500 text-xs text-center">Version 1.0.0</div>
+              <div className="text-slate-500 text-xs text-center">Version 2.1.0</div>
             </div>
           </div>
         </SheetContent>
