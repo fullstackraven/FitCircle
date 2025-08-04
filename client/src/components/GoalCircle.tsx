@@ -63,15 +63,15 @@ export function GoalCircle({
         {/* Center content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           {title === "Wellness Score" ? (
-            <div className="text-2xl font-bold text-white">
+            <div className="text-lg font-bold text-white">
               {isNaN(percentage) ? 0 : Math.round(percentage)}
             </div>
           ) : (
             <>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-lg font-bold text-white">
                 {isNaN(goalValue) ? 0 : goalValue} {goalValue === 1 ? unit.replace('days', 'Day').replace('Days', 'Day') : unit.replace('days', 'Days').replace('Days', 'Days')}
               </div>
-              <div className="text-sm text-slate-400 text-center">
+              <div className="text-xs text-slate-400 text-center">
                 {isNaN(percentage) ? 0 : Math.round(percentage)}%
               </div>
             </>
