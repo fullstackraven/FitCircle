@@ -53,7 +53,8 @@ export function ProgressCircle({
   // Add padding to accommodate the stroke width
   const padding = strokeWidth + 4;
   const svgSize = size + padding * 2;
-  const radius = size / 2;
+  // Increase radius so the inside of the ring fits around the outside of the center circle
+  const radius = (size / 2) + (strokeWidth / 2) + 2;
   const circumference = radius * 2 * Math.PI;
   const strokeDasharray = circumference;
   const strokeDashoffset = isNaN(progress) ? circumference : circumference - (progress * circumference);
