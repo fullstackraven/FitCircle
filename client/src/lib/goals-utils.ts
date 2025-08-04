@@ -270,7 +270,7 @@ export function getWorkoutConsistencyProgress(): GoalProgress {
     const today = getTodayString();
     
     // Calculate last 30 days consistency
-    const last30Days = [];
+    const last30Days: string[] = [];
     for (let i = 0; i < 30; i++) {
       const date = new Date();
       date.setDate(date.getDate() - i);

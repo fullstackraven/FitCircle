@@ -63,7 +63,7 @@ export function GoalCircle({
         {/* Center content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           {title === "Wellness Score" ? (
-            <div className="text-lg font-bold text-white">
+            <div className="text-4xl font-bold text-white">
               {isNaN(percentage) ? 0 : Math.round(percentage)}
             </div>
           ) : (
