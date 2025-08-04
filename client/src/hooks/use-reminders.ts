@@ -38,7 +38,7 @@ export function useReminders() {
     localStorage.removeItem('fitcircle_notes');
   }, [reminders]);
 
-  const addReminder = (text: string) => {
+  const addReminder = (text: string, insertAfterIndex?: number) => {
     const newReminder: Reminder = {
       id: Date.now().toString(),
       text: text.trim(),
@@ -46,7 +46,17 @@ export function useReminders() {
       createdAt: new Date().toISOString()
     };
     
-    setReminders(prev => [...prev, newReminder]);
+    setReminders(prev => {
+      if (insertAfterIndex !== undefined && insertAfterIndex >= 0) {
+        // Insert after the specified index
+        const newArray = [...prev];
+        newArray.splice(insertAfterIndex + 1, 0, newReminder);
+        return newArray;
+      } else {
+        // Default behavior: add to end
+        return [...prev, newReminder];
+      }
+    });
   };
 
   const updateReminder = (id: string, updates: Partial<Reminder>) => {

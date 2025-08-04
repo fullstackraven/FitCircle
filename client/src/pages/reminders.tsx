@@ -27,7 +27,16 @@ export default function RemindersPage() {
 
   const handleAddReminder = (keepFormOpen = false) => {
     if (newReminderText.trim()) {
-      addReminder(newReminderText.trim());
+      // Check if we need to insert at a specific position
+      const insertAfterIndexStr = localStorage.getItem('insertAfterIndex');
+      let insertAfterIndex: number | undefined;
+      
+      if (insertAfterIndexStr !== null) {
+        insertAfterIndex = parseInt(insertAfterIndexStr);
+        localStorage.removeItem('insertAfterIndex'); // Clean up after use
+      }
+      
+      addReminder(newReminderText.trim(), insertAfterIndex);
       setNewReminderText('');
       if (!keepFormOpen) {
         setShowAddForm(false);
@@ -91,11 +100,21 @@ export default function RemindersPage() {
         // Delete reminder if text is empty
         deleteReminder(editingId);
       }
-      setEditingId(null);
-      setEditText('');
       
       if (openNewReminder) {
+        // Find the position of the edited reminder in the full reminders array
+        const editedReminderIndex = reminders.findIndex(r => r.id === editingId);
+        setEditingId(null);
+        setEditText('');
+        
+        // Set up state to add new reminder after the edited one
         setShowAddForm(true);
+        setNewReminderText('');
+        // Store the position where we want to insert the new reminder
+        localStorage.setItem('insertAfterIndex', editedReminderIndex.toString());
+      } else {
+        setEditingId(null);
+        setEditText('');
       }
     }
   };
