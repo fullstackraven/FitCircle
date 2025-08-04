@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, Upload, Download, Trash2, Bug, Clock, Shield } from 'lucide-react';
+import { ChevronLeft, Upload, Download, Trash2, Clock, Shield } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
 import { Switch } from '@/components/ui/switch';
@@ -14,156 +14,154 @@ export default function SettingsPage() {
   const [isExporting, setIsExporting] = useState(false);
   const [status, setStatus] = useState<string>('');
   const [showEraseConfirm, setShowEraseConfirm] = useState(false);
-  const [autoBackupEnabled, setAutoBackupEnabled] = useState(() => {
-    return localStorage.getItem(STORAGE_KEYS.AUTO_BACKUP_ENABLED) === 'true';
-  });
-  const [lastAutoBackup, setLastAutoBackup] = useState(() => {
-    return localStorage.getItem(STORAGE_KEYS.LAST_AUTO_BACKUP) || null;
-  });
-  const [showAutoBackups, setShowAutoBackups] = useState(false);
+  // COMMENTED OUT: Auto-backup functionality removed per user request
+  // const [autoBackupEnabled, setAutoBackupEnabled] = useState(() => {
+  //   return localStorage.getItem(STORAGE_KEYS.AUTO_BACKUP_ENABLED) === 'true';
+  // });
+  // const [lastAutoBackup, setLastAutoBackup] = useState(() => {
+  //   return localStorage.getItem(STORAGE_KEYS.LAST_AUTO_BACKUP) || null;
+  // });
+  // const [showAutoBackups, setShowAutoBackups] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
 
   
-  // Generate or get unique device identifier
-  const getDeviceId = () => {
-    let deviceId = localStorage.getItem(STORAGE_KEYS.DEVICE_ID);
-    if (!deviceId) {
-      // Create unique ID based on multiple device characteristics
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      ctx!.textBaseline = 'top';
-      ctx!.font = '14px Arial';
-      ctx!.fillText('Device fingerprint', 2, 2);
-      
-      const fingerprint = [
-        navigator.userAgent,
-        navigator.language,
-        screen.width + 'x' + screen.height,
-        new Date().getTimezoneOffset(),
-        canvas.toDataURL()
-      ].join('|');
-      
-      // Create hash of fingerprint
-      let hash = 0;
-      for (let i = 0; i < fingerprint.length; i++) {
-        const char = fingerprint.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Convert to 32-bit integer
-      }
-      
-      deviceId = Math.abs(hash).toString(36).substring(0, 8);
-      localStorage.setItem(STORAGE_KEYS.DEVICE_ID, deviceId);
-    }
-    return deviceId;
-  };
+  // COMMENTED OUT: Device ID generation for auto-backup removed per user request
+  // const getDeviceId = () => {
+  //   let deviceId = localStorage.getItem(STORAGE_KEYS.DEVICE_ID);
+  //   if (!deviceId) {
+  //     // Create unique ID based on multiple device characteristics
+  //     const canvas = document.createElement('canvas');
+  //     const ctx = canvas.getContext('2d');
+  //     ctx!.textBaseline = 'top';
+  //     ctx!.font = '14px Arial';
+  //     ctx!.fillText('Device fingerprint', 2, 2);
+  //     
+  //     const fingerprint = [
+  //       navigator.userAgent,
+  //       navigator.language,
+  //       screen.width + 'x' + screen.height,
+  //       new Date().getTimezoneOffset(),
+  //       canvas.toDataURL()
+  //     ].join('|');
+  //     
+  //     // Create hash of fingerprint
+  //     let hash = 0;
+  //     for (let i = 0; i < fingerprint.length; i++) {
+  //       const char = fingerprint.charCodeAt(i);
+  //       hash = ((hash << 5) - hash) + char;
+  //       hash = hash & hash; // Convert to 32-bit integer
+  //     }
+  //     
+  //     deviceId = Math.abs(hash).toString(36).substring(0, 8);
+  //     localStorage.setItem(STORAGE_KEYS.DEVICE_ID, deviceId);
+  //   }
+  //   return deviceId;
+  // };
 
-  // Function to perform auto-backup (writes to codebase like bug reports)
-  const performAutoBackup = async () => {
-    try {
-      // Get all localStorage data (same as manual export)
-      const completeSnapshot: Record<string, any> = {};
-      
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key) {
-          const value = localStorage.getItem(key);
-          if (value !== null) {
-            try {
-              completeSnapshot[key] = JSON.parse(value);
-            } catch {
-              completeSnapshot[key] = value;
-            }
-          }
-        }
-      }
+  // COMMENTED OUT: Auto-backup function removed per user request - no server calls
+  // const performAutoBackup = async () => {
+  //   try {
+  //     // Get all localStorage data (same as manual export)
+  //     const completeSnapshot: Record<string, any> = {};
+  //     
+  //     for (let i = 0; i < localStorage.length; i++) {
+  //       const key = localStorage.key(i);
+  //       if (key) {
+  //         const value = localStorage.getItem(key);
+  //         if (value !== null) {
+  //           try {
+  //             completeSnapshot[key] = JSON.parse(value);
+  //           } catch {
+  //             completeSnapshot[key] = value;
+  //           }
+  //         }
+  //       }
+  //     }
 
-      // Send backup to server with device ID (same pattern as bug reports)
-      const deviceId = getDeviceId();
-      const response = await fetch('/api/save-backup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          backupData: completeSnapshot,
-          deviceId: deviceId 
-        }),
-      });
+  //     // Send backup to server with device ID (same pattern as bug reports)
+  //     const deviceId = getDeviceId();
+  //     const response = await fetch('/api/save-backup', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ 
+  //         backupData: completeSnapshot,
+  //         deviceId: deviceId 
+  //       }),
+  //     });
 
-      if (response.ok) {
-        const result = await response.json();
-        const now = new Date().toISOString();
-        localStorage.setItem(STORAGE_KEYS.LAST_AUTO_BACKUP, now);
-        setLastAutoBackup(now);
-        console.log('Auto-backup completed successfully:', result.filename);
-        return true;
-      } else {
-        throw new Error('Failed to save auto-backup');
-      }
-    } catch (error) {
-      console.error('Auto-backup failed:', error);
-      return false;
-    }
-  };
+  //     if (response.ok) {
+  //       const result = await response.json();
+  //       const now = new Date().toISOString();
+  //       localStorage.setItem(STORAGE_KEYS.LAST_AUTO_BACKUP, now);
+  //       setLastAutoBackup(now);
+  //       console.log('Auto-backup completed successfully:', result.filename);
+  //       return true;
+  //     } else {
+  //       throw new Error('Failed to save auto-backup');
+  //     }
+  //   } catch (error) {
+  //     console.error('Auto-backup failed:', error);
+  //     return false;
+  //   }
+  // };
 
-  // Check if backup needed and schedule next one
-  const scheduleAutoBackup = () => {
-    if (!autoBackupEnabled) return;
+  // COMMENTED OUT: Auto-backup scheduling and toggle functions removed per user request
+  // const scheduleAutoBackup = () => {
+  //   if (!autoBackupEnabled) return;
 
-    const now = new Date();
-    const today = getTodayString();
-    const lastBackupDate = lastAutoBackup ? new Date(lastAutoBackup).toLocaleDateString('en-CA') : null;
+  //   const now = new Date();
+  //   const today = getTodayString();
+  //   const lastBackupDate = lastAutoBackup ? new Date(lastAutoBackup).toLocaleDateString('en-CA') : null;
 
-    // If we haven't backed up today, do it now
-    if (lastBackupDate !== today) {
-      performAutoBackup();
-    }
+  //   // If we haven't backed up today, do it now
+  //   if (lastBackupDate !== today) {
+  //     performAutoBackup();
+  //   }
 
-    // Calculate time until next midnight
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
-    const msUntilMidnight = tomorrow.getTime() - now.getTime();
+  //   // Calculate time until next midnight
+  //   const tomorrow = new Date(now);
+  //   tomorrow.setDate(tomorrow.getDate() + 1);
+  //   tomorrow.setHours(0, 0, 0, 0);
+  //   const msUntilMidnight = tomorrow.getTime() - now.getTime();
 
-    // Schedule next backup  
-    setTimeout(() => {
-      if (localStorage.getItem('fitcircle_auto_backup_enabled') === 'true') {
-        performAutoBackup();
-        // Schedule recurring daily backups
-        setInterval(() => {
-          if (localStorage.getItem('fitcircle_auto_backup_enabled') === 'true') {
-            performAutoBackup();
-          }
-        }, 24 * 60 * 60 * 1000); // 24 hours
-      }
-    }, msUntilMidnight);
-  };
+  //   // Schedule next backup  
+  //   setTimeout(() => {
+  //     if (localStorage.getItem('fitcircle_auto_backup_enabled') === 'true') {
+  //       performAutoBackup();
+  //       // Schedule recurring daily backups
+  //       setInterval(() => {
+  //         if (localStorage.getItem('fitcircle_auto_backup_enabled') === 'true') {
+  //           performAutoBackup();
+  //         }
+  //       }, 24 * 60 * 60 * 1000); // 24 hours
+  //     }
+  //   }, msUntilMidnight);
+  // };
 
-  // Toggle auto-backup
-  const handleAutoBackupToggle = (enabled: boolean) => {
-    setAutoBackupEnabled(enabled);
-    localStorage.setItem(STORAGE_KEYS.AUTO_BACKUP_ENABLED, enabled.toString());
-    
-    if (enabled) {
-      scheduleAutoBackup();
-      setStatus('Auto-backup enabled! Daily backups saved to codebase.');
-    } else {
-      setStatus('Auto-backup disabled.');
-    }
-    
-    setTimeout(() => setStatus(''), 3000);
-  };
+  // const handleAutoBackupToggle = (enabled: boolean) => {
+  //   setAutoBackupEnabled(enabled);
+  //   localStorage.setItem(STORAGE_KEYS.AUTO_BACKUP_ENABLED, enabled.toString());
+  //   
+  //   if (enabled) {
+  //     scheduleAutoBackup();
+  //     setStatus('Auto-backup enabled! Daily backups saved to codebase.');
+  //   } else {
+  //     setStatus('Auto-backup disabled.');
+  //   }
+  //   
+  //   setTimeout(() => setStatus(''), 3000);
+  // };
 
-
-
-  // Initialize auto-backup scheduling on component mount
-  useEffect(() => {
-    if (autoBackupEnabled) {
-      scheduleAutoBackup();
-    }
-  }, [autoBackupEnabled]);
+  // // Initialize auto-backup scheduling on component mount
+  // useEffect(() => {
+  //   if (autoBackupEnabled) {
+  //     scheduleAutoBackup();
+  //   }
+  // }, [autoBackupEnabled]);
   
   // Check if we came from dashboard
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
@@ -379,8 +377,8 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Auto-Backup Section */}
-        <div className="bg-slate-800 rounded-xl p-6 mb-6">
+        {/* COMMENTED OUT: Auto-Backup Section removed per user request - no server calls */}
+        {/* <div className="bg-slate-800 rounded-xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-white">Auto-Backup</h2>
             <button
@@ -415,7 +413,7 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* Controls Section */}
         <div className="bg-slate-800 rounded-xl p-6 mb-6">
@@ -481,22 +479,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Report Bug Section */}
-        <div className="bg-slate-800 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Help & Feedback</h2>
-          
-          <button
-            onClick={() => navigate('/report-bug')}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2"
-          >
-            <Bug className="w-5 h-5" />
-            Report a Problem
-          </button>
-          
-          <p className="text-xs text-slate-400 text-center mt-3">
-            Found an issue? Help us improve the app by reporting bugs and problems.
-          </p>
-        </div>
+        {/* REMOVED: Bug reporting section removed per user request - no server calls */}
         {/* Erase All Data Section */}
         <div className="bg-red-900/20 border border-red-700 rounded-xl p-6 mb-6">
           <h2 className="text-lg font-semibold text-red-400 mb-4">Danger Zone</h2>

@@ -232,125 +232,125 @@ Always base your advice on evidence-based fitness principles and encourage users
   */
 
 
-  // Auto-backup endpoint - saves complete app state as JSON files locally (like bug reports)
-  app.post('/api/save-backup', async (req, res) => {
-    try {
-      const { backupData, deviceId } = req.body;
+  // COMMENTED OUT: Auto-backup endpoint removed per user request - no server calls
+  // app.post('/api/save-backup', async (req, res) => {
+  //   try {
+  //     const { backupData, deviceId } = req.body;
 
-      if (!backupData) {
-        return res.status(400).json({ error: 'Backup data is required' });
-      }
+  //     if (!backupData) {
+  //       return res.status(400).json({ error: 'Backup data is required' });
+  //     }
 
-      if (!deviceId) {
-        return res.status(400).json({ error: 'Device ID is required' });
-      }
+  //     if (!deviceId) {
+  //       return res.status(400).json({ error: 'Device ID is required' });
+  //     }
 
-      // Ensure backups directory exists (same pattern as bug reports)
-      const backupsDir = path.join(process.cwd(), 'backups');
-      if (!fs.existsSync(backupsDir)) {
-        fs.mkdirSync(backupsDir, { recursive: true });
-      }
+  //     // Ensure backups directory exists (same pattern as bug reports)
+  //     const backupsDir = path.join(process.cwd(), 'backups');
+  //     if (!fs.existsSync(backupsDir)) {
+  //       fs.mkdirSync(backupsDir, { recursive: true });
+  //     }
 
-      // Create filename with local date (not UTC)
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const localDate = `${year}-${month}-${day}`;
-      
-      const filename = `fitcircle-auto-backup-${deviceId}-${localDate}.json`;
-      const filepath = path.join(backupsDir, filename);
+  //     // Create filename with local date (not UTC)
+  //     const now = new Date();
+  //     const year = now.getFullYear();
+  //     const month = String(now.getMonth() + 1).padStart(2, '0');
+  //     const day = String(now.getDate()).padStart(2, '0');
+  //     const localDate = `${year}-${month}-${day}`;
+  //     
+  //     const filename = `fitcircle-auto-backup-${deviceId}-${localDate}.json`;
+  //     const filepath = path.join(backupsDir, filename);
 
-      // Prepare the complete backup data
-      const completeBackup = {
-        id: `backup-${Date.now()}`,
-        timestamp: new Date().toISOString(),
-        localDate: localDate,
-        deviceId: deviceId,
-        type: 'auto-backup',
-        data: backupData,
-        itemCount: Object.keys(backupData).length
-      };
+  //     // Prepare the complete backup data
+  //     const completeBackup = {
+  //       id: `backup-${Date.now()}`,
+  //       timestamp: new Date().toISOString(),
+  //       localDate: localDate,
+  //       deviceId: deviceId,
+  //       type: 'auto-backup',
+  //       data: backupData,
+  //       itemCount: Object.keys(backupData).length
+  //     };
 
-      // Write the backup to file (same as bug reports)
-      fs.writeFileSync(filepath, JSON.stringify(completeBackup, null, 2));
+  //     // Write the backup to file (same as bug reports)
+  //     fs.writeFileSync(filepath, JSON.stringify(completeBackup, null, 2));
 
-      console.log(`Auto-backup saved: ${filename}`);
-      console.log(`Device ID: ${deviceId}`);
-      console.log(`Items backed up: ${Object.keys(backupData).length}`);
+  //     console.log(`Auto-backup saved: ${filename}`);
+  //     console.log(`Device ID: ${deviceId}`);
+  //     console.log(`Items backed up: ${Object.keys(backupData).length}`);
 
-      res.json({ 
-        success: true, 
-        message: 'Auto-backup saved successfully',
-        backupId: completeBackup.id,
-        filename: filename
-      });
-    } catch (error) {
-      console.error('Error saving auto-backup:', error);
-      res.status(500).json({ 
-        error: 'Failed to save auto-backup. Please try again later.' 
-      });
-    }
-  });
+  //     res.json({ 
+  //       success: true, 
+  //       message: 'Auto-backup saved successfully',
+  //       backupId: completeBackup.id,
+  //       filename: filename
+  //     });
+  //   } catch (error) {
+  //     console.error('Error saving auto-backup:', error);
+  //     res.status(500).json({ 
+  //       error: 'Failed to save auto-backup. Please try again later.' 
+  //     });
+  //   }
+  // });
 
-  // Bug report endpoint - saves reports as JSON files locally
-  app.post('/api/report-bug', async (req, res) => {
-    try {
-      const { bugReport } = req.body;
+  // COMMENTED OUT: Bug report endpoint removed per user request - no server calls
+  // app.post('/api/report-bug', async (req, res) => {
+  //   try {
+  //     const { bugReport } = req.body;
 
-      // Validate required fields
-      if (!bugReport || !bugReport.summary) {
-        return res.status(400).json({ error: 'Bug report summary is required' });
-      }
+  //     // Validate required fields
+  //     if (!bugReport || !bugReport.summary) {
+  //       return res.status(400).json({ error: 'Bug report summary is required' });
+  //     }
 
-      // Ensure bug-reports directory exists
-      const reportsDir = path.join(process.cwd(), 'bug-reports');
-      if (!fs.existsSync(reportsDir)) {
-        fs.mkdirSync(reportsDir, { recursive: true });
-      }
+  //     // Ensure bug-reports directory exists
+  //     const reportsDir = path.join(process.cwd(), 'bug-reports');
+  //     if (!fs.existsSync(reportsDir)) {
+  //       fs.mkdirSync(reportsDir, { recursive: true });
+  //     }
 
-      // Create filename with timestamp
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `bug-report-${timestamp}.json`;
-      const filepath = path.join(reportsDir, filename);
+  //     // Create filename with timestamp
+  //     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  //     const filename = `bug-report-${timestamp}.json`;
+  //     const filepath = path.join(reportsDir, filename);
 
-      // Prepare the complete bug report data
-      const completeReport = {
-        id: `bug-${Date.now()}`,
-        timestamp: new Date().toISOString(),
-        summary: bugReport.summary,
-        hasHappenedMoreThanOnce: bugReport.hasHappenedMoreThanOnce,
-        stepsToReproduce: bugReport.stepsToReproduce || '',
-        expectedResult: bugReport.expectedResult || '',
-        actualResult: bugReport.actualResult || '',
-        comments: bugReport.comments || '',
-        includeLogs: bugReport.includeLogs || false,
-        technicalInfo: {
-          userAgent: bugReport.userAgent || '',
-          url: bugReport.url || '',
-          timestamp: bugReport.timestamp || new Date().toISOString()
-        },
-        status: 'new'
-      };
+  //     // Prepare the complete bug report data
+  //     const completeReport = {
+  //       id: `bug-${Date.now()}`,
+  //       timestamp: new Date().toISOString(),
+  //       summary: bugReport.summary,
+  //       hasHappenedMoreThanOnce: bugReport.hasHappenedMoreThanOnce,
+  //       stepsToReproduce: bugReport.stepsToReproduce || '',
+  //       expectedResult: bugReport.expectedResult || '',
+  //       actualResult: bugReport.actualResult || '',
+  //       comments: bugReport.comments || '',
+  //       includeLogs: bugReport.includeLogs || false,
+  //       technicalInfo: {
+  //         userAgent: bugReport.userAgent || '',
+  //         url: bugReport.url || '',
+  //         timestamp: bugReport.timestamp || new Date().toISOString()
+  //       },
+  //       status: 'new'
+  //     };
 
-      // Write the bug report to file
-      fs.writeFileSync(filepath, JSON.stringify(completeReport, null, 2));
+  //     // Write the bug report to file
+  //     fs.writeFileSync(filepath, JSON.stringify(completeReport, null, 2));
 
-      console.log(`Bug report saved: ${filename}`);
-      console.log(`Summary: ${bugReport.summary}`);
+  //     console.log(`Bug report saved: ${filename}`);
+  //     console.log(`Summary: ${bugReport.summary}`);
 
-      res.json({ 
-        success: true, 
-        message: 'Bug report submitted successfully',
-        reportId: completeReport.id
-      });
-    } catch (error) {
-      console.error('Error saving bug report:', error);
-      res.status(500).json({ 
-        error: 'Failed to save bug report. Please try again later.' 
-      });
-    }
-  });
+  //     res.json({ 
+  //       success: true, 
+  //       message: 'Bug report submitted successfully',
+  //       reportId: completeReport.id
+  //     });
+  //   } catch (error) {
+  //     console.error('Error saving bug report:', error);
+  //     res.status(500).json({ 
+  //       error: 'Failed to save bug report. Please try again later.' 
+  //     });
+  //   }
+  // });
 
   const httpServer = createServer(app);
 

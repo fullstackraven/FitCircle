@@ -5,6 +5,8 @@ FitCircle is a mobile-friendly workout tracking web application inspired by the 
 
 **Major Codebase Optimization Completed (Aug 2025):** Achieved zero redundancy with comprehensive refactoring - eliminated duplicate functions, removed 17 unused UI components, standardized localStorage management, and created centralized utility libraries for maximum efficiency.
 
+**Auto-Backup & Bug Reporting Removal (Aug 2025):** Completely removed auto-backup and bug reporting features per user request to eliminate all server calls and maintain fully offline operation. App is now 100% client-side with no server dependencies.
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 

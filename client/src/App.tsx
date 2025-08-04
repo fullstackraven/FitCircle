@@ -5,7 +5,7 @@ import Home from "@/pages/home";
 import CalendarPage from "@/pages/calendar";
 import FitnessCalculatorPage from "@/pages/fitness-calculator";
 import FoodTrackerPage from "@/pages/food-tracker";
-import ReportBugPage from "@/pages/report-bug";
+// REMOVED: Bug reporting feature removed per user request
 import ProfilePage from "@/pages/profile";
 import MeasurementsPage from "@/pages/measurements";
 import SettingsPage from "@/pages/settings";
@@ -35,7 +35,7 @@ function Router() {
       <Route path="/fitness-calculator" component={FitnessCalculatorPage} />
       <Route path="/food-tracker" component={FoodTrackerPage} />
       <Route path="/cardio" component={CardioPage} />
-      <Route path="/report-bug" component={ReportBugPage} />
+      {/* REMOVED: Bug reporting route removed per user request */}
 
       <Route path="/reminders" component={RemindersPage} />
 
