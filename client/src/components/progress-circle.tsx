@@ -72,17 +72,17 @@ export function ProgressCircle({
     
     isHoldingRef.current = true;
     
-    // Start the hold timeout (2 seconds)
+    // Start the hold timeout (0.5 seconds)
     holdTimeoutRef.current = setTimeout(() => {
       if (isHoldingRef.current && onHoldIncrement) {
-        // Start incrementing by 5 every 100ms
+        // Start incrementing by 1 every 100ms
         holdIntervalRef.current = setInterval(() => {
           if (isHoldingRef.current && onHoldIncrement) {
             onHoldIncrement();
           }
         }, 100);
       }
-    }, 2000);
+    }, 500);
   }, [onHoldIncrement]);
 
   const endHold = useCallback(() => {
