@@ -69,7 +69,7 @@ export function GoalCircle({
           ) : (
             <>
               <div className="text-xl font-bold text-white">
-                {isNaN(currentValue) ? 0 : currentValue} {currentValue === 1 ? unit.replace('days', 'Day').replace('Days', 'Day') : unit.replace('days', 'Days').replace('Days', 'Days')}
+                {isNaN(goalValue) ? 0 : goalValue} {goalValue === 1 ? unit.replace('days', 'Day').replace('Days', 'Day') : unit.replace('days', 'Days').replace('Days', 'Days')}
               </div>
               <div className="text-xs text-slate-400 text-center">
                 {isNaN(percentage) ? 0 : Math.round(percentage)}%

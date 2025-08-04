@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity, Timer, Play, Pause, Square } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
+import { useTimer } from '@/hooks/use-timer';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const colorClassMap: { [key: string]: string } = {
   green: 'workout-green',
@@ -40,11 +44,15 @@ export default function Home() {
     canAddMoreWorkouts
   } = useWorkouts();
 
+  const { timerState, startTimer, pauseTimer, resumeTimer, resetTimer, formatTime, getProgress } = useTimer();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
   const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number } | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
+  const [isTimerOpen, setIsTimerOpen] = useState(false);
+  const [timerMinutes, setTimerMinutes] = useState<string>('5');
 
   // Check if we should open dashboard on load
   useEffect(() => {
@@ -205,12 +213,21 @@ export default function Home() {
 
           {canAddMoreWorkouts() && (
             <div className="flex flex-col items-center space-y-3">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="w-20 h-20 rounded-full border-2 border-dashed border-slate-600 flex items-center justify-center text-slate-400 font-bold text-3xl hover:border-slate-500 hover:text-slate-300 transition-colors"
-              >
-                <Plus size={24} />
-              </button>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="w-20 h-20 rounded-full border-2 border-dashed border-slate-600 flex items-center justify-center text-slate-400 font-bold text-3xl hover:border-slate-500 hover:text-slate-300 transition-colors"
+                >
+                  <Plus size={24} />
+                </button>
+                <button
+                  onClick={() => setIsTimerOpen(true)}
+                  className="w-12 h-12 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-slate-400 hover:bg-slate-600 hover:text-slate-300 transition-colors"
+                  title="Timer"
+                >
+                  <Timer size={20} />
+                </button>
+              </div>
               <span className="text-sm text-slate-500 font-medium">Add Workout</span>
               <div className="h-5"></div>
             </div>
@@ -433,6 +450,149 @@ export default function Home() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Timer Dialog */}
+      <Dialog open={isTimerOpen} onOpenChange={setIsTimerOpen}>
+        <DialogContent className="bg-slate-800 text-white border-slate-700 max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Workout Timer</DialogTitle>
+          </DialogHeader>
+          
+          {!timerState.isRunning && timerState.remainingTime === 0 ? (
+            // Timer Setup
+            <div className="space-y-6">
+              <div className="text-center">
+                <label className="block text-sm text-slate-300 mb-2">Timer Duration (minutes)</label>
+                <Input
+                  type="number"
+                  value={timerMinutes}
+                  onChange={(e) => setTimerMinutes(e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white text-center text-xl"
+                  min="1"
+                  max="60"
+                />
+              </div>
+              
+              <div className="flex space-x-3">
+                <Button
+                  onClick={() => {
+                    const minutes = parseInt(timerMinutes);
+                    if (minutes > 0) {
+                      startTimer(minutes);
+                    }
+                  }}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
+                  <Play size={16} className="mr-2" />
+                  Start Timer
+                </Button>
+                <Button
+                  onClick={() => setIsTimerOpen(false)}
+                  variant="outline"
+                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            // Timer Running/Completed
+            <div className="space-y-6">
+              <div className="flex justify-center">
+                <div className="relative w-48 h-48">
+                  <svg width="192" height="192" className="transform -rotate-90">
+                    {/* Background circle */}
+                    <circle
+                      cx="96"
+                      cy="96"
+                      r="88"
+                      stroke="rgb(71, 85, 105)"
+                      strokeWidth="8"
+                      fill="none"
+                    />
+                    {/* Progress circle */}
+                    <circle
+                      cx="96"
+                      cy="96"
+                      r="88"
+                      stroke={timerState.isCompleted ? "rgb(34, 197, 94)" : "rgb(59, 130, 246)"}
+                      strokeWidth="8"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeDasharray={`${2 * Math.PI * 88}`}
+                      strokeDashoffset={`${2 * Math.PI * 88 * (1 - getProgress() / 100)}`}
+                      className="transition-all duration-1000 ease-linear"
+                    />
+                  </svg>
+                  
+                  {/* Center content */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <div className="text-3xl font-bold text-white">
+                      {formatTime(timerState.remainingTime)}
+                    </div>
+                    <div className="text-sm text-slate-400">
+                      {timerState.isCompleted ? 'Completed!' : 'Remaining'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex space-x-3">
+                {timerState.isCompleted ? (
+                  <>
+                    <Button
+                      onClick={() => {
+                        resetTimer();
+                        setTimerMinutes('5');
+                      }}
+                      className="flex-1 bg-green-600 hover:bg-green-700"
+                    >
+                      New Timer
+                    </Button>
+                    <Button
+                      onClick={() => setIsTimerOpen(false)}
+                      variant="outline"
+                      className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                    >
+                      Close
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      onClick={timerState.isRunning ? pauseTimer : resumeTimer}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    >
+                      {timerState.isRunning ? (
+                        <>
+                          <Pause size={16} className="mr-2" />
+                          Pause
+                        </>
+                      ) : (
+                        <>
+                          <Play size={16} className="mr-2" />
+                          Resume
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        resetTimer();
+                        setTimerMinutes('5');
+                      }}
+                      variant="outline"
+                      className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                    >
+                      <Square size={16} className="mr-2" />
+                      Stop
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
