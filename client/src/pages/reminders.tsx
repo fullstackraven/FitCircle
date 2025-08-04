@@ -25,18 +25,20 @@ export default function RemindersPage() {
     navigate('/');
   };
 
-  const handleAddReminder = () => {
+  const handleAddReminder = (keepFormOpen = false) => {
     if (newReminderText.trim()) {
       addReminder(newReminderText.trim());
       setNewReminderText('');
-      setShowAddForm(false);
+      if (!keepFormOpen) {
+        setShowAddForm(false);
+      }
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleAddReminder();
+      handleAddReminder(true); // Keep form open when using keyboard
     }
   };
 
