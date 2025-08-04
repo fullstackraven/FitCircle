@@ -1,4 +1,5 @@
 import { Check } from 'lucide-react';
+import { useRef, useCallback } from 'react';
 
 interface ProgressCircleProps {
   count: number;
@@ -7,6 +8,7 @@ interface ProgressCircleProps {
   size?: number;
   strokeWidth?: number;
   onClick?: () => void;
+  onHoldIncrement?: () => void;
   isAnimating?: boolean;
 }
 
@@ -47,6 +49,7 @@ export function ProgressCircle({
   size = 80, 
   strokeWidth = 6, 
   onClick,
+  onHoldIncrement,
   isAnimating = false 
 }: ProgressCircleProps) {
   const progress = goal > 0 ? Math.min(count / goal, 1) : 0;
@@ -59,9 +62,59 @@ export function ProgressCircle({
   const strokeDasharray = circumference;
   const strokeDashoffset = isNaN(progress) ? circumference : circumference - (progress * circumference);
 
+  // Hold-to-increment functionality
+  const holdTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const holdIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isHoldingRef = useRef(false);
+
+  const startHold = useCallback(() => {
+    if (!onHoldIncrement) return;
+    
+    isHoldingRef.current = true;
+    
+    // Start the hold timeout (2 seconds)
+    holdTimeoutRef.current = setTimeout(() => {
+      if (isHoldingRef.current && onHoldIncrement) {
+        // Start incrementing by 5 every 100ms
+        holdIntervalRef.current = setInterval(() => {
+          if (isHoldingRef.current && onHoldIncrement) {
+            onHoldIncrement();
+          }
+        }, 100);
+      }
+    }, 2000);
+  }, [onHoldIncrement]);
+
+  const endHold = useCallback(() => {
+    isHoldingRef.current = false;
+    
+    if (holdTimeoutRef.current) {
+      clearTimeout(holdTimeoutRef.current);
+      holdTimeoutRef.current = null;
+    }
+    
+    if (holdIntervalRef.current) {
+      clearInterval(holdIntervalRef.current);
+      holdIntervalRef.current = null;
+    }
+  }, []);
+
+  const handleClick = useCallback(() => {
+    // Only trigger onClick if we're not holding
+    if (!isHoldingRef.current && onClick) {
+      onClick();
+    }
+  }, [onClick]);
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
+      onMouseDown={startHold}
+      onMouseUp={endHold}
+      onMouseLeave={endHold}
+      onTouchStart={startHold}
+      onTouchEnd={endHold}
+      onTouchCancel={endHold}
       className={`relative transform transition-transform duration-150 hover:scale-105 active:scale-95 ${
         isAnimating ? 'bounce-animation' : ''
       }`}

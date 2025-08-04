@@ -94,6 +94,21 @@ export default function Home() {
     setTimeout(() => setClickingWorkout(null), 200);
   };
 
+  const handleWorkoutHoldIncrement = (workoutId: string) => {
+    const todayTotal = todaysTotals.find(t => t.id === workoutId);
+    const currentCount = todayTotal?.count || 0;
+    const workout = getWorkoutById(workoutId);
+
+    if (workout && currentCount >= workout.dailyGoal) return;
+
+    // Increment by 5 for hold functionality
+    for (let i = 0; i < 5; i++) {
+      incrementWorkout(workoutId);
+    }
+    setClickingWorkout(workoutId);
+    setTimeout(() => setClickingWorkout(null), 200);
+  };
+
   const handleUndo = (workoutId: string) => {
     decrementWorkout(workoutId);
   };
@@ -181,6 +196,7 @@ export default function Home() {
                   size={80}
                   strokeWidth={8}
                   onClick={() => handleWorkoutClick(workout.id)}
+                  onHoldIncrement={() => handleWorkoutHoldIncrement(workout.id)}
                   isAnimating={clickingWorkout === workout.id}
                 />
                 <div className="text-center">
