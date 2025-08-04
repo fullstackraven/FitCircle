@@ -101,10 +101,8 @@ export default function Home() {
 
     if (workout && currentCount >= workout.dailyGoal) return;
 
-    // Increment by 5 for hold functionality
-    for (let i = 0; i < 5; i++) {
-      incrementWorkout(workoutId);
-    }
+    // Increment by 1 for hold functionality
+    incrementWorkout(workoutId);
     setClickingWorkout(workoutId);
     setTimeout(() => setClickingWorkout(null), 200);
   };

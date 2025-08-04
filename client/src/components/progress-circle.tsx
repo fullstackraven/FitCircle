@@ -118,7 +118,7 @@ export function ProgressCircle({
       className={`relative transform transition-transform duration-150 hover:scale-105 active:scale-95 ${
         isAnimating ? 'bounce-animation' : ''
       }`}
-      style={{ width: svgSize, height: svgSize }}
+      style={{ width: svgSize, height: svgSize, userSelect: 'none', WebkitUserSelect: 'none' }}
     >
       {/* Background circle - more transparent when completed */}
       <div 
