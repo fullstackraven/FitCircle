@@ -63,6 +63,15 @@ export function useTimer() {
     });
   };
 
+  const startTimerFromSeconds = (totalSeconds: number) => {
+    setTimerState({
+      totalTime: totalSeconds,
+      remainingTime: totalSeconds,
+      isRunning: true,
+      isCompleted: false
+    });
+  };
+
   const pauseTimer = () => {
     setTimerState(prev => ({
       ...prev,
@@ -100,6 +109,7 @@ export function useTimer() {
   return {
     timerState,
     startTimer,
+    startTimerFromSeconds,
     pauseTimer,
     resumeTimer,
     resetTimer,

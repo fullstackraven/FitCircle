@@ -44,7 +44,7 @@ export default function Home() {
     canAddMoreWorkouts
   } = useWorkouts();
 
-  const { timerState, startTimer, pauseTimer, resumeTimer, resetTimer, formatTime, getProgress } = useTimer();
+  const { timerState, startTimer, startTimerFromSeconds, pauseTimer, resumeTimer, resetTimer, formatTime, getProgress } = useTimer();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
@@ -52,7 +52,9 @@ export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
   const [isTimerOpen, setIsTimerOpen] = useState(false);
+  const [timerHours, setTimerHours] = useState<string>('0');
   const [timerMinutes, setTimerMinutes] = useState<string>('5');
+  const [timerSeconds, setTimerSeconds] = useState<string>('0');
 
   // Check if we should open dashboard on load
   useEffect(() => {
@@ -463,7 +465,7 @@ export default function Home() {
 
       {/* Timer Dialog */}
       <Dialog open={isTimerOpen} onOpenChange={setIsTimerOpen}>
-        <DialogContent className="bg-slate-800 text-white border-slate-700 max-w-sm">
+        <DialogContent className="bg-slate-800 text-white border-slate-700 max-w-md">
           <DialogHeader>
             <DialogTitle>Workout Timer</DialogTitle>
           </DialogHeader>
@@ -471,24 +473,133 @@ export default function Home() {
           {!timerState.isRunning && timerState.remainingTime === 0 ? (
             // Timer Setup
             <div className="space-y-6">
-              <div className="text-center">
-                <label className="block text-sm text-slate-300 mb-2">Timer Duration (minutes)</label>
-                <Input
-                  type="number"
-                  value={timerMinutes}
-                  onChange={(e) => setTimerMinutes(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white text-center text-xl"
-                  min="1"
-                  max="60"
-                />
+              {/* Timer Ring Display */}
+              <div className="flex justify-center mb-6">
+                <div className="relative w-48 h-48">
+                  <svg width="192" height="192" className="transform -rotate-90">
+                    {/* Background circle */}
+                    <circle
+                      cx="96"
+                      cy="96"
+                      r="88"
+                      stroke="rgb(71, 85, 105)"
+                      strokeWidth="8"
+                      fill="none"
+                    />
+                  </svg>
+                  
+                  {/* Center content */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <div className="text-2xl font-bold text-white">
+                      {String((parseInt(timerHours) || 0)).padStart(2, '0')}:
+                      {String((parseInt(timerMinutes) || 0)).padStart(2, '0')}:
+                      {String(parseInt(timerSeconds) || 0).padStart(2, '0')}
+                    </div>
+                    <div className="text-xs text-slate-400">Set Time</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Time Input Fields */}
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                <div className="text-center">
+                  <label className="block text-xs text-slate-400 mb-1">Hours</label>
+                  <Input
+                    type="number"
+                    value={timerHours}
+                    onChange={(e) => setTimerHours(e.target.value)}
+                    className="bg-slate-700 border-slate-600 text-white text-center text-lg"
+                    min="0"
+                    max="23"
+                    placeholder="0"
+                  />
+                </div>
+                <div className="text-center">
+                  <label className="block text-xs text-slate-400 mb-1">Minutes</label>
+                  <Input
+                    type="number"
+                    value={timerMinutes}
+                    onChange={(e) => setTimerMinutes(e.target.value)}
+                    className="bg-slate-700 border-slate-600 text-white text-center text-lg"
+                    min="0"
+                    max="59"
+                    placeholder="0"
+                  />
+                </div>
+                <div className="text-center">
+                  <label className="block text-xs text-slate-400 mb-1">Seconds</label>
+                  <Input
+                    type="number"
+                    value={timerSeconds}
+                    onChange={(e) => setTimerSeconds(e.target.value)}
+                    className="bg-slate-700 border-slate-600 text-white text-center text-lg"
+                    min="0"
+                    max="59"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+
+              {/* Quick Preset Buttons */}
+              <div className="space-y-3">
+                <div className="text-sm text-slate-300 text-center">Quick Presets</div>
+                <div className="grid grid-cols-4 gap-2">
+                  <Button
+                    onClick={() => startTimerFromSeconds(30)}
+                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
+                  >
+                    30s
+                  </Button>
+                  <Button
+                    onClick={() => startTimerFromSeconds(60)}
+                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
+                  >
+                    60s
+                  </Button>
+                  <Button
+                    onClick={() => startTimerFromSeconds(90)}
+                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
+                  >
+                    90s
+                  </Button>
+                  <Button
+                    onClick={() => startTimerFromSeconds(120)}
+                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
+                  >
+                    2m
+                  </Button>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <Button
+                    onClick={() => startTimerFromSeconds(300)}
+                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
+                  >
+                    5m
+                  </Button>
+                  <Button
+                    onClick={() => startTimerFromSeconds(600)}
+                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
+                  >
+                    10m
+                  </Button>
+                  <Button
+                    onClick={() => startTimerFromSeconds(900)}
+                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
+                  >
+                    15m
+                  </Button>
+                </div>
               </div>
               
-              <div className="flex space-x-3">
+              {/* Control Buttons */}
+              <div className="flex space-x-3 pt-4">
                 <Button
                   onClick={() => {
-                    const minutes = parseInt(timerMinutes);
-                    if (minutes > 0) {
-                      startTimer(minutes);
+                    const totalSeconds = (parseInt(timerHours) || 0) * 3600 + 
+                                       (parseInt(timerMinutes) || 0) * 60 + 
+                                       (parseInt(timerSeconds) || 0);
+                    if (totalSeconds > 0) {
+                      startTimerFromSeconds(totalSeconds);
                     }
                   }}
                   className="flex-1 bg-green-600 hover:bg-green-700"
@@ -553,7 +664,9 @@ export default function Home() {
                     <Button
                       onClick={() => {
                         resetTimer();
+                        setTimerHours('0');
                         setTimerMinutes('5');
+                        setTimerSeconds('0');
                       }}
                       className="flex-1 bg-green-600 hover:bg-green-700"
                     >
@@ -588,7 +701,9 @@ export default function Home() {
                     <Button
                       onClick={() => {
                         resetTimer();
+                        setTimerHours('0');
                         setTimerMinutes('5');
+                        setTimerSeconds('0');
                       }}
                       variant="outline"
                       className="border-slate-600 text-slate-300 hover:bg-slate-700"
