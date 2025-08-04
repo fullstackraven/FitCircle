@@ -53,7 +53,7 @@ export default function Home() {
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [timerHours, setTimerHours] = useState<string>('0');
-  const [timerMinutes, setTimerMinutes] = useState<string>('5');
+  const [timerMinutes, setTimerMinutes] = useState<string>('0');
   const [timerSeconds, setTimerSeconds] = useState<string>('0');
 
   // Check if we should open dashboard on load
@@ -665,7 +665,7 @@ export default function Home() {
                       onClick={() => {
                         resetTimer();
                         setTimerHours('0');
-                        setTimerMinutes('5');
+                        setTimerMinutes('0');
                         setTimerSeconds('0');
                       }}
                       className="flex-1 bg-green-600 hover:bg-green-700"
@@ -702,7 +702,7 @@ export default function Home() {
                       onClick={() => {
                         resetTimer();
                         setTimerHours('0');
-                        setTimerMinutes('5');
+                        setTimerMinutes('0');
                         setTimerSeconds('0');
                       }}
                       variant="outline"
