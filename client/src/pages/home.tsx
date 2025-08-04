@@ -123,8 +123,12 @@ export default function Home() {
 
 
 
-  const minSlots = Math.max(4, workouts.length + (canAddMoreWorkouts() ? 1 : 0));
-  const emptySlots = Math.max(0, minSlots - workouts.length);
+  // Account for timer circle (1 slot) + add workout button (1 slot if available) + actual workouts
+  const timerSlots = 1; // Timer always takes 1 slot
+  const addWorkoutSlots = canAddMoreWorkouts() ? 1 : 0;
+  const usedSlots = workouts.length + timerSlots + addWorkoutSlots;
+  const minSlots = Math.max(6, usedSlots); // Ensure at least 6 total slots for good layout
+  const emptySlots = Math.max(0, minSlots - usedSlots);
 
 
 
@@ -211,29 +215,35 @@ export default function Home() {
             );
           })}
 
+          {/* Timer Circle */}
+          <div className="flex flex-col items-center space-y-3">
+            <button
+              onClick={() => setIsTimerOpen(true)}
+              className="w-20 h-20 rounded-full border-2 border-slate-600 bg-slate-800 flex items-center justify-center text-slate-400 hover:border-slate-500 hover:text-slate-300 hover:bg-slate-700 transition-colors"
+              title="Timer"
+            >
+              <Timer size={24} />
+            </button>
+            <div className="text-center">
+              <span className="text-sm text-slate-300 font-medium">Timer</span>
+            </div>
+            <div className="h-5"></div>
+          </div>
+
           {canAddMoreWorkouts() && (
             <div className="flex flex-col items-center space-y-3">
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="w-20 h-20 rounded-full border-2 border-dashed border-slate-600 flex items-center justify-center text-slate-400 font-bold text-3xl hover:border-slate-500 hover:text-slate-300 transition-colors"
-                >
-                  <Plus size={24} />
-                </button>
-                <button
-                  onClick={() => setIsTimerOpen(true)}
-                  className="w-12 h-12 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-slate-400 hover:bg-slate-600 hover:text-slate-300 transition-colors"
-                  title="Timer"
-                >
-                  <Timer size={20} />
-                </button>
-              </div>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="w-20 h-20 rounded-full border-2 border-dashed border-slate-600 flex items-center justify-center text-slate-400 font-bold text-3xl hover:border-slate-500 hover:text-slate-300 transition-colors"
+              >
+                <Plus size={24} />
+              </button>
               <span className="text-sm text-slate-500 font-medium">Add Workout</span>
               <div className="h-5"></div>
             </div>
           )}
 
-          {Array.from({ length: Math.max(0, emptySlots - (canAddMoreWorkouts() ? 1 : 0)) }).map((_, index) => (
+          {Array.from({ length: emptySlots }).map((_, index) => (
             <div key={`empty-${index}`} className="flex flex-col items-center space-y-3">
               <div className="w-20 h-20 rounded-full border-2 border-dashed border-slate-700 opacity-30"></div>
               <div className="h-5"></div>
