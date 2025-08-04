@@ -104,6 +104,7 @@ export default function RemindersPage() {
       if (openNewReminder) {
         // Find the position of the edited reminder in the full reminders array
         const editedReminderIndex = reminders.findIndex(r => r.id === editingId);
+        console.log('Edited reminder index:', editedReminderIndex, 'ID:', editingId);
         setEditingId(null);
         setEditText('');
         

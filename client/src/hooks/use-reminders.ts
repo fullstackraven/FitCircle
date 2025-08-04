@@ -47,13 +47,15 @@ export function useReminders() {
     };
     
     setReminders(prev => {
-      if (insertAfterIndex !== undefined && insertAfterIndex >= 0) {
+      if (insertAfterIndex !== undefined && insertAfterIndex >= 0 && insertAfterIndex < prev.length) {
         // Insert after the specified index
         const newArray = [...prev];
         newArray.splice(insertAfterIndex + 1, 0, newReminder);
+        console.log('Inserting reminder at index:', insertAfterIndex + 1, 'Array length:', prev.length, 'text:', text);
         return newArray;
       } else {
         // Default behavior: add to end
+        console.log('Adding reminder to end, insertAfterIndex was:', insertAfterIndex, 'Array length:', prev?.length);
         return [...prev, newReminder];
       }
     });
