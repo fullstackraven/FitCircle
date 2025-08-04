@@ -512,7 +512,7 @@ export default function Home() {
                     min="0"
                     max="23"
                     placeholder="0"
-                    autoFocus={false}
+                    tabIndex={-1}
                   />
                 </div>
                 <div className="text-center">
@@ -525,7 +525,7 @@ export default function Home() {
                     min="0"
                     max="59"
                     placeholder="0"
-                    autoFocus={false}
+                    tabIndex={-1}
                   />
                 </div>
                 <div className="text-center">
@@ -538,7 +538,7 @@ export default function Home() {
                     min="0"
                     max="59"
                     placeholder="0"
-                    autoFocus={false}
+                    tabIndex={-1}
                   />
                 </div>
               </div>
