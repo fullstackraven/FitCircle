@@ -83,7 +83,7 @@ export default function RemindersPage() {
     setShowMenuId(showMenuId === id ? null : id);
   };
 
-  const saveEdit = () => {
+  const saveEdit = (openNewReminder = false) => {
     if (editingId) {
       if (editText.trim()) {
         updateReminder(editingId, { text: editText.trim() });
@@ -93,6 +93,10 @@ export default function RemindersPage() {
       }
       setEditingId(null);
       setEditText('');
+      
+      if (openNewReminder) {
+        setShowAddForm(true);
+      }
     }
   };
 
@@ -104,7 +108,7 @@ export default function RemindersPage() {
   const handleEditKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      saveEdit();
+      saveEdit(true); // Open new reminder after saving edit
     } else if (e.key === 'Escape') {
       cancelEdit();
     }
