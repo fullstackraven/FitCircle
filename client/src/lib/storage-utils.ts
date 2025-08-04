@@ -35,5 +35,11 @@ export const STORAGE_KEYS = {
   DEVICE_ID: 'fitcircle_device_id',
   CARDIO: 'fitcircle_cardio_data',
   RECOVERY: 'fitcircle_recovery_data',
-  WORKOUT_LOGS: 'workout-tracker-logs'
+  WORKOUT_LOGS: 'workout-tracker-logs',
+  // Legacy individual goal keys (for backward compatibility)
+  GOAL_HYDRATION: 'fitcircle_goal_hydration',
+  GOAL_MEDITATION: 'fitcircle_goal_meditation',
+  GOAL_FASTING: 'fitcircle_goal_fasting',
+  GOAL_WEIGHT: 'fitcircle_goal_weight',
+  GOAL_BODYFAT: 'fitcircle_goal_bodyfat'
 } as const;

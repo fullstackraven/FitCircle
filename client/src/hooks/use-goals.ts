@@ -39,8 +39,8 @@ export function useGoals() {
   const [goals, setGoals] = useState<Goals>(() => {
     const saved = safeParseJSON(localStorage.getItem(STORAGE_KEYS.GOALS), null);
     
-    if (saved && typeof saved === 'object') {
-      return { ...defaultGoals, ...saved };
+    if (saved && typeof saved === 'object' && saved !== null) {
+      return { ...defaultGoals, ...(saved as Partial<Goals>) };
     }
     
     // Fallback to old format migration

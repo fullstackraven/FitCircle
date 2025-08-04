@@ -15,7 +15,7 @@ interface GoalCircleProps {
 export function GoalCircle({ 
   percentage, 
   color, 
-  size = 120, 
+  size = 140, 
   strokeWidth = 8, 
   currentValue, 
   goalValue, 
@@ -68,10 +68,10 @@ export function GoalCircle({
             </div>
           ) : (
             <>
-              <div className="text-xl font-bold text-white">
+              <div className="text-2xl font-bold text-white">
                 {isNaN(goalValue) ? 0 : goalValue} {goalValue === 1 ? unit.replace('days', 'Day').replace('Days', 'Day') : unit.replace('days', 'Days').replace('Days', 'Days')}
               </div>
-              <div className="text-xs text-slate-400 text-center">
+              <div className="text-sm text-slate-400 text-center">
                 {isNaN(percentage) ? 0 : Math.round(percentage)}%
               </div>
             </>
