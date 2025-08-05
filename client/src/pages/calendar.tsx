@@ -589,13 +589,13 @@ export default function CalendarPage() {
             {(hasJournal || hasEnergy || hasSupplements) && (
                 <div className="absolute bottom-1 left-0 w-full flex justify-center space-x-1">
                   {hasJournal && (
-                    <div className="w-1 h-1 bg-blue-400 rounded-full" />
+                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
                   )}
                   {hasEnergy && (
-                    <div className="w-1 h-1 bg-purple-400 rounded-full" />
+                    <div className="w-1.5 h-1.5 bg-purple-400 rounded-full" />
                   )}
                   {hasSupplements && (
-                    <div className="w-1 h-1 bg-green-400 rounded-full" />
+                    <div className="w-1.5 h-1.5 bg-orange-400 rounded-full" />
                   )}
                 </div>
               )}
