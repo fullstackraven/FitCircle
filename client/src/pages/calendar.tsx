@@ -517,12 +517,25 @@ export default function CalendarPage() {
     const day = String(date.getDate()).padStart(2, '0');
     const dateString = `${year}-${month}-${day}`;
     
-    const workoutsForDate = getWorkoutLogsForDate(dateString);
+    // Set selected date for all panels
+    setSelectedDate(date);
     
+    // Load data for the selected date
+    const workoutsForDate = getWorkoutLogsForDate(dateString);
+    const journalEntry = getJournalEntry(dateString);
+    const energyLevelForDate = getEnergyLevel(date);
+    const supplementLogsForDate = getSupplementLogsForDate(dateString);
+    
+    // Update states
+    setSelectedDateWorkouts(workoutsForDate.length > 0 ? workoutsForDate : null);
+    setSelectedDateString(dateString);
+    setJournalText(journalEntry || '');
+    setEnergyLevel(energyLevelForDate);
+    setTempSupplementLogs(supplementLogsForDate || []);
+    
+    // Always open the statistics panel to show workout editing if there are workouts
     if (workoutsForDate.length > 0) {
-      setSelectedDateWorkouts(workoutsForDate);
-      setSelectedDateString(dateString);
-      setIsStatsOpen(true); // Open statistics panel to show workout editing
+      setIsStatsOpen(true);
     }
   };
 
