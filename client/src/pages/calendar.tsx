@@ -166,6 +166,19 @@ export default function CalendarPage() {
     setTempSupplementLogs(currentLogs);
   }, []);
 
+  // Listen for workout data changes to refresh selected date workouts
+  useEffect(() => {
+    const handleWorkoutDataChange = () => {
+      if (selectedDateString) {
+        const updatedWorkouts = getWorkoutLogsForDate(selectedDateString);
+        setSelectedDateWorkouts(updatedWorkouts);
+      }
+    };
+
+    window.addEventListener('workoutDataChanged', handleWorkoutDataChange);
+    return () => window.removeEventListener('workoutDataChanged', handleWorkoutDataChange);
+  }, [selectedDateString, getWorkoutLogsForDate]);
+
   const startDate = startOfWeek(startOfMonth(currentMonth), { weekStartsOn: 0 });
   const endDate = endOfWeek(endOfMonth(currentMonth), { weekStartsOn: 0 });
 
@@ -521,11 +534,18 @@ export default function CalendarPage() {
   const handleSaveWorkoutEdit = () => {
     if (editingWorkoutId && selectedDateString && editingWorkoutCount !== '') {
       const newCount = parseInt(editingWorkoutCount) || 0;
+      
+      // Save the edit
       editWorkoutForDate(editingWorkoutId, selectedDateString, newCount);
       
-      // Update the displayed workouts
-      const updatedWorkouts = getWorkoutLogsForDate(selectedDateString);
-      setSelectedDateWorkouts(updatedWorkouts);
+      // Immediately update the local state to reflect the change
+      setSelectedDateWorkouts(prev => 
+        prev ? prev.map(workout => 
+          workout.id === editingWorkoutId 
+            ? { ...workout, count: newCount }
+            : workout
+        ) : null
+      );
       
       // Clear editing state
       setEditingWorkoutId(null);
