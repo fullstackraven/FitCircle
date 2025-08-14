@@ -64,20 +64,16 @@ export function EnergyLevelPage() {
     const today = new Date();
     const energy = getEnergyLevel(today);
     setEnergyLevel(energy);
-  }, [getEnergyLevel]);
+  }, []);
 
   const handleEnergyTap = () => {
-    setEnergyLevel(prevLevel => {
-      const newLevel = prevLevel >= 10 ? 1 : prevLevel + 1;
-      return newLevel;
-    });
+    const newLevel = energyLevel >= 10 ? 1 : energyLevel + 1;
+    setEnergyLevel(newLevel);
   };
 
   const handleEnergyUndo = () => {
-    setEnergyLevel(prevLevel => {
-      const newLevel = prevLevel <= 1 ? 0 : prevLevel - 1;
-      return newLevel;
-    });
+    const newLevel = energyLevel <= 1 ? 0 : energyLevel - 1;
+    setEnergyLevel(newLevel);
   };
 
   const handleEnergySave = () => {
