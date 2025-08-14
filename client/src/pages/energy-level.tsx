@@ -143,26 +143,27 @@ export function EnergyLevelPage() {
                   <circle
                     cx="60"
                     cy="60"
-                    r="50"
+                    r="48"
                     stroke="#475569"
-                    strokeWidth="6"
+                    strokeWidth="10"
                     fill="none"
                     className="opacity-30"
                   />
                   {/* Progress circle */}
-                  {energyLevel > 0 && (
-                    <circle
-                      cx="60"
-                      cy="60"
-                      r="50"
-                      stroke={energyLevel <= 3 ? '#ef4444' : energyLevel <= 6 ? '#fbbf24' : '#22c55e'}
-                      strokeWidth="6"
-                      fill="none"
-                      strokeDasharray={`${(energyLevel / 10) * 314.159} 314.159`}
-                      strokeLinecap="round"
-                      className="transition-all duration-500 ease-out"
-                    />
-                  )}
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="48"
+                    stroke={energyLevel <= 3 ? '#ef4444' : energyLevel <= 6 ? '#fbbf24' : '#22c55e'}
+                    strokeWidth="10"
+                    fill="none"
+                    strokeDasharray={`${(energyLevel / 10) * 301.593} 301.593`}
+                    strokeLinecap="round"
+                    className="transition-all duration-300"
+                    style={{
+                      opacity: energyLevel > 0 ? 1 : 0
+                    }}
+                  />
                 </svg>
                 {/* Clickable button */}
                 <button
