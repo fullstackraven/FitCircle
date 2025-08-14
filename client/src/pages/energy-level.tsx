@@ -136,36 +136,38 @@ export function EnergyLevelPage() {
 
             {/* Energy Level Circle with Progress Ring */}
             <div className="flex justify-center">
-              <div className="relative">
-                <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
+              <div className="relative w-32 h-32">
+                {/* SVG Progress Ring */}
+                <svg className="absolute inset-0 w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
                   {/* Background circle */}
                   <circle
                     cx="60"
                     cy="60"
-                    r="54"
+                    r="50"
                     stroke="#475569"
-                    strokeWidth="4"
+                    strokeWidth="6"
                     fill="none"
-                    className="opacity-20"
+                    className="opacity-30"
                   />
                   {/* Progress circle */}
                   {energyLevel > 0 && (
                     <circle
                       cx="60"
                       cy="60"
-                      r="54"
+                      r="50"
                       stroke={energyLevel <= 3 ? '#ef4444' : energyLevel <= 6 ? '#fbbf24' : '#22c55e'}
-                      strokeWidth="4"
+                      strokeWidth="6"
                       fill="none"
-                      strokeDasharray={`${(energyLevel / 10) * 339.292} 339.292`}
-                      className="transition-all duration-300"
+                      strokeDasharray={`${(energyLevel / 10) * 314.159} 314.159`}
+                      strokeLinecap="round"
+                      className="transition-all duration-500 ease-out"
                     />
                   )}
                 </svg>
+                {/* Clickable button */}
                 <button
                   onClick={handleEnergyTap}
-                  className="absolute inset-0 rounded-full bg-slate-700 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
-                  style={{ margin: '4px' }}
+                  className="absolute inset-2 rounded-full bg-slate-700 flex items-center justify-center transition-all hover:scale-105 active:scale-95 border-4 border-slate-600"
                 >
                   <div className="text-center">
                     <div className={`text-3xl font-bold ${getEnergyColor(energyLevel)}`}>
