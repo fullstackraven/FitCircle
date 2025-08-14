@@ -167,6 +167,7 @@ export function useSupplements() {
 
   return {
     supplements: getSupplements(),
+    getSupplements,
     createSupplement,
     editSupplement,
     deleteSupplement,

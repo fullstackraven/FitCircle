@@ -97,11 +97,20 @@ export const useRecovery = () => {
     return isRecoveryDay(today);
   }, [isRecoveryDay]);
 
+  const toggleRecoveryDay = (date: string) => {
+    if (isRecoveryDay(date)) {
+      removeRecoveryDay(date);
+    } else {
+      addRecoveryDay(date);
+    }
+  };
+
   return {
     data,
     addRecoveryDay,
     removeRecoveryDay,
     isRecoveryDay,
+    toggleRecoveryDay,
     getRecoveryStats,
     getTodaysRecoveryStatus
   };

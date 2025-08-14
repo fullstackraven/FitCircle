@@ -2,7 +2,7 @@
 import { Switch, Route } from "wouter";
 
 import Home from "@/pages/home";
-import CalendarPage from "@/pages/calendar";
+import CalendarPage from "@/pages/calendar-new";
 import FitnessCalculatorPage from "@/pages/fitness-calculator";
 import FoodTrackerPage from "@/pages/food-tracker";
 // REMOVED: Bug reporting feature removed per user request
@@ -15,7 +15,12 @@ import HydrationPage from "@/pages/hydration";
 import GoalsPage from "@/pages/goals";
 import RemindersPage from "@/pages/reminders";
 import CardioPage from "@/pages/cardio";
-
+import { WorkoutStatistics } from "@/pages/workout-statistics";
+import { DailyJournal } from "@/pages/daily-journal";
+import { EnergyLevelPage } from "@/pages/energy-level";
+import { SupplementsPage } from "@/pages/supplements";
+import RecoveryPage from "@/pages/recovery";
+import { DynamicOverview } from "@/pages/dynamic-overview";
 
 // import TrainerPage from "@/pages/trainer";
 import NotFound from "@/pages/not-found";
@@ -35,6 +40,12 @@ function Router() {
       <Route path="/fitness-calculator" component={FitnessCalculatorPage} />
       <Route path="/food-tracker" component={FoodTrackerPage} />
       <Route path="/cardio" component={CardioPage} />
+      <Route path="/workout-statistics" component={WorkoutStatistics} />
+      <Route path="/daily-journal" component={DailyJournal} />
+      <Route path="/energy-level" component={EnergyLevelPage} />
+      <Route path="/supplements-page" component={SupplementsPage} />
+      <Route path="/recovery" component={RecoveryPage} />
+      <Route path="/dynamic-overview/:date" component={({ params }) => <DynamicOverview selectedDate={params.date} />} />
       {/* REMOVED: Bug reporting route removed per user request */}
 
       <Route path="/reminders" component={RemindersPage} />

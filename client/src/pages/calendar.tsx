@@ -6,17 +6,8 @@ import {
   ArrowLeft,
   BarChart3,
   BookOpen,
-  ChevronDown,
-  ChevronUp,
-  TrendingUp,
   Zap,
-  Undo2,
   Pill,
-  Plus,
-  Edit2,
-  Trash2,
-  Save,
-  X,
   Heart
 } from "lucide-react";
 import { useLocation } from "wouter";
@@ -510,33 +501,14 @@ export default function CalendarPage() {
     }
   };
 
-  // Workout editing functions
+  // Handle date click - navigate to dynamic overview
   const handleDateClick = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const dateString = `${year}-${month}-${day}`;
     
-    // Set selected date for all panels
-    setSelectedDate(date);
-    
-    // Load data for the selected date
-    const workoutsForDate = getWorkoutLogsForDate(dateString);
-    const journalEntry = getJournalEntry(dateString);
-    const energyLevelForDate = getEnergyLevel(date);
-    const supplementLogsForDate = getSupplementLogsForDate(dateString);
-    
-    // Update states
-    setSelectedDateWorkouts(workoutsForDate.length > 0 ? workoutsForDate : null);
-    setSelectedDateString(dateString);
-    setJournalText(journalEntry || '');
-    setEnergyLevel(energyLevelForDate);
-    setTempSupplementLogs(supplementLogsForDate || []);
-    
-    // Always open the statistics panel to show workout editing if there are workouts
-    if (workoutsForDate.length > 0) {
-      setIsStatsOpen(true);
-    }
+    navigate(`/dynamic-overview/${dateString}`);
   };
 
   const handleEditWorkout = (workoutId: string, currentCount: number) => {
@@ -684,20 +656,67 @@ export default function CalendarPage() {
         })}
       </div>
 
-      {/* Statistics Panel */}
-      <div className="mt-8">
-        <Collapsible open={isStatsOpen} onOpenChange={setIsStatsOpen}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors">
-            <div className="flex items-center space-x-2">
-              <BarChart3 className="w-5 h-5 text-blue-400" />
-              <span className="text-white font-medium">Workout Statistics</span>
-            </div>
-            {isStatsOpen ? (
-              <ChevronUp className="w-5 h-5 text-slate-400" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-slate-400" />
-            )}
-          </CollapsibleTrigger>
+      {/* Navigation Panels */}
+      <div className="mt-8 space-y-3">
+        {/* Workout Statistics Panel */}
+        <button
+          onClick={() => navigate("/workout-statistics")}
+          className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
+        >
+          <div className="flex items-center space-x-3">
+            <BarChart3 className="w-5 h-5 text-blue-400" />
+            <span className="text-white font-medium">Workout Statistics</span>
+          </div>
+          <ChevronRight className="w-5 h-5 text-slate-400" />
+        </button>
+
+        {/* Daily Journal Panel */}
+        <button
+          onClick={() => navigate("/daily-journal")}
+          className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
+        >
+          <div className="flex items-center space-x-3">
+            <BookOpen className="w-5 h-5 text-purple-400" />
+            <span className="text-white font-medium">Daily Journal</span>
+          </div>
+          <ChevronRight className="w-5 h-5 text-slate-400" />
+        </button>
+
+        {/* Energy Level Panel */}
+        <button
+          onClick={() => navigate("/energy-level")}
+          className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
+        >
+          <div className="flex items-center space-x-3">
+            <Zap className="w-5 h-5 text-yellow-400" />
+            <span className="text-white font-medium">Energy Level</span>
+          </div>
+          <ChevronRight className="w-5 h-5 text-slate-400" />
+        </button>
+
+        {/* Recovery Panel */}
+        <button
+          onClick={() => navigate("/recovery")}
+          className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
+        >
+          <div className="flex items-center space-x-3">
+            <Heart className="w-5 h-5 text-orange-400" />
+            <span className="text-white font-medium">Recovery</span>
+          </div>
+          <ChevronRight className="w-5 h-5 text-slate-400" />
+        </button>
+
+        {/* Supplements Panel */}
+        <button
+          onClick={() => navigate("/supplements-page")}
+          className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
+        >
+          <div className="flex items-center space-x-3">
+            <Pill className="w-5 h-5 text-green-400" />
+            <span className="text-white font-medium">Supplements</span>
+          </div>
+          <ChevronRight className="w-5 h-5 text-slate-400" />
+        </button>
           <CollapsibleContent>
             <div className="mt-4 bg-slate-800 rounded-xl p-4 space-y-6">
               {/* Total All Time Section */}
