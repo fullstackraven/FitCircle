@@ -16,7 +16,6 @@ export function SupplementsPage() {
     editSupplement 
   } = useSupplements();
   
-  const [supplements] = useState(allSupplements);
   const [tempSupplementLogs, setTempSupplementLogs] = useState<{id: number, name: string, taken: boolean}[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isManageOpen, setIsManageOpen] = useState(false);
@@ -32,13 +31,13 @@ export function SupplementsPage() {
     const dateStr = `${year}-${month}-${day}`;
     
     const logsData = getSupplementLogsForDate(dateStr);
-    const supplementLogs = supplements.map(supplement => ({
+    const supplementLogs = allSupplements.map(supplement => ({
       id: supplement.id,
       name: supplement.name,
       taken: logsData[supplement.id] || false
     }));
     setTempSupplementLogs(supplementLogs);
-  }, [supplements, getSupplementLogsForDate]);
+  }, [allSupplements, getSupplementLogsForDate]);
 
   const handleSupplementToggle = (supplementId: number) => {
     setTempSupplementLogs(prev => 
@@ -171,9 +170,9 @@ export function SupplementsPage() {
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className="mt-4 bg-slate-800 rounded-xl p-6">
-              {supplements.length > 0 ? (
+              {allSupplements.length > 0 ? (
                 <div className="space-y-3">
-                  {supplements.map(supplement => (
+                  {allSupplements.map(supplement => (
                     <div key={supplement.id} className="flex items-center justify-between p-3 bg-slate-700 rounded-xl">
                       {editingId === supplement.id ? (
                         <div className="flex items-center space-x-2 flex-1">

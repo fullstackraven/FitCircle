@@ -8,7 +8,7 @@ export function DailyJournal() {
   const [, navigate] = useLocation();
   const { getJournalEntry, addJournalEntry } = useWorkouts();
   const [journalText, setJournalText] = useState("");
-  const [journalFocused, setJournalFocused] = useState(false);
+
 
   useEffect(() => {
     // Load today's journal entry
@@ -20,7 +20,7 @@ export function DailyJournal() {
     
     const entry = getJournalEntry(dateStr);
     setJournalText(entry || '');
-  }, [getJournalEntry]);
+  }, []);
 
   const handleJournalSubmit = () => {
     if (journalText.trim()) {
