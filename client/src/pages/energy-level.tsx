@@ -138,24 +138,49 @@ export function EnergyLevelPage() {
               <p className="text-sm text-slate-400">{format(new Date(), "MMMM d, yyyy")}</p>
             </div>
 
-            {/* Energy Level Circle */}
+            {/* Energy Level Circle with Progress Ring */}
             <div className="flex justify-center">
-              <button
-                onClick={handleEnergyTap}
-                className="relative w-32 h-32 rounded-full border-4 border-slate-600 bg-slate-700 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
-                style={{
-                  borderColor: energyLevel > 0 ? (energyLevel <= 3 ? '#ef4444' : energyLevel <= 6 ? '#fbbf24' : '#22c55e') : '#475569'
-                }}
-              >
-                <div className="text-center">
-                  <div className={`text-3xl font-bold ${getEnergyColor(energyLevel)}`}>
-                    {energyLevel}
+              <div className="relative">
+                <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
+                  {/* Background circle */}
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="54"
+                    stroke="#475569"
+                    strokeWidth="4"
+                    fill="none"
+                    className="opacity-20"
+                  />
+                  {/* Progress circle */}
+                  {energyLevel > 0 && (
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="54"
+                      stroke={energyLevel <= 3 ? '#ef4444' : energyLevel <= 6 ? '#fbbf24' : '#22c55e'}
+                      strokeWidth="4"
+                      fill="none"
+                      strokeDasharray={`${(energyLevel / 10) * 339.292} 339.292`}
+                      className="transition-all duration-300"
+                    />
+                  )}
+                </svg>
+                <button
+                  onClick={handleEnergyTap}
+                  className="absolute inset-0 rounded-full bg-slate-700 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+                  style={{ margin: '4px' }}
+                >
+                  <div className="text-center">
+                    <div className={`text-3xl font-bold ${getEnergyColor(energyLevel)}`}>
+                      {energyLevel}
+                    </div>
+                    <div className="text-xs text-slate-400 mt-1">
+                      {getEnergyDescription(energyLevel)}
+                    </div>
                   </div>
-                  <div className="text-xs text-slate-400 mt-1">
-                    {getEnergyDescription(energyLevel)}
-                  </div>
-                </div>
-              </button>
+                </button>
+              </div>
             </div>
 
             <div className="text-sm text-slate-300">
