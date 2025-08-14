@@ -64,9 +64,7 @@ export function DailyJournal() {
           <textarea
             value={journalText}
             onChange={(e) => setJournalText(e.target.value)}
-            onFocus={() => setJournalFocused(true)}
-            onBlur={() => setJournalFocused(false)}
-            placeholder={journalFocused ? "" : "Write your daily journal entry here..."}
+            placeholder="Write your daily journal entry here..."
             className="w-full h-64 p-4 bg-slate-700 text-white rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
           

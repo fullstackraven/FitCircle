@@ -81,8 +81,11 @@ export function EnergyLevelPage() {
   };
 
   const handleEnergySave = () => {
-    const today = new Date();
-    setEnergyLevelForDate(today, energyLevel);
+    if (energyLevel > 0) {
+      const today = new Date();
+      setEnergyLevelForDate(today, energyLevel);
+      alert('Energy level saved successfully!');
+    }
   };
 
   const getEnergyColor = (level: number) => {

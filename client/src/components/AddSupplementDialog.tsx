@@ -133,7 +133,11 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
             <Button 
               type="button" 
               variant="outline" 
-              onClick={handleCancel}
+              onClick={() => {
+                setName('');
+                setMeasurementType('');
+                setAmount('');
+              }}
               className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
             >
               Cancel
