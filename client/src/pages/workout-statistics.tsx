@@ -62,16 +62,16 @@ export function WorkoutStatistics() {
             <h2 className="text-lg font-semibold text-white">All-Time Statistics</h2>
           </div>
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-slate-700 rounded-xl">
-              <div className="text-2xl font-bold text-white">{totalStats.totalReps}</div>
+            <div className="text-center p-6 bg-slate-700 rounded-xl">
+              <div className="text-3xl font-bold text-white mb-2">{totalStats.totalReps}</div>
               <div className="text-sm text-slate-400">Total Reps</div>
             </div>
-            <div className="text-center p-4 bg-slate-700 rounded-xl">
-              <div className="text-2xl font-bold text-white">{totalStats.totalCompletedDays}</div>
+            <div className="text-center p-6 bg-slate-700 rounded-xl">
+              <div className="text-3xl font-bold text-white mb-2">{totalStats.totalCompletedDays}</div>
               <div className="text-sm text-slate-400">Days Completed</div>
             </div>
-            <div className="text-center p-4 bg-slate-700 rounded-xl">
-              <div className="text-2xl font-bold text-blue-400">{totalStats.totalConsistency.toFixed(1)}%</div>
+            <div className="text-center p-6 bg-slate-700 rounded-xl">
+              <div className="text-3xl font-bold text-blue-400 mb-2">{totalStats.totalConsistency.toFixed(1)}%</div>
               <div className="text-sm text-slate-400">Consistency</div>
             </div>
           </div>
@@ -100,16 +100,16 @@ export function WorkoutStatistics() {
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-slate-700 rounded-xl">
-              <div className="text-2xl font-bold text-white">{monthlyStats.monthlyReps}</div>
+            <div className="text-center p-6 bg-slate-700 rounded-xl">
+              <div className="text-3xl font-bold text-white mb-2">{monthlyStats.monthlyReps}</div>
               <div className="text-sm text-slate-400">Monthly Reps</div>
             </div>
-            <div className="text-center p-4 bg-slate-700 rounded-xl">
-              <div className="text-2xl font-bold text-white">{monthlyStats.monthlyCompletedDays}</div>
+            <div className="text-center p-6 bg-slate-700 rounded-xl">
+              <div className="text-3xl font-bold text-white mb-2">{monthlyStats.monthlyCompletedDays}</div>
               <div className="text-sm text-slate-400">Days Completed</div>
             </div>
-            <div className="text-center p-4 bg-slate-700 rounded-xl">
-              <div className="text-2xl font-bold text-green-400">{monthlyStats.monthlyConsistency.toFixed(1)}%</div>
+            <div className="text-center p-6 bg-slate-700 rounded-xl">
+              <div className="text-3xl font-bold text-green-400 mb-2">{monthlyStats.monthlyConsistency.toFixed(1)}%</div>
               <div className="text-sm text-slate-400">Consistency</div>
             </div>
           </div>
@@ -121,12 +121,12 @@ export function WorkoutStatistics() {
           <div className="space-y-3">
             {individualWorkoutTotals.length > 0 ? (
               individualWorkoutTotals.map((workout) => (
-                <div key={workout.id} className="flex items-center justify-between p-3 bg-slate-700 rounded-xl">
+                <div key={workout.id} className="flex items-center justify-between p-4 bg-slate-700 rounded-xl">
                   <div className="flex items-center space-x-3">
-                    <div className={`w-4 h-4 rounded-full ${colorClassMap[workout.color]}`}></div>
-                    <span className="text-white font-medium">{workout.name}</span>
+                    <div className={`w-5 h-5 rounded-full ${colorClassMap[workout.color]}`}></div>
+                    <span className="text-white font-medium text-lg">{workout.name}</span>
                   </div>
-                  <span className="text-white font-bold">{workout.totalReps}</span>
+                  <span className="text-white font-bold text-xl">{workout.totalReps}</span>
                 </div>
               ))
             ) : (

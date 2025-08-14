@@ -13,7 +13,6 @@ interface AddSupplementDialogProps {
 }
 
 export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState('');
   const [measurementType, setMeasurementType] = useState('');
   const [amount, setAmount] = useState('');
@@ -52,19 +51,11 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
     setName('');
     setMeasurementType('');
     setAmount('');
-    setIsOpen(false);
     onSupplementAdded?.();
   };
 
-  const handleCancel = () => {
-    setName('');
-    setMeasurementType('');
-    setAmount('');
-    setIsOpen(false);
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog>
       <DialogTrigger asChild>
         <Button 
           size="sm" 

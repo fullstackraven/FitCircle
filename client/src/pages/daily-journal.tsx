@@ -23,13 +23,16 @@ export function DailyJournal() {
   }, [getJournalEntry]);
 
   const handleJournalSubmit = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    const dateStr = `${year}-${month}-${day}`;
-    
-    addJournalEntry(dateStr, journalText);
+    if (journalText.trim()) {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      
+      addJournalEntry(dateStr, journalText);
+      alert('Journal entry saved successfully!');
+    }
   };
 
   return (

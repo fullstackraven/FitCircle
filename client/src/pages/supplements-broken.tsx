@@ -60,7 +60,6 @@ export function SupplementsPage() {
     tempSupplementLogs.forEach(log => {
       setSupplementLog(dateStr, log.id, log.taken);
     });
-    alert('Supplement log saved successfully!');
   };
 
   const handleEditSupplement = (id: number, name: string) => {
@@ -99,21 +98,26 @@ export function SupplementsPage() {
         </button>
 
         <h1 className="text-xl font-bold text-white">Supplements</h1>
-        
-        <AddSupplementDialog 
-          onSupplementAdded={() => window.location.reload()}
-        />
+        <div className="w-[42px]" />
       </div>
 
       <div className="space-y-6">
         {/* Today's Supplements */}
         <div className="bg-slate-800 rounded-xl p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <Pill className="w-6 h-6 text-green-400" />
-            <div>
-              <h2 className="text-lg font-semibold text-white">Today's Supplements</h2>
-              <p className="text-sm text-slate-400">{format(new Date(), "MMMM d, yyyy")}</p>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <Pill className="w-6 h-6 text-green-400" />
+              <div>
+                <h2 className="text-lg font-semibold text-white">Today's Supplements</h2>
+                <p className="text-sm text-slate-400">{format(new Date(), "MMMM d, yyyy")}</p>
+              </div>
             </div>
+            <button
+              onClick={() => setIsAddDialogOpen(true)}
+              className="w-8 h-8 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors flex items-center justify-center"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
           </div>
 
           {tempSupplementLogs.length > 0 ? (
@@ -171,73 +175,72 @@ export function SupplementsPage() {
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className="mt-4 bg-slate-800 rounded-xl p-6">
-              {supplements.length > 0 ? (
-                <div className="space-y-3">
-                  {supplements.map(supplement => (
-                    <div key={supplement.id} className="flex items-center justify-between p-3 bg-slate-700 rounded-xl">
-                      {editingId === supplement.id ? (
-                        <div className="flex items-center space-x-2 flex-1">
-                          <input
-                            type="text"
-                            value={editingName}
-                            onChange={(e) => setEditingName(e.target.value)}
-                            className="flex-1 px-3 py-2 bg-slate-800 text-white rounded border border-slate-500 focus:outline-none focus:border-blue-400"
-                            autoFocus
-                          />
-                          <button
-                            onClick={handleSaveEdit}
-                            className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm"
-                          >
-                            Save
-                          </button>
-                          <button
-                            onClick={() => {
-                              setEditingId(null);
-                              setEditingName("");
-                            }}
-                            className="px-3 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded text-sm"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex items-center space-x-3">
-                            <Pill className="w-4 h-4 text-green-400" />
-                            <span className="text-white font-medium">{supplement.name}</span>
-                            <span className="text-xs text-slate-400">
-                              {supplement.amount} {supplement.measurementType}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => handleEditSupplement(supplement.id, supplement.name)}
-                              className="p-2 text-slate-400 hover:text-slate-200 transition-colors"
-                              title="Edit supplement"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteSupplement(supplement.id)}
-                              className="p-2 text-red-400 hover:text-red-300 transition-colors"
-                              title="Delete supplement"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </>
-                      )}
+          
+          {supplements.length > 0 ? (
+            <div className="space-y-3">
+              {supplements.map(supplement => (
+                <div key={supplement.id} className="flex items-center justify-between p-3 bg-slate-700 rounded-xl">
+                  {editingId === supplement.id ? (
+                    <div className="flex items-center space-x-2 flex-1">
+                      <input
+                        type="text"
+                        value={editingName}
+                        onChange={(e) => setEditingName(e.target.value)}
+                        className="flex-1 px-3 py-2 bg-slate-800 text-white rounded border border-slate-500 focus:outline-none focus:border-blue-400"
+                        autoFocus
+                      />
+                      <button
+                        onClick={handleSaveEdit}
+                        className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingId(null);
+                          setEditingName("");
+                        }}
+                        className="px-3 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded text-sm"
+                      >
+                        Cancel
+                      </button>
                     </div>
-                  ))}
+                  ) : (
+                    <>
+                      <div className="flex items-center space-x-3">
+                        <Pill className="w-4 h-4 text-green-400" />
+                        <span className="text-white font-medium">{supplement.name}</span>
+                        <span className="text-xs text-slate-400">
+                          {supplement.amount} {supplement.measurementType}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleEditSupplement(supplement.id, supplement.name)}
+                          className="p-2 text-slate-400 hover:text-slate-200 transition-colors"
+                          title="Edit supplement"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSupplement(supplement.id)}
+                          className="p-2 text-red-400 hover:text-red-300 transition-colors"
+                          title="Delete supplement"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-slate-400">No supplements added yet</p>
-                </div>
-              )}
+              ))}
             </div>
-          </CollapsibleContent>
-        </Collapsible>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-slate-400">No supplements added yet</p>
+            </div>
+          )}
+        </div>
 
         <div className="bg-slate-700 rounded-xl p-4">
           <p className="text-sm text-slate-300">
@@ -247,7 +250,10 @@ export function SupplementsPage() {
         </div>
       </div>
 
-
+      <AddSupplementDialog 
+        open={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+      />
     </div>
   );
 }

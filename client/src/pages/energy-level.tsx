@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, Zap, Undo2, Calendar } from "lucide-react";
 import { useLocation } from "wouter";
-import { useEnergyLevel } from "@/hooks/use-energy-level";
+import { useEnergyLevel } from "../hooks/use-energy-level";
 import { format } from "date-fns";
 
 // Energy Level Trend Visualization Component

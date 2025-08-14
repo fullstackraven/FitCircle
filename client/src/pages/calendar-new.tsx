@@ -91,7 +91,7 @@ export default function CalendarPage() {
     navigate(`/dynamic-overview/${dateString}`);
   };
 
-  // Calculate day completion
+  // Calculate day completion - only consider workouts that existed on that day
   const isDayComplete = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -99,10 +99,21 @@ export default function CalendarPage() {
     const dateStr = `${year}-${month}-${day}`;
     
     const dateLog = logs[dateStr];
-    if (!dateLog || workouts.length === 0) return false;
+    if (!dateLog) return false;
     
-    return workouts.every(workout => {
-      const count = dateLog[workout.id] || 0;
+    // Get workouts that had any activity on this date
+    const workoutsWithActivity = Object.keys(dateLog).filter(workoutId => 
+      (dateLog[workoutId] || 0) > 0
+    );
+    
+    if (workoutsWithActivity.length === 0) return false;
+    
+    // Check if all active workouts on that day met their goals
+    return workoutsWithActivity.every(workoutId => {
+      const workout = workouts.find(w => w.id === workoutId);
+      if (!workout) return false;
+      
+      const count = dateLog[workoutId] || 0;
       return count >= workout.dailyGoal;
     });
   };
