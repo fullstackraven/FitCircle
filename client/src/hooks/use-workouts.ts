@@ -232,6 +232,30 @@ export function useWorkouts() {
     return Object.keys(data.workouts || {}).length < 10;
   };
 
+  const editWorkoutForDate = (workoutId: string, dateString: string, newCount: number) => {
+    setData(prev => ({
+      ...prev,
+      dailyLogs: {
+        ...prev.dailyLogs,
+        [dateString]: {
+          ...prev.dailyLogs[dateString],
+          [workoutId]: Math.max(0, newCount) // Ensure non-negative count
+        }
+      }
+    }));
+    
+    // Trigger re-render for any components listening to workout changes
+    window.dispatchEvent(new CustomEvent('workoutDataChanged'));
+  };
+
+  const getWorkoutLogsForDate = (dateString: string) => {
+    const dayLog = data.dailyLogs[dateString] || {};
+    return Object.values(data.workouts || {}).map(workout => ({
+      ...workout,
+      count: dayLog[workout.id] || 0
+    }));
+  };
+
   const addJournalEntry = (date: string, entry: string) => {
     setData(prev => ({
       ...prev,
@@ -510,5 +534,7 @@ export function useWorkouts() {
     getMonthlyStats,
     getTotalStats,
     getIndividualWorkoutTotals,
+    editWorkoutForDate,
+    getWorkoutLogsForDate,
   };
 }

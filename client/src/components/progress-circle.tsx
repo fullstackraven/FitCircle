@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react';
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 
 interface ProgressCircleProps {
   count: number;
@@ -77,13 +77,16 @@ export function ProgressCircle({
       if (isHoldingRef.current && onHoldIncrement) {
         // Start incrementing by 1 every 100ms
         holdIntervalRef.current = setInterval(() => {
-          if (isHoldingRef.current && onHoldIncrement) {
+          if (isHoldingRef.current && onHoldIncrement && count < goal) {
             onHoldIncrement();
+          } else if (count >= goal) {
+            // Stop incrementing when goal is reached
+            endHold();
           }
         }, 100);
       }
     }, 500);
-  }, [onHoldIncrement]);
+  }, [onHoldIncrement, count, goal]);
 
   const endHold = useCallback(() => {
     isHoldingRef.current = false;
@@ -98,6 +101,13 @@ export function ProgressCircle({
       holdIntervalRef.current = null;
     }
   }, []);
+
+  // Effect to stop hold when goal is reached
+  useEffect(() => {
+    if (count >= goal && holdIntervalRef.current) {
+      endHold();
+    }
+  }, [count, goal, endHold]);
 
   const handleClick = useCallback(() => {
     // Only trigger onClick if we're not holding

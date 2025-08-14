@@ -62,7 +62,9 @@ export default function CalendarPage() {
     getJournalEntry, 
     getMonthlyStats, 
     getTotalStats,
-    getIndividualWorkoutTotals
+    getIndividualWorkoutTotals,
+    editWorkoutForDate,
+    getWorkoutLogsForDate
   } = useWorkouts();
   const {
     supplements,
@@ -101,6 +103,10 @@ export default function CalendarPage() {
   const [supplementsRefresh, setSupplementsRefresh] = useState(0);
   const [journalFocused, setJournalFocused] = useState(false);
   const [tempSupplementLogs, setTempSupplementLogs] = useState<Record<number, boolean>>({});
+  const [selectedDateWorkouts, setSelectedDateWorkouts] = useState<Array<{ id: string; name: string; color: string; count: number; dailyGoal: number }> | null>(null);
+  const [editingWorkoutId, setEditingWorkoutId] = useState<string | null>(null);
+  const [editingWorkoutCount, setEditingWorkoutCount] = useState<string>('');
+  const [selectedDateString, setSelectedDateString] = useState<string | null>(null);
   const circleRef = useRef<SVGSVGElement>(null);
 
   // Supplement editing functions
@@ -491,6 +497,47 @@ export default function CalendarPage() {
     }
   };
 
+  // Workout editing functions
+  const handleDateClick = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateString = `${year}-${month}-${day}`;
+    
+    const workoutsForDate = getWorkoutLogsForDate(dateString);
+    
+    if (workoutsForDate.length > 0) {
+      setSelectedDateWorkouts(workoutsForDate);
+      setSelectedDateString(dateString);
+      setIsStatsOpen(true); // Open statistics panel to show workout editing
+    }
+  };
+
+  const handleEditWorkout = (workoutId: string, currentCount: number) => {
+    setEditingWorkoutId(workoutId);
+    setEditingWorkoutCount(currentCount.toString());
+  };
+
+  const handleSaveWorkoutEdit = () => {
+    if (editingWorkoutId && selectedDateString && editingWorkoutCount !== '') {
+      const newCount = parseInt(editingWorkoutCount) || 0;
+      editWorkoutForDate(editingWorkoutId, selectedDateString, newCount);
+      
+      // Update the displayed workouts
+      const updatedWorkouts = getWorkoutLogsForDate(selectedDateString);
+      setSelectedDateWorkouts(updatedWorkouts);
+      
+      // Clear editing state
+      setEditingWorkoutId(null);
+      setEditingWorkoutCount('');
+    }
+  };
+
+  const handleCancelWorkoutEdit = () => {
+    setEditingWorkoutId(null);
+    setEditingWorkoutCount('');
+  };
+
   const monthlyStats = getMonthlyStats(currentMonth.getFullYear(), currentMonth.getMonth()) || {
     monthlyReps: 0,
     monthlyCompletedDays: 0,
@@ -559,7 +606,7 @@ export default function CalendarPage() {
           return (
             <div
               key={date.toISOString()}
-              onClick={() => handleDayClick(date)}
+              onClick={() => handleDateClick(date)}
               className={`aspect-square rounded-xl flex items-center justify-center relative text-sm font-medium cursor-pointer transition-all hover:opacity-80
                 ${isCurrent ? "bg-slate-800 text-white" : "bg-slate-700 text-slate-500"} 
                 ${complete && !isRecovery ? "bg-green-500 text-white shadow-lg shadow-green-500/50" : ""}
@@ -693,6 +740,77 @@ export default function CalendarPage() {
                   </CollapsibleContent>
                 </Collapsible>
               </div>
+
+              {/* Selected Date Workouts Editing Section */}
+              {selectedDateWorkouts && selectedDateString && (
+                <div className="mt-4 p-4 bg-slate-700 rounded-xl">
+                  <h3 className="text-sm font-medium text-slate-300 mb-3 text-center">
+                    Edit Workouts for {format(new Date(selectedDateString + 'T00:00:00'), "MMMM d, yyyy")}
+                  </h3>
+                  <div className="space-y-3">
+                    {selectedDateWorkouts.map((workout) => (
+                      <div key={workout.id} className="flex items-center justify-between p-3 bg-slate-600 rounded-xl">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-3 h-3 rounded-full ${colorClassMap[workout.color]}`}></div>
+                          <span className="text-sm font-medium text-white">{workout.name}</span>
+                        </div>
+                        
+                        {editingWorkoutId === workout.id ? (
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="number"
+                              value={editingWorkoutCount}
+                              onChange={(e) => setEditingWorkoutCount(e.target.value)}
+                              className="w-16 px-2 py-1 text-sm bg-slate-800 text-white rounded border border-slate-500 focus:outline-none focus:border-blue-400"
+                              min="0"
+                              autoFocus
+                            />
+                            <button
+                              onClick={handleSaveWorkoutEdit}
+                              className="p-1 text-green-400 hover:text-green-300 transition-colors"
+                              title="Save"
+                            >
+                              <Save size={14} />
+                            </button>
+                            <button
+                              onClick={handleCancelWorkoutEdit}
+                              className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                              title="Cancel"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm font-bold text-white">{workout.count}</span>
+                            <button
+                              onClick={() => handleEditWorkout(workout.id, workout.count)}
+                              className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
+                              title="Edit count"
+                            >
+                              <Edit2 size={14} />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-3 text-center">
+                    <button
+                      onClick={() => {
+                        setSelectedDateWorkouts(null);
+                        setSelectedDateString(null);
+                        setEditingWorkoutId(null);
+                        setEditingWorkoutCount('');
+                      }}
+                      className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs rounded-xl transition-colors"
+                    >
+                      Done Editing
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </CollapsibleContent>
         </Collapsible>
