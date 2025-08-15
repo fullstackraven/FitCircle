@@ -137,54 +137,77 @@ export function EnergyLevelPage() {
             {/* Energy Level Circle with Progress Ring */}
             <div className="flex justify-center">
               <div className="relative w-32 h-32">
-                {/* SVG Progress Ring - Using workout ring logic */}
-                <svg
-                  className="absolute transform -rotate-90"
-                  width={128}
-                  height={128}
-                  style={{ top: 0, left: 0 }}
-                >
-                  {/* Background ring - darker and thicker */}
-                  <circle
-                    cx={64}
-                    cy={64}
-                    r={50}
-                    stroke="rgba(255, 255, 255, 0.1)"
-                    strokeWidth={10}
-                    fill="none"
-                  />
-                  {/* Progress ring - Apple fitness style */}
-                  <circle
-                    cx={64}
-                    cy={64}
-                    r={50}
-                    stroke={energyLevel <= 3 ? '#ef4444' : energyLevel <= 6 ? '#fbbf24' : '#22c55e'}
-                    strokeWidth={10}
-                    fill="none"
-                    strokeDasharray={314.159}
-                    strokeDashoffset={314.159 - (energyLevel / 10) * 314.159}
-                    strokeLinecap="round"
-                    className="transition-all duration-500 ease-out"
-                    style={{
-                      filter: energyLevel >= 8 ? 'drop-shadow(0 0 16px currentColor) drop-shadow(0 0 32px currentColor)' : 'drop-shadow(0 0 4px currentColor)',
-                      opacity: 0.9
-                    }}
-                  />
-                </svg>
-                {/* Clickable button */}
-                <button
-                  onClick={handleEnergyTap}
-                  className="absolute inset-2 rounded-full bg-slate-700 flex items-center justify-center transition-all hover:scale-105 active:scale-95 border-4 border-slate-600"
-                >
-                  <div className="text-center">
-                    <div className={`text-3xl font-bold ${getEnergyColor(energyLevel)}`}>
-                      {energyLevel}
-                    </div>
-                    <div className="text-xs text-slate-400 mt-1">
-                      {getEnergyDescription(energyLevel)}
-                    </div>
-                  </div>
-                </button>
+                {(() => {
+                  // Exact same calculation as workout progress circles
+                  const size = 80;
+                  const strokeWidth = 8;
+                  const progress = energyLevel / 10;
+                  const padding = strokeWidth + 4;
+                  const svgSize = size + padding * 2;
+                  const radius = (size / 2) + (strokeWidth / 2) + 2;
+                  const circumference = radius * 2 * Math.PI;
+                  const strokeDasharray = circumference;
+                  const strokeDashoffset = isNaN(progress) ? circumference : circumference - (progress * circumference);
+                  
+                  return (
+                    <>
+                      {/* SVG Progress Ring - Exact workout logic */}
+                      <svg
+                        className="absolute transform -rotate-90"
+                        width={svgSize}
+                        height={svgSize}
+                        style={{ top: 0, left: 0 }}
+                      >
+                        {/* Background ring - darker and thicker */}
+                        <circle
+                          cx={svgSize / 2}
+                          cy={svgSize / 2}
+                          r={radius}
+                          stroke="rgba(255, 255, 255, 0.1)"
+                          strokeWidth={strokeWidth + 2}
+                          fill="none"
+                        />
+                        {/* Progress ring - Apple fitness style */}
+                        <circle
+                          cx={svgSize / 2}
+                          cy={svgSize / 2}
+                          r={radius}
+                          stroke={energyLevel <= 3 ? '#ef4444' : energyLevel <= 6 ? '#fbbf24' : '#22c55e'}
+                          strokeWidth={strokeWidth + 2}
+                          fill="none"
+                          strokeDasharray={strokeDasharray}
+                          strokeDashoffset={strokeDashoffset}
+                          strokeLinecap="round"
+                          className="transition-all duration-500 ease-out"
+                          style={{
+                            filter: energyLevel >= 8 ? 'drop-shadow(0 0 16px currentColor) drop-shadow(0 0 32px currentColor)' : 'drop-shadow(0 0 4px currentColor)',
+                            opacity: 0.9
+                          }}
+                        />
+                      </svg>
+                      {/* Clickable button */}
+                      <button
+                        onClick={handleEnergyTap}
+                        className="absolute rounded-full bg-slate-700 flex items-center justify-center transition-all hover:scale-105 active:scale-95 border-4 border-slate-600"
+                        style={{ 
+                          width: size, 
+                          height: size, 
+                          top: padding, 
+                          left: padding 
+                        }}
+                      >
+                        <div className="text-center">
+                          <div className={`text-3xl font-bold ${getEnergyColor(energyLevel)}`}>
+                            {energyLevel}
+                          </div>
+                          <div className="text-xs text-slate-400 mt-1">
+                            {getEnergyDescription(energyLevel)}
+                          </div>
+                        </div>
+                      </button>
+                    </>
+                  );
+                })()}
               </div>
             </div>
 
