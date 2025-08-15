@@ -68,7 +68,6 @@ export function EnergyLevelPage() {
 
   const handleEnergyTap = () => {
     const newLevel = energyLevel >= 10 ? 1 : energyLevel + 1;
-    console.log('Energy level changed from', energyLevel, 'to', newLevel);
     setEnergyLevel(newLevel);
   };
 
@@ -138,32 +137,37 @@ export function EnergyLevelPage() {
             {/* Energy Level Circle with Progress Ring */}
             <div className="flex justify-center">
               <div className="relative w-32 h-32">
-                {/* SVG Progress Ring */}
-                <svg className="absolute inset-0 w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
-                  {/* Background circle */}
+                {/* SVG Progress Ring - Using workout ring logic */}
+                <svg
+                  className="absolute transform -rotate-90"
+                  width={128}
+                  height={128}
+                  style={{ top: 0, left: 0 }}
+                >
+                  {/* Background ring - darker and thicker */}
                   <circle
-                    cx="60"
-                    cy="60"
-                    r="48"
-                    stroke="#475569"
-                    strokeWidth="10"
+                    cx={64}
+                    cy={64}
+                    r={50}
+                    stroke="rgba(255, 255, 255, 0.1)"
+                    strokeWidth={10}
                     fill="none"
-                    className="opacity-30"
                   />
-                  {/* Progress circle - always rendered */}
+                  {/* Progress ring - Apple fitness style */}
                   <circle
-                    cx="60"
-                    cy="60"
-                    r="48"
+                    cx={64}
+                    cy={64}
+                    r={50}
                     stroke={energyLevel <= 3 ? '#ef4444' : energyLevel <= 6 ? '#fbbf24' : '#22c55e'}
-                    strokeWidth="10"
+                    strokeWidth={10}
                     fill="none"
-                    strokeDasharray="301.593"
-                    strokeDashoffset={301.593 - (energyLevel / 10) * 301.593}
+                    strokeDasharray={314.159}
+                    strokeDashoffset={314.159 - (energyLevel / 10) * 314.159}
                     strokeLinecap="round"
-                    className="transition-all duration-500"
+                    className="transition-all duration-500 ease-out"
                     style={{
-                      visibility: energyLevel > 0 ? 'visible' : 'hidden'
+                      filter: energyLevel >= 8 ? 'drop-shadow(0 0 16px currentColor) drop-shadow(0 0 32px currentColor)' : 'drop-shadow(0 0 4px currentColor)',
+                      opacity: 0.9
                     }}
                   />
                 </svg>
