@@ -136,10 +136,10 @@ export function EnergyLevelPage() {
 
             {/* Energy Level Circle with Progress Ring */}
             <div className="flex justify-center">
-              <div className="relative w-32 h-32">
+              <div className="relative w-40 h-40">
                 {(() => {
-                  // Exact same calculation as workout progress circles
-                  const size = 80;
+                  // Larger circle with more spacing
+                  const size = 120;
                   const strokeWidth = 8;
                   const progress = energyLevel / 10;
                   const padding = strokeWidth + 4;
