@@ -68,6 +68,7 @@ export function EnergyLevelPage() {
 
   const handleEnergyTap = () => {
     const newLevel = energyLevel >= 10 ? 1 : energyLevel + 1;
+    console.log('Energy level changed from', energyLevel, 'to', newLevel);
     setEnergyLevel(newLevel);
   };
 
@@ -149,7 +150,7 @@ export function EnergyLevelPage() {
                     fill="none"
                     className="opacity-30"
                   />
-                  {/* Progress circle */}
+                  {/* Progress circle - always rendered */}
                   <circle
                     cx="60"
                     cy="60"
@@ -157,11 +158,12 @@ export function EnergyLevelPage() {
                     stroke={energyLevel <= 3 ? '#ef4444' : energyLevel <= 6 ? '#fbbf24' : '#22c55e'}
                     strokeWidth="10"
                     fill="none"
-                    strokeDasharray={`${(energyLevel / 10) * 301.593} 301.593`}
+                    strokeDasharray="301.593"
+                    strokeDashoffset={301.593 - (energyLevel / 10) * 301.593}
                     strokeLinecap="round"
-                    className="transition-all duration-300"
+                    className="transition-all duration-500"
                     style={{
-                      opacity: energyLevel > 0 ? 1 : 0
+                      visibility: energyLevel > 0 ? 'visible' : 'hidden'
                     }}
                   />
                 </svg>
