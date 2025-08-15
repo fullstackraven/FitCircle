@@ -4,52 +4,157 @@ import { useLocation } from "wouter";
 import { useEnergyLevel } from "../hooks/use-energy-level";
 import { format } from "date-fns";
 
-// Energy Level Trend Visualization Component
+// Enhanced Energy Level Trend Visualization Component
 const EnergyTrendVisualization = () => {
   const { getEnergyLevelData } = useEnergyLevel();
   const energyData = getEnergyLevelData();
   
-  // Get last 7 days of data
-  const last7Days = [];
+  // Get last 14 days of data for better trend analysis
+  const last14Days = [];
   const today = new Date();
   
-  for (let i = 6; i >= 0; i--) {
+  for (let i = 13; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
     const dateStr = format(date, 'yyyy-MM-dd');
     const energy = energyData[dateStr] || 0;
-    last7Days.push({
-      date: format(date, 'EEE'),
+    last14Days.push({
+      date: format(date, 'MM/dd'),
       energy: energy,
       dateStr: dateStr
     });
   }
 
-  const maxEnergy = 10;
+  // Calculate statistics
+  const nonZeroEnergies = last14Days.filter(day => day.energy > 0);
+  const avgEnergy = nonZeroEnergies.length > 0 
+    ? (nonZeroEnergies.reduce((sum, day) => sum + day.energy, 0) / nonZeroEnergies.length).toFixed(1)
+    : '0';
+  const daysLogged = nonZeroEnergies.length;
+  const todayEnergy = energyData[format(today, 'yyyy-MM-dd')] || 0;
+
+  // Create SVG path for the trend line
+  const createPath = (data: any[]) => {
+    const width = 300;
+    const height = 80;
+    const padding = 20;
+    
+    const validData = data.filter(d => d.energy > 0);
+    if (validData.length < 2) return '';
+    
+    const xStep = (width - padding * 2) / (data.length - 1);
+    const yScale = (height - padding * 2) / 10; // Max energy is 10
+    
+    let path = '';
+    validData.forEach((point, index) => {
+      const dataIndex = data.findIndex(d => d.dateStr === point.dateStr);
+      const x = padding + (dataIndex * xStep);
+      const y = height - padding - (point.energy * yScale);
+      
+      if (index === 0) {
+        path += `M ${x} ${y}`;
+      } else {
+        path += ` L ${x} ${y}`;
+      }
+    });
+    
+    return path;
+  };
+
+  const pathData = createPath(last14Days);
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-end h-32 bg-slate-800 rounded-xl p-4">
-        {last7Days.map((day, index) => (
-          <div key={index} className="flex flex-col items-center space-y-2">
-            <div className="flex flex-col items-center justify-end h-20">
-              <div 
-                className="bg-gradient-to-t from-yellow-500 to-yellow-300 rounded-t-md transition-all duration-300"
-                style={{ 
-                  height: `${(day.energy / maxEnergy) * 100}%`,
-                  width: '16px',
-                  minHeight: day.energy > 0 ? '4px' : '0px'
-                }}
-              />
-            </div>
-            <span className="text-xs text-slate-400">{day.date}</span>
-            <span className="text-xs text-yellow-400 font-medium">{day.energy || '-'}</span>
-          </div>
-        ))}
+    <div className="bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-xl p-6 border border-purple-500/20">
+      <h2 className="text-lg font-semibold text-white mb-4">Energy Level Trends</h2>
+      
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-purple-400">{avgEnergy}</div>
+          <div className="text-xs text-slate-400">Avg Energy</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-blue-400">{daysLogged}</div>
+          <div className="text-xs text-slate-400">Days Logged</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-green-400">{todayEnergy}</div>
+          <div className="text-xs text-slate-400">Today</div>
+        </div>
       </div>
-      <p className="text-xs text-slate-400 text-center">
-        Energy levels over the past 7 days (1-10 scale)
-      </p>
+
+      {/* Trend Line Chart */}
+      <div className="relative mb-4">
+        <svg width="100%" height="120" viewBox="0 0 300 120" className="overflow-visible">
+          {/* Grid lines */}
+          {[...Array(6)].map((_, i) => (
+            <line
+              key={i}
+              x1="20"
+              y1={20 + (i * 16)}
+              x2="280"
+              y2={20 + (i * 16)}
+              stroke="rgba(255,255,255,0.1)"
+              strokeWidth="1"
+            />
+          ))}
+          
+          {/* Trend line */}
+          {pathData && (
+            <path
+              d={pathData}
+              stroke="url(#energyGradient)"
+              strokeWidth="3"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          )}
+          
+          {/* Data points */}
+          {last14Days.filter(d => d.energy > 0).map((point, index) => {
+            const dataIndex = last14Days.findIndex(d => d.dateStr === point.dateStr);
+            const x = 20 + (dataIndex * (260 / (last14Days.length - 1)));
+            const y = 100 - (point.energy * 8);
+            
+            return (
+              <circle
+                key={point.dateStr}
+                cx={x}
+                cy={y}
+                r="4"
+                fill="url(#energyGradient)"
+                stroke="rgba(255,255,255,0.8)"
+                strokeWidth="2"
+              />
+            );
+          })}
+          
+          {/* Gradient definition */}
+          <defs>
+            <linearGradient id="energyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#8b5cf6" />
+              <stop offset="50%" stopColor="#3b82f6" />
+              <stop offset="100%" stopColor="#06b6d4" />
+            </linearGradient>
+          </defs>
+        </svg>
+        
+        {/* Date labels */}
+        <div className="flex justify-between mt-2 px-5">
+          <span className="text-xs text-slate-400">{last14Days[0]?.date}</span>
+          <span className="text-xs text-slate-400">{last14Days[Math.floor(last14Days.length / 2)]?.date}</span>
+          <span className="text-xs text-slate-400">{last14Days[last14Days.length - 1]?.date}</span>
+        </div>
+      </div>
+
+      {/* Status indicator */}
+      <div className="flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+          <span className="text-sm text-yellow-400">Energy stable</span>
+        </div>
+      </div>
     </div>
   );
 };
