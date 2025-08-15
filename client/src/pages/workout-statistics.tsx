@@ -72,7 +72,7 @@ export function WorkoutStatistics() {
             </div>
             <div className="text-center p-4 bg-slate-700 rounded-xl">
               <div className="text-xl font-bold text-blue-400 mb-1">{totalStats.totalConsistency.toFixed(1)}%</div>
-              <div className="text-xs text-slate-400">Consistency</div>
+              <div className="text-xs text-slate-400 w-full text-center px-1">Consistency</div>
             </div>
           </div>
         </div>
@@ -110,7 +110,7 @@ export function WorkoutStatistics() {
             </div>
             <div className="text-center p-4 bg-slate-700 rounded-xl">
               <div className="text-xl font-bold text-green-400 mb-1">{monthlyStats.monthlyConsistency.toFixed(1)}%</div>
-              <div className="text-xs text-slate-400">Consistency</div>
+              <div className="text-xs text-slate-400 w-full text-center px-1">Consistency</div>
             </div>
           </div>
         </div>
