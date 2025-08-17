@@ -19,7 +19,9 @@ document.addEventListener('touchstart', function(e) {
 }, { passive: false });
 
 document.addEventListener('touchmove', function(e) {
-  if (!startX || !startY) return;
+  if (!startX || !startY) {
+    return;
+  }
   
   const currentX = e.touches[0].clientX;
   const currentY = e.touches[0].clientY;
@@ -48,7 +50,6 @@ document.addEventListener('touchmove', function(e) {
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
-    return false;
   }
   
   // For vertical scrolling, only allow if within scrollable content
@@ -132,7 +133,7 @@ if (urlParams.get('restore') === 'true' && urlParams.get('updated') === 'true') 
     const backup = sessionStorage.getItem('fitcircle_update_backup');
     if (backup) {
       const data = JSON.parse(backup);
-      console.log('🔄 Restoring data after PWA update...');
+      // Restoring data after PWA update
       
       // Restore all data
       Object.keys(data).forEach(key => {
@@ -143,13 +144,13 @@ if (urlParams.get('restore') === 'true' && urlParams.get('updated') === 'true') 
       
       // Clean up
       sessionStorage.removeItem('fitcircle_update_backup');
-      console.log('✅ Data restored successfully');
+      // Data restored successfully
       
       // Redirect to clean URL
       window.history.replaceState({}, '', window.location.pathname);
     }
   } catch (error) {
-    console.error('Error restoring data:', error);
+    // Error restoring data
   }
 }
 

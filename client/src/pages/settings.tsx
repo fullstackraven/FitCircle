@@ -98,7 +98,7 @@ export default function SettingsPage() {
   //       const now = new Date().toISOString();
   //       localStorage.setItem(STORAGE_KEYS.LAST_AUTO_BACKUP, now);
   //       setLastAutoBackup(now);
-  //       console.log('Auto-backup completed successfully:', result.filename);
+
   //       return true;
   //     } else {
   //       throw new Error('Failed to save auto-backup');
@@ -226,24 +226,24 @@ export default function SettingsPage() {
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        console.log('File content length:', content.length);
+        // File content processed for export
         
         const snapshot = JSON.parse(content);
-        console.log('Parsed snapshot keys:', Object.keys(snapshot));
+        // Snapshot keys parsed successfully
         
         if (typeof snapshot !== 'object' || !snapshot) {
           throw new Error('Invalid file format');
         }
         
         // Clear localStorage first
-        console.log('Clearing localStorage...');
+        // Clearing localStorage...
         localStorage.clear();
         
         let count = 0;
         let errors = 0;
         
         for (const [key, value] of Object.entries(snapshot)) {
-          console.log(`Processing key: ${key}, type: ${typeof value}`);
+          // Processing key restoration
           
           // Skip invalid keys that contain functions or are clearly invalid
           if (typeof value === 'function' || key === 'setItem' || key.includes('function')) {

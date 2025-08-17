@@ -7,7 +7,7 @@ import { useTimer } from '@/hooks/use-timer';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -326,6 +326,9 @@ export default function Home() {
       {/* Sidebar Dashboard */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
         <SheetContent side="left" className="w-80 bg-slate-900 border-slate-700">
+          <SheetHeader className="sr-only">
+            <SheetTitle>Navigation Menu</SheetTitle>
+          </SheetHeader>
           <div className="flex flex-col h-full">
             {/* User Profile Section */}
             <div 
