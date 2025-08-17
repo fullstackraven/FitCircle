@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
 
 export default function CardioPage() {
@@ -162,6 +162,9 @@ export default function CardioPage() {
           <DialogContent className="bg-slate-800 text-white border-slate-700">
             <DialogHeader>
               <DialogTitle>Cardio Goal</DialogTitle>
+              <DialogDescription className="text-slate-400 text-center">
+                Set and track your weekly cardio goals
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-6">
               <div className="flex justify-center">
@@ -300,6 +303,9 @@ export default function CardioPage() {
           <DialogContent className="bg-slate-800 text-white border-slate-700">
             <DialogHeader>
               <DialogTitle>Add Cardio Entry</DialogTitle>
+              <DialogDescription className="text-slate-400 text-center">
+                Log your cardio workout details
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-3">
@@ -324,6 +330,9 @@ export default function CardioPage() {
                     <DialogContent className="bg-slate-800 text-white border-slate-700">
                       <DialogHeader>
                         <DialogTitle>Add Custom Cardio Type</DialogTitle>
+                        <DialogDescription className="text-slate-400 text-center">
+                          Create a new cardio activity type
+                        </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
                         <Input
@@ -459,6 +468,9 @@ export default function CardioPage() {
         <DialogContent className="bg-slate-800 text-white border-slate-700">
           <DialogHeader>
             <DialogTitle>Edit Cardio Entry</DialogTitle>
+            <DialogDescription className="text-slate-400 text-center">
+              Update your cardio workout details
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-3">

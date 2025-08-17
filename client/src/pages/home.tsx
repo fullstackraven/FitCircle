@@ -8,7 +8,7 @@ import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -482,6 +482,9 @@ export default function Home() {
         <DialogContent className="bg-slate-800 text-white border-slate-700 max-w-md">
           <DialogHeader>
             <DialogTitle>Workout Timer</DialogTitle>
+            <DialogDescription className="text-slate-400 text-center">
+              Set up and run your workout timer
+            </DialogDescription>
           </DialogHeader>
           
           {!timerState.isRunning && timerState.remainingTime === 0 ? (
