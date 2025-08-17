@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { STORAGE_KEYS } from '@/lib/keys';
-import { get, set } from '@/lib/safeStorage';
+import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 export interface MeditationLog {
   id: string;
@@ -11,14 +10,13 @@ export interface MeditationLog {
 }
 
 export function useMeditation() {
-  const [logs, setLogs] = useState<MeditationLog[]>(() => {
-    const stored = get(STORAGE_KEYS.meditation);
-    return stored || [];
-  });
+  const [logs, setLogs] = useState<MeditationLog[]>(() => 
+    safeParseJSON(localStorage.getItem(STORAGE_KEYS.MEDITATION), [])
+  );
 
   // Save to localStorage whenever data changes
   useEffect(() => {
-    set(STORAGE_KEYS.meditation, logs);
+    localStorage.setItem(STORAGE_KEYS.MEDITATION, JSON.stringify(logs));
   }, [logs]);
 
   const addLog = (log: Omit<MeditationLog, 'id' | 'completedAt'>) => {

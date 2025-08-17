@@ -1,5 +1,5 @@
-import { STORAGE_KEYS } from '@/lib/keys';
-import { get, set } from '@/lib/safeStorage';
+import type { Supplement } from '@shared/schema';
+import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 interface LocalSupplement {
   id: number;
@@ -10,11 +10,9 @@ interface LocalSupplement {
 }
 
 export function useSupplements() {
-  // Get supplements from localStorage  
-  const getSupplements = (): LocalSupplement[] => {
-    const stored = get(STORAGE_KEYS.supplements);
-    return stored || [];
-  };
+  // Get supplements from localStorage
+  const getSupplements = (): LocalSupplement[] => 
+    safeParseJSON(localStorage.getItem(STORAGE_KEYS.SUPPLEMENTS), []);
 
   // Create supplement
   const createSupplement = (supplement: { name: string; measurementType: string; amount: number }) => {
@@ -29,7 +27,7 @@ export function useSupplements() {
     };
     
     const updatedSupplements = [...supplements, newSupplement];
-    set(STORAGE_KEYS.supplements, updatedSupplements);
+    localStorage.setItem(STORAGE_KEYS.SUPPLEMENTS, JSON.stringify(updatedSupplements));
     return newSupplement;
   };
 
@@ -39,7 +37,7 @@ export function useSupplements() {
     const updatedSupplements = supplements.map(supplement => 
       supplement.id === id ? { ...supplement, ...updates } : supplement
     );
-    set(STORAGE_KEYS.supplements, updatedSupplements);
+    localStorage.setItem(STORAGE_KEYS.SUPPLEMENTS, JSON.stringify(updatedSupplements));
     return updatedSupplements.find(s => s.id === id);
   };
 
@@ -47,7 +45,7 @@ export function useSupplements() {
   const deleteSupplement = (id: number) => {
     const supplements = getSupplements();
     const updatedSupplements = supplements.filter(supplement => supplement.id !== id);
-    set(STORAGE_KEYS.supplements, updatedSupplements);
+    localStorage.setItem(STORAGE_KEYS.SUPPLEMENTS, JSON.stringify(updatedSupplements));
     
     // Also remove all logs for this supplement to clean up data
     const logs = getSupplementLogs();
@@ -63,21 +61,21 @@ export function useSupplements() {
       }
     });
     
-    set('fitcircle_supplement_logs', updatedLogs);
+    localStorage.setItem('fitcircle_supplement_logs', JSON.stringify(updatedLogs));
     return true;
   };
 
   // Helper functions for supplement logs
   const getSupplementLogs = (): Record<string, Record<number, boolean>> => {
-    const stored = get('fitcircle_supplement_logs');
-    return stored || {};
+    const stored = localStorage.getItem('fitcircle_supplement_logs');
+    return stored ? JSON.parse(stored) : {};
   };
 
   const setSupplementLog = (date: string, supplementId: number, taken: boolean) => {
     const logs = getSupplementLogs();
     if (!logs[date]) logs[date] = {};
     logs[date][supplementId] = taken;
-    set('fitcircle_supplement_logs', logs);
+    localStorage.setItem('fitcircle_supplement_logs', JSON.stringify(logs));
   };
 
   const getSupplementLogsForDate = (date: string): Record<number, boolean> => {

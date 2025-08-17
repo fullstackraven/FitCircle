@@ -3,7 +3,21 @@ import { ArrowLeft, TrendingUp } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { format, addMonths, subMonths } from "date-fns";
-import { colorClassMap } from "@/lib/colors";
+
+const colorClassMap: { [key: string]: string } = {
+  green: 'workout-green',
+  blue: 'workout-blue',
+  purple: 'workout-purple',
+  amber: 'workout-amber',
+  red: 'workout-red',
+  pink: 'workout-pink',
+  cyan: 'workout-cyan',
+  lime: 'workout-lime',
+  orange: 'workout-orange',
+  indigo: 'workout-indigo',
+  emerald: 'workout-emerald',
+  yellow: 'workout-yellow'
+};
 
 export function WorkoutStatistics() {
   const [, navigate] = useLocation();
