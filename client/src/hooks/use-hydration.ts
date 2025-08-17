@@ -1,63 +1,27 @@
-import { useState, useEffect } from 'react';
 import { getTodayString, getCurrentTime } from '@/lib/date-utils';
-import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
+import { K } from '@/lib/keys';
+import { HydrationStateSchema, type HydrationState } from '@/lib/storageSchemas';
+import { useLocalStorageState } from './useLocalStorageState';
+import { useEffect } from 'react';
 
-export interface HydrationEntry {
-  time: string;
-  amount: number;
-  liquidType: string;
-}
+// Export types for backward compatibility
+export type { HydrationState as HydrationData };
+export type { HydrationState } from '@/lib/storageSchemas';
 
-export interface HydrationLog {
-  date: string;
-  totalOz: number;
-  entries: HydrationEntry[];
-}
-
-export interface HydrationData {
-  dailyGoalOz: number;
-  currentDayOz: number;
-  logs: { [date: string]: HydrationLog };
-  lastDate: string;
-}
+const defaultHydrationState: HydrationState = {
+  dailyGoalOz: 64,
+  currentDayOz: 0,
+  logs: {},
+  lastDate: getTodayString(),
+  lastUpdated: undefined
+};
 
 export function useHydration() {
-  const [data, setData] = useState<HydrationData>(() => {
-    const goalFromGoalsPage = localStorage.getItem('fitcircle_goal_hydration');
-    const defaultData = {
-      dailyGoalOz: goalFromGoalsPage ? parseFloat(goalFromGoalsPage) : 64,
-      currentDayOz: 0,
-      logs: {},
-      lastDate: getTodayString()
-    };
-    
-    const saved = safeParseJSON(localStorage.getItem(STORAGE_KEYS.HYDRATION), defaultData);
-    
-    // Migrate liquid type if not present
-    if (saved.logs) {
-      Object.values(saved.logs).forEach((dayLog: any) => {
-        if (dayLog.entries) {
-          dayLog.entries.forEach((entry: any) => {
-            if (!entry.liquidType) {
-              entry.liquidType = 'Water';
-            }
-          });
-        }
-      });
-    }
-    
-    // Sync goal from Goals page if it exists and is different
-    if (goalFromGoalsPage) {
-      saved.dailyGoalOz = parseFloat(goalFromGoalsPage);
-    }
-    
-    return saved;
-  });
-
-  // Save to localStorage whenever data changes
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.HYDRATION, JSON.stringify(data));
-  }, [data]);
+  const [data, setData] = useLocalStorageState(
+    K.hydration,
+    HydrationStateSchema,
+    defaultHydrationState
+  );
 
   // Reset daily data if date has changed
   useEffect(() => {
@@ -67,7 +31,8 @@ export function useHydration() {
         setData(prev => ({
           ...prev,
           lastDate: today,
-          currentDayOz: 0
+          currentDayOz: 0,
+          lastUpdated: new Date().toISOString()
         }));
       }
     };
@@ -76,45 +41,50 @@ export function useHydration() {
     // Check for date change every minute
     const interval = setInterval(checkDateChange, 60000);
     return () => clearInterval(interval);
-  }, [data.lastDate]);
+  }, [data.lastDate, setData]);
 
   const addHydration = (amountOz: number, liquidType: string = 'Water') => {
     const today = getTodayString();
     const currentTime = getCurrentTime();
     
     setData(prev => {
-      const newCurrentDayOz = prev.currentDayOz + amountOz;
-      const todayLog = prev.logs[today] || { date: today, totalOz: 0, entries: [] };
+      const newCurrentDayOz = (prev.currentDayOz || 0) + amountOz;
+      const todayLog = (prev.logs || {})[today] || { date: today, totalOz: 0, entries: [] };
       
       const updatedLog = {
         ...todayLog,
         totalOz: todayLog.totalOz + amountOz,
-        entries: [...todayLog.entries, { time: currentTime, amount: amountOz, liquidType }]
+        entries: [...(todayLog.entries || []), { time: currentTime, amount: amountOz, liquidType }]
       };
 
       return {
         ...prev,
         currentDayOz: newCurrentDayOz,
         logs: {
-          ...prev.logs,
+          ...(prev.logs || {}),
           [today]: updatedLog
-        }
+        },
+        lastUpdated: new Date().toISOString()
       };
     });
   };
 
   const setDailyGoal = (goalOz: number) => {
-    setData(prev => ({ ...prev, dailyGoalOz: goalOz }));
-    // Sync with goals page
+    setData(prev => ({ 
+      ...prev, 
+      dailyGoalOz: goalOz,
+      lastUpdated: new Date().toISOString()
+    }));
+    // Sync with goals page for backward compatibility
     localStorage.setItem('fitcircle_goal_hydration', goalOz.toString());
   };
 
   const getProgressPercentage = () => {
-    return Math.min((data.currentDayOz / data.dailyGoalOz) * 100, 100);
+    return Math.min(((data.currentDayOz || 0) / (data.dailyGoalOz || 64)) * 100, 100);
   };
 
   const getRecentLogs = (days: number = 7) => {
-    const logs = Object.values(data.logs)
+    const logs = Object.values(data.logs || {})
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, days);
     return logs;
@@ -122,18 +92,18 @@ export function useHydration() {
 
   const getTodayEntries = () => {
     const today = getTodayString();
-    const todayLog = data.logs[today];
+    const todayLog = (data.logs || {})[today];
     return todayLog?.entries || [];
   };
 
   return {
-    dailyGoalOz: data.dailyGoalOz,
-    currentDayOz: data.currentDayOz,
+    dailyGoalOz: data.dailyGoalOz || 64,
+    currentDayOz: data.currentDayOz || 0,
     progressPercentage: getProgressPercentage(),
     addHydration,
     setDailyGoal,
     getRecentLogs,
     getTodayEntries,
-    isGoalReached: data.currentDayOz >= data.dailyGoalOz
+    isGoalReached: (data.currentDayOz || 0) >= (data.dailyGoalOz || 64)
   };
 }

@@ -1,0 +1,77 @@
+You are the Replit Coding Agent working on the **FitCircle** repo. Keep the **UI identical** and preserve the **localStorage-first** design. Implement the following refactor and safety upgrades. Make changes exactly as specified below.
+
+## Rules
+- Do NOT change the current visuals or layout.
+- Replace all direct `localStorage.*` usage in hooks with the new safe storage layer.
+- Unify all duplicated color maps into a single import.
+- All date math must use the shared date utils.
+- Keep TypeScript strict; avoid `any`. Add zod schemas where data enters/leaves storage.
+- Ensure the PWA works fully offline with a versioned service worker.
+
+## File adds
+Create these files:
+
+1. `client/src/lib/keys.ts` – storage keys (see code block below).
+2. `client/src/lib/colors.ts` – unified `colorClassMap` + type (see code block).
+3. `client/src/lib/storageSchemas.ts` – zod schemas for each storage domain (see code block).
+4. `client/src/lib/safeStorage.ts` – versioned, validated storage helpers (see code block).
+5. `client/src/hooks/useLocalStorageState.ts` – generic localStorage hook (see code block).
+6. `client/public/service-worker.js` – offline app shell SW (see code block).
+7. `client/src/components/BackButton.tsx` – tiny reusable back button (icon + aria-label).
+
+Use the code templates in the plan.
+
+## File edits
+1. `client/index.html`
+   - Remove `maximum-scale=1` from the viewport meta tag to allow zoom.
+2. `client/src/lib/date-utils.ts`
+   - Ensure there are helpers: `toLocalYMD(date)`, `parseLocalDateTime(ymd, hhmm)`, and `rangeDays(startYMD,endYMD)`.
+   - Migrate any ad hoc date logic in pages to use these helpers.
+3. `client/src/components/progress-circle.tsx` and `client/src/components/GoalCircle.tsx`
+   - Wrap with `React.memo`.
+   - Verify timers are cleared on unmount and on pointer cancel. Add proper `aria` attributes for progress.
+4. Replace all duplicated `colorClassMap` definitions with:
+   ```ts
+   import { colorClassMap, type WorkoutColor } from "@/lib/colors";
+   ```
+   Affected files include (non-exhaustive, search and replace):
+   - `client/src/components/progress-circle.tsx`
+   - `client/src/components/workout-modal.tsx`
+   - `client/src/pages/calendar-new.tsx`
+   - `client/src/pages/calendar.tsx`
+   - `client/src/pages/dynamic-overview.tsx`
+   - `client/src/pages/home.tsx`
+   - `client/src/pages/workout-statistics.tsx`
+5. Replace direct storage access in hooks with `useLocalStorageState` and schemas:
+   - `client/src/hooks/use-workouts.ts` → use `K.workouts` + `WorkoutsState`
+   - `client/src/hooks/use-hydration.ts` → `K.hydration` + `HydrationState`
+   - `client/src/hooks/use-fasting.ts` → `K.fasting` + `FastingState`
+   - `client/src/hooks/use-goals.ts` → `K.goals` + `GoalsState` (also migrate legacy `fitcircle_goal_*` keys)
+   - `client/src/hooks/use-reminders.ts` → `K.reminders` + `RemindersState`
+   - `client/src/hooks/use-cardio.ts` → `K.cardio` + `CardioState`
+   - `client/src/hooks/use-recovery.ts` → `K.recovery` + `RecoveryState`
+6. Add a simple migration step on app start:
+   - When the app boots (e.g., in `client/src/main.tsx`), check for legacy keys (`WORKOUT_LOGS`, `fitcircle_goal_*`, etc.). If present, map them into the new schemas and write to the new keys, then delete the old keys. Set `fitcircle:version = 2`.
+7. `vite.config.ts`
+   - Add `define: { __DEV__: JSON.stringify(process.env.NODE_ENV !== "production") }` and gate any `console.log` calls in code with `if (__DEV__)`.
+
+## Acceptance Tests
+- Build succeeds: `npm run build` (Vite builds to `dist/public`).
+- Start dev server (if applicable) and verify:
+  - Visuals identical across Home, Calendar, Hydration, Fasting, Goals, Cardio, Recovery, Reminders, etc.
+  - No direct `localStorage` calls remain in hooks; they import the generic hook and schemas.
+  - `colorClassMap` exists only in `@/lib/colors`.
+  - Offline mode works: load app, go offline, reload → app shell renders.
+  - Storage contains `fitcircle:version` and new namespaced keys.
+  - Old keys (e.g., `workout-tracker-logs`, `fitcircle_goal_*`) are migrated then removed.
+  - No `any` types in modified hooks.
+
+## Code blocks to use
+Use the exact code templates from **FitCircle Refactor Plan** stored at `/mnt/data/FitCircle-refactor-plan.md` (keys.ts, colors.ts, storageSchemas.ts, safeStorage.ts, useLocalStorageState.ts, service-worker.js, and the example Hydration refactor). Do not deviate in structure unless types require minor adjustments to fit existing usages.
+
+## Notes
+- Keep the UI intact. This task is about **structure, safety, and maintainability**, not design.
+- If a page still directly accesses `localStorage`, refactor it to call into its hook instead.
+- If a Tailwind class map is derived from user input, constrain it through `WorkoutColor`.
+
+When all acceptance tests pass, report a concise summary of files changed and confirm that visuals are unchanged and the app works offline.

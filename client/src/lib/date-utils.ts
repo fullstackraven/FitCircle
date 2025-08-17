@@ -99,3 +99,37 @@ export function isToday(dateString: string): boolean {
 export function isYesterday(dateString: string): boolean {
   return dateString === getYesterdayString();
 }
+
+/**
+ * Convert date to local YYYY-MM-DD format (alias for getDateString)
+ */
+export function toLocalYMD(date: Date): string {
+  return getDateString(date);
+}
+
+/**
+ * Parse local date time from YYYY-MM-DD and HH:mm format
+ */
+export function parseLocalDateTime(ymd: string, hhmm: string): Date {
+  const [year, month, day] = ymd.split('-').map(Number);
+  const [hours, minutes] = hhmm.split(':').map(Number);
+  return new Date(year, month - 1, day, hours, minutes);
+}
+
+/**
+ * Get range of days between start and end dates (inclusive)
+ */
+export function rangeDays(startYMD: string, endYMD: string): string[] {
+  const startDate = parseLocalDate(startYMD);
+  const endDate = parseLocalDate(endYMD);
+  
+  const result: string[] = [];
+  const current = new Date(startDate);
+  
+  while (current <= endDate) {
+    result.push(getDateString(current));
+    current.setDate(current.getDate() + 1);
+  }
+  
+  return result;
+}

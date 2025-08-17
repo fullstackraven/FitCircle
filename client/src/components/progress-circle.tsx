@@ -12,20 +12,7 @@ interface ProgressCircleProps {
   isAnimating?: boolean;
 }
 
-const colorClassMap: { [key: string]: string } = {
-  green: 'workout-green',
-  blue: 'workout-blue',
-  purple: 'workout-purple',
-  amber: 'workout-amber',
-  red: 'workout-red',
-  pink: 'workout-pink',
-  cyan: 'workout-cyan',
-  lime: 'workout-lime',
-  orange: 'workout-orange',
-  indigo: 'workout-indigo',
-  emerald: 'workout-emerald',
-  yellow: 'workout-yellow'
-};
+import { colorClassMap } from '@/lib/colors';
 
 const strokeColorMap: { [key: string]: string } = {
   green: '#22c55e',

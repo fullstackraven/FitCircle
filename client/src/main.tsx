@@ -6,6 +6,7 @@ import "./index.css";
 import { Router } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
+import { migrateLegacyData } from "./lib/migration";
 
 // Completely disable browser swipe navigation
 let startX = 0;
@@ -152,6 +153,9 @@ if (urlParams.get('restore') === 'true' && urlParams.get('updated') === 'true') 
     console.error('Error restoring data:', error);
   }
 }
+
+// Run migration on app start
+migrateLegacyData();
 
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
