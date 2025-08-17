@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -72,6 +72,9 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
           <DialogTitle className="text-xl font-semibold text-center text-white">
             {editingWorkout ? 'Edit Workout' : 'Add New Workout'}
           </DialogTitle>
+          <DialogDescription className="text-sm text-slate-400 text-center">
+            {editingWorkout ? 'Modify the workout details below' : 'Create a new workout to track your progress'}
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">
