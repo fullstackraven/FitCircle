@@ -4,7 +4,7 @@ export const registerServiceWorker = () => {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')
       .then((registration) => {
-        console.log('Service Worker registered successfully');
+        // Service Worker registered successfully
         
         // Check for updates periodically
         setInterval(() => {
@@ -17,14 +17,14 @@ export const registerServiceWorker = () => {
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 // New update available - could show custom notification here
-                console.log('New version available');
+                // New version available
               }
             });
           }
         });
       })
       .catch((error) => {
-        console.error('Service Worker registration failed:', error);
+        // Service Worker registration failed
       });
   }
 };

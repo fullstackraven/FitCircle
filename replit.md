@@ -84,8 +84,9 @@ Preferred communication style: Simple, everyday language.
 - **Dialog Accessibility**: Added missing DialogDescription components to all Dialog instances across the application for full accessibility compliance.
 - **Broken File Removal**: Removed broken supplements file and outdated calendar.tsx file, leaving only the working versions.
 - **Asset Management**: Cleaned up 17 additional old attached assets (reduced from 47 to 30 files), removing unused IMG_1* series images.
-- **Code Quality**: Replaced console.log statements with comments in settings.tsx for cleaner production code.
+- **Code Quality**: Replaced console.log statements with comments in settings.tsx, main.tsx, index.html, and sw-utils.ts for cleaner production code.
 - **Directory Cleanup**: Removed unused directories (backups/, bug-reports/) and old service worker files.
+- **PWA Service Worker**: Restored proper service worker functionality with `/client/sw.js` for offline caching and PWA features.
 - **Navigation Improvements**: Added proper SheetTitle to sidebar navigation for accessibility compliance.
 - **JavaScript Fixes**: Fixed return statement formatting in main.tsx touch event handlers.
-- **Maintenance Status**: Completed comprehensive cleanup with zero functional impact and improved code quality throughout.
+- **Maintenance Status**: Completed comprehensive cleanup with zero functional impact, restored PWA functionality, and improved code quality throughout.

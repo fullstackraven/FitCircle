@@ -39,13 +39,13 @@
         
         // Check if this is a cache clearing request and skip SW registration
         if (window.location.search.includes('clear=true')) {
-          console.log('⚡ Cache clearing mode - skipping service worker');
+          // Cache clearing mode - skipping service worker
           return;
         }
         
         navigator.serviceWorker.register("/sw.js")
           .then((registration) => {
-            console.log('Service Worker registered successfully');
+            // Service Worker registered successfully
             
             // Check for updates and auto-refresh
             registration.addEventListener('updatefound', () => {
@@ -53,7 +53,7 @@
               if (newWorker) {
                 newWorker.addEventListener('statechange', () => {
                   if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    console.log('New version available, refreshing...');
+                    // New version available, refreshing
                     window.location.reload();
                   }
                 });
@@ -62,7 +62,7 @@
             
             // Auto-refresh on service worker update
             navigator.serviceWorker.addEventListener('controllerchange', () => {
-              console.log('Service worker controller changed, reloading page');
+              // Service worker controller changed, reloading page
               window.location.reload();
             });
             
@@ -70,7 +70,7 @@
             registration.update();
           })
           .catch((error) => {
-            console.error('Service Worker registration failed:', error);
+            // Service Worker registration failed
           });
       }
     </script>
