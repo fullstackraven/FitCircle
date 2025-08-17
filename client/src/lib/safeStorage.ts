@@ -91,6 +91,27 @@ export function removeStorageData(key: string): boolean {
 }
 
 /**
+ * Simple non-validating storage functions for backward compatibility
+ */
+export function get(key: string) {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function set(key: string, data: any): boolean {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Check if localStorage is available
  */
 export function isStorageAvailable(): boolean {

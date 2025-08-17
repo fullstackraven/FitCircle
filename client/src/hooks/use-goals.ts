@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
+import { STORAGE_KEYS } from '@/lib/keys';
+import { get, set } from '@/lib/safeStorage';
 
 export interface Goals {
   hydrationOz: number;
@@ -37,53 +38,21 @@ export function useGoals() {
   };
 
   const [goals, setGoals] = useState<Goals>(() => {
-    const saved = safeParseJSON(localStorage.getItem(STORAGE_KEYS.GOALS), null);
-    
-    if (saved && typeof saved === 'object' && saved !== null) {
-      return { ...defaultGoals, ...(saved as Partial<Goals>) };
-    }
-    
-    // Fallback to old format migration
-    const loadedGoals: Partial<Goals> = {};
-    const hydration = localStorage.getItem(`${STORAGE_PREFIX}hydration`);
-    if (hydration) loadedGoals.hydrationOz = parseFloat(hydration);
-    
-    const meditation = localStorage.getItem(`${STORAGE_PREFIX}meditation`);
-    if (meditation) loadedGoals.meditationMinutes = parseFloat(meditation);
-    
-    const fasting = localStorage.getItem(`${STORAGE_PREFIX}fasting`);
-    if (fasting) loadedGoals.fastingHours = parseFloat(fasting);
-    
-    const weight = localStorage.getItem(`${STORAGE_PREFIX}weight`);
-    if (weight) loadedGoals.weightLbs = parseFloat(weight);
-    
-    return { ...defaultGoals, ...loadedGoals };
+    const stored = get(STORAGE_KEYS.goals);
+    return stored ? { ...defaultGoals, ...stored } : defaultGoals;
   });
 
   const updateGoal = (goalType: keyof Goals, value: number) => {
     const updatedGoals = { ...goals, [goalType]: value };
     setGoals(updatedGoals);
-    localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(updatedGoals));
-    
-    // Keep backward compatibility with old storage format
-    const keyMap: { [K in keyof Goals]?: string } = {
-      hydrationOz: 'hydration',
-      meditationMinutes: 'meditation',
-      fastingHours: 'fasting',
-      weightLbs: 'weight'
-    };
-    
-    const oldKey = keyMap[goalType];
-    if (oldKey) {
-      localStorage.setItem(`${STORAGE_PREFIX}${oldKey}`, value.toString());
-    }
+    set(STORAGE_KEYS.goals, updatedGoals);
     
     // Sync hydration goal with hydration hook
     if (goalType === 'hydrationOz') {
-      const hydrationData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.HYDRATION), {}) as any;
+      const hydrationData = get(STORAGE_KEYS.hydration) || {};
       if (hydrationData && typeof hydrationData === 'object') {
         hydrationData.dailyGoalOz = value;
-        localStorage.setItem(STORAGE_KEYS.HYDRATION, JSON.stringify(hydrationData));
+        set(STORAGE_KEYS.hydration, hydrationData);
       }
     }
   };
@@ -92,7 +61,7 @@ export function useGoals() {
     
     // Hydration progress
     let hydrationProgress = 0;
-    const hydrationData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.HYDRATION), {}) as any;
+    const hydrationData = get(STORAGE_KEYS.hydration) || {};
     if (hydrationData && typeof hydrationData === 'object') {
       const actualGoal = hydrationData.dailyGoalOz || goals.hydrationOz;
       hydrationProgress = Math.min((hydrationData.currentDayOz / actualGoal) * 100, 100);
@@ -100,7 +69,7 @@ export function useGoals() {
 
     // Meditation progress (average last 7 days)
     let meditationProgress = 0;
-    const meditationLogs = safeParseJSON(localStorage.getItem('fitcircle_meditation_logs'), []);
+    const meditationLogs = get(STORAGE_KEYS.meditation) || [];
     if (Array.isArray(meditationLogs)) {
       const last7Days = new Date();
       last7Days.setDate(last7Days.getDate() - 7);
@@ -122,7 +91,7 @@ export function useGoals() {
 
     // Fasting progress (all-time average)
     let fastingProgress = 0;
-    const fastingLogs = safeParseJSON(localStorage.getItem('fitcircle_fasting_logs'), []);
+    const fastingLogs = get(STORAGE_KEYS.fasting) || [];
     if (Array.isArray(fastingLogs)) {
       const completedFasts: number[] = [];
       
@@ -150,9 +119,9 @@ export function useGoals() {
 
     // Weight progress (based on current vs target)
     let weightProgress = 0;
-    const currentWeightString = localStorage.getItem('fitcircle_weight');
-    if (currentWeightString) {
-      const current = parseFloat(currentWeightString);
+    const currentWeight = get('fitcircle_weight');
+    if (currentWeight) {
+      const current = typeof currentWeight === 'string' ? parseFloat(currentWeight) : currentWeight;
       const tolerance = goals.weightLbs * 0.05;
       const difference = Math.abs(current - goals.weightLbs);
       weightProgress = Math.max(0, 100 - (difference / tolerance) * 100);
@@ -161,7 +130,7 @@ export function useGoals() {
     // Target weight progress (based on current vs target weight from measurements)
     let targetWeightProgress = 0;
     if (goals.targetWeight) {
-      const measurementsData = safeParseJSON(localStorage.getItem('fitcircle_measurements'), {}) as any;
+      const measurementsData = get('fitcircle_measurements') || {};
       const currentWeight = measurementsData.currentWeight || 0;
       if (currentWeight > 0) {
         const tolerance = goals.targetWeight * 0.05;

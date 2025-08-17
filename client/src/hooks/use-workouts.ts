@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getTodayString, getDateString } from '@/lib/date-utils';
-import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
+import { STORAGE_KEYS } from '@/lib/keys';
+import { get, set } from '@/lib/safeStorage';
 
 export interface Workout {
   id: string;
@@ -26,18 +27,19 @@ const WORKOUT_COLORS = [
 ];
 
 export function useWorkouts() {
-  const [data, setData] = useState<WorkoutData>(() => 
-    safeParseJSON(localStorage.getItem(STORAGE_KEYS.WORKOUTS), {
+  const [data, setData] = useState<WorkoutData>(() => {
+    const stored = get(STORAGE_KEYS.workouts);
+    return stored || {
       workouts: {},
       dailyLogs: {},
       lastDate: getTodayString(),
       journalEntries: {}
-    })
-  );
+    };
+  });
 
   // Save to localStorage whenever data changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(data));
+    set(STORAGE_KEYS.workouts, data);
   }, [data]);
 
   // Reset daily data if date has changed

@@ -14,13 +14,16 @@ const WorkoutColorSchema = z.enum(WORKOUT_COLORS);
 export const WorkoutSchema = z.object({
   id: z.string(),
   name: z.string(),
-  color: WorkoutColorSchema,
-  dailyGoal: z.number().min(0).default(0),
-  logs: z.record(DateString, z.number().min(0)).default({})
+  color: z.string(),
+  count: z.number().default(0),
+  dailyGoal: z.number().default(0)
 });
 
 export const WorkoutsStateSchema = z.object({
-  workouts: z.array(WorkoutSchema).default([]),
+  workouts: z.record(z.string(), WorkoutSchema).default({}),
+  dailyLogs: z.record(DateString, z.record(z.string(), z.number())).default({}),
+  journalEntries: z.record(DateString, z.string()).default({}),
+  lastDate: z.string().optional(),
   lastUpdated: z.string().optional()
 });
 

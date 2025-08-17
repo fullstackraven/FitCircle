@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
+import { STORAGE_KEYS } from '@/lib/keys';
+import { get, set } from '@/lib/safeStorage';
 
 export interface FastingLog {
   id: string;
@@ -12,13 +13,14 @@ export interface FastingLog {
 }
 
 export function useFasting() {
-  const [logs, setLogs] = useState<FastingLog[]>(() => 
-    safeParseJSON(localStorage.getItem(STORAGE_KEYS.FASTING), [])
-  );
+  const [logs, setLogs] = useState<FastingLog[]>(() => {
+    const stored = get(STORAGE_KEYS.fasting);
+    return stored || [];
+  });
 
   // Save to localStorage whenever data changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.FASTING, JSON.stringify(logs));
+    set(STORAGE_KEYS.fasting, logs);
   }, [logs]);
 
   const addLog = (log: Omit<FastingLog, 'id' | 'loggedAt'>) => {
