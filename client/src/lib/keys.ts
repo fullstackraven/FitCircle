@@ -25,6 +25,11 @@ export const STORAGE_KEYS = {
   legacy: {
     workoutLogs: 'WORKOUT_LOGS',
     workoutTracker: 'workout-tracker-logs',
+    workouts: 'fitcircle_workouts', // Common PWA format
+    hydration: 'fitcircle_hydration', // Common PWA format
+    fasting: 'fitcircle_fasting', // Common PWA format
+    meditation: 'fitcircle_meditation', // Common PWA format
+    journal: 'fitcircle_journal', // Common PWA format
     goalPrefix: 'fitcircle_goal_',
     hydrationLogs: 'HYDRATION_LOGS',
     fastingLogs: 'FASTING_LOGS',

@@ -54,17 +54,28 @@ export function migrateLegacyData(): void {
 
 function migrateWorkouts(): void {
   const legacyData = localStorage.getItem(K.legacy.workoutLogs) || 
-                   localStorage.getItem(K.legacy.workoutTracker);
+                   localStorage.getItem(K.legacy.workoutTracker) ||
+                   localStorage.getItem(K.legacy.workouts); // PWA format
   
   if (legacyData && !localStorage.getItem(K.workouts)) {
     try {
       const parsed = JSON.parse(legacyData);
-      // Transform legacy format to new schema
-      const migrated = {
-        workouts: Array.isArray(parsed) ? parsed : [],
-        lastUpdated: new Date().toISOString()
-      };
-      localStorage.setItem(K.workouts, JSON.stringify(migrated));
+      console.log('Migrating workout data:', parsed);
+      
+      // If it's already in the correct format, use as-is
+      if (parsed.workouts && parsed.dailyLogs) {
+        localStorage.setItem(K.workouts, legacyData);
+      } else {
+        // Transform legacy format to new schema
+        const migrated = {
+          workouts: Array.isArray(parsed) ? parsed : (parsed.workouts || {}),
+          dailyLogs: parsed.dailyLogs || {},
+          journalEntries: parsed.journalEntries || {},
+          lastDate: parsed.lastDate || new Date().toISOString().split('T')[0]
+        };
+        localStorage.setItem(K.workouts, JSON.stringify(migrated));
+      }
+      console.log('✅ Workouts migrated successfully');
     } catch (error) {
       if (import.meta.env.DEV) {
         console.warn('Failed to migrate workouts:', error);
@@ -74,13 +85,16 @@ function migrateWorkouts(): void {
 }
 
 function migrateHydration(): void {
-  const legacyData = localStorage.getItem(K.legacy.hydrationLogs);
+  const legacyData = localStorage.getItem(K.legacy.hydrationLogs) ||
+                    localStorage.getItem(K.legacy.hydration); // PWA format
   
   if (legacyData && !localStorage.getItem(K.hydration)) {
     try {
       const parsed = JSON.parse(legacyData);
+      console.log('Migrating hydration data:', parsed);
       // Keep existing complex hydration structure
       localStorage.setItem(K.hydration, legacyData);
+      console.log('✅ Hydration migrated successfully');
     } catch (error) {
       if (import.meta.env.DEV) {
         console.warn('Failed to migrate hydration:', error);
@@ -125,17 +139,26 @@ function migrateGoals(): void {
 }
 
 function migrateFasting(): void {
-  const legacyData = localStorage.getItem(K.legacy.fastingLogs);
+  const legacyData = localStorage.getItem(K.legacy.fastingLogs) ||
+                    localStorage.getItem(K.legacy.fasting); // PWA format
   
   if (legacyData && !localStorage.getItem(K.fasting)) {
     try {
       const parsed = JSON.parse(legacyData);
-      const migrated = {
-        logs: parsed || {},
-        defaultType: '16:8',
-        lastUpdated: new Date().toISOString()
-      };
-      localStorage.setItem(K.fasting, JSON.stringify(migrated));
+      console.log('Migrating fasting data:', parsed);
+      
+      // If it's already an array (PWA format), keep as-is
+      if (Array.isArray(parsed)) {
+        localStorage.setItem(K.fasting, legacyData);
+      } else {
+        const migrated = {
+          logs: parsed || {},
+          defaultType: '16:8',
+          lastUpdated: new Date().toISOString()
+        };
+        localStorage.setItem(K.fasting, JSON.stringify(migrated));
+      }
+      console.log('✅ Fasting migrated successfully');
     } catch (error) {
       if (import.meta.env.DEV) {
         console.warn('Failed to migrate fasting:', error);
@@ -189,10 +212,31 @@ function migrateMeasurements(): void {
 }
 
 function migrateMeditation(): void {
-  const legacyData = localStorage.getItem(K.legacy.meditationData);
+  const legacyData = localStorage.getItem(K.legacy.meditationData) ||
+                    localStorage.getItem(K.legacy.meditation); // PWA format
   
   if (legacyData && !localStorage.getItem(K.meditation)) {
-    localStorage.setItem(K.meditation, legacyData);
+    try {
+      const parsed = JSON.parse(legacyData);
+      console.log('Migrating meditation data:', parsed);
+      
+      // If it's already an array (PWA format), keep as-is
+      if (Array.isArray(parsed)) {
+        localStorage.setItem(K.meditation, legacyData);
+      } else {
+        const migrated = {
+          logs: parsed || {},
+          customTypes: [],
+          lastUpdated: new Date().toISOString()
+        };
+        localStorage.setItem(K.meditation, JSON.stringify(migrated));
+      }
+      console.log('✅ Meditation migrated successfully');
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.warn('Failed to migrate meditation:', error);
+      }
+    }
   }
 }
 

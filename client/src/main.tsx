@@ -7,6 +7,7 @@ import { Router } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { migrateLegacyData } from "./lib/migration";
+import { emergencyDataRecovery } from "./lib/emergency-recovery";
 
 // Completely disable browser swipe navigation
 let startX = 0;
@@ -156,6 +157,34 @@ if (urlParams.get('restore') === 'true' && urlParams.get('updated') === 'true') 
 
 // Run migration on app start
 migrateLegacyData();
+
+// EMERGENCY: Run data recovery to find PWA imported data
+console.log('🚨 Running emergency data recovery...');
+const recoveryReport = emergencyDataRecovery();
+if (recoveryReport.recovered.length > 0) {
+  console.log('✅ Successfully recovered data:', recoveryReport.recovered);
+  // Don't auto-refresh, let user manually refresh to avoid loops
+} else if (recoveryReport.found.length > 0) {
+  console.warn('⚠️ Found data but failed to recover:', recoveryReport.found);
+} else {
+  console.log('ℹ️ No additional data found to recover');
+}
+
+// Debug current workout state
+const currentWorkouts = localStorage.getItem('fitcircle:workouts');
+console.log('Current workout data exists:', !!currentWorkouts);
+if (currentWorkouts) {
+  try {
+    const parsed = JSON.parse(currentWorkouts);
+    console.log('Workout data structure:', {
+      workouts: Object.keys(parsed.workouts || {}).length,
+      dailyLogs: Object.keys(parsed.dailyLogs || {}).length,
+      journalEntries: Object.keys(parsed.journalEntries || {}).length
+    });
+  } catch (e) {
+    console.error('Error parsing workout data:', e);
+  }
+}
 
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
