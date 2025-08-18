@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, BarChart3, BookOpen, Zap, Pill, Edit2, Save, X, Heart } from "lucide-react";
+import { ArrowLeft, BarChart3, BookOpen, Zap, Pill, Edit2, Save, X, Heart, Timer } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { useSupplements } from "@/hooks/use-supplements";
 import { useEnergyLevel } from "@/hooks/use-energy-level";
 import { useRecovery } from "@/hooks/use-recovery";
+import { useWorkoutDuration } from "@/hooks/use-workout-duration";
 import { format } from "date-fns";
 
 const colorClassMap: { [key: string]: string } = {
@@ -37,6 +38,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
   const { getSupplementLogsForDate, setSupplementLog } = useSupplements();
   const { getEnergyLevel, setEnergyLevelForDate } = useEnergyLevel();
   const { isRecoveryDay, toggleRecoveryDay } = useRecovery();
+  const { getWorkoutDurationForDate, formatDuration } = useWorkoutDuration();
 
   const [workouts, setWorkouts] = useState<any[]>([]);
   const [journalText, setJournalText] = useState("");
@@ -214,6 +216,22 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                 </div>
               ))}
             </div>
+            
+            {/* Workout Duration */}
+            {(() => {
+              const workoutDuration = getWorkoutDurationForDate(selectedDate);
+              return workoutDuration > 0 ? (
+                <div className="mt-4 p-3 bg-slate-700 rounded-xl">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Timer className="w-4 h-4 text-green-400" />
+                      <span className="text-sm font-medium text-white">Workout Duration</span>
+                    </div>
+                    <span className="text-sm font-bold text-green-400">{formatDuration(workoutDuration)}</span>
+                  </div>
+                </div>
+              ) : null;
+            })()}
           </div>
         )}
 
