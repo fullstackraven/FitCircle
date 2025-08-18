@@ -295,14 +295,14 @@ export default function Home() {
           {!isWorkoutActive ? (
             <button
               onClick={startWorkout}
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-4 px-8 rounded-xl flex items-center space-x-3 shadow-lg transition-all duration-200 transform hover:scale-105"
+              className="text-white font-bold py-4 px-8 rounded-xl flex items-center space-x-3 shadow-lg transition-all duration-200 transform hover:scale-105"
               style={{
                 background: 'linear-gradient(135deg, #00ff41 0%, #00cc33 100%)',
                 boxShadow: '0 0 20px rgba(0, 255, 65, 0.3)'
               }}
             >
-              <Play className="w-6 h-6" />
-              <span className="text-lg">Start Workout</span>
+              <Play className="w-6 h-6 text-white" />
+              <span className="text-lg text-white">Start Workout</span>
             </button>
           ) : (
             <div className="bg-slate-800 rounded-xl px-8 py-4 flex items-center space-x-4">
