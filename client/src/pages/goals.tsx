@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Droplet, Brain, Clock, Scale, Percent, Target, Edit3, Check, X, Activity } from 'lucide-react';
+import { ChevronLeft, Droplet, Brain, Clock, Scale, Percent, Target, Edit3, Check, X, Activity, Heart } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useHydration } from '@/hooks/use-hydration';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useCardio } from '@/hooks/use-cardio';
+import { useRecovery } from '@/hooks/use-recovery';
 import { GoalCircle } from '@/components/GoalCircle';
 import { 
   calculateMeditation7DayAverage, 
@@ -229,6 +230,11 @@ export default function GoalsPageFinal() {
   const { getLast7DaysAverage, getWeeklyProgress, updateGoal, data: cardioData } = useCardio();
   const cardio7DayAverage = getLast7DaysAverage();
 
+  // Get recovery data
+  const { getRecoveryStats } = useRecovery();
+  const recoveryStats = getRecoveryStats();
+  const recoveryPercentage = recoveryStats.recoveryPercentage;
+
   // Note: Cardio goal now updates directly through cardio hook, no separate form state needed
 
   // Use shared meditation calculation for progress
@@ -259,6 +265,7 @@ export default function GoalsPageFinal() {
     weightedScore += (bodyFatProgress * wellnessWeights.targetBodyFat) / totalWeight;
     weightedScore += (workoutCurrent * wellnessWeights.workoutConsistency) / totalWeight;
     weightedScore += (cardio7DayAverage.progressToGoal * wellnessWeights.cardio) / totalWeight;
+    weightedScore += (recoveryPercentage * wellnessWeights.recovery) / totalWeight;
 
     return Math.round(weightedScore);
   };
@@ -278,7 +285,8 @@ export default function GoalsPageFinal() {
     weightLbs: 10,
     targetBodyFat: 10,
     workoutConsistency: 30,
-    cardio: 10
+    cardio: 10,
+    recovery: 0 // Start with 0% weight as requested
   });
 
   // Goal ring colors state
@@ -289,7 +297,8 @@ export default function GoalsPageFinal() {
     weightLbs: 'rgb(34, 197, 94)',
     targetBodyFat: 'rgb(239, 68, 68)',
     workoutConsistency: 'rgb(147, 51, 234)',
-    cardio: 'rgb(59, 130, 246)'
+    cardio: 'rgb(59, 130, 246)',
+    recovery: 'rgb(251, 146, 60)' // Orange color for recovery
   });
 
   // Available color options
@@ -316,7 +325,7 @@ export default function GoalsPageFinal() {
     if (savedWeights) {
       try {
         const parsed = JSON.parse(savedWeights);
-        // Ensure cardio is included if missing from saved data
+        // Ensure cardio and recovery are included if missing from saved data
         const updatedWeights = {
           hydrationOz: 20,
           meditationMinutes: 10,
@@ -325,6 +334,7 @@ export default function GoalsPageFinal() {
           targetBodyFat: 10,
           workoutConsistency: 30,
           cardio: 10,
+          recovery: 0, // Default recovery weight to 0%
           ...parsed
         };
         setWellnessWeights(updatedWeights);
@@ -523,6 +533,17 @@ export default function GoalsPageFinal() {
       currentValue: Math.round(cardio7DayAverage.average * 10) / 10,
       goalValue: cardioData.goal.target,
       progress: cardio7DayAverage.progressToGoal || 0
+    },
+    {
+      key: 'recovery',
+      title: 'Recovery Rate',
+      unit: '%',
+      icon: Heart,
+      color: goalColors.recovery,
+      currentValue: Math.round(recoveryPercentage * 10) / 10,
+      goalValue: 100, // Recovery is percentage-based, so goal is 100%
+      progress: recoveryPercentage,
+      isReadOnly: true // Recovery is calculated automatically, no manual goal setting
     }
   ];
 
@@ -632,21 +653,23 @@ export default function GoalsPageFinal() {
                           style={{ backgroundColor: item.color }}
                         />
                       </button>
-                      <button
-                        onClick={() => {
-                          if (item.hasSpecialEdit && item.key === 'weightLbs') {
-                            setIsWeightGoalTypeDialogOpen(true);
-                          } else if (item.key === 'cardio') {
-                            setIsCardioGoalDialogOpen(true);
-                          } else {
-                            handleEdit(item.key, item.goalValue);
-                          }
-                        }}
-                        className="p-1 text-slate-400 hover:text-white"
-                        title="Edit goal"
-                      >
-                        <Edit3 className="w-3 h-3" />
-                      </button>
+                      {!item.isReadOnly && (
+                        <button
+                          onClick={() => {
+                            if (item.hasSpecialEdit && item.key === 'weightLbs') {
+                              setIsWeightGoalTypeDialogOpen(true);
+                            } else if (item.key === 'cardio') {
+                              setIsCardioGoalDialogOpen(true);
+                            } else {
+                              handleEdit(item.key, item.goalValue);
+                            }
+                          }}
+                          className="p-1 text-slate-400 hover:text-white"
+                          title="Edit goal"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                        </button>
+                      )}
                     </>
                   )}
                 </div>
@@ -667,6 +690,7 @@ export default function GoalsPageFinal() {
             <div className="space-y-4 mb-6">
               {Object.entries(tempWeights).map(([key, value]) => {
                 const displayName = key === 'cardio' ? 'Cardio' : 
+                  key === 'recovery' ? 'Recovery' :
                   key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
                 return (
                 <div key={key} className="flex items-center justify-between">
