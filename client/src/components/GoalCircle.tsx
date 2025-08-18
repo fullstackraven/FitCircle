@@ -16,7 +16,7 @@ export function GoalCircle({
   percentage, 
   color, 
   size = 140, 
-  strokeWidth = 8, 
+  strokeWidth = 12, 
   currentValue, 
   goalValue, 
   unit, 

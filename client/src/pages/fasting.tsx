@@ -226,70 +226,27 @@ export default function FastingPage() {
         </div>
 
         {/* Today's Fasting Progress Circle */}
-        <div className="bg-slate-800 rounded-xl p-8 mb-8">
-          <h2 className="text-lg font-semibold text-center mb-6">Today's Fasting Progress</h2>
-          
-          <div className="relative w-64 h-64 mx-auto mb-4">
-            {(() => {
-              const todayHours = getTodayFastingHours();
-              const maxHours = goals.maxFastingHours || 24;
-              const progressPercentage = getProgressPercentage(todayHours);
-              const ringColor = getHeatRingColor(todayHours);
-              const radius = 110;
-              const circumference = 2 * Math.PI * radius;
-              const strokeDasharray = circumference;
-              const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
-              
-              return (
-                <>
-                  {/* Background circle */}
-                  <svg width="256" height="256" className="absolute inset-0">
-                    <circle
-                      cx="128"
-                      cy="128"
-                      r={radius}
-                      fill="none"
-                      stroke="rgba(148, 163, 184, 0.3)"
-                      strokeWidth="16"
-                    />
-                    <circle
-                      cx="128"
-                      cy="128"
-                      r={radius}
-                      fill="none"
-                      stroke={ringColor}
-                      strokeWidth="16"
-                      strokeLinecap="round"
-                      strokeDasharray={strokeDasharray}
-                      strokeDashoffset={strokeDashoffset}
-                      className="transition-all duration-500 ease-out"
-                      style={{ transformOrigin: '50% 50%', transform: 'rotate(-90deg)' }}
-                    />
-                  </svg>
-                  
-                  {/* Center content */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="text-4xl font-bold text-white">
-                      {todayHours}<span className="text-lg text-slate-400">h</span>
-                    </div>
-                    <div className="text-sm text-slate-400">of {maxHours}h max</div>
-                    <div className="text-xs text-slate-500 mt-1">
-                      {Math.round(progressPercentage)}% complete
-                    </div>
-                  </div>
-                </>
-              );
-            })()}
-          </div>
-          
-          <div className="text-center text-sm text-slate-400">
-            Heat level: <span style={{ color: getHeatRingColor(getTodayFastingHours()) }}>
-              {getTodayFastingHours() <= 1 ? 'Cool' : 
-               getTodayFastingHours() <= 6 ? 'Warm' :
-               getTodayFastingHours() <= 12 ? 'Hot' :
-               getTodayFastingHours() <= 18 ? 'Very Hot' : 'Extreme'}
-            </span>
-          </div>
+        <div className="flex justify-center mb-4">
+          <GoalCircle
+            percentage={getProgressPercentage(getTodayFastingHours())}
+            color={getHeatRingColor(getTodayFastingHours())}
+            size={240}
+            strokeWidth={16}
+            currentValue={getTodayFastingHours()}
+            goalValue={goals.maxFastingHours || 24}
+            unit="h"
+            title="Today's Fasting"
+            description={`Max: ${goals.maxFastingHours || 24}h`}
+          />
+        </div>
+        
+        <div className="text-center text-sm text-slate-400 mb-8">
+          Heat level: <span style={{ color: getHeatRingColor(getTodayFastingHours()) }}>
+            {getTodayFastingHours() <= 1 ? 'Cool' : 
+             getTodayFastingHours() <= 6 ? 'Warm' :
+             getTodayFastingHours() <= 12 ? 'Hot' :
+             getTodayFastingHours() <= 18 ? 'Very Hot' : 'Extreme'}
+          </span>
         </div>
 
         {/* Add Fasting Log Button */}

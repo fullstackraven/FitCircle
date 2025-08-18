@@ -276,55 +276,25 @@ export default function MeditationPage() {
         )}
 
         {/* Today's Meditation Progress Circle */}
-        <div className="bg-slate-800 rounded-xl p-8 mb-8">
-          <h2 className="text-lg font-semibold text-center mb-6">Today's Meditation Progress</h2>
-          
-          <div className="flex flex-col items-center space-y-6">
-            <div className="relative">
-              <svg className="transform -rotate-90" width="280" height="280">
-                {/* Background circle */}
-                <circle
-                  cx="140"
-                  cy="140"
-                  r="120"
-                  stroke="rgb(71, 85, 105)"
-                  strokeWidth="16"
-                  fill="none"
-                />
-                {/* Progress circle */}
-                <circle
-                  cx="140"
-                  cy="140"
-                  r="120"
-                  stroke="rgb(168, 85, 247)" 
-                  strokeWidth="16"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeDasharray={2 * Math.PI * 120}
-                  strokeDashoffset={2 * Math.PI * 120 - (getProgressPercentage() / 100) * 2 * Math.PI * 120}
-                  className="transition-all duration-500 ease-out"
-                />
-              </svg>
-              
-              {/* Center content */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="text-4xl font-bold text-white">
-                  {getTodayMinutes()}<span className="text-lg text-slate-400">min</span>
-                </div>
-                <div className="text-sm text-slate-400">of {getDailyGoal()}min</div>
-                <div className="text-xs text-slate-500 mt-1">
-                  {Math.round(getProgressPercentage())}% complete
-                </div>
-              </div>
-            </div>
-
-            {isGoalReached() && (
-              <div className="text-purple-400 font-medium text-center">
-                🧘‍♂️ Daily goal achieved!
-              </div>
-            )}
-          </div>
+        <div className="flex justify-center mb-8">
+          <GoalCircle
+            percentage={getProgressPercentage()}
+            color="rgb(168, 85, 247)"
+            size={240}
+            strokeWidth={16}
+            currentValue={getTodayMinutes()}
+            goalValue={getDailyGoal()}
+            unit="min"
+            title="Today's Meditation"
+            description={`Goal: ${getDailyGoal()}min/day`}
+          />
         </div>
+
+        {isGoalReached() && (
+          <div className="text-purple-400 font-medium text-center -mt-4 mb-8">
+            🧘‍♂️ Daily goal achieved!
+          </div>
+        )}
 
         {/* Meditation Timer */}
         <div className="flex flex-col items-center mb-8">
