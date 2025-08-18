@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity, Timer, Play, Pause, Square, StopCircle } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity, Timer, Play, Pause, Square, StopCircle, RotateCcw } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
@@ -46,7 +46,7 @@ export default function Home() {
   } = useWorkouts();
 
   const { timerState, startTimer, startTimerFromSeconds, pauseTimer, resumeTimer, resetTimer, formatTime, getProgress } = useTimer();
-  const { isActive: isWorkoutActive, startWorkout, stopWorkout, getCurrentSessionDuration } = useWorkoutDuration();
+  const { isActive: isWorkoutActive, startWorkout, stopWorkout, resetWorkout, getCurrentSessionDuration } = useWorkoutDuration();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
@@ -310,13 +310,23 @@ export default function Home() {
                 <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-white font-mono text-xl">{getCurrentSessionDuration()}</span>
               </div>
-              <button
-                onClick={stopWorkout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-              >
-                <StopCircle className="w-4 h-4" />
-                <span>Stop</span>
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={stopWorkout}
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                >
+                  <StopCircle className="w-4 h-4" />
+                  <span>Stop</span>
+                </button>
+                <button
+                  onClick={resetWorkout}
+                  className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                  title="Reset without saving"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span>Reset</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

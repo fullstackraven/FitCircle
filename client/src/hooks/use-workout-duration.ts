@@ -99,6 +99,19 @@ export const useWorkoutDuration = () => {
     setCurrentTime(0);
   }, [data, saveData]);
 
+  const resetWorkout = useCallback(() => {
+    if (!data.currentSession) return;
+
+    const newData = {
+      ...data,
+      currentSession: undefined
+    };
+
+    saveData(newData);
+    setIsActive(false);
+    setCurrentTime(0);
+  }, [data, saveData]);
+
   const getWorkoutDurationForDate = useCallback((dateString: string): number => {
     const sessions = data.completedSessions.filter(session => session.date === dateString);
     return sessions.reduce((total, session) => total + (session.duration || 0), 0);
@@ -129,6 +142,7 @@ export const useWorkoutDuration = () => {
     currentTime,
     startWorkout,
     stopWorkout,
+    resetWorkout,
     getWorkoutDurationForDate,
     formatDuration,
     getTodaysWorkoutDuration,
