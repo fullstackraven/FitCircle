@@ -279,14 +279,14 @@ export default function Home() {
               <>
                 <button
                   onClick={startWorkout}
-                  className="text-black font-bold py-4 px-8 rounded-xl flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 transform hover:scale-105 w-full max-w-sm"
+                  className="text-black font-bold py-4 px-6 rounded-xl flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 transform hover:scale-105 w-full max-w-xs"
                   style={{
                     background: 'linear-gradient(135deg, #00ff41 0%, #00cc33 100%)',
                     boxShadow: '0 0 20px rgba(0, 255, 65, 0.3)'
                   }}
                 >
-                  <Play className="w-6 h-6 text-black" />
-                  <span className="text-lg text-black">Start Workout Session</span>
+                  <Play className="w-5 h-5 text-black" />
+                  <span className="text-base text-black whitespace-nowrap">Start Workout Session</span>
                 </button>
                 <p className="text-sm text-slate-400 text-center">Start a Workout Session to track the duration of your workouts</p>
               </>
