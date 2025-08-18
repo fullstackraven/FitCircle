@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
+import { getTodayString } from '@/lib/date-utils';
 
 export interface MeditationLog {
   id: string;
@@ -38,10 +39,45 @@ export function useMeditation() {
     setLogs(prev => prev.filter(log => log.id !== id));
   };
 
+  // Get today's total meditation minutes
+  const getTodayMinutes = (): number => {
+    const today = getTodayString();
+    const todayLogs = logs.filter(log => {
+      // Parse log date to match today's format
+      const logDate = new Date(log.date).toLocaleDateString('en-CA'); // YYYY-MM-DD format
+      return logDate === today;
+    });
+    
+    return todayLogs.reduce((total, log) => total + log.duration, 0);
+  };
+
+  // Get daily goal from localStorage (shared with Goals page)
+  const getDailyGoal = (): number => {
+    const goalFromGoalsPage = localStorage.getItem('fitcircle_goal_meditation');
+    return goalFromGoalsPage ? parseFloat(goalFromGoalsPage) : 20; // Default 20 minutes
+  };
+
+  // Get progress percentage
+  const getProgressPercentage = (): number => {
+    const todayMinutes = getTodayMinutes();
+    const dailyGoal = getDailyGoal();
+    if (dailyGoal === 0) return 0;
+    return Math.min((todayMinutes / dailyGoal) * 100, 100);
+  };
+
+  // Check if goal is reached
+  const isGoalReached = (): boolean => {
+    return getTodayMinutes() >= getDailyGoal();
+  };
+
   return {
     logs,
     addLog,
     updateLog,
-    deleteLog
+    deleteLog,
+    getTodayMinutes,
+    getDailyGoal,
+    getProgressPercentage,
+    isGoalReached
   };
 }
