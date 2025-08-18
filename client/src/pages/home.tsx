@@ -271,6 +271,57 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Start Workout Session Section */}
+      <section className="mb-8">
+        <div className="bg-slate-800 rounded-xl p-6">
+          <div className="flex flex-col items-center space-y-4">
+            {!isWorkoutActive ? (
+              <>
+                <button
+                  onClick={startWorkout}
+                  className="text-black font-bold py-4 px-8 rounded-xl flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 transform hover:scale-105 w-full max-w-sm"
+                  style={{
+                    background: 'linear-gradient(135deg, #00ff41 0%, #00cc33 100%)',
+                    boxShadow: '0 0 20px rgba(0, 255, 65, 0.3)'
+                  }}
+                >
+                  <Play className="w-6 h-6 text-black" />
+                  <span className="text-lg text-black">Start Workout Session</span>
+                </button>
+                <p className="text-sm text-slate-400 text-center">Start a Workout Session to track the duration of your workouts</p>
+              </>
+            ) : (
+              <div className="w-full flex flex-col items-center space-y-4">
+                <div className="bg-slate-700 rounded-xl px-8 py-4 flex items-center space-x-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-white font-mono text-xl">{getCurrentSessionDuration()}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={stopWorkout}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                    >
+                      <StopCircle className="w-4 h-4" />
+                      <span>Stop</span>
+                    </button>
+                    <button
+                      onClick={resetWorkout}
+                      className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                      title="Reset without saving"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      <span>Reset</span>
+                    </button>
+                  </div>
+                </div>
+                <p className="text-sm text-slate-400 text-center">Workout session in progress</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* Today's Totals Section */}
       {!isTodaysTotalsHidden && todaysTotals.some(w => w.count > 0) && (
         <section className="mb-8">
@@ -289,48 +340,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* Start Workout Button */}
-      <section className="mb-8">
-        <div className="flex justify-center">
-          {!isWorkoutActive ? (
-            <button
-              onClick={startWorkout}
-              className="text-black font-bold py-4 px-8 rounded-xl flex items-center space-x-3 shadow-lg transition-all duration-200 transform hover:scale-105"
-              style={{
-                background: 'linear-gradient(135deg, #00ff41 0%, #00cc33 100%)',
-                boxShadow: '0 0 20px rgba(0, 255, 65, 0.3)'
-              }}
-            >
-              <Play className="w-6 h-6 text-black" />
-              <span className="text-lg text-black">Start Workout Session</span>
-            </button>
-          ) : (
-            <div className="bg-slate-800 rounded-xl px-8 py-4 flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-white font-mono text-xl">{getCurrentSessionDuration()}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={stopWorkout}
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-                >
-                  <StopCircle className="w-4 h-4" />
-                  <span>Stop</span>
-                </button>
-                <button
-                  onClick={resetWorkout}
-                  className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-                  title="Reset without saving"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  <span>Reset</span>
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
+
 
       {/* Recent Activity Section */}
       {!isRecentActivityHidden && recentActivity.length > 0 && (
