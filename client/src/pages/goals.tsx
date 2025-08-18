@@ -579,7 +579,8 @@ export default function GoalsPageFinal() {
             <GoalCircle
               percentage={calculateWellnessScore()}
               color="rgb(34, 197, 94)"
-              size={140}
+              size={160}
+              strokeWidth={10}
               currentValue={calculateWellnessScore()}
               goalValue={100}
               unit=""
@@ -602,7 +603,8 @@ export default function GoalsPageFinal() {
                   <GoalCircle
                     percentage={Math.min(item.progress || 0, 100)}
                     color={item.color}
-                    size={100}
+                    size={120}
+                    strokeWidth={10}
                     currentValue={item.currentValue}
                     goalValue={item.goalValue}
                     unit={item.unit}
@@ -825,7 +827,8 @@ export default function GoalsPageFinal() {
                   <GoalCircle
                     percentage={progressPercentage}
                     color={goalColors.cardio}
-                    size={120}
+                    size={140}
+                    strokeWidth={10}
                     currentValue={Math.round(currentWeekTotal)}
                     goalValue={cardioData.goal.target}
                     unit={cardioData.goal.type === 'duration' ? 'min' : 'mi'}
