@@ -46,7 +46,16 @@ export default function Home() {
   } = useWorkouts();
 
   const { timerState, startTimer, startTimerFromSeconds, pauseTimer, resumeTimer, resetTimer, formatTime, getProgress } = useTimer();
-  const { isActive: isWorkoutActive, startWorkout, stopWorkout, resetWorkout, getCurrentSessionDuration } = useWorkoutDuration();
+  const { 
+    isActive: isWorkoutActive, 
+    isPaused: isWorkoutPaused, 
+    startWorkout, 
+    stopWorkout, 
+    resetWorkout, 
+    pauseWorkout, 
+    resumeWorkout, 
+    getCurrentSessionDuration 
+  } = useWorkoutDuration();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
@@ -294,16 +303,23 @@ export default function Home() {
               <div className="w-full flex flex-col items-center space-y-4">
                 <div className="bg-slate-700 rounded-xl py-4 px-6 flex items-center justify-between w-full max-w-xs" style={{ minHeight: '56px' }}>
                   <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                    <div className={`w-3 h-3 rounded-full ${isWorkoutPaused ? 'bg-yellow-400' : 'bg-green-400 animate-pulse'}`}></div>
                     <span className="text-white font-mono text-xl">{getCurrentSessionDuration()}</span>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-1">
                     <button
                       onClick={stopWorkout}
                       className="w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
                       title="Stop workout"
                     >
                       <StopCircle className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={isWorkoutPaused ? resumeWorkout : pauseWorkout}
+                      className="w-8 h-8 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-colors"
+                      title={isWorkoutPaused ? "Resume workout" : "Pause workout"}
+                    >
+                      {isWorkoutPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
                     </button>
                     <button
                       onClick={resetWorkout}

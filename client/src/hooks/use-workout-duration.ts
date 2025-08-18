@@ -12,6 +12,8 @@ interface WorkoutSession {
 interface WorkoutDurationData {
   currentSession?: WorkoutSession;
   completedSessions: WorkoutSession[];
+  isPaused?: boolean;
+  pausedTime?: number; // total paused time in seconds
 }
 
 const defaultWorkoutDurationData: WorkoutDurationData = {
@@ -27,30 +29,35 @@ export const useWorkoutDuration = () => {
   });
 
   const [isActive, setIsActive] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [pauseStartTime, setPauseStartTime] = useState<number | null>(null);
 
   // Load active session on mount
   useEffect(() => {
     if (data.currentSession && !data.currentSession.endTime) {
       setIsActive(true);
-      const elapsed = Math.floor((Date.now() - data.currentSession.startTime) / 1000);
+      setIsPaused(data.isPaused || false);
+      const pausedTime = data.pausedTime || 0;
+      const elapsed = Math.floor((Date.now() - data.currentSession.startTime) / 1000) - pausedTime;
       setCurrentTime(elapsed);
     }
   }, []);
 
-  // Update timer when active
+  // Update timer when active and not paused
   useEffect(() => {
-    if (!isActive || !data.currentSession) return;
+    if (!isActive || !data.currentSession || isPaused) return;
 
     const interval = setInterval(() => {
       if (data.currentSession) {
-        const elapsed = Math.floor((Date.now() - data.currentSession.startTime) / 1000);
+        const pausedTime = data.pausedTime || 0;
+        const elapsed = Math.floor((Date.now() - data.currentSession.startTime) / 1000) - pausedTime;
         setCurrentTime(elapsed);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isActive, data.currentSession]);
+  }, [isActive, isPaused, data.currentSession, data.pausedTime]);
 
   const saveData = useCallback((newData: WorkoutDurationData) => {
     setData(newData);
@@ -80,7 +87,8 @@ export const useWorkoutDuration = () => {
     if (!data.currentSession) return;
 
     const now = Date.now();
-    const duration = Math.floor((now - data.currentSession.startTime) / 1000);
+    const pausedTime = data.pausedTime || 0;
+    const duration = Math.floor((now - data.currentSession.startTime) / 1000) - pausedTime;
     
     const completedSession: WorkoutSession = {
       ...data.currentSession,
@@ -91,12 +99,16 @@ export const useWorkoutDuration = () => {
     const newData = {
       ...data,
       currentSession: undefined,
-      completedSessions: [...data.completedSessions, completedSession]
+      completedSessions: [...data.completedSessions, completedSession],
+      isPaused: false,
+      pausedTime: 0
     };
 
     saveData(newData);
     setIsActive(false);
+    setIsPaused(false);
     setCurrentTime(0);
+    setPauseStartTime(null);
   }, [data, saveData]);
 
   const resetWorkout = useCallback(() => {
@@ -104,13 +116,50 @@ export const useWorkoutDuration = () => {
 
     const newData = {
       ...data,
-      currentSession: undefined
+      currentSession: undefined,
+      isPaused: false,
+      pausedTime: 0
     };
 
     saveData(newData);
     setIsActive(false);
+    setIsPaused(false);
     setCurrentTime(0);
+    setPauseStartTime(null);
   }, [data, saveData]);
+
+  const pauseWorkout = useCallback(() => {
+    if (!data.currentSession || isPaused) return;
+
+    const now = Date.now();
+    setPauseStartTime(now);
+    setIsPaused(true);
+
+    const newData = {
+      ...data,
+      isPaused: true
+    };
+
+    saveData(newData);
+  }, [data, isPaused, saveData]);
+
+  const resumeWorkout = useCallback(() => {
+    if (!data.currentSession || !isPaused || !pauseStartTime) return;
+
+    const now = Date.now();
+    const additionalPausedTime = Math.floor((now - pauseStartTime) / 1000);
+    const totalPausedTime = (data.pausedTime || 0) + additionalPausedTime;
+
+    const newData = {
+      ...data,
+      isPaused: false,
+      pausedTime: totalPausedTime
+    };
+
+    saveData(newData);
+    setIsPaused(false);
+    setPauseStartTime(null);
+  }, [data, isPaused, pauseStartTime, saveData]);
 
   const getWorkoutDurationForDate = useCallback((dateString: string): number => {
     const sessions = data.completedSessions.filter(session => session.date === dateString);
@@ -139,10 +188,13 @@ export const useWorkoutDuration = () => {
 
   return {
     isActive,
+    isPaused,
     currentTime,
     startWorkout,
     stopWorkout,
     resetWorkout,
+    pauseWorkout,
+    resumeWorkout,
     getWorkoutDurationForDate,
     formatDuration,
     getTodaysWorkoutDuration,
