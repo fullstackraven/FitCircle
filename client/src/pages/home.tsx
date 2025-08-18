@@ -292,7 +292,7 @@ export default function Home() {
               </>
             ) : (
               <div className="w-full flex flex-col items-center space-y-4">
-                <div className="bg-slate-700 rounded-xl px-8 py-4 flex items-center space-x-4">
+                <div className="bg-slate-700 rounded-xl py-4 px-6 flex items-center justify-between w-full max-w-xs" style={{ minHeight: '56px' }}>
                   <div className="flex items-center space-x-3">
                     <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                     <span className="text-white font-mono text-xl">{getCurrentSessionDuration()}</span>
@@ -300,18 +300,17 @@ export default function Home() {
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={stopWorkout}
-                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                      className="w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
+                      title="Stop workout"
                     >
                       <StopCircle className="w-4 h-4" />
-                      <span>Stop</span>
                     </button>
                     <button
                       onClick={resetWorkout}
-                      className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                      className="w-8 h-8 bg-slate-600 hover:bg-slate-700 text-white rounded-full flex items-center justify-center transition-colors"
                       title="Reset without saving"
                     >
                       <RotateCcw className="w-4 h-4" />
-                      <span>Reset</span>
                     </button>
                   </div>
                 </div>
