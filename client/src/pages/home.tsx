@@ -306,27 +306,27 @@ export default function Home() {
                     <div className={`w-3 h-3 rounded-full ${isWorkoutPaused ? 'bg-yellow-400' : 'bg-green-400 animate-pulse'}`}></div>
                     <span className="text-white font-mono text-xl">{getCurrentSessionDuration()}</span>
                   </div>
-                  <div className="flex items-center space-x-1">
+                  <div className="flex items-center space-x-3">
                     <button
                       onClick={stopWorkout}
-                      className="w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
                       title="Stop workout"
                     >
-                      <StopCircle className="w-4 h-4" />
+                      <StopCircle className="w-5 h-5" />
                     </button>
                     <button
                       onClick={isWorkoutPaused ? resumeWorkout : pauseWorkout}
-                      className="w-8 h-8 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-colors"
                       title={isWorkoutPaused ? "Resume workout" : "Pause workout"}
                     >
-                      {isWorkoutPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                      {isWorkoutPaused ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
                     </button>
                     <button
                       onClick={resetWorkout}
-                      className="w-8 h-8 bg-slate-600 hover:bg-slate-700 text-white rounded-full flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-slate-600 hover:bg-slate-700 text-white rounded-full flex items-center justify-center transition-colors"
                       title="Reset without saving"
                     >
-                      <RotateCcw className="w-4 h-4" />
+                      <RotateCcw className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
