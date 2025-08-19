@@ -31,7 +31,11 @@ export function useControls() {
   const updateSetting = (key: keyof ControlSettings, value: boolean) => {
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
-    localStorage.setItem(CONTROLS_STORAGE_KEY, JSON.stringify(newSettings));
+    try {
+      localStorage.setItem(CONTROLS_STORAGE_KEY, JSON.stringify(newSettings));
+    } catch (error) {
+      console.error('Failed to save control settings:', error);
+    }
   };
 
   return {

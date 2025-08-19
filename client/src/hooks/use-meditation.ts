@@ -17,7 +17,11 @@ export function useMeditation() {
 
   // Save to localStorage whenever data changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.MEDITATION, JSON.stringify(logs));
+    try {
+      localStorage.setItem(STORAGE_KEYS.MEDITATION, JSON.stringify(logs));
+    } catch (error) {
+      console.error('Failed to save meditation data:', error);
+    }
   }, [logs]);
 
   const addLog = (log: Omit<MeditationLog, 'id' | 'completedAt'>) => {

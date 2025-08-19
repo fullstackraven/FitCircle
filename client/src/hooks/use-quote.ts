@@ -237,8 +237,12 @@ export function useQuote() {
     }
 
     // Save the quote for today
-    localStorage.setItem(QUOTE_STORAGE_KEY, JSON.stringify(todaysQuote));
-    localStorage.setItem(QUOTE_DATE_KEY, today);
+    try {
+      localStorage.setItem(QUOTE_STORAGE_KEY, JSON.stringify(todaysQuote));
+      localStorage.setItem(QUOTE_DATE_KEY, today);
+    } catch (error) {
+      console.error('Failed to save quote to localStorage:', error);
+    }
     
     setQuote(todaysQuote);
     setLoading(false);

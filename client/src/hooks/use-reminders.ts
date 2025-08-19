@@ -33,9 +33,13 @@ export function useReminders() {
 
   // Save to localStorage whenever reminders change
   useEffect(() => {
-    localStorage.setItem('fitcircle_reminders', JSON.stringify(reminders));
-    // Clean up old notes data
-    localStorage.removeItem('fitcircle_notes');
+    try {
+      localStorage.setItem('fitcircle_reminders', JSON.stringify(reminders));
+      // Clean up old notes data
+      localStorage.removeItem('fitcircle_notes');
+    } catch (error) {
+      console.error('Failed to save reminders:', error);
+    }
   }, [reminders]);
 
   const addReminder = (text: string, insertAfterIndex?: number) => {

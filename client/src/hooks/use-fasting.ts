@@ -18,7 +18,11 @@ export function useFasting() {
 
   // Save to localStorage whenever data changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.FASTING, JSON.stringify(logs));
+    try {
+      localStorage.setItem(STORAGE_KEYS.FASTING, JSON.stringify(logs));
+    } catch (error) {
+      console.error('Failed to save fasting data:', error);
+    }
   }, [logs]);
 
   const addLog = (log: Omit<FastingLog, 'id' | 'loggedAt'>) => {

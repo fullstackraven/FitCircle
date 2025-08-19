@@ -63,7 +63,11 @@ export function useGoals() {
   const updateGoal = (goalType: keyof Goals, value: number) => {
     const updatedGoals = { ...goals, [goalType]: value };
     setGoals(updatedGoals);
-    localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(updatedGoals));
+    try {
+      localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(updatedGoals));
+    } catch (error) {
+      console.error('Failed to save goals data:', error);
+    }
     
     // Keep backward compatibility with old storage format
     const keyMap: { [K in keyof Goals]?: string } = {

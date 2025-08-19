@@ -48,7 +48,11 @@ export function useMeasurements() {
 
   // Save to localStorage whenever data changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.MEASUREMENTS, JSON.stringify(data));
+    try {
+      localStorage.setItem(STORAGE_KEYS.MEASUREMENTS, JSON.stringify(data));
+    } catch (error) {
+      console.error('Failed to save measurements data:', error);
+    }
   }, [data]);
 
   const addMeasurement = (type: keyof MeasurementData, value: number, date?: string) => {

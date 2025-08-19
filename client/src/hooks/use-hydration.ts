@@ -56,7 +56,11 @@ export function useHydration() {
 
   // Save to localStorage whenever data changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.HYDRATION, JSON.stringify(data));
+    try {
+      localStorage.setItem(STORAGE_KEYS.HYDRATION, JSON.stringify(data));
+    } catch (error) {
+      console.error('Failed to save hydration data:', error);
+    }
   }, [data]);
 
   // Reset daily data if date has changed

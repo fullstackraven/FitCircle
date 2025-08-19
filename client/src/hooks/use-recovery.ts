@@ -21,7 +21,11 @@ export const useRecovery = () => {
 
   const saveData = useCallback((newData: RecoveryData) => {
     setData(newData);
-    localStorage.setItem(RECOVERY_STORAGE_KEY, JSON.stringify(newData));
+    try {
+      localStorage.setItem(RECOVERY_STORAGE_KEY, JSON.stringify(newData));
+    } catch (error) {
+      console.error('Failed to save recovery data:', error);
+    }
   }, []);
 
   const addRecoveryDay = useCallback((date: string) => {

@@ -138,7 +138,11 @@ export function useWorkouts() {
     });
 
     // Save migrated data immediately
-    localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(migratedData));
+    try {
+      localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(migratedData));
+    } catch (error) {
+      console.error('Failed to save migrated workout data:', error);
+    }
     console.log('Migration complete - historical goals determined from completion patterns');
     return migratedData;
   }
@@ -151,7 +155,11 @@ export function useWorkouts() {
 
   // Save to localStorage whenever data changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(data));
+    try {
+      localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(data));
+    } catch (error) {
+      console.error('Failed to save workouts data:', error);
+    }
   }, [data]);
 
   // Reset daily data if date has changed
@@ -305,7 +313,7 @@ export function useWorkouts() {
         date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
       const totalReps = Object.values(dayLog || {}).reduce((sum, logEntry) => {
-        const count = getCountFromLogEntry(logEntry);
+        const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
         return sum + count;
       }, 0);
 
@@ -519,7 +527,16 @@ export function useWorkouts() {
 
     // Get recovery days from localStorage to include in consistency calculation
     const recoveryData = localStorage.getItem('fitcircle_recovery_data');
-    const recoveryDays = recoveryData ? JSON.parse(recoveryData).recoveryDays || [] : [];
+    let recoveryDays = [];
+    if (recoveryData) {
+      try {
+        const parsed = JSON.parse(recoveryData);
+        recoveryDays = parsed.recoveryDays || [];
+      } catch (error) {
+        console.warn('Failed to parse recovery data in getMonthlyStats:', error);
+        recoveryDays = [];
+      }
+    }
 
     // Count only completed days and reps in this specific month
     Object.entries(data.dailyLogs || {}).forEach(([dateStr, dayLog]) => {
@@ -631,7 +648,16 @@ export function useWorkouts() {
 
     // Get recovery days from localStorage to include in consistency calculation
     const recoveryData = localStorage.getItem('fitcircle_recovery_data');
-    const recoveryDays = recoveryData ? JSON.parse(recoveryData).recoveryDays || [] : [];
+    let recoveryDays = [];
+    if (recoveryData) {
+      try {
+        const parsed = JSON.parse(recoveryData);
+        recoveryDays = parsed.recoveryDays || [];
+      } catch (error) {
+        console.warn('Failed to parse recovery data in getTotalStats:', error);
+        recoveryDays = [];
+      }
+    }
 
     // Count all completed days and total reps across entire history
     Object.entries(data.dailyLogs).forEach(([dateStr, dayLog]) => {

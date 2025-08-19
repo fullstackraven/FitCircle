@@ -27,7 +27,11 @@ export function useSupplements() {
     };
     
     const updatedSupplements = [...supplements, newSupplement];
-    localStorage.setItem(STORAGE_KEYS.SUPPLEMENTS, JSON.stringify(updatedSupplements));
+    try {
+      localStorage.setItem(STORAGE_KEYS.SUPPLEMENTS, JSON.stringify(updatedSupplements));
+    } catch (error) {
+      console.error('Failed to save supplement:', error);
+    }
     return newSupplement;
   };
 
@@ -37,7 +41,11 @@ export function useSupplements() {
     const updatedSupplements = supplements.map(supplement => 
       supplement.id === id ? { ...supplement, ...updates } : supplement
     );
-    localStorage.setItem(STORAGE_KEYS.SUPPLEMENTS, JSON.stringify(updatedSupplements));
+    try {
+      localStorage.setItem(STORAGE_KEYS.SUPPLEMENTS, JSON.stringify(updatedSupplements));
+    } catch (error) {
+      console.error('Failed to save supplement update:', error);
+    }
     return updatedSupplements.find(s => s.id === id);
   };
 
@@ -45,7 +53,11 @@ export function useSupplements() {
   const deleteSupplement = (id: number) => {
     const supplements = getSupplements();
     const updatedSupplements = supplements.filter(supplement => supplement.id !== id);
-    localStorage.setItem(STORAGE_KEYS.SUPPLEMENTS, JSON.stringify(updatedSupplements));
+    try {
+      localStorage.setItem(STORAGE_KEYS.SUPPLEMENTS, JSON.stringify(updatedSupplements));
+    } catch (error) {
+      console.error('Failed to save supplement deletion:', error);
+    }
     
     // Also remove all logs for this supplement to clean up data
     const logs = getSupplementLogs();
@@ -61,21 +73,37 @@ export function useSupplements() {
       }
     });
     
-    localStorage.setItem('fitcircle_supplement_logs', JSON.stringify(updatedLogs));
+    try {
+      localStorage.setItem('fitcircle_supplement_logs', JSON.stringify(updatedLogs));
+    } catch (error) {
+      console.error('Failed to save supplement logs:', error);
+    }
     return true;
   };
 
   // Helper functions for supplement logs
   const getSupplementLogs = (): Record<string, Record<number, boolean>> => {
     const stored = localStorage.getItem('fitcircle_supplement_logs');
-    return stored ? JSON.parse(stored) : {};
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch (error) {
+        console.warn('Failed to parse supplement logs data:', error);
+        return {};
+      }
+    }
+    return {};
   };
 
   const setSupplementLog = (date: string, supplementId: number, taken: boolean) => {
     const logs = getSupplementLogs();
     if (!logs[date]) logs[date] = {};
     logs[date][supplementId] = taken;
-    localStorage.setItem('fitcircle_supplement_logs', JSON.stringify(logs));
+    try {
+      localStorage.setItem('fitcircle_supplement_logs', JSON.stringify(logs));
+    } catch (error) {
+      console.error('Failed to save supplement logs:', error);
+    }
   };
 
   const getSupplementLogsForDate = (date: string): Record<number, boolean> => {

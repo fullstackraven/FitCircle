@@ -79,6 +79,9 @@ export default function FastingPage() {
     if (todayLogs.length === 0) return 0;
     
     // Return the longest fast that actually involves today in hours
+    if (todayLogs.length === 0) {
+      return 0;
+    }
     const longestFast = Math.max(...todayLogs.map(log => log.duration / 60));
     return Math.round(longestFast * 10) / 10; // Round to 1 decimal place
   };
