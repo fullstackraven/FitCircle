@@ -219,7 +219,7 @@ export default function Home() {
                   className="text-black font-bold py-4 px-6 rounded-xl flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 transform hover:scale-105 w-full max-w-xs"
                   style={{
                     background: 'linear-gradient(135deg, #00ff41 0%, #00cc33 100%)',
-                    boxShadow: '0 0 20px rgba(0, 255, 65, 0.3)'
+                    boxShadow: '0 0 10px rgba(0, 255, 65, 0.2)'
                   }}
                 >
                   <Play className="w-5 h-5 text-black" />
@@ -269,13 +269,13 @@ export default function Home() {
       {todaysWorkouts.length > 0 && (
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-4 text-white">Today's Workouts</h2>
-          <div className="grid grid-cols-2 gap-6 justify-items-center p-4">
+          <div className="grid grid-cols-2 gap-8 justify-items-center p-8 overflow-visible">
           {todaysWorkouts.map((workout) => {
             const todayTotal = todaysTotals.find(t => t.id === workout.id);
             const currentCount = todayTotal?.count || 0;
 
             return (
-              <div key={workout.id} className="flex flex-col items-center space-y-3">
+              <div key={workout.id} className="flex flex-col items-center space-y-3 py-2">
                 <ProgressCircle
                   count={currentCount}
                   goal={workout.dailyGoal}

@@ -53,8 +53,8 @@ export function ProgressCircle({
   isAnimating = false 
 }: ProgressCircleProps) {
   const progress = goal > 0 ? Math.min(count / goal, 1) : 0;
-  // Add padding to accommodate the stroke width
-  const padding = strokeWidth + 4;
+  // Add padding to accommodate the stroke width and glow effect
+  const padding = strokeWidth + 8; // Increased padding for glow
   const svgSize = size + padding * 2;
   // Increase radius so the inside of the ring fits around the outside of the center circle
   const radius = (size / 2) + (strokeWidth / 2) + 2;
@@ -158,7 +158,7 @@ export function ProgressCircle({
             size={32} 
             style={{ 
               color: '#00ff41', // Bright neon green
-              filter: 'drop-shadow(0 0 16px #00ff41) drop-shadow(0 0 32px #00ff41)',
+              filter: 'drop-shadow(0 0 8px #00ff41) drop-shadow(0 0 16px #00ff41)',
               opacity: 1
             }} 
           />
