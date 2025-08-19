@@ -279,6 +279,10 @@ export function useWorkouts() {
     return data.journalEntries[date] || '';
   };
 
+  const getAllJournalEntries = () => {
+    return data.journalEntries || {};
+  };
+
   // Get statistics for current month only
   const getMonthlyStats = (year: number, month: number) => {
     const workoutArray = Object.values(data.workouts || {});
@@ -541,6 +545,7 @@ export function useWorkouts() {
     getDailyLogs: () => data.dailyLogs,
     addJournalEntry,
     getJournalEntry,
+    getAllJournalEntries,
     getMonthlyStats,
     getTotalStats,
     getIndividualWorkoutTotals,

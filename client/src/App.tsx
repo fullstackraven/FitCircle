@@ -17,6 +17,7 @@ import RemindersPage from "@/pages/reminders";
 import CardioPage from "@/pages/cardio";
 import { WorkoutStatistics } from "@/pages/workout-statistics";
 import { DailyJournal } from "@/pages/daily-journal";
+import { JournalLog } from "@/pages/journal-log";
 import { EnergyLevelPage } from "@/pages/energy-level";
 import { SupplementsPage } from "@/pages/supplements";
 import RecoveryPage from "@/pages/recovery";
@@ -42,6 +43,7 @@ function Router() {
       <Route path="/cardio" component={CardioPage} />
       <Route path="/workout-statistics" component={WorkoutStatistics} />
       <Route path="/daily-journal" component={DailyJournal} />
+      <Route path="/journal-log" component={JournalLog} />
       <Route path="/energy-level" component={EnergyLevelPage} />
       <Route path="/supplements-page" component={SupplementsPage} />
       <Route path="/recovery" component={RecoveryPage} />

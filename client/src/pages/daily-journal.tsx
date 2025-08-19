@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, BookOpen, Calendar } from "lucide-react";
+import { ArrowLeft, BookOpen, Calendar, FileText } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { format } from "date-fns";
@@ -8,31 +8,45 @@ export function DailyJournal() {
   const [, navigate] = useLocation();
   const { getJournalEntry, addJournalEntry } = useWorkouts();
   const [journalText, setJournalText] = useState("");
-
+  const [currentDate, setCurrentDate] = useState("");
 
   useEffect(() => {
-    // Load today's journal entry
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    const dateStr = `${year}-${month}-${day}`;
+    // Check for date parameter in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const dateParam = urlParams.get('date');
     
-    const entry = getJournalEntry(dateStr);
-    setJournalText(entry || '');
-  }, []);
-
-  const handleJournalSubmit = () => {
-    if (journalText.trim()) {
+    let dateStr: string;
+    let displayDate: Date;
+    
+    if (dateParam) {
+      dateStr = dateParam;
+      displayDate = new Date(dateParam + 'T00:00:00');
+    } else {
+      // Load today's journal entry
       const today = new Date();
       const year = today.getFullYear();
       const month = String(today.getMonth() + 1).padStart(2, '0');
       const day = String(today.getDate()).padStart(2, '0');
-      const dateStr = `${year}-${month}-${day}`;
-      
-      addJournalEntry(dateStr, journalText);
+      dateStr = `${year}-${month}-${day}`;
+      displayDate = today;
+    }
+    
+    setCurrentDate(dateStr);
+    const entry = getJournalEntry(dateStr);
+    setJournalText(entry || '');
+  }, [window.location.search]);
+
+  const handleJournalSubmit = () => {
+    if (journalText.trim()) {
+      addJournalEntry(currentDate, journalText);
       alert('Journal entry saved successfully!');
     }
+  };
+
+  const getDisplayDate = () => {
+    if (!currentDate) return format(new Date(), "MMMM d, yyyy");
+    const date = new Date(currentDate + 'T00:00:00');
+    return format(date, "MMMM d, yyyy");
   };
 
   return (
@@ -49,12 +63,18 @@ export function DailyJournal() {
         </button>
 
         <h1 className="text-xl font-bold text-white">Daily Journal</h1>
-        <div className="w-[42px]" />
+        <button
+          onClick={() => navigate("/journal-log")}
+          className="text-slate-500 hover:text-white transition-colors"
+          title="View all journal entries"
+        >
+          <FileText className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Date indicator */}
       <div className="px-4 mb-4">
-        <p className="text-sm text-slate-400">{format(new Date(), "MMMM d, yyyy")}</p>
+        <p className="text-sm text-slate-400">{getDisplayDate()}</p>
       </div>
 
       {/* Main writing area - full screen like Notes app */}
