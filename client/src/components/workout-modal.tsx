@@ -3,13 +3,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { DaySelector } from './DaySelector';
 
 interface WorkoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string, color: string, dailyGoal: number, weightLbs?: number) => void;
+  onSave: (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[]) => void;
   availableColors: string[];
-  editingWorkout?: { id: string; name: string; color: string; dailyGoal: number; weightLbs?: number } | null;
+  editingWorkout?: { id: string; name: string; color: string; dailyGoal: number; weightLbs?: number; scheduledDays?: number[] } | null;
 }
 
 const colorClassMap: { [key: string]: string } = {
@@ -32,6 +33,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || 'green');
   const [dailyGoal, setDailyGoal] = useState<number | string>(10);
   const [weightLbs, setWeightLbs] = useState<number | string>('');
+  const [scheduledDays, setScheduledDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]); // Default to all days
   const [workoutNameFocused, setWorkoutNameFocused] = useState(false);
   const [dailyGoalFocused, setDailyGoalFocused] = useState(false);
   const [weightFocused, setWeightFocused] = useState(false);
@@ -43,6 +45,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
       setSelectedColor(editingWorkout.color);
       setDailyGoal(editingWorkout.dailyGoal);
       setWeightLbs(editingWorkout.weightLbs || '');
+      setScheduledDays(editingWorkout.scheduledDays || [0, 1, 2, 3, 4, 5, 6]);
     } else if (!isOpen) {
       resetForm();
     }
@@ -52,7 +55,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
     const finalGoal = typeof dailyGoal === 'string' ? parseInt(dailyGoal) || 1 : dailyGoal;
     const finalWeight = typeof weightLbs === 'string' ? (weightLbs === '' ? undefined : parseInt(weightLbs) || undefined) : weightLbs;
     if (workoutName.trim() && finalGoal > 0) {
-      onSave(workoutName.trim(), selectedColor, finalGoal, finalWeight);
+      onSave(workoutName.trim(), selectedColor, finalGoal, finalWeight, scheduledDays);
       resetForm();
       onClose();
     }
@@ -63,6 +66,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
     setSelectedColor(availableColors[0] || 'green');
     setDailyGoal(10);
     setWeightLbs('');
+    setScheduledDays([0, 1, 2, 3, 4, 5, 6]); // Reset to all days
   };
 
   const handleCancel = () => {
@@ -169,6 +173,13 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
               className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
             />
           </div>
+
+          {/* Days of Week Selection */}
+          <DaySelector
+            selectedDays={scheduledDays}
+            onSelectionChange={setScheduledDays}
+            className="space-y-2"
+          />
 
           {/* Color Selection */}
           <div className="space-y-3">

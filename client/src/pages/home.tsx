@@ -43,7 +43,8 @@ export default function Home() {
     getRecentActivity,
     getAvailableColors,
     getWorkoutArray,
-    canAddMoreWorkouts
+    canAddMoreWorkouts,
+    isWorkoutActiveOnDay
   } = useWorkouts();
 
   const { timerState, startTimer, startTimerFromSeconds, pauseTimer, resumeTimer, resetTimer, formatTime, getProgress } = useTimer();
@@ -60,7 +61,7 @@ export default function Home() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
-  const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number; weightLbs?: number } | null>(null);
+  const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number; weightLbs?: number; scheduledDays?: number[] } | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
   const [isTimerOpen, setIsTimerOpen] = useState(false);
@@ -93,6 +94,10 @@ export default function Home() {
   const todaysTotals = getTodaysTotals();
   const recentActivity = getRecentActivity();
   const availableColors = getAvailableColors();
+  
+  // Filter workouts that should be active today
+  const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+  const todaysWorkouts = workouts.filter(workout => isWorkoutActiveOnDay(workout, today));
 
   const handleWorkoutClick = (workoutId: string) => {
     const todayTotal = todaysTotals.find(t => t.id === workoutId);
@@ -129,12 +134,12 @@ export default function Home() {
     }
   };
 
-  const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number) => {
+  const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[]) => {
     if (editingWorkout) {
-      updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs);
+      updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs, scheduledDays);
       setEditingWorkout(null);
     } else {
-      addWorkout(name, color, dailyGoal, weightLbs);
+      addWorkout(name, color, dailyGoal, weightLbs, scheduledDays);
     }
   };
 
@@ -144,7 +149,8 @@ export default function Home() {
       name: workout.name,
       color: workout.color,
       dailyGoal: workout.dailyGoal,
-      weightLbs: workout.weightLbs
+      weightLbs: workout.weightLbs,
+      scheduledDays: workout.scheduledDays
     });
     setIsModalOpen(true);
   };
@@ -194,7 +200,7 @@ export default function Home() {
       {/* Workout Circles Grid */}
       <section className="mb-8">
         <div className="grid grid-cols-2 gap-6 justify-items-center p-4">
-          {workouts.map((workout) => {
+          {todaysWorkouts.map((workout) => {
             const todayTotal = todaysTotals.find(t => t.id === workout.id);
             const currentCount = todayTotal?.count || 0;
 
