@@ -15,6 +15,8 @@ export interface Workout {
   dailyGoal: number;
   weightLbs?: number; // Optional weight in pounds
   goalHistory?: GoalHistoryEntry[]; // Track all goal changes over time
+  scheduledDays?: number[]; // 0-6 (Sun-Sat), empty array means every day
+  routineId?: string; // Optional routine assignment
 }
 
 export interface WorkoutLogEntry {
@@ -26,10 +28,17 @@ export interface DailyLog {
   [workoutId: string]: number | WorkoutLogEntry;
 }
 
+export interface Routine {
+  id: string;
+  name: string;
+  createdAt: string;
+}
+
 export interface WorkoutData {
   workouts: { [id: string]: Workout };
   dailyLogs: { [date: string]: DailyLog };
   journalEntries: { [date: string]: string };
+  routines: { [id: string]: Routine };
   lastDate?: string;
 }
 
@@ -43,7 +52,8 @@ export function useWorkouts() {
       workouts: {},
       dailyLogs: {},
       lastDate: getTodayString(),
-      journalEntries: {}
+      journalEntries: {},
+      routines: {}
     });
     
     // Migration: convert old format data to new format with goal preservation
@@ -170,6 +180,7 @@ export function useWorkouts() {
         setData(prev => ({
           ...prev,
           lastDate: today,
+          routines: prev.routines || {},
           workouts: Object.fromEntries(
             Object.entries(prev.workouts).map(([id, workout]) => [id, { ...workout, count: 0 }])
           )
@@ -189,19 +200,26 @@ export function useWorkouts() {
     return () => clearInterval(interval);
   }, [data.lastDate]);
 
-  const addWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number) => {
-    const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+  const addWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], routineId?: string) => {
+    const id = Date.now().toString();
     const newWorkout: Workout = {
       id,
       name,
       color,
       count: 0,
       dailyGoal,
+      scheduledDays: scheduledDays || [],
+      routineId,
+      goalHistory: [{
+        goal: dailyGoal,
+        timestamp: new Date().toISOString()
+      }],
       ...(weightLbs && weightLbs > 0 ? { weightLbs } : {})
     };
 
     setData(prev => ({
       ...prev,
+      routines: prev.routines || {},
       workouts: {
         ...prev.workouts,
         [id]: newWorkout
@@ -313,7 +331,7 @@ export function useWorkouts() {
         date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
       const totalReps = Object.values(dayLog || {}).reduce((sum, logEntry) => {
-        const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
+        const count = getCountFromLogEntry(logEntry);
         return sum + count;
       }, 0);
 
@@ -381,6 +399,7 @@ export function useWorkouts() {
       
       return {
         ...prev,
+        routines: prev.routines || {},
         workouts: {
           ...prev.workouts,
           [workoutId]: {
@@ -415,7 +434,8 @@ export function useWorkouts() {
         workouts: remainingWorkouts,
         dailyLogs: cleanedDailyLogs,
         lastDate: prev.lastDate,
-        journalEntries: prev.journalEntries
+        journalEntries: prev.journalEntries,
+        routines: prev.routines || {}
       };
     });
   };
@@ -737,8 +757,85 @@ export function useWorkouts() {
     }));
   };
 
+  // Routine management functions
+  const addRoutine = (name: string) => {
+    const id = Date.now().toString();
+    const newRoutine: Routine = {
+      id,
+      name,
+      createdAt: new Date().toISOString()
+    };
+
+    setData(prev => ({
+      ...prev,
+      routines: { ...prev.routines, [id]: newRoutine }
+    }));
+    return id;
+  };
+
+  const updateRoutine = (routineId: string, name: string) => {
+    setData(prev => ({
+      ...prev,
+      routines: {
+        ...prev.routines,
+        [routineId]: { ...prev.routines[routineId], name }
+      }
+    }));
+  };
+
+  const deleteRoutine = (routineId: string) => {
+    setData(prev => {
+      const { [routineId]: removed, ...remainingRoutines } = prev.routines;
+      
+      // Remove routine assignment from workouts
+      const updatedWorkouts = Object.fromEntries(
+        Object.entries(prev.workouts).map(([id, workout]) => [
+          id,
+          workout.routineId === routineId 
+            ? { ...workout, routineId: undefined }
+            : workout
+        ])
+      );
+
+      return {
+        ...prev,
+        routines: remainingRoutines,
+        workouts: updatedWorkouts
+      };
+    });
+  };
+
+  const assignWorkoutToRoutine = (workoutId: string, routineId?: string) => {
+    setData(prev => ({
+      ...prev,
+      workouts: {
+        ...prev.workouts,
+        [workoutId]: { ...prev.workouts[workoutId], routineId }
+      }
+    }));
+  };
+
+  const getRoutineArray = () => {
+    return Object.values(data.routines || {});
+  };
+
+  const getWorkoutsByRoutine = (routineId?: string) => {
+    return Object.values(data.workouts || {}).filter(workout => 
+      routineId ? workout.routineId === routineId : !workout.routineId
+    );
+  };
+
+  // Helper function to check if workout should be active on given day
+  const isWorkoutActiveOnDay = (workout: Workout, dayOfWeek: number) => {
+    if (!workout.scheduledDays || workout.scheduledDays.length === 0) {
+      return true; // Every day if no schedule set
+    }
+    return workout.scheduledDays.includes(dayOfWeek);
+  };
+
   return {
     workouts: data.workouts,
+    routines: data.routines,
     addWorkout,
     incrementWorkout,
     decrementWorkout,
@@ -759,5 +856,12 @@ export function useWorkouts() {
     getIndividualWorkoutTotals,
     editWorkoutForDate,
     getWorkoutLogsForDate,
+    addRoutine,
+    updateRoutine,
+    deleteRoutine,
+    assignWorkoutToRoutine,
+    getRoutineArray,
+    getWorkoutsByRoutine,
+    isWorkoutActiveOnDay,
   };
 }
