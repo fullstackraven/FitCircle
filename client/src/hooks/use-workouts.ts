@@ -197,14 +197,15 @@ export function useWorkouts() {
     return Object.values(data.workouts || {});
   };
 
-  const updateWorkoutGoal = (workoutId: string, newGoal: number) => {
+  const updateWorkoutGoal = (workoutId: string, newGoal: number, weightLbs?: number) => {
     setData(prev => ({
       ...prev,
       workouts: {
         ...prev.workouts,
         [workoutId]: {
           ...prev.workouts[workoutId],
-          dailyGoal: newGoal
+          dailyGoal: newGoal,
+          ...(weightLbs !== undefined ? { weightLbs: weightLbs > 0 ? weightLbs : undefined } : {})
         }
       }
     }));

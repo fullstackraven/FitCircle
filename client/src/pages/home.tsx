@@ -130,7 +130,7 @@ export default function Home() {
 
   const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number) => {
     if (editingWorkout) {
-      updateWorkoutGoal(editingWorkout.id, dailyGoal);
+      updateWorkoutGoal(editingWorkout.id, dailyGoal, weightLbs);
       setEditingWorkout(null);
     } else {
       addWorkout(name, color, dailyGoal, weightLbs);
@@ -211,14 +211,7 @@ export default function Home() {
                 />
                 <div className="text-center">
                   <div className="flex items-center space-x-1">
-                    <span className="text-sm text-slate-300 font-medium">
-                      {workout.name}
-                      {workout.weightLbs && (
-                        <span className="text-xs text-slate-400 ml-1">
-                          ({workout.weightLbs}lbs)
-                        </span>
-                      )}
-                    </span>
+                    <span className="text-sm text-slate-300 font-medium">{workout.name}</span>
                     <button
                       onClick={() => handleEditWorkout(workout)}
                       className="text-slate-400 hover:text-slate-200 transition-colors"
@@ -226,8 +219,13 @@ export default function Home() {
                       <Edit size={12} />
                     </button>
                   </div>
+                  {workout.weightLbs && (
+                    <div className="text-xs text-slate-400">
+                      Weight: {workout.weightLbs}lbs
+                    </div>
+                  )}
                   <div className="text-xs text-slate-400 font-mono">
-                    {currentCount >= workout.dailyGoal ? 'COMPLETED!' : `${Math.round((currentCount / workout.dailyGoal) * 100)}%`}
+                    {currentCount >= workout.dailyGoal ? 'COMPLETED!' : `${Math.round((currentCount / workout.dailyGoal) * 100)}% complete`}
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
