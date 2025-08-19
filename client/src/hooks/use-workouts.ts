@@ -69,8 +69,7 @@ export function useWorkouts() {
       return savedData;
     }
 
-    console.log('Migrating workout data to preserve historical completion status...', 
-      { hasOldFormat, hasMissingGoalHistory });
+    console.log('Migrating workout data to preserve historical completion status...');
     const migratedData = { ...savedData };
     const currentWorkouts = savedData.workouts || {};
 
@@ -133,7 +132,7 @@ export function useWorkouts() {
             count: entry.count,
             goalAtTime: historicalGoal
           };
-          console.log(`Updated ${workoutId} for ${entry.date}: count=${entry.count}, goal=${historicalGoal}`);
+
         }
       });
     });
