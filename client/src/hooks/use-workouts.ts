@@ -331,7 +331,7 @@ export function useWorkouts() {
         date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
       const totalReps = Object.values(dayLog || {}).reduce((sum, logEntry) => {
-        const count = getCountFromLogEntry(logEntry);
+        const count = typeof logEntry === 'number' ? logEntry : (logEntry?.count || 0);
         return sum + count;
       }, 0);
 
@@ -344,7 +344,7 @@ export function useWorkouts() {
           count: getCountFromLogEntry(dayLog[workout.id])
         }))
       };
-    }).filter(day => day.totalReps > 0);
+    }).filter(day => (typeof day.totalReps === 'number' ? day.totalReps : 0) > 0);
   };
 
   const getAvailableColors = () => {

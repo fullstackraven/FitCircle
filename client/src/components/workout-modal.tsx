@@ -3,6 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { DaySelector } from './DaySelector';
 
 interface WorkoutModalProps {
@@ -37,6 +39,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
   const [workoutNameFocused, setWorkoutNameFocused] = useState(false);
   const [dailyGoalFocused, setDailyGoalFocused] = useState(false);
   const [weightFocused, setWeightFocused] = useState(false);
+  const [isColorSectionOpen, setIsColorSectionOpen] = useState(false);
 
   // Initialize form when editing
   useEffect(() => {
@@ -181,41 +184,55 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
             className="space-y-2"
           />
 
-          {/* Color Selection */}
-          <div className="space-y-3">
-            <Label className="text-sm font-medium text-white">Choose Color</Label>
-            <div className="grid grid-cols-4 gap-3">
-              {(editingWorkout ? [...availableColors, editingWorkout.color] : availableColors).map((color) => (
-                <button
-                  key={color}
-                  onClick={() => setSelectedColor(color)}
-                  className={`w-10 h-10 rounded-full ${colorClassMap[color]} border-2 transition-colors ${
-                    selectedColor === color
-                      ? 'border-white ring-2 ring-white'
-                      : 'border-transparent hover:border-white'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
+          {/* Collapsible Color Selection */}
+          <Collapsible open={isColorSectionOpen} onOpenChange={setIsColorSectionOpen}>
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-between bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+              >
+                <div className="flex items-center gap-2">
+                  <div className={`w-4 h-4 rounded-full ${colorClassMap[selectedColor]}`} />
+                  <span>Choose Color</span>
+                </div>
+                {isColorSectionOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-2">
+              <div className="grid grid-cols-6 gap-2 p-3 bg-slate-700 rounded-lg">
+                {(editingWorkout ? [...availableColors, editingWorkout.color] : availableColors).map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => setSelectedColor(color)}
+                    className={`w-8 h-8 rounded-full ${colorClassMap[color]} border-2 transition-colors ${
+                      selectedColor === color
+                        ? 'border-white ring-2 ring-white'
+                        : 'border-transparent hover:border-white'
+                    }`}
+                  />
+                ))}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
-          {/* Modal Actions */}
-          <div className="flex space-x-3 pt-2">
-            <Button
-              variant="outline"
-              onClick={handleCancel}
-              className="flex-1 bg-slate-700 text-white border-slate-600 hover:bg-slate-600"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={!workoutName.trim() || !dailyGoal || (typeof dailyGoal === 'number' && dailyGoal <= 0)}
-              className="flex-1 workout-green text-white hover:opacity-90"
-            >
-              {editingWorkout ? 'Update Workout' : 'Add Workout'}
-            </Button>
-          </div>
+        </div>
+
+        {/* Fixed Bottom Actions */}
+        <div className="flex space-x-3 pt-4 border-t border-slate-700 bg-slate-800 shrink-0">
+          <Button
+            variant="outline"
+            onClick={handleCancel}
+            className="flex-1 bg-slate-700 text-white border-slate-600 hover:bg-slate-600"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={!workoutName.trim() || !dailyGoal || (typeof dailyGoal === 'number' && dailyGoal <= 0)}
+            className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+          >
+            {editingWorkout ? 'Update Workout' : 'Add Workout'}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
