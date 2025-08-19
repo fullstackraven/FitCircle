@@ -37,6 +37,7 @@ export default function Home() {
     incrementWorkout,
     decrementWorkout,
     deleteWorkout,
+    updateWorkout,
     updateWorkoutGoal,
     getTodaysTotals,
     getRecentActivity,
@@ -130,7 +131,7 @@ export default function Home() {
 
   const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number) => {
     if (editingWorkout) {
-      updateWorkoutGoal(editingWorkout.id, dailyGoal, weightLbs);
+      updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs);
       setEditingWorkout(null);
     } else {
       addWorkout(name, color, dailyGoal, weightLbs);
@@ -210,7 +211,7 @@ export default function Home() {
                   isAnimating={clickingWorkout === workout.id}
                 />
                 <div className="text-center">
-                  <div className="flex items-center space-x-1">
+                  <div className="flex items-center justify-center space-x-1">
                     <span className="text-sm text-slate-300 font-medium">{workout.name}</span>
                     <button
                       onClick={() => handleEditWorkout(workout)}

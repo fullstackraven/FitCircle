@@ -197,18 +197,24 @@ export function useWorkouts() {
     return Object.values(data.workouts || {});
   };
 
-  const updateWorkoutGoal = (workoutId: string, newGoal: number, weightLbs?: number) => {
+  const updateWorkout = (workoutId: string, name?: string, newGoal?: number, weightLbs?: number) => {
     setData(prev => ({
       ...prev,
       workouts: {
         ...prev.workouts,
         [workoutId]: {
           ...prev.workouts[workoutId],
-          dailyGoal: newGoal,
+          ...(name !== undefined ? { name } : {}),
+          ...(newGoal !== undefined ? { dailyGoal: newGoal } : {}),
           ...(weightLbs !== undefined ? { weightLbs: weightLbs > 0 ? weightLbs : undefined } : {})
         }
       }
     }));
+  };
+
+  // Keep the old function for backward compatibility
+  const updateWorkoutGoal = (workoutId: string, newGoal: number, weightLbs?: number) => {
+    updateWorkout(workoutId, undefined, newGoal, weightLbs);
   };
 
   const deleteWorkout = (workoutId: string) => {
@@ -525,6 +531,7 @@ export function useWorkouts() {
     incrementWorkout,
     decrementWorkout,
     deleteWorkout,
+    updateWorkout,
     updateWorkoutGoal,
     getTodaysTotals,
     getRecentActivity,
