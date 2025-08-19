@@ -270,117 +270,125 @@ export default function Home() {
         {todaysWorkouts.length > 0 && (
           <h2 className="text-xl font-semibold mb-4 text-white">Today's Workouts</h2>
         )}
-        <div className="grid grid-cols-2 gap-8 justify-items-center p-8 overflow-visible">
-          {todaysWorkouts.map((workout) => {
-            const todayTotal = todaysTotals.find(t => t.id === workout.id);
-            const currentCount = todayTotal?.count || 0;
+        <div className="space-y-8 p-8 overflow-visible">
+          {/* Workout Circles Grid */}
+          {todaysWorkouts.length > 0 && (
+            <div className="grid grid-cols-2 gap-8 justify-items-center">
+              {todaysWorkouts.map((workout) => {
+                const todayTotal = todaysTotals.find(t => t.id === workout.id);
+                const currentCount = todayTotal?.count || 0;
 
-            return (
-              <div key={workout.id} className="flex flex-col items-center space-y-3 py-2">
-                <ProgressCircle
-                  count={currentCount}
-                  goal={workout.dailyGoal}
-                  color={workout.color}
-                  size={100}
-                  strokeWidth={10}
-                  onClick={() => handleWorkoutClick(workout.id)}
-                  onHoldIncrement={() => handleWorkoutHoldIncrement(workout.id)}
-                  isAnimating={clickingWorkout === workout.id}
-                />
-                <div className="text-center">
-                  <div className="flex items-center justify-center space-x-1">
-                    <span className="text-sm text-slate-300 font-medium">{workout.name}</span>
-                    <button
-                      onClick={() => handleEditWorkout(workout)}
-                      className="text-slate-400 hover:text-slate-200 transition-colors"
-                    >
-                      <Edit size={12} />
-                    </button>
-                  </div>
-                  {workout.weightLbs && (
-                    <div className="text-xs text-slate-400">
-                      Weight: {workout.weightLbs}lbs
+                return (
+                  <div key={workout.id} className="flex flex-col items-center space-y-3 py-2">
+                    <ProgressCircle
+                      count={currentCount}
+                      goal={workout.dailyGoal}
+                      color={workout.color}
+                      size={100}
+                      strokeWidth={10}
+                      onClick={() => handleWorkoutClick(workout.id)}
+                      onHoldIncrement={() => handleWorkoutHoldIncrement(workout.id)}
+                      isAnimating={clickingWorkout === workout.id}
+                    />
+                    <div className="text-center">
+                      <div className="flex items-center justify-center space-x-1">
+                        <span className="text-sm text-slate-300 font-medium">{workout.name}</span>
+                        <button
+                          onClick={() => handleEditWorkout(workout)}
+                          className="text-slate-400 hover:text-slate-200 transition-colors"
+                        >
+                          <Edit size={12} />
+                        </button>
+                      </div>
+                      {workout.weightLbs && (
+                        <div className="text-xs text-slate-400">
+                          Weight: {workout.weightLbs}lbs
+                        </div>
+                      )}
+                      <div className="text-xs text-slate-400 font-mono">
+                        {currentCount >= workout.dailyGoal ? 'COMPLETED!' : `${Math.round((currentCount / workout.dailyGoal) * 100)}% complete`}
+                      </div>
                     </div>
-                  )}
-                  <div className="text-xs text-slate-400 font-mono">
-                    {currentCount >= workout.dailyGoal ? 'COMPLETED!' : `${Math.round((currentCount / workout.dailyGoal) * 100)}% complete`}
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => handleUndo(workout.id)}
+                        className="text-slate-400 hover:text-slate-200 transition-colors p-1"
+                        title="Undo last rep"
+                      >
+                        <Undo2 size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteWorkout(workout.id)}
+                        className="text-slate-400 hover:text-red-400 transition-colors p-1"
+                        title="Delete workout"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => handleUndo(workout.id)}
-                    className="text-slate-400 hover:text-slate-200 transition-colors p-1"
-                    title="Undo last rep"
-                  >
-                    <Undo2 size={14} />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteWorkout(workout.id)}
-                    className="text-slate-400 hover:text-red-400 transition-colors p-1"
-                    title="Delete workout"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Timer Circle */}
-          <div className="flex flex-col items-center space-y-3">
-            <button
-              onClick={() => setIsTimerOpen(true)}
-              className="relative"
-              title="Open Timer"
-            >
-              <div className="relative w-25 h-25 rounded-full bg-slate-800 flex items-center justify-center border-4 border-slate-700 hover:border-slate-600 transition-colors" style={{ width: '100px', height: '100px' }}>
-                <Timer className="w-10 h-10 text-slate-400" />
-                {timerState.remainingTime > 0 && (
-                  <div className="absolute inset-0 rounded-full">
-                    <svg width="100" height="100" className="transform -rotate-90">
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="46"
-                        stroke="rgb(34, 197, 94)"
-                        strokeWidth="4"
-                        fill="none"
-                        strokeDasharray={`${2 * Math.PI * 46}`}
-                        strokeDashoffset={`${2 * Math.PI * 46 * (1 - getProgress())}`}
-                        className="transition-all duration-1000"
-                      />
-                    </svg>
-                  </div>
-                )}
-              </div>
-            </button>
-            <div className="text-center">
-              <div className="text-sm text-slate-300 font-medium">
-                {timerState.remainingTime > 0 ? formatTime(timerState.remainingTime) : "Timer"}
-              </div>
-              <div className="text-xs text-slate-400">
-                {isWorkoutActive ? `${getCurrentSessionDuration()}` : "Tap to start"}
-              </div>
-            </div>
-          </div>
-
-          {/* Add Workout Button */}
-          {canAddMoreWorkouts() && (
-            <div className="flex flex-col items-center space-y-3">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="w-25 h-25 rounded-full bg-slate-800 flex items-center justify-center border-4 border-dashed border-slate-700 hover:border-slate-600 transition-colors"
-                style={{ width: '100px', height: '100px' }}
-                title="Add new workout"
-              >
-                <Plus className="w-10 h-10 text-slate-400" />
-              </button>
-              <div className="text-center">
-                <div className="text-sm text-slate-300 font-medium">Add</div>
-                <div className="text-xs text-slate-400">New workout</div>
-              </div>
+                );
+              })}
             </div>
           )}
+
+          {/* Timer and Add Workout - Always bottom row */}
+          <div className="grid grid-cols-2 gap-8 justify-items-center">
+            {/* Timer Circle */}
+            <div className="flex flex-col items-center space-y-3">
+              <button
+                onClick={() => setIsTimerOpen(true)}
+                className="relative"
+                title="Open Timer"
+              >
+                <div className="relative w-25 h-25 rounded-full bg-slate-800 flex items-center justify-center border-4 border-slate-700 hover:border-slate-600 transition-colors" style={{ width: '100px', height: '100px' }}>
+                  <Timer className="w-10 h-10 text-slate-400" />
+                  {timerState.remainingTime > 0 && (
+                    <div className="absolute inset-0 rounded-full">
+                      <svg width="100" height="100" className="transform -rotate-90">
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="46"
+                          stroke="rgb(34, 197, 94)"
+                          strokeWidth="4"
+                          fill="none"
+                          strokeDasharray={`${2 * Math.PI * 46}`}
+                          strokeDashoffset={`${2 * Math.PI * 46 * (1 - getProgress())}`}
+                          className="transition-all duration-1000"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              </button>
+              <div className="text-center">
+                <div className="text-sm text-slate-300 font-medium">
+                  {timerState.remainingTime > 0 ? formatTime(timerState.remainingTime) : "Timer"}
+                </div>
+                <div className="text-xs text-slate-400">
+                  {isWorkoutActive ? `${getCurrentSessionDuration()}` : "Tap to start"}
+                </div>
+              </div>
+            </div>
+
+            {/* Add Workout Button */}
+            {canAddMoreWorkouts() && (
+              <div className="flex flex-col items-center space-y-3">
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="w-25 h-25 rounded-full bg-slate-800 flex items-center justify-center border-4 border-dashed border-slate-700 hover:border-slate-600 transition-colors"
+                  style={{ width: '100px', height: '100px' }}
+                  title="Add new workout"
+                >
+                  <Plus className="w-10 h-10 text-slate-400" />
+                </button>
+                <div className="text-center">
+                  <div className="text-sm text-slate-300 font-medium">Add</div>
+                  <div className="text-xs text-slate-400">New workout</div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
