@@ -52,16 +52,25 @@ export function useWorkouts() {
 
   // Advanced migration that uses completion patterns to determine historical goals
   function migrateDataFormat(savedData: WorkoutData): WorkoutData {
-    // Check if migration is needed
-    const needsMigration = Object.values(savedData.dailyLogs || {}).some(dayLog =>
+    // Check if migration is needed (either old format OR missing goal history)
+    const hasOldFormat = Object.values(savedData.dailyLogs || {}).some(dayLog =>
       Object.values(dayLog).some(logEntry => typeof logEntry === 'number' && logEntry > 0)
     );
+    
+    const hasMissingGoalHistory = Object.keys(savedData.workouts || {}).some(workoutId => {
+      const workout = savedData.workouts[workoutId];
+      const hasHistoricalData = Object.values(savedData.dailyLogs || {}).some(dayLog => 
+        dayLog[workoutId] && (typeof dayLog[workoutId] === 'number' ? dayLog[workoutId] > 0 : dayLog[workoutId].count > 0)
+      );
+      return hasHistoricalData && (!workout.goalHistory || workout.goalHistory.length === 0);
+    });
 
-    if (!needsMigration) {
+    if (!hasOldFormat && !hasMissingGoalHistory) {
       return savedData;
     }
 
-    console.log('Migrating workout data to preserve historical completion status...');
+    console.log('Migrating workout data to preserve historical completion status...', 
+      { hasOldFormat, hasMissingGoalHistory });
     const migratedData = { ...savedData };
     const currentWorkouts = savedData.workouts || {};
 
@@ -69,10 +78,18 @@ export function useWorkouts() {
     Object.keys(currentWorkouts).forEach(workoutId => {
       const workoutEntries: Array<{date: string, count: number}> = [];
       
-      // Collect all workout entries for this workout
+      // Collect all workout entries for this workout (handle both old and new formats)
       Object.entries(savedData.dailyLogs || {}).forEach(([dateStr, dayLog]) => {
-        const count = dayLog[workoutId];
-        if (typeof count === 'number' && count > 0) {
+        const logEntry = dayLog[workoutId];
+        let count = 0;
+        
+        if (typeof logEntry === 'number' && logEntry > 0) {
+          count = logEntry;
+        } else if (typeof logEntry === 'object' && logEntry.count > 0) {
+          count = logEntry.count;
+        }
+        
+        if (count > 0) {
           workoutEntries.push({ date: dateStr, count });
         }
       });
@@ -110,12 +127,13 @@ export function useWorkouts() {
         // Use the most common count as the historical goal
         historicalGoal = mostCommonCount;
         
-        // Update the daily log with historical goal
+        // Update the daily log with historical goal (force update even if already object)
         if (migratedData.dailyLogs[entry.date]) {
           migratedData.dailyLogs[entry.date][workoutId] = {
             count: entry.count,
             goalAtTime: historicalGoal
           };
+          console.log(`Updated ${workoutId} for ${entry.date}: count=${entry.count}, goal=${historicalGoal}`);
         }
       });
     });
