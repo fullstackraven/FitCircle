@@ -406,7 +406,10 @@ export function useWorkouts() {
         ...prev.dailyLogs,
         [dateString]: {
           ...prev.dailyLogs[dateString],
-          [workoutId]: Math.max(0, newCount) // Ensure non-negative count
+          [workoutId]: newCount > 0 ? {
+            count: newCount,
+            goalAtTime: getGoalForDate(workoutId, dateString)
+          } : 0
         }
       }
     }));
@@ -419,7 +422,7 @@ export function useWorkouts() {
     const dayLog = data.dailyLogs[dateString] || {};
     return Object.values(data.workouts || {}).map(workout => ({
       ...workout,
-      count: dayLog[workout.id] || 0
+      count: getCountFromLogEntry(dayLog[workout.id])
     }));
   };
 
@@ -590,7 +593,7 @@ export function useWorkouts() {
     let firstWorkoutDate: string | null = null;
     Object.keys(data.dailyLogs).forEach(dateStr => {
       const dayLog = data.dailyLogs[dateStr];
-      const hasAnyReps = workoutArray.some(w => dayLog[w.id] && dayLog[w.id] > 0);
+      const hasAnyReps = workoutArray.some(w => getCountFromLogEntry(dayLog[w.id]) > 0);
       if (hasAnyReps && (!firstWorkoutDate || dateStr < firstWorkoutDate)) {
         firstWorkoutDate = dateStr;
       }
