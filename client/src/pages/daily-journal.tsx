@@ -65,7 +65,6 @@ export function DailyJournal() {
           placeholder="Start writing..."
           className="w-full min-h-[calc(100vh-200px)] p-0 bg-transparent text-white border-none resize-none focus:outline-none text-base leading-relaxed placeholder-slate-500"
           style={{
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             lineHeight: '1.6'
           }}
         />
@@ -75,7 +74,7 @@ export function DailyJournal() {
       <div className="fixed bottom-8 left-4 right-4 z-10">
         <button
           onClick={handleJournalSubmit}
-          className="w-full max-w-sm mx-auto block px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-full transition-colors font-medium shadow-lg"
+          className="w-full max-w-sm mx-auto block px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors font-medium shadow-lg"
         >
           Save Entry
         </button>
