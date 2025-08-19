@@ -11,8 +11,13 @@ export interface Workout {
   weightLbs?: number; // Optional weight in pounds
 }
 
+export interface WorkoutLogEntry {
+  count: number;
+  goalAtTime: number; // Store the goal that was in effect when this workout was logged
+}
+
 export interface DailyLog {
-  [workoutId: string]: number;
+  [workoutId: string]: number | WorkoutLogEntry;
 }
 
 export interface WorkoutData {
@@ -35,6 +40,12 @@ export function useWorkouts() {
       journalEntries: {}
     })
   );
+
+  // Helper function to extract count from log entry
+  const getCountFromLogEntry = (logEntry: number | WorkoutLogEntry | undefined): number => {
+    if (!logEntry) return 0;
+    return typeof logEntry === 'object' ? logEntry.count : logEntry;
+  };
 
   // Save to localStorage whenever data changes
   useEffect(() => {
@@ -93,7 +104,9 @@ export function useWorkouts() {
 
     setData(prev => {
       const currentCount = prev.workouts[workoutId]?.count || 0;
-      const currentDailyCount = prev.dailyLogs[today]?.[workoutId] || 0;
+      const currentDailyLog = prev.dailyLogs[today]?.[workoutId];
+      const currentDailyCount = typeof currentDailyLog === 'object' ? currentDailyLog.count : (currentDailyLog || 0);
+      const currentGoal = prev.workouts[workoutId]?.dailyGoal || 1;
 
       return {
         ...prev,
@@ -108,7 +121,10 @@ export function useWorkouts() {
           ...prev.dailyLogs,
           [today]: {
             ...prev.dailyLogs[today],
-            [workoutId]: currentDailyCount + 1
+            [workoutId]: {
+              count: currentDailyCount + 1,
+              goalAtTime: currentGoal
+            }
           }
         }
       };
@@ -120,9 +136,13 @@ export function useWorkouts() {
 
     setData(prev => {
       const currentCount = prev.workouts[workoutId]?.count || 0;
-      const currentDailyCount = prev.dailyLogs[today]?.[workoutId] || 0;
+      const currentDailyLog = prev.dailyLogs[today]?.[workoutId];
+      const currentDailyCount = typeof currentDailyLog === 'object' ? currentDailyLog.count : (currentDailyLog || 0);
+      const currentGoal = prev.workouts[workoutId]?.dailyGoal || 1;
 
       if (currentCount <= 0 || currentDailyCount <= 0) return prev;
+
+      const newCount = Math.max(0, currentDailyCount - 1);
 
       return {
         ...prev,
@@ -137,7 +157,10 @@ export function useWorkouts() {
           ...prev.dailyLogs,
           [today]: {
             ...prev.dailyLogs[today],
-            [workoutId]: currentDailyCount - 1
+            [workoutId]: newCount > 0 ? {
+              count: newCount,
+              goalAtTime: currentGoal
+            } : 0 // Keep old format for zero values to save space
           }
         }
       };
@@ -148,10 +171,14 @@ export function useWorkouts() {
     const today = getTodayString();
     const todayLog = data.dailyLogs[today] || {};
 
-    return Object.values(data.workouts || {}).map(workout => ({
-      ...workout,
-      count: todayLog[workout.id] || 0
-    }));
+    return Object.values(data.workouts || {}).map(workout => {
+      const logEntry = todayLog[workout.id];
+      const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
+      return {
+        ...workout,
+        count
+      };
+    });
   };
 
   const getRecentActivity = () => {
@@ -175,7 +202,10 @@ export function useWorkouts() {
       const formattedDate = isYesterday ? 'Yesterday' : 
         date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-      const totalReps = Object.values(dayLog || {}).reduce((sum, count) => sum + count, 0);
+      const totalReps = Object.values(dayLog || {}).reduce((sum, logEntry) => {
+        const count = getCountFromLogEntry(logEntry);
+        return sum + count;
+      }, 0);
 
       return {
         date: formattedDate,
@@ -183,7 +213,7 @@ export function useWorkouts() {
         totalReps,
         workouts: Object.values(data.workouts || {}).map(workout => ({
           ...workout,
-          count: dayLog[workout.id] || 0
+          count: getCountFromLogEntry(dayLog[workout.id])
         }))
       };
     }).filter(day => day.totalReps > 0);
@@ -308,7 +338,7 @@ export function useWorkouts() {
       const date = new Date(dateStr + 'T00:00:00');
       if (date.getFullYear() === year && date.getMonth() === month) {
         const dayLog = data.dailyLogs[dateStr];
-        const hasAnyReps = workoutArray.some(w => dayLog[w.id] && dayLog[w.id] > 0);
+        const hasAnyReps = workoutArray.some(w => getCountFromLogEntry(dayLog[w.id]) > 0);
         if (hasAnyReps) {
           if (!firstWorkoutDateInMonth || dateStr < firstWorkoutDateInMonth) {
             firstWorkoutDateInMonth = dateStr;
@@ -357,7 +387,7 @@ export function useWorkouts() {
         // For today, check ALL current workouts (including newly added ones)
         let allGoalsMet = true;
         workoutArray.forEach(workout => {
-          const count = dayLog[workout.id] || 0;
+          const count = getCountFromLogEntry(dayLog[workout.id]);
           monthlyReps += count;
           if (count < workout.dailyGoal) {
             allGoalsMet = false;
@@ -369,12 +399,12 @@ export function useWorkouts() {
         }
       } else {
         // For past days, only check workouts that actually have logged reps
-        const workoutsWithReps = workoutArray.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
+        const workoutsWithReps = workoutArray.filter(w => getCountFromLogEntry(dayLog[w.id]) > 0);
         if (workoutsWithReps.length > 0) {
           let allGoalsMet = true;
           
           workoutsWithReps.forEach(workout => {
-            const count = dayLog[workout.id] || 0;
+            const count = getCountFromLogEntry(dayLog[workout.id]);
             monthlyReps += count;
             if (count < workout.dailyGoal) {
               allGoalsMet = false;
@@ -394,7 +424,7 @@ export function useWorkouts() {
       if (date.getFullYear() === year && date.getMonth() === month && dateStr <= today) {
         // Only count recovery days if there's no workout logged for that day
         const dayLog = data.dailyLogs[dateStr] || {};
-        const hasWorkouts = workoutArray.some(w => dayLog[w.id] && dayLog[w.id] > 0);
+        const hasWorkouts = workoutArray.some(w => getCountFromLogEntry(dayLog[w.id]) > 0);
         if (!hasWorkouts) {
           monthlyCompletedDays++;
         }
@@ -461,7 +491,7 @@ export function useWorkouts() {
         // For today, check ALL current workouts (including newly added ones)
         let allGoalsMet = true;
         workoutArray.forEach(workout => {
-          const count = dayLog[workout.id] || 0;
+          const count = getCountFromLogEntry(dayLog[workout.id]);
           totalReps += count;
           if (count < workout.dailyGoal) {
             allGoalsMet = false;
@@ -473,12 +503,12 @@ export function useWorkouts() {
         }
       } else {
         // For past days, only check workouts that actually have logged reps
-        const workoutsWithReps = workoutArray.filter(w => dayLog[w.id] && dayLog[w.id] > 0);
+        const workoutsWithReps = workoutArray.filter(w => getCountFromLogEntry(dayLog[w.id]) > 0);
         if (workoutsWithReps.length > 0) {
           let allGoalsMet = true;
           
           workoutsWithReps.forEach(workout => {
-            const count = dayLog[workout.id] || 0;
+            const count = getCountFromLogEntry(dayLog[workout.id]);
             totalReps += count;
             if (count < workout.dailyGoal) {
               allGoalsMet = false;
@@ -497,7 +527,7 @@ export function useWorkouts() {
       if (dateStr <= today) {
         // Only count recovery days if there's no workout logged for that day
         const dayLog = data.dailyLogs[dateStr] || {};
-        const hasWorkouts = workoutArray.some(w => dayLog[w.id] && dayLog[w.id] > 0);
+        const hasWorkouts = workoutArray.some(w => getCountFromLogEntry(dayLog[w.id]) > 0);
         if (!hasWorkouts) {
           totalCompletedDays++;
         }
@@ -525,7 +555,7 @@ export function useWorkouts() {
       name: workout.name,
       color: workout.color,
       totalReps: Object.values(data.dailyLogs || {})
-        .reduce((total, dayLog) => total + (dayLog[workout.id] || 0), 0)
+        .reduce((total, dayLog) => total + getCountFromLogEntry(dayLog[workout.id]), 0)
     }));
   };
 

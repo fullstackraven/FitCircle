@@ -102,19 +102,27 @@ export default function CalendarPage() {
     if (!dateLog) return false;
     
     // Get workouts that had any activity on this date
-    const workoutsWithActivity = Object.keys(dateLog).filter(workoutId => 
-      (dateLog[workoutId] || 0) > 0
-    );
+    const workoutsWithActivity = Object.keys(dateLog).filter(workoutId => {
+      const logEntry = dateLog[workoutId];
+      const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
+      return count > 0;
+    });
     
     if (workoutsWithActivity.length === 0) return false;
     
     // Check if all active workouts on that day met their goals
     return workoutsWithActivity.every(workoutId => {
-      const workout = workouts.find(w => w.id === workoutId);
-      if (!workout) return false;
+      const logEntry = dateLog[workoutId];
+      const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
+      const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : null;
       
-      const count = dateLog[workoutId] || 0;
-      return count >= workout.dailyGoal;
+      // If we have a stored goal from that time, use it. Otherwise fall back to current goal
+      if (goalAtTime !== null) {
+        return count >= goalAtTime;
+      } else {
+        const workout = workouts.find(w => w.id === workoutId);
+        return workout ? count >= workout.dailyGoal : false;
+      }
     });
   };
 
