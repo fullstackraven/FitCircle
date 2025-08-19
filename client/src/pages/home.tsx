@@ -138,7 +138,7 @@ export default function Home() {
 
   const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[]) => {
     if (editingWorkout) {
-      updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs);
+      updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs, scheduledDays);
       setEditingWorkout(null);
     } else {
       addWorkout(name, color, dailyGoal, weightLbs, scheduledDays);
