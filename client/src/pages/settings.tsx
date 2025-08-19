@@ -200,7 +200,12 @@ export default function SettingsPage() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `fitcircle-backup-${getTodayString()}.json`;
+      // Generate unique ID with date and time
+      const now = new Date();
+      const dateStr = getTodayString();
+      const timeStr = now.toTimeString().slice(0, 8).replace(/:/g, '-'); // HH-MM-SS format
+      const uniqueId = Math.random().toString(36).substr(2, 6); // 6-character random string
+      link.download = `fitcircle-backup-${dateStr}-${timeStr}-${uniqueId}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
