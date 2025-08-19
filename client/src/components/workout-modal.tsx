@@ -226,6 +226,20 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
           >
             Cancel
           </Button>
+          {editingWorkout && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (editingWorkout && onDelete) {
+                  onDelete(editingWorkout.id);
+                  handleCancel();
+                }
+              }}
+              className="bg-red-500 hover:bg-red-600 text-white border-red-600"
+            >
+              Delete
+            </Button>
+          )}
           <Button
             onClick={handleSave}
             disabled={!workoutName.trim() || !dailyGoal || (typeof dailyGoal === 'number' && dailyGoal <= 0)}

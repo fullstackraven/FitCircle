@@ -485,15 +485,6 @@ export default function Home() {
               </div>
             </CollapsibleContent>
             </Collapsible>
-            {canAddMoreWorkouts() && (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="ml-3 bg-green-500 hover:bg-green-600 text-white p-3 rounded-xl transition-all transform hover:scale-105"
-                title="Add new workout"
-              >
-                <Plus className="w-5 h-5" />
-              </button>
-            )}
           </div>
         </section>
       )}
