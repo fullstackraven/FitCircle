@@ -265,6 +265,23 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Add Workout Button - Always visible when no workouts exist */}
+      {workouts.length === 0 && (
+        <section className="mb-8">
+          <div className="bg-slate-800 rounded-xl p-6 text-center">
+            <h2 className="text-xl font-semibold mb-4 text-white">Get Started</h2>
+            <p className="text-slate-400 mb-6">Create your first workout to start tracking your fitness progress</p>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all transform hover:scale-105 flex items-center justify-center space-x-3 mx-auto"
+            >
+              <Plus className="w-5 h-5" />
+              <span>Add First Workout</span>
+            </button>
+          </div>
+        </section>
+      )}
+
       {/* Today's Workouts Section */}
       {todaysWorkouts.length > 0 && (
         <section className="mb-8">
@@ -387,16 +404,17 @@ export default function Home() {
       {/* All Workouts Section */}
       {workouts.length > 0 && (
         <section className="mb-8">
-          <Collapsible open={isAllWorkoutsOpen} onOpenChange={setIsAllWorkoutsOpen}>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-between bg-slate-800 border-slate-700 text-white hover:bg-slate-700 mb-4 py-4 h-auto rounded-xl"
-              >
-                <span className="text-lg font-semibold">All Workouts</span>
-                {isAllWorkoutsOpen ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
-              </Button>
-            </CollapsibleTrigger>
+          <div className="flex items-center justify-between mb-4">
+            <Collapsible open={isAllWorkoutsOpen} onOpenChange={setIsAllWorkoutsOpen} className="flex-1">
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-between bg-slate-800 border-slate-700 text-white hover:bg-slate-700 py-4 h-auto rounded-xl"
+                >
+                  <span className="text-lg font-semibold">All Workouts</span>
+                  {isAllWorkoutsOpen ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
+                </Button>
+              </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="space-y-3 bg-slate-800 rounded-xl p-4">
                 {workouts.map((workout) => {
@@ -427,7 +445,17 @@ export default function Home() {
                 })}
               </div>
             </CollapsibleContent>
-          </Collapsible>
+            </Collapsible>
+            {canAddMoreWorkouts() && (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="ml-3 bg-green-500 hover:bg-green-600 text-white p-3 rounded-xl transition-all transform hover:scale-105"
+                title="Add new workout"
+              >
+                <Plus className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         </section>
       )}
 
