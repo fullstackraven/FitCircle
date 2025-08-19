@@ -273,7 +273,7 @@ export default function Home() {
         <div className="space-y-8 p-8 overflow-visible">
           {/* Workout Circles Grid */}
           {todaysWorkouts.length > 0 && (
-            <div className="grid grid-cols-2 gap-8 justify-items-center">
+            <div className="grid grid-cols-2 gap-12 justify-items-center">
               {todaysWorkouts.map((workout) => {
                 const todayTotal = todaysTotals.find(t => t.id === workout.id);
                 const currentCount = todayTotal?.count || 0;
@@ -332,7 +332,7 @@ export default function Home() {
           )}
 
           {/* Timer and Add Workout - Always bottom row */}
-          <div className="grid grid-cols-2 gap-8 justify-items-center">
+          <div className="grid grid-cols-2 gap-12 justify-items-center">
             {/* Timer Circle */}
             <div className="flex flex-col items-center space-y-3">
               <button
