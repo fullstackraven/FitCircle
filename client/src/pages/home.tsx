@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity, Timer, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp, FolderOpen, Dumbbell } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity, Timer, Play, Pause, Square, StopCircle, RotateCcw } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
@@ -8,12 +8,10 @@ import { useWorkoutDuration } from '@/hooks/use-workout-duration';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
-import { WorkoutCardSkeleton, StatCardSkeleton, RecentActivitySkeleton, QuoteSkeleton, RoutineSkeleton } from '@/components/loading-skeleton';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 const colorClassMap: { [key: string]: string } = {
   green: 'workout-green',
@@ -45,14 +43,7 @@ export default function Home() {
     getRecentActivity,
     getAvailableColors,
     getWorkoutArray,
-    canAddMoreWorkouts,
-    getRoutineArray,
-    getWorkoutsByRoutine,
-    isWorkoutActiveOnDay,
-    addRoutine,
-    updateRoutine,
-    deleteRoutine,
-    assignWorkoutToRoutine
+    canAddMoreWorkouts
   } = useWorkouts();
 
   const { timerState, startTimer, startTimerFromSeconds, pauseTimer, resumeTimer, resetTimer, formatTime, getProgress } = useTimer();
@@ -69,15 +60,13 @@ export default function Home() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
-  const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number; weightLbs?: number; scheduledDays?: number[]; routineId?: string } | null>(null);
+  const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number; weightLbs?: number } | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [timerHours, setTimerHours] = useState<string>('0');
   const [timerMinutes, setTimerMinutes] = useState<string>('0');
   const [timerSeconds, setTimerSeconds] = useState<string>('0');
-  const [isLoading, setIsLoading] = useState(true);
-  const [expandedRoutines, setExpandedRoutines] = useState<Set<string>>(new Set());
 
   // Check if we should open dashboard on load
   useEffect(() => {
@@ -87,10 +76,6 @@ export default function Home() {
       // Clear the URL parameter
       window.history.replaceState({}, '', '/');
     }
-    
-    // Simulate loading delay for smooth skeleton transition
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
   }, []);
 
   // Update username when it changes in localStorage
@@ -104,33 +89,10 @@ export default function Home() {
   }, []);
 
   const workouts = getWorkoutArray();
-  const routines = getRoutineArray();
   const getWorkoutById = (id: string) => workouts.find(w => w.id === id);
   const todaysTotals = getTodaysTotals();
   const recentActivity = getRecentActivity();
   const availableColors = getAvailableColors();
-  
-  // Helper functions for routine management
-  const toggleRoutineExpansion = (routineId: string) => {
-    const newExpanded = new Set(expandedRoutines);
-    if (newExpanded.has(routineId)) {
-      newExpanded.delete(routineId);
-    } else {
-      newExpanded.add(routineId);
-    }
-    setExpandedRoutines(newExpanded);
-  };
-  
-  // Check if workout should be visible today based on scheduled days
-  const isWorkoutActiveToday = (workout: any) => {
-    const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
-    return isWorkoutActiveOnDay(workout, today);
-  };
-  
-  // Get filtered workouts for today only
-  const getTodaysActiveWorkouts = () => {
-    return workouts.filter(isWorkoutActiveToday);
-  };
 
   const handleWorkoutClick = (workoutId: string) => {
     const todayTotal = todaysTotals.find(t => t.id === workoutId);
@@ -167,12 +129,12 @@ export default function Home() {
     }
   };
 
-  const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], routineId?: string) => {
+  const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number) => {
     if (editingWorkout) {
       updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs);
       setEditingWorkout(null);
     } else {
-      addWorkout(name, color, dailyGoal, weightLbs, scheduledDays, routineId);
+      addWorkout(name, color, dailyGoal, weightLbs);
     }
   };
 
@@ -182,9 +144,7 @@ export default function Home() {
       name: workout.name,
       color: workout.color,
       dailyGoal: workout.dailyGoal,
-      weightLbs: workout.weightLbs,
-      scheduledDays: workout.scheduledDays,
-      routineId: workout.routineId
+      weightLbs: workout.weightLbs
     });
     setIsModalOpen(true);
   };
@@ -229,247 +189,122 @@ export default function Home() {
       </header>
 
       {/* Quote of the Day */}
-      {!isQuoteHidden && (isLoading ? <QuoteSkeleton /> : <QuoteOfTheDay />)}
+      {!isQuoteHidden && <QuoteOfTheDay />}
 
-      {/* Workouts Section with Routines */}
+      {/* Workout Circles Grid */}
       <section className="mb-8">
-        {isLoading ? (
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <WorkoutCardSkeleton />
-              <WorkoutCardSkeleton />
-            </div>
-            <RoutineSkeleton />
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Routines */}
-            {routines.map(routine => {
-              const routineWorkouts = getWorkoutsByRoutine(routine.id).filter(isWorkoutActiveToday);
-              const isExpanded = expandedRoutines.has(routine.id);
-              
-              if (routineWorkouts.length === 0) return null;
-              
-              return (
-                <Collapsible 
-                  key={routine.id} 
-                  open={isExpanded} 
-                  onOpenChange={() => toggleRoutineExpansion(routine.id)}
-                  className="bg-slate-800 rounded-xl overflow-hidden"
-                >
-                  <CollapsibleTrigger className="w-full p-4 flex items-center justify-between hover:bg-slate-700/50 transition-colors">
-                    <div className="flex items-center space-x-3">
-                      <FolderOpen className="w-5 h-5 text-slate-400" />
-                      <span className="font-medium text-white">{routine.name}</span>
-                      <span className="text-sm text-slate-400">({routineWorkouts.length})</span>
-                    </div>
-                    {isExpanded ? (
-                      <ChevronUp className="w-5 h-5 text-slate-400" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-slate-400" />
-                    )}
-                  </CollapsibleTrigger>
-                  
-                  <CollapsibleContent className="px-4 pb-4">
-                    <div className="grid grid-cols-2 gap-3">
-                      {routineWorkouts.map((workout) => {
-                        const todayTotal = todaysTotals.find(t => t.id === workout.id);
-                        const currentCount = todayTotal?.count || 0;
-                        const progress = workout.dailyGoal > 0 ? (currentCount / workout.dailyGoal) * 100 : 0;
-                        const isCompleted = currentCount >= workout.dailyGoal;
-                        const isClicking = clickingWorkout === workout.id;
+        <div className="grid grid-cols-2 gap-6 justify-items-center p-4">
+          {workouts.map((workout) => {
+            const todayTotal = todaysTotals.find(t => t.id === workout.id);
+            const currentCount = todayTotal?.count || 0;
 
-                        return (
-                          <div
-                            key={workout.id}
-                            className={`bg-slate-700 rounded-lg p-4 flex flex-col items-center relative transition-transform ${
-                              isClicking ? 'scale-95' : 'scale-100'
-                            }`}
-                          >
-                            <button
-                              onClick={() => handleEditWorkout(workout)}
-                              className="absolute top-2 right-2 text-slate-400 hover:text-white transition-colors p-1"
-                            >
-                              <Edit className="w-3 h-3" />
-                            </button>
-
-                            <div
-                              className="relative mb-3 cursor-pointer"
-                              onMouseDown={() => {
-                                if (!isCompleted) {
-                                  handleWorkoutClick(workout.id);
-                                  if (!isWorkoutActive) startWorkout();
-                                }
-                              }}
-                            >
-                              <ProgressCircle
-                                count={currentCount}
-                                goal={workout.dailyGoal}
-                                color={workout.color}
-                                size={48}
-                                strokeWidth={4}
-                              />
-                            </div>
-
-                            <div className="text-center space-y-1">
-                              <div className="font-medium text-white text-sm">{workout.name}</div>
-                              <div className="text-xs text-slate-400">
-                                {workout.dailyGoal}{workout.weightLbs && ` • ${workout.weightLbs} lbs`}
-                              </div>
-                              
-                              {isCompleted && (
-                                <div className="text-green-500 text-xs flex items-center justify-center gap-1">
-                                  <CheckCircle className="w-3 h-3" />
-                                  Done
-                                </div>
-                              )}
-                            </div>
-
-                            {currentCount > 0 && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleUndo(workout.id);
-                                }}
-                                className="absolute bottom-2 right-2 text-slate-400 hover:text-orange-400 transition-colors p-1"
-                              >
-                                <Undo2 className="w-3 h-3" />
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-              );
-            })}
-
-            {/* Individual Workouts (No Routine) */}
-            {(() => {
-              const individualWorkouts = getWorkoutsByRoutine().filter(isWorkoutActiveToday);
-              
-              if (individualWorkouts.length === 0 && workouts.length === 0) {
-                return (
-                  <div
-                    onClick={() => setIsModalOpen(true)}
-                    className="bg-slate-800 border-2 border-dashed border-slate-600 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer hover:border-slate-500 hover:bg-slate-750 transition-colors"
-                  >
-                    <Dumbbell className="w-8 h-8 text-slate-400 mb-3" />
-                    <span className="text-lg font-medium text-slate-400 mb-1">Add Your First Workout</span>
-                    <span className="text-sm text-slate-500">Start tracking your fitness journey</span>
+            return (
+              <div key={workout.id} className="flex flex-col items-center space-y-3">
+                <ProgressCircle
+                  count={currentCount}
+                  goal={workout.dailyGoal}
+                  color={workout.color}
+                  size={100}
+                  strokeWidth={10}
+                  onClick={() => handleWorkoutClick(workout.id)}
+                  onHoldIncrement={() => handleWorkoutHoldIncrement(workout.id)}
+                  isAnimating={clickingWorkout === workout.id}
+                />
+                <div className="text-center">
+                  <div className="flex items-center justify-center space-x-1">
+                    <span className="text-sm text-slate-300 font-medium">{workout.name}</span>
+                    <button
+                      onClick={() => handleEditWorkout(workout)}
+                      className="text-slate-400 hover:text-slate-200 transition-colors"
+                    >
+                      <Edit size={12} />
+                    </button>
                   </div>
-                );
-              }
-              
-              return individualWorkouts.length > 0 ? (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                      <Activity className="w-5 h-5" />
-                      Today's Workouts
-                    </h3>
-                    {canAddMoreWorkouts() && (
-                      <Button
-                        onClick={() => setIsModalOpen(true)}
-                        size="sm"
-                        className="bg-green-500 hover:bg-green-600 text-white"
-                      >
-                        <Plus className="w-4 h-4 mr-1" />
-                        Add
-                      </Button>
-                    )}
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    {individualWorkouts.map((workout) => {
-                      const todayTotal = todaysTotals.find(t => t.id === workout.id);
-                      const currentCount = todayTotal?.count || 0;
-                      const progress = workout.dailyGoal > 0 ? (currentCount / workout.dailyGoal) * 100 : 0;
-                      const isCompleted = currentCount >= workout.dailyGoal;
-                      const isClicking = clickingWorkout === workout.id;
-
-                      return (
-                        <div
-                          key={workout.id}
-                          className={`bg-slate-800 rounded-xl p-6 flex flex-col items-center justify-center min-h-[180px] relative transition-transform ${
-                            isClicking ? 'scale-95' : 'scale-100'
-                          }`}
-                        >
-                          <button
-                            onClick={() => handleEditWorkout(workout)}
-                            className="absolute top-2 right-2 text-slate-400 hover:text-white transition-colors p-1"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-
-                          <button
-                            onClick={() => handleDeleteWorkout(workout.id)}
-                            className="absolute top-2 left-2 text-slate-400 hover:text-red-400 transition-colors p-1"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-
-                          <div
-                            className="relative mb-4 cursor-pointer select-none"
-                            onMouseDown={() => {
-                              if (!isCompleted) {
-                                handleWorkoutClick(workout.id);
-                                if (!isWorkoutActive) startWorkout();
-                              }
-                            }}
-                          >
-                            <ProgressCircle
-                              count={currentCount}
-                              goal={workout.dailyGoal}
-                              color={workout.color}
-                              size={64}
-                              strokeWidth={6}
-                            />
-                          </div>
-
-                          <div className="text-center space-y-2">
-                            <div className="font-medium text-white text-sm">{workout.name}</div>
-                            <div className="text-xs text-slate-400">
-                              Goal: {workout.dailyGoal}
-                              {workout.weightLbs && ` • ${workout.weightLbs} lbs`}
-                            </div>
-                            
-                            <div className="w-full bg-slate-700 rounded-full h-2">
-                              <div
-                                className={`h-2 rounded-full transition-all duration-300 ${colorClassMap[workout.color] || 'bg-green-500'}`}
-                                style={{ width: `${Math.min(progress, 100)}%` }}
-                              />
-                            </div>
-                            
-                            {isCompleted && (
-                              <div className="text-green-500 text-xs flex items-center justify-center gap-1">
-                                <CheckCircle className="w-3 h-3" />
-                                Complete!
-                              </div>
-                            )}
-                          </div>
-
-                          {currentCount > 0 && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleUndo(workout.id);
-                              }}
-                              className="absolute bottom-2 right-2 text-slate-400 hover:text-orange-400 transition-colors p-1"
-                            >
-                              <Undo2 className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
+                  {workout.weightLbs && (
+                    <div className="text-xs text-slate-400">
+                      Weight: {workout.weightLbs}lbs
+                    </div>
+                  )}
+                  <div className="text-xs text-slate-400 font-mono">
+                    {currentCount >= workout.dailyGoal ? 'COMPLETED!' : `${Math.round((currentCount / workout.dailyGoal) * 100)}% complete`}
                   </div>
                 </div>
-              ) : null;
-            })()}
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handleUndo(workout.id)}
+                    className="text-slate-400 hover:text-slate-200 transition-colors p-1"
+                    title="Undo last rep"
+                  >
+                    <Undo2 size={14} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteWorkout(workout.id)}
+                    className="text-slate-400 hover:text-red-400 transition-colors p-1"
+                    title="Delete workout"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Timer Circle */}
+          <div className="flex flex-col items-center space-y-3">
+            <button
+              onClick={() => setIsTimerOpen(true)}
+              className="relative"
+              title="Open Timer"
+            >
+              <div className="relative w-25 h-25 rounded-full bg-slate-800 flex items-center justify-center border-4 border-slate-700 hover:border-slate-600 transition-colors" style={{ width: '100px', height: '100px' }}>
+                <Timer className="w-10 h-10 text-slate-400" />
+                {timerState.remainingTime > 0 && (
+                  <div className="absolute inset-0 rounded-full">
+                    <svg width="100" height="100" className="transform -rotate-90">
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="46"
+                        stroke="rgb(34, 197, 94)"
+                        strokeWidth="4"
+                        fill="none"
+                        strokeDasharray={`${2 * Math.PI * 46}`}
+                        strokeDashoffset={`${2 * Math.PI * 46 * (1 - getProgress())}`}
+                        className="transition-all duration-1000"
+                      />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            </button>
+            <div className="text-center">
+              <div className="text-sm text-slate-300 font-medium">
+                {timerState.remainingTime > 0 ? formatTime(timerState.remainingTime) : "Timer"}
+              </div>
+              <div className="text-xs text-slate-400">
+                {isWorkoutActive ? `${getCurrentSessionDuration()}` : "Tap to start"}
+              </div>
+            </div>
           </div>
-        )}
+
+          {/* Add Workout Button */}
+          {canAddMoreWorkouts() && (
+            <div className="flex flex-col items-center space-y-3">
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="w-25 h-25 rounded-full bg-slate-800 flex items-center justify-center border-4 border-dashed border-slate-700 hover:border-slate-600 transition-colors"
+                style={{ width: '100px', height: '100px' }}
+                title="Add new workout"
+              >
+                <Plus className="w-10 h-10 text-slate-400" />
+              </button>
+              <div className="text-center">
+                <div className="text-sm text-slate-300 font-medium">Add</div>
+                <div className="text-xs text-slate-400">New workout</div>
+              </div>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Start Workout Session Section */}
@@ -530,57 +365,49 @@ export default function Home() {
       </section>
 
       {/* Today's Totals Section */}
-      {!isTodaysTotalsHidden && (isLoading ? (
-        <StatCardSkeleton title="Today's Totals" />
-      ) : (
-        todaysTotals.some(w => w.count > 0) && (
-          <section className="mb-8">
-            <h2 className="text-xl font-semibold mb-4 text-center text-white">Today's Totals</h2>
-            <div className="bg-slate-800 rounded-xl p-4 space-y-3">
-              {todaysTotals.filter(w => w.count > 0).map((workout) => (
-                <div key={workout.id} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-4 h-4 rounded-full ${colorClassMap[workout.color]}`}></div>
-                    <span className="font-medium text-white">{workout.name}</span>
-                  </div>
-                  <span className="text-lg font-bold text-white">{workout.count}</span>
+      {!isTodaysTotalsHidden && todaysTotals.some(w => w.count > 0) && (
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-4 text-center text-white">Today's Totals</h2>
+          <div className="bg-slate-800 rounded-xl p-4 space-y-3">
+            {todaysTotals.filter(w => w.count > 0).map((workout) => (
+              <div key={workout.id} className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-4 h-4 rounded-full ${colorClassMap[workout.color]}`}></div>
+                  <span className="font-medium text-white">{workout.name}</span>
                 </div>
-              ))}
-            </div>
-          </section>
-        )
-      ))}
+                <span className="text-lg font-bold text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
 
 
       {/* Recent Activity Section */}
-      {!isRecentActivityHidden && (isLoading ? (
-        <RecentActivitySkeleton />
-      ) : (
-        recentActivity.length > 0 && (
-          <section className="mb-8">
-            <h2 className="text-xl font-semibold mb-4 text-center text-white">Recent Activity</h2>
-            <div className="space-y-3">
-              {recentActivity.map((day) => (
-                <div key={day.dateString} className="bg-slate-800 rounded-xl p-4">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="font-medium text-slate-300">{day.date}</span>
-                    <span className="text-sm text-slate-400">{day.totalReps} total</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-3">
-                    {day.workouts.filter(w => w.count > 0).map((workout) => (
-                      <div key={workout.id} className="text-center">
-                        <div className={`w-3 h-3 rounded-full ${colorClassMap[workout.color]} mx-auto mb-1`}></div>
-                        <span className="text-sm font-medium text-white">{workout.count}</span>
-                      </div>
-                    ))}
-                  </div>
+      {!isRecentActivityHidden && recentActivity.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-4 text-center text-white">Recent Activity</h2>
+          <div className="space-y-3">
+            {recentActivity.map((day) => (
+              <div key={day.dateString} className="bg-slate-800 rounded-xl p-4">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="font-medium text-slate-300">{day.date}</span>
+                  <span className="text-sm text-slate-400">{typeof day.totalReps === 'number' ? day.totalReps : 0} total</span>
                 </div>
-              ))}
-            </div>
-          </section>
-        )
-      ))}
+                <div className="grid grid-cols-3 gap-3">
+                  {day.workouts.filter(w => w.count > 0).map((workout) => (
+                    <div key={workout.id} className="text-center">
+                      <div className={`w-3 h-3 rounded-full ${colorClassMap[workout.color]} mx-auto mb-1`}></div>
+                      <span className="text-sm font-medium text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <WorkoutModal
         isOpen={isModalOpen}
@@ -591,7 +418,6 @@ export default function Home() {
         onSave={handleAddWorkout}
         availableColors={availableColors}
         editingWorkout={editingWorkout}
-        routines={getRoutineArray()}
       />
 
       {/* Sidebar Dashboard */}
