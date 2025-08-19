@@ -59,7 +59,7 @@ export default function Home() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
-  const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number } | null>(null);
+  const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number; weightLbs?: number } | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
   const [isTimerOpen, setIsTimerOpen] = useState(false);
@@ -128,12 +128,12 @@ export default function Home() {
     }
   };
 
-  const handleAddWorkout = (name: string, color: string, dailyGoal: number) => {
+  const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number) => {
     if (editingWorkout) {
       updateWorkoutGoal(editingWorkout.id, dailyGoal);
       setEditingWorkout(null);
     } else {
-      addWorkout(name, color, dailyGoal);
+      addWorkout(name, color, dailyGoal, weightLbs);
     }
   };
 
@@ -142,7 +142,8 @@ export default function Home() {
       id: workout.id,
       name: workout.name,
       color: workout.color,
-      dailyGoal: workout.dailyGoal
+      dailyGoal: workout.dailyGoal,
+      weightLbs: workout.weightLbs
     });
     setIsModalOpen(true);
   };
@@ -210,7 +211,14 @@ export default function Home() {
                 />
                 <div className="text-center">
                   <div className="flex items-center space-x-1">
-                    <span className="text-sm text-slate-300 font-medium">{workout.name}</span>
+                    <span className="text-sm text-slate-300 font-medium">
+                      {workout.name}
+                      {workout.weightLbs && (
+                        <span className="text-xs text-slate-400 ml-1">
+                          ({workout.weightLbs}lbs)
+                        </span>
+                      )}
+                    </span>
                     <button
                       onClick={() => handleEditWorkout(workout)}
                       className="text-slate-400 hover:text-slate-200 transition-colors"

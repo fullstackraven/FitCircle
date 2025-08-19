@@ -8,6 +8,7 @@ export interface Workout {
   color: string;
   count: number;
   dailyGoal: number;
+  weightLbs?: number; // Optional weight in pounds
 }
 
 export interface DailyLog {
@@ -67,14 +68,15 @@ export function useWorkouts() {
     return () => clearInterval(interval);
   }, [data.lastDate]);
 
-  const addWorkout = (name: string, color: string, dailyGoal: number) => {
+  const addWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number) => {
     const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
     const newWorkout: Workout = {
       id,
       name,
       color,
       count: 0,
-      dailyGoal
+      dailyGoal,
+      ...(weightLbs && weightLbs > 0 ? { weightLbs } : {})
     };
 
     setData(prev => ({

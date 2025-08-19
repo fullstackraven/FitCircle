@@ -7,9 +7,9 @@ import { Label } from '@/components/ui/label';
 interface WorkoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string, color: string, dailyGoal: number) => void;
+  onSave: (name: string, color: string, dailyGoal: number, weightLbs?: number) => void;
   availableColors: string[];
-  editingWorkout?: { id: string; name: string; color: string; dailyGoal: number } | null;
+  editingWorkout?: { id: string; name: string; color: string; dailyGoal: number; weightLbs?: number } | null;
 }
 
 const colorClassMap: { [key: string]: string } = {
@@ -31,8 +31,10 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
   const [workoutName, setWorkoutName] = useState('');
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || 'green');
   const [dailyGoal, setDailyGoal] = useState<number | string>(10);
+  const [weightLbs, setWeightLbs] = useState<number | string>('');
   const [workoutNameFocused, setWorkoutNameFocused] = useState(false);
   const [dailyGoalFocused, setDailyGoalFocused] = useState(false);
+  const [weightFocused, setWeightFocused] = useState(false);
 
   // Initialize form when editing
   useEffect(() => {
@@ -40,6 +42,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
       setWorkoutName(editingWorkout.name);
       setSelectedColor(editingWorkout.color);
       setDailyGoal(editingWorkout.dailyGoal);
+      setWeightLbs(editingWorkout.weightLbs || '');
     } else if (!isOpen) {
       resetForm();
     }
@@ -47,8 +50,9 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
 
   const handleSave = () => {
     const finalGoal = typeof dailyGoal === 'string' ? parseInt(dailyGoal) || 1 : dailyGoal;
+    const finalWeight = typeof weightLbs === 'string' ? (weightLbs === '' ? undefined : parseInt(weightLbs) || undefined) : weightLbs;
     if (workoutName.trim() && finalGoal > 0) {
-      onSave(workoutName.trim(), selectedColor, finalGoal);
+      onSave(workoutName.trim(), selectedColor, finalGoal, finalWeight);
       resetForm();
       onClose();
     }
@@ -58,6 +62,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
     setWorkoutName('');
     setSelectedColor(availableColors[0] || 'green');
     setDailyGoal(10);
+    setWeightLbs('');
   };
 
   const handleCancel = () => {
@@ -95,10 +100,46 @@ export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editing
             />
           </div>
 
+          {/* Weight Input */}
+          <div className="space-y-2">
+            <Label htmlFor="weight-lbs" className="text-sm font-medium text-white">
+              Weight (lbs) - Optional
+            </Label>
+            <Input
+              id="weight-lbs"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              placeholder={weightFocused ? "" : "e.g., 25 (leave empty for bodyweight)"}
+              value={weightLbs.toString()}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, ''); // Only allow digits
+                
+                if (value === '') {
+                  // Allow empty field for bodyweight exercises
+                  setWeightLbs('');
+                  return;
+                }
+                
+                const numValue = parseInt(value);
+                // Allow up to 4 digits (1-9999 lbs)
+                if (numValue >= 1 && numValue <= 9999) {
+                  setWeightLbs(numValue);
+                }
+              }}
+              onFocus={(e) => {
+                setWeightFocused(true);
+                e.target.select(); // Select all text when focused
+              }}
+              onBlur={() => setWeightFocused(false)}
+              className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
+            />
+          </div>
+
           {/* Daily Goal Input */}
           <div className="space-y-2">
             <Label htmlFor="daily-goal" className="text-sm font-medium text-white">
-              Daily Goal
+              Daily Goal Reps
             </Label>
             <Input
               id="daily-goal"
