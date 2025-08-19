@@ -11,6 +11,7 @@ interface WorkoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[]) => void;
+  onDelete?: (workoutId: string) => void;
   availableColors: string[];
   editingWorkout?: { id: string; name: string; color: string; dailyGoal: number; weightLbs?: number; scheduledDays?: number[] } | null;
 }
@@ -30,7 +31,7 @@ const colorClassMap: { [key: string]: string } = {
   yellow: 'workout-yellow'
 };
 
-export function WorkoutModal({ isOpen, onClose, onSave, availableColors, editingWorkout }: WorkoutModalProps) {
+export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColors, editingWorkout }: WorkoutModalProps) {
   const [workoutName, setWorkoutName] = useState('');
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || 'green');
   const [dailyGoal, setDailyGoal] = useState<number | string>(10);

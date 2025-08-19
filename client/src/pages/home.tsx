@@ -381,62 +381,6 @@ export default function Home() {
               </div>
             </div>
           )}
-
-          {/* Timer Circle */}
-          <div className="flex flex-col items-center space-y-3">
-            <button
-              onClick={() => setIsTimerOpen(true)}
-              className="relative"
-              title="Open Timer"
-            >
-              <div className="relative w-25 h-25 rounded-full bg-slate-800 flex items-center justify-center border-4 border-slate-700 hover:border-slate-600 transition-colors" style={{ width: '100px', height: '100px' }}>
-                <Timer className="w-10 h-10 text-slate-400" />
-                {timerState.remainingTime > 0 && (
-                  <div className="absolute inset-0 rounded-full">
-                    <svg width="100" height="100" className="transform -rotate-90">
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="46"
-                        stroke="rgb(34, 197, 94)"
-                        strokeWidth="4"
-                        fill="none"
-                        strokeDasharray={`${2 * Math.PI * 46}`}
-                        strokeDashoffset={`${2 * Math.PI * 46 * (1 - getProgress())}`}
-                        className="transition-all duration-1000"
-                      />
-                    </svg>
-                  </div>
-                )}
-              </div>
-            </button>
-            <div className="text-center">
-              <div className="text-sm text-slate-300 font-medium">
-                {timerState.remainingTime > 0 ? formatTime(timerState.remainingTime) : "Timer"}
-              </div>
-              <div className="text-xs text-slate-400">
-                {isWorkoutActive ? `${getCurrentSessionDuration()}` : "Tap to start"}
-              </div>
-            </div>
-          </div>
-
-          {/* Add Workout Button */}
-          {canAddMoreWorkouts() && (
-            <div className="flex flex-col items-center space-y-3">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="w-25 h-25 rounded-full bg-slate-800 flex items-center justify-center border-4 border-dashed border-slate-700 hover:border-slate-600 transition-colors"
-                style={{ width: '100px', height: '100px' }}
-                title="Add new workout"
-              >
-                <Plus className="w-10 h-10 text-slate-400" />
-              </button>
-              <div className="text-center">
-                <div className="text-sm text-slate-300 font-medium">Add</div>
-                <div className="text-xs text-slate-400">New workout</div>
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
@@ -541,6 +485,7 @@ export default function Home() {
           setEditingWorkout(null);
         }}
         onSave={handleAddWorkout}
+        onDelete={handleDeleteWorkout}
         availableColors={availableColors}
         editingWorkout={editingWorkout}
       />
