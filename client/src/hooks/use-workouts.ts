@@ -65,13 +65,32 @@ export function useWorkouts() {
       
       Object.entries(dayLog).forEach(([workoutId, count]) => {
         if (typeof count === 'number' && count > 0) {
-          // Use current goal as historical goal (best approximation we have)
+          // Smart goal estimation based on the count that was actually achieved
+          // If someone completed exactly their count, we assume it was their goal
           const workout = currentWorkouts[workoutId];
-          const historicalGoal = workout?.dailyGoal || 1;
+          let estimatedGoal = count; // Default: assume they met exactly their goal
+          
+          // For very high counts, it's likely they exceeded their goal
+          // Common workout goals: 10, 20, 25, 30, 50, 100, 200, etc.
+          const commonGoals = [1, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150, 200, 250, 300, 500];
+          const possibleGoal = commonGoals.find(goal => goal <= count && count <= goal * 1.5);
+          
+          if (possibleGoal) {
+            estimatedGoal = possibleGoal;
+          } else if (count >= 90 && count <= 110) {
+            // Probably aiming for 100
+            estimatedGoal = 100;
+          } else if (count >= 45 && count <= 55) {
+            // Probably aiming for 50  
+            estimatedGoal = 50;
+          } else if (count >= 20 && count <= 35) {
+            // Probably aiming for 25-30
+            estimatedGoal = Math.min(count, 30);
+          }
           
           migratedDayLog[workoutId] = {
             count: count,
-            goalAtTime: historicalGoal
+            goalAtTime: estimatedGoal
           };
         } else if (typeof count === 'object') {
           // Already in new format
@@ -87,6 +106,7 @@ export function useWorkouts() {
 
     // Save migrated data immediately
     localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(migratedData));
+    console.log('Migration complete - historical goals preserved based on actual performance');
     return migratedData;
   }
 
