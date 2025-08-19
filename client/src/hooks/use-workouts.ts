@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import { getTodayString, getDateString } from '@/lib/date-utils';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
+export interface GoalHistoryEntry {
+  goal: number;
+  timestamp: string; // ISO date string when the goal was set
+}
+
 export interface Workout {
   id: string;
   name: string;
@@ -9,6 +14,7 @@ export interface Workout {
   count: number;
   dailyGoal: number;
   weightLbs?: number; // Optional weight in pounds
+  goalHistory?: GoalHistoryEntry[]; // Track all goal changes over time
 }
 
 export interface WorkoutLogEntry {
@@ -44,7 +50,7 @@ export function useWorkouts() {
     return migrateDataFormat(savedData);
   });
 
-  // Migration function to convert old data format to preserve historical goals
+  // Advanced migration that uses completion patterns to determine historical goals
   function migrateDataFormat(savedData: WorkoutData): WorkoutData {
     // Check if migration is needed
     const needsMigration = Object.values(savedData.dailyLogs || {}).some(dayLog =>
@@ -55,58 +61,68 @@ export function useWorkouts() {
       return savedData;
     }
 
-    console.log('Migrating workout data to preserve historical goals...');
+    console.log('Migrating workout data to preserve historical completion status...');
     const migratedData = { ...savedData };
     const currentWorkouts = savedData.workouts || {};
 
-    // For each day in daily logs, convert number entries to WorkoutLogEntry format
-    Object.entries(savedData.dailyLogs || {}).forEach(([dateStr, dayLog]) => {
-      const migratedDayLog: DailyLog = {};
+    // For each workout, analyze patterns to determine what goals were likely used
+    Object.keys(currentWorkouts).forEach(workoutId => {
+      const workoutEntries: Array<{date: string, count: number}> = [];
       
-      Object.entries(dayLog).forEach(([workoutId, count]) => {
+      // Collect all workout entries for this workout
+      Object.entries(savedData.dailyLogs || {}).forEach(([dateStr, dayLog]) => {
+        const count = dayLog[workoutId];
         if (typeof count === 'number' && count > 0) {
-          // Smart goal estimation based on the count that was actually achieved
-          // If someone completed exactly their count, we assume it was their goal
-          const workout = currentWorkouts[workoutId];
-          let estimatedGoal = count; // Default: assume they met exactly their goal
-          
-          // For very high counts, it's likely they exceeded their goal
-          // Common workout goals: 10, 20, 25, 30, 50, 100, 200, etc.
-          const commonGoals = [1, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150, 200, 250, 300, 500];
-          const possibleGoal = commonGoals.find(goal => goal <= count && count <= goal * 1.5);
-          
-          if (possibleGoal) {
-            estimatedGoal = possibleGoal;
-          } else if (count >= 90 && count <= 110) {
-            // Probably aiming for 100
-            estimatedGoal = 100;
-          } else if (count >= 45 && count <= 55) {
-            // Probably aiming for 50  
-            estimatedGoal = 50;
-          } else if (count >= 20 && count <= 35) {
-            // Probably aiming for 25-30
-            estimatedGoal = Math.min(count, 30);
-          }
-          
-          migratedDayLog[workoutId] = {
-            count: count,
-            goalAtTime: estimatedGoal
-          };
-        } else if (typeof count === 'object') {
-          // Already in new format
-          migratedDayLog[workoutId] = count;
-        } else {
-          // Zero values keep old format
-          migratedDayLog[workoutId] = count;
+          workoutEntries.push({ date: dateStr, count });
         }
       });
-      
-      migratedData.dailyLogs[dateStr] = migratedDayLog;
+
+      // Sort by date
+      workoutEntries.sort((a, b) => a.date.localeCompare(b.date));
+
+      // Determine historical goals by analyzing completion patterns
+      // Key insight: if someone consistently hit the same number, that was likely their goal
+      workoutEntries.forEach(entry => {
+        // For each entry, determine what the goal likely was at that time
+        let historicalGoal = entry.count; // Default: assume they met their exact goal
+        
+        // Look for patterns around this date
+        const nearbyEntries = workoutEntries.filter(e => 
+          Math.abs(new Date(e.date).getTime() - new Date(entry.date).getTime()) < 7 * 24 * 60 * 60 * 1000 // Within a week
+        );
+        
+        // If there are multiple entries around this time with the same value, it's likely a goal
+        const commonCounts = new Map<number, number>();
+        nearbyEntries.forEach(e => {
+          commonCounts.set(e.count, (commonCounts.get(e.count) || 0) + 1);
+        });
+        
+        // Find the most common count in that time period
+        let mostCommonCount = entry.count;
+        let maxFrequency = 0;
+        commonCounts.forEach((frequency, count) => {
+          if (frequency > maxFrequency) {
+            maxFrequency = frequency;
+            mostCommonCount = count;
+          }
+        });
+        
+        // Use the most common count as the historical goal
+        historicalGoal = mostCommonCount;
+        
+        // Update the daily log with historical goal
+        if (migratedData.dailyLogs[entry.date]) {
+          migratedData.dailyLogs[entry.date][workoutId] = {
+            count: entry.count,
+            goalAtTime: historicalGoal
+          };
+        }
+      });
     });
 
     // Save migrated data immediately
     localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(migratedData));
-    console.log('Migration complete - historical goals preserved based on actual performance');
+    console.log('Migration complete - historical goals determined from completion patterns');
     return migratedData;
   }
 
@@ -192,7 +208,7 @@ export function useWorkouts() {
             ...prev.dailyLogs[today],
             [workoutId]: {
               count: currentDailyCount + 1,
-              goalAtTime: currentGoal
+              goalAtTime: getGoalForDate(workoutId, today)
             }
           }
         }
@@ -228,7 +244,7 @@ export function useWorkouts() {
             ...prev.dailyLogs[today],
             [workoutId]: newCount > 0 ? {
               count: newCount,
-              goalAtTime: currentGoal
+              goalAtTime: getGoalForDate(workoutId, today)
             } : 0 // Keep old format for zero values to save space
           }
         }
@@ -296,19 +312,62 @@ export function useWorkouts() {
     return Object.values(data.workouts || {});
   };
 
-  const updateWorkout = (workoutId: string, name?: string, newGoal?: number, weightLbs?: number) => {
-    setData(prev => ({
-      ...prev,
-      workouts: {
-        ...prev.workouts,
-        [workoutId]: {
-          ...prev.workouts[workoutId],
-          ...(name !== undefined ? { name } : {}),
-          ...(newGoal !== undefined ? { dailyGoal: newGoal } : {}),
-          ...(weightLbs !== undefined ? { weightLbs: weightLbs > 0 ? weightLbs : undefined } : {})
-        }
+  // Helper function to get the goal that was in effect on a specific date
+  const getGoalForDate = (workoutId: string, dateStr: string): number => {
+    const workout = data.workouts[workoutId];
+    if (!workout) return 1;
+    
+    // If no goal history, use current goal (for new workouts or before migration)
+    if (!workout.goalHistory || workout.goalHistory.length === 0) {
+      return workout.dailyGoal;
+    }
+    
+    // Find the most recent goal change before or on the given date
+    const goalHistory = [...workout.goalHistory].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+    let applicableGoal = workout.dailyGoal; // Default to current goal
+    
+    // Work backwards through history to find the applicable goal
+    for (let i = goalHistory.length - 1; i >= 0; i--) {
+      if (goalHistory[i].timestamp <= dateStr) {
+        applicableGoal = goalHistory[i].goal;
+        break;
       }
-    }));
+    }
+    
+    return applicableGoal;
+  };
+
+  const updateWorkout = (workoutId: string, name?: string, newGoal?: number, weightLbs?: number) => {
+    setData(prev => {
+      const currentWorkout = prev.workouts[workoutId];
+      const isGoalChanged = newGoal !== undefined && newGoal !== currentWorkout?.dailyGoal;
+      
+      // If goal is being changed, add to goal history
+      let updatedGoalHistory = currentWorkout?.goalHistory || [];
+      if (isGoalChanged && currentWorkout) {
+        updatedGoalHistory = [
+          ...updatedGoalHistory,
+          {
+            goal: newGoal!,
+            timestamp: getTodayString()
+          }
+        ];
+      }
+      
+      return {
+        ...prev,
+        workouts: {
+          ...prev.workouts,
+          [workoutId]: {
+            ...currentWorkout,
+            ...(name !== undefined ? { name } : {}),
+            ...(newGoal !== undefined ? { dailyGoal: newGoal } : {}),
+            ...(weightLbs !== undefined ? { weightLbs: weightLbs > 0 ? weightLbs : undefined } : {}),
+            ...(isGoalChanged ? { goalHistory: updatedGoalHistory } : {})
+          }
+        }
+      };
+    });
   };
 
   // Keep the old function for backward compatibility
