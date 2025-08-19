@@ -270,10 +270,10 @@ export default function Home() {
         {todaysWorkouts.length > 0 && (
           <h2 className="text-xl font-semibold mb-4 text-white">Today's Workouts</h2>
         )}
-        <div className="space-y-8 p-8 overflow-visible">
+        <div className="space-y-6 p-8 overflow-visible">
           {/* Workout Circles Grid */}
           {todaysWorkouts.length > 0 && (
-            <div className="grid grid-cols-2 gap-16 justify-items-center">
+            <div className="grid grid-cols-2 gap-x-20 gap-y-4 justify-items-center">
               {todaysWorkouts.map((workout) => {
                 const todayTotal = todaysTotals.find(t => t.id === workout.id);
                 const currentCount = todayTotal?.count || 0;
@@ -332,7 +332,7 @@ export default function Home() {
           )}
 
           {/* Timer and Add Workout - Always bottom row */}
-          <div className="grid grid-cols-2 gap-16 justify-items-center">
+          <div className="grid grid-cols-2 gap-x-20 gap-y-4 justify-items-center">
             {/* Timer Circle */}
             <div className="flex flex-col items-center space-y-3">
               <button
