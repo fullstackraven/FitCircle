@@ -32,14 +32,63 @@ const WORKOUT_COLORS = [
 ];
 
 export function useWorkouts() {
-  const [data, setData] = useState<WorkoutData>(() => 
-    safeParseJSON(localStorage.getItem(STORAGE_KEYS.WORKOUTS), {
+  const [data, setData] = useState<WorkoutData>(() => {
+    const savedData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.WORKOUTS), {
       workouts: {},
       dailyLogs: {},
       lastDate: getTodayString(),
       journalEntries: {}
-    })
-  );
+    });
+    
+    // Migration: convert old format data to new format with goal preservation
+    return migrateDataFormat(savedData);
+  });
+
+  // Migration function to convert old data format to preserve historical goals
+  function migrateDataFormat(savedData: WorkoutData): WorkoutData {
+    // Check if migration is needed
+    const needsMigration = Object.values(savedData.dailyLogs || {}).some(dayLog =>
+      Object.values(dayLog).some(logEntry => typeof logEntry === 'number' && logEntry > 0)
+    );
+
+    if (!needsMigration) {
+      return savedData;
+    }
+
+    console.log('Migrating workout data to preserve historical goals...');
+    const migratedData = { ...savedData };
+    const currentWorkouts = savedData.workouts || {};
+
+    // For each day in daily logs, convert number entries to WorkoutLogEntry format
+    Object.entries(savedData.dailyLogs || {}).forEach(([dateStr, dayLog]) => {
+      const migratedDayLog: DailyLog = {};
+      
+      Object.entries(dayLog).forEach(([workoutId, count]) => {
+        if (typeof count === 'number' && count > 0) {
+          // Use current goal as historical goal (best approximation we have)
+          const workout = currentWorkouts[workoutId];
+          const historicalGoal = workout?.dailyGoal || 1;
+          
+          migratedDayLog[workoutId] = {
+            count: count,
+            goalAtTime: historicalGoal
+          };
+        } else if (typeof count === 'object') {
+          // Already in new format
+          migratedDayLog[workoutId] = count;
+        } else {
+          // Zero values keep old format
+          migratedDayLog[workoutId] = count;
+        }
+      });
+      
+      migratedData.dailyLogs[dateStr] = migratedDayLog;
+    });
+
+    // Save migrated data immediately
+    localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(migratedData));
+    return migratedData;
+  }
 
   // Helper function to extract count from log entry
   const getCountFromLogEntry = (logEntry: number | WorkoutLogEntry | undefined): number => {
@@ -404,9 +453,11 @@ export function useWorkouts() {
           let allGoalsMet = true;
           
           workoutsWithReps.forEach(workout => {
-            const count = getCountFromLogEntry(dayLog[workout.id]);
+            const logEntry = dayLog[workout.id];
+            const count = getCountFromLogEntry(logEntry);
+            const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : workout.dailyGoal;
             monthlyReps += count;
-            if (count < workout.dailyGoal) {
+            if (count < goalAtTime) {
               allGoalsMet = false;
             }
           });
@@ -508,9 +559,11 @@ export function useWorkouts() {
           let allGoalsMet = true;
           
           workoutsWithReps.forEach(workout => {
-            const count = getCountFromLogEntry(dayLog[workout.id]);
+            const logEntry = dayLog[workout.id];
+            const count = getCountFromLogEntry(logEntry);
+            const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : workout.dailyGoal;
             totalReps += count;
-            if (count < workout.dailyGoal) {
+            if (count < goalAtTime) {
               allGoalsMet = false;
             }
           });
