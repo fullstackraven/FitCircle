@@ -208,67 +208,62 @@ export default function Home() {
       {/* Quote of the Day */}
       {!isQuoteHidden && <QuoteOfTheDay />}
 
-      {/* Start Workout Session Button */}
-      <div className="mb-6 text-center">
-        <Button
-          onClick={() => {
-            if (isWorkoutActive) {
-              if (isWorkoutPaused) {
-                resumeWorkout();
-              } else {
-                pauseWorkout();
-              }
-            } else {
-              startWorkout();
-            }
-          }}
-          className={`${
-            isWorkoutActive 
-              ? isWorkoutPaused 
-                ? 'bg-green-500 hover:bg-green-600' 
-                : 'bg-yellow-500 hover:bg-yellow-600'
-              : 'bg-blue-500 hover:bg-blue-600'
-          } text-white px-8 py-3 rounded-xl text-lg font-semibold transition-all transform active:scale-95`}
-        >
-          {isWorkoutActive 
-            ? isWorkoutPaused 
-              ? <>
-                  <Play size={20} className="mr-2" />
-                  Resume Session
-                </> 
-              : <>
-                  <Pause size={20} className="mr-2" />
-                  Pause Session
-                </>
-            : <>
-                <Activity size={20} className="mr-2" />
-                Start Workout Session
+      {/* Start Workout Session Section */}
+      <section className="mb-8">
+        <div className="bg-slate-800 rounded-xl p-6">
+          <div className="flex flex-col items-center space-y-4">
+            {!isWorkoutActive ? (
+              <>
+                <button
+                  onClick={startWorkout}
+                  className="text-black font-bold py-4 px-6 rounded-xl flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 transform hover:scale-105 w-full max-w-xs"
+                  style={{
+                    background: 'linear-gradient(135deg, #00ff41 0%, #00cc33 100%)',
+                    boxShadow: '0 0 20px rgba(0, 255, 65, 0.3)'
+                  }}
+                >
+                  <Play className="w-5 h-5 text-black" />
+                  <span className="text-base text-black whitespace-nowrap">Start Workout Session</span>
+                </button>
+                <p className="text-sm text-slate-400 text-center">Start a Workout Session to track the duration of your workouts</p>
               </>
-          }
-        </Button>
-        
-        {isWorkoutActive && (
-          <div className="mt-3 flex justify-center space-x-4">
-            <div className="text-sm text-slate-300">
-              Session: {getCurrentSessionDuration()}
-            </div>
-            <button
-              onClick={stopWorkout}
-              className="text-red-400 hover:text-red-300 transition-colors text-sm"
-            >
-              <StopCircle size={16} className="inline mr-1" />
-              End Session
-            </button>
-            <button
-              onClick={resetWorkout}
-              className="text-slate-400 hover:text-slate-300 transition-colors text-sm"
-            >
-              <RotateCcw size={16} className="inline mr-1" />
-              Reset
-            </button>
+            ) : (
+              <div className="w-full flex flex-col items-center space-y-4">
+                <div className="bg-slate-700 rounded-xl py-4 px-6 flex items-center justify-between w-full max-w-xs" style={{ minHeight: '56px' }}>
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-3 h-3 rounded-full ${isWorkoutPaused ? 'bg-yellow-400' : 'bg-green-400 animate-pulse'}`}></div>
+                    <span className="text-white font-mono text-xl">{getCurrentSessionDuration()}</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={stopWorkout}
+                      className="w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
+                      title="Stop workout"
+                    >
+                      <StopCircle className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={isWorkoutPaused ? resumeWorkout : pauseWorkout}
+                      className="w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-colors"
+                      title={isWorkoutPaused ? "Resume workout" : "Pause workout"}
+                    >
+                      {isWorkoutPaused ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
+                    </button>
+                    <button
+                      onClick={resetWorkout}
+                      className="w-10 h-10 bg-slate-600 hover:bg-slate-700 text-white rounded-full flex items-center justify-center transition-colors"
+                      title="Reset without saving"
+                    >
+                      <RotateCcw className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+                <p className="text-sm text-slate-400 text-center">Workout session in progress</p>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      </section>
 
       {/* Today's Workouts Section */}
       {todaysWorkouts.length > 0 && (
@@ -396,10 +391,10 @@ export default function Home() {
             <CollapsibleTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full justify-between bg-slate-800 border-slate-700 text-white hover:bg-slate-700 mb-4"
+                className="w-full justify-between bg-slate-800 border-slate-700 text-white hover:bg-slate-700 mb-4 py-4 h-auto rounded-xl"
               >
                 <span className="text-lg font-semibold">All Workouts</span>
-                {isAllWorkoutsOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                {isAllWorkoutsOpen ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -409,7 +404,7 @@ export default function Home() {
                   return (
                     <div 
                       key={workout.id} 
-                      className="flex items-center justify-between p-3 bg-slate-700 rounded-lg"
+                      className="flex items-center justify-between p-4 bg-slate-700 rounded-xl"
                     >
                       <div className="flex items-center space-x-3">
                         <div className={`w-3 h-3 rounded-full ${colorClassMap[workout.color]}`} />
