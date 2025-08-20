@@ -254,3 +254,10 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: hsl(210, 40%, 80%);
 }
+
+/* Dialog/Modal styling for better visibility */
+.fitcircle-dialog {
+  background-color: hsl(222.2, 84%, 4.9%) !important;
+  border: 1px solid hsl(217.2, 32.6%, 17.5%) !important;
+  backdrop-filter: blur(8px) !important;
+}

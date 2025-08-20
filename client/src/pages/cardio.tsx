@@ -298,7 +298,7 @@ export default function CardioPage() {
               Log Cardio
             </Button>
           </DialogTrigger>
-          <DialogContent className="fitcircle-dialog">
+          <DialogContent className="fitcircle-dialog max-w-md">
             <DialogHeader>
               <DialogTitle>Add Cardio Entry</DialogTitle>
               <DialogDescription className="text-slate-400 text-center">
@@ -482,7 +482,7 @@ export default function CardioPage() {
 
         {/* Edit Entry Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="fitcircle-dialog">
+          <DialogContent className="fitcircle-dialog max-w-md">
             <DialogHeader>
               <DialogTitle>Edit Cardio Entry</DialogTitle>
               <DialogDescription className="text-slate-400 text-center">
