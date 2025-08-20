@@ -54,7 +54,6 @@ export default function CardioPage() {
     notes: ''
   });
   const [newCustomType, setNewCustomType] = useState('');
-  // Removed goalForm state - now updates directly
 
   const todaysProgress = getTodaysProgress();
   const weeklyProgress = getWeeklyProgress();
@@ -66,8 +65,6 @@ export default function CardioPage() {
   const dailyGoalTarget = data.goal.target / 7; // Weekly goal divided by 7 days
   const todaysValue = data.goal.type === 'duration' ? todaysProgress.duration : todaysProgress.distance;
   const progressPercentage = dailyGoalTarget > 0 ? Math.min((todaysValue / dailyGoalTarget) * 100, 100) : 0;
-  
-  // Removed debug logging
 
   const resetAddForm = () => {
     setNewEntry({
@@ -78,43 +75,46 @@ export default function CardioPage() {
     });
   };
 
+  const todaysEntries = data.entries.filter(entry => {
+    const entryDate = new Date(entry.createdAt).toDateString();
+    const today = new Date().toDateString();
+    return entryDate === today;
+  });
+
   const handleAddEntry = () => {
-    if (!newEntry.type || !newEntry.duration) return;
-    
-    addCardioEntry(
-      newEntry.type,
-      parseFloat(newEntry.duration),
-      newEntry.distance ? parseFloat(newEntry.distance) : undefined,
-      newEntry.notes || undefined
-    );
-    
+    if (!newEntry.type || (!newEntry.duration && !newEntry.distance)) {
+      alert('Please fill in the cardio type and either duration or distance');
+      return;
+    }
+
+    const entry: Omit<CardioEntry, 'id' | 'createdAt'> = {
+      type: newEntry.type,
+      duration: parseFloat(newEntry.duration) || 0,
+      distance: parseFloat(newEntry.distance) || 0,
+      notes: newEntry.notes || undefined
+    };
+
+    addCardioEntry(entry);
     resetAddForm();
     setIsAddDialogOpen(false);
   };
 
-  const handleEditEntry = (entry: CardioEntry) => {
-    setEditingEntry(entry);
-    setNewEntry({
-      type: entry.type,
-      duration: entry.duration.toString(),
-      distance: entry.distance?.toString() || '',
-      notes: entry.notes || ''
-    });
-    setIsEditDialogOpen(true);
-  };
-
   const handleUpdateEntry = () => {
-    if (!editingEntry || !newEntry.type || !newEntry.duration) return;
-    
-    updateCardioEntry(editingEntry.id, {
+    if (!editingEntry || !newEntry.type || (!newEntry.duration && !newEntry.distance)) {
+      alert('Please fill in the cardio type and either duration or distance');
+      return;
+    }
+
+    const updatedEntry: Partial<CardioEntry> = {
       type: newEntry.type,
-      duration: parseFloat(newEntry.duration),
-      distance: newEntry.distance ? parseFloat(newEntry.distance) : undefined,
+      duration: parseFloat(newEntry.duration) || 0,
+      distance: parseFloat(newEntry.distance) || 0,
       notes: newEntry.notes || undefined
-    });
-    
-    resetAddForm();
+    };
+
+    updateCardioEntry(editingEntry.id, updatedEntry);
     setEditingEntry(null);
+    resetAddForm();
     setIsEditDialogOpen(false);
   };
 
@@ -123,8 +123,6 @@ export default function CardioPage() {
       deleteCardioEntry(id);
     }
   };
-
-  // handleUpdateGoal removed - goal updates now happen directly in UI
 
   const handleAddCustomType = () => {
     if (!newCustomType.trim()) return;
@@ -155,99 +153,100 @@ export default function CardioPage() {
           </button>
           <h1 className="fitcircle-page-title">Cardio</h1>
           <Dialog open={isGoalDialogOpen} onOpenChange={setIsGoalDialogOpen}>
-          <DialogTrigger asChild>
-            <button className="flex items-center space-x-1 fitcircle-text-muted hover:text-white">
-              <Target className="w-5 h-5" />
-              <span>Goal</span>
-            </button>
-          </DialogTrigger>
-          <DialogContent className="bg-slate-800 text-white border-slate-700">
-            <DialogHeader>
-              <DialogTitle>Cardio Goal</DialogTitle>
-              <DialogDescription className="text-slate-400 text-center">
-                Set and track your weekly cardio goals
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-6">
-              <div className="flex justify-center">
-                <GoalCircle
-                  percentage={weeklyProgress.goalProgress || 0}
-                  color="rgb(34, 197, 94)"
-                  size={120}
-                  currentValue={Math.round(data.goal.type === 'duration' ? weeklyProgress.duration : weeklyProgress.distance)}
-                  goalValue={data.goal.target}
-                  unit={data.goal.type === 'duration' ? 'min' : 'mi'}
-                  title="This Week"
-                  description=""
-                />
-              </div>
-              
-              <div className="space-y-4">
-                <div className="space-y-3">
-                  <Label className="text-sm text-slate-300">Goal Type:</Label>
-                  <div className="flex space-x-3">
-                    <Button
-                      onClick={() => updateGoal({ type: 'distance', target: data.goal.target, period: 'week' })}
-                      variant={data.goal.type === 'distance' ? 'default' : 'outline'}
-                      className={`flex-1 ${
-                        data.goal.type === 'distance' 
-                          ? 'bg-green-600 hover:bg-green-700 text-white' 
-                          : 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600'
-                      }`}
-                    >
-                      Miles per week
-                    </Button>
-                    <Button
-                      onClick={() => updateGoal({ type: 'duration', target: data.goal.target, period: 'week' })}
-                      variant={data.goal.type === 'duration' ? 'default' : 'outline'}
-                      className={`flex-1 ${
-                        data.goal.type === 'duration' 
-                          ? 'bg-green-600 hover:bg-green-700 text-white' 
-                          : 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600'
-                      }`}
-                    >
-                      Minutes per week
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <Label className="text-sm text-slate-300">Weekly Target:</Label>
-                  <Input
-                    type="number"
-                    value={data.goal.target}
-                    onChange={(e) => {
-                      const value = parseFloat(e.target.value);
-                      if (value > 0) {
-                        updateGoal({
-                          type: data.goal.type,
-                          target: value,
-                          period: 'week'
-                        });
-                      }
-                    }}
-                    className="bg-slate-700 border-slate-600 text-white"
-                    step="0.1"
+            <DialogTrigger asChild>
+              <button className="flex items-center space-x-1 fitcircle-text-muted hover:text-white">
+                <Target className="w-5 h-5" />
+                <span>Goal</span>
+              </button>
+            </DialogTrigger>
+            <DialogContent className="fitcircle-dialog">
+              <DialogHeader>
+                <DialogTitle>Cardio Goal</DialogTitle>
+                <DialogDescription className="text-slate-400 text-center">
+                  Set and track your weekly cardio goals
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-6">
+                <div className="flex justify-center">
+                  <GoalCircle
+                    percentage={weeklyProgress.goalProgress || 0}
+                    color="rgb(34, 197, 94)"
+                    size={120}
+                    currentValue={Math.round(data.goal.type === 'duration' ? weeklyProgress.duration : weeklyProgress.distance)}
+                    goalValue={data.goal.target}
+                    unit={data.goal.type === 'duration' ? 'min' : 'mi'}
+                    title="This Week"
+                    description=""
                   />
                 </div>
                 
-                <div className="text-xs text-slate-400 bg-slate-700 rounded-xl p-3">
-                  <strong>Current Week:</strong> {Math.round(data.goal.type === 'duration' ? weeklyProgress.duration : weeklyProgress.distance)}{data.goal.type === 'duration' ? ' min' : ' mi'}<br/>
-                  <strong>Target:</strong> {data.goal.target}{data.goal.type === 'duration' ? ' min' : ' mi'} per week
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <Label className="text-sm text-slate-300">Goal Type:</Label>
+                    <div className="flex space-x-3">
+                      <Button
+                        onClick={() => updateGoal({ type: 'distance', target: data.goal.target, period: 'week' })}
+                        variant={data.goal.type === 'distance' ? 'default' : 'outline'}
+                        className={`flex-1 ${
+                          data.goal.type === 'distance' 
+                            ? 'bg-green-600 hover:bg-green-700 text-white' 
+                            : 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600'
+                        }`}
+                      >
+                        Miles per week
+                      </Button>
+                      <Button
+                        onClick={() => updateGoal({ type: 'duration', target: data.goal.target, period: 'week' })}
+                        variant={data.goal.type === 'duration' ? 'default' : 'outline'}
+                        className={`flex-1 ${
+                          data.goal.type === 'duration' 
+                            ? 'bg-green-600 hover:bg-green-700 text-white' 
+                            : 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600'
+                        }`}
+                      >
+                        Minutes per week
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <Label className="text-sm text-slate-300">Weekly Target:</Label>
+                    <Input
+                      type="number"
+                      value={data.goal.target}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value);
+                        if (value > 0) {
+                          updateGoal({
+                            type: data.goal.type,
+                            target: value,
+                            period: 'week'
+                          });
+                        }
+                      }}
+                      className="fitcircle-input"
+                      step="0.1"
+                    />
+                  </div>
+                  
+                  <div className="text-xs text-slate-400 bg-slate-700 rounded-xl p-3">
+                    <strong>Current Week:</strong> {Math.round(data.goal.type === 'duration' ? weeklyProgress.duration : weeklyProgress.distance)}{data.goal.type === 'duration' ? ' min' : ' mi'}<br/>
+                    <strong>Target:</strong> {data.goal.target}{data.goal.type === 'duration' ? ' min' : ' mi'} per week
+                  </div>
+                </div>
+                
+                <div className="flex space-x-3">
+                  <Button
+                    onClick={() => setIsGoalDialogOpen(false)}
+                    className="flex-1 bg-slate-600 hover:bg-slate-700 text-white"
+                  >
+                    Done
+                  </Button>
                 </div>
               </div>
-              
-              <div className="flex space-x-3">
-                <Button
-                  onClick={() => setIsGoalDialogOpen(false)}
-                  className="flex-1 bg-slate-600 hover:bg-slate-700 text-white"
-                >
-                  Done
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        </div>
 
         {/* Main Progress Circle */}
         <div className="flex justify-center mb-8">
@@ -265,7 +264,7 @@ export default function CardioPage() {
         </div>
 
         {/* Weekly Progress Stats */}
-        <Card className="bg-slate-800 border-slate-700 rounded-xl">
+        <Card className="fitcircle-card-lg mb-6">
           <CardContent className="p-4">
             <h3 className="text-lg font-semibold mb-3 text-center">Last 7 Days</h3>
             <div className="grid grid-cols-2 gap-4 text-center">
@@ -296,12 +295,12 @@ export default function CardioPage() {
         {/* Add Entry Button */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full bg-green-600 hover:bg-green-700 h-12">
+            <Button className="w-full bg-green-600 hover:bg-green-700 h-12 mb-6">
               <Plus className="w-5 h-5 mr-2" />
               Log Cardio
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-slate-800 text-white border-slate-700">
+          <DialogContent className="fitcircle-dialog">
             <DialogHeader>
               <DialogTitle>Add Cardio Entry</DialogTitle>
               <DialogDescription className="text-slate-400 text-center">
@@ -313,10 +312,10 @@ export default function CardioPage() {
                 <Label>Cardio Type</Label>
                 <div className="flex space-x-2">
                   <Select value={newEntry.type} onValueChange={(value) => setNewEntry({...newEntry, type: value})}>
-                    <SelectTrigger className="flex-1 bg-slate-700 border-slate-600">
+                    <SelectTrigger className="flex-1 fitcircle-input">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-700 border-slate-600">
+                    <SelectContent className="fitcircle-dialog">
                       {cardioTypes.map(type => (
                         <SelectItem key={type} value={type}>{type}</SelectItem>
                       ))}
@@ -324,27 +323,32 @@ export default function CardioPage() {
                   </Select>
                   <Dialog open={isAddCustomTypeOpen} onOpenChange={setIsAddCustomTypeOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="border-slate-600">
+                      <Button variant="outline" size="sm" className="px-3">
                         <Plus className="w-4 h-4" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-slate-800 text-white border-slate-700">
+                    <DialogContent className="fitcircle-dialog">
                       <DialogHeader>
-                        <DialogTitle>Add Custom Cardio Type</DialogTitle>
-                        <DialogDescription className="text-slate-400 text-center">
-                          Create a new cardio activity type
-                        </DialogDescription>
+                        <DialogTitle>Add Custom Type</DialogTitle>
+                        <DialogDescription>Create a new cardio type</DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
-                        <Input
-                          value={newCustomType}
-                          onChange={(e) => setNewCustomType(e.target.value)}
-                          placeholder="Enter custom cardio type"
-                          className="bg-slate-700 border-slate-600"
-                        />
+                        <div>
+                          <Label>Type Name</Label>
+                          <Input
+                            value={newCustomType}
+                            onChange={(e) => setNewCustomType(e.target.value)}
+                            placeholder="e.g., Swimming"
+                            className="fitcircle-input"
+                          />
+                        </div>
                         <div className="flex space-x-2">
-                          <Button onClick={handleAddCustomType} className="flex-1">Add</Button>
-                          <Button variant="outline" onClick={() => setIsAddCustomTypeOpen(false)}>Cancel</Button>
+                          <Button onClick={handleAddCustomType} className="flex-1">
+                            Add Type
+                          </Button>
+                          <Button variant="outline" onClick={() => setIsAddCustomTypeOpen(false)}>
+                            Cancel
+                          </Button>
                         </div>
                       </div>
                     </DialogContent>
@@ -352,27 +356,28 @@ export default function CardioPage() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <Label>Duration (minutes)</Label>
-                <Input
-                  type="number"
-                  value={newEntry.duration}
-                  onChange={(e) => setNewEntry({...newEntry, duration: e.target.value})}
-                  className="bg-slate-700 border-slate-600"
-                  placeholder="30"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <Label>Distance (miles) - Optional</Label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={newEntry.distance}
-                  onChange={(e) => setNewEntry({...newEntry, distance: e.target.value})}
-                  className="bg-slate-700 border-slate-600"
-                  placeholder="3.1"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <Label>Duration (minutes)</Label>
+                  <Input
+                    type="number"
+                    placeholder="30"
+                    value={newEntry.duration}
+                    onChange={(e) => setNewEntry({...newEntry, duration: e.target.value})}
+                    className="fitcircle-input"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <Label>Distance (miles)</Label>
+                  <Input
+                    type="number"
+                    placeholder="3.0"
+                    step="0.1"
+                    value={newEntry.distance}
+                    onChange={(e) => setNewEntry({...newEntry, distance: e.target.value})}
+                    className="fitcircle-input"
+                  />
+                </div>
               </div>
 
               <div className="space-y-3">
@@ -380,15 +385,14 @@ export default function CardioPage() {
                 <Textarea
                   value={newEntry.notes}
                   onChange={(e) => setNewEntry({...newEntry, notes: e.target.value})}
-                  className="bg-slate-700 border-slate-600"
-                  placeholder="How did it feel?"
+                  className="fitcircle-input"
                   rows={2}
                 />
               </div>
 
               <div className="flex space-x-2">
                 <Button onClick={handleAddEntry} className="flex-1 bg-green-600 hover:bg-green-700">
-                  <Save className="w-4 h-4 mr-2" />
+                  <Plus className="w-4 h-4 mr-2" />
                   Add Entry
                 </Button>
                 <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
@@ -399,137 +403,140 @@ export default function CardioPage() {
           </DialogContent>
         </Dialog>
 
-        {/* Cardio History */}
+        {/* Recent Entries */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Recent Activity</h3>
-          {data.entries.length === 0 ? (
-            <Card className="bg-slate-800 border-slate-700 rounded-xl">
-              <CardContent className="p-6 text-center text-slate-400">
-                <Activity className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No cardio entries yet</p>
-                <p className="text-sm">Start logging your cardio workouts!</p>
-              </CardContent>
-            </Card>
-          ) : (
+          <h3 className="text-lg font-semibold">Recent Entries</h3>
+          {todaysEntries.length > 0 ? (
             <div className="space-y-3">
-              {data.entries.slice(0, 10).map((entry) => (
-                <Card key={entry.id} className="bg-slate-800 border-slate-700 rounded-xl">
+              {todaysEntries.map(entry => (
+                <Card key={entry.id} className="fitcircle-card">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <span className="font-medium text-green-400 capitalize">{entry.type}</span>
-                          <span className="text-slate-400">•</span>
-                          <span className="text-slate-300">{entry.date}</span>
-                        </div>
-                        <div className="flex items-center space-x-4 text-sm text-slate-400">
-                          <div className="flex items-center space-x-1">
-                            <Clock className="w-3 h-3" />
-                            <span>{formatDuration(entry.duration)}</span>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                        <div>
+                          <div className="font-medium">{entry.type}</div>
+                          <div className="text-sm text-slate-400">
+                            {entry.duration > 0 && `${entry.duration} min`}
+                            {entry.duration > 0 && entry.distance > 0 && ' • '}
+                            {entry.distance > 0 && `${entry.distance} mi`}
                           </div>
-                          {entry.distance && (
-                            <div className="flex items-center space-x-1">
-                              <MapPin className="w-3 h-3" />
-                              <span>{entry.distance} mi</span>
-                            </div>
-                          )}
                           {entry.notes && (
-                            <div className="flex items-center space-x-1">
-                              <FileText className="w-3 h-3" />
-                              <span className="truncate max-w-32">{entry.notes}</span>
-                            </div>
+                            <div className="text-sm text-slate-300 mt-1">{entry.notes}</div>
                           )}
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => handleEditEntry(entry)}
-                          className="text-slate-400 hover:text-blue-400 transition-colors"
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setEditingEntry(entry);
+                            setNewEntry({
+                              type: entry.type,
+                              duration: entry.duration.toString(),
+                              distance: entry.distance.toString(),
+                              notes: entry.notes || ''
+                            });
+                            setIsEditDialogOpen(true);
+                          }}
                         >
                           <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleDeleteEntry(entry.id)}
-                          className="text-slate-400 hover:text-red-400 transition-colors"
+                          className="text-red-400 hover:text-red-300"
                         >
                           <Trash2 className="w-4 h-4" />
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
+          ) : (
+            <Card className="fitcircle-card">
+              <CardContent className="p-8 text-center">
+                <div className="text-slate-400">
+                  <Activity className="w-12 h-12 mx-auto mb-2" />
+                  <p>No cardio entries today</p>
+                  <p className="text-sm">Tap "Log Cardio" to get started!</p>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
-      </div>
 
-      {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="bg-slate-800 text-white border-slate-700">
-          <DialogHeader>
-            <DialogTitle>Edit Cardio Entry</DialogTitle>
-            <DialogDescription className="text-slate-400 text-center">
-              Update your cardio workout details
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-3">
-              <Label>Cardio Type</Label>
-              <Select value={newEntry.type} onValueChange={(value) => setNewEntry({...newEntry, type: value})}>
-                <SelectTrigger className="bg-slate-700 border-slate-600">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-700 border-slate-600">
-                  {cardioTypes.map(type => (
-                    <SelectItem key={type} value={type}>{type}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        {/* Edit Entry Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="fitcircle-dialog">
+            <DialogHeader>
+              <DialogTitle>Edit Cardio Entry</DialogTitle>
+              <DialogDescription className="text-slate-400 text-center">
+                Update your cardio workout details
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <Label>Cardio Type</Label>
+                <Select value={newEntry.type} onValueChange={(value) => setNewEntry({...newEntry, type: value})}>
+                  <SelectTrigger className="fitcircle-input">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="fitcircle-dialog">
+                    {cardioTypes.map(type => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="space-y-3">
-              <Label>Duration (minutes)</Label>
-              <Input
-                type="number"
-                value={newEntry.duration}
-                onChange={(e) => setNewEntry({...newEntry, duration: e.target.value})}
-                className="bg-slate-700 border-slate-600"
-              />
-            </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <Label>Duration (minutes)</Label>
+                  <Input
+                    type="number"
+                    value={newEntry.duration}
+                    onChange={(e) => setNewEntry({...newEntry, duration: e.target.value})}
+                    className="fitcircle-input"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <Label>Distance (miles)</Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={newEntry.distance}
+                    onChange={(e) => setNewEntry({...newEntry, distance: e.target.value})}
+                    className="fitcircle-input"
+                  />
+                </div>
+              </div>
 
-            <div className="space-y-3">
-              <Label>Distance (miles) - Optional</Label>
-              <Input
-                type="number"
-                step="0.1"
-                value={newEntry.distance}
-                onChange={(e) => setNewEntry({...newEntry, distance: e.target.value})}
-                className="bg-slate-700 border-slate-600"
-              />
-            </div>
+              <div className="space-y-3">
+                <Label>Notes - Optional</Label>
+                <Textarea
+                  value={newEntry.notes}
+                  onChange={(e) => setNewEntry({...newEntry, notes: e.target.value})}
+                  className="fitcircle-input"
+                  rows={2}
+                />
+              </div>
 
-            <div className="space-y-3">
-              <Label>Notes - Optional</Label>
-              <Textarea
-                value={newEntry.notes}
-                onChange={(e) => setNewEntry({...newEntry, notes: e.target.value})}
-                className="bg-slate-700 border-slate-600"
-                rows={2}
-              />
+              <div className="flex space-x-2">
+                <Button onClick={handleUpdateEntry} className="flex-1 bg-blue-600 hover:bg-blue-700">
+                  <Save className="w-4 h-4 mr-2" />
+                  Update Entry
+                </Button>
+                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                  Cancel
+                </Button>
+              </div>
             </div>
-
-            <div className="flex space-x-2">
-              <Button onClick={handleUpdateEntry} className="flex-1 bg-blue-600 hover:bg-blue-700">
-                <Save className="w-4 h-4 mr-2" />
-                Update Entry
-              </Button>
-              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
+          </DialogContent>
         </Dialog>
       </div>
     </div>
