@@ -130,7 +130,7 @@ export default function FitnessCalculator() {
 
   const handleBack = () => {
     if (fromDashboard) {
-      navigate('/?from=dashboard');
+      navigate('/?dashboard=open');
     } else {
       navigate('/');
     }

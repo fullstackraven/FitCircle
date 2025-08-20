@@ -94,11 +94,14 @@ Preferred communication style: Simple, everyday language.
 ### UI Consistency & Navigation Standardization (August 20, 2025)
 - **Back Button Standardization**: Systematically updated all back buttons across 20+ pages to use consistent styling (`text-slate-400`, `ArrowLeft` icon, `w-5 h-5` size, `space-x-2` spacing).
 - **Import Optimization**: Standardized all Lucide React imports to use `ArrowLeft` instead of `ChevronLeft` for back buttons, ensuring consistent iconography.
+- **Dashboard Navigation Fix**: Fixed fitness calculator and all pages to properly navigate back to dashboard with `?dashboard=open` parameter, eliminating navigation glitches.
+- **Dialog Accessibility**: Added missing `DialogDescription` elements to all Dialog components in food-tracker.tsx to resolve React accessibility warnings.
 - **Color Consistency**: Unified back button hover states (`hover:text-white transition-colors`) across all pages for consistent user experience.
 - **Icon Size Standardization**: All back buttons now use consistent `w-5 h-5` icon sizing instead of mixed `w-4 h-4` and `w-5 h-5` sizes.
 - **Spacing Standardization**: Unified `space-x-2` spacing between icon and text instead of mixed `space-x-1` and `space-x-2` values.
-- **Coverage**: Updated pages including calendar, settings, hydration, measurements, meditation, goals, cardio, energy-level, reminders, daily-journal, journal-log, recovery, supplements, workout-statistics, fasting, and food-tracker.
-- **Zero Functional Impact**: All navigation functionality remains exactly the same - pure UI consistency improvement without feature changes.
+- **Coverage**: Updated pages including calendar, settings, hydration, measurements, meditation, goals, cardio, energy-level, reminders, daily-journal, journal-log, recovery, supplements, workout-statistics, fasting, fitness-calculator, and food-tracker.
+- **Zero LSP Errors**: All React/TypeScript compilation errors resolved with proper imports and accessibility compliance.
+- **Zero Functional Impact**: All navigation functionality remains exactly the same - pure UI consistency improvement with enhanced accessibility.
 
 ### General Maintenance and Cleanup (August 17, 2025)
 - **Dialog Accessibility**: Added missing DialogDescription components to all Dialog instances across the application for full accessibility compliance.

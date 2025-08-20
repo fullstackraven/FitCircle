@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { getTodayString } from '@/lib/date-utils';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
@@ -441,10 +441,13 @@ export default function FoodTrackerPage() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Search Foods</DialogTitle>
+                  <DialogDescription className="text-gray-400">
+                    Search your food history and add items to your daily log
+                  </DialogDescription>
+                </DialogHeader>
                 <div className="space-y-4">
-                  <div>
-                    <h3 className="text-lg font-semibold">Search Foods</h3>
-                  </div>
                   
                   <div>
                     <Label htmlFor="searchQuery" className="text-sm text-gray-300">Search for food</Label>
@@ -834,8 +837,13 @@ export default function FoodTrackerPage() {
         {editingFood && (
           <Dialog open={!!editingFood} onOpenChange={() => setEditingFood(null)}>
             <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-md">
+              <DialogHeader>
+                <DialogTitle>Edit Food</DialogTitle>
+                <DialogDescription className="text-gray-400">
+                  Modify the nutritional information for this food item
+                </DialogDescription>
+              </DialogHeader>
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Edit Food</h3>
                 
                 <div>
                   <Label htmlFor="editName" className="text-sm text-gray-300">Food Name</Label>
