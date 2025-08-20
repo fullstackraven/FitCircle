@@ -411,13 +411,12 @@ export default function CardioPage() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                          <div className="font-medium text-green-400 capitalize">{entry.type}</div>
+                        <div className="flex items-center space-x-2 mb-2">
+                          <div className="text-green-400 font-medium capitalize">{entry.type}</div>
                           <span className="text-slate-400">•</span>
                           <div className="text-sm text-slate-400">{entry.date}</div>
                         </div>
-                        <div className="flex items-center space-x-4 text-sm text-slate-300 ml-6">
+                        <div className="flex items-center space-x-4 text-sm text-slate-300">
                           {entry.duration > 0 && (
                             <div className="flex items-center space-x-1">
                               <Clock className="w-4 h-4" />
