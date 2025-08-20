@@ -320,24 +320,23 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen text-white pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between p-4">
-        <button
-          onClick={handleBack}
-          className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back</span>
-        </button>
-        <h1 className="text-xl font-semibold">Settings</h1>
-        <div className="w-16"></div> {/* Spacer for centering */}
-      </div>
-
-      <div className="container mx-auto p-4 max-w-md">
+    <div className="fitcircle-page">
+      <div className="fitcircle-container">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <button
+            onClick={handleBack}
+            className="fitcircle-back-button"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back</span>
+          </button>
+          <h1 className="fitcircle-page-title">Settings</h1>
+          <div className="w-16"></div> {/* Spacer for centering */}
+        </div>
 
         {/* Backup & Restore Section */}
-        <div className="bg-slate-800 rounded-xl p-6 mb-6">
+        <div className="fitcircle-card-lg mb-6">
           <h2 className="text-lg font-semibold text-white mb-4">Complete Data Backup</h2>
           
           <div className="space-y-4">

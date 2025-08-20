@@ -142,20 +142,21 @@ export default function CardioPage() {
   };
 
   return (
-    <div className="min-h-screen text-white pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between p-4">
-        <button
-          onClick={handleBack}
-          className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back</span>
-        </button>
-        <h1 className="text-xl font-semibold">Cardio</h1>
-        <Dialog open={isGoalDialogOpen} onOpenChange={setIsGoalDialogOpen}>
+    <div className="fitcircle-page">
+      <div className="fitcircle-container">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <button
+            onClick={handleBack}
+            className="fitcircle-back-button"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back</span>
+          </button>
+          <h1 className="fitcircle-page-title">Cardio</h1>
+          <Dialog open={isGoalDialogOpen} onOpenChange={setIsGoalDialogOpen}>
           <DialogTrigger asChild>
-            <button className="flex items-center space-x-1 text-slate-300 hover:text-white">
+            <button className="flex items-center space-x-1 fitcircle-text-muted hover:text-white">
               <Target className="w-5 h-5" />
               <span>Goal</span>
             </button>
@@ -247,11 +248,9 @@ export default function CardioPage() {
             </div>
           </DialogContent>
         </Dialog>
-      </div>
 
-      <div className="p-4 space-y-6">
         {/* Main Progress Circle */}
-        <div className="flex justify-center">
+        <div className="flex justify-center mb-8">
           <GoalCircle
             percentage={progressPercentage}
             color="rgb(34, 197, 94)"
@@ -531,7 +530,8 @@ export default function CardioPage() {
             </div>
           </div>
         </DialogContent>
-      </Dialog>
+        </Dialog>
+      </div>
     </div>
   );
 }

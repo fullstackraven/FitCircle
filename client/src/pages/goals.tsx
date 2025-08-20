@@ -549,23 +549,24 @@ export default function GoalsPageFinal() {
   ];
 
   return (
-    <div className="min-h-screen text-white pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between p-4">
-        <button
-          onClick={handleBack}
-          className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back</span>
-        </button>
-        <h1 className="text-xl font-semibold">Goals</h1>
-        <div className="w-16"></div>
-      </div>
+    <div className="fitcircle-page">
+      <div className="fitcircle-container">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <button
+            onClick={handleBack}
+            className="fitcircle-back-button"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back</span>
+          </button>
+          <h1 className="fitcircle-page-title">Goals</h1>
+          <div className="w-16"></div>
+        </div>
 
-      <div className="p-4 space-y-6">
-        {/* Wellness Score Section - Moved to top */}
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="space-y-6">
+          {/* Wellness Score Section - Moved to top */}
+          <div className="fitcircle-card-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Overall Wellness Score</h2>
             <button
@@ -945,6 +946,7 @@ export default function GoalsPageFinal() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

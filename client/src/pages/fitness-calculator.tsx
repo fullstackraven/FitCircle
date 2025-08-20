@@ -238,24 +238,25 @@ export default function FitnessCalculator() {
   }, [calorieTarget, macros]);
 
   return (
-    <div className="min-h-screen text-white pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between p-4">
-        <button
-          onClick={handleBack}
-          className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back</span>
-        </button>
-        <h1 className="text-xl font-semibold">Fitness Calculator</h1>
-        <div className="w-16"></div>
-      </div>
+    <div className="fitcircle-page">
+      <div className="fitcircle-container">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <button
+            onClick={handleBack}
+            className="fitcircle-back-button"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back</span>
+          </button>
+          <h1 className="fitcircle-page-title">Fitness Calculator</h1>
+          <div className="w-16"></div>
+        </div>
 
-      <div className="container mx-auto px-4 py-6 max-w-2xl space-y-8">
+        <div className="space-y-8">
         
-        {/* Calorie Tracker Section */}
-        <div className="bg-slate-800 rounded-xl p-6">
+          {/* Calorie Tracker Section */}
+          <div className="fitcircle-card-lg">
           <div className="flex items-center space-x-3 mb-6">
             <Target className="w-6 h-6 text-green-400" />
             <h2 className="text-xl font-semibold text-white">Calorie Tracker</h2>
@@ -331,8 +332,8 @@ export default function FitnessCalculator() {
           </div>
         </div>
 
-        {/* BMI Calculator Section */}
-        <div className="bg-slate-800 rounded-xl p-6">
+          {/* BMI Calculator Section */}
+          <div className="fitcircle-card-lg">
           <div className="flex items-center space-x-3 mb-6">
             <Activity className="w-6 h-6 text-blue-400" />
             <h2 className="text-xl font-semibold text-white">BMI Calculator</h2>
@@ -386,8 +387,8 @@ export default function FitnessCalculator() {
           )}
         </div>
 
-        {/* Macro Calculator Section */}
-        <div className="bg-slate-800 rounded-xl p-6">
+          {/* Macro Calculator Section */}
+          <div className="fitcircle-card-lg">
           <div className="flex items-center space-x-3 mb-6">
             <Calculator className="w-6 h-6 text-purple-400" />
             <h2 className="text-xl font-semibold text-white">Macro Calculator</h2>
@@ -504,6 +505,7 @@ export default function FitnessCalculator() {
               })}
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

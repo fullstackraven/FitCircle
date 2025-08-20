@@ -340,18 +340,18 @@ export default function FoodTrackerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white pb-32">
-      <div className="container mx-auto px-4 py-6 max-w-md">
+    <div className="fitcircle-page">
+      <div className="fitcircle-container">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <button
             onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
+            className="fitcircle-back-button"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>
           </button>
-          <h1 className="text-xl font-bold">Food Tracker</h1>
+          <h1 className="fitcircle-page-title">Food Tracker</h1>
           <div className="w-16" />
         </div>
 
@@ -379,15 +379,15 @@ export default function FoodTrackerPage() {
 
         {/* Macro Row */}
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="bg-gray-800 rounded-xl p-4 text-center">
+          <div className="fitcircle-card text-center">
             <div className="text-lg font-bold text-blue-400">
               {Math.round(totals.carbs)}g
             </div>
-            <div className="text-xs text-gray-400">
+            <div className="text-xs fitcircle-text-muted">
               / {macroTargets.carbs}g
             </div>
-            <div className="text-xs text-gray-500 mt-1">Carbs</div>
-            <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+            <div className="text-xs fitcircle-text-secondary mt-1">Carbs</div>
+            <div className="w-full bg-slate-700 rounded-full h-2 mt-2">
               <div 
                 className="bg-blue-400 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${Math.min(carbsProgress, 100)}%` }}
@@ -395,15 +395,15 @@ export default function FoodTrackerPage() {
             </div>
           </div>
           
-          <div className="bg-gray-800 rounded-xl p-4 text-center">
+          <div className="fitcircle-card text-center">
             <div className="text-lg font-bold text-red-400">
               {Math.round(totals.protein)}g
             </div>
-            <div className="text-xs text-gray-400">
+            <div className="text-xs fitcircle-text-muted">
               / {macroTargets.protein}g
             </div>
-            <div className="text-xs text-gray-500 mt-1">Protein</div>
-            <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+            <div className="text-xs fitcircle-text-secondary mt-1">Protein</div>
+            <div className="w-full bg-slate-700 rounded-full h-2 mt-2">
               <div 
                 className="bg-red-400 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${Math.min(proteinProgress, 100)}%` }}
@@ -411,15 +411,15 @@ export default function FoodTrackerPage() {
             </div>
           </div>
           
-          <div className="bg-gray-800 rounded-xl p-4 text-center">
+          <div className="fitcircle-card text-center">
             <div className="text-lg font-bold text-yellow-400">
               {Math.round(totals.fat)}g
             </div>
-            <div className="text-xs text-gray-400">
+            <div className="text-xs fitcircle-text-muted">
               / {macroTargets.fat}g
             </div>
-            <div className="text-xs text-gray-500 mt-1">Fat</div>
-            <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+            <div className="text-xs fitcircle-text-secondary mt-1">Fat</div>
+            <div className="w-full bg-slate-700 rounded-full h-2 mt-2">
               <div 
                 className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${Math.min(fatProgress, 100)}%` }}

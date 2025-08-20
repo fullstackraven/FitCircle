@@ -191,21 +191,21 @@ export default function MeasurementsPage() {
   }, {} as { [category: string]: MeasurementFieldConfig[] });
 
   return (
-    <div className="min-h-screen text-white pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
-      <div className="container mx-auto px-4 py-6">
+    <div className="fitcircle-page">
+      <div className="fitcircle-container">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <button
             onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
+            className="fitcircle-back-button"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>
           </button>
-          <h1 className="text-xl font-semibold">Measurements</h1>
+          <h1 className="fitcircle-page-title">Measurements</h1>
           <button
             onClick={() => setIsGoalModalOpen(true)}
-            className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
+            className="flex items-center space-x-1 fitcircle-text-muted hover:text-white transition-colors"
           >
             <Target className="w-5 h-5" />
             <span>Goal</span>
@@ -215,7 +215,7 @@ export default function MeasurementsPage() {
         {/* Input Section */}
         <div className="space-y-6">
           {Object.entries(categorizedFields).map(([category, fields]) => (
-            <section key={category} className="bg-slate-800 rounded-xl p-6">
+            <section key={category} className="fitcircle-card-lg">
               <h2 className="text-lg font-semibold mb-4 text-white">{category}</h2>
               
               <div className="grid grid-cols-2 gap-4">

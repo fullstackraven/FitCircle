@@ -129,29 +129,30 @@ export default function HydrationPage() {
   const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
 
   return (
-    <div className="min-h-screen text-white pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between p-4">
-        <button
-          onClick={handleBack}
-          className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back</span>
-        </button>
-        <h1 className="text-xl font-semibold">Hydration</h1>
-        <button
-          onClick={() => setIsGoalModalOpen(true)}
-          className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
-        >
-          <Target className="w-5 h-5" />
-          <span>Goal</span>
-        </button>
-      </div>
+    <div className="fitcircle-page">
+      <div className="fitcircle-container">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <button
+            onClick={handleBack}
+            className="fitcircle-back-button"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back</span>
+          </button>
+          <h1 className="fitcircle-page-title">Hydration</h1>
+          <button
+            onClick={() => setIsGoalModalOpen(true)}
+            className="flex items-center space-x-1 fitcircle-text-muted hover:text-white transition-colors"
+          >
+            <Target className="w-5 h-5" />
+            <span>Goal</span>
+          </button>
+        </div>
 
-      <div className="p-6 space-y-8">
-        {/* Progress Circle */}
-        <div className="flex justify-center">
+        <div className="space-y-8">
+          {/* Progress Circle */}
+          <div className="flex justify-center">
           <GoalCircle
             percentage={progressPercentage}
             color="rgb(59, 130, 246)"
@@ -163,119 +164,119 @@ export default function HydrationPage() {
             title="Today's Hydration"
             description={`Goal: ${dailyGoalOz}oz/day`}
           />
-        </div>
+          </div>
 
-        {isGoalReached && (
+          {isGoalReached && (
           <div className="text-green-400 font-medium text-center -mt-4">
             🎉 Daily goal achieved!
           </div>
-        )}
+          )}
 
-        {/* Add Hydration Controls */}
-        <div className="bg-slate-800 rounded-xl p-6 space-y-4">
-          <h2 className="text-lg font-semibold">Add Liquid</h2>
-          
-          {/* Liquid Type Selection */}
-          <div className="space-y-3">
-            <Label className="text-sm font-medium text-slate-300">Liquid Type</Label>
-            <div className="grid grid-cols-4 gap-2">
-              {liquidTypes.map(type => (
-                <button
-                  key={type}
-                  onClick={() => setSelectedLiquidType(type)}
-                  className={`py-2 px-3 rounded-xl text-sm font-medium transition-colors ${
-                    selectedLiquidType === type
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
-                  }`}
-                >
-                  {type}
-                </button>
-              ))}
+          {/* Add Hydration Controls */}
+          <div className="fitcircle-card-lg space-y-4">
+            <h2 className="text-lg font-semibold">Add Liquid</h2>
+            
+            {/* Liquid Type Selection */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-slate-300">Liquid Type</Label>
+              <div className="grid grid-cols-4 gap-2">
+                {liquidTypes.map(type => (
+                  <button
+                    key={type}
+                    onClick={() => setSelectedLiquidType(type)}
+                    className={`py-2 px-3 rounded-xl text-sm font-medium transition-colors ${
+                      selectedLiquidType === type
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Custom Liquid Type Input */}
+              {selectedLiquidType === 'Custom' && (
+                <Input
+                  type="text"
+                  value={customLiquidType}
+                  onChange={(e) => setCustomLiquidType(e.target.value)}
+                  onFocus={() => setCustomLiquidFocused(true)}
+                  onBlur={() => setCustomLiquidFocused(false)}
+                  placeholder={customLiquidFocused ? "" : "Enter liquid type"}
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              )}
             </div>
             
-            {/* Custom Liquid Type Input */}
-            {selectedLiquidType === 'Custom' && (
-              <Input
-                type="text"
-                value={customLiquidType}
-                onChange={(e) => setCustomLiquidType(e.target.value)}
-                onFocus={() => setCustomLiquidFocused(true)}
-                onBlur={() => setCustomLiquidFocused(false)}
-                placeholder={customLiquidFocused ? "" : "Enter liquid type"}
-                className="bg-slate-700 border-slate-600 text-white"
-              />
-            )}
-          </div>
-          
-          {/* Quick Add Buttons */}
-          <div className="grid grid-cols-5 gap-2">
-            {quickAddAmounts.map(amount => (
-              <Button
-                key={amount}
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuickAdd(amount)}
-                className="border-slate-600 text-slate-300 hover:bg-slate-700"
-              >
-                {amount}oz
-              </Button>
-            ))}
-          </div>
-
-          {/* Custom Amount */}
-          <div className="flex space-x-2">
-            <div className="flex-1">
-              <Input
-                type="number"
-                value={addAmount}
-                onChange={(e) => setAddAmount(e.target.value)}
-                onFocus={() => setAddAmountFocused(true)}
-                onBlur={() => setAddAmountFocused(false)}
-                placeholder={addAmountFocused ? "" : "Enter amount"}
-                className="bg-slate-700 border-slate-600 text-white"
-              />
-            </div>
-            <Button
-              onClick={handleAddHydration}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Add
-            </Button>
-          </div>
-        </div>
-
-        {/* Today's Entries */}
-        {todayEntries.length > 0 && (
-          <div className="bg-slate-800 rounded-xl p-6">
-            <h3 className="text-lg font-semibold mb-3">Today's Intake</h3>
-            <div className="space-y-2">
-              {todayEntries.slice().reverse().map((entry, index) => (
-                <div key={index} className="flex justify-between items-center text-sm">
-                  <span className="text-slate-400">{entry.time}</span>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-slate-300">{entry.liquidType || 'Water'}</span>
-                    <span className="text-blue-400">{entry.amount}oz</span>
-                  </div>
-                </div>
+            {/* Quick Add Buttons */}
+            <div className="grid grid-cols-5 gap-2">
+              {quickAddAmounts.map(amount => (
+                <Button
+                  key={amount}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleQuickAdd(amount)}
+                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                >
+                  {amount}oz
+                </Button>
               ))}
             </div>
-          </div>
-        )}
 
-        {/* History */}
-        <Collapsible open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
-          <CollapsibleTrigger asChild>
-            <Button variant="ghost" className="w-full justify-between text-slate-300 hover:text-white">
-              <span>Hydration History</span>
-              {isHistoryOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-2 mt-4">
-            {recentLogs.length > 0 ? (
-              recentLogs.map((log) => (
-                <div key={log.date} className="bg-slate-800 rounded-xl p-4">
+            {/* Custom Amount */}
+            <div className="flex space-x-2">
+              <div className="flex-1">
+                <Input
+                  type="number"
+                  value={addAmount}
+                  onChange={(e) => setAddAmount(e.target.value)}
+                  onFocus={() => setAddAmountFocused(true)}
+                  onBlur={() => setAddAmountFocused(false)}
+                  placeholder={addAmountFocused ? "" : "Enter amount"}
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <Button
+                onClick={handleAddHydration}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add
+              </Button>
+            </div>
+          </div>
+
+          {/* Today's Entries */}
+          {todayEntries.length > 0 && (
+            <div className="fitcircle-card-lg">
+              <h3 className="text-lg font-semibold mb-3">Today's Intake</h3>
+              <div className="space-y-2">
+                {todayEntries.slice().reverse().map((entry, index) => (
+                  <div key={index} className="flex justify-between items-center text-sm">
+                    <span className="text-slate-400">{entry.time}</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-slate-300">{entry.liquidType || 'Water'}</span>
+                      <span className="text-blue-400">{entry.amount}oz</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* History */}
+          <Collapsible open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="w-full justify-between text-slate-300 hover:text-white">
+                <span>Hydration History</span>
+                {isHistoryOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-2 mt-4">
+              {recentLogs.length > 0 ? (
+                recentLogs.map((log) => (
+                  <div key={log.date} className="fitcircle-card">
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-white font-medium">
                       {new Date(log.date + 'T00:00:00').toLocaleDateString('en-US', { 
@@ -308,16 +309,17 @@ export default function HydrationPage() {
                         +{log.entries.length - 3} more entries
                       </div>
                     )}
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-center text-slate-500 py-4">
+                  No hydration history yet
                 </div>
-              ))
-            ) : (
-              <div className="text-center text-slate-500 py-4">
-                No hydration history yet
-              </div>
-            )}
-          </CollapsibleContent>
-        </Collapsible>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
       </div>
 
       {/* Goal Setting Modal */}
