@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, Upload, Download, Trash2, Clock, Shield } from 'lucide-react';
+import { ArrowLeft, Upload, Download, Trash2, Clock, Shield } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
 import { Switch } from '@/components/ui/switch';
@@ -324,9 +324,9 @@ export default function SettingsPage() {
       <div className="flex items-center justify-between p-4">
         <button
           onClick={handleBack}
-          className="flex items-center space-x-2 text-slate-300 hover:text-white"
+          className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ArrowLeft className="w-5 h-5" />
           <span>Back</span>
         </button>
         <h1 className="text-xl font-semibold">Settings</h1>

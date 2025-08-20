@@ -62,11 +62,11 @@ export function JournalLog() {
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => navigate("/daily-journal")}
-          className="text-slate-500 hover:text-white transition-colors flex items-center space-x-1"
+          className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
           title="Back to Daily Journal"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm font-medium">Back</span>
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back</span>
         </button>
 
         <h1 className="text-xl font-bold text-white">Journal Log</h1>

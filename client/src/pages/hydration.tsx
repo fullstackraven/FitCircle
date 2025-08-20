@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Plus, ChevronDown, ChevronRight, Target, X } from 'lucide-react';
+import { ArrowLeft, Plus, ChevronDown, ChevronRight, Target, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useHydration } from '@/hooks/use-hydration';
 import { Button } from '@/components/ui/button';
@@ -133,9 +133,9 @@ export default function HydrationPage() {
       <div className="flex items-center justify-between p-4">
         <button
           onClick={handleBack}
-          className="flex items-center space-x-2 text-slate-300 hover:text-white"
+          className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ArrowLeft className="w-5 h-5" />
           <span>Back</span>
         </button>
         <h1 className="text-xl font-semibold">Hydration</h1>

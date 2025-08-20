@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Plus, Trash2, ChevronDown, ChevronUp, Search, X, Edit2, Save, X as Cancel } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp, Search, X, Edit2, Save, X as Cancel } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -343,15 +343,13 @@ export default function FoodTrackerPage() {
       <div className="container mx-auto px-4 py-6 max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={handleBack}
-            className="text-white hover:bg-gray-800 rounded-xl"
+            className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
           >
-            <ChevronLeft className="h-5 w-5 mr-1" />
-            Back
-          </Button>
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back</span>
+          </button>
           <h1 className="text-xl font-bold">Food Tracker</h1>
           <div className="w-16" />
         </div>
