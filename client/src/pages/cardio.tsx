@@ -298,19 +298,19 @@ export default function CardioPage() {
               Log Cardio
             </Button>
           </DialogTrigger>
-          <DialogContent className="fitcircle-dialog max-w-md">
+          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
             <DialogHeader>
-              <DialogTitle>Add Cardio Entry</DialogTitle>
-              <DialogDescription className="text-slate-400 text-center">
+              <DialogTitle className="text-xl font-semibold text-center text-white">Add Cardio Entry</DialogTitle>
+              <DialogDescription className="text-sm text-slate-400 text-center">
                 Log your cardio workout details
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-3">
-                <Label>Cardio Type</Label>
+                <Label className="text-sm font-medium text-white">Cardio Type</Label>
                 <div className="flex space-x-2">
                   <Select value={newEntry.type} onValueChange={(value) => setNewEntry({...newEntry, type: value})}>
-                    <SelectTrigger className="flex-1 fitcircle-input">
+                    <SelectTrigger className="flex-1 bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent className="bg-slate-700 border-slate-600">
@@ -356,40 +356,40 @@ export default function CardioPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <Label>Duration (minutes)</Label>
+                  <Label className="text-sm font-medium text-white">Duration (minutes)</Label>
                   <Input
                     type="number"
                     placeholder="30"
                     value={newEntry.duration}
                     onChange={(e) => setNewEntry({...newEntry, duration: e.target.value})}
-                    className="fitcircle-input"
+                    className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label>Distance (miles)</Label>
+                  <Label className="text-sm font-medium text-white">Distance (miles)</Label>
                   <Input
                     type="number"
                     placeholder="3.0"
                     step="0.1"
                     value={newEntry.distance}
                     onChange={(e) => setNewEntry({...newEntry, distance: e.target.value})}
-                    className="fitcircle-input"
+                    className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-3">
-                <Label>Notes - Optional</Label>
+                <Label className="text-sm font-medium text-white">Notes - Optional</Label>
                 <Textarea
                   value={newEntry.notes}
                   onChange={(e) => setNewEntry({...newEntry, notes: e.target.value})}
-                  className="fitcircle-input"
+                  className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
                   rows={2}
                 />
               </div>
 
               <div className="flex space-x-2">
-                <Button onClick={handleAddEntry} className="flex-1 bg-green-600 hover:bg-green-700">
+                <Button onClick={handleAddEntry} className="flex-1 bg-green-500 hover:bg-green-600 text-white">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Entry
                 </Button>
@@ -482,18 +482,18 @@ export default function CardioPage() {
 
         {/* Edit Entry Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="fitcircle-dialog max-w-md">
+          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
             <DialogHeader>
-              <DialogTitle>Edit Cardio Entry</DialogTitle>
-              <DialogDescription className="text-slate-400 text-center">
+              <DialogTitle className="text-xl font-semibold text-center text-white">Edit Cardio Entry</DialogTitle>
+              <DialogDescription className="text-sm text-slate-400 text-center">
                 Update your cardio workout details
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-3">
-                <Label>Cardio Type</Label>
+                <Label className="text-sm font-medium text-white">Cardio Type</Label>
                 <Select value={newEntry.type} onValueChange={(value) => setNewEntry({...newEntry, type: value})}>
-                  <SelectTrigger className="fitcircle-input">
+                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-700 border-slate-600">
@@ -506,38 +506,38 @@ export default function CardioPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <Label>Duration (minutes)</Label>
+                  <Label className="text-sm font-medium text-white">Duration (minutes)</Label>
                   <Input
                     type="number"
                     value={newEntry.duration}
                     onChange={(e) => setNewEntry({...newEntry, duration: e.target.value})}
-                    className="fitcircle-input"
+                    className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label>Distance (miles)</Label>
+                  <Label className="text-sm font-medium text-white">Distance (miles)</Label>
                   <Input
                     type="number"
                     step="0.1"
                     value={newEntry.distance}
                     onChange={(e) => setNewEntry({...newEntry, distance: e.target.value})}
-                    className="fitcircle-input"
+                    className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-3">
-                <Label>Notes - Optional</Label>
+                <Label className="text-sm font-medium text-white">Notes - Optional</Label>
                 <Textarea
                   value={newEntry.notes}
                   onChange={(e) => setNewEntry({...newEntry, notes: e.target.value})}
-                  className="fitcircle-input"
+                  className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
                   rows={2}
                 />
               </div>
 
               <div className="flex space-x-2">
-                <Button onClick={handleUpdateEntry} className="flex-1 bg-blue-600 hover:bg-blue-700">
+                <Button onClick={handleUpdateEntry} className="flex-1 bg-green-500 hover:bg-green-600 text-white">
                   <Save className="w-4 h-4 mr-2" />
                   Update Entry
                 </Button>
