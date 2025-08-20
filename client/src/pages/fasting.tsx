@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, Plus, Edit, Trash2, Target, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Clock, Plus, Edit, Trash2, Target, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GoalCircle } from '@/components/GoalCircle';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useFasting, type FastingLog } from '@/hooks/use-fasting';
 import { useGoals } from '@/hooks/use-goals';
 import { getTodayString, getCurrentTime24, getDisplayDate, isToday, isYesterday } from '@/lib/date-utils';
@@ -44,8 +43,7 @@ export default function FastingPage() {
   const [maxHoursInput, setMaxHoursInput] = useState('');
   const [maxHoursFocused, setMaxHoursFocused] = useState(false);
   
-  // UI state
-  const [isLogHistoryOpen, setIsLogHistoryOpen] = useState(false);
+  // UI state removed - no longer needed for collapsible
 
   useEffect(() => {
     // Initialize goal input with current goal value
@@ -219,7 +217,7 @@ export default function FastingPage() {
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>
           </button>
-          <h1 className="fitcircle-page-title">Fasting Log</h1>
+          <h1 className="fitcircle-page-title">Fasting</h1>
           <button
             onClick={() => setIsGoalModalOpen(true)}
             className="flex items-center space-x-1 fitcircle-text-muted hover:text-white transition-colors"
@@ -364,18 +362,10 @@ export default function FastingPage() {
           </div>
         )}
 
-        {/* Fasting Log History */}
-        <Collapsible open={isLogHistoryOpen} onOpenChange={setIsLogHistoryOpen}>
-          <CollapsibleTrigger asChild>
-            <Button 
-              variant="ghost" 
-              className="w-full justify-between text-slate-300 hover:text-white hover:bg-slate-800"
-            >
-              <span className="text-lg font-semibold">Fasting Log History</span>
-              {isLogHistoryOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-2 mt-4">
+        {/* Fasting Log */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Fasting Log</h3>
+          <div className="space-y-2">
             {logs.length === 0 ? (
               <div className="text-center py-8 text-slate-400">
                 <p>No fasting logs yet.</p>
@@ -443,8 +433,8 @@ export default function FastingPage() {
                 );
               })
             )}
-          </CollapsibleContent>
-        </Collapsible>
+          </div>
+        </div>
       </div>
 
       {/* Goal Setting Modal */}

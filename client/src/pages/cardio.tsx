@@ -401,9 +401,9 @@ export default function CardioPage() {
           </DialogContent>
         </Dialog>
 
-        {/* Recent Activity */}
+        {/* Cardio Log */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Recent Activity</h3>
+          <h3 className="text-lg font-semibold">Cardio Log</h3>
           {recentActivity.length > 0 ? (
             <div className="space-y-3">
               {recentActivity.map(entry => (

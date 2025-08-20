@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Play, Pause, Square, ChevronDown, ChevronUp, Target, X } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Square, Target, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { GoalCircle } from '@/components/GoalCircle';
 import { useMeditation, type MeditationLog } from '@/hooks/use-meditation';
 import { useGoals } from '@/hooks/use-goals';
@@ -36,7 +35,6 @@ export default function MeditationPage() {
   const [timeLeft, setTimeLeft] = useState(0); // in seconds
   const [totalDuration, setTotalDuration] = useState(0); // in seconds
   const [inputMinutes, setInputMinutes] = useState('');
-  const [isLogOpen, setIsLogOpen] = useState(false);
   const [showCompletion, setShowCompletion] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   
@@ -408,17 +406,9 @@ export default function MeditationPage() {
         </div>
 
         {/* Meditation Log */}
-        <Collapsible open={isLogOpen} onOpenChange={setIsLogOpen}>
-          <CollapsibleTrigger asChild>
-            <Button 
-              variant="ghost" 
-              className="w-full justify-between text-slate-300 hover:text-white hover:bg-slate-800"
-            >
-              <span className="text-lg font-semibold">Meditation Log</span>
-              {isLogOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-2 mt-4">
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Meditation Log</h3>
+          <div className="space-y-2">
             {logs.length === 0 ? (
               <div className="text-center py-8 text-slate-400">
                 <p>No meditation sessions yet.</p>
@@ -443,8 +433,8 @@ export default function MeditationPage() {
                 </div>
               ))
             )}
-          </CollapsibleContent>
-        </Collapsible>
+          </div>
+        </div>
       </div>
 
       {/* Goal Setting Modal */}

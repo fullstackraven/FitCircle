@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, ChevronDown, ChevronRight, Target, X } from 'lucide-react';
+import { ArrowLeft, Plus, Target, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useHydration } from '@/hooks/use-hydration';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { GoalCircle } from '@/components/GoalCircle';
 
 
@@ -40,7 +39,6 @@ export default function HydrationPage() {
   const [customLiquidType, setCustomLiquidType] = useState('');
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [newGoal, setNewGoal] = useState(dailyGoalOz.toString());
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [customLiquidFocused, setCustomLiquidFocused] = useState(false);
   const [addAmountFocused, setAddAmountFocused] = useState(false);
   const [goalFocused, setGoalFocused] = useState(false);
@@ -265,15 +263,10 @@ export default function HydrationPage() {
             </div>
           )}
 
-          {/* History */}
-          <Collapsible open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" className="w-full justify-between text-slate-300 hover:text-white">
-                <span>Hydration History</span>
-                {isHistoryOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-2 mt-4">
+          {/* Hydration Log */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Hydration Log</h3>
+            <div className="space-y-2">
               {recentLogs.length > 0 ? (
                 recentLogs.map((log) => (
                   <div key={log.date} className="fitcircle-card">
@@ -317,8 +310,8 @@ export default function HydrationPage() {
                   No hydration history yet
                 </div>
               )}
-            </CollapsibleContent>
-          </Collapsible>
+            </div>
+          </div>
         </div>
       </div>
 
