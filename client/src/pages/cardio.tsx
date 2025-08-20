@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
+import { getTodayString } from '@/lib/date-utils';
 
 export default function CardioPage() {
   const [, navigate] = useLocation();
@@ -76,9 +77,16 @@ export default function CardioPage() {
   };
 
   const todaysEntries = data.entries.filter(entry => {
-    const entryDate = new Date(entry.createdAt).toDateString();
-    const today = new Date().toDateString();
-    return entryDate === today;
+    return entry.date === getTodayString();
+  });
+
+  // Debug logging to help diagnose the issue
+  console.log('Cardio Debug Info:', {
+    totalEntries: data.entries.length,
+    todaysEntries: todaysEntries.length,
+    todayString: getTodayString(),
+    allDates: data.entries.map(e => e.date),
+    progressData: todaysProgress
   });
 
   const handleAddEntry = () => {
@@ -87,14 +95,12 @@ export default function CardioPage() {
       return;
     }
 
-    const entry: Omit<CardioEntry, 'id' | 'createdAt'> = {
-      type: newEntry.type,
-      duration: parseFloat(newEntry.duration) || 0,
-      distance: parseFloat(newEntry.distance) || 0,
-      notes: newEntry.notes || undefined
-    };
-
-    addCardioEntry(entry);
+    addCardioEntry(
+      newEntry.type,
+      parseFloat(newEntry.duration) || 0,
+      parseFloat(newEntry.distance) || 0,
+      newEntry.notes || undefined
+    );
     resetAddForm();
     setIsAddDialogOpen(false);
   };
