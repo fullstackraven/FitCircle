@@ -168,7 +168,8 @@ export default function SettingsPage() {
 
   const handleBack = () => {
     if (fromDashboard) {
-      navigate('/?dashboard=open');
+      sessionStorage.setItem('fitcircle_dashboard_open', 'true');
+      navigate('/');
     } else {
       navigate('/');
     }

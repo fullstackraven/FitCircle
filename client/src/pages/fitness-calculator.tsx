@@ -130,7 +130,9 @@ export default function FitnessCalculator() {
 
   const handleBack = () => {
     if (fromDashboard) {
-      navigate('/?dashboard=open');
+      // Use sessionStorage to signal dashboard should open
+      sessionStorage.setItem('fitcircle_dashboard_open', 'true');
+      navigate('/');
     } else {
       navigate('/');
     }

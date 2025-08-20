@@ -74,10 +74,13 @@ export default function Home() {
   // Check if we should open dashboard on load
   useEffect(() => {
     const shouldOpenDashboard = new URLSearchParams(window.location.search).get('dashboard') === 'open';
-    if (shouldOpenDashboard) {
+    const dashboardState = sessionStorage.getItem('fitcircle_dashboard_open');
+    
+    if (shouldOpenDashboard || dashboardState === 'true') {
       setIsSidebarOpen(true);
-      // Clear the URL parameter
+      // Clear the URL parameter and session storage
       window.history.replaceState({}, '', '/');
+      sessionStorage.removeItem('fitcircle_dashboard_open');
     }
   }, []);
 
