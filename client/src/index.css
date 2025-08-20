@@ -255,9 +255,9 @@
   background: hsl(210, 40%, 80%);
 }
 
-/* Dialog/Modal styling for better visibility */
+/* Dialog/Modal styling for consistent UI */
 .fitcircle-dialog {
-  background-color: hsl(222.2, 84%, 4.9%) !important;
-  border: 1px solid hsl(217.2, 32.6%, 17.5%) !important;
-  backdrop-filter: blur(8px) !important;
+  background-color: hsl(215.4, 16.3%, 26.9%) !important; /* slate-700 */
+  border: 1px solid hsl(215, 20.2%, 65.1%) !important;
+  color: white !important;
 }

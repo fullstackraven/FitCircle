@@ -313,7 +313,7 @@ export default function CardioPage() {
                     <SelectTrigger className="flex-1 fitcircle-input">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
-                    <SelectContent className="fitcircle-dialog">
+                    <SelectContent className="bg-slate-700 border-slate-600">
                       {cardioTypes.map(type => (
                         <SelectItem key={type} value={type}>{type}</SelectItem>
                       ))}
@@ -496,7 +496,7 @@ export default function CardioPage() {
                   <SelectTrigger className="fitcircle-input">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="fitcircle-dialog">
+                  <SelectContent className="bg-slate-700 border-slate-600">
                     {cardioTypes.map(type => (
                       <SelectItem key={type} value={type}>{type}</SelectItem>
                     ))}
