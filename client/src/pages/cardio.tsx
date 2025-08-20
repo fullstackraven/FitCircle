@@ -408,62 +408,60 @@ export default function CardioPage() {
             <div className="space-y-3">
               {recentActivity.map(entry => (
                 <Card key={entry.id} className="fitcircle-card">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <div className="text-green-400 font-medium capitalize">{entry.type}</div>
-                          <span className="text-slate-400">•</span>
-                          <div className="text-sm text-slate-400">{entry.date}</div>
-                        </div>
-                        <div className="flex items-center space-x-4 text-sm text-slate-300">
-                          {entry.duration > 0 && (
-                            <div className="flex items-center space-x-1">
-                              <Clock className="w-4 h-4" />
-                              <span>{entry.duration}min</span>
-                            </div>
-                          )}
-                          {entry.distance && entry.distance > 0 && (
-                            <div className="flex items-center space-x-1">
-                              <MapPin className="w-4 h-4" />
-                              <span>{entry.distance} mi</span>
-                            </div>
-                          )}
-                          {entry.notes && (
-                            <div className="flex items-center space-x-1">
-                              <FileText className="w-4 h-4" />
-                              <span className="truncate max-w-32">{entry.notes}</span>
-                            </div>
-                          )}
-                        </div>
+                  <CardContent className="p-3 relative">
+                    <div className="pr-16">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <div className="text-green-400 font-medium capitalize">{entry.type}</div>
+                        <span className="text-slate-400">•</span>
+                        <div className="text-sm text-slate-400">{entry.date}</div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setEditingEntry(entry);
-                            setNewEntry({
-                              type: entry.type,
-                              duration: entry.duration.toString(),
-                              distance: entry.distance.toString(),
-                              notes: entry.notes || ''
-                            });
-                            setIsEditDialogOpen(true);
-                          }}
-                          className="text-slate-400 hover:text-white"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteEntry(entry.id)}
-                          className="text-slate-400 hover:text-red-300"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                      <div className="flex items-center space-x-4 text-sm text-slate-300">
+                        {entry.duration > 0 && (
+                          <div className="flex items-center space-x-1">
+                            <Clock className="w-4 h-4" />
+                            <span>{entry.duration}min</span>
+                          </div>
+                        )}
+                        {entry.distance && entry.distance > 0 && (
+                          <div className="flex items-center space-x-1">
+                            <MapPin className="w-4 h-4" />
+                            <span>{entry.distance} mi</span>
+                          </div>
+                        )}
+                        {entry.notes && (
+                          <div className="flex items-center space-x-1">
+                            <FileText className="w-4 h-4" />
+                            <span className="truncate max-w-24">{entry.notes}</span>
+                          </div>
+                        )}
                       </div>
+                    </div>
+                    <div className="absolute top-3 right-3 flex items-center space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingEntry(entry);
+                          setNewEntry({
+                            type: entry.type,
+                            duration: entry.duration.toString(),
+                            distance: entry.distance.toString(),
+                            notes: entry.notes || ''
+                          });
+                          setIsEditDialogOpen(true);
+                        }}
+                        className="text-slate-400 hover:text-white p-1 h-auto"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteEntry(entry.id)}
+                        className="text-slate-400 hover:text-red-300 p-1 h-auto"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
