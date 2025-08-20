@@ -76,18 +76,10 @@ export default function CardioPage() {
     });
   };
 
-  const todaysEntries = data.entries.filter(entry => {
-    return entry.date === getTodayString();
-  });
-
-  // Debug logging to help diagnose the issue
-  console.log('Cardio Debug Info:', {
-    totalEntries: data.entries.length,
-    todaysEntries: todaysEntries.length,
-    todayString: getTodayString(),
-    allDates: data.entries.map(e => e.date),
-    progressData: todaysProgress
-  });
+  // Get recent activity - all entries sorted by date/time (most recent first)
+  const recentActivity = data.entries
+    .sort((a, b) => b.timestamp - a.timestamp)
+    .slice(0, 20); // Show last 20 entries
 
   const handleAddEntry = () => {
     if (!newEntry.type || (!newEntry.duration && !newEntry.distance)) {
@@ -409,26 +401,40 @@ export default function CardioPage() {
           </DialogContent>
         </Dialog>
 
-        {/* Recent Entries */}
+        {/* Recent Activity */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Recent Entries</h3>
-          {todaysEntries.length > 0 ? (
+          <h3 className="text-lg font-semibold">Recent Activity</h3>
+          {recentActivity.length > 0 ? (
             <div className="space-y-3">
-              {todaysEntries.map(entry => (
+              {recentActivity.map(entry => (
                 <Card key={entry.id} className="fitcircle-card">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                        <div>
-                          <div className="font-medium">{entry.type}</div>
-                          <div className="text-sm text-slate-400">
-                            {entry.duration > 0 && `${entry.duration} min`}
-                            {entry.duration > 0 && entry.distance > 0 && ' • '}
-                            {entry.distance > 0 && `${entry.distance} mi`}
-                          </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                          <div className="font-medium text-green-400 capitalize">{entry.type}</div>
+                          <span className="text-slate-400">•</span>
+                          <div className="text-sm text-slate-400">{entry.date}</div>
+                        </div>
+                        <div className="flex items-center space-x-4 text-sm text-slate-300 ml-6">
+                          {entry.duration > 0 && (
+                            <div className="flex items-center space-x-1">
+                              <Clock className="w-4 h-4" />
+                              <span>{entry.duration}min</span>
+                            </div>
+                          )}
+                          {entry.distance && entry.distance > 0 && (
+                            <div className="flex items-center space-x-1">
+                              <MapPin className="w-4 h-4" />
+                              <span>{entry.distance} mi</span>
+                            </div>
+                          )}
                           {entry.notes && (
-                            <div className="text-sm text-slate-300 mt-1">{entry.notes}</div>
+                            <div className="flex items-center space-x-1">
+                              <FileText className="w-4 h-4" />
+                              <span className="truncate max-w-32">{entry.notes}</span>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -446,6 +452,7 @@ export default function CardioPage() {
                             });
                             setIsEditDialogOpen(true);
                           }}
+                          className="text-slate-400 hover:text-white"
                         >
                           <Edit2 className="w-4 h-4" />
                         </Button>
@@ -453,7 +460,7 @@ export default function CardioPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDeleteEntry(entry.id)}
-                          className="text-red-400 hover:text-red-300"
+                          className="text-slate-400 hover:text-red-300"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -468,7 +475,7 @@ export default function CardioPage() {
               <CardContent className="p-8 text-center">
                 <div className="text-slate-400">
                   <Activity className="w-12 h-12 mx-auto mb-2" />
-                  <p>No cardio entries today</p>
+                  <p>No cardio activity yet</p>
                   <p className="text-sm">Tap "Log Cardio" to get started!</p>
                 </div>
               </CardContent>
