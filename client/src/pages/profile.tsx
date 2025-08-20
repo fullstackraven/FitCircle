@@ -1,9 +1,10 @@
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, User } from 'lucide-react';
+import { ArrowLeft, User, CheckCircle } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function ProfilePage() {
   const [, navigate] = useLocation();
@@ -21,45 +22,42 @@ export default function ProfilePage() {
   };
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
-  const [birthday, setBirthday] = useState('');
   const [fitnessGoal, setFitnessGoal] = useState('');
 
   useEffect(() => {
     // Load saved profile data
     setName(localStorage.getItem('fitcircle_username') || '');
     setAge(localStorage.getItem('fitcircle_age') || '');
-    setBirthday(localStorage.getItem('fitcircle_birthday') || '');
     setFitnessGoal(localStorage.getItem('fitcircle_fitness_goal') || '');
   }, []);
 
   const handleSave = () => {
     localStorage.setItem('fitcircle_username', name);
     localStorage.setItem('fitcircle_age', age);
-    localStorage.setItem('fitcircle_birthday', birthday);
     localStorage.setItem('fitcircle_fitness_goal', fitnessGoal);
     navigate('/');
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white pb-32">
-      <div className="container mx-auto px-4 py-6 max-w-md">
+    <div className="fitcircle-page">
+      <div className="fitcircle-container">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
+            className="fitcircle-back-button"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>
           </button>
-          <h1 className="text-xl font-semibold">Profile</h1>
+          <h1 className="fitcircle-page-title">Profile</h1>
           <div className="w-16"></div>
         </div>
 
         {/* Profile Icon */}
         <div className="flex justify-center mb-8">
-          <div className="w-24 h-24 bg-slate-800 rounded-full flex items-center justify-center">
-            <User className="w-12 h-12 text-slate-400" />
+          <div className="w-20 h-20 rounded-full bg-green-600 flex items-center justify-center border-2 border-green-400">
+            <CheckCircle className="w-12 h-12 text-white" />
           </div>
         </div>
 
@@ -71,7 +69,7 @@ export default function ProfilePage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
-              className="bg-slate-800 border-slate-700 text-white"
+              className="fitcircle-input"
             />
           </div>
 
@@ -82,27 +80,18 @@ export default function ProfilePage() {
               value={age}
               onChange={(e) => setAge(e.target.value)}
               placeholder="Enter your age"
-              className="bg-slate-800 border-slate-700 text-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Birthday</label>
-            <Input
-              type="date"
-              value={birthday}
-              onChange={(e) => setBirthday(e.target.value)}
-              className="bg-slate-800 border-slate-700 text-white"
+              className="fitcircle-input"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">Fitness Goal</label>
-            <Input
+            <Textarea
               value={fitnessGoal}
               onChange={(e) => setFitnessGoal(e.target.value)}
-              placeholder="e.g., Build muscle, Lose weight, Stay healthy"
-              className="bg-slate-800 border-slate-700 text-white"
+              placeholder="e.g., Build muscle, lose weight, stay healthy, train for a marathon..."
+              className="fitcircle-input h-24 resize-none"
+              rows={3}
             />
           </div>
 
