@@ -276,28 +276,74 @@ export default function MeditationPage() {
           </div>
         )}
 
-        {/* Today's Meditation Progress Circle */}
+        {/* Main Meditation Circle - transforms between progress tracker and timer */}
         <div className="flex justify-center mb-8">
-          <GoalCircle
-            percentage={getProgressPercentage()}
-            color="rgb(168, 85, 247)"
-            size={240}
-            strokeWidth={16}
-            currentValue={getTodayMinutes()}
-            goalValue={getDailyGoal()}
-            unit="min"
-            title="Today's Meditation"
-            description={`Goal: ${getDailyGoal()}min/day`}
-          />
+          {!isActive ? (
+            /* Progress Circle when not meditating */
+            <GoalCircle
+              percentage={getProgressPercentage()}
+              color="rgb(168, 85, 247)"
+              size={240}
+              strokeWidth={16}
+              currentValue={getTodayMinutes()}
+              goalValue={getDailyGoal()}
+              unit="min"
+              title="Today's Meditation"
+              description={`Goal: ${getDailyGoal()}min/day`}
+            />
+          ) : (
+            /* Timer Circle when meditating */
+            <div className="relative">
+              <svg width="240" height="240" className="transform -rotate-90">
+                {/* Background circle */}
+                <circle
+                  cx="120"
+                  cy="120"
+                  r="104"
+                  stroke="rgba(100, 116, 139, 0.3)"
+                  strokeWidth="16"
+                  fill="none"
+                />
+                {/* Progress circle */}
+                <circle
+                  cx="120"
+                  cy="120"
+                  r="104"
+                  stroke="rgb(59, 130, 246)"
+                  strokeWidth="16"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeDasharray={`${2 * Math.PI * 104}`}
+                  strokeDashoffset={2 * Math.PI * 104 - (getTimerProgressPercentage() / 100) * 2 * Math.PI * 104}
+                  className="transition-all duration-1000 ease-linear"
+                  style={{
+                    filter: 'drop-shadow(0 0 20px rgba(59, 130, 246, 0.5))'
+                  }}
+                />
+              </svg>
+              
+              {/* Time display */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-white font-mono mb-2">
+                    {formatTime(timeLeft)}
+                  </div>
+                  <div className="text-sm text-slate-400">
+                    {isPaused ? 'Paused' : 'Meditating...'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {isGoalReached() && (
+        {!isActive && isGoalReached() && (
           <div className="text-purple-400 font-medium text-center -mt-4 mb-8">
             🧘‍♂️ Daily goal achieved!
           </div>
         )}
 
-        {/* Meditation Timer */}
+        {/* Meditation Controls */}
         <div className="flex flex-col items-center mb-8">
           {!isActive ? (
             /* Start Session Form */
@@ -329,80 +375,34 @@ export default function MeditationPage() {
               </div>
             </div>
           ) : (
-            /* Active Session */
-            <div className="flex flex-col items-center">
-              {/* Progress Circle */}
-              <div className="relative mb-8">
-                <svg width="280" height="280" className="transform -rotate-90">
-                  {/* Background circle */}
-                  <circle
-                    cx="140"
-                    cy="140"
-                    r="120"
-                    stroke="rgba(100, 116, 139, 0.3)"
-                    strokeWidth="12"
-                    fill="none"
-                  />
-                  {/* Progress circle */}
-                  <circle
-                    cx="140"
-                    cy="140"
-                    r="120"
-                    stroke="rgb(59, 130, 246)"
-                    strokeWidth="12"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeDasharray={`${2 * Math.PI * 120}`}
-                    strokeDashoffset={getProgressStroke()}
-                    className="transition-all duration-1000 ease-linear"
-                    style={{
-                      filter: 'drop-shadow(0 0 20px rgba(59, 130, 246, 0.5))'
-                    }}
-                  />
-                </svg>
-                
-                {/* Time display */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-4xl font-bold text-white font-mono mb-2">
-                      {formatTime(timeLeft)}
-                    </div>
-                    <div className="text-sm text-slate-400">
-                      {isPaused ? 'Paused' : 'Meditating...'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Control Buttons */}
-              <div className="flex space-x-4">
-                {!isPaused ? (
-                  <Button
-                    onClick={pauseMeditation}
-                    variant="outline"
-                    className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                  >
-                    <Pause className="w-4 h-4 mr-2" />
-                    Pause
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={resumeMeditation}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    <Play className="w-4 h-4 mr-2" />
-                    Resume
-                  </Button>
-                )}
+            /* Active Session Controls */
+            <div className="flex space-x-4">
+              {!isPaused ? (
                 <Button
-                  onClick={stopMeditation}
+                  onClick={pauseMeditation}
                   variant="outline"
-                  className="border-red-600 text-red-400 hover:bg-red-900/20"
+                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
                 >
-                  <Square className="w-4 h-4 mr-2" />
-                  Stop
+                  <Pause className="w-4 h-4 mr-2" />
+                  Pause
                 </Button>
-              </div>
+              ) : (
+                <Button
+                  onClick={resumeMeditation}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Resume
+                </Button>
+              )}
+              <Button
+                onClick={stopMeditation}
+                variant="outline"
+                className="border-red-600 text-red-400 hover:bg-red-900/20"
+              >
+                <Square className="w-4 h-4 mr-2" />
+                Stop
+              </Button>
             </div>
           )}
         </div>
