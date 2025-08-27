@@ -53,6 +53,7 @@ export default function CalendarPage() {
     getTotalStats,
     getIndividualWorkoutTotals,
     editWorkoutForDate,
+    isWorkoutActiveOnDay,
     getWorkoutLogsForDate
   } = useWorkouts();
   const {
@@ -101,11 +102,9 @@ export default function CalendarPage() {
     const dateLog = logs[dateStr];
     if (!dateLog) return false;
     
-    // Get all available workouts that should be active on this day
-    const dayOfWeek = date.getDay();
-    const activeWorkouts = workouts.filter(workout => 
-      isWorkoutActiveOnDay(workout, dayOfWeek)
-    );
+    // For simplicity, check if all current workouts have met their goals
+    // (regardless of scheduling - this ensures stricter completion logic)
+    const activeWorkouts = workouts;
     
     // If no workouts are scheduled for this day, it's not complete
     if (activeWorkouts.length === 0) return false;
