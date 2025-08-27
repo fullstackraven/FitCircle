@@ -57,8 +57,50 @@ export function useWorkouts() {
     });
     
     // Migration: convert old format data to new format with goal preservation
-    return migrateDataFormat(savedData);
+    const migratedData = migrateDataFormat(savedData);
+    // Migration: add timestamps to journal entries that don't have them
+    return migrateJournalTimestamps(migratedData);
   });
+
+  // Migration function to add timestamps to journal entries
+  function migrateJournalTimestamps(data: WorkoutData): WorkoutData {
+    let hasChanges = false;
+    const updatedJournalEntries: { [date: string]: { text: string; timestamp: string } | string } = {};
+
+    Object.entries(data.journalEntries || {}).forEach(([dateString, entry]) => {
+      if (typeof entry === 'string' && entry.trim()) {
+        // This is an old entry without timestamp, add one
+        // Use the date at 6 PM as a reasonable default time for journal writing
+        const entryDate = new Date(dateString + 'T18:00:00');
+        updatedJournalEntries[dateString] = {
+          text: entry,
+          timestamp: entryDate.toISOString()
+        };
+        hasChanges = true;
+      } else {
+        // Entry already has timestamp or is empty
+        updatedJournalEntries[dateString] = entry;
+      }
+    });
+
+    if (hasChanges) {
+      console.log('Migrating journal entries to add timestamps...');
+      const migratedData = {
+        ...data,
+        journalEntries: updatedJournalEntries
+      };
+      // Save to localStorage immediately
+      try {
+        localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(migratedData));
+      } catch (error) {
+        console.error('Failed to save migrated journal data:', error);
+      }
+      console.log('Journal timestamp migration complete');
+      return migratedData;
+    }
+
+    return data;
+  }
 
   // Advanced migration that uses completion patterns to determine historical goals
   function migrateDataFormat(savedData: WorkoutData): WorkoutData {
