@@ -339,13 +339,54 @@ export default function Home() {
             {/* Timer Circle */}
             <div className="flex flex-col items-center space-y-3">
               <button
-                onClick={() => setIsTimerOpen(true)}
+                onClick={() => {
+                  if (timerState.isCompleted) {
+                    // Timer completed - reset and open setup modal
+                    resetTimer();
+                    setTimerHours('0');
+                    setTimerMinutes('0');
+                    setTimerSeconds('0');
+                    setIsTimerOpen(true);
+                  } else if (timerState.remainingTime > 0) {
+                    // Timer is running - toggle pause/resume
+                    timerState.isRunning ? pauseTimer() : resumeTimer();
+                  } else {
+                    // Timer is not running - open setup modal
+                    setIsTimerOpen(true);
+                  }
+                }}
                 className="relative"
-                title="Open Timer"
+                title={timerState.isCompleted ? "Reset Timer" : 
+                       timerState.remainingTime > 0 ? (timerState.isRunning ? "Pause Timer" : "Resume Timer") : "Open Timer"}
               >
                 <div className="relative w-25 h-25 rounded-full bg-slate-800 flex items-center justify-center border-4 border-slate-700 hover:border-slate-600 transition-colors" style={{ width: '100px', height: '100px' }}>
-                  <Timer className="w-10 h-10 text-slate-400" />
-                  {timerState.remainingTime > 0 && (
+                  {timerState.remainingTime > 0 && timerState.isCompleted ? (
+                    <CheckCircle className="w-10 h-10 text-green-400" />
+                  ) : timerState.remainingTime > 0 && !timerState.isRunning ? (
+                    <Play className="w-8 h-8 text-blue-400" />
+                  ) : (
+                    <Timer className="w-10 h-10 text-slate-400" />
+                  )}
+                  
+                  {timerState.remainingTime > 0 && !timerState.isCompleted && (
+                    <div className="absolute inset-0 rounded-full">
+                      <svg width="100" height="100" className="transform -rotate-90">
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="46"
+                          stroke={timerState.isRunning ? "rgb(59, 130, 246)" : "rgb(156, 163, 175)"}
+                          strokeWidth="4"
+                          fill="none"
+                          strokeDasharray={`${2 * Math.PI * 46}`}
+                          strokeDashoffset={`${2 * Math.PI * 46 * (1 - getProgress() / 100)}`}
+                          className="transition-all duration-1000"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                  
+                  {timerState.remainingTime > 0 && timerState.isCompleted && (
                     <div className="absolute inset-0 rounded-full">
                       <svg width="100" height="100" className="transform -rotate-90">
                         <circle
@@ -356,7 +397,7 @@ export default function Home() {
                           strokeWidth="4"
                           fill="none"
                           strokeDasharray={`${2 * Math.PI * 46}`}
-                          strokeDashoffset={`${2 * Math.PI * 46 * (1 - getProgress())}`}
+                          strokeDashoffset="0"
                           className="transition-all duration-1000"
                         />
                       </svg>
@@ -366,10 +407,15 @@ export default function Home() {
               </button>
               <div className="text-center">
                 <div className="text-sm text-slate-300 font-medium">
-                  {timerState.remainingTime > 0 ? formatTime(timerState.remainingTime) : "Timer"}
+                  {timerState.remainingTime > 0 && !timerState.isCompleted ? formatTime(timerState.remainingTime) : 
+                   timerState.isCompleted ? "Completed!" : "Timer"}
                 </div>
                 <div className="text-xs text-slate-400">
-                  {isWorkoutActive ? `${getCurrentSessionDuration()}` : "Tap to start"}
+                  {timerState.remainingTime > 0 && !timerState.isCompleted ? 
+                    (timerState.isRunning ? "Running" : "Paused") :
+                    timerState.isCompleted ? "Tap to reset" :
+                    "Tap to start"
+                  }
                 </div>
               </div>
             </div>
@@ -671,31 +717,14 @@ export default function Home() {
           {!timerState.isRunning && timerState.remainingTime === 0 ? (
             // Timer Setup
             <div className="space-y-6">
-              {/* Timer Ring Display */}
-              <div className="flex justify-center mb-6">
-                <div className="relative w-48 h-48">
-                  <svg width="192" height="192" className="transform -rotate-90">
-                    {/* Background circle */}
-                    <circle
-                      cx="96"
-                      cy="96"
-                      r="88"
-                      stroke="rgb(71, 85, 105)"
-                      strokeWidth="8"
-                      fill="none"
-                    />
-                  </svg>
-                  
-                  {/* Center content */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="text-2xl font-bold text-white">
-                      {String((parseInt(timerHours) || 0)).padStart(2, '0')}:
-                      {String((parseInt(timerMinutes) || 0)).padStart(2, '0')}:
-                      {String(parseInt(timerSeconds) || 0).padStart(2, '0')}
-                    </div>
-                    <div className="text-xs text-slate-400">Set Time</div>
-                  </div>
+              {/* Simple Time Display */}
+              <div className="text-center space-y-2">
+                <div className="text-4xl font-bold text-white">
+                  {String((parseInt(timerHours) || 0)).padStart(2, '0')}:
+                  {String((parseInt(timerMinutes) || 0)).padStart(2, '0')}:
+                  {String(parseInt(timerSeconds) || 0).padStart(2, '0')}
                 </div>
+                <div className="text-sm text-slate-400">Set Time</div>
               </div>
 
               {/* Time Input Fields */}
@@ -746,25 +775,37 @@ export default function Home() {
                 <div className="text-sm text-slate-300 text-center">Quick Presets</div>
                 <div className="grid grid-cols-4 gap-2">
                   <Button
-                    onClick={() => startTimerFromSeconds(30)}
+                    onClick={() => {
+                      startTimerFromSeconds(30);
+                      setIsTimerOpen(false);
+                    }}
                     className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
                   >
                     30s
                   </Button>
                   <Button
-                    onClick={() => startTimerFromSeconds(60)}
+                    onClick={() => {
+                      startTimerFromSeconds(60);
+                      setIsTimerOpen(false);
+                    }}
                     className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
                   >
                     60s
                   </Button>
                   <Button
-                    onClick={() => startTimerFromSeconds(90)}
+                    onClick={() => {
+                      startTimerFromSeconds(90);
+                      setIsTimerOpen(false);
+                    }}
                     className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
                   >
                     90s
                   </Button>
                   <Button
-                    onClick={() => startTimerFromSeconds(120)}
+                    onClick={() => {
+                      startTimerFromSeconds(120);
+                      setIsTimerOpen(false);
+                    }}
                     className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
                   >
                     2m
@@ -772,19 +813,28 @@ export default function Home() {
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <Button
-                    onClick={() => startTimerFromSeconds(300)}
+                    onClick={() => {
+                      startTimerFromSeconds(300);
+                      setIsTimerOpen(false);
+                    }}
                     className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
                   >
                     5m
                   </Button>
                   <Button
-                    onClick={() => startTimerFromSeconds(600)}
+                    onClick={() => {
+                      startTimerFromSeconds(600);
+                      setIsTimerOpen(false);
+                    }}
                     className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
                   >
                     10m
                   </Button>
                   <Button
-                    onClick={() => startTimerFromSeconds(900)}
+                    onClick={() => {
+                      startTimerFromSeconds(900);
+                      setIsTimerOpen(false);
+                    }}
                     className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
                   >
                     15m
@@ -801,6 +851,7 @@ export default function Home() {
                                        (parseInt(timerSeconds) || 0);
                     if (totalSeconds > 0) {
                       startTimerFromSeconds(totalSeconds);
+                      setIsTimerOpen(false);
                     }
                   }}
                   className="flex-1 bg-green-600 hover:bg-green-700"
@@ -818,103 +869,16 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            // Timer Running/Completed
-            <div className="space-y-6">
-              <div className="flex justify-center">
-                <div className="relative w-48 h-48">
-                  <svg width="192" height="192" className="transform -rotate-90">
-                    {/* Background circle */}
-                    <circle
-                      cx="96"
-                      cy="96"
-                      r="88"
-                      stroke="rgb(71, 85, 105)"
-                      strokeWidth="8"
-                      fill="none"
-                    />
-                    {/* Progress circle */}
-                    <circle
-                      cx="96"
-                      cy="96"
-                      r="88"
-                      stroke={timerState.isCompleted ? "rgb(34, 197, 94)" : "rgb(59, 130, 246)"}
-                      strokeWidth="8"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeDasharray={`${2 * Math.PI * 88}`}
-                      strokeDashoffset={`${2 * Math.PI * 88 * (1 - getProgress() / 100)}`}
-                      className="transition-all duration-1000 ease-linear"
-                    />
-                  </svg>
-                  
-                  {/* Center content */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="text-3xl font-bold text-white">
-                      {formatTime(timerState.remainingTime)}
-                    </div>
-                    <div className="text-sm text-slate-400">
-                      {timerState.isCompleted ? 'Completed!' : 'Remaining'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex space-x-3">
-                {timerState.isCompleted ? (
-                  <>
-                    <Button
-                      onClick={() => {
-                        resetTimer();
-                        setTimerHours('0');
-                        setTimerMinutes('0');
-                        setTimerSeconds('0');
-                      }}
-                      className="flex-1 bg-green-600 hover:bg-green-700"
-                    >
-                      New Timer
-                    </Button>
-                    <Button
-                      onClick={() => setIsTimerOpen(false)}
-                      variant="outline"
-                      className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                    >
-                      Close
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      onClick={timerState.isRunning ? pauseTimer : resumeTimer}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700"
-                    >
-                      {timerState.isRunning ? (
-                        <>
-                          <Pause size={16} className="mr-2" />
-                          Pause
-                        </>
-                      ) : (
-                        <>
-                          <Play size={16} className="mr-2" />
-                          Resume
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        resetTimer();
-                        setTimerHours('0');
-                        setTimerMinutes('0');
-                        setTimerSeconds('0');
-                      }}
-                      variant="outline"
-                      className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                    >
-                      <Square size={16} className="mr-2" />
-                      Stop
-                    </Button>
-                  </>
-                )}
-              </div>
+            // Timer is running - show simple message and close automatically
+            <div className="text-center space-y-4">
+              <div className="text-lg text-white">Timer is running!</div>
+              <div className="text-sm text-slate-400">Check the timer icon on the home page for countdown progress</div>
+              <Button
+                onClick={() => setIsTimerOpen(false)}
+                className="bg-slate-600 hover:bg-slate-700"
+              >
+                Close
+              </Button>
             </div>
           )}
         </DialogContent>
