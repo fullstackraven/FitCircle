@@ -378,8 +378,12 @@ export function useWorkouts() {
         date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
       const totalReps = Object.values(dayLog || {}).reduce((sum, logEntry) => {
-        const count = getCountFromLogEntry(logEntry);
-        return sum + count;
+        if (typeof logEntry === 'number') {
+          return sum + logEntry;
+        } else if (typeof logEntry === 'object' && logEntry?.count) {
+          return sum + logEntry.count;
+        }
+        return sum;
       }, 0);
 
       return {
