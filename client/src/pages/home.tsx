@@ -359,22 +359,15 @@ export default function Home() {
                 title={timerState.isCompleted ? "Reset Timer" : 
                        timerState.remainingTime > 0 ? (timerState.isRunning ? "Pause Timer" : "Resume Timer") : "Open Timer"}
               >
-                <div className="relative w-25 h-25 rounded-full bg-slate-800 flex items-center justify-center border-4 border-slate-700 hover:border-slate-600 transition-colors" style={{ width: '100px', height: '100px' }}>
-                  {timerState.remainingTime > 0 && timerState.isCompleted ? (
-                    <CheckCircle className="w-10 h-10 text-green-400" />
-                  ) : timerState.remainingTime > 0 && !timerState.isRunning ? (
-                    <Play className="w-8 h-8 text-blue-400" />
-                  ) : (
-                    <Timer className="w-10 h-10 text-slate-400" />
-                  )}
-                  
+                <div className="relative" style={{ width: '120px', height: '120px' }}>
+                  {/* Progress rings - positioned behind the circle */}
                   {timerState.remainingTime > 0 && !timerState.isCompleted && (
-                    <div className="absolute inset-0 rounded-full">
-                      <svg width="100" height="100" className="transform -rotate-90">
+                    <div className="absolute inset-0">
+                      <svg width="120" height="120" className="transform -rotate-90">
                         {/* Background ring */}
                         <circle
-                          cx="50"
-                          cy="50"
+                          cx="60"
+                          cy="60"
                           r="55"
                           stroke="rgb(71, 85, 105)"
                           strokeWidth="10"
@@ -382,8 +375,8 @@ export default function Home() {
                         />
                         {/* Progress ring */}
                         <circle
-                          cx="50"
-                          cy="50"
+                          cx="60"
+                          cy="60"
                           r="55"
                           stroke={timerState.isRunning ? "rgb(59, 130, 246)" : "rgb(156, 163, 175)"}
                           strokeWidth="10"
@@ -398,12 +391,12 @@ export default function Home() {
                   )}
                   
                   {timerState.remainingTime > 0 && timerState.isCompleted && (
-                    <div className="absolute inset-0 rounded-full">
-                      <svg width="100" height="100" className="transform -rotate-90">
+                    <div className="absolute inset-0">
+                      <svg width="120" height="120" className="transform -rotate-90">
                         {/* Background ring */}
                         <circle
-                          cx="50"
-                          cy="50"
+                          cx="60"
+                          cy="60"
                           r="55"
                           stroke="rgb(71, 85, 105)"
                           strokeWidth="10"
@@ -411,8 +404,8 @@ export default function Home() {
                         />
                         {/* Completed ring */}
                         <circle
-                          cx="50"
-                          cy="50"
+                          cx="60"
+                          cy="60"
                           r="55"
                           stroke="rgb(34, 197, 94)"
                           strokeWidth="10"
@@ -425,6 +418,17 @@ export default function Home() {
                       </svg>
                     </div>
                   )}
+                  
+                  {/* Timer circle - positioned on top */}
+                  <div className="absolute top-2.5 left-2.5 w-25 h-25 rounded-full bg-slate-800 flex items-center justify-center border-4 border-slate-700 hover:border-slate-600 transition-colors z-10" style={{ width: '100px', height: '100px' }}>
+                    {timerState.remainingTime > 0 && timerState.isCompleted ? (
+                      <CheckCircle className="w-10 h-10 text-green-400" />
+                    ) : timerState.remainingTime > 0 && !timerState.isRunning ? (
+                      <Play className="w-8 h-8 text-blue-400" />
+                    ) : (
+                      <Timer className="w-10 h-10 text-slate-400" />
+                    )}
+                  </div>
                 </div>
               </button>
               <div className="text-center">
