@@ -1024,7 +1024,7 @@ export function useWorkouts() {
       const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
       const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : null;
       
-      // Use the goal that was in effect at that time
+      // Use the goal that was in effect at that time, or current goal if no stored goal
       const requiredGoal = goalAtTime !== null ? goalAtTime : workout.dailyGoal;
       return count >= requiredGoal;
     });
@@ -1044,6 +1044,18 @@ export function useWorkouts() {
     }
 
     return workoutData;
+  };
+
+  // Manual function to check and mark today as complete if all workouts are done
+  const checkTodayCompletion = () => {
+    const today = getTodayString();
+    const updatedData = checkAndMarkDayCompletion(data, today);
+    if (updatedData !== data) {
+      setData(updatedData);
+      console.log('Manually marked today as complete!');
+      return true;
+    }
+    return false;
   };
 
   return {
@@ -1077,5 +1089,6 @@ export function useWorkouts() {
     getRoutineArray,
     getWorkoutsByRoutine,
     isWorkoutActiveOnDay,
+    checkTodayCompletion,
   };
 }
