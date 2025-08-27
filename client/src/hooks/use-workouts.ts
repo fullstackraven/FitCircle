@@ -114,6 +114,10 @@ export function useWorkouts() {
     Object.entries(data.dailyLogs || {}).forEach(([dateStr, dailyLog]) => {
       // Skip if already has completion flag
       if (dailyLog.dayCompleted !== undefined) return;
+      
+      // IMPORTANT: Only process days that are NOT today to avoid interfering with current workouts
+      const today = getTodayString();
+      if (dateStr === today) return;
 
       // Get workouts that existed at that time (we'll check all current workouts for historical data)
       const workouts = Object.values(data.workouts || {});
@@ -139,12 +143,13 @@ export function useWorkouts() {
         const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : null;
         
         // Use the goal that was stored for that time
-        // If no goalAtTime was stored, we assume it was completed (old data before tracking)
+        // IMPORTANT: Only mark complete if we have stored goal and met it
         if (goalAtTime !== null) {
           return count >= goalAtTime;
         } else {
-          // For historical data without goalAtTime, if there's activity, assume it was completed
-          return count > 0;
+          // For historical data without goalAtTime, we CANNOT assume completion
+          // Return false to be conservative - only mark days complete when we're certain
+          return false;
         }
       });
 
