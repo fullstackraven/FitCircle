@@ -8,6 +8,36 @@ export function JournalLog() {
   const [, navigate] = useLocation();
   const { getAllJournalEntries } = useWorkouts();
 
+  // Manual cleanup function to remove estimated timestamps
+  const cleanupEstimatedTimestamps = () => {
+    try {
+      const workoutData = JSON.parse(localStorage.getItem('fitcircle_workouts') || '{}');
+      if (workoutData.journalEntries) {
+        let hasChanges = false;
+        const cleanedEntries: any = {};
+        
+        Object.entries(workoutData.journalEntries).forEach(([date, entry]: [string, any]) => {
+          if (typeof entry === 'object' && entry.timestamp && entry.timestamp.includes('T18:00:00')) {
+            cleanedEntries[date] = entry.text; // Convert back to string
+            hasChanges = true;
+            console.log(`Cleaned timestamp for ${date}`);
+          } else {
+            cleanedEntries[date] = entry;
+          }
+        });
+        
+        if (hasChanges) {
+          workoutData.journalEntries = cleanedEntries;
+          localStorage.setItem('fitcircle_workouts', JSON.stringify(workoutData));
+          console.log('Manual cleanup complete - please refresh the page');
+          window.location.reload(); // Force page refresh to see changes
+        }
+      }
+    } catch (error) {
+      console.error('Manual cleanup failed:', error);
+    }
+  };
+
   // Get all journal entries
   const allJournalEntries = getAllJournalEntries();
   const journalEntries = Object.entries(allJournalEntries)
@@ -80,7 +110,13 @@ export function JournalLog() {
         </button>
 
         <h1 className="text-xl font-bold text-white">Journal Log</h1>
-        <div className="w-[42px]" />
+        <button
+          onClick={cleanupEstimatedTimestamps}
+          className="text-xs bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded"
+          title="Remove estimated 6:00 PM timestamps"
+        >
+          Clean
+        </button>
       </div>
 
       <div className="space-y-4">

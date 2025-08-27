@@ -63,7 +63,7 @@ export function useWorkouts() {
     return cleanedData;
   });
 
-  // Function to clean up estimated timestamps from journal entries
+  // Function to clean up estimated timestamps from journal entries - runs every time
   function cleanupEstimatedTimestamps(data: WorkoutData): WorkoutData {
     let hasChanges = false;
     const updatedJournalEntries: { [date: string]: { text: string; timestamp: string } | string } = {};
@@ -75,7 +75,7 @@ export function useWorkouts() {
           // Convert back to simple string format (no timestamp)
           updatedJournalEntries[dateString] = entry.text;
           hasChanges = true;
-          console.log(`Removing estimated timestamp for ${dateString}`);
+          console.log(`Removing estimated timestamp for ${dateString} - text: ${entry.text.substring(0, 50)}...`);
         } else {
           // Keep real timestamps
           updatedJournalEntries[dateString] = entry;
@@ -87,6 +87,7 @@ export function useWorkouts() {
     });
 
     if (hasChanges) {
+      console.log('Found and removing estimated journal timestamps...');
       const cleanedData = {
         ...data,
         journalEntries: updatedJournalEntries
