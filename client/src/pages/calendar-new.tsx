@@ -92,7 +92,7 @@ export default function CalendarPage() {
     navigate(`/dynamic-overview/${dateString}`);
   };
 
-  // Calculate day completion - only consider workouts that existed on that day
+  // Calculate day completion using immutable dayCompleted flag
   const isDayComplete = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -102,26 +102,12 @@ export default function CalendarPage() {
     const dateLog = logs[dateStr];
     if (!dateLog) return false;
     
-    // For simplicity, check if all current workouts have met their goals
-    // (regardless of scheduling - this ensures stricter completion logic)
-    const activeWorkouts = workouts;
+    // Check immutable completion flag first - once set, day stays complete forever
+    if (dateLog.dayCompleted === true) {
+      return true;
+    }
     
-    // If no workouts are scheduled for this day, it's not complete
-    if (activeWorkouts.length === 0) return false;
-    
-    // Check if ALL scheduled workouts for this day met their goals
-    return activeWorkouts.every(workout => {
-      const logEntry = dateLog[workout.id];
-      const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
-      const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : null;
-      
-      // If we have a stored goal from that time, use it. Otherwise fall back to current goal
-      if (goalAtTime !== null) {
-        return count >= goalAtTime;
-      } else {
-        return count >= workout.dailyGoal;
-      }
-    });
+    return false; // If no immutable flag, day is not complete
   };
 
   // Generate calendar days

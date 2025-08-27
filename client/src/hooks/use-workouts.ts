@@ -26,6 +26,7 @@ export interface WorkoutLogEntry {
 
 export interface DailyLog {
   [workoutId: string]: number | WorkoutLogEntry;
+  dayCompleted?: boolean; // Immutable flag - once set to true, day stays completed forever
 }
 
 export interface Routine {
@@ -278,7 +279,7 @@ export function useWorkouts() {
       const currentDailyCount = typeof currentDailyLog === 'object' ? currentDailyLog.count : (currentDailyLog || 0);
       const currentGoal = prev.workouts[workoutId]?.dailyGoal || 1;
 
-      return {
+      const updatedData = {
         ...prev,
         workouts: {
           ...prev.workouts,
@@ -298,6 +299,9 @@ export function useWorkouts() {
           }
         }
       };
+
+      // Check if day is now complete and mark it immutable
+      return checkAndMarkDayCompletion(updatedData, today);
     });
   };
 
@@ -888,6 +892,44 @@ export function useWorkouts() {
       return true; // Every day if no schedule set
     }
     return workout.scheduledDays.includes(dayOfWeek);
+  };
+
+  // Helper function to check if day is complete and mark it immutable
+  const checkAndMarkDayCompletion = (workoutData: WorkoutData, dateStr: string): WorkoutData => {
+    const dailyLog = workoutData.dailyLogs[dateStr];
+    if (!dailyLog || dailyLog.dayCompleted) {
+      return workoutData; // Already completed or no log
+    }
+
+    const workouts = Object.values(workoutData.workouts || {});
+    if (workouts.length === 0) return workoutData;
+
+    // Check if ALL workouts have met their goals for that day
+    const allCompleted = workouts.every(workout => {
+      const logEntry = dailyLog[workout.id];
+      const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
+      const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : null;
+      
+      // Use the goal that was in effect at that time
+      const requiredGoal = goalAtTime !== null ? goalAtTime : workout.dailyGoal;
+      return count >= requiredGoal;
+    });
+
+    if (allCompleted) {
+      // Mark this day as completed forever
+      return {
+        ...workoutData,
+        dailyLogs: {
+          ...workoutData.dailyLogs,
+          [dateStr]: {
+            ...dailyLog,
+            dayCompleted: true
+          }
+        }
+      };
+    }
+
+    return workoutData;
   };
 
   return {
