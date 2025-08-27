@@ -13,15 +13,25 @@ export function JournalLog() {
   const journalEntries = Object.entries(allJournalEntries)
     .map(([dateString, entry]) => {
       const date = new Date(dateString + 'T00:00:00');
+      const text = typeof entry === 'string' ? entry : entry.text;
+      const timestamp = typeof entry === 'string' ? null : entry.timestamp;
+      
       return {
         date: dateString,
-        entry: entry,
+        entry: text,
+        timestamp: timestamp,
         parsedDate: date,
+        timestampDate: timestamp ? new Date(timestamp) : null,
         isValidDate: isValid(date)
       };
     })
     .filter((entry) => entry.isValidDate && entry.entry && entry.entry.trim())
-    .sort((a, b) => b.parsedDate.getTime() - a.parsedDate.getTime());
+    .sort((a, b) => {
+      // Sort by timestamp if available, otherwise by date
+      const aTime = a.timestampDate?.getTime() || a.parsedDate.getTime();
+      const bTime = b.timestampDate?.getTime() || b.parsedDate.getTime();
+      return bTime - aTime;
+    });
 
   const handleEntryClick = (dateString: string) => {
     navigate(`/daily-journal?date=${dateString}`);
@@ -97,6 +107,11 @@ export function JournalLog() {
               <div className="flex items-center mt-3 text-xs text-slate-500">
                 <Calendar className="w-3 h-3 mr-1" />
                 {format(entry.parsedDate, "MMM d, yyyy")}
+                {entry.timestamp && (
+                  <span className="ml-3">
+                    • {format(entry.timestampDate!, "h:mm a")}
+                  </span>
+                )}
               </div>
             </button>
           ))

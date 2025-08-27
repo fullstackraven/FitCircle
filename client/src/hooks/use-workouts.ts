@@ -37,7 +37,7 @@ export interface Routine {
 export interface WorkoutData {
   workouts: { [id: string]: Workout };
   dailyLogs: { [date: string]: DailyLog };
-  journalEntries: { [date: string]: string };
+  journalEntries: { [date: string]: { text: string; timestamp: string } | string };
   routines: { [id: string]: Routine };
   lastDate?: string;
 }
@@ -473,17 +473,31 @@ export function useWorkouts() {
   };
 
   const addJournalEntry = (date: string, entry: string) => {
+    const timestamp = new Date().toISOString();
     setData(prev => ({
       ...prev,
       journalEntries: {
         ...prev.journalEntries,
-        [date]: entry
+        [date]: { text: entry, timestamp }
       }
     }));
   };
 
   const getJournalEntry = (date: string) => {
-    return data.journalEntries[date] || '';
+    const entry = data.journalEntries[date];
+    if (!entry) return '';
+    // Support both old string format and new timestamp format
+    return typeof entry === 'string' ? entry : entry.text;
+  };
+
+  const getJournalEntryWithTimestamp = (date: string) => {
+    const entry = data.journalEntries[date];
+    if (!entry) return null;
+    // Support both old string format and new timestamp format
+    if (typeof entry === 'string') {
+      return { text: entry, timestamp: null };
+    }
+    return entry;
   };
 
   const getAllJournalEntries = () => {
@@ -851,6 +865,7 @@ export function useWorkouts() {
     getDailyLogs: () => data.dailyLogs,
     addJournalEntry,
     getJournalEntry,
+    getJournalEntryWithTimestamp,
     getAllJournalEntries,
     getMonthlyStats,
     getTotalStats,

@@ -6,9 +6,10 @@ import { format } from "date-fns";
 
 export function DailyJournal() {
   const [, navigate] = useLocation();
-  const { getJournalEntry, addJournalEntry } = useWorkouts();
+  const { getJournalEntry, getJournalEntryWithTimestamp, addJournalEntry } = useWorkouts();
   const [journalText, setJournalText] = useState("");
   const [currentDate, setCurrentDate] = useState("");
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
 
   useEffect(() => {
     // Check for date parameter in URL
@@ -34,11 +35,16 @@ export function DailyJournal() {
     setCurrentDate(dateStr);
     const entry = getJournalEntry(dateStr);
     setJournalText(entry || '');
+    
+    // Get timestamp for existing entry
+    const entryWithTimestamp = getJournalEntryWithTimestamp(dateStr);
+    setLastSaved(entryWithTimestamp?.timestamp || null);
   }, [window.location.search]);
 
   const handleJournalSubmit = () => {
     if (journalText.trim()) {
       addJournalEntry(currentDate, journalText);
+      setLastSaved(new Date().toISOString());
       alert('Journal entry saved successfully!');
     }
   };
@@ -75,6 +81,11 @@ export function DailyJournal() {
       {/* Date indicator */}
       <div className="px-4 mb-4">
         <p className="text-sm text-slate-400">{getDisplayDate()}</p>
+        {lastSaved && (
+          <p className="text-xs text-slate-500 mt-1">
+            Last saved: {format(new Date(lastSaved), "MMM d, yyyy 'at' h:mm a")}
+          </p>
+        )}
       </div>
 
       {/* Main writing area - full screen like Notes app */}
