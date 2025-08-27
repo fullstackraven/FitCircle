@@ -60,7 +60,9 @@ export function useWorkouts() {
     // Migration: convert old format data to new format with goal preservation
     const migratedData = migrateDataFormat(savedData);
     // Migration: add timestamps to journal entries that don't have them
-    return migrateJournalTimestamps(migratedData);
+    const timestampMigrated = migrateJournalTimestamps(migratedData);
+    // Migration: add dayCompleted flags for historically completed days
+    return migrateDayCompletionFlags(timestampMigrated);
   });
 
   // Migration function to add timestamps to journal entries
@@ -97,6 +99,59 @@ export function useWorkouts() {
         console.error('Failed to save migrated journal data:', error);
       }
       console.log('Journal timestamp migration complete');
+      return migratedData;
+    }
+
+    return data;
+  }
+
+  // Migration function to add dayCompleted flags for historically completed days
+  function migrateDayCompletionFlags(data: WorkoutData): WorkoutData {
+    const updatedDailyLogs = { ...data.dailyLogs };
+    let hasChanges = false;
+
+    // For each day in the logs
+    Object.entries(data.dailyLogs || {}).forEach(([dateStr, dailyLog]) => {
+      // Skip if already has completion flag
+      if (dailyLog.dayCompleted !== undefined) return;
+
+      // Get workouts that existed at that time (we'll check all current workouts for historical data)
+      const workouts = Object.values(data.workouts || {});
+      if (workouts.length === 0) return;
+
+      // Check if ALL workouts had met their goals on that specific day
+      const allCompleted = workouts.every(workout => {
+        const logEntry = dailyLog[workout.id];
+        const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
+        const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : null;
+        
+        // Use the goal that was stored for that time, or fall back to current goal
+        const requiredGoal = goalAtTime !== null ? goalAtTime : workout.dailyGoal;
+        return count >= requiredGoal;
+      });
+
+      if (allCompleted) {
+        updatedDailyLogs[dateStr] = {
+          ...dailyLog,
+          dayCompleted: true
+        };
+        hasChanges = true;
+      }
+    });
+
+    if (hasChanges) {
+      console.log('Migrating historical day completion flags...');
+      const migratedData = {
+        ...data,
+        dailyLogs: updatedDailyLogs
+      };
+      // Save to localStorage immediately
+      try {
+        localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(migratedData));
+      } catch (error) {
+        console.error('Failed to save migrated completion data:', error);
+      }
+      console.log('Historical day completion migration complete');
       return migratedData;
     }
 
