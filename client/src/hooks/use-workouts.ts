@@ -62,7 +62,9 @@ export function useWorkouts() {
     // Migration: add timestamps to journal entries that don't have them
     const timestampMigrated = migrateJournalTimestamps(migratedData);
     // Migration: add dayCompleted flags for historically completed days
-    return migrateDayCompletionFlags(timestampMigrated);
+    const completionMigrated = migrateDayCompletionFlags(timestampMigrated);
+    // Clean up any incorrect completion flags for today
+    return cleanupTodaysCompletionFlag(completionMigrated);
   });
 
   // Migration function to add timestamps to journal entries
@@ -178,6 +180,40 @@ export function useWorkouts() {
       return migratedData;
     }
 
+    return data;
+  }
+
+  // Clean up any incorrect completion flags for today
+  function cleanupTodaysCompletionFlag(data: WorkoutData): WorkoutData {
+    const today = getTodayString();
+    const todayLog = data.dailyLogs[today];
+    
+    if (todayLog && todayLog.dayCompleted === true) {
+      console.log('Found incorrect dayCompleted flag for today - clearing it');
+      const cleanedDailyLogs = {
+        ...data.dailyLogs,
+        [today]: {
+          ...todayLog,
+          dayCompleted: undefined
+        }
+      };
+      
+      const cleanedData = {
+        ...data,
+        dailyLogs: cleanedDailyLogs
+      };
+      
+      // Save immediately
+      try {
+        localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(cleanedData));
+        console.log('Cleared incorrect completion flag for today');
+      } catch (error) {
+        console.error('Failed to save cleaned completion data:', error);
+      }
+      
+      return cleanedData;
+    }
+    
     return data;
   }
 

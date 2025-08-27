@@ -102,6 +102,16 @@ export default function CalendarPage() {
     const dateLog = logs[dateStr];
     if (!dateLog) return false;
     
+    // Debug logging for today's date
+    const today = new Date().toISOString().split('T')[0];
+    if (dateStr === today) {
+      console.log(`Today (${dateStr}) completion check:`, {
+        hasDateLog: !!dateLog,
+        dayCompleted: dateLog.dayCompleted,
+        logKeys: Object.keys(dateLog)
+      });
+    }
+    
     // Check immutable completion flag first - once set, day stays complete forever
     if (dateLog.dayCompleted === true) {
       return true;
