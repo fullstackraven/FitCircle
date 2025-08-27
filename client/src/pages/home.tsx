@@ -45,8 +45,7 @@ export default function Home() {
     getAvailableColors,
     getWorkoutArray,
     canAddMoreWorkouts,
-    isWorkoutActiveOnDay,
-    checkTodayCompletion
+    isWorkoutActiveOnDay
   } = useWorkouts();
 
   const { timerState, startTimer, startTimerFromSeconds, pauseTimer, resumeTimer, resetTimer, formatTime, getProgress } = useTimer();
@@ -115,9 +114,6 @@ export default function Home() {
     incrementWorkout(workoutId);
     setClickingWorkout(workoutId);
     setTimeout(() => setClickingWorkout(null), 200);
-    
-    // Check if day is now complete after this increment
-    setTimeout(() => checkTodayCompletion(), 100);
   };
 
   const handleWorkoutHoldIncrement = (workoutId: string) => {

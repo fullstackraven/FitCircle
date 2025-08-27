@@ -26,7 +26,6 @@ export interface WorkoutLogEntry {
 
 export interface DailyLog {
   [workoutId: string]: number | WorkoutLogEntry;
-  dayCompleted?: boolean; // Immutable flag - once set to true, day stays completed forever
 }
 
 export interface Routine {
@@ -61,10 +60,8 @@ export function useWorkouts() {
     const migratedData = migrateDataFormat(savedData);
     // Migration: add timestamps to journal entries that don't have them
     const timestampMigrated = migrateJournalTimestamps(migratedData);
-    // Migration: add dayCompleted flags for historically completed days
-    const completionMigrated = migrateDayCompletionFlags(timestampMigrated);
-    // Clean up any incorrect completion flags for today
-    return cleanupTodaysCompletionFlag(completionMigrated);
+    // Migration: add timestamps to journal entries that don't have them
+    return timestampMigrated;
   });
 
   // Migration function to add timestamps to journal entries
@@ -107,115 +104,7 @@ export function useWorkouts() {
     return data;
   }
 
-  // Migration function to add dayCompleted flags for historically completed days
-  function migrateDayCompletionFlags(data: WorkoutData): WorkoutData {
-    const updatedDailyLogs = { ...data.dailyLogs };
-    let hasChanges = false;
 
-    // For each day in the logs
-    Object.entries(data.dailyLogs || {}).forEach(([dateStr, dailyLog]) => {
-      // Skip if already has completion flag
-      if (dailyLog.dayCompleted !== undefined) return;
-      
-      // IMPORTANT: Only process days that are NOT today to avoid interfering with current workouts
-      const today = getTodayString();
-      if (dateStr === today) return;
-
-      // Get workouts that existed at that time (we'll check all current workouts for historical data)
-      const workouts = Object.values(data.workouts || {});
-      if (workouts.length === 0) return;
-
-      // Check if ALL workouts that actually had activity on that day met their goals
-      const workoutsWithActivity = Object.keys(dailyLog).filter(workoutId => {
-        // Skip the dayCompleted flag itself
-        if (workoutId === 'dayCompleted') return false;
-        
-        const logEntry = dailyLog[workoutId];
-        const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
-        return count > 0;
-      });
-
-      // If no workouts had activity, day is not complete
-      if (workoutsWithActivity.length === 0) return;
-
-      // Check if ALL active workouts on that day met their goals
-      const allCompleted = workoutsWithActivity.every(workoutId => {
-        const logEntry = dailyLog[workoutId];
-        const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
-        const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : null;
-        
-        // Use the goal that was stored for that time
-        // IMPORTANT: Only mark complete if we have stored goal and met it
-        if (goalAtTime !== null) {
-          return count >= goalAtTime;
-        } else {
-          // For historical data without goalAtTime, we CANNOT assume completion
-          // Return false to be conservative - only mark days complete when we're certain
-          return false;
-        }
-      });
-
-      if (allCompleted) {
-        updatedDailyLogs[dateStr] = {
-          ...dailyLog,
-          dayCompleted: true
-        };
-        hasChanges = true;
-      }
-    });
-
-    if (hasChanges) {
-      console.log('Migrating historical day completion flags...');
-      const migratedData = {
-        ...data,
-        dailyLogs: updatedDailyLogs
-      };
-      // Save to localStorage immediately
-      try {
-        localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(migratedData));
-      } catch (error) {
-        console.error('Failed to save migrated completion data:', error);
-      }
-      console.log('Historical day completion migration complete');
-      return migratedData;
-    }
-
-    return data;
-  }
-
-  // Clean up any incorrect completion flags for today
-  function cleanupTodaysCompletionFlag(data: WorkoutData): WorkoutData {
-    const today = getTodayString();
-    const todayLog = data.dailyLogs[today];
-    
-    if (todayLog && todayLog.dayCompleted === true) {
-      console.log('Found incorrect dayCompleted flag for today - clearing it');
-      const cleanedDailyLogs = {
-        ...data.dailyLogs,
-        [today]: {
-          ...todayLog,
-          dayCompleted: undefined
-        }
-      };
-      
-      const cleanedData = {
-        ...data,
-        dailyLogs: cleanedDailyLogs
-      };
-      
-      // Save immediately
-      try {
-        localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(cleanedData));
-        console.log('Cleared incorrect completion flag for today');
-      } catch (error) {
-        console.error('Failed to save cleaned completion data:', error);
-      }
-      
-      return cleanedData;
-    }
-    
-    return data;
-  }
 
   // Advanced migration that uses completion patterns to determine historical goals
   function migrateDataFormat(savedData: WorkoutData): WorkoutData {
@@ -393,7 +282,7 @@ export function useWorkouts() {
       const currentDailyCount = typeof currentDailyLog === 'object' ? currentDailyLog.count : (currentDailyLog || 0);
       const currentGoal = prev.workouts[workoutId]?.dailyGoal || 1;
 
-      const updatedData = {
+      return {
         ...prev,
         workouts: {
           ...prev.workouts,
@@ -413,9 +302,6 @@ export function useWorkouts() {
           }
         }
       };
-
-      // Check if day is now complete and mark it immutable
-      return checkAndMarkDayCompletion(updatedData, today);
     });
   };
 
@@ -1008,55 +894,7 @@ export function useWorkouts() {
     return workout.scheduledDays.includes(dayOfWeek);
   };
 
-  // Helper function to check if day is complete and mark it immutable
-  const checkAndMarkDayCompletion = (workoutData: WorkoutData, dateStr: string): WorkoutData => {
-    const dailyLog = workoutData.dailyLogs[dateStr];
-    if (!dailyLog || dailyLog.dayCompleted) {
-      return workoutData; // Already completed or no log
-    }
 
-    const workouts = Object.values(workoutData.workouts || {});
-    if (workouts.length === 0) return workoutData;
-
-    // Check if ALL workouts have met their goals for that day
-    const allCompleted = workouts.every(workout => {
-      const logEntry = dailyLog[workout.id];
-      const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
-      const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : null;
-      
-      // Use the goal that was in effect at that time, or current goal if no stored goal
-      const requiredGoal = goalAtTime !== null ? goalAtTime : workout.dailyGoal;
-      return count >= requiredGoal;
-    });
-
-    if (allCompleted) {
-      // Mark this day as completed forever
-      return {
-        ...workoutData,
-        dailyLogs: {
-          ...workoutData.dailyLogs,
-          [dateStr]: {
-            ...dailyLog,
-            dayCompleted: true
-          }
-        }
-      };
-    }
-
-    return workoutData;
-  };
-
-  // Manual function to check and mark today as complete if all workouts are done
-  const checkTodayCompletion = () => {
-    const today = getTodayString();
-    const updatedData = checkAndMarkDayCompletion(data, today);
-    if (updatedData !== data) {
-      setData(updatedData);
-      console.log('Manually marked today as complete!');
-      return true;
-    }
-    return false;
-  };
 
   return {
     workouts: data.workouts,
@@ -1089,6 +927,5 @@ export function useWorkouts() {
     getRoutineArray,
     getWorkoutsByRoutine,
     isWorkoutActiveOnDay,
-    checkTodayCompletion,
   };
 }

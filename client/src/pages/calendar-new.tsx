@@ -92,7 +92,7 @@ export default function CalendarPage() {
     navigate(`/dynamic-overview/${dateString}`);
   };
 
-  // Calculate day completion using immutable dayCompleted flag
+  // Calculate day completion - check if all workouts with activity met their goals  
   const isDayComplete = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -102,22 +102,29 @@ export default function CalendarPage() {
     const dateLog = logs[dateStr];
     if (!dateLog) return false;
     
-    // Debug logging for today's date
-    const today = new Date().toISOString().split('T')[0];
-    if (dateStr === today) {
-      console.log(`Today (${dateStr}) completion check:`, {
-        hasDateLog: !!dateLog,
-        dayCompleted: dateLog.dayCompleted,
-        logKeys: Object.keys(dateLog)
-      });
-    }
+    // Get workouts that had any activity on this date
+    const workoutsWithActivity = Object.keys(dateLog).filter(workoutId => {
+      const logEntry = dateLog[workoutId];
+      const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
+      return count > 0;
+    });
     
-    // Check immutable completion flag first - once set, day stays complete forever
-    if (dateLog.dayCompleted === true) {
-      return true;
-    }
+    if (workoutsWithActivity.length === 0) return false;
     
-    return false; // If no immutable flag, day is not complete
+    // Check if all active workouts on that day met their goals
+    return workoutsWithActivity.every(workoutId => {
+      const logEntry = dateLog[workoutId];
+      const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
+      const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : null;
+      
+      // If we have a stored goal from that time, use it. Otherwise fall back to current goal
+      if (goalAtTime !== null) {
+        return count >= goalAtTime;
+      } else {
+        const workout = workouts.find(w => w.id === workoutId);
+        return workout ? count >= workout.dailyGoal : false;
+      }
+    });
   };
 
   // Generate calendar days
