@@ -378,7 +378,7 @@ export default function Home() {
                           cx="60"
                           cy="60"
                           r="55"
-                          stroke={timerState.isRunning ? "rgb(59, 130, 246)" : "rgb(156, 163, 175)"}
+                          stroke={timerState.isRunning ? "rgb(34, 197, 94)" : "rgb(156, 163, 175)"}
                           strokeWidth="10"
                           fill="none"
                           strokeLinecap="round"
