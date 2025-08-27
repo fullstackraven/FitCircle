@@ -312,17 +312,17 @@ export default function Home() {
                         {currentCount >= workout.dailyGoal ? 'COMPLETED!' : `${Math.round((currentCount / workout.dailyGoal) * 100)}% complete`}
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-6">
                       <button
                         onClick={() => handleUndo(workout.id)}
-                        className="text-slate-400 hover:text-slate-200 transition-colors p-1"
+                        className="text-slate-400 hover:text-slate-200 transition-colors p-2"
                         title="Undo last rep"
                       >
                         <Undo2 size={14} />
                       </button>
                       <button
                         onClick={() => handleDeleteWorkout(workout.id)}
-                        className="text-slate-400 hover:text-red-400 transition-colors p-1"
+                        className="text-slate-400 hover:text-red-400 transition-colors p-2"
                         title="Delete workout"
                       >
                         <Trash2 size={14} />
