@@ -371,15 +371,26 @@ export default function Home() {
                   {timerState.remainingTime > 0 && !timerState.isCompleted && (
                     <div className="absolute inset-0 rounded-full">
                       <svg width="100" height="100" className="transform -rotate-90">
+                        {/* Background ring */}
                         <circle
                           cx="50"
                           cy="50"
-                          r="46"
-                          stroke={timerState.isRunning ? "rgb(59, 130, 246)" : "rgb(156, 163, 175)"}
-                          strokeWidth="4"
+                          r="42"
+                          stroke="rgb(71, 85, 105)"
+                          strokeWidth="10"
                           fill="none"
-                          strokeDasharray={`${2 * Math.PI * 46}`}
-                          strokeDashoffset={`${2 * Math.PI * 46 * (1 - getProgress() / 100)}`}
+                        />
+                        {/* Progress ring */}
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="42"
+                          stroke={timerState.isRunning ? "rgb(59, 130, 246)" : "rgb(156, 163, 175)"}
+                          strokeWidth="10"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeDasharray={`${2 * Math.PI * 42}`}
+                          strokeDashoffset={`${2 * Math.PI * 42 * (1 - getProgress() / 100)}`}
                           className="transition-all duration-1000"
                         />
                       </svg>
@@ -389,14 +400,25 @@ export default function Home() {
                   {timerState.remainingTime > 0 && timerState.isCompleted && (
                     <div className="absolute inset-0 rounded-full">
                       <svg width="100" height="100" className="transform -rotate-90">
+                        {/* Background ring */}
                         <circle
                           cx="50"
                           cy="50"
-                          r="46"
-                          stroke="rgb(34, 197, 94)"
-                          strokeWidth="4"
+                          r="42"
+                          stroke="rgb(71, 85, 105)"
+                          strokeWidth="10"
                           fill="none"
-                          strokeDasharray={`${2 * Math.PI * 46}`}
+                        />
+                        {/* Completed ring */}
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="42"
+                          stroke="rgb(34, 197, 94)"
+                          strokeWidth="10"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeDasharray={`${2 * Math.PI * 42}`}
                           strokeDashoffset="0"
                           className="transition-all duration-1000"
                         />
@@ -418,6 +440,38 @@ export default function Home() {
                   }
                 </div>
               </div>
+              
+              {/* Timer Controls - Only show when timer is active */}
+              {timerState.remainingTime > 0 && (
+                <div className="flex items-center space-x-4 mt-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      resetTimer();
+                      setTimerHours('0');
+                      setTimerMinutes('0');
+                      setTimerSeconds('0');
+                    }}
+                    className="text-slate-400 hover:text-slate-200 transition-colors p-1"
+                    title="Reset timer"
+                  >
+                    <RotateCcw size={14} />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      resetTimer();
+                      setTimerHours('0');
+                      setTimerMinutes('0');
+                      setTimerSeconds('0');
+                    }}
+                    className="text-slate-400 hover:text-red-400 transition-colors p-1"
+                    title="Stop timer"
+                  >
+                    <Square size={14} />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Add Workout Button */}
