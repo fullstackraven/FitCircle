@@ -119,15 +119,33 @@ export function useWorkouts() {
       const workouts = Object.values(data.workouts || {});
       if (workouts.length === 0) return;
 
-      // Check if ALL workouts had met their goals on that specific day
-      const allCompleted = workouts.every(workout => {
-        const logEntry = dailyLog[workout.id];
+      // Check if ALL workouts that actually had activity on that day met their goals
+      const workoutsWithActivity = Object.keys(dailyLog).filter(workoutId => {
+        // Skip the dayCompleted flag itself
+        if (workoutId === 'dayCompleted') return false;
+        
+        const logEntry = dailyLog[workoutId];
+        const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
+        return count > 0;
+      });
+
+      // If no workouts had activity, day is not complete
+      if (workoutsWithActivity.length === 0) return;
+
+      // Check if ALL active workouts on that day met their goals
+      const allCompleted = workoutsWithActivity.every(workoutId => {
+        const logEntry = dailyLog[workoutId];
         const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
         const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : null;
         
-        // Use the goal that was stored for that time, or fall back to current goal
-        const requiredGoal = goalAtTime !== null ? goalAtTime : workout.dailyGoal;
-        return count >= requiredGoal;
+        // Use the goal that was stored for that time
+        // If no goalAtTime was stored, we assume it was completed (old data before tracking)
+        if (goalAtTime !== null) {
+          return count >= goalAtTime;
+        } else {
+          // For historical data without goalAtTime, if there's activity, assume it was completed
+          return count > 0;
+        }
       });
 
       if (allCompleted) {
