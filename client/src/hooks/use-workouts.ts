@@ -58,47 +58,47 @@ export function useWorkouts() {
     
     // Migration: convert old format data to new format with goal preservation
     const migratedData = migrateDataFormat(savedData);
-    // Migration: add timestamps to journal entries that don't have them
-    const timestampMigrated = migrateJournalTimestamps(migratedData);
-    // Migration: add timestamps to journal entries that don't have them
-    return timestampMigrated;
+    // Clean up any estimated timestamps from journal entries
+    const cleanedData = cleanupEstimatedTimestamps(migratedData);
+    return cleanedData;
   });
 
-  // Migration function to add timestamps to journal entries
-  function migrateJournalTimestamps(data: WorkoutData): WorkoutData {
+  // Function to clean up estimated timestamps from journal entries
+  function cleanupEstimatedTimestamps(data: WorkoutData): WorkoutData {
     let hasChanges = false;
     const updatedJournalEntries: { [date: string]: { text: string; timestamp: string } | string } = {};
 
     Object.entries(data.journalEntries || {}).forEach(([dateString, entry]) => {
-      if (typeof entry === 'string' && entry.trim()) {
-        // This is an old entry without timestamp, add one
-        // Use the date at 6 PM as a reasonable default time for journal writing
-        const entryDate = new Date(dateString + 'T18:00:00');
-        updatedJournalEntries[dateString] = {
-          text: entry,
-          timestamp: entryDate.toISOString()
-        };
-        hasChanges = true;
+      if (typeof entry === 'object' && entry.timestamp) {
+        // Check if this is an estimated 6 PM timestamp (ends with T18:00:00.000Z)
+        if (entry.timestamp.includes('T18:00:00')) {
+          // Convert back to simple string format (no timestamp)
+          updatedJournalEntries[dateString] = entry.text;
+          hasChanges = true;
+          console.log(`Removing estimated timestamp for ${dateString}`);
+        } else {
+          // Keep real timestamps
+          updatedJournalEntries[dateString] = entry;
+        }
       } else {
-        // Entry already has timestamp or is empty
+        // Keep string entries as-is
         updatedJournalEntries[dateString] = entry;
       }
     });
 
     if (hasChanges) {
-      console.log('Migrating journal entries to add timestamps...');
-      const migratedData = {
+      const cleanedData = {
         ...data,
         journalEntries: updatedJournalEntries
       };
       // Save to localStorage immediately
       try {
-        localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(migratedData));
+        localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(cleanedData));
+        console.log('Cleaned up estimated journal timestamps');
       } catch (error) {
-        console.error('Failed to save migrated journal data:', error);
+        console.error('Failed to save cleaned journal data:', error);
       }
-      console.log('Journal timestamp migration complete');
-      return migratedData;
+      return cleanedData;
     }
 
     return data;
@@ -377,7 +377,7 @@ export function useWorkouts() {
         date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
       const totalReps = Object.values(dayLog || {}).reduce((sum, logEntry) => {
-        const count = typeof logEntry === 'number' ? logEntry : (logEntry?.count || 0);
+        const count = getCountFromLogEntry(logEntry);
         return sum + count;
       }, 0);
 
