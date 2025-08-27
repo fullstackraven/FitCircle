@@ -375,7 +375,7 @@ export default function Home() {
                         <circle
                           cx="50"
                           cy="50"
-                          r="42"
+                          r="55"
                           stroke="rgb(71, 85, 105)"
                           strokeWidth="10"
                           fill="none"
@@ -384,13 +384,13 @@ export default function Home() {
                         <circle
                           cx="50"
                           cy="50"
-                          r="42"
+                          r="55"
                           stroke={timerState.isRunning ? "rgb(59, 130, 246)" : "rgb(156, 163, 175)"}
                           strokeWidth="10"
                           fill="none"
                           strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 42}`}
-                          strokeDashoffset={`${2 * Math.PI * 42 * (1 - getProgress() / 100)}`}
+                          strokeDasharray={`${2 * Math.PI * 55}`}
+                          strokeDashoffset={`${2 * Math.PI * 55 * (1 - getProgress() / 100)}`}
                           className="transition-all duration-1000"
                         />
                       </svg>
@@ -404,7 +404,7 @@ export default function Home() {
                         <circle
                           cx="50"
                           cy="50"
-                          r="42"
+                          r="55"
                           stroke="rgb(71, 85, 105)"
                           strokeWidth="10"
                           fill="none"
@@ -413,12 +413,12 @@ export default function Home() {
                         <circle
                           cx="50"
                           cy="50"
-                          r="42"
+                          r="55"
                           stroke="rgb(34, 197, 94)"
                           strokeWidth="10"
                           fill="none"
                           strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 42}`}
+                          strokeDasharray={`${2 * Math.PI * 55}`}
                           strokeDashoffset="0"
                           className="transition-all duration-1000"
                         />
@@ -447,13 +447,11 @@ export default function Home() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      resetTimer();
-                      setTimerHours('0');
-                      setTimerMinutes('0');
-                      setTimerSeconds('0');
+                      // Restart timer with the original total time
+                      startTimerFromSeconds(timerState.totalTime);
                     }}
                     className="text-slate-400 hover:text-slate-200 transition-colors p-1"
-                    title="Reset timer"
+                    title="Restart timer from beginning"
                   >
                     <RotateCcw size={14} />
                   </button>
