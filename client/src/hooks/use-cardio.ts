@@ -54,13 +54,17 @@ export function useCardio() {
     if (storedData) {
       const parsed = safeParseJSON(storedData, defaultData);
       
-      // Clean up duration values - ensure they're proper numbers
+      // Clean up duration values - ensure they're proper numbers with clean precision
       const cleanedData = {
         ...parsed,
         entries: parsed.entries.map(entry => ({
           ...entry,
-          duration: typeof entry.duration === 'string' ? parseFloat(entry.duration) || 0 : entry.duration,
-          distance: typeof entry.distance === 'string' ? parseFloat(entry.distance) || 0 : entry.distance
+          duration: typeof entry.duration === 'string' ? 
+            Math.round((parseFloat(entry.duration) || 0) * 10) / 10 : 
+            Math.round((entry.duration || 0) * 10) / 10,
+          distance: typeof entry.distance === 'string' ? 
+            Math.round((parseFloat(entry.distance) || 0) * 10) / 10 : 
+            Math.round((entry.distance || 0) * 10) / 10
         }))
       };
       
@@ -78,8 +82,8 @@ export function useCardio() {
       id: Date.now().toString(),
       date: getTodayString(),
       type,
-      duration,
-      distance,
+      duration: Math.round(duration * 10) / 10, // Clean up precision to 1 decimal place
+      distance: distance ? Math.round(distance * 10) / 10 : distance,
       notes,
       timestamp: Date.now()
     };

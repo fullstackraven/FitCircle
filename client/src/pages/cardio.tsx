@@ -131,19 +131,22 @@ export default function CardioPage() {
   };
 
   const formatDuration = (minutes: number) => {
-    // Debug logging
-    console.log('formatDuration input:', minutes, 'type:', typeof minutes);
-    
     // Ensure we have a clean number
     const cleanMinutes = typeof minutes === 'string' ? parseFloat(minutes) : minutes;
-    const roundedMinutes = Math.round(cleanMinutes);
     
-    console.log('formatDuration cleaned:', roundedMinutes);
+    // If it's a whole number, show without decimals, otherwise show with decimals
+    const isWholeNumber = cleanMinutes % 1 === 0;
+    const displayMinutes = isWholeNumber ? Math.round(cleanMinutes) : cleanMinutes;
     
-    if (roundedMinutes < 60) return `${roundedMinutes}min`;
-    const hours = Math.floor(roundedMinutes / 60);
-    const mins = roundedMinutes % 60;
-    return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
+    if (displayMinutes < 60) {
+      return isWholeNumber ? `${Math.round(displayMinutes)}min` : `${displayMinutes.toFixed(1)}min`;
+    }
+    
+    const hours = Math.floor(displayMinutes / 60);
+    const mins = displayMinutes % 60;
+    const minsDisplay = isWholeNumber ? Math.round(mins) : mins.toFixed(1);
+    
+    return mins > 0 ? `${hours}h ${minsDisplay}min` : `${hours}h`;
   };
 
   return (
