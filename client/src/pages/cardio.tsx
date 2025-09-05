@@ -131,7 +131,15 @@ export default function CardioPage() {
   };
 
   const formatDuration = (minutes: number) => {
-    const roundedMinutes = Math.round(minutes);
+    // Debug logging
+    console.log('formatDuration input:', minutes, 'type:', typeof minutes);
+    
+    // Ensure we have a clean number
+    const cleanMinutes = typeof minutes === 'string' ? parseFloat(minutes) : minutes;
+    const roundedMinutes = Math.round(cleanMinutes);
+    
+    console.log('formatDuration cleaned:', roundedMinutes);
+    
     if (roundedMinutes < 60) return `${roundedMinutes}min`;
     const hours = Math.floor(roundedMinutes / 60);
     const mins = roundedMinutes % 60;
