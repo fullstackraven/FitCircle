@@ -59,6 +59,10 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     const supplementLogsData = getSupplementLogsForDate(selectedDate);
     const recoveryData = isRecoveryDay(selectedDate);
 
+    // Debug logging
+    console.log('allSupplements:', allSupplements);
+    console.log('allSupplements.length:', allSupplements.length);
+
     // Combine all supplements with their status for this date
     const supplementLogs = allSupplements.map(supplement => ({
       id: supplement.id,
@@ -71,7 +75,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     setEnergyLevel(energyData);
     setSupplementLogs(supplementLogs);
     setIsRecovery(recoveryData);
-  }, [selectedDate, allSupplements]);
+  }, [selectedDate]);
 
   const handleEditWorkout = (workoutId: string, currentCount: number) => {
     setEditingWorkoutId(workoutId);
