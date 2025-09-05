@@ -54,19 +54,37 @@ export function useCardio() {
     if (storedData) {
       const parsed = safeParseJSON(storedData, defaultData);
       
-      // Clean up duration values - ensure they're proper numbers with clean precision
+      // Aggressive cleanup of duration values to fix historical "0" display issues
       const cleanedData = {
         ...parsed,
-        entries: parsed.entries.map(entry => ({
-          ...entry,
-          duration: typeof entry.duration === 'string' ? 
-            Math.round((parseFloat(entry.duration) || 0) * 10) / 10 : 
-            Math.round((entry.duration || 0) * 10) / 10,
-          distance: typeof entry.distance === 'string' ? 
-            Math.round((parseFloat(entry.distance) || 0) * 10) / 10 : 
-            Math.round((entry.distance || 0) * 10) / 10
-        }))
+        entries: parsed.entries.map(entry => {
+          // Force clean the duration value
+          let cleanDuration = 0;
+          if (typeof entry.duration === 'string') {
+            cleanDuration = Math.floor(parseFloat(entry.duration) || 0);
+          } else if (typeof entry.duration === 'number') {
+            cleanDuration = Math.floor(entry.duration);
+          }
+          
+          // Force clean the distance value  
+          let cleanDistance = 0;
+          if (entry.distance) {
+            if (typeof entry.distance === 'string') {
+              cleanDistance = Math.round((parseFloat(entry.distance) || 0) * 10) / 10;
+            } else {
+              cleanDistance = Math.round((entry.distance || 0) * 10) / 10;
+            }
+          }
+          
+          return {
+            ...entry,
+            duration: cleanDuration,
+            distance: cleanDistance || undefined
+          };
+        })
       };
+      
+      console.log('Cleaned cardio data:', cleanedData.entries.slice(0, 3));
       
       setData(cleanedData);
     }
@@ -82,7 +100,7 @@ export function useCardio() {
       id: Date.now().toString(),
       date: getTodayString(),
       type,
-      duration: Math.round(duration * 10) / 10, // Clean up precision to 1 decimal place
+      duration: Math.floor(duration || 0), // Force whole numbers to prevent "0" suffix
       distance: distance ? Math.round(distance * 10) / 10 : distance,
       notes,
       timestamp: Date.now()
