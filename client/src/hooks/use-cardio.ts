@@ -53,7 +53,18 @@ export function useCardio() {
     const storedData = localStorage.getItem(STORAGE_KEYS.CARDIO);
     if (storedData) {
       const parsed = safeParseJSON(storedData, defaultData);
-      setData(parsed);
+      
+      // Clean up duration values - ensure they're proper numbers
+      const cleanedData = {
+        ...parsed,
+        entries: parsed.entries.map(entry => ({
+          ...entry,
+          duration: typeof entry.duration === 'string' ? parseFloat(entry.duration) || 0 : entry.duration,
+          distance: typeof entry.distance === 'string' ? parseFloat(entry.distance) || 0 : entry.distance
+        }))
+      };
+      
+      setData(cleanedData);
     }
   }, []);
 
