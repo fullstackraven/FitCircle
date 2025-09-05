@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, BarChart3, BookOpen, Zap, Pill, Edit2, Save, X, Heart, Timer } from "lucide-react";
+import { ArrowLeft, BarChart3, BookOpen, Zap, Pill, Edit2, Save, X, Heart, Timer, Plus } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { useSupplements } from "@/hooks/use-supplements";
@@ -35,7 +35,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     getJournalEntry, 
     addJournalEntry 
   } = useWorkouts();
-  const { supplements: allSupplements, getSupplementLogsForDate, setSupplementLog } = useSupplements();
+  const { supplements: allSupplements, getSupplementLogsForDate, setSupplementLog, createSupplement } = useSupplements();
   const { getEnergyLevel, setEnergyLevelForDate } = useEnergyLevel();
   const { isRecoveryDay, toggleRecoveryDay } = useRecovery();
   const { getWorkoutDurationForDate, formatDuration } = useWorkoutDuration();
@@ -48,6 +48,11 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
   
   const [editingWorkoutId, setEditingWorkoutId] = useState<string | null>(null);
   const [editingWorkoutCount, setEditingWorkoutCount] = useState("");
+  
+  // Supplement creation state
+  const [isAddingSuplement, setIsAddingSupplement] = useState(false);
+  const [newSupplementName, setNewSupplementName] = useState("");
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const selectedDateObj = new Date(selectedDate + 'T00:00:00');
 
@@ -58,16 +63,6 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     const energyData = getEnergyLevel(selectedDateObj);
     const supplementLogsData = getSupplementLogsForDate(selectedDate);
     const recoveryData = isRecoveryDay(selectedDate);
-
-    // Debug logging
-    console.log('allSupplements:', allSupplements);
-    console.log('allSupplements.length:', allSupplements.length);
-    
-    // Check localStorage for supplement data under different keys
-    console.log('localStorage fitcircle_supplements:', localStorage.getItem('fitcircle_supplements'));
-    console.log('localStorage supplements:', localStorage.getItem('supplements'));
-    console.log('localStorage supplement_data:', localStorage.getItem('supplement_data'));
-    console.log('All localStorage keys containing "supplement":', Object.keys(localStorage).filter(key => key.toLowerCase().includes('supplement')));
 
     // Combine all supplements with their status for this date
     const supplementLogs = allSupplements.map(supplement => ({
@@ -81,7 +76,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     setEnergyLevel(energyData);
     setSupplementLogs(supplementLogs);
     setIsRecovery(recoveryData);
-  }, [selectedDate]);
+  }, [selectedDate, refreshTrigger]);
 
   const handleEditWorkout = (workoutId: string, currentCount: number) => {
     setEditingWorkoutId(workoutId);
@@ -138,6 +133,19 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     supplementLogs.forEach(log => {
       setSupplementLog(selectedDate, log.id, log.taken);
     });
+  };
+
+  const handleAddSupplement = () => {
+    if (newSupplementName.trim()) {
+      createSupplement({
+        name: newSupplementName.trim(),
+        measurementType: 'pills',
+        amount: 1
+      });
+      setNewSupplementName("");
+      setIsAddingSupplement(false);
+      setRefreshTrigger(prev => prev + 1); // Trigger refresh
+    }
   };
 
   const handleRecoveryToggle = () => {
@@ -332,12 +340,52 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
         </div>
 
         {/* Supplements */}
-        {allSupplements.length > 0 && (
-          <div className="bg-slate-800 rounded-xl p-6">
-            <div className="flex items-center space-x-3 mb-4">
+        <div className="bg-slate-800 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
               <Pill className="w-5 h-5 text-green-400" />
               <h3 className="text-lg font-semibold text-white">Supplements</h3>
             </div>
+            <button
+              onClick={() => setIsAddingSupplement(true)}
+              className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+              title="Add supplement"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
+
+          {isAddingSuplement && (
+            <div className="mb-4 p-3 bg-slate-700 rounded-xl">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={newSupplementName}
+                  onChange={(e) => setNewSupplementName(e.target.value)}
+                  placeholder="Enter supplement name..."
+                  className="flex-1 px-3 py-2 bg-slate-800 text-white rounded border border-slate-500 focus:outline-none focus:border-green-400"
+                  autoFocus
+                />
+                <button
+                  onClick={handleAddSupplement}
+                  className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm"
+                >
+                  Add
+                </button>
+                <button
+                  onClick={() => {
+                    setIsAddingSupplement(false);
+                    setNewSupplementName("");
+                  }}
+                  className="px-3 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
+          {allSupplements.length > 0 ? (
             <div className="space-y-3">
               {supplementLogs.map(log => (
                 <div key={log.id} className="flex items-center justify-between p-3 bg-slate-700 rounded-xl">
@@ -372,8 +420,13 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                 Save Supplement Log
               </button>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="text-center py-6">
+              <p className="text-slate-400 mb-2">No supplements added yet</p>
+              <p className="text-sm text-slate-500">Click the + button above to add your first supplement</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
