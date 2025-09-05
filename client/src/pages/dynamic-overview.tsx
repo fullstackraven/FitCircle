@@ -62,6 +62,12 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     // Debug logging
     console.log('allSupplements:', allSupplements);
     console.log('allSupplements.length:', allSupplements.length);
+    
+    // Check localStorage for supplement data under different keys
+    console.log('localStorage fitcircle_supplements:', localStorage.getItem('fitcircle_supplements'));
+    console.log('localStorage supplements:', localStorage.getItem('supplements'));
+    console.log('localStorage supplement_data:', localStorage.getItem('supplement_data'));
+    console.log('All localStorage keys containing "supplement":', Object.keys(localStorage).filter(key => key.toLowerCase().includes('supplement')));
 
     // Combine all supplements with their status for this date
     const supplementLogs = allSupplements.map(supplement => ({
