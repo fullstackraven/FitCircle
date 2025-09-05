@@ -130,23 +130,28 @@ export default function CardioPage() {
     setIsAddCustomTypeOpen(false);
   };
 
-  const formatDuration = (minutes: number) => {
-    // Ensure we have a clean number
-    const cleanMinutes = typeof minutes === 'string' ? parseFloat(minutes) : minutes;
+  const formatDuration = (minutes: any) => {
+    // Convert to number and clean it
+    const num = parseFloat(String(minutes)) || 0;
     
-    // If it's a whole number, show without decimals, otherwise show with decimals
-    const isWholeNumber = cleanMinutes % 1 === 0;
-    const displayMinutes = isWholeNumber ? Math.round(cleanMinutes) : cleanMinutes;
+    // Round to remove floating point precision issues
+    const cleanNum = Math.round(num * 100) / 100;
     
-    if (displayMinutes < 60) {
-      return isWholeNumber ? `${Math.round(displayMinutes)}min` : `${displayMinutes.toFixed(1)}min`;
+    if (cleanNum < 60) {
+      // For numbers like 22.0, show as 22. For 22.5, show as 22.5
+      return cleanNum % 1 === 0 ? `${Math.floor(cleanNum)}min` : `${cleanNum}min`;
     }
     
-    const hours = Math.floor(displayMinutes / 60);
-    const mins = displayMinutes % 60;
-    const minsDisplay = isWholeNumber ? Math.round(mins) : mins.toFixed(1);
+    const hours = Math.floor(cleanNum / 60);
+    const remainingMins = cleanNum % 60;
     
-    return mins > 0 ? `${hours}h ${minsDisplay}min` : `${hours}h`;
+    if (remainingMins === 0) {
+      return `${hours}h`;
+    }
+    
+    return remainingMins % 1 === 0 ? 
+      `${hours}h ${Math.floor(remainingMins)}min` : 
+      `${hours}h ${remainingMins}min`;
   };
 
   return (
