@@ -131,9 +131,10 @@ export default function CardioPage() {
   };
 
   const formatDuration = (minutes: number) => {
-    if (minutes < 60) return `${minutes}min`;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
+    const roundedMinutes = Math.round(minutes);
+    if (roundedMinutes < 60) return `${roundedMinutes}min`;
+    const hours = Math.floor(roundedMinutes / 60);
+    const mins = roundedMinutes % 60;
     return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
   };
 
@@ -453,7 +454,7 @@ export default function CardioPage() {
                           setNewEntry({
                             type: entry.type,
                             duration: entry.duration.toString(),
-                            distance: entry.distance.toString(),
+                            distance: entry.distance?.toString() || '',
                             notes: entry.notes || ''
                           });
                           setIsEditDialogOpen(true);
