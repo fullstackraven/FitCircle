@@ -35,7 +35,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     getJournalEntry, 
     addJournalEntry 
   } = useWorkouts();
-  const { getSupplementLogsForDate, setSupplementLog } = useSupplements();
+  const { supplements: allSupplements, getSupplementLogsForDate, setSupplementLog } = useSupplements();
   const { getEnergyLevel, setEnergyLevelForDate } = useEnergyLevel();
   const { isRecoveryDay, toggleRecoveryDay } = useRecovery();
   const { getWorkoutDurationForDate, formatDuration } = useWorkoutDuration();
@@ -56,15 +56,22 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     const workoutData = getWorkoutLogsForDate(selectedDate);
     const journalData = getJournalEntry(selectedDate);
     const energyData = getEnergyLevel(selectedDateObj);
-    const supplementData = getSupplementLogsForDate(selectedDate);
+    const supplementLogsData = getSupplementLogsForDate(selectedDate);
     const recoveryData = isRecoveryDay(selectedDate);
+
+    // Combine all supplements with their status for this date
+    const supplementLogs = allSupplements.map(supplement => ({
+      id: supplement.id,
+      name: supplement.name,
+      taken: supplementLogsData[supplement.id] || false
+    }));
 
     setWorkouts(workoutData);
     setJournalText(journalData || '');
     setEnergyLevel(energyData);
-    setSupplementLogs(supplementData);
+    setSupplementLogs(supplementLogs);
     setIsRecovery(recoveryData);
-  }, [selectedDate]);
+  }, [selectedDate, allSupplements]);
 
   const handleEditWorkout = (workoutId: string, currentCount: number) => {
     setEditingWorkoutId(workoutId);
@@ -315,7 +322,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
         </div>
 
         {/* Supplements */}
-        {supplementLogs.length > 0 && (
+        {allSupplements.length > 0 && (
           <div className="bg-slate-800 rounded-xl p-6">
             <div className="flex items-center space-x-3 mb-4">
               <Pill className="w-5 h-5 text-green-400" />
