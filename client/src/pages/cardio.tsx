@@ -408,30 +408,38 @@ export default function CardioPage() {
             <div className="space-y-3">
               {recentActivity.map(entry => (
                 <Card key={entry.id} className="fitcircle-card">
-                  <CardContent className="p-3 relative">
+                  <CardContent className="p-4 relative">
                     <div className="pr-16">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <div className="text-green-400 font-medium capitalize">{entry.type}</div>
-                        <span className="text-slate-400">•</span>
-                        <div className="text-sm text-slate-400">{entry.date}</div>
+                      {/* Header/Title at the top */}
+                      <div className="mb-3">
+                        <h4 className="text-green-400 font-semibold capitalize text-lg">{entry.type}</h4>
                       </div>
-                      <div className="flex items-center space-x-4 text-sm text-slate-300">
-                        {entry.duration > 0 && (
-                          <div className="flex items-center space-x-1">
-                            <Clock className="w-4 h-4" />
-                            <span>{entry.duration}min</span>
-                          </div>
-                        )}
-                        {entry.distance && entry.distance > 0 && (
-                          <div className="flex items-center space-x-1">
-                            <MapPin className="w-4 h-4" />
-                            <span>{entry.distance} mi</span>
-                          </div>
-                        )}
+                      
+                      {/* Date and details organized below */}
+                      <div className="space-y-2">
+                        <div className="text-sm text-slate-400 font-medium">
+                          {entry.date}
+                        </div>
+                        
+                        <div className="flex items-center space-x-4 text-sm text-slate-300">
+                          {entry.duration > 0 && (
+                            <div className="flex items-center space-x-1">
+                              <Clock className="w-4 h-4" />
+                              <span>{formatDuration(entry.duration)}</span>
+                            </div>
+                          )}
+                          {entry.distance && entry.distance > 0 && (
+                            <div className="flex items-center space-x-1">
+                              <MapPin className="w-4 h-4" />
+                              <span>{entry.distance} mi</span>
+                            </div>
+                          )}
+                        </div>
+                        
                         {entry.notes && (
-                          <div className="flex items-center space-x-1">
-                            <FileText className="w-4 h-4" />
-                            <span className="truncate max-w-24">{entry.notes}</span>
+                          <div className="flex items-start space-x-1 text-sm text-slate-300">
+                            <FileText className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <span className="break-words">{entry.notes}</span>
                           </div>
                         )}
                       </div>

@@ -42,6 +42,7 @@ export default function HydrationPage() {
   const [customLiquidFocused, setCustomLiquidFocused] = useState(false);
   const [addAmountFocused, setAddAmountFocused] = useState(false);
   const [goalFocused, setGoalFocused] = useState(false);
+  const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
 
   // Load goal from Goals page when it changes
   useEffect(() => {
@@ -288,7 +289,7 @@ export default function HydrationPage() {
                   
                   {/* Show detailed entries for this day */}
                   <div className="space-y-1">
-                    {log.entries.slice(0, 3).map((entry, index) => (
+                    {(expandedDays.has(log.date) ? log.entries : log.entries.slice(0, 3)).map((entry, index) => (
                       <div key={index} className="flex justify-between items-center text-xs">
                         <span className="text-slate-500">{entry.time}</span>
                         <div className="flex items-center space-x-1">
@@ -298,9 +299,23 @@ export default function HydrationPage() {
                       </div>
                     ))}
                     {log.entries.length > 3 && (
-                      <div className="text-xs text-slate-500 text-center mt-1">
-                        +{log.entries.length - 3} more entries
-                      </div>
+                      <button
+                        onClick={() => {
+                          const newExpanded = new Set(expandedDays);
+                          if (newExpanded.has(log.date)) {
+                            newExpanded.delete(log.date);
+                          } else {
+                            newExpanded.add(log.date);
+                          }
+                          setExpandedDays(newExpanded);
+                        }}
+                        className="text-xs text-slate-500 hover:text-slate-300 text-center mt-1 w-full transition-colors"
+                      >
+                        {expandedDays.has(log.date) 
+                          ? 'Show less' 
+                          : `+${log.entries.length - 3} more entries`
+                        }
+                      </button>
                     )}
                     </div>
                   </div>
