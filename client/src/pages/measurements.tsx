@@ -355,7 +355,7 @@ export default function MeasurementsPage() {
                   }
                 })()}
                 color="rgb(34, 197, 94)"
-                size={100}
+                size={140}
                 currentValue={getLatestValue('weight') || 0}
                 goalValue={parseFloat(goalWeightInput) || 0}
                 unit="lbs"
@@ -378,7 +378,7 @@ export default function MeasurementsPage() {
                   return Math.min(100, (targetBodyFat / currentBodyFat) * 100);
                 })()}
                 color="rgb(239, 68, 68)"
-                size={100}
+                size={140}
                 currentValue={getLatestValue('bodyFat') || 0}
                 goalValue={parseFloat(goalBodyFatInput) || 0}
                 unit="%"
