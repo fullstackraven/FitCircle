@@ -230,6 +230,7 @@ export default function GoalsPageFinal() {
   // Get cardio data
   const { getLast7DaysAverage, getWeeklyProgress, updateGoal, data: cardioData } = useCardio();
   const cardio7DayAverage = getLast7DaysAverage();
+  const cardioWeeklyProgress = getWeeklyProgress(); // Use same calculation as cardio page
 
   // Get recovery data
   const { getRecoveryStats } = useRecovery();
@@ -265,7 +266,7 @@ export default function GoalsPageFinal() {
     weightedScore += (weightProgress * wellnessWeights.weightLbs) / totalWeight;
     weightedScore += (bodyFatProgress * wellnessWeights.targetBodyFat) / totalWeight;
     weightedScore += (workoutCurrent * wellnessWeights.workoutConsistency) / totalWeight;
-    weightedScore += (cardio7DayAverage.progressToGoal * wellnessWeights.cardio) / totalWeight;
+    weightedScore += (cardioWeeklyProgress.goalProgress * wellnessWeights.cardio) / totalWeight;
     weightedScore += (recoveryPercentage * wellnessWeights.recovery) / totalWeight;
 
     return Math.round(weightedScore);
@@ -533,7 +534,7 @@ export default function GoalsPageFinal() {
       color: goalColors.cardio,
       currentValue: Math.round(cardio7DayAverage.average * 10) / 10,
       goalValue: cardioData.goal.target,
-      progress: cardio7DayAverage.progressToGoal || 0
+      progress: cardioWeeklyProgress.goalProgress || 0
     },
     {
       key: 'recovery',
