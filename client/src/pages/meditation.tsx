@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Play, Pause, Square, Target, X } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Square, Target, X, Plus } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { GoalCircle } from '@/components/GoalCircle';
 import { useMeditation, type MeditationLog } from '@/hooks/use-meditation';
 import { useGoals } from '@/hooks/use-goals';
@@ -41,6 +42,7 @@ export default function MeditationPage() {
   
   // Goal state
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [isMeditationDialogOpen, setIsMeditationDialogOpen] = useState(false);
   const [goalMinutesInput, setGoalMinutesInput] = useState('');
   const [inputMinutesFocused, setInputMinutesFocused] = useState(false);
   const [goalMinutesFocused, setGoalMinutesFocused] = useState(false);
@@ -371,33 +373,15 @@ export default function MeditationPage() {
         {/* Meditation Controls */}
         <div className="flex flex-col items-center mb-8">
           {!isActive ? (
-            /* Start Session Form */
-            <div className="fitcircle-card-lg w-full max-w-sm">
-              <h2 className="text-lg font-semibold mb-4 text-center">Start Meditation</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Duration (minutes)
-                  </label>
-                  <Input
-                    type="number"
-                    value={inputMinutes}
-                    onChange={(e) => setInputMinutes(e.target.value)}
-                    onFocus={() => setInputMinutesFocused(true)}
-                    onBlur={() => setInputMinutesFocused(false)}
-                    placeholder={inputMinutesFocused ? "" : "Enter Duration"}
-                    className="bg-slate-700 border-slate-600 text-white text-center"
-                    min="1"
-                  />
-                </div>
-                <Button
-                  onClick={startMeditation}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
-                >
-                  <Play className="w-4 h-4 mr-2" />
-                  Start Meditation
-                </Button>
-              </div>
+            /* Add Meditation Button */
+            <div className="mb-8 w-full max-w-sm">
+              <Button
+                onClick={() => setIsMeditationDialogOpen(true)}
+                className="w-full bg-purple-600 hover:bg-purple-700 flex items-center justify-center space-x-2"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Meditation</span>
+              </Button>
             </div>
           ) : (
             /* Active Session Controls */
@@ -528,6 +512,43 @@ export default function MeditationPage() {
           </div>
         </div>
       )}
+
+      {/* Start Meditation Dialog */}
+      <Dialog open={isMeditationDialogOpen} onOpenChange={setIsMeditationDialogOpen}>
+        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto">
+          <DialogTitle className="text-lg font-semibold text-center">Start Meditation</DialogTitle>
+          <DialogDescription className="sr-only">
+            Set meditation duration and start your session
+          </DialogDescription>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Duration (minutes)
+              </label>
+              <Input
+                type="number"
+                value={inputMinutes}
+                onChange={(e) => setInputMinutes(e.target.value)}
+                onFocus={() => setInputMinutesFocused(true)}
+                onBlur={() => setInputMinutesFocused(false)}
+                placeholder={inputMinutesFocused ? "" : "Enter Duration"}
+                className="bg-slate-700 border-slate-600 text-white text-center"
+                min="1"
+              />
+            </div>
+            <Button
+              onClick={() => {
+                startMeditation();
+                setIsMeditationDialogOpen(false);
+              }}
+              className="w-full bg-blue-600 hover:bg-blue-700"
+            >
+              <Play className="w-4 h-4 mr-2" />
+              Start Meditation
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { GoalCircle } from '@/components/GoalCircle';
 
 
@@ -41,6 +42,7 @@ export default function HydrationPage() {
   const [customLiquidType, setCustomLiquidType] = useState('');
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [newGoal, setNewGoal] = useState(dailyGoalOz.toString());
+  const [isHydrationDialogOpen, setIsHydrationDialogOpen] = useState(false);
   const [customLiquidFocused, setCustomLiquidFocused] = useState(false);
   const [addAmountFocused, setAddAmountFocused] = useState(false);
   const [goalFocused, setGoalFocused] = useState(false);
@@ -199,79 +201,15 @@ export default function HydrationPage() {
             </CardContent>
           </Card>
 
-          {/* Add Hydration Controls */}
-          <div className="fitcircle-card-lg space-y-4">
-            <h2 className="text-lg font-semibold">Add Liquid</h2>
-            
-            {/* Liquid Type Selection */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium text-slate-300">Liquid Type</Label>
-              <div className="grid grid-cols-4 gap-2">
-                {liquidTypes.map(type => (
-                  <button
-                    key={type}
-                    onClick={() => setSelectedLiquidType(type)}
-                    className={`py-2 px-3 rounded-xl text-sm font-medium transition-colors ${
-                      selectedLiquidType === type
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
-                    }`}
-                  >
-                    {type}
-                  </button>
-                ))}
-              </div>
-              
-              {/* Custom Liquid Type Input */}
-              {selectedLiquidType === 'Custom' && (
-                <Input
-                  type="text"
-                  value={customLiquidType}
-                  onChange={(e) => setCustomLiquidType(e.target.value)}
-                  onFocus={() => setCustomLiquidFocused(true)}
-                  onBlur={() => setCustomLiquidFocused(false)}
-                  placeholder={customLiquidFocused ? "" : "Enter liquid type"}
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-              )}
-            </div>
-            
-            {/* Quick Add Buttons */}
-            <div className="grid grid-cols-5 gap-2">
-              {quickAddAmounts.map(amount => (
-                <Button
-                  key={amount}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleQuickAdd(amount)}
-                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                >
-                  {amount}oz
-                </Button>
-              ))}
-            </div>
-
-            {/* Custom Amount */}
-            <div className="flex space-x-2">
-              <div className="flex-1">
-                <Input
-                  type="number"
-                  value={addAmount}
-                  onChange={(e) => setAddAmount(e.target.value)}
-                  onFocus={() => setAddAmountFocused(true)}
-                  onBlur={() => setAddAmountFocused(false)}
-                  placeholder={addAmountFocused ? "" : "Enter amount"}
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-              </div>
-              <Button
-                onClick={handleAddHydration}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                Add
-              </Button>
-            </div>
+          {/* Add Liquid Button */}
+          <div className="mb-8">
+            <Button
+              onClick={() => setIsHydrationDialogOpen(true)}
+              className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center space-x-2"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Liquid</span>
+            </Button>
           </div>
 
           {/* Today's Entries */}
@@ -422,6 +360,93 @@ export default function HydrationPage() {
           </div>
         </div>
       )}
+
+      {/* Add Liquid Dialog */}
+      <Dialog open={isHydrationDialogOpen} onOpenChange={setIsHydrationDialogOpen}>
+        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto">
+          <DialogTitle className="text-lg font-semibold text-center">Add Liquid</DialogTitle>
+          <DialogDescription className="sr-only">
+            Add liquid consumption to your hydration tracking
+          </DialogDescription>
+          <div className="space-y-4">
+            {/* Liquid Type Selection */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-slate-300">Liquid Type</Label>
+              <div className="grid grid-cols-4 gap-2">
+                {liquidTypes.map(type => (
+                  <button
+                    key={type}
+                    onClick={() => setSelectedLiquidType(type)}
+                    className={`py-2 px-3 rounded-xl text-sm font-medium transition-colors ${
+                      selectedLiquidType === type
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Custom Liquid Type Input */}
+              {selectedLiquidType === 'Custom' && (
+                <Input
+                  type="text"
+                  value={customLiquidType}
+                  onChange={(e) => setCustomLiquidType(e.target.value)}
+                  onFocus={() => setCustomLiquidFocused(true)}
+                  onBlur={() => setCustomLiquidFocused(false)}
+                  placeholder={customLiquidFocused ? "" : "Enter liquid type"}
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              )}
+            </div>
+            
+            {/* Quick Add Buttons */}
+            <div className="grid grid-cols-5 gap-2">
+              {quickAddAmounts.map(amount => (
+                <Button
+                  key={amount}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    handleQuickAdd(amount);
+                    setIsHydrationDialogOpen(false);
+                  }}
+                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                >
+                  {amount}oz
+                </Button>
+              ))}
+            </div>
+
+            {/* Custom Amount */}
+            <div className="flex space-x-2">
+              <div className="flex-1">
+                <Input
+                  type="number"
+                  value={addAmount}
+                  onChange={(e) => setAddAmount(e.target.value)}
+                  onFocus={() => setAddAmountFocused(true)}
+                  onBlur={() => setAddAmountFocused(false)}
+                  placeholder={addAmountFocused ? "" : "Enter amount"}
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <Button
+                onClick={() => {
+                  handleAddHydration();
+                  setIsHydrationDialogOpen(false);
+                }}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
