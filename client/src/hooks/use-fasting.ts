@@ -58,21 +58,37 @@ export function useFasting() {
     for (let i = 0; i < 7; i++) {
       const checkDate = new Date(sevenDaysAgo);
       checkDate.setDate(sevenDaysAgo.getDate() + i);
-      const dateString = checkDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
       
-      const dayLogs = logs.filter(log => {
-        const logStartDate = new Date(log.startDate).toLocaleDateString('en-CA');
-        return logStartDate === dateString;
+      // Calculate how many hours of fasting occurred on this specific day
+      let dayHours = 0;
+      
+      logs.forEach(log => {
+        const startDateTime = new Date(`${log.startDate}T${log.startTime}`);
+        const endDateTime = new Date(`${log.endDate}T${log.endTime}`);
+        
+        // Check if this fast overlaps with the current day
+        const dayStart = new Date(checkDate);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(checkDate);
+        dayEnd.setHours(23, 59, 59, 999);
+        
+        // Calculate overlap between fast period and this day
+        const overlapStart = new Date(Math.max(startDateTime.getTime(), dayStart.getTime()));
+        const overlapEnd = new Date(Math.min(endDateTime.getTime(), dayEnd.getTime()));
+        
+        if (overlapStart < overlapEnd) {
+          const overlapMinutes = (overlapEnd.getTime() - overlapStart.getTime()) / (1000 * 60);
+          dayHours += overlapMinutes / 60;
+        }
       });
       
-      if (dayLogs.length > 0) {
-        const dayHours = dayLogs.reduce((sum, log) => sum + (log.duration / 60), 0); // Convert minutes to hours
+      if (dayHours > 0) {
         totalHours += dayHours;
         fastingDays++;
       }
     }
     
-    const averageHours = fastingDays > 0 ? totalHours / 7 : 0; // Average over 7 days (including zero days)
+    const averageHours = totalHours / 7; // Average over 7 days (including zero days)
     const goalProgress = weeklyGoal > 0 ? Math.min((totalHours / weeklyGoal) * 100, 100) : 0;
     const remaining = Math.max(0, weeklyGoal - totalHours);
     
