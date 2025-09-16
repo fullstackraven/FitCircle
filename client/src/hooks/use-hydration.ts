@@ -130,6 +130,37 @@ export function useHydration() {
     return todayLog?.entries || [];
   };
 
+  // Get last 7 days hydration stats
+  const getLast7DaysProgress = () => {
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6); // Last 7 days including today
+    
+    let totalOz = 0;
+    const weeklyGoal = data.dailyGoalOz * 7; // 7 days worth of daily goals
+    
+    for (let i = 0; i < 7; i++) {
+      const checkDate = new Date(sevenDaysAgo);
+      checkDate.setDate(sevenDaysAgo.getDate() + i);
+      const dateString = checkDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
+      
+      const dayLog = data.logs[dateString];
+      if (dayLog) {
+        totalOz += dayLog.totalOz;
+      }
+    }
+    
+    const goalProgress = weeklyGoal > 0 ? Math.min((totalOz / weeklyGoal) * 100, 100) : 0;
+    const remaining = Math.max(0, weeklyGoal - totalOz);
+    
+    return {
+      totalOz: Math.round(totalOz),
+      weeklyGoal,
+      goalProgress: Math.round(goalProgress * 10) / 10, // Round to 1 decimal
+      remaining: Math.round(remaining)
+    };
+  };
+
   return {
     dailyGoalOz: data.dailyGoalOz,
     currentDayOz: data.currentDayOz,
@@ -138,6 +169,7 @@ export function useHydration() {
     setDailyGoal,
     getRecentLogs,
     getTodayEntries,
-    isGoalReached: data.currentDayOz >= data.dailyGoalOz
+    isGoalReached: data.currentDayOz >= data.dailyGoalOz,
+    getLast7DaysProgress
   };
 }

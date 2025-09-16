@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Clock, Plus, Edit, Trash2, Target, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GoalCircle } from '@/components/GoalCircle';
@@ -23,7 +24,7 @@ export default function FastingPage() {
       navigate('/');
     }
   };
-  const { logs, addLog, updateLog, deleteLog } = useFasting();
+  const { logs, addLog, updateLog, deleteLog, getLast7DaysProgress } = useFasting();
   const { goals, updateGoal } = useGoals();
   const [isLogging, setIsLogging] = useState(false);
   const [editingLog, setEditingLog] = useState<FastingLog | null>(null);
@@ -250,6 +251,32 @@ export default function FastingPage() {
              getTodayFastingHours() <= 18 ? 'Very Hot' : 'Extreme'}
           </span>
         </div>
+
+        {/* Last 7 Days Progress Stats */}
+        <Card className="fitcircle-card-lg mb-6">
+          <CardContent className="p-4">
+            <h3 className="text-lg font-semibold mb-3 text-center">Last 7 Days</h3>
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div>
+                <div className="text-2xl font-bold text-amber-400">
+                  {getLast7DaysProgress().totalHours}h
+                </div>
+                <div className="text-sm text-slate-400">Completed</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-blue-400">{getLast7DaysProgress().goalProgress.toFixed(1)}%</div>
+                <div className="text-sm text-slate-400">Goal Progress</div>
+              </div>
+            </div>
+            {getLast7DaysProgress().remaining > 0 && (
+              <div className="mt-3 text-center text-slate-300">
+                <span className="text-sm">
+                  {getLast7DaysProgress().remaining} hours remaining
+                </span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Add Fasting Log Button */}
         {!isLogging && (

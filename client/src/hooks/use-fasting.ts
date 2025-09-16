@@ -44,10 +44,52 @@ export function useFasting() {
     setLogs(prev => prev.filter(log => log.id !== id));
   };
 
+  // Get last 7 days fasting stats
+  const getLast7DaysProgress = () => {
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6); // Last 7 days including today
+    
+    let totalHours = 0;
+    let fastingDays = 0;
+    const dailyGoal = parseFloat(localStorage.getItem('fitcircle_goal_fasting') || '16'); // Default 16h
+    const weeklyGoal = dailyGoal * 7; // 7 days worth of daily goals
+    
+    for (let i = 0; i < 7; i++) {
+      const checkDate = new Date(sevenDaysAgo);
+      checkDate.setDate(sevenDaysAgo.getDate() + i);
+      const dateString = checkDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
+      
+      const dayLogs = logs.filter(log => {
+        const logStartDate = new Date(log.startDate).toLocaleDateString('en-CA');
+        return logStartDate === dateString;
+      });
+      
+      if (dayLogs.length > 0) {
+        const dayHours = dayLogs.reduce((sum, log) => sum + (log.duration / 60), 0); // Convert minutes to hours
+        totalHours += dayHours;
+        fastingDays++;
+      }
+    }
+    
+    const averageHours = fastingDays > 0 ? totalHours / 7 : 0; // Average over 7 days (including zero days)
+    const goalProgress = weeklyGoal > 0 ? Math.min((totalHours / weeklyGoal) * 100, 100) : 0;
+    const remaining = Math.max(0, weeklyGoal - totalHours);
+    
+    return {
+      totalHours: Math.round(totalHours * 10) / 10,
+      averageHours: Math.round(averageHours * 10) / 10,
+      weeklyGoal,
+      goalProgress: Math.round(goalProgress * 10) / 10,
+      remaining: Math.round(remaining * 10) / 10
+    };
+  };
+
   return {
     logs,
     addLog,
     updateLog,
-    deleteLog
+    deleteLog,
+    getLast7DaysProgress
   };
 }
