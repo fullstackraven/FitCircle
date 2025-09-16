@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { getTodayString } from '@/lib/date-utils';
 
 interface Quote {
   text: string;
@@ -7,6 +8,7 @@ interface Quote {
 
 const QUOTE_STORAGE_KEY = 'fitcircle_daily_quote';
 const QUOTE_DATE_KEY = 'fitcircle_quote_date';
+const LAST_QUOTE_KEY = 'fitcircle_last_quote_index';
 
 // Inspirational quotes for daily motivation
 const DAILY_QUOTES: Quote[] = [
@@ -158,31 +160,17 @@ const DAILY_QUOTES: Quote[] = [
   { text: "Success is not for the chosen few, but for the few who choose.", author: "UNKNOWN" }
 ];
 
-// Helper function to get current date in EST/EDT timezone
-const getESTDate = (): string => {
-  const now = new Date();
-  // Use America/New_York timezone to handle DST automatically
-  const estDate = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
-  const year = estDate.getFullYear();
-  const month = String(estDate.getMonth() + 1).padStart(2, '0');
-  const day = String(estDate.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
-// Helper function to calculate milliseconds until next midnight EST/EDT
-const getMillisecondsUntilMidnightEST = (): number => {
+// Helper function to calculate milliseconds until next midnight in local timezone
+const getMillisecondsUntilMidnightLocal = (): number => {
   const now = new Date();
   
-  // Get current time in EST/EDT
-  const currentEstTime = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
-  
-  // Create tomorrow's date at midnight in EST
-  const tomorrowEst = new Date(currentEstTime);
-  tomorrowEst.setDate(tomorrowEst.getDate() + 1);
-  tomorrowEst.setHours(0, 0, 0, 0);
+  // Create tomorrow's date at midnight in local timezone
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
   
   // Calculate the difference
-  return tomorrowEst.getTime() - currentEstTime.getTime();
+  return tomorrow.getTime() - now.getTime();
 };
 
 export function useQuote() {
@@ -191,24 +179,39 @@ export function useQuote() {
   const [error, setError] = useState<string | null>(null);
   const midnightTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const getDailyQuote = (date: string): Quote => {
-    // Use date to create a deterministic but seemingly random selection
-    const dateHash = date.split('-').reduce((acc, part) => acc + parseInt(part), 0);
-    const quoteIndex = dateHash % DAILY_QUOTES.length;
-    return DAILY_QUOTES[quoteIndex];
+  const getTrulyRandomQuote = (): Quote => {
+    // Get the last quote index to avoid repeats
+    const lastQuoteIndex = parseInt(localStorage.getItem(LAST_QUOTE_KEY) || '-1');
+    
+    // Create array of available indices (excluding the last one used)
+    const availableIndices = DAILY_QUOTES.map((_, index) => index)
+      .filter(index => index !== lastQuoteIndex);
+    
+    // If we've exhausted all quotes, reset and allow any quote
+    const indices = availableIndices.length > 0 ? availableIndices : 
+      DAILY_QUOTES.map((_, index) => index);
+    
+    // Select random index from available options
+    const randomIndex = Math.floor(Math.random() * indices.length);
+    const selectedIndex = indices[randomIndex];
+    
+    // Save this index to prevent immediate repeats
+    localStorage.setItem(LAST_QUOTE_KEY, selectedIndex.toString());
+    
+    return DAILY_QUOTES[selectedIndex];
   };
 
   const getRandomQuote = (): Quote => {
+    // For manual refresh, get truly random quote without saving last index
+    // This allows users to refresh multiple times if they want
     const randomIndex = Math.floor(Math.random() * DAILY_QUOTES.length);
     return DAILY_QUOTES[randomIndex];
   };
 
   const getTodaysQuote = (forceRefresh = false) => {
-    const today = getESTDate();
+    const today = getTodayString(); // Use local timezone from date-utils
     const savedDate = localStorage.getItem(QUOTE_DATE_KEY);
     const savedQuote = localStorage.getItem(QUOTE_STORAGE_KEY);
-
-
 
     // If we have a quote for today and not forcing refresh, use it
     if (!forceRefresh && savedDate === today && savedQuote) {
@@ -229,11 +232,11 @@ export function useQuote() {
     let todaysQuote: Quote;
 
     if (forceRefresh) {
-      // For manual refresh, get a random quote
+      // For manual refresh, get a random quote (doesn't affect daily rotation)
       todaysQuote = getRandomQuote();
     } else {
-      // For daily refresh, get deterministic daily quote
-      todaysQuote = getDailyQuote(today);
+      // For daily refresh, get truly random quote (avoids repeats)
+      todaysQuote = getTrulyRandomQuote();
     }
 
     // Save the quote for today
@@ -255,7 +258,7 @@ export function useQuote() {
       clearTimeout(midnightTimeoutRef.current);
     }
 
-    const msUntilMidnight = getMillisecondsUntilMidnightEST();
+    const msUntilMidnight = getMillisecondsUntilMidnightLocal();
     
     midnightTimeoutRef.current = setTimeout(() => {
       getTodaysQuote(false); // Get new daily quote at midnight (not force refresh)
