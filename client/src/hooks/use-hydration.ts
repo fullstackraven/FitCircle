@@ -150,11 +150,13 @@ export function useHydration() {
       }
     }
     
+    const averageOz = totalOz / 7; // Average over 7 days (including zero days)
     const goalProgress = weeklyGoal > 0 ? Math.min((totalOz / weeklyGoal) * 100, 100) : 0;
     const remaining = Math.max(0, weeklyGoal - totalOz);
     
     return {
       totalOz: Math.round(totalOz),
+      averageOz: Math.round(averageOz * 10) / 10,
       weeklyGoal,
       goalProgress: Math.round(goalProgress * 10) / 10, // Round to 1 decimal
       remaining: Math.round(remaining)

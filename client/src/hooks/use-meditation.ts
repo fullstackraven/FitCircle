@@ -97,11 +97,13 @@ export function useMeditation() {
       totalMinutes += dayLogs.reduce((sum, log) => sum + log.duration, 0);
     }
     
+    const averageMinutes = totalMinutes / 7; // Average over 7 days (including zero days)
     const goalProgress = weeklyGoal > 0 ? Math.min((totalMinutes / weeklyGoal) * 100, 100) : 0;
     const remaining = Math.max(0, weeklyGoal - totalMinutes);
     
     return {
       totalMinutes: Math.round(totalMinutes),
+      averageMinutes: Math.round(averageMinutes * 10) / 10,
       weeklyGoal,
       goalProgress: Math.round(goalProgress * 10) / 10, // Round to 1 decimal
       remaining: Math.round(remaining)
