@@ -487,10 +487,17 @@ export default function FastingPage() {
                   const goalHours = parseFloat(goalHoursInput) || 0;
                   if (goalHours === 0 || logs.length === 0) return 0;
                   
-                  // Calculate average fasting hours from recent logs
-                  const recentLogs = logs.slice(-7); // Last 7 fasts
-                  const totalHours = recentLogs.reduce((sum, log) => sum + (log.duration / 60), 0);
-                  const averageHours = totalHours / recentLogs.length;
+                  // Calculate all-time average fasting hours (same as Goals page)
+                  const completedFasts: number[] = [];
+                  logs.forEach(log => {
+                    const durationHours = log.duration / 60;
+                    if (durationHours > 0 && durationHours < 48) {
+                      completedFasts.push(durationHours);
+                    }
+                  });
+                  
+                  if (completedFasts.length === 0) return 0;
+                  const averageHours = completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length;
                   
                   return Math.min(100, (averageHours / goalHours) * 100);
                 })()}
@@ -498,14 +505,23 @@ export default function FastingPage() {
                 size={120}
                 currentValue={(() => {
                   if (logs.length === 0) return 0;
-                  const recentLogs = logs.slice(-7);
-                  const totalHours = recentLogs.reduce((sum, log) => sum + (log.duration / 60), 0);
-                  return Math.round((totalHours / recentLogs.length) * 10) / 10;
+                  
+                  // Calculate all-time average (same as Goals page)
+                  const completedFasts: number[] = [];
+                  logs.forEach(log => {
+                    const durationHours = log.duration / 60;
+                    if (durationHours > 0 && durationHours < 48) {
+                      completedFasts.push(durationHours);
+                    }
+                  });
+                  
+                  if (completedFasts.length === 0) return 0;
+                  return Math.round((completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length) * 10) / 10;
                 })()}
                 goalValue={parseFloat(goalHoursInput) || 0}
                 unit="hrs"
                 title="Average Fast Duration"
-                description="Last 7 fasts average"
+                description="All-time average"
               />
             </div>
 
