@@ -179,7 +179,7 @@ export default function HydrationPage() {
           <Card className="fitcircle-card-lg">
             <CardContent className="p-4">
               <h3 className="text-lg font-semibold mb-3 text-center">Last 7 Days</h3>
-              <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-bold text-blue-400">
                     {getLast7DaysProgress().totalOz}oz
@@ -191,10 +191,6 @@ export default function HydrationPage() {
                     {getLast7DaysProgress().averageOz}oz
                   </div>
                   <div className="text-sm text-slate-400">Daily Average</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-blue-400">{getLast7DaysProgress().goalProgress.toFixed(1)}%</div>
-                  <div className="text-sm text-slate-400">Goal Progress</div>
                 </div>
               </div>
               {getLast7DaysProgress().remaining > 0 && (

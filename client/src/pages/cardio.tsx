@@ -282,7 +282,7 @@ export default function CardioPage() {
         <Card className="fitcircle-card-lg mb-6">
           <CardContent className="p-4">
             <h3 className="text-lg font-semibold mb-3 text-center">Last 7 Days</h3>
-            <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-2 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-green-400">
                   {data.goal.type === 'duration' ? formatDuration(weeklyProgress.duration) : `${weeklyProgress.distance.toFixed(1)}mi`}
@@ -291,13 +291,9 @@ export default function CardioPage() {
               </div>
               <div>
                 <div className="text-2xl font-bold text-green-400">
-                  {data.goal.type === 'duration' ? `${weeklyProgress.average}min` : `${weeklyProgress.average}mi`}
+                  {data.goal.type === 'duration' ? `${getLast7DaysAverage().average}min` : `${getLast7DaysAverage().average}mi`}
                 </div>
                 <div className="text-sm text-slate-400">Daily Average</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-blue-400">{weeklyProgress.goalProgress.toFixed(1)}%</div>
-                <div className="text-sm text-slate-400">Goal Progress</div>
               </div>
             </div>
             {weeklyProgress.remaining > 0 && (
