@@ -54,39 +54,17 @@ export function useCardio() {
     if (storedData) {
       const parsed = safeParseJSON(storedData, defaultData);
       
-      // Aggressive cleanup of duration values to fix historical "0" display issues
-      const cleanedData = {
+      // Simple data validation without destructive cleanup
+      const validatedData = {
         ...parsed,
-        entries: parsed.entries.map(entry => {
-          // Force clean the duration value
-          let cleanDuration = 0;
-          if (typeof entry.duration === 'string') {
-            cleanDuration = Math.floor(parseFloat(entry.duration) || 0);
-          } else if (typeof entry.duration === 'number') {
-            cleanDuration = Math.floor(entry.duration);
-          }
-          
-          // Force clean the distance value  
-          let cleanDistance = 0;
-          if (entry.distance) {
-            if (typeof entry.distance === 'string') {
-              cleanDistance = Math.round((parseFloat(entry.distance) || 0) * 10) / 10;
-            } else {
-              cleanDistance = Math.round((entry.distance || 0) * 10) / 10;
-            }
-          }
-          
-          return {
-            ...entry,
-            duration: cleanDuration,
-            distance: cleanDistance || undefined
-          };
-        })
+        entries: parsed.entries.filter(entry => entry && entry.id).map(entry => ({
+          ...entry,
+          duration: typeof entry.duration === 'string' ? parseFloat(entry.duration) || 0 : entry.duration || 0,
+          distance: entry.distance ? (typeof entry.distance === 'string' ? parseFloat(entry.distance) || 0 : entry.distance) : undefined
+        }))
       };
       
-      console.log('Cleaned cardio data:', cleanedData.entries.slice(0, 3));
-      
-      setData(cleanedData);
+      setData(validatedData);
     }
   }, []);
 
