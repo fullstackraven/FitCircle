@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
+import { getAllTimeFastingAverage } from '@/lib/date-utils';
 
 export interface FastingLog {
   id: string;
@@ -101,11 +102,21 @@ export function useFasting() {
     };
   };
 
+  // Get all-time goal percentage (matches what the Fasting page goal modal shows)
+  const getAllTimeGoalPercentage = (): number => {
+    const goalHours = parseFloat(localStorage.getItem('fitcircle_goal_fasting') || '16');
+    if (goalHours === 0) return 0;
+    
+    const { averageHours } = getAllTimeFastingAverage(logs);
+    return Math.min(100, (averageHours / goalHours) * 100);
+  };
+
   return {
     logs,
     addLog,
     updateLog,
     deleteLog,
-    getLast7DaysProgress
+    getLast7DaysProgress,
+    getAllTimeGoalPercentage
   };
 }

@@ -5,6 +5,8 @@ import { useHydration } from '@/hooks/use-hydration';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useCardio } from '@/hooks/use-cardio';
 import { useRecovery } from '@/hooks/use-recovery';
+import { useMeditation } from '@/hooks/use-meditation';
+import { useFasting } from '@/hooks/use-fasting';
 import { GoalCircle } from '@/components/GoalCircle';
 import { 
   calculateMeditation7DayAverage, 
@@ -114,8 +116,11 @@ export default function GoalsPageFinal() {
     };
   }, []);
 
-  // Get current values using same logic as working modals
+  // Get current values directly from each page's hook functions (single source of truth)
   const { currentDayOz, dailyGoalOz, progressPercentage: hydrationProgress } = useHydration();
+  const { getProgressPercentage: getMeditationProgress } = useMeditation();
+  const { getAllTimeGoalPercentage: getFastingProgress } = useFasting();
+  const { getWeeklyProgress: getCardioWeeklyProgress } = useCardio();
   
   // Also get hydration from direct localStorage if hook fails
   const getHydrationData = () => {
@@ -239,9 +244,9 @@ export default function GoalsPageFinal() {
 
   // Note: Cardio goal now updates directly through cardio hook, no separate form state needed
 
-  // Use shared meditation calculation for progress
-  const meditationProgress = calculateMeditationProgress(meditationLogs, getMeditationGoal());
-  const fastingProgress = goals.fastingHours > 0 ? Math.min((fastingCurrent / goals.fastingHours) * 100, 100) : 0;
+  // Use hook functions directly (single source of truth)
+  const meditationProgress = getMeditationProgress();
+  const fastingProgress = getFastingProgress();
   // Weight progress: depends on whether goal is to gain or lose weight
   const weightProgress = goals.weightLbs > 0 && weightCurrent > 0 ? 
     (goals.weightGoalType === 'gain' 
