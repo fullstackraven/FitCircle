@@ -32,7 +32,7 @@ export default function MeditationPage() {
       navigate('/');
     }
   };
-  const { logs, addLog, getTodayMinutes, getDailyGoal, getProgressPercentage, isGoalReached, getLast7DaysProgress } = useMeditation();
+  const { logs, addLog, getTodayMinutes, getDailyGoal, getProgressPercentage, isGoalReached, getLast7DaysProgress, getAllTimeGoalPercentage } = useMeditation();
   const { goals, updateGoal } = useGoals();
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -506,14 +506,14 @@ export default function MeditationPage() {
             {/* Goal Progress Circle */}
             <div className="flex justify-center mb-8">
               <GoalCircle
-                percentage={calculateMeditationProgress(logs, parseFloat(goalMinutesInput) || 0)}
+                percentage={getAllTimeGoalPercentage()}
                 color="rgb(147, 51, 234)"
                 size={120}
                 currentValue={Math.round(calculateMeditation7DayAverage(logs))}
                 goalValue={parseFloat(goalMinutesInput) || 0}
                 unit="min"
                 title="Daily Meditation"
-                description="7-day average"
+                description="All-time average"
               />
             </div>
 

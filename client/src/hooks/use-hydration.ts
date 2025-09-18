@@ -168,6 +168,18 @@ export function useHydration() {
     };
   };
 
+  // Get all-time goal percentage for goal modal
+  const getAllTimeGoalPercentage = (): number => {
+    const allLogs = Object.values(data.logs);
+    if (allLogs.length === 0) return 0;
+    
+    const totalOz = allLogs.reduce((sum, log) => sum + (log.totalOz || 0), 0);
+    const averageOz = totalOz / allLogs.length;
+    const goalOz = data.dailyGoalOz || 64;
+    
+    return goalOz > 0 ? Math.min((averageOz / goalOz) * 100, 100) : 0;
+  };
+
   return {
     dailyGoalOz: data.dailyGoalOz,
     currentDayOz: data.currentDayOz,
@@ -178,6 +190,7 @@ export function useHydration() {
     getAllLogs,
     getTodayEntries,
     isGoalReached: data.currentDayOz >= data.dailyGoalOz,
-    getLast7DaysProgress
+    getLast7DaysProgress,
+    getAllTimeGoalPercentage
   };
 }

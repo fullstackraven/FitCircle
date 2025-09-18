@@ -228,3 +228,115 @@ export function getAllTimeFastingAverage(logs: { startDate: string; duration: nu
     totalHours: Math.round(totalHours * 10) / 10
   };
 }
+
+/**
+ * Calculates all-time average hydration including days with no hydration (0 oz)
+ * Input: Object with date keys and totalOz values
+ * Output: { averageOz: number, totalDays: number, totalOz: number }
+ */
+export function getAllTimeHydrationAverage(logs: { [date: string]: { totalOz: number } }): { averageOz: number; totalDays: number; totalOz: number } {
+  const logEntries = Object.entries(logs);
+  if (logEntries.length === 0) {
+    return { averageOz: 0, totalDays: 0, totalOz: 0 };
+  }
+  
+  // Find date range using string comparison (timezone-safe)
+  const dates = logEntries.map(([date]) => date).sort();
+  const firstDate = dates[0];
+  const today = getTodayString();
+  
+  // Calculate total days from first log to today (inclusive)
+  const totalDays = getDaysBetweenInclusive(firstDate, today);
+  
+  // Calculate total oz across all logged days
+  const totalOz = logEntries.reduce((sum, [, log]) => sum + (log.totalOz || 0), 0);
+  const averageOz = totalOz / totalDays;
+  
+  return {
+    averageOz: Math.round(averageOz * 10) / 10, // Round to 1 decimal
+    totalDays,
+    totalOz: Math.round(totalOz * 10) / 10
+  };
+}
+
+/**
+ * Calculates all-time average meditation including days with no meditation (0 minutes)  
+ * Input: Array of meditation logs with date and duration fields
+ * Output: { averageMinutes: number, totalDays: number, totalMinutes: number }
+ */
+export function getAllTimeMeditationAverage(logs: { date: string; duration: number }[]): { averageMinutes: number; totalDays: number; totalMinutes: number } {
+  if (logs.length === 0) {
+    return { averageMinutes: 0, totalDays: 0, totalMinutes: 0 };
+  }
+  
+  // Group by date using timezone-safe parsing
+  const dailyTotals: { [date: string]: number } = {};
+  logs.forEach(session => {
+    const date = parseLocalDate(session.date);
+    const dateKey = date.toLocaleDateString('en-CA'); // YYYY-MM-DD format, timezone-safe
+    dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
+  });
+  
+  const dates = Object.keys(dailyTotals).sort();
+  if (dates.length === 0) {
+    return { averageMinutes: 0, totalDays: 0, totalMinutes: 0 };
+  }
+  
+  const firstDate = dates[0];
+  const today = getTodayString();
+  
+  // Calculate total days from first log to today (inclusive)
+  const totalDays = getDaysBetweenInclusive(firstDate, today);
+  
+  // Calculate total minutes across all logged days
+  const totalMinutes = Object.values(dailyTotals).reduce((sum, minutes) => sum + minutes, 0);
+  const averageMinutes = totalMinutes / totalDays;
+  
+  return {
+    averageMinutes: Math.round(averageMinutes * 10) / 10, // Round to 1 decimal
+    totalDays,
+    totalMinutes: Math.round(totalMinutes * 10) / 10
+  };
+}
+
+/**
+ * Calculates all-time average cardio including days with no cardio (0 duration/distance)
+ * Input: Array of cardio entries with date, duration, and distance fields
+ * Output: { averageDuration: number, averageDistance: number, totalDays: number }
+ */
+export function getAllTimeCardioAverage(entries: { date: string; duration: number; distance?: number }[]): { averageDuration: number; averageDistance: number; totalDays: number } {
+  if (entries.length === 0) {
+    return { averageDuration: 0, averageDistance: 0, totalDays: 0 };
+  }
+  
+  // Group by date and sum daily totals
+  const dailyTotals: { [date: string]: { duration: number; distance: number } } = {};
+  entries.forEach(entry => {
+    const dateKey = entry.date; // Already in YYYY-MM-DD format
+    if (!dailyTotals[dateKey]) {
+      dailyTotals[dateKey] = { duration: 0, distance: 0 };
+    }
+    dailyTotals[dateKey].duration += entry.duration || 0;
+    dailyTotals[dateKey].distance += entry.distance || 0;
+  });
+  
+  const dates = Object.keys(dailyTotals).sort();
+  const firstDate = dates[0];
+  const today = getTodayString();
+  
+  // Calculate total days from first log to today (inclusive)
+  const totalDays = getDaysBetweenInclusive(firstDate, today);
+  
+  // Calculate totals across all logged days
+  const totalDuration = Object.values(dailyTotals).reduce((sum, day) => sum + day.duration, 0);
+  const totalDistance = Object.values(dailyTotals).reduce((sum, day) => sum + day.distance, 0);
+  
+  const averageDuration = totalDuration / totalDays;
+  const averageDistance = totalDistance / totalDays;
+  
+  return {
+    averageDuration: Math.round(averageDuration * 10) / 10, // Round to 1 decimal
+    averageDistance: Math.round(averageDistance * 10) / 10, // Round to 1 decimal
+    totalDays
+  };
+}

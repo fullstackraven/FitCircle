@@ -228,6 +228,37 @@ export function useCardio() {
     };
   };
 
+  // Get all-time goal percentage for goal modal
+  const getAllTimeGoalPercentage = (): number => {
+    if (data.entries.length === 0) return 0;
+    
+    // Group entries by date and calculate daily totals
+    const dailyTotals: { [date: string]: { duration: number; distance: number } } = {};
+    data.entries.forEach(entry => {
+      const dateKey = entry.date;
+      if (!dailyTotals[dateKey]) {
+        dailyTotals[dateKey] = { duration: 0, distance: 0 };
+      }
+      dailyTotals[dateKey].duration += entry.duration || 0;
+      dailyTotals[dateKey].distance += entry.distance || 0;
+    });
+    
+    const allDays = Object.values(dailyTotals);
+    const avgDuration = allDays.reduce((sum, day) => sum + day.duration, 0) / allDays.length;
+    const avgDistance = allDays.reduce((sum, day) => sum + day.distance, 0) / allDays.length;
+    
+    // Calculate based on goal type
+    if (data.goal.type === 'duration') {
+      const weeklyTarget = data.goal.target;
+      const dailyTarget = weeklyTarget / 7;
+      return dailyTarget > 0 ? Math.min((avgDuration / dailyTarget) * 100, 100) : 0;
+    } else {
+      const weeklyTarget = data.goal.target;
+      const dailyTarget = weeklyTarget / 7;
+      return dailyTarget > 0 ? Math.min((avgDistance / dailyTarget) * 100, 100) : 0;
+    }
+  };
+
   return {
     data,
     addCardioEntry,
@@ -240,6 +271,7 @@ export function useCardio() {
     getTodaysProgress,
     getWeeklyProgress,
     getLast7DaysAverage,
-    getCardioStats
+    getCardioStats,
+    getAllTimeGoalPercentage
   };
 }

@@ -110,6 +110,26 @@ export function useMeditation() {
     };
   };
 
+  // Get all-time goal percentage for goal modal
+  const getAllTimeGoalPercentage = (): number => {
+    const goalMinutes = getDailyGoal();
+    if (goalMinutes === 0 || logs.length === 0) return 0;
+    
+    // Group logs by date and calculate daily totals
+    const dailyTotals: { [date: string]: number } = {};
+    logs.forEach(session => {
+      const sessionDate = new Date(session.date);
+      const dateKey = sessionDate.toISOString().split('T')[0];
+      dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
+    });
+    
+    // Calculate average daily minutes across all days with meditation
+    const allDailyMinutes = Object.values(dailyTotals);
+    const averageMinutes = allDailyMinutes.reduce((sum, minutes) => sum + minutes, 0) / allDailyMinutes.length;
+    
+    return Math.min((averageMinutes / goalMinutes) * 100, 100);
+  };
+
   return {
     logs,
     addLog,
@@ -119,6 +139,7 @@ export function useMeditation() {
     getDailyGoal,
     getProgressPercentage,
     isGoalReached,
-    getLast7DaysProgress
+    getLast7DaysProgress,
+    getAllTimeGoalPercentage
   };
 }

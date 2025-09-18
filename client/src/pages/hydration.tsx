@@ -37,7 +37,8 @@ export default function HydrationPage() {
     getAllLogs,
     getTodayEntries,
     isGoalReached,
-    getLast7DaysProgress 
+    getLast7DaysProgress,
+    getAllTimeGoalPercentage
   } = useHydration();
 
   const [addAmount, setAddAmount] = useState('');
@@ -352,14 +353,14 @@ export default function HydrationPage() {
             {/* Goal Progress Circle */}
             <div className="flex justify-center mb-8">
               <GoalCircle
-                percentage={progressPercentage}
+                percentage={getAllTimeGoalPercentage()}
                 color="rgb(59, 130, 246)"
                 size={120}
                 currentValue={Math.round(currentDayOz)}
                 goalValue={parseFloat(newGoal) || dailyGoalOz}
                 unit="oz"
                 title="Daily Hydration"
-                description="Today's progress"
+                description="All-time average"
               />
             </div>
 

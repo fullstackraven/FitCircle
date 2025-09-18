@@ -26,6 +26,7 @@ export default function CardioPage() {
     getWeeklyProgress,
     getLast7DaysAverage,
     getCardioStats,
+    getAllTimeGoalPercentage,
     data
   } = useCardio();
 
@@ -188,14 +189,14 @@ export default function CardioPage() {
               <div className="space-y-6">
                 <div className="flex justify-center">
                   <GoalCircle
-                    percentage={weeklyProgress.goalProgress || 0}
+                    percentage={getAllTimeGoalPercentage()}
                     color="rgb(34, 197, 94)"
                     size={120}
                     currentValue={Math.round(data.goal.type === 'duration' ? weeklyProgress.duration : weeklyProgress.distance)}
                     goalValue={data.goal.target}
                     unit={data.goal.type === 'duration' ? 'min' : 'mi'}
-                    title="This Week"
-                    description=""
+                    title="Cardio Progress"
+                    description="All-time average"
                   />
                 </div>
                 
