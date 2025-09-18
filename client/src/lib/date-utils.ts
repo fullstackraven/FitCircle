@@ -99,3 +99,70 @@ export function isToday(dateString: string): boolean {
 export function isYesterday(dateString: string): boolean {
   return dateString === getYesterdayString();
 }
+
+/**
+ * Groups logs by month and returns only months that have data
+ * Format: "September 2025", "August 2025", etc.
+ * @param logs - Array of logs or object with date keys
+ * @param dateField - Field name containing the date (for array logs) or 'key' for object logs
+ * @returns Object with month names as keys and arrays of logs as values
+ */
+export function groupLogsByMonth<T>(logs: T[] | { [key: string]: T }, dateField: string = 'date'): { [monthName: string]: T[] } {
+  const monthGroups: { [monthName: string]: T[] } = {};
+  
+  // Handle object-based logs (like hydration)
+  if (!Array.isArray(logs)) {
+    Object.entries(logs).forEach(([dateKey, log]) => {
+      const date = parseLocalDate(dateKey);
+      const monthKey = date.toLocaleDateString('en-US', { 
+        month: 'long', 
+        year: 'numeric' 
+      });
+      
+      if (!monthGroups[monthKey]) {
+        monthGroups[monthKey] = [];
+      }
+      monthGroups[monthKey].push(log);
+    });
+  } 
+  // Handle array-based logs (like cardio, fasting, meditation)
+  else {
+    logs.forEach((log: any) => {
+      let dateString: string;
+      
+      // Handle different date field names
+      if (dateField === 'startDate') {
+        dateString = log.startDate; // For fasting logs
+      } else {
+        dateString = log[dateField]; // For cardio, meditation, etc.
+      }
+      
+      if (dateString) {
+        const date = parseLocalDate(dateString);
+        const monthKey = date.toLocaleDateString('en-US', { 
+          month: 'long', 
+          year: 'numeric' 
+        });
+        
+        if (!monthGroups[monthKey]) {
+          monthGroups[monthKey] = [];
+        }
+        monthGroups[monthKey].push(log);
+      }
+    });
+  }
+  
+  // Sort months from newest to oldest
+  const sortedMonths: { [monthName: string]: T[] } = {};
+  Object.keys(monthGroups)
+    .sort((a, b) => {
+      const dateA = new Date(a);
+      const dateB = new Date(b);
+      return dateB.getTime() - dateA.getTime();
+    })
+    .forEach(month => {
+      sortedMonths[month] = monthGroups[month];
+    });
+  
+  return sortedMonths;
+}

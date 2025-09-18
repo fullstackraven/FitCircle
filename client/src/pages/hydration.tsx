@@ -7,7 +7,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { GoalCircle } from '@/components/GoalCircle';
+import { groupLogsByMonth } from '@/lib/date-utils';
 
 
 
@@ -48,6 +50,7 @@ export default function HydrationPage() {
   const [addAmountFocused, setAddAmountFocused] = useState(false);
   const [goalFocused, setGoalFocused] = useState(false);
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
+  const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
 
   // Load goal from Goals page when it changes
   useEffect(() => {
@@ -127,6 +130,7 @@ export default function HydrationPage() {
   const quickAddAmounts = [12, 16, 24, 34, 36];
   const recentLogs = getAllLogs();
   const todayEntries = getTodayEntries();
+  const monthlyLogs = groupLogsByMonth(recentLogs.reduce((acc, log) => ({ ...acc, [log.date]: log }), {}));
 
   // Calculate progress ring
   const circumference = 2 * Math.PI * 120;
@@ -233,61 +237,93 @@ export default function HydrationPage() {
             </div>
           )}
 
-          {/* Hydration Log */}
+          {/* Hydration Log - Monthly Sections */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Hydration Log</h3>
-            <div className="space-y-2">
-              {recentLogs.length > 0 ? (
-                recentLogs.map((log) => (
-                  <div key={log.date} className="fitcircle-card">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-white font-medium">
-                      {new Date(log.date + 'T00:00:00').toLocaleDateString('en-US', { 
-                        weekday: 'short', 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })}
-                    </span>
-                    <span className="text-blue-400 font-semibold">
-                      {log.totalOz}oz
-                    </span>
-                  </div>
-                  <div className="text-xs text-slate-400 mb-2">
-                    {log.entries.length} entries
-                  </div>
-                  
-                  {/* Show detailed entries for this day */}
-                  <div className="space-y-1">
-                    {(expandedDays.has(log.date) ? log.entries : log.entries.slice(0, 3)).map((entry, index) => (
-                      <div key={index} className="flex justify-between items-center text-xs">
-                        <span className="text-slate-500">{entry.time}</span>
-                        <div className="flex items-center space-x-1">
-                          <span className="text-slate-400">{entry.liquidType || 'Water'}</span>
-                          <span className="text-slate-300">{entry.amount}oz</span>
+            <div className="space-y-3">
+              {Object.keys(monthlyLogs).length > 0 ? (
+                Object.entries(monthlyLogs).map(([monthName, monthLogs]) => (
+                  <Collapsible
+                    key={monthName}
+                    open={expandedMonths.has(monthName)}
+                    onOpenChange={(isOpen) => {
+                      const newExpanded = new Set(expandedMonths);
+                      if (isOpen) {
+                        newExpanded.add(monthName);
+                      } else {
+                        newExpanded.delete(monthName);
+                      }
+                      setExpandedMonths(newExpanded);
+                    }}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <button className="w-full fitcircle-card hover:bg-slate-700 transition-colors">
+                        <div className="flex justify-between items-center">
+                          <span className="text-white font-medium">{monthName}</span>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-blue-400 text-sm">{monthLogs.length} days</span>
+                            <span className="text-slate-400">
+                              {expandedMonths.has(monthName) ? '−' : '+'}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                    {log.entries.length > 3 && (
-                      <button
-                        onClick={() => {
-                          const newExpanded = new Set(expandedDays);
-                          if (newExpanded.has(log.date)) {
-                            newExpanded.delete(log.date);
-                          } else {
-                            newExpanded.add(log.date);
-                          }
-                          setExpandedDays(newExpanded);
-                        }}
-                        className="text-xs text-slate-500 hover:text-slate-300 text-center mt-1 w-full transition-colors"
-                      >
-                        {expandedDays.has(log.date) 
-                          ? 'Show less' 
-                          : `+${log.entries.length - 3} more entries`
-                        }
                       </button>
-                    )}
-                    </div>
-                  </div>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent className="space-y-2 mt-2">
+                      {monthLogs.map((log) => (
+                        <div key={log.date} className="fitcircle-card ml-4">
+                          <div className="flex justify-between items-center mb-3">
+                            <span className="text-white font-medium">
+                              {new Date(log.date + 'T00:00:00').toLocaleDateString('en-US', { 
+                                weekday: 'short', 
+                                month: 'short', 
+                                day: 'numeric' 
+                              })}
+                            </span>
+                            <span className="text-blue-400 font-semibold">
+                              {log.totalOz}oz
+                            </span>
+                          </div>
+                          <div className="text-xs text-slate-400 mb-2">
+                            {log.entries.length} entries
+                          </div>
+                          
+                          {/* Show detailed entries for this day */}
+                          <div className="space-y-1">
+                            {(expandedDays.has(log.date) ? log.entries : log.entries.slice(0, 3)).map((entry, index) => (
+                              <div key={index} className="flex justify-between items-center text-xs">
+                                <span className="text-slate-500">{entry.time}</span>
+                                <div className="flex items-center space-x-1">
+                                  <span className="text-slate-400">{entry.liquidType || 'Water'}</span>
+                                  <span className="text-slate-300">{entry.amount}oz</span>
+                                </div>
+                              </div>
+                            ))}
+                            {log.entries.length > 3 && (
+                              <button
+                                onClick={() => {
+                                  const newExpanded = new Set(expandedDays);
+                                  if (newExpanded.has(log.date)) {
+                                    newExpanded.delete(log.date);
+                                  } else {
+                                    newExpanded.add(log.date);
+                                  }
+                                  setExpandedDays(newExpanded);
+                                }}
+                                className="text-xs text-slate-500 hover:text-slate-300 text-center mt-1 w-full transition-colors"
+                              >
+                                {expandedDays.has(log.date) 
+                                  ? 'Show less' 
+                                  : `+${log.entries.length - 3} more entries`
+                                }
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </CollapsibleContent>
+                  </Collapsible>
                 ))
               ) : (
                 <div className="text-center text-slate-500 py-4">
