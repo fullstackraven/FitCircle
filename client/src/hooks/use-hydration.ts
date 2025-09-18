@@ -124,6 +124,11 @@ export function useHydration() {
     return logs;
   };
 
+  const getAllLogs = () => {
+    return Object.values(data.logs)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  };
+
   const getTodayEntries = () => {
     const today = getTodayString();
     const todayLog = data.logs[today];
@@ -170,6 +175,7 @@ export function useHydration() {
     addHydration,
     setDailyGoal,
     getRecentLogs,
+    getAllLogs,
     getTodayEntries,
     isGoalReached: data.currentDayOz >= data.dailyGoalOz,
     getLast7DaysProgress

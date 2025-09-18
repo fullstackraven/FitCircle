@@ -32,6 +32,7 @@ export default function HydrationPage() {
     addHydration, 
     setDailyGoal, 
     getRecentLogs, 
+    getAllLogs,
     getTodayEntries,
     isGoalReached,
     getLast7DaysProgress 
@@ -124,7 +125,7 @@ export default function HydrationPage() {
   };
 
   const quickAddAmounts = [12, 16, 24, 34, 36];
-  const recentLogs = getRecentLogs();
+  const recentLogs = getAllLogs();
   const todayEntries = getTodayEntries();
 
   // Calculate progress ring
