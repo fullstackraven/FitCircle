@@ -1,7 +1,7 @@
 // Unified Goals Management System
 // This eliminates redundant goal-handling code across all pages
 import { STORAGE_KEYS, safeParseJSON } from './storage-utils';
-import { getTodayString } from './date-utils';
+import { getTodayString, getAllTimeFastingAverage } from './date-utils';
 
 export interface UnifiedGoals {
   hydrationOz: number;
@@ -185,35 +185,13 @@ export function getFastingProgress(): GoalProgress {
   const goals = getAllGoals();
   const logs = safeParseJSON(localStorage.getItem('fitcircle_fasting_logs'), []);
   
-  let current = 0;
-  if (Array.isArray(logs)) {
-    const completedFasts: number[] = [];
-    
-    logs.forEach((log: any) => {
-      if (log?.endDate && log?.startDate && log?.endTime && log?.startTime) {
-        const start = new Date(`${log.startDate}T${log.startTime}`);
-        const end = new Date(`${log.endDate}T${log.endTime}`);
-        const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-        if (duration > 0 && duration < 48) {
-          completedFasts.push(duration);
-        }
-      } else if (log?.duration) {
-        const durationHours = log.duration / 60;
-        if (durationHours > 0 && durationHours < 48) {
-          completedFasts.push(durationHours);
-        }
-      }
-    });
-    
-    if (completedFasts.length > 0) {
-      current = completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length;
-    }
-  }
+  // Use centralized calculation that includes days with no fasting as "0"
+  const { averageHours } = getAllTimeFastingAverage(logs);
   
   const target = goals.fastingHours;
-  const percentage = target > 0 ? Math.min((current / target) * 100, 100) : 0;
+  const percentage = target > 0 ? Math.min((averageHours / target) * 100, 100) : 0;
   
-  return { current: Math.round(current), target, percentage, unit: 'hrs' };
+  return { current: Math.round(averageHours * 10) / 10, target, percentage, unit: 'hrs' };
 }
 
 /**
