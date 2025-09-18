@@ -54,13 +54,20 @@ export function getCurrentTime24(): string {
 
 /**
  * Converts a date string to user's local date (handles timezone issues)
- * Input: YYYY-MM-DD string
+ * Input: YYYY-MM-DD string or MM/DD/YYYY string (for backward compatibility)
  * Output: Date object in user's local timezone
  */
 export function parseLocalDate(dateString: string): Date {
-  // Parse as local date, not UTC
-  const [year, month, day] = dateString.split('-').map(Number);
-  return new Date(year, month - 1, day); // month is 0-indexed
+  // Handle both YYYY-MM-DD and MM/DD/YYYY formats
+  if (dateString.includes('/')) {
+    // Handle MM/DD/YYYY format (legacy meditation entries)
+    const [month, day, year] = dateString.split('/').map(Number);
+    return new Date(year, month - 1, day); // month is 0-indexed
+  } else {
+    // Handle YYYY-MM-DD format (standard)
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day); // month is 0-indexed
+  }
 }
 
 /**
