@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { GoalCircle } from '@/components/GoalCircle';
 import { useMeditation, type MeditationLog } from '@/hooks/use-meditation';
 import { useGoals } from '@/hooks/use-goals';
@@ -15,6 +16,7 @@ import {
   getMeditationGoal, 
   setMeditationGoal 
 } from '@/utils/meditation-calc';
+import { groupLogsByMonth } from '@/lib/date-utils';
 
 export default function MeditationPage() {
   const [, navigate] = useLocation();
@@ -46,11 +48,15 @@ export default function MeditationPage() {
   const [goalMinutesInput, setGoalMinutesInput] = useState('');
   const [inputMinutesFocused, setInputMinutesFocused] = useState(false);
   const [goalMinutesFocused, setGoalMinutesFocused] = useState(false);
+  const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     // Initialize goal input with current goal value from shared utility
     setGoalMinutesInput(getMeditationGoal().toString());
   }, []);
+  
+  // Group logs by month for display
+  const monthlyLogs = groupLogsByMonth(logs);
   
   // Listen for goal changes from other pages
   useEffect(() => {
@@ -418,32 +424,65 @@ export default function MeditationPage() {
           )}
         </div>
 
-        {/* Meditation Log */}
+        {/* Meditation Log - Monthly Sections */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Meditation Log</h3>
-          <div className="space-y-2">
-            {logs.length === 0 ? (
+          <div className="space-y-3">
+            {Object.keys(monthlyLogs).length === 0 ? (
               <div className="text-center py-8 text-slate-400">
                 <p>No meditation sessions yet.</p>
                 <p className="text-sm mt-2">Complete a meditation session to see your log here.</p>
               </div>
             ) : (
-              logs
-                .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
-                .map((log) => (
-                <div key={log.id} className="bg-slate-800 rounded-xl p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="text-sm text-slate-300">
-                        {log.date} at {log.time}
+              Object.entries(monthlyLogs).map(([monthName, monthLogs]) => (
+                <Collapsible
+                  key={monthName}
+                  open={expandedMonths.has(monthName)}
+                  onOpenChange={(isOpen) => {
+                    const newExpanded = new Set(expandedMonths);
+                    if (isOpen) {
+                      newExpanded.add(monthName);
+                    } else {
+                      newExpanded.delete(monthName);
+                    }
+                    setExpandedMonths(newExpanded);
+                  }}
+                >
+                  <CollapsibleTrigger asChild>
+                    <button className="w-full fitcircle-card hover:bg-slate-700 transition-colors">
+                      <div className="flex justify-between items-center">
+                        <span className="text-white font-medium">{monthName}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-purple-400 text-sm">{monthLogs.length} sessions</span>
+                          <span className="text-slate-400">
+                            {expandedMonths.has(monthName) ? '−' : '+'}
+                          </span>
+                        </div>
                       </div>
-                      <div className="text-lg font-semibold text-blue-400">
-                        {log.duration} minute{log.duration !== 1 ? 's' : ''}
-                      </div>
-                    </div>
-                    <div className="text-2xl">🧘‍♂️</div>
-                  </div>
-                </div>
+                    </button>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent className="space-y-2 mt-2">
+                    {monthLogs
+                      .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+                      .map((log) => (
+                        <div key={log.id} className="bg-slate-800 rounded-xl p-4 ml-4">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <div className="text-sm text-slate-300">
+                                {log.date} at {log.time}
+                              </div>
+                              <div className="text-lg font-semibold text-purple-400">
+                                {log.duration} minute{log.duration !== 1 ? 's' : ''}
+                              </div>
+                            </div>
+                            <div className="text-2xl">🧘‍♂️</div>
+                          </div>
+                        </div>
+                      ))
+                    }
+                  </CollapsibleContent>
+                </Collapsible>
               ))
             )}
           </div>

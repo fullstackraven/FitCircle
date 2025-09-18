@@ -9,8 +9,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Card, CardContent } from '@/components/ui/card';
-import { getTodayString } from '@/lib/date-utils';
+import { getTodayString, groupLogsByMonth } from '@/lib/date-utils';
 
 export default function CardioPage() {
   const [, navigate] = useLocation();
@@ -55,6 +56,7 @@ export default function CardioPage() {
     notes: ''
   });
   const [newCustomType, setNewCustomType] = useState('');
+  const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
 
   const todaysProgress = getTodaysProgress();
   const weeklyProgress = getWeeklyProgress();
@@ -76,10 +78,12 @@ export default function CardioPage() {
     });
   };
 
-  // Get recent activity - all entries sorted by date/time (most recent first)
+  // Get recent activity - all entries sorted by date/time (most recent first)  
   const recentActivity = data.entries
-    .sort((a, b) => b.timestamp - a.timestamp)
-    .slice(0, 20); // Show last 20 entries
+    .sort((a, b) => b.timestamp - a.timestamp);
+    
+  // Group all entries by month
+  const monthlyLogs = groupLogsByMonth(recentActivity);
 
   const handleAddEntry = () => {
     if (!newEntry.type || (!newEntry.duration && !newEntry.distance)) {
@@ -420,91 +424,123 @@ export default function CardioPage() {
           </DialogContent>
         </Dialog>
 
-        {/* Cardio Log */}
+        {/* Cardio Log - Monthly Sections */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Cardio Log</h3>
-          {recentActivity.length > 0 ? (
-            <div className="space-y-3">
-              {recentActivity.map(entry => (
-                <Card key={entry.id} className="fitcircle-card">
-                  <CardContent className="p-4 relative">
-                    <div className="pr-16">
-                      {/* Header/Title at the top */}
-                      <div className="mb-3">
-                        <h4 className="text-green-400 font-semibold capitalize text-lg">{entry.type}</h4>
+          <div className="space-y-3">
+            {Object.keys(monthlyLogs).length > 0 ? (
+              Object.entries(monthlyLogs).map(([monthName, monthEntries]) => (
+                <Collapsible
+                  key={monthName}
+                  open={expandedMonths.has(monthName)}
+                  onOpenChange={(isOpen) => {
+                    const newExpanded = new Set(expandedMonths);
+                    if (isOpen) {
+                      newExpanded.add(monthName);
+                    } else {
+                      newExpanded.delete(monthName);
+                    }
+                    setExpandedMonths(newExpanded);
+                  }}
+                >
+                  <CollapsibleTrigger asChild>
+                    <button className="w-full fitcircle-card hover:bg-slate-700 transition-colors">
+                      <div className="flex justify-between items-center">
+                        <span className="text-white font-medium">{monthName}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-green-400 text-sm">{monthEntries.length} workouts</span>
+                          <span className="text-slate-400">
+                            {expandedMonths.has(monthName) ? '−' : '+'}
+                          </span>
+                        </div>
                       </div>
-                      
-                      {/* Date and details organized below */}
-                      <div className="space-y-2">
-                        <div className="text-sm text-slate-400 font-medium">
-                          {entry.date}
-                        </div>
-                        
-                        <div className="flex items-center space-x-4 text-sm text-slate-300">
-                          {entry.duration > 0 && (
-                            <div className="flex items-center space-x-1">
-                              <Clock className="w-4 h-4" />
-                              <span>{formatDuration(entry.duration)}</span>
+                    </button>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent className="space-y-3 mt-2">
+                    {monthEntries.map(entry => (
+                      <Card key={entry.id} className="fitcircle-card ml-4">
+                        <CardContent className="p-4 relative">
+                          <div className="pr-16">
+                            {/* Header/Title at the top */}
+                            <div className="mb-3">
+                              <h4 className="text-green-400 font-semibold capitalize text-lg">{entry.type}</h4>
                             </div>
-                          )}
-                          {entry.distance && entry.distance > 0 && (
-                            <div className="flex items-center space-x-1">
-                              <MapPin className="w-4 h-4" />
-                              <span>{entry.distance} mi</span>
+                            
+                            {/* Date and details organized below */}
+                            <div className="space-y-2">
+                              <div className="text-sm text-slate-400 font-medium">
+                                {entry.date}
+                              </div>
+                              
+                              <div className="flex items-center space-x-4 text-sm text-slate-300">
+                                {entry.duration > 0 && (
+                                  <div className="flex items-center space-x-1">
+                                    <Clock className="w-4 h-4" />
+                                    <span>{formatDuration(entry.duration)}</span>
+                                  </div>
+                                )}
+                                {entry.distance && entry.distance > 0 && (
+                                  <div className="flex items-center space-x-1">
+                                    <MapPin className="w-4 h-4" />
+                                    <span>{entry.distance} mi</span>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {entry.notes && (
+                                <div className="flex items-start space-x-1 text-sm text-slate-300">
+                                  <FileText className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                  <span className="break-words">{entry.notes}</span>
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                        
-                        {entry.notes && (
-                          <div className="flex items-start space-x-1 text-sm text-slate-300">
-                            <FileText className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                            <span className="break-words">{entry.notes}</span>
                           </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="absolute top-3 right-3 flex items-center space-x-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setEditingEntry(entry);
-                          setNewEntry({
-                            type: entry.type,
-                            duration: entry.duration.toString(),
-                            distance: entry.distance?.toString() || '',
-                            notes: entry.notes || ''
-                          });
-                          setIsEditDialogOpen(true);
-                        }}
-                        className="text-slate-400 hover:text-white p-1 h-auto"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteEntry(entry.id)}
-                        className="text-slate-400 hover:text-red-300 p-1 h-auto"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card className="fitcircle-card">
-              <CardContent className="p-8 text-center">
-                <div className="text-slate-400">
-                  <Activity className="w-12 h-12 mx-auto mb-2" />
-                  <p>No cardio activity yet</p>
-                  <p className="text-sm">Tap "Log Cardio" to get started!</p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                          <div className="absolute top-3 right-3 flex items-center space-x-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setEditingEntry(entry);
+                                setNewEntry({
+                                  type: entry.type,
+                                  duration: entry.duration.toString(),
+                                  distance: entry.distance?.toString() || '',
+                                  notes: entry.notes || ''
+                                });
+                                setIsEditDialogOpen(true);
+                              }}
+                              className="text-slate-400 hover:text-white p-1 h-auto"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteEntry(entry.id)}
+                              className="text-slate-400 hover:text-red-300 p-1 h-auto"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
+              ))
+            ) : (
+              <Card className="fitcircle-card">
+                <CardContent className="p-8 text-center">
+                  <div className="text-slate-400">
+                    <Activity className="w-12 h-12 mx-auto mb-2" />
+                    <p>No cardio activity yet</p>
+                    <p className="text-sm">Tap "Log Cardio" to get started!</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
 
         {/* Edit Entry Dialog */}

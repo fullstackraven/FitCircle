@@ -3,12 +3,13 @@ import { ArrowLeft, Clock, Plus, Edit, Trash2, Target, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GoalCircle } from '@/components/GoalCircle';
 import { useFasting, type FastingLog } from '@/hooks/use-fasting';
 import { useGoals } from '@/hooks/use-goals';
-import { getTodayString, getCurrentTime24, getDisplayDate, isToday, isYesterday } from '@/lib/date-utils';
+import { getTodayString, getCurrentTime24, getDisplayDate, isToday, isYesterday, groupLogsByMonth } from '@/lib/date-utils';
 
 export default function FastingPage() {
   const [, navigate] = useLocation();
@@ -44,12 +45,16 @@ export default function FastingPage() {
   const [maxHoursInput, setMaxHoursInput] = useState('');
   const [maxHoursFocused, setMaxHoursFocused] = useState(false);
   
-  // UI state removed - no longer needed for collapsible
+  // UI state for monthly collapsible sections
+  const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     // Initialize goal input with current goal value
     setGoalHoursInput(goals.fastingHours?.toString() || '');
   }, [goals.fastingHours]);
+
+  // Group logs by month for display
+  const monthlyLogs = groupLogsByMonth(logs, 'startDate');
 
   const calculateDuration = (startDate: string, startTime: string, endDate: string, endTime: string): number => {
     const start = new Date(`${startDate}T${startTime}`);
@@ -391,76 +396,109 @@ export default function FastingPage() {
           </div>
         )}
 
-        {/* Fasting Log */}
+        {/* Fasting Log - Monthly Sections */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Fasting Log</h3>
-          <div className="space-y-2">
-            {logs.length === 0 ? (
+          <div className="space-y-3">
+            {Object.keys(monthlyLogs).length === 0 ? (
               <div className="text-center py-8 text-slate-400">
                 <p>No fasting logs yet.</p>
                 <p className="text-sm mt-2">Start tracking your intermittent fasting journey!</p>
               </div>
             ) : (
-              logs
-                .sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime())
-                .map((log) => {
-                const hours = log.duration / 60;
-                const loggedDate = new Date(log.loggedAt).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric'
-                });
-                const loggedTime = new Date(log.loggedAt).toLocaleTimeString('en-US', {
-                  hour: 'numeric',
-                  minute: '2-digit'
-                });
-                
-                return (
-                  <div key={log.id} className="bg-slate-800 rounded-xl p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="text-sm text-slate-300">
-                        {loggedDate} at {loggedTime}
-                      </div>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleEditLog(log)}
-                          className="text-slate-400 hover:text-blue-400 transition-colors"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteLog(log.id)}
-                          className="text-slate-400 hover:text-red-400 transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div className="text-center">
-                      {/* Heat Bar */}
-                      <div className="mb-2">
-                        <div className="w-full bg-slate-600 rounded-full h-2">
-                          <div 
-                            className={`h-2 rounded-full ${getHeatBarColor(hours)}`}
-                            style={{ width: getHeatBarWidth(hours) }}
-                          ></div>
+              Object.entries(monthlyLogs).map(([monthName, monthLogs]) => (
+                <Collapsible
+                  key={monthName}
+                  open={expandedMonths.has(monthName)}
+                  onOpenChange={(isOpen) => {
+                    const newExpanded = new Set(expandedMonths);
+                    if (isOpen) {
+                      newExpanded.add(monthName);
+                    } else {
+                      newExpanded.delete(monthName);
+                    }
+                    setExpandedMonths(newExpanded);
+                  }}
+                >
+                  <CollapsibleTrigger asChild>
+                    <button className="w-full fitcircle-card hover:bg-slate-700 transition-colors">
+                      <div className="flex justify-between items-center">
+                        <span className="text-white font-medium">{monthName}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-amber-400 text-sm">{monthLogs.length} fasts</span>
+                          <span className="text-slate-400">
+                            {expandedMonths.has(monthName) ? '−' : '+'}
+                          </span>
                         </div>
                       </div>
-                      
-                      {/* Duration */}
-                      <div className="text-xl font-bold text-amber-400 font-mono mb-2">
-                        {formatDuration(log.duration)}
-                      </div>
-                      
-                      {/* Fast Period */}
-                      <div className="text-sm text-slate-400">
-                        {getDisplayDate(log.startDate)} - {getDisplayDate(log.endDate)}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
+                    </button>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent className="space-y-2 mt-2">
+                    {monthLogs
+                      .sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime())
+                      .map((log) => {
+                        const hours = log.duration / 60;
+                        const loggedDate = new Date(log.loggedAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        });
+                        const loggedTime = new Date(log.loggedAt).toLocaleTimeString('en-US', {
+                          hour: 'numeric',
+                          minute: '2-digit'
+                        });
+                        
+                        return (
+                          <div key={log.id} className="bg-slate-800 rounded-xl p-4 ml-4">
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="text-sm text-slate-300">
+                                {loggedDate} at {loggedTime}
+                              </div>
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => handleEditLog(log)}
+                                  className="text-slate-400 hover:text-blue-400 transition-colors"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteLog(log.id)}
+                                  className="text-slate-400 hover:text-red-400 transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                            
+                            <div className="text-center">
+                              {/* Heat Bar */}
+                              <div className="mb-2">
+                                <div className="w-full bg-slate-600 rounded-full h-2">
+                                  <div 
+                                    className={`h-2 rounded-full ${getHeatBarColor(hours)}`}
+                                    style={{ width: getHeatBarWidth(hours) }}
+                                  ></div>
+                                </div>
+                              </div>
+                              
+                              {/* Duration */}
+                              <div className="text-xl font-bold text-amber-400 font-mono mb-2">
+                                {formatDuration(log.duration)}
+                              </div>
+                              
+                              {/* Fast Period */}
+                              <div className="text-sm text-slate-400">
+                                {getDisplayDate(log.startDate)} - {getDisplayDate(log.endDate)}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    }
+                  </CollapsibleContent>
+                </Collapsible>
+              ))
             )}
           </div>
         </div>
