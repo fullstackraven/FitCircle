@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { GoalCircle } from '@/components/GoalCircle';
 import { useFasting, type FastingLog } from '@/hooks/use-fasting';
 import { useGoals } from '@/hooks/use-goals';
-import { getTodayString, getCurrentTime24, getDisplayDate, isToday, isYesterday, groupLogsByMonth } from '@/lib/date-utils';
+import { getTodayString, getCurrentTime24, getDisplayDate, isToday, isYesterday, groupLogsByMonth, getAllTimeFastingAverage } from '@/lib/date-utils';
 
 export default function FastingPage() {
   const [, navigate] = useLocation();
@@ -523,39 +523,14 @@ export default function FastingPage() {
               <GoalCircle
                 percentage={(() => {
                   const goalHours = parseFloat(goalHoursInput) || 0;
-                  if (goalHours === 0 || logs.length === 0) return 0;
+                  if (goalHours === 0) return 0;
                   
-                  // Calculate all-time average fasting hours (same as Goals page)
-                  const completedFasts: number[] = [];
-                  logs.forEach(log => {
-                    const durationHours = log.duration / 60;
-                    if (durationHours > 0 && durationHours < 48) {
-                      completedFasts.push(durationHours);
-                    }
-                  });
-                  
-                  if (completedFasts.length === 0) return 0;
-                  const averageHours = completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length;
-                  
+                  const { averageHours } = getAllTimeFastingAverage(logs);
                   return Math.min(100, (averageHours / goalHours) * 100);
                 })()}
                 color="rgb(245, 158, 11)"
                 size={120}
-                currentValue={(() => {
-                  if (logs.length === 0) return 0;
-                  
-                  // Calculate all-time average (same as Goals page)
-                  const completedFasts: number[] = [];
-                  logs.forEach(log => {
-                    const durationHours = log.duration / 60;
-                    if (durationHours > 0 && durationHours < 48) {
-                      completedFasts.push(durationHours);
-                    }
-                  });
-                  
-                  if (completedFasts.length === 0) return 0;
-                  return Math.round((completedFasts.reduce((sum, hours) => sum + hours, 0) / completedFasts.length) * 10) / 10;
-                })()}
+                currentValue={getAllTimeFastingAverage(logs).averageHours}
                 goalValue={parseFloat(goalHoursInput) || 0}
                 unit="hrs"
                 title="Average Fast Duration"

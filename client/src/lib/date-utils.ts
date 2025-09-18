@@ -173,3 +173,58 @@ export function groupLogsByMonth<T>(logs: T[] | { [key: string]: T }, dateField:
   
   return sortedMonths;
 }
+
+/**
+ * Calculates the number of days between two date strings (inclusive)
+ * Input: YYYY-MM-DD format strings
+ * Output: Number of days including both start and end dates
+ */
+export function getDaysBetweenInclusive(startDateStr: string, endDateStr: string): number {
+  const startDate = parseLocalDate(startDateStr);
+  const endDate = parseLocalDate(endDateStr);
+  const diffTime = endDate.getTime() - startDate.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays + 1; // +1 to make it inclusive
+}
+
+/**
+ * Calculates all-time average fasting hours including days with no fasting (0 hours)
+ * Input: Array of fasting logs with startDate and duration fields
+ * Output: { averageHours: number, totalDays: number, totalHours: number }
+ */
+export function getAllTimeFastingAverage(logs: { startDate: string; duration: number }[]): { averageHours: number; totalDays: number; totalHours: number } {
+  if (logs.length === 0) {
+    return { averageHours: 0, totalDays: 0, totalHours: 0 };
+  }
+  
+  // Calculate total hours from valid fasting logs
+  let totalHours = 0;
+  const startDates: string[] = [];
+  
+  logs.forEach(log => {
+    const durationHours = log.duration / 60;
+    if (durationHours > 0 && durationHours < 48) { // Valid fasting duration
+      totalHours += durationHours;
+      startDates.push(log.startDate);
+    }
+  });
+  
+  if (startDates.length === 0) {
+    return { averageHours: 0, totalDays: 0, totalHours: 0 };
+  }
+  
+  // Find date range using string comparison (timezone-safe)
+  const sortedDates = startDates.sort();
+  const firstDate = sortedDates[0];
+  const today = getTodayString();
+  
+  // Calculate total days from first log to today (inclusive)
+  const totalDays = getDaysBetweenInclusive(firstDate, today);
+  const averageHours = totalHours / totalDays;
+  
+  return {
+    averageHours: Math.round(averageHours * 10) / 10, // Round to 1 decimal
+    totalDays,
+    totalHours: Math.round(totalHours * 10) / 10
+  };
+}
