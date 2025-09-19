@@ -66,11 +66,13 @@ export function useCardio() {
             const parsed = safeParseJSON(legacyData, []);
             // Handle both array of entries and object with entries property
             if (Array.isArray(parsed) && parsed.length > 0) {
-              dataToLoad = { ...defaultData, entries: parsed };
+              // PRESERVE existing goal data - only load entries from backup
+              dataToLoad = { ...dataToLoad, entries: parsed };
               console.log('Loaded cardio data from legacy key:', key, 'entries:', parsed.length);
               break;
             } else if (parsed.entries && Array.isArray(parsed.entries)) {
-              dataToLoad = { ...defaultData, entries: parsed.entries };
+              // PRESERVE existing goal data - only load entries from backup
+              dataToLoad = { ...dataToLoad, entries: parsed.entries };
               console.log('Loaded cardio data from legacy key:', key, 'entries:', parsed.entries.length);
               break;
             }
