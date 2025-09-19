@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { calculateWellnessScore } from '@/lib/goals-utils';
+import { GoalCircle } from '@/components/GoalCircle';
 
 const colorClassMap: { [key: string]: string } = {
   green: 'workout-green',
@@ -72,6 +73,16 @@ export default function Home() {
   const [timerSeconds, setTimerSeconds] = useState<string>('0');
   const [isAllWorkoutsOpen, setIsAllWorkoutsOpen] = useState(false);
   const [isRecentActivityOpen, setIsRecentActivityOpen] = useState(false);
+  const [isWellnessWeightsOpen, setIsWellnessWeightsOpen] = useState(false);
+  const [wellnessWeights, setWellnessWeights] = useState({
+    hydration: 20,
+    meditation: 15,
+    fasting: 15,
+    cardio: 10,
+    targetBodyFat: 10,
+    targetWeight: 15,
+    workoutConsistency: 15
+  });
 
   // Check if we should open dashboard on load
   useEffect(() => {
@@ -95,6 +106,24 @@ export default function Home() {
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
+
+  // Load wellness weights from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('fitcircle_wellness_weights');
+    if (saved) {
+      try {
+        setWellnessWeights(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to parse wellness weights:', e);
+      }
+    }
+  }, []);
+
+  // Save wellness weights to localStorage
+  const saveWellnessWeights = (weights: typeof wellnessWeights) => {
+    setWellnessWeights(weights);
+    localStorage.setItem('fitcircle_wellness_weights', JSON.stringify(weights));
+  };
 
   const workouts = getWorkoutArray();
   const getWorkoutById = (id: string) => workouts.find(w => w.id === id);
@@ -607,21 +636,28 @@ export default function Home() {
 
       {/* Wellness Score Section */}
       <section className="mb-20">
-        <h2 className="text-xl font-semibold mb-4 text-center text-white">Overall Wellness Score</h2>
-        <div className="bg-slate-800 rounded-xl p-6">
-          <div className="text-center">
-            <div className="text-4xl font-bold text-white mb-2">{calculateWellnessScore()}%</div>
-            <div className="text-sm text-slate-400 mb-4">Based on your goal progress</div>
-            <div className="w-full bg-slate-700 rounded-full h-3">
-              <div 
-                className="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min(calculateWellnessScore(), 100)}%` }}
-              ></div>
-            </div>
-            <div className="text-xs text-slate-500 mt-2">
-              Score calculated from hydration, meditation, fasting, workouts, and cardio goals
-            </div>
-          </div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-center text-white flex-1">Overall Wellness Score</h2>
+          <button
+            onClick={() => setIsWellnessWeightsOpen(true)}
+            className="text-slate-400 hover:text-white transition-colors p-2"
+            data-testid="button-edit-wellness"
+          >
+            <Edit className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="bg-slate-800 rounded-xl p-6 flex justify-center">
+          <GoalCircle
+            percentage={calculateWellnessScore()}
+            color="rgb(59, 130, 246)"
+            size={160}
+            strokeWidth={14}
+            currentValue={calculateWellnessScore()}
+            goalValue={100}
+            unit="%"
+            title="Wellness Score"
+            description="Based on your goal progress"
+          />
         </div>
       </section>
 
@@ -960,6 +996,68 @@ export default function Home() {
               </Button>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Wellness Weights Editor Dialog */}
+      <Dialog open={isWellnessWeightsOpen} onOpenChange={setIsWellnessWeightsOpen}>
+        <DialogContent className="bg-slate-800 border-slate-700 text-white">
+          <DialogHeader>
+            <DialogTitle>Edit Wellness Score Weights</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Adjust the priority weights for each wellness metric. Higher values mean more influence on your overall score.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {[
+              { key: 'hydration', label: 'Hydration', max: 50 },
+              { key: 'meditation', label: 'Meditation', max: 50 },
+              { key: 'fasting', label: 'Fasting', max: 50 },
+              { key: 'cardio', label: 'Cardio', max: 50 },
+              { key: 'targetBodyFat', label: 'Target Body Fat %', max: 50 },
+              { key: 'targetWeight', label: 'Target Weight', max: 50 },
+              { key: 'workoutConsistency', label: 'Workout Consistency', max: 50 }
+            ].map(({ key, label, max }) => (
+              <div key={key} className="space-y-2">
+                <div className="flex justify-between">
+                  <label className="text-sm font-medium text-white">{label}</label>
+                  <span className="text-sm text-slate-400">{wellnessWeights[key as keyof typeof wellnessWeights]}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max={max}
+                  value={wellnessWeights[key as keyof typeof wellnessWeights]}
+                  onChange={(e) => setWellnessWeights(prev => ({
+                    ...prev,
+                    [key]: parseInt(e.target.value)
+                  }))}
+                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
+                />
+              </div>
+            ))}
+            <div className="text-xs text-slate-500 mt-4">
+              Total: {Object.values(wellnessWeights).reduce((sum, val) => sum + val, 0)}%
+            </div>
+          </div>
+          <div className="flex space-x-3 pt-4">
+            <Button
+              onClick={() => setIsWellnessWeightsOpen(false)}
+              variant="outline"
+              className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                saveWellnessWeights(wellnessWeights);
+                setIsWellnessWeightsOpen(false);
+              }}
+              className="flex-1 bg-blue-600 hover:bg-blue-700"
+            >
+              Save Weights
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
