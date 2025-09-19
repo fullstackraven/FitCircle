@@ -571,14 +571,14 @@ export default function CardioPage() {
                   const targetValue = parseFloat(goalInput) || data.goal.target || 0;
                   if (targetValue === 0) return 0;
                   
-                  const { averageDuration, averageDistance } = getAllTimeAverage();
+                  const { averageDuration, averageDistance } = getAllTimeCardioAverage(data.entries);
                   const currentAverage = data.goal.type === 'duration' ? averageDuration : averageDistance;
                   return Math.min(100, (currentAverage / targetValue) * 100);
                 })()}
                 color="rgb(34, 197, 94)"
                 size={120}
                 currentValue={(() => {
-                  const { averageDuration, averageDistance } = getAllTimeAverage();
+                  const { averageDuration, averageDistance } = getAllTimeCardioAverage(data.entries);
                   return data.goal.type === 'duration' ? averageDuration : averageDistance;
                 })()}
                 goalValue={parseFloat(goalInput) || data.goal.target || 0}
