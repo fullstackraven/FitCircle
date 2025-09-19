@@ -184,6 +184,7 @@ export function useHydration() {
     dailyGoalOz: data.dailyGoalOz,
     currentDayOz: data.currentDayOz,
     progressPercentage: getProgressPercentage(),
+    hasUserGoal: Boolean(localStorage.getItem('fitcircle_goal_hydration')), // Flag indicating if user has set a goal
     addHydration,
     setDailyGoal,
     getRecentLogs,

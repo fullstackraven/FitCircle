@@ -113,6 +113,7 @@ export function useFasting() {
 
   return {
     logs,
+    hasUserGoal: Boolean(localStorage.getItem('fitcircle_goal_fasting')), // Flag indicating if user has set a goal
     addLog,
     updateLog,
     deleteLog,

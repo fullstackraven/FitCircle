@@ -132,6 +132,7 @@ export function useMeditation() {
 
   return {
     logs,
+    hasUserGoal: Boolean(localStorage.getItem('fitcircle_goal_meditation')), // Flag indicating if user has set a goal
     addLog,
     updateLog,
     deleteLog,
