@@ -715,7 +715,6 @@ export default function Home() {
 
               {/* Goals */}
 
-{/* Wellness Predictions - Now integrated into Goals page */}
 
               {/* Trainer - Hidden for now, can be re-enabled by uncommenting */}
               {/* <div 
