@@ -276,10 +276,10 @@ export default function CardioPage() {
             size={240}
             strokeWidth={16}
             currentValue={Math.round(todaysValue * 10) / 10}
-            goalValue={Math.round(dailyGoalTarget * 10) / 10}
+            goalValue={Math.round(data.goal.target * 10) / 10}
             unit={data.goal.type === 'duration' ? 'min' : 'mi'}
             title="Today's Cardio"
-            description={`Goal: ${Math.round(dailyGoalTarget * 10) / 10} ${data.goal.type === 'duration' ? 'min' : 'mi'}/day`}
+            description={`Goal: ${Math.round(data.goal.target * 10) / 10} ${data.goal.type === 'duration' ? 'min' : 'mi'}/day`}
           />
         </div>
 
