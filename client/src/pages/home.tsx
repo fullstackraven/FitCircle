@@ -647,17 +647,53 @@ export default function Home() {
           </button>
         </div>
         <div className="bg-slate-800 rounded-xl p-6 flex justify-center">
-          <GoalCircle
-            percentage={calculateWellnessScore()}
-            color="rgb(59, 130, 246)"
-            size={160}
-            strokeWidth={14}
-            currentValue={calculateWellnessScore()}
-            goalValue={100}
-            unit="%"
-            title="Wellness Score"
-            description="Based on your goal progress"
-          />
+          <div className="relative" style={{ width: 160, height: 160 }}>
+            <svg
+              width={160}
+              height={160}
+              className="transform -rotate-90"
+            >
+              <defs>
+                <linearGradient id="wellnessGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="rgb(59, 130, 246)" />
+                  <stop offset="100%" stopColor="rgb(34, 197, 94)" />
+                </linearGradient>
+              </defs>
+              {/* Background circle */}
+              <circle
+                cx={80}
+                cy={80}
+                r={66}
+                stroke="rgb(71, 85, 105)"
+                strokeWidth={14}
+                fill="none"
+              />
+              {/* Progress circle */}
+              <circle
+                cx={80}
+                cy={80}
+                r={66}
+                stroke="url(#wellnessGradient)"
+                strokeWidth={14}
+                fill="none"
+                strokeLinecap="round"
+                strokeDasharray={2 * Math.PI * 66}
+                strokeDashoffset={2 * Math.PI * 66 - (calculateWellnessScore() / 100) * 2 * Math.PI * 66}
+                className="transition-all duration-500 ease-out"
+              />
+            </svg>
+            
+            {/* Center content */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="text-4xl font-bold text-white">
+                {Math.round(calculateWellnessScore())}%
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 text-center">
+            <h3 className="text-lg font-semibold text-white">Wellness Score</h3>
+            <p className="text-sm text-slate-400 mt-1">Based on your goal progress</p>
+          </div>
         </div>
       </section>
 
@@ -1010,30 +1046,30 @@ export default function Home() {
           </DialogHeader>
           <div className="space-y-4">
             {[
-              { key: 'hydration', label: 'Hydration', max: 50 },
-              { key: 'meditation', label: 'Meditation', max: 50 },
-              { key: 'fasting', label: 'Fasting', max: 50 },
-              { key: 'cardio', label: 'Cardio', max: 50 },
-              { key: 'targetBodyFat', label: 'Target Body Fat %', max: 50 },
-              { key: 'targetWeight', label: 'Target Weight', max: 50 },
-              { key: 'workoutConsistency', label: 'Workout Consistency', max: 50 }
-            ].map(({ key, label, max }) => (
-              <div key={key} className="space-y-2">
-                <div className="flex justify-between">
-                  <label className="text-sm font-medium text-white">{label}</label>
-                  <span className="text-sm text-slate-400">{wellnessWeights[key as keyof typeof wellnessWeights]}%</span>
+              { key: 'hydration', label: 'Hydration' },
+              { key: 'meditation', label: 'Meditation' },
+              { key: 'fasting', label: 'Fasting' },
+              { key: 'cardio', label: 'Cardio' },
+              { key: 'targetBodyFat', label: 'Target Body Fat %' },
+              { key: 'targetWeight', label: 'Target Weight' },
+              { key: 'workoutConsistency', label: 'Workout Consistency' }
+            ].map(({ key, label }) => (
+              <div key={key} className="flex items-center justify-between space-x-4">
+                <label className="text-sm font-medium text-white flex-1">{label}</label>
+                <div className="flex items-center space-x-2">
+                  <Input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={wellnessWeights[key as keyof typeof wellnessWeights]}
+                    onChange={(e) => setWellnessWeights(prev => ({
+                      ...prev,
+                      [key]: Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
+                    }))}
+                    className="w-16 h-8 bg-slate-700 border-slate-600 text-white text-center text-sm"
+                  />
+                  <span className="text-sm text-slate-400">%</span>
                 </div>
-                <input
-                  type="range"
-                  min="0"
-                  max={max}
-                  value={wellnessWeights[key as keyof typeof wellnessWeights]}
-                  onChange={(e) => setWellnessWeights(prev => ({
-                    ...prev,
-                    [key]: parseInt(e.target.value)
-                  }))}
-                  className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
-                />
               </div>
             ))}
             <div className="text-xs text-slate-500 mt-4">
