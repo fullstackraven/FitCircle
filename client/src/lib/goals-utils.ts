@@ -267,7 +267,7 @@ export function getWorkoutConsistencyProgress(): GoalProgress {
       });
       
       // Check if it was a recovery day
-      const isRecoveryDay = recovery?.recoveryDays?.includes(date);
+      const isRecoveryDay = recovery?.recoveryDays && Array.isArray(recovery.recoveryDays) ? recovery.recoveryDays.includes(date) : false;
       
       if (hasWorkout || isRecoveryDay) {
         if (hasWorkout) workoutDays++;
