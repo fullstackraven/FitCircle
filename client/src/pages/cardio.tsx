@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Card, CardContent } from '@/components/ui/card';
-import { getTodayString, groupLogsByMonth } from '@/lib/date-utils';
+import { getTodayString, groupLogsByMonth, getAllTimeCardioAverage } from '@/lib/date-utils';
 
 export default function CardioPage() {
   const [, navigate] = useLocation();
