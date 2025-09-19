@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
-import { getTodayString } from '@/lib/date-utils';
+import { getTodayString, getAllTimeCardioAverage } from '@/lib/date-utils';
 
 export interface CardioEntry {
   id: string;
@@ -14,8 +14,8 @@ export interface CardioEntry {
 
 export interface CardioGoal {
   type: 'distance' | 'duration';
-  target: number; // miles per week or minutes per week
-  period: 'week';
+  target: number; // miles per day or minutes per day
+  period: 'day';
 }
 
 interface CardioData {
@@ -39,8 +39,8 @@ const defaultData: CardioData = {
   entries: [],
   goal: {
     type: 'duration',
-    target: 150, // 150 minutes per week (WHO recommendation)
-    period: 'week'
+    target: 21, // ~21 minutes per day (150 minutes per week / 7)
+    period: 'day'
   },
   customTypes: []
 };
@@ -48,23 +48,92 @@ const defaultData: CardioData = {
 export function useCardio() {
   const [data, setData] = useState<CardioData>(defaultData);
 
-  // Load data from localStorage on mount
+  // Load data from localStorage on mount with backup data migration
   useEffect(() => {
-    const storedData = localStorage.getItem(STORAGE_KEYS.CARDIO);
-    if (storedData) {
-      const parsed = safeParseJSON(storedData, defaultData);
+    try {
+      let dataToLoad = defaultData;
       
-      // Simple data validation without destructive cleanup
+      // Try to load from primary storage key
+      const storedData = localStorage.getItem(STORAGE_KEYS.CARDIO);
+      if (storedData) {
+        dataToLoad = safeParseJSON(storedData, defaultData);
+      } else {
+        // Check for legacy keys from backup files
+        const legacyKeys = ['fitcircle_cardio', 'cardioLogs', 'cardio_entries', 'cardio'];
+        for (const key of legacyKeys) {
+          const legacyData = localStorage.getItem(key);
+          if (legacyData) {
+            const parsed = safeParseJSON(legacyData, { entries: [] });
+            if (parsed.entries && Array.isArray(parsed.entries)) {
+              dataToLoad = { ...defaultData, entries: parsed.entries };
+              break;
+            }
+          }
+        }
+      }
+      
+      // Normalize and validate entries with backup data migration
+      const normalizedEntries = dataToLoad.entries
+        .filter(entry => entry) // Remove null/undefined entries
+        .map((entry, index) => {
+          // Generate ID if missing (common in backup data)
+          const id = entry.id || String(entry.timestamp || `${entry.date || getTodayString()}-${entry.type || 'cardio'}-${index}`);
+          
+          // Normalize date format (handle various backup formats)
+          let date = entry.date;
+          if (!date && entry.timestamp) {
+            date = new Date(entry.timestamp).toLocaleDateString('en-CA');
+          }
+          if (!date) {
+            date = getTodayString();
+          }
+          
+          // Normalize duration and distance (handle string/number conversion)
+          const duration = typeof entry.duration === 'string' ? parseFloat(entry.duration) || 0 : entry.duration || 0;
+          const distance = entry.distance ? (typeof entry.distance === 'string' ? parseFloat(entry.distance) || 0 : entry.distance) : undefined;
+          
+          // Normalize type field (map legacy field names)
+          const type = entry.type || entry.name || entry.activity || 'cardio';
+          
+          // Ensure timestamp exists
+          const timestamp = entry.timestamp || new Date(date).getTime();
+          
+          return {
+            id,
+            date,
+            type,
+            duration,
+            distance,
+            notes: entry.notes,
+            timestamp
+          };
+        });
+
+      // Update goal format if it's still weekly
+      let normalizedGoal = dataToLoad.goal || defaultData.goal;
+      if (normalizedGoal.period === 'week') {
+        normalizedGoal = {
+          ...normalizedGoal,
+          target: Math.round(normalizedGoal.target / 7), // Convert weekly to daily
+          period: 'day'
+        };
+      }
+      
       const validatedData = {
-        ...parsed,
-        entries: parsed.entries.filter(entry => entry && entry.id).map(entry => ({
-          ...entry,
-          duration: typeof entry.duration === 'string' ? parseFloat(entry.duration) || 0 : entry.duration || 0,
-          distance: entry.distance ? (typeof entry.distance === 'string' ? parseFloat(entry.distance) || 0 : entry.distance) : undefined
-        }))
+        ...dataToLoad,
+        entries: normalizedEntries,
+        goal: normalizedGoal,
+        customTypes: dataToLoad.customTypes || []
       };
       
       setData(validatedData);
+      
+      // Save normalized data back to primary storage
+      localStorage.setItem(STORAGE_KEYS.CARDIO, JSON.stringify(validatedData));
+      
+    } catch (error) {
+      console.error('Error loading cardio data:', error);
+      setData(defaultData);
     }
   }, []);
 
@@ -197,13 +266,12 @@ export function useCardio() {
     }
 
     const average = last7Days.reduce((sum, day) => sum + day, 0) / 7;
-    const dailyGoalTarget = data.goal.target / 7; // Weekly goal divided by 7 days
-    const progressToGoal = dailyGoalTarget > 0 ? (average / dailyGoalTarget) * 100 : 0;
+    const progressToGoal = data.goal.target > 0 ? (average / data.goal.target) * 100 : 0;
 
     return {
       average: Math.round(average * 10) / 10,
       progressToGoal: Math.min(progressToGoal, 100),
-      dailyTarget: Math.round(dailyGoalTarget * 10) / 10
+      dailyTarget: Math.round(data.goal.target * 10) / 10
     };
   };
 
@@ -229,34 +297,17 @@ export function useCardio() {
   };
 
   // Get all-time goal percentage for goal modal
+  const getAllTimeAverage = () => {
+    return getAllTimeCardioAverage(data.entries);
+  };
+  
   const getAllTimeGoalPercentage = (): number => {
     if (data.entries.length === 0) return 0;
     
-    // Group entries by date and calculate daily totals
-    const dailyTotals: { [date: string]: { duration: number; distance: number } } = {};
-    data.entries.forEach(entry => {
-      const dateKey = entry.date;
-      if (!dailyTotals[dateKey]) {
-        dailyTotals[dateKey] = { duration: 0, distance: 0 };
-      }
-      dailyTotals[dateKey].duration += entry.duration || 0;
-      dailyTotals[dateKey].distance += entry.distance || 0;
-    });
+    const { averageDuration, averageDistance } = getAllTimeCardioAverage(data.entries);
+    const averageValue = data.goal.type === 'duration' ? averageDuration : averageDistance;
     
-    const allDays = Object.values(dailyTotals);
-    const avgDuration = allDays.reduce((sum, day) => sum + day.duration, 0) / allDays.length;
-    const avgDistance = allDays.reduce((sum, day) => sum + day.distance, 0) / allDays.length;
-    
-    // Calculate based on goal type
-    if (data.goal.type === 'duration') {
-      const weeklyTarget = data.goal.target;
-      const dailyTarget = weeklyTarget / 7;
-      return dailyTarget > 0 ? Math.min((avgDuration / dailyTarget) * 100, 100) : 0;
-    } else {
-      const weeklyTarget = data.goal.target;
-      const dailyTarget = weeklyTarget / 7;
-      return dailyTarget > 0 ? Math.min((avgDistance / dailyTarget) * 100, 100) : 0;
-    }
+    return data.goal.target > 0 ? Math.min((averageValue / data.goal.target) * 100, 100) : 0;
   };
 
   return {
@@ -272,6 +323,7 @@ export function useCardio() {
     getWeeklyProgress,
     getLast7DaysAverage,
     getCardioStats,
-    getAllTimeGoalPercentage
+    getAllTimeGoalPercentage,
+    getAllTimeAverage
   };
 }

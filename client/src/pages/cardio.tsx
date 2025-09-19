@@ -65,8 +65,8 @@ export default function CardioPage() {
   const stats = getCardioStats();
   const cardioTypes = getAllCardioTypes();
 
-  // Calculate daily goal target for the circle
-  const dailyGoalTarget = data.goal.target / 7; // Weekly goal divided by 7 days
+  // Calculate daily goal target for the circle  
+  const dailyGoalTarget = data.goal.target; // Daily goal target
   const todaysValue = data.goal.type === 'duration' ? todaysProgress.duration : todaysProgress.distance;
   const progressPercentage = dailyGoalTarget > 0 ? Math.min((todaysValue / dailyGoalTarget) * 100, 100) : 0;
 
