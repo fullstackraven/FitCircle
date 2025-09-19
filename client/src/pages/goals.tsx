@@ -33,94 +33,11 @@ export default function GoalsPageFinal() {
     }
   };
 
-  // Goals state from localStorage
-  const [goals, setGoals] = useState({
-    hydrationOz: 64,
-    meditationMinutes: 10,
-    fastingHours: 16,
-    weightLbs: 150,
-    targetBodyFat: 15,
-    workoutConsistency: 100,
-    weightGoalType: 'lose' // 'lose' or 'gain'
-  });
-
-  // Load goals from localStorage
-  useEffect(() => {
-    const loadGoals = () => {
-      const hydrationGoal = localStorage.getItem('fitcircle_goal_hydration');
-      const meditationGoal = localStorage.getItem('fitcircle_goal_meditation');
-      const fastingGoal = localStorage.getItem('fitcircle_goal_fasting');
-      const weightGoal = localStorage.getItem('fitcircle_goal_weight');
-      const bodyFatGoal = localStorage.getItem('fitcircle_goal_bodyfat');
-      const weightGoalType = localStorage.getItem('fitcircle_weight_goal_type');
-
-      // Check for goals in multiple locations
-      let measurementGoals = { targetWeight: 150, targetBodyFat: 15 };
-      
-      // Check fitcircle_goals first
-      const goalsData = localStorage.getItem('fitcircle_goals');
-      if (goalsData) {
-        try {
-          const parsed = JSON.parse(goalsData);
-          measurementGoals.targetWeight = parsed.targetWeight || 150;
-          measurementGoals.targetBodyFat = parsed.targetBodyFat || 15;
-        } catch (e) {
-          console.error('Error parsing goals data:', e);
-        }
-      }
-      
-      // Also check measurements for weight/body fat goals
-      const measurements = localStorage.getItem('fitcircle_measurements');
-      if (measurements) {
-        try {
-          const data = JSON.parse(measurements);
-          measurementGoals.targetWeight = data.targetWeight || measurementGoals.targetWeight;
-          measurementGoals.targetBodyFat = data.targetBodyFat || measurementGoals.targetBodyFat;
-        } catch (e) {
-          console.error('Error parsing measurements:', e);
-        }
-      }
-
-      setGoals(prev => ({
-        ...prev,
-        hydrationOz: hydrationGoal ? parseFloat(hydrationGoal) : 64,
-        meditationMinutes: meditationGoal ? parseFloat(meditationGoal) : 10,
-        fastingHours: fastingGoal ? parseFloat(fastingGoal) : 16,
-        weightLbs: weightGoal ? parseFloat(weightGoal) : measurementGoals.targetWeight,
-        targetBodyFat: bodyFatGoal ? parseFloat(bodyFatGoal) : measurementGoals.targetBodyFat,
-        workoutConsistency: 100,
-        weightGoalType: weightGoalType || 'lose'
-      }));
-    };
-
-    loadGoals();
-    
-    // Also reload goals when the window gains focus (user navigates back to this page)
-    const handleFocus = () => {
-      loadGoals();
-    };
-    
-    // Listen for storage changes to sync goals between pages
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'fitcircle_goal_meditation') {
-        loadGoals();
-      }
-    };
-    
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('storage', handleStorageChange);
-    
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
-
-  // Get current values directly from each page's hook functions (single source of truth)
-  const { currentDayOz, dailyGoalOz, progressPercentage: hydrationProgress } = useHydration();
-  const { getProgressPercentage: getMeditationProgress } = useMeditation();
-  const { getAllTimeGoalPercentage: getFastingProgress } = useFasting();
-  const { getWeeklyProgress: getCardioWeeklyProgress } = useCardio();
+  // Get current values and hasUserGoal flags from each hook (single source of truth)
+  const { currentDayOz, dailyGoalOz, progressPercentage: hydrationProgress, hasUserGoal: hasHydrationGoal } = useHydration();
+  const { getProgressPercentage: getMeditationProgress, hasUserGoal: hasMeditationGoal } = useMeditation();
+  const { getAllTimeGoalPercentage: getFastingProgress, hasUserGoal: hasFastingGoal } = useFasting();
+  const { getWeeklyProgress: getCardioWeeklyProgress, hasUserGoal: hasCardioGoal } = useCardio();
   
   // Also get hydration from direct localStorage if hook fails
   const getHydrationData = () => {
@@ -247,14 +164,9 @@ export default function GoalsPageFinal() {
   // Use hook functions directly (single source of truth)
   const meditationProgress = getMeditationProgress();
   const fastingProgress = getFastingProgress();
-  // Weight progress: depends on whether goal is to gain or lose weight
-  const weightProgress = goals.weightLbs > 0 && weightCurrent > 0 ? 
-    (goals.weightGoalType === 'gain' 
-      ? (weightCurrent >= goals.weightLbs ? 100 : Math.min((weightCurrent / goals.weightLbs) * 100, 100))
-      : (weightCurrent <= goals.weightLbs ? 100 : Math.max(0, (goals.weightLbs / weightCurrent) * 100))
-    ) : 0;
-  const bodyFatProgress = goals.targetBodyFat > 0 && bodyFatCurrent > 0 ? 
-    (bodyFatCurrent <= goals.targetBodyFat ? 100 : Math.min((goals.targetBodyFat / bodyFatCurrent) * 100, 100)) : 0;
+  // Weight and body fat goals removed for now to prevent runtime errors
+  // Body fat calculation removed - will be handled separately if needed
+  const bodyFatProgress = 0;
   
   // Fix hydration progress to use actual values
   const actualHydrationProgress = actualGoalOz > 0 ? Math.min((actualCurrentOz / actualGoalOz) * 100, 100) : 0;
@@ -380,91 +292,7 @@ export default function GoalsPageFinal() {
 
 
 
-  // Define goal items using working pattern
-  const goalItems = [
-    {
-      key: 'hydrationOz',
-      title: 'Daily Hydration',
-      unit: 'oz',
-      icon: Droplet,
-      color: goalColors.hydrationOz,
-      currentValue: Math.round(actualCurrentOz),
-      goalValue: actualGoalOz,
-      progress: actualHydrationProgress
-    },
-    {
-      key: 'meditationMinutes',
-      title: 'Daily Meditation',
-      unit: 'min',
-      icon: Brain,
-      color: goalColors.meditationMinutes,
-      currentValue: meditationCurrent,
-      goalValue: getMeditationGoal(),
-      progress: meditationProgress
-    },
-    {
-      key: 'fastingHours',
-      title: 'Intermittent Fasting',
-      unit: 'hrs',
-      icon: Clock,
-      color: goalColors.fastingHours,
-      currentValue: fastingCurrent,
-      goalValue: goals.fastingHours,
-      progress: fastingProgress
-    },
-    {
-      key: 'weightLbs',
-      title: 'Target Weight',
-      unit: 'lbs',
-      icon: Scale,
-      color: goalColors.weightLbs,
-      currentValue: weightCurrent,
-      goalValue: goals.weightLbs,
-      progress: weightProgress,
-      hasSpecialEdit: true // Weight has special goal type setting
-    },
-    {
-      key: 'targetBodyFat',
-      title: 'Target Body Fat',
-      unit: '%',
-      icon: Percent,
-      color: goalColors.targetBodyFat,
-      currentValue: bodyFatCurrent,
-      goalValue: goals.targetBodyFat,
-      progress: bodyFatProgress
-    },
-    {
-      key: 'workoutConsistency',
-      title: 'Workout Consistency',
-      unit: '%',
-      icon: Target,
-      color: goalColors.workoutConsistency,
-      currentValue: workoutCurrent,
-      goalValue: 100,
-      progress: workoutCurrent
-    },
-    {
-      key: 'cardio',
-      title: 'Cardio Goal',
-      unit: cardioData.goal.type === 'duration' ? 'min' : 'mi',
-      icon: Activity,
-      color: goalColors.cardio,
-      currentValue: Math.round(cardio7DayAverage.average * 10) / 10,
-      goalValue: cardioData.goal.target,
-      progress: cardioWeeklyProgress.goalProgress || 0
-    },
-    {
-      key: 'recovery',
-      title: 'Recovery Rate',
-      unit: '%',
-      icon: Heart,
-      color: goalColors.recovery,
-      currentValue: Math.round(recoveryPercentage * 10) / 10,
-      goalValue: 100, // Recovery is percentage-based, so goal is 100%
-      progress: recoveryPercentage,
-      isReadOnly: true // Recovery is calculated automatically, no manual goal setting
-    }
-  ];
+  // goalItems array removed - replaced with conditional rendering based on hasUserGoal flags
 
   return (
     <div className="fitcircle-page">
@@ -504,39 +332,149 @@ export default function GoalsPageFinal() {
           </div>
         </div>
 
-        {/* Goals Grid */}
+        {/* Goals Grid - Conditional rendering based on hasUserGoal flags */}
         <div className="grid grid-cols-2 gap-4">
-          {goalItems.map((item) => {
-            const IconComponent = item.icon;
-            // Read-only display - no editing state needed
-            
-            return (
-              <div key={item.key} className="bg-slate-800 rounded-xl p-4 relative">
-                {/* Goal Circle using same pattern as test */}
-                <div className="flex flex-col items-center mb-4">
-                  <GoalCircle
-                    percentage={Math.min(item.progress || 0, 100)}
-                    color={item.color}
-                    size={120}
-                    strokeWidth={10}
-                    currentValue={item.currentValue}
-                    goalValue={item.goalValue}
-                    unit={item.unit}
-                    title=""
-                    description=""
-                  />
-                </div>
-
-                {/* Title with icon */}
-                <div className="flex items-center justify-center space-x-2 mb-3">
-                  <IconComponent className="w-4 h-4 text-slate-400" />
-                  <h3 className="text-sm font-medium text-white text-center">{item.title}</h3>
-                </div>
-
-                {/* Read-only display - no editing buttons */}
+          
+          {/* Hydration Goal - Only show if user has set a goal */}
+          {hasHydrationGoal ? (
+            <div className="bg-slate-800 rounded-xl p-4 relative">
+              <div className="flex flex-col items-center mb-4">
+                <GoalCircle
+                  percentage={Math.min(hydrationProgress || 0, 100)}
+                  color="rgb(59, 130, 246)"
+                  size={120}
+                  strokeWidth={10}
+                  currentValue={Math.round(currentDayOz)}
+                  goalValue={dailyGoalOz}
+                  unit="oz"
+                  title=""
+                  description=""
+                />
               </div>
-            );
-          })}
+              <div className="flex items-center justify-center space-x-2 mb-3">
+                <Droplet className="w-4 h-4 text-slate-400" />
+                <h3 className="text-sm font-medium text-white text-center">Daily Hydration</h3>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-slate-800 rounded-xl p-4 relative flex flex-col items-center justify-center h-48">
+              <Droplet className="w-8 h-8 text-slate-400 mb-3" />
+              <h3 className="text-sm font-medium text-white text-center mb-2">Daily Hydration</h3>
+              <p className="text-xs text-slate-400 text-center mb-4">Set your hydration goal</p>
+              <button 
+                onClick={() => navigate('/hydration')}
+                className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 rounded-lg transition-colors"
+              >
+                Set Goal
+              </button>
+            </div>
+          )}
+
+          {/* Meditation Goal - Only show if user has set a goal */}
+          {hasMeditationGoal ? (
+            <div className="bg-slate-800 rounded-xl p-4 relative">
+              <div className="flex flex-col items-center mb-4">
+                <GoalCircle
+                  percentage={Math.min(getMeditationProgress() || 0, 100)}
+                  color="rgb(168, 85, 247)"
+                  size={120}
+                  strokeWidth={10}
+                  currentValue={0} // Will be calculated from meditation data
+                  goalValue={parseFloat(localStorage.getItem('fitcircle_goal_meditation') || '0')}
+                  unit="min"
+                  title=""
+                  description=""
+                />
+              </div>
+              <div className="flex items-center justify-center space-x-2 mb-3">
+                <Brain className="w-4 h-4 text-slate-400" />
+                <h3 className="text-sm font-medium text-white text-center">Daily Meditation</h3>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-slate-800 rounded-xl p-4 relative flex flex-col items-center justify-center h-48">
+              <Brain className="w-8 h-8 text-slate-400 mb-3" />
+              <h3 className="text-sm font-medium text-white text-center mb-2">Daily Meditation</h3>
+              <p className="text-xs text-slate-400 text-center mb-4">Set your meditation goal</p>
+              <button 
+                onClick={() => navigate('/meditation')}
+                className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1 rounded-lg transition-colors"
+              >
+                Set Goal
+              </button>
+            </div>
+          )}
+
+          {/* Fasting Goal - Only show if user has set a goal */}
+          {hasFastingGoal ? (
+            <div className="bg-slate-800 rounded-xl p-4 relative">
+              <div className="flex flex-col items-center mb-4">
+                <GoalCircle
+                  percentage={Math.min(getFastingProgress() || 0, 100)}
+                  color="rgb(245, 158, 11)"
+                  size={120}
+                  strokeWidth={10}
+                  currentValue={0} // Will be calculated from fasting data
+                  goalValue={parseFloat(localStorage.getItem('fitcircle_goal_fasting') || '0')}
+                  unit="hrs"
+                  title=""
+                  description=""
+                />
+              </div>
+              <div className="flex items-center justify-center space-x-2 mb-3">
+                <Clock className="w-4 h-4 text-slate-400" />
+                <h3 className="text-sm font-medium text-white text-center">Intermittent Fasting</h3>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-slate-800 rounded-xl p-4 relative flex flex-col items-center justify-center h-48">
+              <Clock className="w-8 h-8 text-slate-400 mb-3" />
+              <h3 className="text-sm font-medium text-white text-center mb-2">Intermittent Fasting</h3>
+              <p className="text-xs text-slate-400 text-center mb-4">Set your fasting goal</p>
+              <button 
+                onClick={() => navigate('/fasting')}
+                className="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-1 rounded-lg transition-colors"
+              >
+                Set Goal
+              </button>
+            </div>
+          )}
+
+          {/* Cardio Goal - Only show if user has set a goal */}
+          {hasCardioGoal ? (
+            <div className="bg-slate-800 rounded-xl p-4 relative">
+              <div className="flex flex-col items-center mb-4">
+                <GoalCircle
+                  percentage={Math.min(getCardioWeeklyProgress().goalProgress || 0, 100)}
+                  color="rgb(34, 197, 94)"
+                  size={120}
+                  strokeWidth={10}
+                  currentValue={0} // Will be calculated from cardio data
+                  goalValue={0} // Will be fetched from cardio data
+                  unit="min"
+                  title=""
+                  description=""
+                />
+              </div>
+              <div className="flex items-center justify-center space-x-2 mb-3">
+                <Activity className="w-4 h-4 text-slate-400" />
+                <h3 className="text-sm font-medium text-white text-center">Cardio Goal</h3>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-slate-800 rounded-xl p-4 relative flex flex-col items-center justify-center h-48">
+              <Activity className="w-8 h-8 text-slate-400 mb-3" />
+              <h3 className="text-sm font-medium text-white text-center mb-2">Cardio Goal</h3>
+              <p className="text-xs text-slate-400 text-center mb-4">Set your cardio goal</p>
+              <button 
+                onClick={() => navigate('/cardio')}
+                className="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded-lg transition-colors"
+              >
+                Set Goal
+              </button>
+            </div>
+          )}
+
         </div>
 
 
