@@ -1067,7 +1067,8 @@ export default function Home() {
                       [key]: Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
                     }))}
                     onFocus={(e) => e.target.select()}
-                    className="w-16 h-8 bg-slate-700 border-slate-600 text-white text-center text-sm"
+                    className="w-16 h-8 bg-slate-700 border-slate-600 text-white text-center text-sm focus:ring-0 focus:border-slate-500"
+                    style={{ textAlign: 'center' }}
                   />
                   <span className="text-sm text-slate-400">%</span>
                 </div>
