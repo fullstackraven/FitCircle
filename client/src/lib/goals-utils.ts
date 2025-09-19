@@ -1,7 +1,7 @@
 // Unified Goals Management System
 // This eliminates redundant goal-handling code across all pages
 import { STORAGE_KEYS, safeParseJSON } from './storage-utils';
-import { getTodayString, getAllTimeFastingAverage } from './date-utils';
+import { getTodayString, getAllTimeFastingAverage, getAllTimeHydrationAverage, getAllTimeMeditationAverage, getAllTimeCardioAverage } from './date-utils';
 
 export interface UnifiedGoals {
   hydrationOz: number;
@@ -267,7 +267,7 @@ export function getWorkoutConsistencyProgress(): GoalProgress {
       });
       
       // Check if it was a recovery day
-      const isRecoveryDay = recovery?.recoveryDays && Array.isArray(recovery.recoveryDays) ? recovery.recoveryDays.includes(date) : false;
+      const isRecoveryDay = recovery?.recoveryDays && Array.isArray(recovery.recoveryDays) && recovery.recoveryDays.includes ? recovery.recoveryDays.includes(date) : false;
       
       if (hasWorkout || isRecoveryDay) {
         if (hasWorkout) workoutDays++;
@@ -343,26 +343,106 @@ export function getCardioProgress(): { miles: GoalProgress; minutes: GoalProgres
 }
 
 /**
- * Calculate overall wellness score from all goals
+ * Get all-time goal percentages for wellness score calculation
+ */
+export function getAllTimeGoalPercentages(): { [key: string]: number } {
+  // Get hydration all-time percentage
+  const hydrationData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.HYDRATION), {}) as any;
+  const hydrationLogs = hydrationData?.logs || {};
+  const hydrationGoal = hydrationData?.dailyGoalOz || 64;
+  const { averageOz } = getAllTimeHydrationAverage(hydrationLogs);
+  const hydrationPercentage = hydrationGoal > 0 ? Math.min((averageOz / hydrationGoal) * 100, 100) : 0;
+
+  // Get meditation all-time percentage
+  const meditationLogs = safeParseJSON(localStorage.getItem(STORAGE_KEYS.MEDITATION), []);
+  const meditationGoal = parseFloat(localStorage.getItem('fitcircle_goal_meditation') || '20');
+  const { averageMinutes } = getAllTimeMeditationAverage(meditationLogs);
+  const meditationPercentage = meditationGoal > 0 ? Math.min((averageMinutes / meditationGoal) * 100, 100) : 0;
+
+  // Get fasting all-time percentage  
+  const fastingLogs = safeParseJSON(localStorage.getItem('fitcircle_fasting_logs'), []);
+  const fastingGoal = parseFloat(localStorage.getItem('fitcircle_goal_fasting') || '16');
+  const { averageHours } = getAllTimeFastingAverage(fastingLogs);
+  const fastingPercentage = fastingGoal > 0 ? Math.min((averageHours / fastingGoal) * 100, 100) : 0;
+
+  // Get cardio all-time percentage
+  const cardioData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.CARDIO), { entries: [], goal: { type: 'duration', target: 21 } });
+  const cardioEntries = cardioData?.entries || [];
+  const cardioGoal = cardioData?.goal?.target || 21;
+  const { averageDuration, averageDistance } = getAllTimeCardioAverage(cardioEntries);
+  const cardioAverage = cardioData?.goal?.type === 'distance' ? averageDistance : averageDuration;
+  const cardioPercentage = cardioGoal > 0 ? Math.min((cardioAverage / cardioGoal) * 100, 100) : 0;
+
+  // Get measurements all-time percentage (weight and body fat)
+  const measurements = safeParseJSON(localStorage.getItem(STORAGE_KEYS.MEASUREMENTS), {}) as any;
+  const weightEntries = measurements?.weight || [];
+  const bodyFatEntries = measurements?.bodyFat || [];
+  
+  // Weight percentage (latest vs target)
+  const weightGoal = parseFloat(localStorage.getItem('fitcircle_goal_weight') || '150');
+  const latestWeight = weightEntries.length > 0 ? weightEntries[weightEntries.length - 1].value : 0;
+  let weightPercentage = 0;
+  if (latestWeight > 0 && weightGoal > 0) {
+    const tolerance = weightGoal * 0.05; // 5% tolerance
+    const difference = Math.abs(latestWeight - weightGoal);
+    weightPercentage = Math.max(0, 100 - (difference / tolerance) * 100);
+  }
+
+  // Body fat percentage (latest vs target)
+  const bodyFatGoal = parseFloat(localStorage.getItem('fitcircle_goal_bodyfat') || '15');
+  const latestBodyFat = bodyFatEntries.length > 0 ? bodyFatEntries[bodyFatEntries.length - 1].value : 0;
+  let bodyFatPercentage = 0;
+  if (latestBodyFat > 0 && bodyFatGoal > 0) {
+    const tolerance = bodyFatGoal * 0.1; // 10% tolerance
+    const difference = Math.abs(latestBodyFat - bodyFatGoal);
+    bodyFatPercentage = Math.max(0, 100 - (difference / tolerance) * 100);
+  }
+
+  return {
+    hydration: hydrationPercentage,
+    meditation: meditationPercentage,
+    fasting: fastingPercentage,
+    cardio: cardioPercentage,
+    targetWeight: weightPercentage,
+    targetBodyFat: bodyFatPercentage
+  };
+}
+
+/**
+ * Calculate overall wellness score from all goals using user priority weights
  */
 export function calculateWellnessScore(): number {
-  const hydration = getHydrationProgress();
-  const meditation = getMeditationProgress();
-  const fasting = getFastingProgress();
-  const weight = getWeightProgress();
-  const bodyFat = getBodyFatProgress();
+  // Get user's priority weights from localStorage
+  const savedWeights = safeParseJSON(localStorage.getItem('fitcircle_wellness_weights'), null);
+  const weights = savedWeights || {
+    hydration: 20,
+    meditation: 15,
+    fasting: 15,
+    cardio: 10,
+    targetBodyFat: 10,
+    targetWeight: 15,
+    workoutConsistency: 15
+  };
+
+  // Get all-time percentages
+  const percentages = getAllTimeGoalPercentages();
+  
+  // Get workout consistency (keep existing logic as it's already good)
   const consistency = getWorkoutConsistencyProgress();
-  const cardio = getCardioProgress();
+
+  // Calculate weighted score
+  const totalWeight = Object.values(weights).reduce((sum, weight) => sum + weight, 0);
+  if (totalWeight === 0) return 0;
+
+  const weightedScore = (
+    (percentages.hydration * weights.hydration) +
+    (percentages.meditation * weights.meditation) +
+    (percentages.fasting * weights.fasting) +
+    (percentages.cardio * weights.cardio) +
+    (percentages.targetWeight * weights.targetWeight) +
+    (percentages.targetBodyFat * weights.targetBodyFat) +
+    (consistency.percentage * weights.workoutConsistency)
+  ) / totalWeight;
   
-  const scores = [
-    hydration.percentage * 0.2,      // 20% weight
-    meditation.percentage * 0.15,    // 15% weight
-    fasting.percentage * 0.15,       // 15% weight
-    weight.percentage * 0.15,        // 15% weight
-    bodyFat.percentage * 0.1,        // 10% weight
-    consistency.percentage * 0.15,   // 15% weight
-    cardio.minutes.percentage * 0.1  // 10% weight
-  ];
-  
-  return Math.round(scores.reduce((sum, score) => sum + score, 0));
+  return Math.round(weightedScore);
 }

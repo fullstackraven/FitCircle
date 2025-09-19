@@ -686,13 +686,12 @@ export default function Home() {
             {/* Center content */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <div className="text-4xl font-bold text-white">
-                {Math.round(calculateWellnessScore())}%
+                {calculateWellnessScore()}
               </div>
             </div>
           </div>
           <div className="mt-4 text-center">
             <h3 className="text-lg font-semibold text-white">Wellness Score</h3>
-            <p className="text-sm text-slate-400 mt-1">Based on your goal progress</p>
           </div>
         </div>
       </section>
