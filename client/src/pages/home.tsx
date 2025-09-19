@@ -1060,11 +1060,13 @@ export default function Home() {
                     type="number"
                     min="0"
                     max="100"
-                    value={wellnessWeights[key as keyof typeof wellnessWeights]}
+                    value={wellnessWeights[key as keyof typeof wellnessWeights] || ''}
+                    placeholder="0"
                     onChange={(e) => setWellnessWeights(prev => ({
                       ...prev,
                       [key]: Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
                     }))}
+                    onFocus={(e) => e.target.select()}
                     className="w-16 h-8 bg-slate-700 border-slate-600 text-white text-center text-sm"
                   />
                   <span className="text-sm text-slate-400">%</span>
