@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Droplet, Brain, Clock, Scale, Percent, Target, Edit3, Check, X, Activity, Heart } from 'lucide-react';
+import { ArrowLeft, Droplet, Brain, Clock, Scale, Percent, Target, Activity, Heart } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useHydration } from '@/hooks/use-hydration';
 import { useWorkouts } from '@/hooks/use-workouts';
@@ -277,12 +277,7 @@ export default function GoalsPageFinal() {
     return Math.round(weightedScore);
   };
 
-  // Editing state
-  const [editingGoal, setEditingGoal] = useState<string | null>(null);
-  const [tempValue, setTempValue] = useState<string>('');
-  const [isWeightGoalTypeDialogOpen, setIsWeightGoalTypeDialogOpen] = useState(false);
-  const [isCardioGoalDialogOpen, setIsCardioGoalDialogOpen] = useState(false);
-  const [isColorPickerOpen, setIsColorPickerOpen] = useState<string | null>(null);
+  // Goals page is now read-only - removed all editing state
 
   // Wellness Score State
   const [wellnessWeights, setWellnessWeights] = useState({
@@ -323,8 +318,7 @@ export default function GoalsPageFinal() {
     { name: 'Lime', value: 'rgb(132, 204, 22)' },
     { name: 'Emerald', value: 'rgb(16, 185, 129)' }
   ];
-  const [isWeightsDialogOpen, setIsWeightsDialogOpen] = useState(false);
-  const [tempWeights, setTempWeights] = useState(wellnessWeights);
+  // Removed wellness weights editing state - Goals page is read-only
 
   // Load wellness weights and goal colors from localStorage
   useEffect(() => {
@@ -374,97 +368,15 @@ export default function GoalsPageFinal() {
     localStorage.setItem('fitcircle_goal_colors', JSON.stringify(colors));
   };
 
-  const handleColorChange = (goalKey: string, color: string) => {
-    const newColors = { ...goalColors, [goalKey]: color };
-    saveGoalColors(newColors);
-    setIsColorPickerOpen(null);
-  };
+  // Color changing removed - Goals page is read-only
 
-  const handleEdit = (goalKey: string, currentValue: number) => {
-    setEditingGoal(goalKey);
-    setTempValue(currentValue.toString());
-  };
+  // Edit function removed - Goals page is read-only
 
-  const handleSave = (goalKey: string) => {
-    const value = parseFloat(tempValue);
-    if (value > 0) {
-      // Special handling for meditation goal using shared utility
-      if (goalKey === 'meditationMinutes') {
-        setMeditationGoal(value);
-      } else {
-        // Update localStorage with individual goal keys
-        const storageKey = `fitcircle_goal_${goalKey.replace(/([A-Z])/g, '').toLowerCase()}`;
-        localStorage.setItem(storageKey, value.toString());
-      }
-      
-      // ALSO update the fitcircle_goals object for cross-compatibility with other pages
-      const existingGoals = localStorage.getItem('fitcircle_goals');
-      let goalsObject = {};
-      if (existingGoals) {
-        try {
-          goalsObject = JSON.parse(existingGoals);
-        } catch (e) {
-          goalsObject = {};
-        }
-      }
-      
-      // Map goal keys to fitcircle_goals object properties
-      const goalKeyMap: { [key: string]: string } = {
-        'weightLbs': 'targetWeight',
-        'targetBodyFat': 'targetBodyFat',
-        'hydrationOz': 'hydrationOz',
-        'meditationMinutes': 'meditationMinutes',
-        'fastingHours': 'fastingHours'
-      };
-      
-      if (goalKeyMap[goalKey]) {
-        goalsObject = {
-          ...goalsObject,
-          [goalKeyMap[goalKey]]: value
-        };
-        localStorage.setItem('fitcircle_goals', JSON.stringify(goalsObject));
-      }
-      
-      // Update state
-      setGoals(prev => ({
-        ...prev,
-        [goalKey]: value
-      }));
-    }
-    setEditingGoal(null);
-    setTempValue('');
-  };
+  // Save function removed - Goals page is read-only
 
-  const handleCancel = () => {
-    setEditingGoal(null);
-    setTempValue('');
-  };
+  // Cancel function removed - Goals page is read-only
   
-  const handleWeightGoalTypeChange = (type: 'gain' | 'lose') => {
-    localStorage.setItem('fitcircle_weight_goal_type', type);
-    
-    // ALSO update fitcircle_goals for cross-compatibility
-    const existingGoals = localStorage.getItem('fitcircle_goals');
-    let goalsObject = {};
-    if (existingGoals) {
-      try {
-        goalsObject = JSON.parse(existingGoals);
-      } catch (e) {
-        goalsObject = {};
-      }
-    }
-    goalsObject = {
-      ...goalsObject,
-      weightGoalType: type
-    };
-    localStorage.setItem('fitcircle_goals', JSON.stringify(goalsObject));
-    
-    setGoals(prev => ({
-      ...prev,
-      weightGoalType: type
-    }));
-    setIsWeightGoalTypeDialogOpen(false);
-  };
+  // Weight goal type change function removed - Goals page is read-only
 
 
 
@@ -573,14 +485,8 @@ export default function GoalsPageFinal() {
         <div className="space-y-6">
           {/* Wellness Score Section - Moved to top */}
           <div className="fitcircle-card-lg">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-center mb-4">
             <h2 className="text-lg font-semibold">Overall Wellness Score</h2>
-            <button
-              onClick={() => setIsWeightsDialogOpen(true)}
-              className="text-slate-400 hover:text-white"
-            >
-              <Edit3 className="w-4 h-4" />
-            </button>
           </div>
           
           <div className="flex flex-col items-center">
@@ -602,7 +508,7 @@ export default function GoalsPageFinal() {
         <div className="grid grid-cols-2 gap-4">
           {goalItems.map((item) => {
             const IconComponent = item.icon;
-            const isEditing = editingGoal === item.key;
+            // Read-only display - no editing state needed
             
             return (
               <div key={item.key} className="bg-slate-800 rounded-xl p-4 relative">
@@ -627,62 +533,7 @@ export default function GoalsPageFinal() {
                   <h3 className="text-sm font-medium text-white text-center">{item.title}</h3>
                 </div>
 
-                {/* Edit and Color picker buttons in top right corner */}
-                <div className="absolute top-2 right-2 flex items-center space-x-1">
-                  {isEditing ? (
-                    <div className="flex items-center space-x-1">
-                      <input
-                        type="number"
-                        value={tempValue}
-                        onChange={(e) => setTempValue(e.target.value)}
-                        className="w-16 px-2 py-1 text-xs bg-slate-700 text-white rounded border border-slate-600"
-                        step={item.key === 'fastingHours' ? "0.1" : "1"}
-                      />
-                      <button
-                        onClick={() => handleSave(item.key)}
-                        className="p-1 text-green-400 hover:text-green-300"
-                      >
-                        <Check className="w-3 h-3" />
-                      </button>
-                      <button
-                        onClick={handleCancel}
-                        className="p-1 text-red-400 hover:text-red-300"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => setIsColorPickerOpen(item.key)}
-                        className="p-1 text-slate-400 hover:text-white"
-                        title="Change color"
-                      >
-                        <div 
-                          className="w-3 h-3 rounded-full border border-slate-500" 
-                          style={{ backgroundColor: item.color }}
-                        />
-                      </button>
-                      {!item.isReadOnly && (
-                        <button
-                          onClick={() => {
-                            if (item.hasSpecialEdit && item.key === 'weightLbs') {
-                              setIsWeightGoalTypeDialogOpen(true);
-                            } else if (item.key === 'cardio') {
-                              setIsCardioGoalDialogOpen(true);
-                            } else {
-                              handleEdit(item.key, item.goalValue);
-                            }
-                          }}
-                          className="p-1 text-slate-400 hover:text-white"
-                          title="Edit goal"
-                        >
-                          <Edit3 className="w-3 h-3" />
-                        </button>
-                      )}
-                    </>
-                  )}
-                </div>
+                {/* Read-only display - no editing buttons */}
               </div>
             );
           })}
@@ -691,267 +542,11 @@ export default function GoalsPageFinal() {
 
       </div>
 
-      {/* Wellness Weights Dialog */}
-      {isWeightsDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Customize Priority Weights</h3>
-            
-            <div className="space-y-4 mb-6">
-              {Object.entries(tempWeights).map(([key, value]) => {
-                const displayName = key === 'cardio' ? 'Cardio' : 
-                  key === 'recovery' ? 'Recovery' :
-                  key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                return (
-                <div key={key} className="flex items-center justify-between">
-                  <label className="text-sm text-slate-300">
-                    {displayName}
-                  </label>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={value}
-                      onChange={(e) => setTempWeights({
-                        ...tempWeights,
-                        [key]: parseInt(e.target.value) || 0
-                      })}
-                      className="w-16 bg-slate-700 border border-slate-600 rounded-lg px-2 py-1 text-white text-sm text-center"
-                    />
-                    <span className="text-sm text-slate-400">%</span>
-                  </div>
-                </div>
-                );
-              })}
-            </div>
-            
-            <div className="flex space-x-3">
-              <button
-                onClick={() => {
-                  saveWellnessWeights(tempWeights);
-                  setIsWeightsDialogOpen(false);
-                }}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-xl"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => {
-                  setTempWeights(wellnessWeights);
-                  setIsWeightsDialogOpen(false);
-                }}
-                className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* All editing modals removed - Goals page is read-only */}
 
-      {/* Weight Goal Type Dialog */}
-      {isWeightGoalTypeDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Weight Goal Setting</h3>
-            
-            <div className="space-y-4 mb-6">
-              <div className="flex flex-col space-y-3">
-                <label className="text-sm text-slate-300">Goal Type:</label>
-                <div className="flex space-x-3">
-                  <button
-                    onClick={() => handleWeightGoalTypeChange('lose')}
-                    className={`flex-1 py-3 px-4 rounded-xl border-2 transition-colors ${
-                      goals.weightGoalType === 'lose' 
-                        ? 'border-green-500 bg-green-500/20 text-green-400' 
-                        : 'border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500'
-                    }`}
-                  >
-                    Lose Weight
-                  </button>
-                  <button
-                    onClick={() => handleWeightGoalTypeChange('gain')}
-                    className={`flex-1 py-3 px-4 rounded-xl border-2 transition-colors ${
-                      goals.weightGoalType === 'gain' 
-                        ? 'border-green-500 bg-green-500/20 text-green-400' 
-                        : 'border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500'
-                    }`}
-                  >
-                    Gain Weight
-                  </button>
-                </div>
-              </div>
-              
-              <div className="flex flex-col space-y-2">
-                <label className="text-sm text-slate-300">Target Weight (lbs):</label>
-                <input
-                  type="number"
-                  value={goals.weightLbs}
-                  onChange={(e) => {
-                    const value = parseFloat(e.target.value);
-                    if (value > 0) {
-                      localStorage.setItem('fitcircle_goal_weight', value.toString());
-                      setGoals(prev => ({ ...prev, weightLbs: value }));
-                    }
-                  }}
-                  className="w-full px-3 py-2 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-green-500"
-                  step="0.1"
-                />
-              </div>
-              
-              <div className="text-xs text-slate-400 bg-slate-700 rounded-xl p-3">
-                <strong>Current:</strong> {weightCurrent}lbs<br/>
-                <strong>Target:</strong> {goals.weightLbs}lbs ({goals.weightGoalType === 'lose' ? 'Lose' : 'Gain'} {Math.abs(weightCurrent - goals.weightLbs).toFixed(1)}lbs)
-              </div>
-            </div>
-            
-            <div className="flex space-x-3">
-              <button
-                onClick={() => setIsWeightGoalTypeDialogOpen(false)}
-                className="flex-1 py-2 px-4 bg-slate-700 text-white rounded-xl hover:bg-slate-600"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Cardio Goal Dialog */}
-      {isCardioGoalDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Cardio Goal Setting</h3>
-            
-            {/* Goal Circle showing overall goal */}
-            <div className="flex justify-center mb-6">
-              {(() => {
-                const weeklyProgress = getWeeklyProgress();
-                const currentWeekTotal = cardioData.goal.type === 'duration' ? weeklyProgress.duration : weeklyProgress.distance;
-                const progressPercentage = cardioData.goal.target > 0 ? Math.min((currentWeekTotal / cardioData.goal.target) * 100, 100) : 0;
-                
-                return (
-                  <GoalCircle
-                    percentage={progressPercentage}
-                    color={goalColors.cardio}
-                    size={140}
-                    strokeWidth={10}
-                    currentValue={Math.round(currentWeekTotal)}
-                    goalValue={cardioData.goal.target}
-                    unit={cardioData.goal.type === 'duration' ? 'min' : 'mi'}
-                    title="This Week"
-                    description=""
-                  />
-                );
-              })()}
-            </div>
-            
-            <div className="space-y-4 mb-6">
-              <div className="flex flex-col space-y-3">
-                <label className="text-sm text-slate-300">Goal Type:</label>
-                <div className="flex space-x-3">
-                  <button
-                    onClick={() => updateGoal({ type: 'distance', target: cardioData.goal.target, period: 'week' })}
-                    className={`flex-1 py-3 px-4 rounded-xl border-2 transition-colors ${
-                      cardioData.goal.type === 'distance' 
-                        ? 'border-blue-500 bg-blue-500/20 text-blue-400' 
-                        : 'border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500'
-                    }`}
-                  >
-                    Miles per week
-                  </button>
-                  <button
-                    onClick={() => updateGoal({ type: 'duration', target: cardioData.goal.target, period: 'week' })}
-                    className={`flex-1 py-3 px-4 rounded-xl border-2 transition-colors ${
-                      cardioData.goal.type === 'duration' 
-                        ? 'border-blue-500 bg-blue-500/20 text-blue-400' 
-                        : 'border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500'
-                    }`}
-                  >
-                    Minutes per week
-                  </button>
-                </div>
-              </div>
-              
-              <div className="flex flex-col space-y-2">
-                <label className="text-sm text-slate-300">Weekly Target:</label>
-                <input
-                  type="number"
-                  value={cardioData.goal.target}
-                  onChange={(e) => {
-                    const value = parseFloat(e.target.value);
-                    if (value > 0) {
-                      updateGoal({
-                        type: cardioData.goal.type,
-                        target: value,
-                        period: 'week'
-                      });
-                    }
-                  }}
-                  className="w-full px-3 py-2 bg-slate-700 text-white rounded-xl border border-slate-600 focus:border-blue-500"
-                  step="0.1"
-                />
-              </div>
-              
-              {(() => {
-                const weeklyProgress = getWeeklyProgress();
-                const currentWeekTotal = cardioData.goal.type === 'duration' ? weeklyProgress.duration : weeklyProgress.distance;
-                
-                return (
-                  <div className="text-xs text-slate-400 bg-slate-700 rounded-xl p-3">
-                    <strong>Current Week:</strong> {Math.round(currentWeekTotal)}{cardioData.goal.type === 'duration' ? ' min' : ' mi'}<br/>
-                    <strong>Target:</strong> {cardioData.goal.target}{cardioData.goal.type === 'duration' ? ' min' : ' mi'} per week
-                  </div>
-                );
-              })()}
-            </div>
-            
-            <div className="flex space-x-3">
-              <button
-                onClick={() => setIsCardioGoalDialogOpen(false)}
-                className="flex-1 py-2 px-4 bg-slate-700 text-white rounded-xl hover:bg-slate-600"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Color Picker Dialog */}
-      {isColorPickerOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-4">Choose Ring Color</h3>
-            
-            <div className="grid grid-cols-4 gap-3 mb-6">
-              {colorOptions.map((color) => (
-                <button
-                  key={color.value}
-                  onClick={() => handleColorChange(isColorPickerOpen, color.value)}
-                  className="w-12 h-12 rounded-xl border-2 border-slate-600 hover:border-slate-400 transition-colors flex items-center justify-center"
-                  style={{ backgroundColor: color.value }}
-                  title={color.name}
-                >
-                  {goalColors[isColorPickerOpen as keyof typeof goalColors] === color.value && (
-                    <Check className="w-4 h-4 text-white drop-shadow-lg" />
-                  )}
-                </button>
-              ))}
-            </div>
-            
-            <div className="flex space-x-3">
-              <button
-                onClick={() => setIsColorPickerOpen(null)}
-                className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-2 px-4 rounded-xl"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* All editing modals have been removed - Goals page is now completely read-only */}
       </div>
     </div>
   );
