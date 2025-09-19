@@ -12,7 +12,6 @@ import SettingsPage from "@/pages/settings";
 import FastingPage from "@/pages/fasting";
 import MeditationPage from "@/pages/meditation";
 import HydrationPage from "@/pages/hydration";
-import GoalsPage from "@/pages/goals";
 import RemindersPage from "@/pages/reminders";
 import CardioPage from "@/pages/cardio";
 import { WorkoutStatistics } from "@/pages/workout-statistics";
@@ -37,7 +36,6 @@ function Router() {
       <Route path="/fasting" component={FastingPage} />
       <Route path="/meditation" component={MeditationPage} />
       <Route path="/hydration" component={HydrationPage} />
-      <Route path="/goals" component={GoalsPage} />
       <Route path="/fitness-calculator" component={FitnessCalculatorPage} />
       <Route path="/food-tracker" component={FoodTrackerPage} />
       <Route path="/cardio" component={CardioPage} />
