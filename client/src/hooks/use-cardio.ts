@@ -21,6 +21,7 @@ export interface CardioGoal {
 interface CardioData {
   entries: CardioEntry[];
   goal: CardioGoal;
+  goalUserSet: boolean; // Track if user has explicitly set a goal
   customTypes: string[];
 }
 
@@ -42,8 +43,14 @@ const defaultData: CardioData = {
     target: 21, // ~21 minutes per day (150 minutes per week / 7)
     period: 'day'
   },
+  goalUserSet: false, // Default to false - user hasn't set a goal yet
   customTypes: []
 };
+
+// Type guard for safe legacy data handling
+function hasEntriesArray(x: any): x is { entries: unknown[] } {
+  return x && !Array.isArray(x) && Array.isArray(x.entries);
+}
 
 export function useCardio() {
   const [data, setData] = useState<CardioData>(defaultData);
@@ -67,12 +74,13 @@ export function useCardio() {
             // Handle both array of entries and object with entries property
             if (Array.isArray(parsed) && parsed.length > 0) {
               // PRESERVE existing goal data - only load entries from backup
-              dataToLoad = { ...dataToLoad, entries: parsed };
+              dataToLoad = { ...dataToLoad, entries: parsed as CardioEntry[] };
               console.log('Loaded cardio data from legacy key:', key, 'entries:', parsed.length);
               break;
-            } else if (parsed.entries && Array.isArray(parsed.entries)) {
+            } else if (hasEntriesArray(parsed)) {
               // PRESERVE existing goal data - only load entries from backup
-              dataToLoad = { ...dataToLoad, entries: parsed.entries };
+              const legacyEntries = parsed.entries as CardioEntry[];
+              dataToLoad = { ...dataToLoad, entries: legacyEntries };
               console.log('Loaded cardio data from legacy key:', key, 'entries:', parsed.entries.length);
               break;
             }
@@ -127,10 +135,16 @@ export function useCardio() {
         };
       }
       
+      // Detect if user has set a goal (backward compatibility)
+      const hasExplicitGoalKey = Boolean(localStorage.getItem('fitcircle_goal_cardio'));
+      const hasNonDefaultGoal = dataToLoad.goal && (dataToLoad.goal.target !== 21 || dataToLoad.goal.type !== 'duration');
+      const goalUserSet = dataToLoad.goalUserSet !== undefined ? dataToLoad.goalUserSet : (hasExplicitGoalKey || hasNonDefaultGoal);
+      
       const validatedData = {
         ...dataToLoad,
         entries: normalizedEntries,
         goal: normalizedGoal,
+        goalUserSet,
         customTypes: dataToLoad.customTypes || []
       };
       
@@ -186,8 +200,12 @@ export function useCardio() {
   const updateGoal = (goal: CardioGoal) => {
     setData(prev => ({
       ...prev,
-      goal
+      goal,
+      goalUserSet: true // Mark as user-set when goal is updated
     }));
+    
+    // Also write to legacy goal key for backward compatibility
+    localStorage.setItem('fitcircle_goal_cardio', JSON.stringify(goal));
   };
 
   const addCustomType = (type: string) => {
@@ -320,6 +338,7 @@ export function useCardio() {
 
   return {
     data,
+    hasUserGoal: data.goalUserSet, // Flag indicating if user has explicitly set a goal
     addCardioEntry,
     updateCardioEntry,
     deleteCardioEntry,
