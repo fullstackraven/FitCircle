@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { calculateWellnessScore } from '@/lib/goals-utils';
 
 const colorClassMap: { [key: string]: string } = {
   green: 'workout-green',
@@ -70,6 +71,7 @@ export default function Home() {
   const [timerMinutes, setTimerMinutes] = useState<string>('0');
   const [timerSeconds, setTimerSeconds] = useState<string>('0');
   const [isAllWorkoutsOpen, setIsAllWorkoutsOpen] = useState(false);
+  const [isRecentActivityOpen, setIsRecentActivityOpen] = useState(false);
 
   // Check if we should open dashboard on load
   useEffect(() => {
@@ -566,30 +568,62 @@ export default function Home() {
 
 
 
-      {/* Recent Activity Section */}
+      {/* Recent Activity Section - Collapsible */}
       {!isRecentActivityHidden && recentActivity.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4 text-center text-white">Recent Activity</h2>
-          <div className="space-y-3">
-            {recentActivity.map((day) => (
-              <div key={day.dateString} className="bg-slate-800 rounded-xl p-4">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="font-medium text-slate-300">{day.date}</span>
-                  <span className="text-sm text-slate-400">{typeof day.totalReps === 'number' ? day.totalReps : 0} total</span>
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  {day.workouts.filter(w => w.count > 0).map((workout) => (
-                    <div key={workout.id} className="text-center">
-                      <div className={`w-3 h-3 rounded-full ${colorClassMap[workout.color]} mx-auto mb-1`}></div>
-                      <span className="text-sm font-medium text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
+          <Collapsible open={isRecentActivityOpen} onOpenChange={setIsRecentActivityOpen}>
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-between bg-slate-800 border-slate-700 text-white hover:bg-slate-700 py-4 h-auto rounded-xl mb-4"
+              >
+                <span className="text-lg font-semibold">Recent Activity</span>
+                {isRecentActivityOpen ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="space-y-3">
+                {recentActivity.map((day) => (
+                  <div key={day.dateString} className="bg-slate-800 rounded-xl p-4">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="font-medium text-slate-300">{day.date}</span>
+                      <span className="text-sm text-slate-400">{typeof day.totalReps === 'number' ? day.totalReps : 0} total</span>
                     </div>
-                  ))}
-                </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      {day.workouts.filter(w => w.count > 0).map((workout) => (
+                        <div key={workout.id} className="text-center">
+                          <div className={`w-3 h-3 rounded-full ${colorClassMap[workout.color]} mx-auto mb-1`}></div>
+                          <span className="text-sm font-medium text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </CollapsibleContent>
+          </Collapsible>
         </section>
       )}
+
+      {/* Wellness Score Section */}
+      <section className="mb-20">
+        <h2 className="text-xl font-semibold mb-4 text-center text-white">Overall Wellness Score</h2>
+        <div className="bg-slate-800 rounded-xl p-6">
+          <div className="text-center">
+            <div className="text-4xl font-bold text-white mb-2">{calculateWellnessScore()}%</div>
+            <div className="text-sm text-slate-400 mb-4">Based on your goal progress</div>
+            <div className="w-full bg-slate-700 rounded-full h-3">
+              <div 
+                className="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-300"
+                style={{ width: `${Math.min(calculateWellnessScore(), 100)}%` }}
+              ></div>
+            </div>
+            <div className="text-xs text-slate-500 mt-2">
+              Score calculated from hydration, meditation, fasting, workouts, and cardio goals
+            </div>
+          </div>
+        </div>
+      </section>
 
       <WorkoutModal
         isOpen={isModalOpen}
