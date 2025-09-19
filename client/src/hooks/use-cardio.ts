@@ -58,14 +58,20 @@ export function useCardio() {
       if (storedData) {
         dataToLoad = safeParseJSON(storedData, defaultData);
       } else {
-        // Check for legacy keys from backup files
+        // Check for legacy keys from backup files - including direct entries array
         const legacyKeys = ['fitcircle_cardio', 'cardioLogs', 'cardio_entries', 'cardio'];
         for (const key of legacyKeys) {
           const legacyData = localStorage.getItem(key);
           if (legacyData) {
-            const parsed = safeParseJSON(legacyData, { entries: [] });
-            if (parsed.entries && Array.isArray(parsed.entries)) {
+            const parsed = safeParseJSON(legacyData, []);
+            // Handle both array of entries and object with entries property
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              dataToLoad = { ...defaultData, entries: parsed };
+              console.log('Loaded cardio data from legacy key:', key, 'entries:', parsed.length);
+              break;
+            } else if (parsed.entries && Array.isArray(parsed.entries)) {
               dataToLoad = { ...defaultData, entries: parsed.entries };
+              console.log('Loaded cardio data from legacy key:', key, 'entries:', parsed.entries.length);
               break;
             }
           }

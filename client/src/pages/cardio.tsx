@@ -48,6 +48,10 @@ export default function CardioPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddCustomTypeOpen, setIsAddCustomTypeOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<CardioEntry | null>(null);
+  
+  // Goal dialog state
+  const [goalInput, setGoalInput] = useState('');
+  const [goalInputFocused, setGoalInputFocused] = useState(false);
 
   // Form states
   const [newEntry, setNewEntry] = useState({
@@ -135,6 +139,25 @@ export default function CardioPage() {
     setIsAddCustomTypeOpen(false);
   };
 
+  const handleSetGoal = async () => {
+    const targetValue = parseFloat(goalInput);
+    
+    if (isNaN(targetValue) || targetValue <= 0) {
+      alert('Please enter a valid goal value');
+      return;
+    }
+    
+    await updateGoal(data.goal.type, targetValue);
+    setIsGoalDialogOpen(false);
+    alert('Cardio goal saved successfully!');
+  };
+
+  // Initialize goal input when dialog opens
+  const handleOpenGoalDialog = () => {
+    setGoalInput(data.goal.target?.toString() || '');
+    setIsGoalDialogOpen(true);
+  };
+
   const formatDuration = (minutes: any) => {
     // Convert to number and clean it
     const num = parseFloat(String(minutes)) || 0;
@@ -172,100 +195,13 @@ export default function CardioPage() {
             <span>Back</span>
           </button>
           <h1 className="fitcircle-page-title">Cardio</h1>
-          <Dialog open={isGoalDialogOpen} onOpenChange={setIsGoalDialogOpen}>
-            <DialogTrigger asChild>
-              <button className="flex items-center space-x-1 fitcircle-text-muted hover:text-white">
-                <Target className="w-5 h-5" />
-                <span>Goal</span>
-              </button>
-            </DialogTrigger>
-            <DialogContent className="fitcircle-dialog">
-              <DialogHeader>
-                <DialogTitle>Cardio Goal</DialogTitle>
-                <DialogDescription className="text-slate-400 text-center">
-                  Set and track your weekly cardio goals
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-6">
-                <div className="flex justify-center">
-                  <GoalCircle
-                    percentage={getAllTimeGoalPercentage()}
-                    color="rgb(34, 197, 94)"
-                    size={120}
-                    currentValue={Math.round(data.goal.type === 'duration' ? weeklyProgress.duration : weeklyProgress.distance)}
-                    goalValue={data.goal.target}
-                    unit={data.goal.type === 'duration' ? 'min' : 'mi'}
-                    title="Cardio Progress"
-                    description="All-time average"
-                  />
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="space-y-3">
-                    <Label className="text-sm text-slate-300">Goal Type:</Label>
-                    <div className="flex space-x-3">
-                      <Button
-                        onClick={() => updateGoal({ type: 'distance', target: data.goal.target, period: 'week' })}
-                        variant={data.goal.type === 'distance' ? 'default' : 'outline'}
-                        className={`flex-1 ${
-                          data.goal.type === 'distance' 
-                            ? 'bg-green-600 hover:bg-green-700 text-white' 
-                            : 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600'
-                        }`}
-                      >
-                        Miles per week
-                      </Button>
-                      <Button
-                        onClick={() => updateGoal({ type: 'duration', target: data.goal.target, period: 'week' })}
-                        variant={data.goal.type === 'duration' ? 'default' : 'outline'}
-                        className={`flex-1 ${
-                          data.goal.type === 'duration' 
-                            ? 'bg-green-600 hover:bg-green-700 text-white' 
-                            : 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600'
-                        }`}
-                      >
-                        Minutes per week
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <Label className="text-sm text-slate-300">Weekly Target:</Label>
-                    <Input
-                      type="number"
-                      value={data.goal.target}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value);
-                        if (value > 0) {
-                          updateGoal({
-                            type: data.goal.type,
-                            target: value,
-                            period: 'week'
-                          });
-                        }
-                      }}
-                      className="fitcircle-input"
-                      step="0.1"
-                    />
-                  </div>
-                  
-                  <div className="text-xs text-slate-400 bg-slate-700 rounded-xl p-3">
-                    <strong>Current Week:</strong> {Math.round(data.goal.type === 'duration' ? weeklyProgress.duration : weeklyProgress.distance)}{data.goal.type === 'duration' ? ' min' : ' mi'}<br/>
-                    <strong>Target:</strong> {data.goal.target}{data.goal.type === 'duration' ? ' min' : ' mi'} per week
-                  </div>
-                </div>
-                
-                <div className="flex space-x-3">
-                  <Button
-                    onClick={() => setIsGoalDialogOpen(false)}
-                    className="flex-1 bg-slate-600 hover:bg-slate-700 text-white"
-                  >
-                    Done
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <button 
+            onClick={handleOpenGoalDialog}
+            className="flex items-center space-x-1 fitcircle-text-muted hover:text-white transition-colors"
+          >
+            <Target className="w-5 h-5" />
+            <span>Goal</span>
+          </button>
         </div>
 
         {/* Main Progress Circle */}
@@ -613,6 +549,100 @@ export default function CardioPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Simple Goal Setting Modal - Fasting Style */}
+      {isGoalDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-lg">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-white">Cardio Goal</h3>
+              <button
+                onClick={() => setIsGoalDialogOpen(false)}
+                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Goal Progress Circle */}
+            <div className="flex justify-center mb-8">
+              <GoalCircle
+                percentage={(() => {
+                  const targetValue = parseFloat(goalInput) || data.goal.target || 0;
+                  if (targetValue === 0) return 0;
+                  
+                  const { averageDuration, averageDistance } = getAllTimeAverage();
+                  const currentAverage = data.goal.type === 'duration' ? averageDuration : averageDistance;
+                  return Math.min(100, (currentAverage / targetValue) * 100);
+                })()}
+                color="rgb(34, 197, 94)"
+                size={120}
+                currentValue={(() => {
+                  const { averageDuration, averageDistance } = getAllTimeAverage();
+                  return data.goal.type === 'duration' ? averageDuration : averageDistance;
+                })()}
+                goalValue={parseFloat(goalInput) || data.goal.target || 0}
+                unit={data.goal.type === 'duration' ? 'min' : 'mi'}
+                title="Daily Average"
+                description="All-time average"
+              />
+            </div>
+
+            {/* Goal Input Form */}
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="goalTarget" className="text-slate-300">
+                  Daily Goal ({data.goal.type === 'duration' ? 'minutes' : 'miles'})
+                </Label>
+                <Input
+                  id="goalTarget"
+                  type="number"
+                  value={goalInput}
+                  onChange={(e) => setGoalInput(e.target.value)}
+                  onFocus={() => setGoalInputFocused(true)}
+                  onBlur={() => setGoalInputFocused(false)}
+                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  placeholder={goalInputFocused ? "" : `Enter daily ${data.goal.type === 'duration' ? 'minutes' : 'miles'}`}
+                  step="0.1"
+                />
+              </div>
+              
+              <div className="flex space-x-3">
+                <Button
+                  onClick={() => {
+                    if (data.goal.type === 'duration') {
+                      updateGoal('distance', data.goal.target);
+                    } else {
+                      updateGoal('duration', data.goal.target);
+                    }
+                  }}
+                  variant="outline"
+                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                >
+                  Switch to {data.goal.type === 'duration' ? 'Miles' : 'Minutes'}
+                </Button>
+              </div>
+              
+              <div className="flex space-x-3 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsGoalDialogOpen(false)}
+                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSetGoal}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                >
+                  Save Goal
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
