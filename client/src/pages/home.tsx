@@ -646,7 +646,7 @@ export default function Home() {
             <Edit className="w-5 h-5" />
           </button>
         </div>
-        <div className="bg-slate-800 rounded-xl p-6 flex justify-center">
+        <div className="bg-slate-800 rounded-xl p-6 flex flex-col items-center justify-center">
           <div className="relative" style={{ width: 160, height: 160 }}>
             <svg
               width={160}
@@ -689,9 +689,6 @@ export default function Home() {
                 {calculateWellnessScore()}
               </div>
             </div>
-          </div>
-          <div className="mt-4 text-center">
-            <h3 className="text-lg font-semibold text-white">Wellness Score</h3>
           </div>
         </div>
       </section>
@@ -1074,9 +1071,11 @@ export default function Home() {
                 </div>
               </div>
             ))}
-            <div className="text-xs text-slate-500 mt-4">
-              Total: {Object.values(wellnessWeights).reduce((sum, val) => sum + val, 0)}%
-            </div>
+            {Object.values(wellnessWeights).reduce((sum, val) => sum + val, 0) > 0 && (
+              <div className="text-xs text-slate-500 mt-4">
+                Total: {Object.values(wellnessWeights).reduce((sum, val) => sum + val, 0)}%
+              </div>
+            )}
           </div>
           <div className="flex space-x-3 pt-4">
             <Button
