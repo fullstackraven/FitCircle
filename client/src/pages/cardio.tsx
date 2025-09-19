@@ -147,7 +147,7 @@ export default function CardioPage() {
       return;
     }
     
-    await updateGoal(data.goal.type, targetValue);
+    await updateGoal({ type: data.goal.type, target: targetValue, period: data.goal.period });
     setIsGoalDialogOpen(false);
     alert('Cardio goal saved successfully!');
   };
@@ -611,9 +611,9 @@ export default function CardioPage() {
                 <Button
                   onClick={() => {
                     if (data.goal.type === 'duration') {
-                      updateGoal('distance', data.goal.target);
+                      updateGoal({ type: 'distance', target: data.goal.target, period: data.goal.period });
                     } else {
-                      updateGoal('duration', data.goal.target);
+                      updateGoal({ type: 'duration', target: data.goal.target, period: data.goal.period });
                     }
                   }}
                   variant="outline"
