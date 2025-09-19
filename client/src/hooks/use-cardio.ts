@@ -15,7 +15,7 @@ export interface CardioEntry {
 export interface CardioGoal {
   type: 'distance' | 'duration';
   target: number; // miles per day or minutes per day
-  period: 'day';
+  period: 'day' | 'week'; // Support both for backward compatibility
 }
 
 interface CardioData {
@@ -101,7 +101,7 @@ export function useCardio() {
           const distance = entry.distance ? (typeof entry.distance === 'string' ? parseFloat(entry.distance) || 0 : entry.distance) : undefined;
           
           // Normalize type field (map legacy field names)
-          const type = entry.type || entry.name || entry.activity || 'cardio';
+          const type = entry.type || (entry as any).name || (entry as any).activity || 'cardio';
           
           // Ensure timestamp exists
           const timestamp = entry.timestamp || new Date(date).getTime();
