@@ -16,7 +16,7 @@ import {
   getMeditationGoal, 
   setMeditationGoal 
 } from '@/utils/meditation-calc';
-import { groupLogsByMonth, getTodayString } from '@/lib/date-utils';
+import { groupLogsByMonth, getTodayString, getDateString } from '@/lib/date-utils';
 
 export default function MeditationPage() {
   const [, navigate] = useLocation();

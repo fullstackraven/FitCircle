@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
-import { getTodayString } from '@/lib/date-utils';
+import { getTodayString, getDateString } from '@/lib/date-utils';
 
 export interface MeditationLog {
   id: string;
@@ -47,9 +47,8 @@ export function useMeditation() {
   const getTodayMinutes = (): number => {
     const today = getTodayString();
     const todayLogs = logs.filter(log => {
-      // Parse log date to match today's format
-      const logDate = new Date(log.date).toLocaleDateString('en-CA'); // YYYY-MM-DD format
-      return logDate === today;
+      // Direct string comparison since both use getTodayString() format
+      return log.date === today;
     });
     
     return todayLogs.reduce((total, log) => total + log.duration, 0);
@@ -87,11 +86,11 @@ export function useMeditation() {
     for (let i = 0; i < 7; i++) {
       const checkDate = new Date(sevenDaysAgo);
       checkDate.setDate(sevenDaysAgo.getDate() + i);
-      const dateString = checkDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
+      const dateString = getDateString(checkDate); // Use consistent date formatting
       
       const dayLogs = logs.filter(log => {
-        const logDate = new Date(log.date).toLocaleDateString('en-CA');
-        return logDate === dateString;
+        // Direct string comparison since both use getTodayString() format
+        return log.date === dateString;
       });
       
       totalMinutes += dayLogs.reduce((sum, log) => sum + log.duration, 0);
