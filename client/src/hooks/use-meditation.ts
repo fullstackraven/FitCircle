@@ -45,9 +45,9 @@ export function useMeditation() {
 
   // Get today's total meditation minutes
   const getTodayMinutes = (): number => {
-    const today = getTodayString();
+    const today = new Date().toLocaleDateString('en-US'); // MM/DD/YYYY format
     const todayLogs = logs.filter(log => {
-      // Direct string comparison since both use getTodayString() format
+      // Direct string comparison using MM/DD/YYYY format
       return log.date === today;
     });
     
@@ -86,10 +86,10 @@ export function useMeditation() {
     for (let i = 0; i < 7; i++) {
       const checkDate = new Date(sevenDaysAgo);
       checkDate.setDate(sevenDaysAgo.getDate() + i);
-      const dateString = getDateString(checkDate); // Use consistent date formatting
+      const dateString = checkDate.toLocaleDateString('en-US'); // MM/DD/YYYY format
       
       const dayLogs = logs.filter(log => {
-        // Direct string comparison since both use getTodayString() format
+        // Direct string comparison using MM/DD/YYYY format
         return log.date === dateString;
       });
       

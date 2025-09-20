@@ -170,7 +170,7 @@ export default function MeditationPage() {
     // Create meditation log entry
     const now = new Date();
     addLog({
-      date: getTodayString(), // Use consistent date format across all pages
+      date: now.toLocaleDateString('en-US'), // MM/DD/YYYY format to match existing logs
       time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       duration: Math.floor(totalDuration / 60)
     });
