@@ -88,12 +88,17 @@ document.addEventListener('gestureend', function(e) {
 }, { passive: false });
 
 // Prevent all forms of gesture-based navigation
-window.history.pushState(null, '', window.location.href);
-
-window.addEventListener('popstate', function(e) {
-  // Always prevent back navigation via gestures
+function preventGestureNavigation() {
   window.history.pushState(null, '', window.location.href);
-});
+
+  window.addEventListener('popstate', function(e) {
+    // Always prevent back navigation via gestures
+    window.history.pushState(null, '', window.location.href);
+  });
+}
+
+// Initialize navigation prevention
+preventGestureNavigation();
 
 // Disable overscroll behavior that can trigger navigation
 document.body.style.overscrollBehavior = 'none';

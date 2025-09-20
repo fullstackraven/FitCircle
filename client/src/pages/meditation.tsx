@@ -16,7 +16,7 @@ import {
   getMeditationGoal, 
   setMeditationGoal 
 } from '@/utils/meditation-calc';
-import { groupLogsByMonth } from '@/lib/date-utils';
+import { groupLogsByMonth, getTodayString } from '@/lib/date-utils';
 
 export default function MeditationPage() {
   const [, navigate] = useLocation();
@@ -170,7 +170,7 @@ export default function MeditationPage() {
     // Create meditation log entry
     const now = new Date();
     addLog({
-      date: now.toLocaleDateString('en-CA'), // YYYY-MM-DD format to match fasting page
+      date: getTodayString(), // Use consistent date format across all pages
       time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       duration: Math.floor(totalDuration / 60)
     });

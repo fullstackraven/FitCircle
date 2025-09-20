@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity, Timer, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity, Timer, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
