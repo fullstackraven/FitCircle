@@ -40,8 +40,6 @@
   
   body {
     @apply bg-background text-foreground;
-    background-color: hsl(222, 47%, 11%);
-    color: hsl(210, 40%, 98%);
     /* Disable browser swipe navigation */
     overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
@@ -58,8 +56,7 @@
 @layer utilities {
   /* Page Layout */
   .fitcircle-page {
-    @apply min-h-screen text-white pb-32;
-    background-color: hsl(222, 47%, 11%);
+    @apply min-h-screen bg-background text-foreground pb-32;
   }
   
   .fitcircle-container {
@@ -255,9 +252,7 @@
   background: hsl(210, 40%, 80%);
 }
 
-/* Dialog/Modal styling - matches workout modal exactly */
+/* Dialog/Modal styling */
 .fitcircle-dialog {
-  background-color: hsl(215.4, 16.3%, 22.1%) !important; /* slate-800 */
-  border: 1px solid hsl(215.4, 16.3%, 26.9%) !important; /* slate-700 */
-  color: white !important;
+  @apply bg-card border-border text-card-foreground;
 }
