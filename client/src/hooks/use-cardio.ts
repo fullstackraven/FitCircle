@@ -151,7 +151,11 @@ export function useCardio() {
       setData(validatedData);
       
       // Save normalized data back to primary storage
-      localStorage.setItem(STORAGE_KEYS.CARDIO, JSON.stringify(validatedData));
+      try {
+        localStorage.setItem(STORAGE_KEYS.CARDIO, JSON.stringify(validatedData));
+      } catch (error) {
+        console.error('Failed to save normalized cardio data:', error);
+      }
       
     } catch (error) {
       console.error('Error loading cardio data:', error);
@@ -161,7 +165,11 @@ export function useCardio() {
 
   // Save data to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.CARDIO, JSON.stringify(data));
+    try {
+      localStorage.setItem(STORAGE_KEYS.CARDIO, JSON.stringify(data));
+    } catch (error) {
+      console.error('Failed to save cardio data:', error);
+    }
   }, [data]);
 
   const addCardioEntry = (type: string, duration: number, distance?: number, notes?: string) => {

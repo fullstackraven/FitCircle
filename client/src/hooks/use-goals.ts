@@ -46,16 +46,28 @@ export function useGoals() {
     // Fallback to old format migration
     const loadedGoals: Partial<Goals> = {};
     const hydration = localStorage.getItem(`${STORAGE_PREFIX}hydration`);
-    if (hydration) loadedGoals.hydrationOz = parseFloat(hydration);
+    if (hydration) {
+      const parsed = parseFloat(hydration);
+      if (!isNaN(parsed)) loadedGoals.hydrationOz = parsed;
+    }
     
     const meditation = localStorage.getItem(`${STORAGE_PREFIX}meditation`);
-    if (meditation) loadedGoals.meditationMinutes = parseFloat(meditation);
+    if (meditation) {
+      const parsed = parseFloat(meditation);
+      if (!isNaN(parsed)) loadedGoals.meditationMinutes = parsed;
+    }
     
     const fasting = localStorage.getItem(`${STORAGE_PREFIX}fasting`);
-    if (fasting) loadedGoals.fastingHours = parseFloat(fasting);
+    if (fasting) {
+      const parsed = parseFloat(fasting);
+      if (!isNaN(parsed)) loadedGoals.fastingHours = parsed;
+    }
     
     const weight = localStorage.getItem(`${STORAGE_PREFIX}weight`);
-    if (weight) loadedGoals.weightLbs = parseFloat(weight);
+    if (weight) {
+      const parsed = parseFloat(weight);
+      if (!isNaN(parsed)) loadedGoals.weightLbs = parsed;
+    }
     
     return { ...defaultGoals, ...loadedGoals };
   });
@@ -79,7 +91,11 @@ export function useGoals() {
     
     const oldKey = keyMap[goalType];
     if (oldKey) {
-      localStorage.setItem(`${STORAGE_PREFIX}${oldKey}`, value.toString());
+      try {
+        localStorage.setItem(`${STORAGE_PREFIX}${oldKey}`, value.toString());
+      } catch (error) {
+        console.error('Failed to save legacy goal key:', error);
+      }
     }
     
     // Sync hydration goal with hydration hook
@@ -87,7 +103,11 @@ export function useGoals() {
       const hydrationData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.HYDRATION), {}) as any;
       if (hydrationData && typeof hydrationData === 'object') {
         hydrationData.dailyGoalOz = value;
-        localStorage.setItem(STORAGE_KEYS.HYDRATION, JSON.stringify(hydrationData));
+        try {
+          localStorage.setItem(STORAGE_KEYS.HYDRATION, JSON.stringify(hydrationData));
+        } catch (error) {
+          console.error('Failed to sync hydration goal:', error);
+        }
       }
     }
   };

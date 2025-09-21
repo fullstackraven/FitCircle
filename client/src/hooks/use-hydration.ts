@@ -24,8 +24,13 @@ export interface HydrationData {
 export function useHydration() {
   const [data, setData] = useState<HydrationData>(() => {
     const goalFromGoalsPage = localStorage.getItem('fitcircle_goal_hydration');
+    let goalValue = 64;
+    if (goalFromGoalsPage) {
+      const parsed = parseFloat(goalFromGoalsPage);
+      goalValue = isNaN(parsed) ? 64 : parsed;
+    }
     const defaultData = {
-      dailyGoalOz: goalFromGoalsPage ? parseFloat(goalFromGoalsPage) : 64,
+      dailyGoalOz: goalValue,
       currentDayOz: 0,
       logs: {},
       lastDate: getTodayString()
@@ -48,7 +53,8 @@ export function useHydration() {
     
     // Sync goal from Goals page if it exists and is different
     if (goalFromGoalsPage) {
-      saved.dailyGoalOz = parseFloat(goalFromGoalsPage);
+      const parsed = parseFloat(goalFromGoalsPage);
+      saved.dailyGoalOz = isNaN(parsed) ? 64 : parsed;
     }
     
     return saved;
