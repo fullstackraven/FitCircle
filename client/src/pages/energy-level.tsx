@@ -10,7 +10,7 @@ const EnergyTrendVisualization = () => {
   const energyData = getEnergyLevelData();
   
   // Get last 14 days of data for better trend analysis
-  const last14Days = [];
+  const last14Days: Array<{ date: string; energy: number; dateStr: string }> = [];
   const today = new Date();
   
   for (let i = 13; i >= 0; i--) {
@@ -34,7 +34,7 @@ const EnergyTrendVisualization = () => {
   const todayEnergy = energyData[format(today, 'yyyy-MM-dd')] || 0;
 
   // Create SVG path for the trend line
-  const createPath = (data: any[]) => {
+  const createPath = (data: Array<{ date: string; energy: number; dateStr: string }>) => {
     const width = 300;
     const height = 80;
     const padding = 20;
