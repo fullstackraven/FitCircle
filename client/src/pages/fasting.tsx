@@ -59,7 +59,15 @@ export default function FastingPage() {
   const calculateDuration = (startDate: string, startTime: string, endDate: string, endTime: string): number => {
     const start = new Date(`${startDate}T${startTime}`);
     const end = new Date(`${endDate}T${endTime}`);
-    return Math.floor((end.getTime() - start.getTime()) / (1000 * 60)); // in minutes
+    
+    // Validate that the dates are valid
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      console.error('Invalid date format provided to calculateDuration');
+      return 0;
+    }
+    
+    const duration = Math.floor((end.getTime() - start.getTime()) / (1000 * 60)); // in minutes
+    return duration < 0 ? 0 : duration; // Ensure non-negative duration
   };
 
   const formatDuration = (minutes: number): string => {

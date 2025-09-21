@@ -156,13 +156,25 @@ export default function FoodTrackerPage() {
   const handleAddFood = () => {
     if (!foodName.trim() || !calories || !carbs || !protein || !fat) return;
 
+    // Validate numeric inputs to prevent NaN values
+    const caloriesNum = parseFloat(calories);
+    const carbsNum = parseFloat(carbs);
+    const proteinNum = parseFloat(protein);
+    const fatNum = parseFloat(fat);
+    
+    if (isNaN(caloriesNum) || isNaN(carbsNum) || isNaN(proteinNum) || isNaN(fatNum) ||
+        caloriesNum < 0 || carbsNum < 0 || proteinNum < 0 || fatNum < 0) {
+      console.error('Invalid numeric values provided for food entry');
+      return;
+    }
+
     const newEntry: FoodEntry = {
       id: Date.now().toString(),
       name: foodName.trim(),
-      calories: parseFloat(calories),
-      carbs: parseFloat(carbs),
-      protein: parseFloat(protein),
-      fat: parseFloat(fat),
+      calories: caloriesNum,
+      carbs: carbsNum,
+      protein: proteinNum,
+      fat: fatNum,
       meal: selectedMeal,
       timestamp: new Date().toISOString()
     };
