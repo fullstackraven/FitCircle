@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 export interface Goals {
@@ -92,7 +92,7 @@ export function useGoals() {
     }
   };
 
-  const calculateProgress = (): Promise<GoalProgress> => {
+  const calculateProgress = useCallback((): Promise<GoalProgress> => {
     
     // Hydration progress
     let hydrationProgress = 0;
@@ -187,7 +187,7 @@ export function useGoals() {
       targetBodyFatProgress,
       workoutConsistencyProgress
     });
-  };
+  }, [goals.hydrationOz, goals.meditationMinutes, goals.fastingHours, goals.weightLbs, goals.targetWeight]);
 
   return {
     goals,

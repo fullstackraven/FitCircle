@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 import { getTodayString, getDateString } from '@/lib/date-utils';
 
@@ -11,27 +11,44 @@ export interface MeditationLog {
 }
 
 export function useMeditation() {
+  const migrationCompleted = useRef(false);
+  
   const [logs, setLogs] = useState<MeditationLog[]>(() => {
     const rawLogs = safeParseJSON(localStorage.getItem(STORAGE_KEYS.MEDITATION), []);
     
-    // Migrate date formats: convert YYYY-MM-DD to MM/DD/YYYY
-    const migratedLogs = rawLogs.map((log: MeditationLog) => {
-      if (log.date && log.date.includes('-')) {
-        // Convert YYYY-MM-DD to MM/DD/YYYY
-        try {
-          const date = new Date(log.date);
-          const convertedDate = date.toLocaleDateString('en-US');
-          console.log(`Migrating meditation log date: ${log.date} → ${convertedDate}`);
-          return { ...log, date: convertedDate };
-        } catch (error) {
-          console.error('Failed to convert meditation date:', log.date, error);
-          return log; // Keep original if conversion fails
-        }
-      }
-      return log; // Already in correct format or no date
-    });
+    // Check if migration is needed
+    const needsMigration = rawLogs.some((log: MeditationLog) => log.date && log.date.includes('-'));
     
-    return migratedLogs;
+    if (needsMigration && !migrationCompleted.current) {
+      // Migrate date formats: convert YYYY-MM-DD to MM/DD/YYYY
+      const migratedLogs = rawLogs.map((log: MeditationLog) => {
+        if (log.date && log.date.includes('-')) {
+          try {
+            const date = new Date(log.date);
+            const convertedDate = date.toLocaleDateString('en-US');
+            console.log(`Migrating meditation log date: ${log.date} → ${convertedDate}`);
+            return { ...log, date: convertedDate };
+          } catch (error) {
+            console.error('Failed to convert meditation date:', log.date, error);
+            return log;
+          }
+        }
+        return log;
+      });
+      
+      // Save migrated data immediately
+      try {
+        localStorage.setItem(STORAGE_KEYS.MEDITATION, JSON.stringify(migratedLogs));
+        migrationCompleted.current = true;
+        console.log('Meditation date migration completed');
+      } catch (error) {
+        console.error('Failed to save migrated meditation data:', error);
+      }
+      
+      return migratedLogs;
+    }
+    
+    return rawLogs;
   });
 
   // Save to localStorage whenever data changes
@@ -43,20 +60,7 @@ export function useMeditation() {
     }
   }, [logs]);
 
-  // One-time migration effect to save converted dates
-  useEffect(() => {
-    const rawLogs = safeParseJSON(localStorage.getItem(STORAGE_KEYS.MEDITATION), []);
-    const hasOldFormat = rawLogs.some((log: MeditationLog) => log.date && log.date.includes('-'));
-    
-    if (hasOldFormat && logs.length > 0) {
-      console.log('Saving migrated meditation log formats to localStorage');
-      try {
-        localStorage.setItem(STORAGE_KEYS.MEDITATION, JSON.stringify(logs));
-      } catch (error) {
-        console.error('Failed to save migrated meditation data:', error);
-      }
-    }
-  }, []); // Run only once on mount
+  // Removed redundant migration effect - now handled in useState initializer
 
   const addLog = (log: Omit<MeditationLog, 'id' | 'completedAt'>) => {
     const newLog: MeditationLog = {
