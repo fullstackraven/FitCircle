@@ -48,49 +48,45 @@ export const useRecovery = () => {
     return data.recoveryDays.includes(date);
   }, [data.recoveryDays]);
 
-  const getRecoveryStats = useCallback(() => {
+  const getRecoveryStats = useCallback((totalCompletedDaysFromStats?: number) => {
     const totalRecoveryDays = data.recoveryDays.length;
     
-    // Get all workout data using the same storage key as the workout hook
-    const workoutData = localStorage.getItem(STORAGE_KEYS.WORKOUTS);
-    const workouts = workoutData ? safeParseJSON(workoutData, { workouts: {}, dailyLogs: {} }) : { workouts: {}, dailyLogs: {} };
-    const workoutArray = Object.values(workouts.workouts || {});
+    // Use the completed days from statistics page if provided, otherwise calculate here
+    let totalCompletedDays = totalCompletedDaysFromStats || 0;
     
-    if (workoutArray.length === 0) {
-      return {
-        totalRecoveryDays,
-        totalWorkoutDays: 0,
-        totalActiveDays: totalRecoveryDays,
-        recoveryPercentage: totalRecoveryDays > 0 ? 100 : 0
-      };
-    }
-    
-    // Count only completed days (where all workout goals were met) across entire history
-    let totalCompletedDays = 0;
-    Object.entries(workouts.dailyLogs || {}).forEach(([dateStr, dayLog]) => {
-      const workoutsWithReps = workoutArray.filter((w: any) => dayLog && (dayLog as any)[w.id] && (dayLog as any)[w.id] > 0);
-      if (workoutsWithReps.length > 0) {
-        let allGoalsMet = true;
-        
-        workoutsWithReps.forEach((workout: any) => {
-          const count = (dayLog as any)[workout.id] || 0;
-          if (count < workout.dailyGoal) {
-            allGoalsMet = false;
+    if (!totalCompletedDaysFromStats) {
+      // Fallback calculation if not provided
+      const workoutData = localStorage.getItem(STORAGE_KEYS.WORKOUTS);
+      const workouts = workoutData ? safeParseJSON(workoutData, { workouts: {}, dailyLogs: {} }) : { workouts: {}, dailyLogs: {} };
+      const workoutArray = Object.values(workouts.workouts || {});
+      
+      if (workoutArray.length > 0) {
+        Object.entries(workouts.dailyLogs || {}).forEach(([dateStr, dayLog]) => {
+          const workoutsWithReps = workoutArray.filter((w: any) => dayLog && (dayLog as any)[w.id] && (dayLog as any)[w.id] > 0);
+          if (workoutsWithReps.length > 0) {
+            let allGoalsMet = true;
+            
+            workoutsWithReps.forEach((workout: any) => {
+              const count = (dayLog as any)[workout.id] || 0;
+              if (count < workout.dailyGoal) {
+                allGoalsMet = false;
+              }
+            });
+            
+            if (allGoalsMet) {
+              totalCompletedDays++;
+            }
           }
         });
-        
-        if (allGoalsMet) {
-          totalCompletedDays++;
-        }
       }
-    });
+    }
     
     // Recovery percentage = recovery days / total completed days (matching statistics panel)
     const recoveryPercentage = totalCompletedDays > 0 ? (totalRecoveryDays / totalCompletedDays) * 100 : 0;
     
     return {
       totalRecoveryDays,
-      totalWorkoutDays: totalCompletedDays, // Using completed days for consistency with stats panel
+      totalWorkoutDays: totalCompletedDays, // Use exact same calculation as statistics page
       totalActiveDays: totalCompletedDays,
       recoveryPercentage: Math.round(recoveryPercentage * 10) / 10 // Round to 1 decimal
     };

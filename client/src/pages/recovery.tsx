@@ -2,12 +2,17 @@ import React from "react";
 import { useLocation } from "wouter";
 import { ArrowLeft, Heart, Calendar } from "lucide-react";
 import { useRecovery } from "@/hooks/use-recovery";
+import { useWorkouts } from "@/hooks/use-workouts";
 import { format } from "date-fns";
 
 export default function RecoveryPage() {
   const [, navigate] = useLocation();
   const { getRecoveryStats, data } = useRecovery();
-  const recoveryStats = getRecoveryStats();
+  const { getTotalStats } = useWorkouts();
+  
+  // Get the same total stats as the statistics page
+  const totalStats = getTotalStats();
+  const recoveryStats = getRecoveryStats(totalStats?.totalCompletedDays);
 
   return (
     <div className="p-4 max-w-3xl mx-auto min-h-screen pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
