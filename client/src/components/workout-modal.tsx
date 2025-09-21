@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { DaySelector } from './DaySelector';
+import { getColorClass } from '@/lib/color-utils';
 
 interface WorkoutModalProps {
   isOpen: boolean;
@@ -16,20 +17,6 @@ interface WorkoutModalProps {
   editingWorkout?: { id: string; name: string; color: string; dailyGoal: number; weightLbs?: number; scheduledDays?: number[] } | null;
 }
 
-const colorClassMap: { [key: string]: string } = {
-  green: 'workout-green',
-  blue: 'workout-blue',
-  purple: 'workout-purple',
-  amber: 'workout-amber',
-  red: 'workout-red',
-  pink: 'workout-pink',
-  cyan: 'workout-cyan',
-  lime: 'workout-lime',
-  orange: 'workout-orange',
-  indigo: 'workout-indigo',
-  emerald: 'workout-emerald',
-  yellow: 'workout-yellow'
-};
 
 export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColors, editingWorkout }: WorkoutModalProps) {
   const [workoutName, setWorkoutName] = useState('');
@@ -193,7 +180,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
                 className="w-full justify-between bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
               >
                 <div className="flex items-center gap-2">
-                  <div className={`w-4 h-4 rounded-full ${colorClassMap[selectedColor]}`} />
+                  <div className={`w-4 h-4 rounded-full ${getColorClass(selectedColor)}`} />
                   <span>Choose Color</span>
                 </div>
                 {isColorSectionOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -205,7 +192,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
-                    className={`w-8 h-8 rounded-full ${colorClassMap[color]} border-2 transition-colors ${
+                    className={`w-8 h-8 rounded-full ${getColorClass(color)} border-2 transition-colors ${
                       selectedColor === color
                         ? 'border-white ring-2 ring-white'
                         : 'border-transparent hover:border-white'

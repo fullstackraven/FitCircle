@@ -1,5 +1,6 @@
 import { Check } from 'lucide-react';
 import { useRef, useCallback, useEffect } from 'react';
+import { getColorClass, getStrokeColor } from '@/lib/color-utils';
 
 interface ProgressCircleProps {
   count: number;
@@ -12,35 +13,6 @@ interface ProgressCircleProps {
   isAnimating?: boolean;
 }
 
-const colorClassMap: { [key: string]: string } = {
-  green: 'workout-green',
-  blue: 'workout-blue',
-  purple: 'workout-purple',
-  amber: 'workout-amber',
-  red: 'workout-red',
-  pink: 'workout-pink',
-  cyan: 'workout-cyan',
-  lime: 'workout-lime',
-  orange: 'workout-orange',
-  indigo: 'workout-indigo',
-  emerald: 'workout-emerald',
-  yellow: 'workout-yellow'
-};
-
-const strokeColorMap: { [key: string]: string } = {
-  green: '#22c55e',
-  blue: '#3b82f6',
-  purple: '#8b5cf6',
-  amber: '#f59e0b',
-  red: '#ef4444',
-  pink: '#ec4899',
-  cyan: '#06b6d4',
-  lime: '#84cc16',
-  orange: '#f97316',
-  indigo: '#6366f1',
-  emerald: '#10b981',
-  yellow: '#eab308'
-};
 
 export function ProgressCircle({ 
   count, 
@@ -132,7 +104,7 @@ export function ProgressCircle({
     >
       {/* Background circle - more transparent when completed */}
       <div 
-        className={`absolute rounded-full ${colorClassMap[color]} shadow-lg transition-opacity duration-300 ${
+        className={`absolute rounded-full ${getColorClass(color)} shadow-lg transition-opacity duration-300 ${
           progress >= 1 ? 'opacity-20' : 'opacity-40'
         }`}
         style={{ 
@@ -199,7 +171,7 @@ export function ProgressCircle({
           cx={svgSize / 2}
           cy={svgSize / 2}
           r={radius}
-          stroke={strokeColorMap[color] || '#22c55e'}
+          stroke={getStrokeColor(color)}
           strokeWidth={strokeWidth + 2}
           fill="none"
           strokeDasharray={strokeDasharray}

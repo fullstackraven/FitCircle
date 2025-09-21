@@ -14,21 +14,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { GoalCircle } from '@/components/GoalCircle';
+import { getColorClass } from '@/lib/color-utils';
 
-const colorClassMap: { [key: string]: string } = {
-  green: 'workout-green',
-  blue: 'workout-blue',
-  purple: 'workout-purple',
-  amber: 'workout-amber',
-  red: 'workout-red',
-  pink: 'workout-pink',
-  cyan: 'workout-cyan',
-  lime: 'workout-lime',
-  orange: 'workout-orange',
-  indigo: 'workout-indigo',
-  emerald: 'workout-emerald',
-  yellow: 'workout-yellow'
-};
 
 export default function Home() {
   const [, navigate] = useLocation();
@@ -524,7 +511,7 @@ export default function Home() {
                       className="flex items-center justify-between p-4 bg-slate-700 rounded-xl"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className={`w-3 h-3 rounded-full ${colorClassMap[workout.color]}`} />
+                        <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)}`} />
                         <div>
                           <div className="text-white font-medium">{workout.name}</div>
                           <div className="text-xs text-slate-400">
@@ -557,7 +544,7 @@ export default function Home() {
             {todaysTotals.filter(w => w.count > 0).map((workout) => (
               <div key={workout.id} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-4 h-4 rounded-full ${colorClassMap[workout.color]}`}></div>
+                  <div className={`w-4 h-4 rounded-full ${getColorClass(workout.color)}`}></div>
                   <span className="font-medium text-white">{workout.name}</span>
                 </div>
                 <span className="text-lg font-bold text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
@@ -593,7 +580,7 @@ export default function Home() {
                     <div className="grid grid-cols-3 gap-3">
                       {day.workouts.filter(w => w.count > 0).map((workout) => (
                         <div key={workout.id} className="text-center">
-                          <div className={`w-3 h-3 rounded-full ${colorClassMap[workout.color]} mx-auto mb-1`}></div>
+                          <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)} mx-auto mb-1`}></div>
                           <span className="text-sm font-medium text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
                         </div>
                       ))}
