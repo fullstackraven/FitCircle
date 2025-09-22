@@ -40,6 +40,8 @@
   
   body {
     @apply bg-background text-foreground;
+    background-color: hsl(222, 47%, 11%);
+    color: hsl(210, 40%, 98%);
     /* Disable browser swipe navigation */
     overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
@@ -56,7 +58,8 @@
 @layer utilities {
   /* Page Layout */
   .fitcircle-page {
-    @apply min-h-screen bg-background text-foreground pb-32;
+    @apply min-h-screen text-white pb-32;
+    background-color: hsl(222, 47%, 11%);
   }
   
   .fitcircle-container {
