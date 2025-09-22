@@ -217,13 +217,13 @@ export default function CalendarPage() {
               {(hasJournal || hasEnergy || hasSupplements) && (
                 <div className="absolute bottom-1 left-0 w-full flex justify-center space-x-1">
                   {hasJournal && (
-                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
-                  )}
-                  {hasEnergy && (
                     <div className="w-1.5 h-1.5 bg-purple-400 rounded-full" />
                   )}
+                  {hasEnergy && (
+                    <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full" />
+                  )}
                   {hasSupplements && (
-                    <div className="w-1.5 h-1.5 bg-orange-400 rounded-full" />
+                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
                   )}
                 </div>
               )}
@@ -240,8 +240,20 @@ export default function CalendarPage() {
           className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
         >
           <div className="flex items-center space-x-3">
-            <BarChart3 className="w-5 h-5 text-blue-400" />
+            <BarChart3 className="w-5 h-5 text-green-400" />
             <span className="text-white font-medium">Workout Statistics</span>
+          </div>
+          <ChevronRight className="w-5 h-5 text-slate-400" />
+        </button>
+
+        {/* Recovery Panel */}
+        <button
+          onClick={() => navigate("/recovery")}
+          className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
+        >
+          <div className="flex items-center space-x-3">
+            <Heart className="w-5 h-5 text-orange-400" />
+            <span className="text-white font-medium">Recovery</span>
           </div>
           <ChevronRight className="w-5 h-5 text-slate-400" />
         </button>
@@ -270,25 +282,13 @@ export default function CalendarPage() {
           <ChevronRight className="w-5 h-5 text-slate-400" />
         </button>
 
-        {/* Recovery Panel */}
-        <button
-          onClick={() => navigate("/recovery")}
-          className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
-        >
-          <div className="flex items-center space-x-3">
-            <Heart className="w-5 h-5 text-orange-400" />
-            <span className="text-white font-medium">Recovery</span>
-          </div>
-          <ChevronRight className="w-5 h-5 text-slate-400" />
-        </button>
-
         {/* Supplements Panel */}
         <button
           onClick={() => navigate("/supplements-page")}
           className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
         >
           <div className="flex items-center space-x-3">
-            <Pill className="w-5 h-5 text-green-400" />
+            <Pill className="w-5 h-5 text-blue-400" />
             <span className="text-white font-medium">Supplements</span>
           </div>
           <ChevronRight className="w-5 h-5 text-slate-400" />
