@@ -156,6 +156,30 @@ export default function FoodTrackerPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchMeal, setSearchMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
   const [allFoodHistory, setAllFoodHistory] = useState<FoodEntry[]>([]);
+
+  // Custom food states
+  const [customFoodOpen, setCustomFoodOpen] = useState(false);
+  const [customFoodMeal, setCustomFoodMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
+  const [customFoodData, setCustomFoodData] = useState({
+    name: '',
+    brand: '',
+    quantity: '100',
+    unit: 'g' as FoodUnit,
+    calories: '',
+    carbs: '',
+    protein: '',
+    fat: '',
+    fiber: '',
+    sugar: '',
+    sodium: '',
+    saturatedFat: '',
+    potassium: '',
+    cholesterol: '',
+    vitaminA: '',
+    vitaminC: '',
+    calcium: '',
+    iron: ''
+  });
   const [apiSearchResults, setApiSearchResults] = useState<FoodEntry[]>([]);
   const [isSearchingApi, setIsSearchingApi] = useState(false);
   
@@ -387,6 +411,110 @@ export default function FoodTrackerPage() {
     setSearchQuery('');
     setApiSearchResults([]);
     setSearchOpen(true);
+  };
+
+  // Function to open custom food form for specific meal
+  const openCustomFoodForMeal = (meal: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
+    setCustomFoodMeal(meal);
+    setCustomFoodData({
+      name: '',
+      brand: '',
+      quantity: '100',
+      unit: 'g' as FoodUnit,
+      calories: '',
+      carbs: '',
+      protein: '',
+      fat: '',
+      fiber: '',
+      sugar: '',
+      sodium: '',
+      saturatedFat: '',
+      potassium: '',
+      cholesterol: '',
+      vitaminA: '',
+      vitaminC: '',
+      calcium: '',
+      iron: ''
+    });
+    setSearchOpen(false); // Close search dialog
+    setCustomFoodOpen(true);
+  };
+
+  // Function to handle custom food submission
+  const handleCustomFoodSubmit = async () => {
+    // Validate required fields
+    if (!customFoodData.name.trim() || !customFoodData.calories || !customFoodData.carbs || !customFoodData.protein || !customFoodData.fat) {
+      toast({
+        title: "Missing Required Information",
+        description: "Please fill in name, calories, carbs, protein, and fat.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const result = await foodApiService.addCustomFood({
+        name: customFoodData.name.trim(),
+        brand: customFoodData.brand.trim() || undefined,
+        quantity: parseFloat(customFoodData.quantity) || 100,
+        unit: customFoodData.unit,
+        calories: parseFloat(customFoodData.calories),
+        carbs: parseFloat(customFoodData.carbs),
+        protein: parseFloat(customFoodData.protein),
+        fat: parseFloat(customFoodData.fat),
+        fiber: customFoodData.fiber ? parseFloat(customFoodData.fiber) : undefined,
+        sugar: customFoodData.sugar ? parseFloat(customFoodData.sugar) : undefined,
+        sodium: customFoodData.sodium ? parseFloat(customFoodData.sodium) : undefined,
+        saturatedFat: customFoodData.saturatedFat ? parseFloat(customFoodData.saturatedFat) : undefined,
+        potassium: customFoodData.potassium ? parseFloat(customFoodData.potassium) : undefined,
+        cholesterol: customFoodData.cholesterol ? parseFloat(customFoodData.cholesterol) : undefined,
+        vitaminA: customFoodData.vitaminA ? parseFloat(customFoodData.vitaminA) : undefined,
+        vitaminC: customFoodData.vitaminC ? parseFloat(customFoodData.vitaminC) : undefined,
+        calcium: customFoodData.calcium ? parseFloat(customFoodData.calcium) : undefined,
+        iron: customFoodData.iron ? parseFloat(customFoodData.iron) : undefined
+      });
+
+      if (result.success && result.food) {
+        // Convert the saved food to our format and add to meal
+        const newFoodEntry: FoodEntry = {
+          ...result.food,
+          meal: customFoodMeal,
+          timestamp: new Date().toISOString()
+        };
+
+        // Add to today's food entries
+        const updatedEntries = [...foodEntries, newFoodEntry];
+        setFoodEntries(updatedEntries);
+
+        // Save to localStorage
+        const today = getTodayString();
+        try {
+          localStorage.setItem(STORAGE_KEYS.FOOD_TRACKER + today, JSON.stringify(updatedEntries));
+        } catch (error) {
+          console.error('Error saving food entries to localStorage:', error);
+        }
+
+        toast({
+          title: "Food Added Successfully!",
+          description: result.message || `${result.food.name} has been added to your ${customFoodMeal}.`
+        });
+
+        setCustomFoodOpen(false);
+      } else {
+        toast({
+          title: "Failed to Add Food",
+          description: result.error || "Something went wrong while adding your custom food.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error adding custom food:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add custom food. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   // Function to open serving size form
@@ -746,6 +874,16 @@ export default function FoodTrackerPage() {
                   </div>
                 )}
               </div>
+
+              {/* Create Custom Food Button */}
+              <Button
+                onClick={() => openCustomFoodForMeal(searchMeal)}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center justify-center"
+                data-testid="button-create-custom-food"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Create Custom Food
+              </Button>
                   
               
               {/* Food List */}

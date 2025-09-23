@@ -230,6 +230,55 @@ class FoodApiService {
       timestamp: new Date().toISOString()
     };
   }
+
+  /**
+   * Add custom food to database permanently
+   */
+  async addCustomFood(foodData: {
+    name: string;
+    brand?: string;
+    quantity?: number;
+    unit?: string;
+    calories: number;
+    carbs: number;
+    protein: number;
+    fat: number;
+    fiber?: number;
+    sugar?: number;
+    sodium?: number;
+    saturatedFat?: number;
+    potassium?: number;
+    cholesterol?: number;
+    vitaminA?: number;
+    vitaminC?: number;
+    calcium?: number;
+    iron?: number;
+  }): Promise<{ success: boolean; food?: any; message?: string; error?: string }> {
+    try {
+      const url = `${this.baseUrl}/add-custom`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(foodData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to add custom food');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error adding custom food:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to add custom food'
+      };
+    }
+  }
 }
 
 export const foodApiService = new FoodApiService();
