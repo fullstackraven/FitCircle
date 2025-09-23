@@ -156,7 +156,6 @@ export default function FoodTrackerPage() {
   const [allFoodHistory, setAllFoodHistory] = useState<FoodEntry[]>([]);
   const [apiSearchResults, setApiSearchResults] = useState<FoodEntry[]>([]);
   const [isSearchingApi, setIsSearchingApi] = useState(false);
-  const [searchSource, setSearchSource] = useState<'history' | 'api'>('history');
   
   // Edit states
   const [editingFood, setEditingFood] = useState<FoodEntry | null>(null);
@@ -359,21 +358,26 @@ export default function FoodTrackerPage() {
     }
   };
   
-  // Throttled API search
+  // Throttled API search (now always searches API when query exists)
   useEffect(() => {
-    if (searchSource === 'api' && searchQuery) {
+    if (searchQuery) {
       const timeoutId = setTimeout(() => {
         performApiSearch(searchQuery);
       }, 300); // 300ms delay to avoid too many API calls
       
       return () => clearTimeout(timeoutId);
-    } else if (searchSource === 'api') {
+    } else {
       setApiSearchResults([]);
     }
-  }, [searchQuery, searchSource, searchMeal]);
+  }, [searchQuery, searchMeal]);
   
-  // Get current search results based on source
-  const currentSearchResults = searchSource === 'history' ? filteredFoodHistory : apiSearchResults;
+  // Function to open search for specific meal
+  const openSearchForMeal = (meal: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
+    setSearchMeal(meal);
+    setSearchQuery('');
+    setApiSearchResults([]);
+    setSearchOpen(true);
+  };
 
   const handleAddFromSearch = (food: FoodEntry) => {
     const newEntry: FoodEntry = {
@@ -654,107 +658,126 @@ export default function FoodTrackerPage() {
           </div>
         </div>
 
-        {/* Add Food Form */}
-        <div className="bg-gray-800 rounded-xl p-4 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold flex items-center">
-              <Plus className="h-5 w-5 mr-2" />
-              Add Food
-            </h2>
-            <div className="flex space-x-2">
-              <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl" data-testid="button-search-foods">
-                    <Search className="h-5 w-5" />
-                  </Button>
-                </DialogTrigger>
-              <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-lg">
-                <DialogHeader>
-                  <DialogTitle>Search Foods</DialogTitle>
-                  <DialogDescription className="text-gray-400">
-                    Search your food history or find new foods from the food database
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4">
+        {/* Search Dialog - triggered by meal 'Add food' buttons */}
+        <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
+          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center justify-between">
+                Add Food to {searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => alert('Barcode scanner functionality coming soon!')}
+                  className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl"
+                  data-testid="button-scan-barcode"
+                  title="Scan Barcode"
+                >
+                  <ScanLine className="h-5 w-5" />
+                </Button>
+              </DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Search the food database or select from your recently added foods
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              
+              {/* Database Search Bar */}
+              <div>
+                <Label htmlFor="searchQuery" className="text-sm text-gray-300 flex items-center">
+                  <Search className="w-4 h-4 mr-2" />
+                  Search Food Database
+                </Label>
+                <Input
+                  id="searchQuery"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="e.g., greek yogurt, banana, chicken breast..."
+                  className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                  data-testid="input-search-query"
+                />
+                {searchQuery.length > 0 && searchQuery.length < 2 && (
+                  <p className="text-xs text-yellow-400 mt-1">Type at least 2 characters to search</p>
+                )}
+              </div>
                   
-                  {/* Search Source Tabs */}
-                  <div className="flex bg-gray-700 rounded-xl p-1">
-                    <button
-                      onClick={() => setSearchSource('history')}
-                      className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                        searchSource === 'history'
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-300 hover:text-white'
-                      }`}
-                      data-testid="button-search-history"
-                    >
-                      📚 My Foods
-                    </button>
-                    <button
-                      onClick={() => setSearchSource('api')}
-                      className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                        searchSource === 'api'
-                          ? 'bg-green-600 text-white'
-                          : 'text-gray-300 hover:text-white'
-                      }`}
-                      data-testid="button-search-api"
-                    >
-                      🌐 Food Database
-                    </button>
-                  </div>
-                  
+              
+              {/* Results Section */}
+              <div className="max-h-80 overflow-y-auto space-y-4">
+                
+                {/* API Search Results (when searching) */}
+                {searchQuery && (
                   <div>
-                    <Label htmlFor="searchQuery" className="text-sm text-gray-300">
-                      {searchSource === 'history' ? 'Search your foods' : 'Search food database'}
-                    </Label>
-                    <Input
-                      id="searchQuery"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder={searchSource === 'history' ? 'Type food name...' : 'e.g., greek yogurt, banana, chicken breast...'}
-                      className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                      data-testid="input-search-query"
-                    />
-                    {searchSource === 'api' && searchQuery.length > 0 && searchQuery.length < 2 && (
-                      <p className="text-xs text-yellow-400 mt-1">Type at least 2 characters to search</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="searchMeal" className="text-sm text-gray-300">Add to meal</Label>
-                    <Select value={searchMeal} onValueChange={(value: 'breakfast' | 'lunch' | 'dinner' | 'snack') => setSearchMeal(value)}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl">
-                        <SelectValue placeholder="Select meal" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600">
-                        <SelectItem value="breakfast" className="text-white hover:bg-gray-600">Breakfast</SelectItem>
-                        <SelectItem value="lunch" className="text-white hover:bg-gray-600">Lunch</SelectItem>
-                        <SelectItem value="dinner" className="text-white hover:bg-gray-600">Dinner</SelectItem>
-                        <SelectItem value="snack" className="text-white hover:bg-gray-600">Snack</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="max-h-60 overflow-y-auto space-y-2">
-                    {/* Loading state for API search */}
-                    {searchSource === 'api' && isSearchingApi && (
+                    <h3 className="text-sm font-medium text-gray-300 mb-2 flex items-center">
+                      🌐 Food Database Results
+                      {isSearchingApi && <div className="animate-spin w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full ml-2"></div>}
+                    </h3>
+                    {isSearchingApi ? (
                       <div className="text-center text-gray-400 py-4 text-sm">
-                        <div className="animate-spin w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full mx-auto mb-2"></div>
                         Searching food database...
                       </div>
+                    ) : apiSearchResults.length > 0 ? (
+                      <div className="space-y-2">
+                        {apiSearchResults.map((food) => (
+                          <div key={food.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
+                            <div className="flex-1">
+                              <h4 className="font-medium text-white text-sm">
+                                {food.name}
+                                {food.brand && <span className="text-gray-400 font-normal"> • {food.brand}</span>}
+                                <span className="ml-1 inline-block w-2 h-2 bg-green-400 rounded-full" title="From food database"></span>
+                              </h4>
+                              <div className="text-xs text-gray-400 mt-1">
+                                {food.quantity}{food.unit} • {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
+                                {food.fiber && <span> • {food.fiber}g fiber</span>}
+                                {food.barcode && <span className="block text-xs text-blue-400 mt-1">#{food.barcode}</span>}
+                              </div>
+                            </div>
+                            <div className="flex flex-col space-y-1 ml-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleAddFromSearch(food)}
+                                className="text-green-400 hover:text-green-300 hover:bg-gray-600 rounded-xl text-xs px-2 py-1"
+                                data-testid={`button-add-${food.id}`}
+                              >
+                                Add
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEditFromSearch(food)}
+                                className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-xl text-xs px-2 py-1"
+                                data-testid={`button-edit-${food.id}`}
+                              >
+                                Edit
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center text-gray-500 py-4 text-sm">
+                        {searchQuery.length < 2
+                          ? 'Type at least 2 characters to search the food database'
+                          : `No foods found in database matching "${searchQuery}"`
+                        }
+                      </div>
                     )}
-                    
-                    {/* Search results */}
-                    {!isSearchingApi && currentSearchResults.length > 0 ? (
-                      currentSearchResults.map((food) => (
+                  </div>
+                )}
+                
+                {/* Recently Added Foods History */}
+                <div>
+                  <h3 className="text-sm font-medium text-gray-300 mb-2 flex items-center">
+                    📚 Recently Added Foods
+                  </h3>
+                  {filteredFoodHistory.length > 0 ? (
+                    <div className="space-y-2">
+                      {filteredFoodHistory.slice(0, searchQuery ? 5 : 10).map((food) => (
                         <div key={food.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                           <div className="flex-1">
                             <h4 className="font-medium text-white text-sm">
                               {food.name}
                               {food.brand && <span className="text-gray-400 font-normal"> • {food.brand}</span>}
-                              {searchSource === 'api' && (
-                                <span className="ml-1 inline-block w-2 h-2 bg-green-400 rounded-full" title="From food database"></span>
-                              )}
                             </h4>
                             <div className="text-xs text-gray-400 mt-1">
                               {food.quantity}{food.unit} • {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
@@ -783,272 +806,24 @@ export default function FoodTrackerPage() {
                             </Button>
                           </div>
                         </div>
-                      ))
-                    ) : !isSearchingApi && searchQuery ? (
-                      <div className="text-center text-gray-500 py-4 text-sm">
-                        {searchSource === 'history' 
-                          ? `No foods found in your history matching "${searchQuery}"`
-                          : searchQuery.length < 2
-                          ? 'Type at least 2 characters to search the food database'
-                          : `No foods found in database matching "${searchQuery}"`
-                        }
-                        {searchSource === 'history' && (
-                          <div className="mt-2">
-                            <button
-                              onClick={() => setSearchSource('api')}
-                              className="text-blue-400 hover:text-blue-300 text-xs underline"
-                            >
-                              Try searching the food database instead
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    ) : !isSearchingApi ? (
-                      <div className="text-center text-gray-500 py-4 text-sm">
-                        {searchSource === 'history'
-                          ? allFoodHistory.length === 0 
-                            ? 'No food history available. Try searching the food database!' 
-                            : 'Start typing to search your foods'
-                          : 'Start typing to search the food database'
-                        }
-                      </div>
-                    ) : null}
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center text-gray-500 py-4 text-sm">
+                      {allFoodHistory.length === 0 
+                        ? 'No food history available yet. Start by searching for foods above!' 
+                        : searchQuery
+                        ? `No recently added foods matching "${searchQuery}"`
+                        : 'Start typing to search your recently added foods'
+                      }
+                    </div>
+                  )}
+                </div>
+                
+              </div>
                 </div>
               </DialogContent>
-              </Dialog>
-              
-              {/* Barcode Scanner Button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => alert('Barcode scanner functionality coming soon!')}
-                className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl"
-                data-testid="button-scan-barcode"
-                title="Scan Barcode"
-              >
-                <ScanLine className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            {/* Basic Food Info */}
-            <div>
-              <Label htmlFor="foodName" className="text-sm text-gray-300">Food Name</Label>
-              <Input
-                id="foodName"
-                value={foodName}
-                onChange={(e) => setFoodName(e.target.value)}
-                placeholder="e.g., Grilled Chicken Breast"
-                className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                data-testid="input-food-name"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="brand" className="text-sm text-gray-300">Brand (optional)</Label>
-              <Input
-                id="brand"
-                value={brand}
-                onChange={(e) => setBrand(e.target.value)}
-                placeholder="e.g., Tyson, Kraft"
-                className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                data-testid="input-brand"
-              />
-            </div>
-            
-            {/* Serving Size Section - Critical for API integration */}
-            <div className="bg-blue-900/20 border border-blue-700/50 p-4 rounded-xl">
-              <Label className="text-sm text-blue-300 font-medium">🥄 Serving Size</Label>
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                <div>
-                  <Label htmlFor="quantity" className="text-xs text-gray-400">Quantity</Label>
-                  <Input
-                    id="quantity"
-                    type="number"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    placeholder="1"
-                    className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                    data-testid="input-quantity"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="unit" className="text-xs text-gray-400">Unit</Label>
-                  <Select value={unit} onValueChange={(value) => setUnit(value as FoodUnit)}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl" data-testid="select-unit">
-                      <SelectValue placeholder="Select unit" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-700 border-gray-600">
-                      <SelectItem value="g" className="text-white hover:bg-gray-600">grams (g)</SelectItem>
-                      <SelectItem value="oz" className="text-white hover:bg-gray-600">ounces (oz)</SelectItem>
-                      <SelectItem value="cup" className="text-white hover:bg-gray-600">cups</SelectItem>
-                      <SelectItem value="piece" className="text-white hover:bg-gray-600">pieces</SelectItem>
-                      <SelectItem value="serving" className="text-white hover:bg-gray-600">servings</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-            
-            {/* Core Nutrition */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="calories" className="text-sm text-gray-300">Calories</Label>
-                <Input
-                  id="calories"
-                  type="number"
-                  value={calories}
-                  onChange={(e) => setCalories(e.target.value)}
-                  placeholder="0"
-                  className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                  data-testid="input-calories"
-                />
-              </div>
-              <div>
-                <Label htmlFor="carbs" className="text-sm text-gray-300">Carbs (g)</Label>
-                <Input
-                  id="carbs"
-                  type="number"
-                  value={carbs}
-                  onChange={(e) => setCarbs(e.target.value)}
-                  placeholder="0"
-                  className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                  data-testid="input-carbs"
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="protein" className="text-sm text-gray-300">Protein (g)</Label>
-                <Input
-                  id="protein"
-                  type="number"
-                  value={protein}
-                  onChange={(e) => setProtein(e.target.value)}
-                  placeholder="0"
-                  className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                  data-testid="input-protein"
-                />
-              </div>
-              <div>
-                <Label htmlFor="fat" className="text-sm text-gray-300">Fat (g)</Label>
-                <Input
-                  id="fat"
-                  type="number"
-                  value={fat}
-                  onChange={(e) => setFat(e.target.value)}
-                  placeholder="0"
-                  className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                  data-testid="input-fat"
-                />
-              </div>
-            </div>
-            
-            {/* Extended Nutrition - Collapsible */}
-            <Collapsible open={showExtendedNutrition} onOpenChange={setShowExtendedNutrition}>
-              <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-gray-700/50 rounded-xl hover:bg-gray-700 transition-colors">
-                <span className="text-sm text-gray-300">📊 Additional Nutrition</span>
-                {showExtendedNutrition ? (
-                  <ChevronUp className="w-4 h-4 text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
-                )}
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <div className="mt-3 space-y-3">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="fiber" className="text-sm text-gray-300">Fiber (g)</Label>
-                      <Input
-                        id="fiber"
-                        type="number"
-                        value={fiber}
-                        onChange={(e) => setFiber(e.target.value)}
-                        placeholder="0"
-                        className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                        data-testid="input-fiber"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="sugar" className="text-sm text-gray-300">Sugar (g)</Label>
-                      <Input
-                        id="sugar"
-                        type="number"
-                        value={sugar}
-                        onChange={(e) => setSugar(e.target.value)}
-                        placeholder="0"
-                        className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                        data-testid="input-sugar"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="sodium" className="text-sm text-gray-300">Sodium (mg)</Label>
-                      <Input
-                        id="sodium"
-                        type="number"
-                        value={sodium}
-                        onChange={(e) => setSodium(e.target.value)}
-                        placeholder="0"
-                        className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                        data-testid="input-sodium"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="saturatedFat" className="text-sm text-gray-300">Sat. Fat (g)</Label>
-                      <Input
-                        id="saturatedFat"
-                        type="number"
-                        value={saturatedFat}
-                        onChange={(e) => setSaturatedFat(e.target.value)}
-                        placeholder="0"
-                        className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                        data-testid="input-saturated-fat"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-            
-            {/* Meal Selection */}
-            <div>
-              <Label htmlFor="meal" className="text-sm text-gray-300">Meal</Label>
-              <Select value={selectedMeal} onValueChange={(value: 'breakfast' | 'lunch' | 'dinner' | 'snack') => setSelectedMeal(value)}>
-                <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl" data-testid="select-meal">
-                  <SelectValue placeholder="Select meal" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-700 border-gray-600">
-                  <SelectItem value="breakfast" className="text-white hover:bg-gray-600">Breakfast</SelectItem>
-                  <SelectItem value="lunch" className="text-white hover:bg-gray-600">Lunch</SelectItem>
-                  <SelectItem value="dinner" className="text-white hover:bg-gray-600">Dinner</SelectItem>
-                  <SelectItem value="snack" className="text-white hover:bg-gray-600">Snack</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {/* Barcode Display (when present) */}
-            {barcode && (
-              <div className="bg-green-900/20 border border-green-700/50 p-3 rounded-xl">
-                <Label className="text-sm text-green-300">🏷️ Barcode/UPC</Label>
-                <div className="text-sm text-gray-300 mt-1 font-mono">{barcode}</div>
-              </div>
-            )}
-            
-            <Button 
-              onClick={handleAddFood}
-              disabled={!foodName.trim() || !calories || !carbs || !protein || !fat || !quantity}
-              className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl"
-              data-testid="button-add-food"
-            >
-              Add Food
-            </Button>
-          </div>
-        </div>
+        </Dialog>
 
         {/* Meal Sections */}
         <div className="space-y-4">
@@ -1071,6 +846,16 @@ export default function FoodTrackerPage() {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
+                {/* Add Food Button */}
+                <Button
+                  onClick={() => openSearchForMeal('breakfast')}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
+                  data-testid="button-add-breakfast"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Food
+                </Button>
+                
                 {getMealEntries('breakfast').map((entry) => (
                   <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                     <div className="flex-1">
@@ -1131,6 +916,16 @@ export default function FoodTrackerPage() {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
+                {/* Add Food Button */}
+                <Button
+                  onClick={() => openSearchForMeal('lunch')}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
+                  data-testid="button-add-lunch"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Food
+                </Button>
+                
                 {getMealEntries('lunch').map((entry) => (
                   <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                     <div className="flex-1">
@@ -1191,6 +986,16 @@ export default function FoodTrackerPage() {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
+                {/* Add Food Button */}
+                <Button
+                  onClick={() => openSearchForMeal('dinner')}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
+                  data-testid="button-add-dinner"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Food
+                </Button>
+                
                 {getMealEntries('dinner').map((entry) => (
                   <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                     <div className="flex-1">
@@ -1251,6 +1056,16 @@ export default function FoodTrackerPage() {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
+                {/* Add Food Button */}
+                <Button
+                  onClick={() => openSearchForMeal('snack')}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
+                  data-testid="button-add-snack"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Food
+                </Button>
+                
                 {getMealEntries('snack').map((entry) => (
                   <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                     <div className="flex-1">
