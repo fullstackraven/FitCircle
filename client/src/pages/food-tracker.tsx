@@ -855,8 +855,17 @@ export default function FoodTrackerPage() {
                 </Button>
                 
                 {getMealEntries('breakfast').map((entry) => (
-                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
-                    <div className="flex-1">
+                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start hover:bg-gray-600 transition-colors cursor-pointer">
+                    <div 
+                      className="flex-1"
+                      onClick={() => {
+                        setSelectedFoodForServing(entry);
+                        setServingQuantity(entry.quantity.toString());
+                        setServingUnit(entry.unit);
+                        setServingSizeOpen(true);
+                      }}
+                      data-testid={`food-item-${entry.id}`}
+                    >
                       <h3 className="font-medium text-white text-sm">
                         {entry.name}
                         {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
@@ -866,24 +875,18 @@ export default function FoodTrackerPage() {
                         {entry.fiber && <span> • {entry.fiber}g fiber</span>}
                       </div>
                     </div>
-                    <div className="flex space-x-1 ml-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditFood(entry)}
-                        className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-xl p-1"
-                      >
-                        <Edit2 className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteFood(entry.id)}
-                        className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteFood(entry.id);
+                      }}
+                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1 ml-2"
+                      data-testid={`button-delete-${entry.id}`}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
                   </div>
                 ))}
                 {getMealEntries('breakfast').length === 0 && (
@@ -925,8 +928,17 @@ export default function FoodTrackerPage() {
                 </Button>
                 
                 {getMealEntries('lunch').map((entry) => (
-                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
-                    <div className="flex-1">
+                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start hover:bg-gray-600 transition-colors cursor-pointer">
+                    <div 
+                      className="flex-1"
+                      onClick={() => {
+                        setSelectedFoodForServing(entry);
+                        setServingQuantity(entry.quantity.toString());
+                        setServingUnit(entry.unit);
+                        setServingSizeOpen(true);
+                      }}
+                      data-testid={`food-item-${entry.id}`}
+                    >
                       <h3 className="font-medium text-white text-sm">
                         {entry.name}
                         {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
@@ -936,24 +948,18 @@ export default function FoodTrackerPage() {
                         {entry.fiber && <span> • {entry.fiber}g fiber</span>}
                       </div>
                     </div>
-                    <div className="flex space-x-1 ml-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditFood(entry)}
-                        className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-xl p-1"
-                      >
-                        <Edit2 className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteFood(entry.id)}
-                        className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteFood(entry.id);
+                      }}
+                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1 ml-2"
+                      data-testid={`button-delete-${entry.id}`}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
                   </div>
                 ))}
                 {getMealEntries('lunch').length === 0 && (
@@ -995,8 +1001,17 @@ export default function FoodTrackerPage() {
                 </Button>
                 
                 {getMealEntries('dinner').map((entry) => (
-                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
-                    <div className="flex-1">
+                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start hover:bg-gray-600 transition-colors cursor-pointer">
+                    <div 
+                      className="flex-1"
+                      onClick={() => {
+                        setSelectedFoodForServing(entry);
+                        setServingQuantity(entry.quantity.toString());
+                        setServingUnit(entry.unit);
+                        setServingSizeOpen(true);
+                      }}
+                      data-testid={`food-item-${entry.id}`}
+                    >
                       <h3 className="font-medium text-white text-sm">
                         {entry.name}
                         {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
@@ -1006,24 +1021,18 @@ export default function FoodTrackerPage() {
                         {entry.fiber && <span> • {entry.fiber}g fiber</span>}
                       </div>
                     </div>
-                    <div className="flex space-x-1 ml-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditFood(entry)}
-                        className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-xl p-1"
-                      >
-                        <Edit2 className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteFood(entry.id)}
-                        className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteFood(entry.id);
+                      }}
+                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1 ml-2"
+                      data-testid={`button-delete-${entry.id}`}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
                   </div>
                 ))}
                 {getMealEntries('dinner').length === 0 && (
@@ -1065,8 +1074,17 @@ export default function FoodTrackerPage() {
                 </Button>
                 
                 {getMealEntries('snack').map((entry) => (
-                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
-                    <div className="flex-1">
+                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start hover:bg-gray-600 transition-colors cursor-pointer">
+                    <div 
+                      className="flex-1"
+                      onClick={() => {
+                        setSelectedFoodForServing(entry);
+                        setServingQuantity(entry.quantity.toString());
+                        setServingUnit(entry.unit);
+                        setServingSizeOpen(true);
+                      }}
+                      data-testid={`food-item-${entry.id}`}
+                    >
                       <h3 className="font-medium text-white text-sm">
                         {entry.name}
                         {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
@@ -1076,24 +1094,18 @@ export default function FoodTrackerPage() {
                         {entry.fiber && <span> • {entry.fiber}g fiber</span>}
                       </div>
                     </div>
-                    <div className="flex space-x-1 ml-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditFood(entry)}
-                        className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-xl p-1"
-                      >
-                        <Edit2 className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteFood(entry.id)}
-                        className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteFood(entry.id);
+                      }}
+                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1 ml-2"
+                      data-testid={`button-delete-${entry.id}`}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
                   </div>
                 ))}
                 {getMealEntries('snack').length === 0 && (
