@@ -10,13 +10,16 @@ interface OpenFoodFactsProduct {
   brands?: string;
   nutriments?: {
     'energy-kcal_100g'?: number;
+    'energy_100g'?: number;
     'carbohydrates_100g'?: number;
     'proteins_100g'?: number;
     'fat_100g'?: number;
     'fiber_100g'?: number;
     'sugars_100g'?: number;
     'sodium_100g'?: number;
+    'salt_100g'?: number;
     'saturated-fat_100g'?: number;
+    [key: string]: any; // Allow additional nutrition fields
   };
   serving_size?: string;
 }
@@ -47,6 +50,8 @@ router.get('/search', async (req, res) => {
 
     const apiUrl = `https://world.openfoodfacts.org/api/v2/search?${searchParams}`;
     
+    console.log(`Making API request to: ${apiUrl}`);
+    
     const response = await fetch(apiUrl, {
       headers: {
         'User-Agent': 'FitCircle/1.0 (Nutrition Tracker)',
@@ -54,34 +59,45 @@ router.get('/search', async (req, res) => {
     });
 
     if (!response.ok) {
+      console.error(`API request failed: ${response.status}`);
       throw new Error(`API request failed: ${response.status}`);
     }
 
     const data: OpenFoodFactsSearchResponse = await response.json();
+    console.log(`API returned ${data.products?.length || 0} total products`);
     let products = data.products || [];
 
-    // Filter for relevant, English products with nutrition data
+    // DEBUG: Log raw products before filtering
+    console.log('Raw products before filtering:', products.slice(0, 2).map(p => ({
+      name: p.product_name || p.product_name_en,
+      brand: p.brands
+    })));
+    
+    // Very relaxed filter - just ensure we have a name
     products = products.filter(product => {
       const name = product.product_name || product.product_name_en || '';
-      const brand = product.brands || '';
-      const searchTerm = query.toLowerCase();
       
-      // Must have a name and nutrition data
-      if (!name || !product.nutriments || !product.nutriments['energy-kcal_100g']) {
+      // Must have a name (very permissive)
+      if (!name || name.trim().length === 0) {
         return false;
       }
       
-      // Filter for English text (ASCII characters only)
-      if (!/^[\x00-\x7F\s]*$/.test(name)) {
-        return false;
-      }
-      
-      // Must match search term in name or brand
-      const nameMatch = name.toLowerCase().includes(searchTerm);
-      const brandMatch = brand.toLowerCase().includes(searchTerm);
-      
-      return nameMatch || brandMatch;
+      return true; // Accept all products with names for now
     });
+    
+    console.log(`After permissive filtering: Found ${products.length} matching products out of ${data.products?.length || 0} total`);
+    
+    // Log sample products that passed filtering
+    if (products.length > 0) {
+      console.log('Products that passed filter:', products.slice(0, 2).map(p => ({
+        name: p.product_name || p.product_name_en,
+        brand: p.brands,
+        hasNutriments: !!p.nutriments,
+        calories: p.nutriments?.['energy-kcal_100g']
+      })));
+    } else {
+      console.log('No products passed the basic name filter');
+    }
 
     // Convert to our format
     const convertedProducts = products.map(product => {
@@ -96,15 +112,16 @@ router.get('/search', async (req, res) => {
       const quantity = servingGrams || 100;
       const unit = servingGrams ? 'g' : 'g';
       
+      // Handle missing nutriments gracefully
       const nutritionPer100g = {
-        calories: nutriments['energy-kcal_100g'] || 0,
-        carbs: nutriments['carbohydrates_100g'] || 0,
-        protein: nutriments['proteins_100g'] || 0,
-        fat: nutriments['fat_100g'] || 0,
-        fiber: nutriments['fiber_100g'],
-        sugar: nutriments['sugars_100g'],
-        sodium: nutriments['sodium_100g'] ? nutriments['sodium_100g'] * 1000 : undefined,
-        saturatedFat: nutriments['saturated-fat_100g']
+        calories: (nutriments?.['energy-kcal_100g'] || nutriments?.['energy_100g'] || 0),
+        carbs: nutriments?.['carbohydrates_100g'] || 0,
+        protein: nutriments?.['proteins_100g'] || 0,
+        fat: nutriments?.['fat_100g'] || 0,
+        fiber: nutriments?.['fiber_100g'] || undefined,
+        sugar: nutriments?.['sugars_100g'] || undefined,
+        sodium: nutriments?.['sodium_100g'] ? nutriments['sodium_100g'] * 1000 : (nutriments?.['salt_100g'] ? nutriments['salt_100g'] * 400 : undefined),
+        saturatedFat: nutriments?.['saturated-fat_100g'] || undefined
       };
       
       const multiplier = quantity / 100;
@@ -131,7 +148,9 @@ router.get('/search', async (req, res) => {
     res.json({ products: convertedProducts });
   } catch (error) {
     console.error('Food API proxy error:', error);
-    res.status(500).json({ error: 'Failed to search food database' });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error details:', errorMessage);
+    res.status(500).json({ error: 'Failed to search food database', details: errorMessage });
   }
 });
 
