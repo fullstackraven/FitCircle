@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp, Search, X, Edit2, Save, X as Cancel, ScanLine } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp, Search, X, Edit2, Save, X as Cancel } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,6 @@ import { getTodayString } from '@/lib/date-utils';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 import { foodApiService } from '@/lib/food-api';
 import { useToast } from '@/hooks/use-toast';
-import BarcodeScanner from '@/components/BarcodeScanner';
 
 // Strong typing for nutrition data and units
 type FoodUnit = 'g' | 'oz' | 'cup' | 'piece' | 'serving';
@@ -159,7 +158,6 @@ export default function FoodTrackerPage() {
   const [allFoodHistory, setAllFoodHistory] = useState<FoodEntry[]>([]);
   const [apiSearchResults, setApiSearchResults] = useState<FoodEntry[]>([]);
   const [isSearchingApi, setIsSearchingApi] = useState(false);
-  const [scannerOpen, setScannerOpen] = useState(false);
   
   // Edit states
   const [editingFood, setEditingFood] = useState<FoodEntry | null>(null);
@@ -401,44 +399,6 @@ export default function FoodTrackerPage() {
     setServingSizeOpen(true);
   };
 
-  // Function to handle barcode scan results
-  const handleBarcodeResult = async (barcode: string) => {
-    try {
-      console.log('Barcode scanned:', barcode);
-      const product = await foodApiService.getProductByBarcode(barcode);
-      
-      if (product) {
-        // Convert the product to our food entry format
-        const foodEntry = foodApiService.convertDirectApiToFoodEntry(product, searchMeal);
-        
-        // Open serving size dialog with the scanned product
-        setSelectedFoodForServing(foodEntry);
-        setServingQuantity('1');
-        setServingUnit(foodEntry.unit || 'serving');
-        setIsEditingExistingFood(false);
-        setEditingFoodId(null);
-        setServingSizeOpen(true);
-        
-        toast({
-          title: "Product Found",
-          description: `Found ${foodEntry.name}${foodEntry.brand ? ` by ${foodEntry.brand}` : ''}`,
-        });
-      } else {
-        toast({
-          title: "Product Not Found",
-          description: "This barcode was not found in our database",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      console.error('Barcode lookup failed:', error);
-      toast({
-        title: "Scan Failed",
-        description: "Failed to look up barcode. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
 
   // Function to add food with confirmed serving size
   const handleConfirmServingSize = async () => {
@@ -755,16 +715,6 @@ export default function FoodTrackerPage() {
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 Add to {searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setScannerOpen(true)}
-                  className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl"
-                  data-testid="button-scan"
-                  title="Scan Barcode"
-                >
-                  <ScanLine className="h-5 w-5" />
-                </Button>
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
@@ -1390,12 +1340,6 @@ export default function FoodTrackerPage() {
           </Dialog>
         )}
         
-        {/* Barcode Scanner Modal */}
-        <BarcodeScanner
-          isOpen={scannerOpen}
-          onClose={() => setScannerOpen(false)}
-          onScanResult={handleBarcodeResult}
-        />
       </div>
     </div>
   );
