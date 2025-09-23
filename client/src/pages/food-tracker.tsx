@@ -172,6 +172,12 @@ export default function FoodTrackerPage() {
   const [editSodium, setEditSodium] = useState('');
   const [editSaturatedFat, setEditSaturatedFat] = useState('');
 
+  // Serving size form states
+  const [servingSizeOpen, setServingSizeOpen] = useState(false);
+  const [selectedFoodForServing, setSelectedFoodForServing] = useState<FoodEntry | null>(null);
+  const [servingQuantity, setServingQuantity] = useState('1');
+  const [servingUnit, setServingUnit] = useState<FoodUnit>('serving');
+
   // Check if we came from dashboard
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
   
@@ -379,33 +385,59 @@ export default function FoodTrackerPage() {
     setSearchOpen(true);
   };
 
+  // Function to open serving size form
   const handleAddFromSearch = (food: FoodEntry) => {
-    const newEntry: FoodEntry = {
-      id: Date.now().toString(),
-      name: food.name,
-      brand: food.brand,
-      barcode: food.barcode,
-      quantity: food.quantity || 100,
-      unit: food.unit || 'g',
-      calories: food.calories,
-      carbs: food.carbs,
-      protein: food.protein,
-      fat: food.fat,
-      fiber: food.fiber,
-      sugar: food.sugar,
-      sodium: food.sodium,
-      saturatedFat: food.saturatedFat,
-      nutritionPer100g: food.nutritionPer100g,
-      meal: searchMeal,
-      timestamp: new Date().toISOString()
-    };
+    setSelectedFoodForServing(food);
+    setServingQuantity('1');
+    setServingUnit(food.unit || 'serving');
+    setServingSizeOpen(true);
+  };
 
-    setFoodEntries(prev => [...prev, newEntry]);
+  // Function to add food with confirmed serving size
+  const handleConfirmServingSize = async () => {
+    if (!selectedFoodForServing) return;
     
-    // Close search modal and reset states
-    setSearchOpen(false);
-    setSearchQuery('');
-    setSearchMeal('breakfast');
+    try {
+      // Calculate nutritional values based on serving size
+      const multiplier = parseFloat(servingQuantity) || 1;
+      
+      const newFood: FoodEntry = {
+        ...selectedFoodForServing,
+        id: Date.now().toString(),
+        meal: searchMeal,
+        timestamp: new Date().toISOString(),
+        quantity: parseFloat(servingQuantity),
+        unit: servingUnit,
+        calories: Math.round(selectedFoodForServing.calories * multiplier),
+        carbs: Math.round(selectedFoodForServing.carbs * multiplier * 10) / 10,
+        protein: Math.round(selectedFoodForServing.protein * multiplier * 10) / 10,
+        fat: Math.round(selectedFoodForServing.fat * multiplier * 10) / 10,
+        fiber: selectedFoodForServing.fiber ? Math.round(selectedFoodForServing.fiber * multiplier * 10) / 10 : undefined,
+        sugar: selectedFoodForServing.sugar ? Math.round(selectedFoodForServing.sugar * multiplier * 10) / 10 : undefined,
+        sodium: selectedFoodForServing.sodium ? Math.round(selectedFoodForServing.sodium * multiplier) : undefined,
+        saturatedFat: selectedFoodForServing.saturatedFat ? Math.round(selectedFoodForServing.saturatedFat * multiplier * 10) / 10 : undefined,
+      };
+      
+      setFoodEntries(prev => [...prev, newFood]);
+      
+      // Close modals
+      setServingSizeOpen(false);
+      setSearchOpen(false);
+      setSearchQuery('');
+      setSelectedFoodForServing(null);
+      
+      toast({
+        title: "Food Added",
+        description: `${selectedFoodForServing.name} (${servingQuantity} ${servingUnit}) added to ${searchMeal}`,
+      });
+    } catch (error) {
+      console.error('Error adding food with serving size:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add food. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Edit functions
@@ -1107,6 +1139,113 @@ export default function FoodTrackerPage() {
             </CollapsibleContent>
           </Collapsible>
         </div>
+
+        {/* Serving Size Modal */}
+        <Dialog open={servingSizeOpen} onOpenChange={setServingSizeOpen}>
+          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center justify-between">
+                Confirm Serving Size
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => alert('Barcode scanner functionality coming soon!')}
+                  className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl"
+                  data-testid="button-scan-barcode-serving"
+                  title="Scan Barcode"
+                >
+                  <ScanLine className="h-5 w-5" />
+                </Button>
+              </DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Adjust the serving size for {selectedFoodForServing?.name}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              
+              {/* Food Info Display */}
+              {selectedFoodForServing && (
+                <div className="bg-gray-700 rounded-xl p-3">
+                  <h4 className="font-medium text-white text-sm">
+                    {selectedFoodForServing.name}
+                    {selectedFoodForServing.brand && <span className="text-gray-400 font-normal"> • {selectedFoodForServing.brand}</span>}
+                  </h4>
+                  <div className="text-xs text-gray-400 mt-1">
+                    Per {selectedFoodForServing.quantity}{selectedFoodForServing.unit}: {selectedFoodForServing.calories} cal • {selectedFoodForServing.carbs}g carbs • {selectedFoodForServing.protein}g protein • {selectedFoodForServing.fat}g fat
+                  </div>
+                </div>
+              )}
+              
+              {/* Serving Size Input */}
+              <div className="bg-blue-900/20 border border-blue-700/50 p-4 rounded-xl">
+                <Label className="text-sm text-blue-300 font-medium">🥄 Your Serving Size</Label>
+                <div className="grid grid-cols-2 gap-4 mt-2">
+                  <div>
+                    <Label htmlFor="servingQuantity" className="text-xs text-gray-400">Quantity</Label>
+                    <Input
+                      id="servingQuantity"
+                      type="number"
+                      value={servingQuantity}
+                      onChange={(e) => setServingQuantity(e.target.value)}
+                      placeholder="1"
+                      className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                      data-testid="input-serving-quantity"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="servingUnit" className="text-xs text-gray-400">Unit</Label>
+                    <Select value={servingUnit} onValueChange={(value) => setServingUnit(value as FoodUnit)}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl" data-testid="select-serving-unit">
+                        <SelectValue placeholder="Select unit" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-700 border-gray-600">
+                        <SelectItem value="g" className="text-white hover:bg-gray-600">grams (g)</SelectItem>
+                        <SelectItem value="oz" className="text-white hover:bg-gray-600">ounces (oz)</SelectItem>
+                        <SelectItem value="cup" className="text-white hover:bg-gray-600">cups</SelectItem>
+                        <SelectItem value="piece" className="text-white hover:bg-gray-600">pieces</SelectItem>
+                        <SelectItem value="serving" className="text-white hover:bg-gray-600">servings</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Calculated Nutrition Preview */}
+              {selectedFoodForServing && servingQuantity && (
+                <div className="bg-gray-700/50 rounded-xl p-3">
+                  <h5 className="text-sm font-medium text-gray-300 mb-2">📊 Nutrition for {servingQuantity} {servingUnit}:</h5>
+                  <div className="text-xs text-gray-400 space-y-1">
+                    <div>Calories: {Math.round(selectedFoodForServing.calories * (parseFloat(servingQuantity) || 1))}</div>
+                    <div>Carbs: {Math.round(selectedFoodForServing.carbs * (parseFloat(servingQuantity) || 1) * 10) / 10}g</div>
+                    <div>Protein: {Math.round(selectedFoodForServing.protein * (parseFloat(servingQuantity) || 1) * 10) / 10}g</div>
+                    <div>Fat: {Math.round(selectedFoodForServing.fat * (parseFloat(servingQuantity) || 1) * 10) / 10}g</div>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex space-x-3 pt-2">
+                <Button 
+                  onClick={handleConfirmServingSize}
+                  disabled={!servingQuantity || parseFloat(servingQuantity) <= 0}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl"
+                  data-testid="button-confirm-serving"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add to {searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => setServingSizeOpen(false)}
+                  className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 rounded-xl"
+                  data-testid="button-cancel-serving"
+                >
+                  <Cancel className="h-4 w-4 mr-2" />
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Edit Food Modal */}
         {editingFood && (
