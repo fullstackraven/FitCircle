@@ -9,7 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { getTodayString } from '@/lib/date-utils';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
-import { foodApiService } from '@/lib/food-api';
+import { localFoodService, LocalFoodItem, FoodEntry as LocalFoodEntry, FoodUnit as LocalFoodUnit } from '@/lib/local-food-service';
 import { useToast } from '@/hooks/use-toast';
 
 // Strong typing for nutrition data and units
@@ -180,8 +180,8 @@ export default function FoodTrackerPage() {
     calcium: '',
     iron: ''
   });
-  const [apiSearchResults, setApiSearchResults] = useState<FoodEntry[]>([]);
-  const [isSearchingApi, setIsSearchingApi] = useState(false);
+  const [searchResults, setSearchResults] = useState<LocalFoodItem[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   
   // Edit states
   const [editingFood, setEditingFood] = useState<FoodEntry | null>(null);
@@ -370,38 +370,35 @@ export default function FoodTrackerPage() {
     food.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
-  // API search with throttling
-  const performApiSearch = async (query: string) => {
+  // Local search with throttling
+  const performLocalSearch = async (query: string) => {
     if (!query.trim() || query.length < 2) {
-      setApiSearchResults([]);
+      setSearchResults([]);
       return;
     }
     
-    setIsSearchingApi(true);
+    setIsSearching(true);
     try {
-      const products = await foodApiService.searchProducts(query, 8);
-      const foodEntries = products.map(product => 
-        foodApiService.convertToFoodEntry(product, searchMeal)
-      );
-      setApiSearchResults(foodEntries);
+      const products = await localFoodService.searchProducts(query, 8);
+      setSearchResults(products);
     } catch (error) {
-      console.error('API search failed:', error);
-      setApiSearchResults([]);
+      console.error('Local search failed:', error);
+      setSearchResults([]);
     } finally {
-      setIsSearchingApi(false);
+      setIsSearching(false);
     }
   };
   
-  // Throttled API search (now always searches API when query exists)
+  // Throttled local search
   useEffect(() => {
     if (searchQuery) {
       const timeoutId = setTimeout(() => {
-        performApiSearch(searchQuery);
-      }, 300); // 300ms delay to avoid too many API calls
+        performLocalSearch(searchQuery);
+      }, 300); // 300ms delay to avoid too many searches
       
       return () => clearTimeout(timeoutId);
     } else {
-      setApiSearchResults([]);
+      setSearchResults([]);
     }
   }, [searchQuery, searchMeal]);
   
@@ -409,7 +406,7 @@ export default function FoodTrackerPage() {
   const openSearchForMeal = (meal: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
     setSearchMeal(meal);
     setSearchQuery('');
-    setApiSearchResults([]);
+    setSearchResults([]);
     setSearchOpen(true);
   };
 
@@ -453,7 +450,7 @@ export default function FoodTrackerPage() {
     }
 
     try {
-      const result = await foodApiService.addCustomFood({
+      const result = await localFoodService.addCustomFood({
         name: customFoodData.name.trim(),
         brand: customFoodData.brand.trim() || undefined,
         quantity: parseFloat(customFoodData.quantity) || 100,
@@ -476,11 +473,7 @@ export default function FoodTrackerPage() {
 
       if (result.success && result.food) {
         // Convert the saved food to our format and add to meal
-        const newFoodEntry: FoodEntry = {
-          ...result.food,
-          meal: customFoodMeal,
-          timestamp: new Date().toISOString()
-        };
+        const newFoodEntry: FoodEntry = localFoodService.convertToFoodEntry(result.food, customFoodMeal);
 
         // Add to today's food entries
         const updatedEntries = [...foodEntries, newFoodEntry];
@@ -868,7 +861,7 @@ export default function FoodTrackerPage() {
                     <Cancel className="w-4 h-4" />
                   </Button>
                 )}
-                {isSearchingApi && (
+                {isSearching && (
                   <div className="absolute inset-x-0 top-full mt-1 text-center">
                     <div className="text-xs text-gray-400">Searching...</div>
                   </div>
@@ -890,9 +883,9 @@ export default function FoodTrackerPage() {
               <div className="max-h-80 overflow-y-auto">
                 {searchQuery ? (
                   // Search Results
-                  apiSearchResults.length > 0 ? (
+                  searchResults.length > 0 ? (
                     <div className="space-y-2">
-                      {apiSearchResults.map((food) => (
+                      {searchResults.map((food) => (
                         <div key={food.id} className="bg-gray-700/30 border border-gray-600/50 rounded-xl p-3 hover:bg-gray-700/50 transition-colors" data-testid={`row-food-${food.id}`}>
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
@@ -910,7 +903,7 @@ export default function FoodTrackerPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleAddFromSearch(food)}
+                              onClick={() => handleAddFromSearch(localFoodService.convertToFoodEntry(food, searchMeal))}
                               className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0 ml-3 flex-shrink-0"
                               data-testid={`button-add-${food.id}`}
                             >
@@ -920,7 +913,7 @@ export default function FoodTrackerPage() {
                         </div>
                       ))}
                     </div>
-                  ) : !isSearchingApi ? (
+                  ) : !isSearching ? (
                     <div className="text-center text-gray-500 py-8 text-sm">
                       No results found
                     </div>
@@ -947,7 +940,7 @@ export default function FoodTrackerPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleAddFromSearch(food)}
+                              onClick={() => handleAddFromSearch(localFoodService.convertToFoodEntry(food, searchMeal))}
                               className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0 ml-3 flex-shrink-0"
                               data-testid={`button-add-${food.id}`}
                             >
