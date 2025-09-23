@@ -59,6 +59,7 @@ export default function Home() {
   const [timerSeconds, setTimerSeconds] = useState<string>('0');
   const [isAllWorkoutsOpen, setIsAllWorkoutsOpen] = useState(false);
   const [isRecentActivityOpen, setIsRecentActivityOpen] = useState(false);
+  const [isThisWeekOpen, setIsThisWeekOpen] = useState(false);
 
   // Check if we should open dashboard on load
   useEffect(() => {
@@ -93,6 +94,26 @@ export default function Home() {
   // Filter workouts that should be active today
   const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
   const todaysWorkouts = workouts.filter(workout => isWorkoutActiveOnDay(workout, today));
+
+  // Get current week's days with scheduled workouts
+  const getWeekDays = () => {
+    const today = new Date();
+    const sunday = new Date(today.setDate(today.getDate() - today.getDay()));
+    
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(sunday);
+      date.setDate(sunday.getDate() + index);
+      
+      return {
+        dayOfWeek: index, // 0-6
+        name: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][index],
+        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        workouts: workouts.filter(workout => isWorkoutActiveOnDay(workout, index))
+      };
+    });
+  };
+  
+  const weekDays = getWeekDays();
 
   const handleWorkoutClick = (workoutId: string) => {
     const todayTotal = todaysTotals.find(t => t.id === workoutId);
@@ -487,6 +508,106 @@ export default function Home() {
         </div>
       </section>
 
+
+      {/* Today's Totals Section */}
+      {!isTodaysTotalsHidden && todaysTotals.some(w => w.count > 0) && (
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-4 text-center text-white">Today's Totals</h2>
+          <div className="bg-slate-800 rounded-xl p-4 space-y-3">
+            {todaysTotals.filter(w => w.count > 0).map((workout) => (
+              <div key={workout.id} className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-4 h-4 rounded-full ${getColorClass(workout.color)}`}></div>
+                  <span className="font-medium text-white">{workout.name}</span>
+                </div>
+                <span className="text-lg font-bold text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* This Week Section */}
+      {workouts.length > 0 && (
+        <section className="mb-8">
+          <Collapsible open={isThisWeekOpen} onOpenChange={setIsThisWeekOpen}>
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-between bg-slate-800 border-slate-700 text-white hover:bg-slate-700 py-4 h-auto rounded-xl mb-4"
+              >
+                <span className="text-lg font-semibold">This Week</span>
+                {isThisWeekOpen ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="space-y-3">
+                {weekDays.map((day) => (
+                  <div key={day.dayOfWeek} className="bg-slate-800 rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="font-medium text-slate-300">{day.name}</span>
+                      <span className="text-sm text-slate-400">{day.date}</span>
+                    </div>
+                    {day.workouts.length > 0 ? (
+                      <div className="space-y-2">
+                        {day.workouts.map((workout) => (
+                          <div key={workout.id} className="flex items-center space-x-3 py-2">
+                            <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)}`} />
+                            <span className="text-white text-sm">{workout.name}</span>
+                            <span className="text-xs text-slate-400">Goal: {workout.dailyGoal}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-sm text-slate-400">No workouts scheduled</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </section>
+      )}
+
+
+
+      {/* Recent Activity Section - Collapsible */}
+      {!isRecentActivityHidden && recentActivity.length > 0 && (
+        <section className="mb-8">
+          <Collapsible open={isRecentActivityOpen} onOpenChange={setIsRecentActivityOpen}>
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-between bg-slate-800 border-slate-700 text-white hover:bg-slate-700 py-4 h-auto rounded-xl mb-4"
+              >
+                <span className="text-lg font-semibold">Recent Activity</span>
+                {isRecentActivityOpen ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="space-y-3">
+                {recentActivity.map((day) => (
+                  <div key={day.dateString} className="bg-slate-800 rounded-xl p-4">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="font-medium text-slate-300">{day.date}</span>
+                      <span className="text-sm text-slate-400">{typeof day.totalReps === 'number' ? day.totalReps : 0} total</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      {day.workouts.filter(w => w.count > 0).map((workout) => (
+                        <div key={workout.id} className="text-center">
+                          <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)} mx-auto mb-1`}></div>
+                          <span className="text-sm font-medium text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </section>
+      )}
+
       {/* All Workouts Section */}
       {workouts.length > 0 && (
         <section className="mb-8">
@@ -533,63 +654,6 @@ export default function Home() {
             </CollapsibleContent>
             </Collapsible>
           </div>
-        </section>
-      )}
-
-      {/* Today's Totals Section */}
-      {!isTodaysTotalsHidden && todaysTotals.some(w => w.count > 0) && (
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4 text-center text-white">Today's Totals</h2>
-          <div className="bg-slate-800 rounded-xl p-4 space-y-3">
-            {todaysTotals.filter(w => w.count > 0).map((workout) => (
-              <div key={workout.id} className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-4 h-4 rounded-full ${getColorClass(workout.color)}`}></div>
-                  <span className="font-medium text-white">{workout.name}</span>
-                </div>
-                <span className="text-lg font-bold text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-
-
-      {/* Recent Activity Section - Collapsible */}
-      {!isRecentActivityHidden && recentActivity.length > 0 && (
-        <section className="mb-8">
-          <Collapsible open={isRecentActivityOpen} onOpenChange={setIsRecentActivityOpen}>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-between bg-slate-800 border-slate-700 text-white hover:bg-slate-700 py-4 h-auto rounded-xl mb-4"
-              >
-                <span className="text-lg font-semibold">Recent Activity</span>
-                {isRecentActivityOpen ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="space-y-3">
-                {recentActivity.map((day) => (
-                  <div key={day.dateString} className="bg-slate-800 rounded-xl p-4">
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="font-medium text-slate-300">{day.date}</span>
-                      <span className="text-sm text-slate-400">{typeof day.totalReps === 'number' ? day.totalReps : 0} total</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      {day.workouts.filter(w => w.count > 0).map((workout) => (
-                        <div key={workout.id} className="text-center">
-                          <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)} mx-auto mb-1`}></div>
-                          <span className="text-sm font-medium text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
         </section>
       )}
 
