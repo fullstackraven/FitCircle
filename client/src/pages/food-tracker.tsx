@@ -860,16 +860,6 @@ export default function FoodTrackerPage() {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
-                {/* Add Food Button */}
-                <Button
-                  onClick={() => openSearchForMeal('breakfast')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
-                  data-testid="button-add-breakfast"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Food
-                </Button>
-                
                 {getMealEntries('breakfast').map((entry) => (
                   <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start hover:bg-gray-600 transition-colors cursor-pointer">
                     <div 
@@ -912,6 +902,16 @@ export default function FoodTrackerPage() {
                     No breakfast items logged
                   </div>
                 )}
+                
+                {/* Add Food Button */}
+                <Button
+                  onClick={() => openSearchForMeal('breakfast')}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
+                  data-testid="button-add-breakfast"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Food
+                </Button>
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -935,16 +935,6 @@ export default function FoodTrackerPage() {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
-                {/* Add Food Button */}
-                <Button
-                  onClick={() => openSearchForMeal('lunch')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
-                  data-testid="button-add-lunch"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Food
-                </Button>
-                
                 {getMealEntries('lunch').map((entry) => (
                   <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start hover:bg-gray-600 transition-colors cursor-pointer">
                     <div 
@@ -987,6 +977,16 @@ export default function FoodTrackerPage() {
                     No lunch items logged
                   </div>
                 )}
+                
+                {/* Add Food Button */}
+                <Button
+                  onClick={() => openSearchForMeal('lunch')}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
+                  data-testid="button-add-lunch"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Food
+                </Button>
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -1010,16 +1010,6 @@ export default function FoodTrackerPage() {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
-                {/* Add Food Button */}
-                <Button
-                  onClick={() => openSearchForMeal('dinner')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
-                  data-testid="button-add-dinner"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Food
-                </Button>
-                
                 {getMealEntries('dinner').map((entry) => (
                   <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start hover:bg-gray-600 transition-colors cursor-pointer">
                     <div 
@@ -1062,6 +1052,16 @@ export default function FoodTrackerPage() {
                     No dinner items logged
                   </div>
                 )}
+                
+                {/* Add Food Button */}
+                <Button
+                  onClick={() => openSearchForMeal('dinner')}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
+                  data-testid="button-add-dinner"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Food
+                </Button>
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -1085,16 +1085,6 @@ export default function FoodTrackerPage() {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
-                {/* Add Food Button */}
-                <Button
-                  onClick={() => openSearchForMeal('snack')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
-                  data-testid="button-add-snack"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Food
-                </Button>
-                
                 {getMealEntries('snack').map((entry) => (
                   <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start hover:bg-gray-600 transition-colors cursor-pointer">
                     <div 
@@ -1137,6 +1127,16 @@ export default function FoodTrackerPage() {
                     No snacks logged
                   </div>
                 )}
+                
+                {/* Add Food Button */}
+                <Button
+                  onClick={() => openSearchForMeal('snack')}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
+                  data-testid="button-add-snack"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Food
+                </Button>
               </div>
             </CollapsibleContent>
           </Collapsible>
