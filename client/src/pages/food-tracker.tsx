@@ -746,25 +746,27 @@ export default function FoodTrackerPage() {
                 {searchQuery ? (
                   // Search Results
                   apiSearchResults.length > 0 ? (
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       {apiSearchResults.map((food) => (
-                        <div key={food.id} className="flex items-center justify-between p-3 hover:bg-gray-700/50 rounded-lg transition-colors" data-testid={`row-food-${food.id}`}>
-                          <div className="flex-1">
-                            <div className="font-medium text-white text-sm">
-                              {food.name}
-                              {food.brand && <span className="text-gray-400 font-normal text-xs ml-1">{food.brand}</span>}
+                        <div key={food.id} className="bg-gray-700/30 border border-gray-600/50 rounded-xl p-3 hover:bg-gray-700/50 transition-colors" data-testid={`row-food-${food.id}`}>
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="font-medium text-white text-sm">
+                                {food.name}
+                                {food.brand && <span className="text-gray-400 font-normal text-xs ml-1">{food.brand}</span>}
+                              </div>
+                              <div className="text-xs text-gray-400 mt-0.5">
+                                {food.quantity} {food.unit}
+                              </div>
+                              <div className="text-xs text-gray-400 mt-1">
+                                {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
+                              </div>
                             </div>
-                            <div className="text-xs text-gray-400 mt-0.5">
-                              {food.quantity} {food.unit}
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-3">
-                            <span className="text-sm text-gray-300">{food.calories} cal</span>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleAddFromSearch(food)}
-                              className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                              className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0 ml-3 flex-shrink-0"
                               data-testid={`button-add-${food.id}`}
                             >
                               <Plus className="w-4 h-4" />
@@ -781,25 +783,27 @@ export default function FoodTrackerPage() {
                 ) : (
                   // Recent Foods (when no search query)
                   filteredFoodHistory.length > 0 ? (
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       {filteredFoodHistory.slice(0, 10).map((food) => (
-                        <div key={food.id} className="flex items-center justify-between p-3 hover:bg-gray-700/50 rounded-lg transition-colors" data-testid={`row-food-${food.id}`}>
-                          <div className="flex-1">
-                            <div className="font-medium text-white text-sm">
-                              {food.name}
-                              {food.brand && <span className="text-gray-400 font-normal text-xs ml-1">{food.brand}</span>}
+                        <div key={food.id} className="bg-gray-700/30 border border-gray-600/50 rounded-xl p-3 hover:bg-gray-700/50 transition-colors" data-testid={`row-food-${food.id}`}>
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="font-medium text-white text-sm">
+                                {food.name}
+                                {food.brand && <span className="text-gray-400 font-normal text-xs ml-1">{food.brand}</span>}
+                              </div>
+                              <div className="text-xs text-gray-400 mt-0.5">
+                                {food.quantity} {food.unit}
+                              </div>
+                              <div className="text-xs text-gray-400 mt-1">
+                                {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
+                              </div>
                             </div>
-                            <div className="text-xs text-gray-400 mt-0.5">
-                              {food.quantity} {food.unit}
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-3">
-                            <span className="text-sm text-gray-300">{food.calories} cal</span>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleAddFromSearch(food)}
-                              className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                              className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0 ml-3 flex-shrink-0"
                               data-testid={`button-add-${food.id}`}
                             >
                               <Plus className="w-4 h-4" />
