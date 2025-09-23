@@ -10,15 +10,48 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { getTodayString } from '@/lib/date-utils';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
-interface FoodEntry {
-  id: string;
-  name: string;
+// Strong typing for nutrition data and units
+type FoodUnit = 'g' | 'oz' | 'cup' | 'piece' | 'serving';
+
+interface NutritionPer100g {
   calories: number;
   carbs: number;
   protein: number;
   fat: number;
+  fiber?: number;
+  sugar?: number;
+  sodium?: number; // in mg
+  saturatedFat?: number;
+}
+
+interface FoodEntry {
+  id: string;
+  name: string;
+  brand?: string;
+  barcode?: string;
+  
+  // Serving info
+  quantity: number;
+  unit: FoodUnit;
+  
+  // Basic macros (calculated for actual serving)
+  calories: number;
+  carbs: number;
+  protein: number;
+  fat: number;
+  
+  // Extended nutrition (calculated for actual serving)
+  fiber?: number;
+  sugar?: number;
+  sodium?: number; // in mg
+  saturatedFat?: number;
+  
+  // Metadata
   meal: 'breakfast' | 'lunch' | 'dinner' | 'snack';
   timestamp: string;
+  
+  // API reference data (per 100g for future calculations)
+  nutritionPer100g?: NutritionPer100g;
 }
 
 interface MacroTargets {
@@ -27,6 +60,52 @@ interface MacroTargets {
   protein: number;
   fat: number;
 }
+
+// Utility function for calculating nutrition values from serving sizes
+const calculateNutritionForServing = (
+  nutritionPer100g: NutritionPer100g,
+  quantity: number,
+  unit: FoodUnit,
+  foodSpecificServingGrams?: number // from API when available
+) => {
+  // Convert user quantity to grams for calculation
+  const gramsConversion: Record<FoodUnit, number> = {
+    'g': 1,
+    'oz': 28.35,
+    'cup': 240, // generic, should use food-specific when available
+    'piece': 100, // generic, should use food-specific when available
+    'serving': foodSpecificServingGrams || 100 // prefer API serving size
+  };
+  
+  const totalGrams = quantity * gramsConversion[unit];
+  const multiplier = totalGrams / 100;
+  
+  return {
+    calories: Math.round(nutritionPer100g.calories * multiplier),
+    carbs: Math.round(nutritionPer100g.carbs * multiplier * 10) / 10,
+    protein: Math.round(nutritionPer100g.protein * multiplier * 10) / 10,
+    fat: Math.round(nutritionPer100g.fat * multiplier * 10) / 10,
+    fiber: nutritionPer100g.fiber ? Math.round(nutritionPer100g.fiber * multiplier * 10) / 10 : undefined,
+    sugar: nutritionPer100g.sugar ? Math.round(nutritionPer100g.sugar * multiplier * 10) / 10 : undefined,
+    sodium: nutritionPer100g.sodium ? Math.round(nutritionPer100g.sodium * multiplier) : undefined,
+    saturatedFat: nutritionPer100g.saturatedFat ? Math.round(nutritionPer100g.saturatedFat * multiplier * 10) / 10 : undefined
+  };
+};
+
+// Validation helper
+const validateNutritionInputs = (calories: string, carbs: string, protein: string, fat: string, quantity: string) => {
+  const caloriesNum = parseFloat(calories);
+  const carbsNum = parseFloat(carbs);
+  const proteinNum = parseFloat(protein);
+  const fatNum = parseFloat(fat);
+  const quantityNum = parseFloat(quantity);
+  
+  return {
+    isValid: !isNaN(caloriesNum) && !isNaN(carbsNum) && !isNaN(proteinNum) && !isNaN(fatNum) && !isNaN(quantityNum) &&
+             caloriesNum >= 0 && carbsNum >= 0 && proteinNum >= 0 && fatNum >= 0 && quantityNum > 0,
+    values: { caloriesNum, carbsNum, proteinNum, fatNum, quantityNum }
+  };
+};
 
 export default function FoodTrackerPage() {
   const [, navigate] = useLocation();
@@ -40,11 +119,28 @@ export default function FoodTrackerPage() {
   
   // Form states
   const [foodName, setFoodName] = useState('');
+  const [brand, setBrand] = useState('');
+  const [barcode, setBarcode] = useState('');
+  
+  // Serving size states
+  const [quantity, setQuantity] = useState('1');
+  const [unit, setUnit] = useState<FoodUnit>('serving');
+  
+  // Basic nutrition states
   const [calories, setCalories] = useState('');
   const [carbs, setCarbs] = useState('');
   const [protein, setProtein] = useState('');
   const [fat, setFat] = useState('');
+  
+  // Extended nutrition states
+  const [fiber, setFiber] = useState('');
+  const [sugar, setSugar] = useState('');
+  const [sodium, setSodium] = useState('');
+  const [saturatedFat, setSaturatedFat] = useState('');
+  
+  // UI states
   const [selectedMeal, setSelectedMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
+  const [showExtendedNutrition, setShowExtendedNutrition] = useState(false);
   
   // Collapsible states
   const [breakfastOpen, setBreakfastOpen] = useState(false);
@@ -61,10 +157,17 @@ export default function FoodTrackerPage() {
   // Edit states
   const [editingFood, setEditingFood] = useState<FoodEntry | null>(null);
   const [editName, setEditName] = useState('');
+  const [editBrand, setEditBrand] = useState('');
+  const [editQuantity, setEditQuantity] = useState('');
+  const [editUnit, setEditUnit] = useState('');
   const [editCalories, setEditCalories] = useState('');
   const [editCarbs, setEditCarbs] = useState('');
   const [editProtein, setEditProtein] = useState('');
   const [editFat, setEditFat] = useState('');
+  const [editFiber, setEditFiber] = useState('');
+  const [editSugar, setEditSugar] = useState('');
+  const [editSodium, setEditSodium] = useState('');
+  const [editSaturatedFat, setEditSaturatedFat] = useState('');
 
   // Check if we came from dashboard
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
@@ -133,13 +236,29 @@ export default function FoodTrackerPage() {
         if (key && key.startsWith('fitcircle_food_')) {
           const entries = safeParseJSON(localStorage.getItem(key), []) as FoodEntry[];
           entries.forEach(entry => {
-            const foodKey = `${entry.name}-${entry.calories}-${entry.carbs}-${entry.protein}-${entry.fat}`;
+            // Handle legacy entries that might not have the new fields
+            const enhancedEntry: FoodEntry = {
+              ...entry,
+              // For legacy entries without serving info, assume "1 serving" to avoid misleading "100g" labels
+              quantity: entry.quantity || 1,
+              unit: (entry.unit as FoodUnit) || 'serving',
+              brand: entry.brand,
+              barcode: entry.barcode,
+              fiber: entry.fiber,
+              sugar: entry.sugar,
+              sodium: entry.sodium,
+              saturatedFat: entry.saturatedFat,
+              nutritionPer100g: entry.nutritionPer100g
+            };
+            
+            // Include barcode in deduplication for API-scanned foods
+            const foodKey = `${enhancedEntry.name}-${enhancedEntry.brand || ''}-${enhancedEntry.barcode || ''}-${enhancedEntry.calories}-${enhancedEntry.carbs}-${enhancedEntry.protein}-${enhancedEntry.fat}`;
             if (!seenFoods.has(foodKey)) {
               seenFoods.add(foodKey);
               // Create a new entry without meal specification for search
               allFoods.push({
-                ...entry,
-                id: `search-${entry.id}`,
+                ...enhancedEntry,
+                id: `search-${enhancedEntry.id}`,
                 meal: 'breakfast' // Default value, will be overridden when adding
               });
             }
@@ -154,27 +273,35 @@ export default function FoodTrackerPage() {
   }, [foodEntries]); // Reload when food entries change
 
   const handleAddFood = () => {
-    if (!foodName.trim() || !calories || !carbs || !protein || !fat) return;
+    if (!foodName.trim() || !calories || !carbs || !protein || !fat || !quantity) return;
 
-    // Validate numeric inputs to prevent NaN values
-    const caloriesNum = parseFloat(calories);
-    const carbsNum = parseFloat(carbs);
-    const proteinNum = parseFloat(protein);
-    const fatNum = parseFloat(fat);
-    
-    if (isNaN(caloriesNum) || isNaN(carbsNum) || isNaN(proteinNum) || isNaN(fatNum) ||
-        caloriesNum < 0 || carbsNum < 0 || proteinNum < 0 || fatNum < 0) {
+    const validation = validateNutritionInputs(calories, carbs, protein, fat, quantity);
+    if (!validation.isValid) {
       console.error('Invalid numeric values provided for food entry');
       return;
     }
+    
+    const { caloriesNum, carbsNum, proteinNum, fatNum, quantityNum } = validation.values;
+    const fiberNum = fiber ? parseFloat(fiber) : undefined;
+    const sugarNum = sugar ? parseFloat(sugar) : undefined;
+    const sodiumNum = sodium ? parseFloat(sodium) : undefined;
+    const saturatedFatNum = saturatedFat ? parseFloat(saturatedFat) : undefined;
 
     const newEntry: FoodEntry = {
       id: Date.now().toString(),
       name: foodName.trim(),
+      brand: brand.trim() || undefined,
+      barcode: barcode.trim() || undefined,
+      quantity: quantityNum,
+      unit,
       calories: caloriesNum,
       carbs: carbsNum,
       protein: proteinNum,
       fat: fatNum,
+      fiber: fiberNum,
+      sugar: sugarNum,
+      sodium: sodiumNum,
+      saturatedFat: saturatedFatNum,
       meal: selectedMeal,
       timestamp: new Date().toISOString()
     };
@@ -183,10 +310,18 @@ export default function FoodTrackerPage() {
     
     // Clear form
     setFoodName('');
+    setBrand('');
+    setBarcode('');
+    setQuantity('1');
+    setUnit('serving');
     setCalories('');
     setCarbs('');
     setProtein('');
     setFat('');
+    setFiber('');
+    setSugar('');
+    setSodium('');
+    setSaturatedFat('');
   };
 
   const handleDeleteFood = (id: string) => {
@@ -202,10 +337,19 @@ export default function FoodTrackerPage() {
     const newEntry: FoodEntry = {
       id: Date.now().toString(),
       name: food.name,
+      brand: food.brand,
+      barcode: food.barcode,
+      quantity: food.quantity || 100,
+      unit: food.unit || 'g',
       calories: food.calories,
       carbs: food.carbs,
       protein: food.protein,
       fat: food.fat,
+      fiber: food.fiber,
+      sugar: food.sugar,
+      sodium: food.sodium,
+      saturatedFat: food.saturatedFat,
+      nutritionPer100g: food.nutritionPer100g,
       meal: searchMeal,
       timestamp: new Date().toISOString()
     };
@@ -222,22 +366,36 @@ export default function FoodTrackerPage() {
   const handleEditFood = (food: FoodEntry) => {
     setEditingFood(food);
     setEditName(food.name);
+    setEditBrand(food.brand || '');
+    setEditQuantity(food.quantity.toString());
+    setEditUnit(food.unit);
     setEditCalories(food.calories.toString());
     setEditCarbs(food.carbs.toString());
     setEditProtein(food.protein.toString());
     setEditFat(food.fat.toString());
+    setEditFiber(food.fiber?.toString() || '');
+    setEditSugar(food.sugar?.toString() || '');
+    setEditSodium(food.sodium?.toString() || '');
+    setEditSaturatedFat(food.saturatedFat?.toString() || '');
   };
 
   const handleSaveEdit = () => {
-    if (!editingFood || !editName.trim() || !editCalories || !editCarbs || !editProtein || !editFat) return;
+    if (!editingFood || !editName.trim() || !editCalories || !editCarbs || !editProtein || !editFat || !editQuantity) return;
 
     const updatedEntry: FoodEntry = {
       ...editingFood,
       name: editName.trim(),
+      brand: editBrand.trim() || undefined,
+      quantity: parseFloat(editQuantity),
+      unit: editUnit,
       calories: parseFloat(editCalories),
       carbs: parseFloat(editCarbs),
       protein: parseFloat(editProtein),
-      fat: parseFloat(editFat)
+      fat: parseFloat(editFat),
+      fiber: editFiber ? parseFloat(editFiber) : undefined,
+      sugar: editSugar ? parseFloat(editSugar) : undefined,
+      sodium: editSodium ? parseFloat(editSodium) : undefined,
+      saturatedFat: editSaturatedFat ? parseFloat(editSaturatedFat) : undefined
     };
 
     setFoodEntries(prev => prev.map(entry => 
@@ -247,19 +405,33 @@ export default function FoodTrackerPage() {
     // Reset edit state
     setEditingFood(null);
     setEditName('');
+    setEditBrand('');
+    setEditQuantity('');
+    setEditUnit('');
     setEditCalories('');
     setEditCarbs('');
     setEditProtein('');
     setEditFat('');
+    setEditFiber('');
+    setEditSugar('');
+    setEditSodium('');
+    setEditSaturatedFat('');
   };
 
   const handleCancelEdit = () => {
     setEditingFood(null);
     setEditName('');
+    setEditBrand('');
+    setEditQuantity('');
+    setEditUnit('');
     setEditCalories('');
     setEditCarbs('');
     setEditProtein('');
     setEditFat('');
+    setEditFiber('');
+    setEditSugar('');
+    setEditSodium('');
+    setEditSaturatedFat('');
   };
 
   const handleEditFromSearch = (food: FoodEntry) => {
@@ -493,9 +665,13 @@ export default function FoodTrackerPage() {
                       filteredFoodHistory.map((food) => (
                         <div key={food.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                           <div className="flex-1">
-                            <h4 className="font-medium text-white text-sm">{food.name}</h4>
+                            <h4 className="font-medium text-white text-sm">
+                              {food.name}
+                              {food.brand && <span className="text-gray-400 font-normal"> • {food.brand}</span>}
+                            </h4>
                             <div className="text-xs text-gray-400 mt-1">
-                              {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
+                              {food.quantity || 100}{food.unit || 'g'} • {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
+                              {food.fiber && <span> • {food.fiber}g fiber</span>}
                             </div>
                           </div>
                           <div className="flex flex-col space-y-1 ml-2">
@@ -534,6 +710,7 @@ export default function FoodTrackerPage() {
           </div>
           
           <div className="space-y-4">
+            {/* Basic Food Info */}
             <div>
               <Label htmlFor="foodName" className="text-sm text-gray-300">Food Name</Label>
               <Input
@@ -542,9 +719,57 @@ export default function FoodTrackerPage() {
                 onChange={(e) => setFoodName(e.target.value)}
                 placeholder="e.g., Grilled Chicken Breast"
                 className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                data-testid="input-food-name"
               />
             </div>
             
+            <div>
+              <Label htmlFor="brand" className="text-sm text-gray-300">Brand (optional)</Label>
+              <Input
+                id="brand"
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
+                placeholder="e.g., Tyson, Kraft"
+                className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                data-testid="input-brand"
+              />
+            </div>
+            
+            {/* Serving Size Section - Critical for API integration */}
+            <div className="bg-blue-900/20 border border-blue-700/50 p-4 rounded-xl">
+              <Label className="text-sm text-blue-300 font-medium">🥄 Serving Size</Label>
+              <div className="grid grid-cols-2 gap-4 mt-2">
+                <div>
+                  <Label htmlFor="quantity" className="text-xs text-gray-400">Quantity</Label>
+                  <Input
+                    id="quantity"
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    placeholder="1"
+                    className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                    data-testid="input-quantity"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="unit" className="text-xs text-gray-400">Unit</Label>
+                  <Select value={unit} onValueChange={setUnit}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl" data-testid="select-unit">
+                      <SelectValue placeholder="Select unit" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-700 border-gray-600">
+                      <SelectItem value="g" className="text-white hover:bg-gray-600">grams (g)</SelectItem>
+                      <SelectItem value="oz" className="text-white hover:bg-gray-600">ounces (oz)</SelectItem>
+                      <SelectItem value="cup" className="text-white hover:bg-gray-600">cups</SelectItem>
+                      <SelectItem value="piece" className="text-white hover:bg-gray-600">pieces</SelectItem>
+                      <SelectItem value="serving" className="text-white hover:bg-gray-600">servings</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+            
+            {/* Core Nutrition */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="calories" className="text-sm text-gray-300">Calories</Label>
@@ -555,6 +780,7 @@ export default function FoodTrackerPage() {
                   onChange={(e) => setCalories(e.target.value)}
                   placeholder="0"
                   className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                  data-testid="input-calories"
                 />
               </div>
               <div>
@@ -566,6 +792,7 @@ export default function FoodTrackerPage() {
                   onChange={(e) => setCarbs(e.target.value)}
                   placeholder="0"
                   className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                  data-testid="input-carbs"
                 />
               </div>
             </div>
@@ -580,6 +807,7 @@ export default function FoodTrackerPage() {
                   onChange={(e) => setProtein(e.target.value)}
                   placeholder="0"
                   className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                  data-testid="input-protein"
                 />
               </div>
               <div>
@@ -591,28 +819,108 @@ export default function FoodTrackerPage() {
                   onChange={(e) => setFat(e.target.value)}
                   placeholder="0"
                   className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                  data-testid="input-fat"
                 />
-              </div>
-              <div>
-                <Label htmlFor="meal" className="text-sm text-gray-300">Meal</Label>
-                <Select value={selectedMeal} onValueChange={(value: 'breakfast' | 'lunch' | 'dinner' | 'snack') => setSelectedMeal(value)}>
-                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl">
-                    <SelectValue placeholder="Select meal" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-700 border-gray-600">
-                    <SelectItem value="breakfast" className="text-white hover:bg-gray-600">Breakfast</SelectItem>
-                    <SelectItem value="lunch" className="text-white hover:bg-gray-600">Lunch</SelectItem>
-                    <SelectItem value="dinner" className="text-white hover:bg-gray-600">Dinner</SelectItem>
-                    <SelectItem value="snack" className="text-white hover:bg-gray-600">Snack</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </div>
             
+            {/* Extended Nutrition - Collapsible */}
+            <Collapsible open={showExtendedNutrition} onOpenChange={setShowExtendedNutrition}>
+              <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-gray-700/50 rounded-xl hover:bg-gray-700 transition-colors">
+                <span className="text-sm text-gray-300">📊 Additional Nutrition</span>
+                {showExtendedNutrition ? (
+                  <ChevronUp className="w-4 h-4 text-gray-400" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                )}
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="mt-3 space-y-3">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="fiber" className="text-sm text-gray-300">Fiber (g)</Label>
+                      <Input
+                        id="fiber"
+                        type="number"
+                        value={fiber}
+                        onChange={(e) => setFiber(e.target.value)}
+                        placeholder="0"
+                        className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                        data-testid="input-fiber"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="sugar" className="text-sm text-gray-300">Sugar (g)</Label>
+                      <Input
+                        id="sugar"
+                        type="number"
+                        value={sugar}
+                        onChange={(e) => setSugar(e.target.value)}
+                        placeholder="0"
+                        className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                        data-testid="input-sugar"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="sodium" className="text-sm text-gray-300">Sodium (mg)</Label>
+                      <Input
+                        id="sodium"
+                        type="number"
+                        value={sodium}
+                        onChange={(e) => setSodium(e.target.value)}
+                        placeholder="0"
+                        className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                        data-testid="input-sodium"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="saturatedFat" className="text-sm text-gray-300">Sat. Fat (g)</Label>
+                      <Input
+                        id="saturatedFat"
+                        type="number"
+                        value={saturatedFat}
+                        onChange={(e) => setSaturatedFat(e.target.value)}
+                        placeholder="0"
+                        className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                        data-testid="input-saturated-fat"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+            
+            {/* Meal Selection */}
+            <div>
+              <Label htmlFor="meal" className="text-sm text-gray-300">Meal</Label>
+              <Select value={selectedMeal} onValueChange={(value: 'breakfast' | 'lunch' | 'dinner' | 'snack') => setSelectedMeal(value)}>
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl" data-testid="select-meal">
+                  <SelectValue placeholder="Select meal" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-700 border-gray-600">
+                  <SelectItem value="breakfast" className="text-white hover:bg-gray-600">Breakfast</SelectItem>
+                  <SelectItem value="lunch" className="text-white hover:bg-gray-600">Lunch</SelectItem>
+                  <SelectItem value="dinner" className="text-white hover:bg-gray-600">Dinner</SelectItem>
+                  <SelectItem value="snack" className="text-white hover:bg-gray-600">Snack</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Barcode Display (when present) */}
+            {barcode && (
+              <div className="bg-green-900/20 border border-green-700/50 p-3 rounded-xl">
+                <Label className="text-sm text-green-300">🏷️ Barcode/UPC</Label>
+                <div className="text-sm text-gray-300 mt-1 font-mono">{barcode}</div>
+              </div>
+            )}
+            
             <Button 
               onClick={handleAddFood}
-              disabled={!foodName.trim() || !calories || !carbs || !protein || !fat}
+              disabled={!foodName.trim() || !calories || !carbs || !protein || !fat || !quantity}
               className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl"
+              data-testid="button-add-food"
             >
               Add Food
             </Button>
@@ -643,9 +951,13 @@ export default function FoodTrackerPage() {
                 {getMealEntries('breakfast').map((entry) => (
                   <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="font-medium text-white text-sm">{entry.name}</h3>
+                      <h3 className="font-medium text-white text-sm">
+                        {entry.name}
+                        {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
+                      </h3>
                       <div className="text-xs text-gray-400 mt-1">
-                        {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
+                        {entry.quantity}{entry.unit} • {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
+                        {entry.fiber && <span> • {entry.fiber}g fiber</span>}
                       </div>
                     </div>
                     <div className="flex space-x-1 ml-2">
@@ -699,9 +1011,13 @@ export default function FoodTrackerPage() {
                 {getMealEntries('lunch').map((entry) => (
                   <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="font-medium text-white text-sm">{entry.name}</h3>
+                      <h3 className="font-medium text-white text-sm">
+                        {entry.name}
+                        {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
+                      </h3>
                       <div className="text-xs text-gray-400 mt-1">
-                        {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
+                        {entry.quantity}{entry.unit} • {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
+                        {entry.fiber && <span> • {entry.fiber}g fiber</span>}
                       </div>
                     </div>
                     <div className="flex space-x-1 ml-2">
@@ -755,9 +1071,13 @@ export default function FoodTrackerPage() {
                 {getMealEntries('dinner').map((entry) => (
                   <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="font-medium text-white text-sm">{entry.name}</h3>
+                      <h3 className="font-medium text-white text-sm">
+                        {entry.name}
+                        {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
+                      </h3>
                       <div className="text-xs text-gray-400 mt-1">
-                        {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
+                        {entry.quantity}{entry.unit} • {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
+                        {entry.fiber && <span> • {entry.fiber}g fiber</span>}
                       </div>
                     </div>
                     <div className="flex space-x-1 ml-2">
@@ -811,9 +1131,13 @@ export default function FoodTrackerPage() {
                 {getMealEntries('snack').map((entry) => (
                   <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="font-medium text-white text-sm">{entry.name}</h3>
+                      <h3 className="font-medium text-white text-sm">
+                        {entry.name}
+                        {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
+                      </h3>
                       <div className="text-xs text-gray-400 mt-1">
-                        {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
+                        {entry.quantity}{entry.unit} • {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
+                        {entry.fiber && <span> • {entry.fiber}g fiber</span>}
                       </div>
                     </div>
                     <div className="flex space-x-1 ml-2">
