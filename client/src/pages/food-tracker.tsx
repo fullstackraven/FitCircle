@@ -1477,6 +1477,322 @@ export default function FoodTrackerPage() {
             </DialogContent>
           </Dialog>
         )}
+
+        {/* Custom Food Dialog */}
+        <Dialog open={customFoodOpen} onOpenChange={setCustomFoodOpen}>
+          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Create Custom Food for {customFoodMeal.charAt(0).toUpperCase() + customFoodMeal.slice(1)}</DialogTitle>
+              <DialogDescription>
+                Add your own food with comprehensive nutritional information. Required fields are marked with *.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {/* Basic Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-white">Basic Information</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="custom-name" className="text-white">Food Name *</Label>
+                    <Input
+                      id="custom-name"
+                      value={customFoodData.name}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="e.g., Homemade Apple Pie"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="custom-brand" className="text-white">Brand (Optional)</Label>
+                    <Input
+                      id="custom-brand"
+                      value={customFoodData.brand}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, brand: e.target.value }))}
+                      placeholder="e.g., Mom's Recipe"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-brand"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="custom-quantity" className="text-white">Serving Size *</Label>
+                    <Input
+                      id="custom-quantity"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.quantity}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, quantity: e.target.value }))}
+                      placeholder="100"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-quantity"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="custom-unit" className="text-white">Unit</Label>
+                    <Select 
+                      value={customFoodData.unit} 
+                      onValueChange={(value: FoodUnit) => setCustomFoodData(prev => ({ ...prev, unit: value }))}
+                    >
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white" data-testid="select-custom-unit">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-700 border-gray-600">
+                        <SelectItem value="g">grams (g)</SelectItem>
+                        <SelectItem value="oz">ounces (oz)</SelectItem>
+                        <SelectItem value="cup">cups</SelectItem>
+                        <SelectItem value="piece">pieces</SelectItem>
+                        <SelectItem value="serving">servings</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Macronutrients */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-white">Macronutrients (per serving)*</h3>
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div>
+                    <Label htmlFor="custom-calories" className="text-white">Calories *</Label>
+                    <Input
+                      id="custom-calories"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.calories}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, calories: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-calories"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="custom-carbs" className="text-white">Carbs (g) *</Label>
+                    <Input
+                      id="custom-carbs"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.carbs}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, carbs: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-carbs"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="custom-protein" className="text-white">Protein (g) *</Label>
+                    <Input
+                      id="custom-protein"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.protein}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, protein: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-protein"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="custom-fat" className="text-white">Fat (g) *</Label>
+                    <Input
+                      id="custom-fat"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.fat}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, fat: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-fat"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Nutrients */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-white">Additional Nutrients (Optional)</h3>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="custom-fiber" className="text-white">Fiber (g)</Label>
+                    <Input
+                      id="custom-fiber"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.fiber}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, fiber: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-fiber"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="custom-sugar" className="text-white">Sugar (g)</Label>
+                    <Input
+                      id="custom-sugar"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.sugar}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, sugar: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-sugar"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="custom-sodium" className="text-white">Sodium (mg)</Label>
+                    <Input
+                      id="custom-sodium"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.sodium}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, sodium: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-sodium"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="custom-saturated-fat" className="text-white">Saturated Fat (g)</Label>
+                    <Input
+                      id="custom-saturated-fat"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.saturatedFat}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, saturatedFat: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-saturated-fat"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="custom-cholesterol" className="text-white">Cholesterol (mg)</Label>
+                    <Input
+                      id="custom-cholesterol"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.cholesterol}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, cholesterol: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-cholesterol"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="custom-potassium" className="text-white">Potassium (mg)</Label>
+                    <Input
+                      id="custom-potassium"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.potassium}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, potassium: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-potassium"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Vitamins & Minerals */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-white">Vitamins & Minerals (Optional)</h3>
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div>
+                    <Label htmlFor="custom-vitamin-a" className="text-white">Vitamin A (IU)</Label>
+                    <Input
+                      id="custom-vitamin-a"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.vitaminA}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, vitaminA: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-vitamin-a"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="custom-vitamin-c" className="text-white">Vitamin C (mg)</Label>
+                    <Input
+                      id="custom-vitamin-c"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.vitaminC}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, vitaminC: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-vitamin-c"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="custom-calcium" className="text-white">Calcium (mg)</Label>
+                    <Input
+                      id="custom-calcium"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.calcium}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, calcium: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-calcium"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="custom-iron" className="text-white">Iron (mg)</Label>
+                    <Input
+                      id="custom-iron"
+                      type="number"
+                      step="0.1"
+                      value={customFoodData.iron}
+                      onChange={(e) => setCustomFoodData(prev => ({ ...prev, iron: e.target.value }))}
+                      placeholder="0"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      data-testid="input-custom-iron"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-3 pt-4 border-t border-gray-600">
+                <Button
+                  onClick={() => setCustomFoodOpen(false)}
+                  variant="outline"
+                  className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+                  data-testid="button-cancel-custom"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCustomFoodSubmit}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  data-testid="button-save-custom"
+                >
+                  Save Food
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
         
       </div>
     </div>
