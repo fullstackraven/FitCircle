@@ -336,6 +336,44 @@ export default function FoodTrackerPage() {
   const filteredFoodHistory = allFoodHistory.filter(food =>
     food.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  
+  // API search with throttling
+  const performApiSearch = async (query: string) => {
+    if (!query.trim() || query.length < 2) {
+      setApiSearchResults([]);
+      return;
+    }
+    
+    setIsSearchingApi(true);
+    try {
+      const products = await foodApiService.searchProducts(query, 8);
+      const foodEntries = products.map(product => 
+        foodApiService.convertToFoodEntry(product, searchMeal)
+      );
+      setApiSearchResults(foodEntries);
+    } catch (error) {
+      console.error('API search failed:', error);
+      setApiSearchResults([]);
+    } finally {
+      setIsSearchingApi(false);
+    }
+  };
+  
+  // Throttled API search
+  useEffect(() => {
+    if (searchSource === 'api' && searchQuery) {
+      const timeoutId = setTimeout(() => {
+        performApiSearch(searchQuery);
+      }, 300); // 300ms delay to avoid too many API calls
+      
+      return () => clearTimeout(timeoutId);
+    } else if (searchSource === 'api') {
+      setApiSearchResults([]);
+    }
+  }, [searchQuery, searchSource, searchMeal]);
+  
+  // Get current search results based on source
+  const currentSearchResults = searchSource === 'history' ? filteredFoodHistory : apiSearchResults;
 
   const handleAddFromSearch = (food: FoodEntry) => {
     const newEntry: FoodEntry = {
@@ -623,30 +661,63 @@ export default function FoodTrackerPage() {
               <Plus className="h-5 w-5 mr-2" />
               Add Food
             </h2>
-            <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-              <DialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl">
-                  <Search className="h-5 w-5" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-md">
+            <div className="flex space-x-2">
+              <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl" data-testid="button-search-foods">
+                    <Search className="h-5 w-5" />
+                  </Button>
+                </DialogTrigger>
+              <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-lg">
                 <DialogHeader>
                   <DialogTitle>Search Foods</DialogTitle>
                   <DialogDescription className="text-gray-400">
-                    Search your food history and add items to your daily log
+                    Search your food history or find new foods from the food database
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
                   
+                  {/* Search Source Tabs */}
+                  <div className="flex bg-gray-700 rounded-xl p-1">
+                    <button
+                      onClick={() => setSearchSource('history')}
+                      className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                        searchSource === 'history'
+                          ? 'bg-blue-600 text-white'
+                          : 'text-gray-300 hover:text-white'
+                      }`}
+                      data-testid="button-search-history"
+                    >
+                      📚 My Foods
+                    </button>
+                    <button
+                      onClick={() => setSearchSource('api')}
+                      className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                        searchSource === 'api'
+                          ? 'bg-green-600 text-white'
+                          : 'text-gray-300 hover:text-white'
+                      }`}
+                      data-testid="button-search-api"
+                    >
+                      🌐 Food Database
+                    </button>
+                  </div>
+                  
                   <div>
-                    <Label htmlFor="searchQuery" className="text-sm text-gray-300">Search for food</Label>
+                    <Label htmlFor="searchQuery" className="text-sm text-gray-300">
+                      {searchSource === 'history' ? 'Search your foods' : 'Search food database'}
+                    </Label>
                     <Input
                       id="searchQuery"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Type food name..."
+                      placeholder={searchSource === 'history' ? 'Type food name...' : 'e.g., greek yogurt, banana, chicken breast...'}
                       className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                      data-testid="input-search-query"
                     />
+                    {searchSource === 'api' && searchQuery.length > 0 && searchQuery.length < 2 && (
+                      <p className="text-xs text-yellow-400 mt-1">Type at least 2 characters to search</p>
+                    )}
                   </div>
                   
                   <div>
@@ -665,17 +736,30 @@ export default function FoodTrackerPage() {
                   </div>
                   
                   <div className="max-h-60 overflow-y-auto space-y-2">
-                    {filteredFoodHistory.length > 0 ? (
-                      filteredFoodHistory.map((food) => (
+                    {/* Loading state for API search */}
+                    {searchSource === 'api' && isSearchingApi && (
+                      <div className="text-center text-gray-400 py-4 text-sm">
+                        <div className="animate-spin w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full mx-auto mb-2"></div>
+                        Searching food database...
+                      </div>
+                    )}
+                    
+                    {/* Search results */}
+                    {!isSearchingApi && currentSearchResults.length > 0 ? (
+                      currentSearchResults.map((food) => (
                         <div key={food.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                           <div className="flex-1">
                             <h4 className="font-medium text-white text-sm">
                               {food.name}
                               {food.brand && <span className="text-gray-400 font-normal"> • {food.brand}</span>}
+                              {searchSource === 'api' && (
+                                <span className="ml-1 inline-block w-2 h-2 bg-green-400 rounded-full" title="From food database"></span>
+                              )}
                             </h4>
                             <div className="text-xs text-gray-400 mt-1">
-                              {food.quantity || 100}{food.unit || 'g'} • {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
+                              {food.quantity}{food.unit} • {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
                               {food.fiber && <span> • {food.fiber}g fiber</span>}
+                              {food.barcode && <span className="block text-xs text-blue-400 mt-1">#{food.barcode}</span>}
                             </div>
                           </div>
                           <div className="flex flex-col space-y-1 ml-2">
@@ -684,6 +768,7 @@ export default function FoodTrackerPage() {
                               size="sm"
                               onClick={() => handleAddFromSearch(food)}
                               className="text-green-400 hover:text-green-300 hover:bg-gray-600 rounded-xl text-xs px-2 py-1"
+                              data-testid={`button-add-${food.id}`}
                             >
                               Add
                             </Button>
@@ -692,25 +777,59 @@ export default function FoodTrackerPage() {
                               size="sm"
                               onClick={() => handleEditFromSearch(food)}
                               className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-xl text-xs px-2 py-1"
+                              data-testid={`button-edit-${food.id}`}
                             >
                               Edit
                             </Button>
                           </div>
                         </div>
                       ))
-                    ) : searchQuery ? (
+                    ) : !isSearchingApi && searchQuery ? (
                       <div className="text-center text-gray-500 py-4 text-sm">
-                        No foods found matching "{searchQuery}"
+                        {searchSource === 'history' 
+                          ? `No foods found in your history matching "${searchQuery}"`
+                          : searchQuery.length < 2
+                          ? 'Type at least 2 characters to search the food database'
+                          : `No foods found in database matching "${searchQuery}"`
+                        }
+                        {searchSource === 'history' && (
+                          <div className="mt-2">
+                            <button
+                              onClick={() => setSearchSource('api')}
+                              className="text-blue-400 hover:text-blue-300 text-xs underline"
+                            >
+                              Try searching the food database instead
+                            </button>
+                          </div>
+                        )}
                       </div>
-                    ) : (
+                    ) : !isSearchingApi ? (
                       <div className="text-center text-gray-500 py-4 text-sm">
-                        {allFoodHistory.length === 0 ? 'No food history available' : 'Start typing to search foods'}
+                        {searchSource === 'history'
+                          ? allFoodHistory.length === 0 
+                            ? 'No food history available. Try searching the food database!' 
+                            : 'Start typing to search your foods'
+                          : 'Start typing to search the food database'
+                        }
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               </DialogContent>
-            </Dialog>
+              </Dialog>
+              
+              {/* Barcode Scanner Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl"
+                data-testid="button-scan-barcode"
+                title="Scan Barcode (Coming Soon)"
+                disabled
+              >
+                📷
+              </Button>
+            </div>
           </div>
           
           <div className="space-y-4">
