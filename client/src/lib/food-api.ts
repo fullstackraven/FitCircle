@@ -39,13 +39,31 @@ class FoodApiService {
   constructor() {
     // For PWA compatibility, use absolute URLs
     if (typeof window !== 'undefined') {
-      this.baseUrl = `${window.location.origin}/api/food`;
+      const origin = window.location.origin;
+      const hostname = window.location.hostname;
+      
+      console.log('Food API - Current origin:', origin);
+      console.log('Food API - Current hostname:', hostname);
+      
+      // Handle different deployment scenarios
+      if (hostname.includes('.replit.app') || hostname.includes('.replit.dev')) {
+        // Deployed or preview Replit app
+        this.baseUrl = `${origin}/api/food`;
+      } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        // Local development
+        this.baseUrl = `${origin}/api/food`;
+      } else {
+        // PWA or other deployment - try current origin first
+        this.baseUrl = `${origin}/api/food`;
+      }
+      
+      console.log('Food API - Using base URL:', this.baseUrl);
     } else {
       this.baseUrl = '/api/food'; // Fallback for server-side
     }
   }
   
-  private async makeRequest<T>(url: string): Promise<T> {
+  private async makeRequest<T>(url: string, retryWithRelative = true): Promise<T> {
     try {
       console.log(`Making food API request to: ${url}`);
       const response = await fetch(url);
@@ -60,6 +78,15 @@ class FoodApiService {
       return data;
     } catch (error) {
       console.error('Food API request failed:', error);
+      
+      // If absolute URL fails and we haven't tried relative yet, try relative URL as fallback
+      if (retryWithRelative && url.startsWith('http') && typeof window !== 'undefined') {
+        console.log('Retrying with relative URL as fallback...');
+        const relativePath = url.split('/api/food')[1] || '';
+        const relativeUrl = `/api/food${relativePath}`;
+        return this.makeRequest<T>(relativeUrl, false);
+      }
+      
       throw error;
     }
   }
@@ -93,7 +120,9 @@ class FoodApiService {
     const url = `${this.baseUrl}/search?${searchParams}`;
     
     try {
+      console.log(`Searching for products with query: "${query}"`);
       const response = await this.makeRequest<{products: any[]}>(url);
+      console.log(`Food search returned ${response.products?.length || 0} results`);
       return response.products || [];
     } catch (error) {
       console.error(`Failed to search products for "${query}":`, error);
