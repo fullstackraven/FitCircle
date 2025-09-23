@@ -1233,7 +1233,7 @@ export default function FoodTrackerPage() {
                   data-testid="button-confirm-serving"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Add to {searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}
+{isEditingExistingFood ? 'Update Food' : `Add to ${searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}`}
                 </Button>
                 <Button 
                   variant="outline"
