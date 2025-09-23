@@ -493,7 +493,7 @@ export function useWorkouts() {
   };
 
   const canAddMoreWorkouts = () => {
-    return Object.keys(data.workouts || {}).length < 10;
+    return true; // No limit on number of workouts
   };
 
   const editWorkoutForDate = (workoutId: string, dateString: string, newCount: number) => {
