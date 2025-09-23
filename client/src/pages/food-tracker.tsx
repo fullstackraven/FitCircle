@@ -1146,63 +1146,53 @@ export default function FoodTrackerPage() {
         <Dialog open={servingSizeOpen} onOpenChange={setServingSizeOpen}>
           <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-md">
             <DialogHeader>
-              <DialogTitle className="flex items-center justify-between">
-{isEditingExistingFood ? 'Edit Food' : 'Confirm Serving Size'}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => alert('Barcode scanner functionality coming soon!')}
-                  className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl"
-                  data-testid="button-scan-barcode-serving"
-                  title="Scan Barcode"
-                >
-                  <ScanLine className="h-5 w-5" />
-                </Button>
-              </DialogTitle>
+              <DialogTitle>Edit Food</DialogTitle>
               <DialogDescription className="text-gray-400">
-{isEditingExistingFood ? 'Update' : 'Adjust'} the serving size for {selectedFoodForServing?.name}
+                Update the serving size for {selectedFoodForServing?.name}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               
-              {/* Food Info Display */}
+              {/* Food Info Card */}
               {selectedFoodForServing && (
-                <div className="bg-gray-700 rounded-xl p-3">
-                  <h4 className="font-medium text-white text-sm">
+                <div className="bg-gray-700/80 rounded-xl p-4">
+                  <div className="text-white font-medium">
                     {selectedFoodForServing.name}
                     {selectedFoodForServing.brand && <span className="text-gray-400 font-normal"> • {selectedFoodForServing.brand}</span>}
-                  </h4>
-                  <div className="text-xs text-gray-400 mt-1">
+                  </div>
+                  <div className="text-sm text-gray-400 mt-1">
                     Per {selectedFoodForServing.quantity}{selectedFoodForServing.unit}: {selectedFoodForServing.calories} cal • {selectedFoodForServing.carbs}g carbs • {selectedFoodForServing.protein}g protein • {selectedFoodForServing.fat}g fat
                   </div>
                 </div>
               )}
               
-              {/* Serving Size Input */}
-              <div className="bg-blue-900/20 border border-blue-700/50 p-4 rounded-xl">
-                <Label className="text-sm text-blue-300 font-medium">🥄 Your Serving Size</Label>
-                <div className="grid grid-cols-2 gap-4 mt-2">
-                  <div>
-                    <Label htmlFor="servingQuantity" className="text-xs text-gray-400">Quantity</Label>
+              {/* Your Serving Size Section */}
+              <div className="bg-blue-900/30 rounded-xl p-4">
+                <div className="flex items-center mb-3">
+                  <div className="w-1 h-5 bg-blue-400 rounded-full mr-3"></div>
+                  <span className="text-white font-medium">Your Serving Size</span>
+                </div>
+                <div className="flex space-x-3">
+                  <div className="flex-1">
+                    <Label className="text-xs text-gray-400 block mb-1">Quantity</Label>
                     <Input
-                      id="servingQuantity"
                       type="number"
                       value={servingQuantity}
                       onChange={(e) => setServingQuantity(e.target.value)}
                       placeholder="1"
-                      className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                      className="bg-gray-700 border-gray-600 text-white rounded-xl text-lg h-12"
                       data-testid="input-serving-quantity"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="servingUnit" className="text-xs text-gray-400">Unit</Label>
+                  <div className="flex-1">
+                    <Label className="text-xs text-gray-400 block mb-1">Unit</Label>
                     <Select value={servingUnit} onValueChange={(value) => setServingUnit(value as FoodUnit)}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl" data-testid="select-serving-unit">
-                        <SelectValue placeholder="Select unit" />
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl h-12" data-testid="select-serving-unit">
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-700 border-gray-600">
-                        <SelectItem value="g" className="text-white hover:bg-gray-600">grams (g)</SelectItem>
-                        <SelectItem value="oz" className="text-white hover:bg-gray-600">ounces (oz)</SelectItem>
+                        <SelectItem value="g" className="text-white hover:bg-gray-600">grams</SelectItem>
+                        <SelectItem value="oz" className="text-white hover:bg-gray-600">ounces</SelectItem>
                         <SelectItem value="cup" className="text-white hover:bg-gray-600">cups</SelectItem>
                         <SelectItem value="piece" className="text-white hover:bg-gray-600">pieces</SelectItem>
                         <SelectItem value="serving" className="text-white hover:bg-gray-600">servings</SelectItem>
@@ -1212,36 +1202,50 @@ export default function FoodTrackerPage() {
                 </div>
               </div>
               
-              {/* Calculated Nutrition Preview */}
+              {/* Nutrition Preview */}
               {selectedFoodForServing && servingQuantity && (
-                <div className="bg-gray-700/50 rounded-xl p-3">
-                  <h5 className="text-sm font-medium text-gray-300 mb-2">📊 Nutrition for {servingQuantity} {servingUnit}:</h5>
-                  <div className="text-xs text-gray-400 space-y-1">
-                    <div>Calories: {Math.round(selectedFoodForServing.calories * (parseFloat(servingQuantity) || 1))}</div>
-                    <div>Carbs: {Math.round(selectedFoodForServing.carbs * (parseFloat(servingQuantity) || 1) * 10) / 10}g</div>
-                    <div>Protein: {Math.round(selectedFoodForServing.protein * (parseFloat(servingQuantity) || 1) * 10) / 10}g</div>
-                    <div>Fat: {Math.round(selectedFoodForServing.fat * (parseFloat(servingQuantity) || 1) * 10) / 10}g</div>
+                <div className="bg-gray-700/50 rounded-xl p-4">
+                  <div className="flex items-center mb-3">
+                    <div className="w-3 h-3 bg-green-400 rounded-full mr-2"></div>
+                    <span className="text-white font-medium">Nutrition for {servingQuantity} {servingUnit}:</span>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Calories:</span>
+                      <span className="text-white font-medium">{Math.round(selectedFoodForServing.calories * (parseFloat(servingQuantity) || 1))}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Carbs:</span>
+                      <span className="text-white font-medium">{Math.round(selectedFoodForServing.carbs * (parseFloat(servingQuantity) || 1) * 10) / 10}g</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Protein:</span>
+                      <span className="text-white font-medium">{Math.round(selectedFoodForServing.protein * (parseFloat(servingQuantity) || 1) * 10) / 10}g</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Fat:</span>
+                      <span className="text-white font-medium">{Math.round(selectedFoodForServing.fat * (parseFloat(servingQuantity) || 1) * 10) / 10}g</span>
+                    </div>
                   </div>
                 </div>
               )}
               
+              {/* Action Buttons */}
               <div className="flex space-x-3 pt-2">
                 <Button 
                   onClick={handleConfirmServingSize}
                   disabled={!servingQuantity || parseFloat(servingQuantity) <= 0}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl"
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl h-12 font-medium"
                   data-testid="button-confirm-serving"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
-{isEditingExistingFood ? 'Update Food' : `Add to ${searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}`}
+                  {isEditingExistingFood ? 'Update Food' : `Add to ${searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}`}
                 </Button>
                 <Button 
                   variant="outline"
                   onClick={() => setServingSizeOpen(false)}
-                  className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 rounded-xl"
+                  className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 rounded-xl h-12 font-medium"
                   data-testid="button-cancel-serving"
                 >
-                  <Cancel className="h-4 w-4 mr-2" />
                   Cancel
                 </Button>
               </div>
