@@ -1,6 +1,8 @@
 // Open Food Facts API integration for food search and barcode lookup
 // API Documentation: https://openfoodfacts.github.io/openfoodfacts-server/api/
 
+import commonFoodsData from '@/data/common-foods.json';
+
 export interface OpenFoodFactsProduct {
   code: string;
   product_name: string;
@@ -119,34 +121,53 @@ class FoodApiService {
   }
   
   /**
-   * Search for products by name
+   * Search for products by name - uses local database first, then API fallback
    */
   async searchProducts(query: string, pageSize: number = 10): Promise<any[]> {
     if (!query.trim()) return [];
     
-    const searchParams = new URLSearchParams({
-      query: query,
-      limit: pageSize.toString()
-    });
+    const searchLower = query.toLowerCase();
     
-    const url = `${this.baseUrl}/search?${searchParams}`;
+    // First, search local database
+    const localResults = commonFoodsData.filter(food => 
+      food.name.toLowerCase().includes(searchLower) ||
+      (food.brand && food.brand.toLowerCase().includes(searchLower))
+    ).slice(0, Math.min(pageSize, 8));
     
+    console.log(`Local search for "${query}" returned ${localResults.length} results`);
+    
+    // If we have enough local results, return them
+    if (localResults.length >= 3) {
+      return localResults;
+    }
+    
+    // If not enough local results, try API as fallback
     try {
-      console.log(`Searching for products with query: "${query}"`);
+      console.log(`Searching API for additional results for "${query}"`);
+      const searchParams = new URLSearchParams({
+        query: query,
+        limit: (pageSize - localResults.length).toString()
+      });
+      
+      const url = `${this.baseUrl}/search?${searchParams}`;
       const response = await this.makeRequest<{products: any[]}>(url);
-      console.log(`Food search returned ${response.products?.length || 0} results`);
-      return response.products || [];
+      const apiResults = response.products || [];
+      
+      console.log(`API search returned ${apiResults.length} additional results`);
+      
+      // Combine local and API results, prioritizing local
+      return [...localResults, ...apiResults].slice(0, pageSize);
     } catch (error) {
-      console.error(`Failed to search products for "${query}":`, error);
-      return [];
+      console.error(`API search failed, using only local results:`, error);
+      return localResults;
     }
   }
   
   /**
-   * Convert backend API product to our FoodEntry format (now handled by backend)
+   * Convert product to our FoodEntry format (handles both local and API products)
    */
   convertToFoodEntry(product: any, meal: 'breakfast' | 'lunch' | 'dinner' | 'snack' = 'breakfast') {
-    // Backend now returns converted products, so we just need to update the meal
+    // For local products (already in our format) or backend-converted products
     return {
       ...product,
       meal,
@@ -212,3 +233,17 @@ class FoodApiService {
 }
 
 export const foodApiService = new FoodApiService();
+
+// Helper function to get local foods for quick access
+export const getLocalFoods = () => commonFoodsData;
+
+// Helper function to search local foods only
+export const searchLocalFoods = (query: string, limit: number = 10) => {
+  if (!query.trim()) return [];
+  
+  const searchLower = query.toLowerCase();
+  return commonFoodsData.filter(food => 
+    food.name.toLowerCase().includes(searchLower) ||
+    (food.brand && food.brand.toLowerCase().includes(searchLower))
+  ).slice(0, limit);
+};
