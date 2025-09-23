@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { getTodayString } from '@/lib/date-utils';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 import { foodApiService } from '@/lib/food-api';
+import { useToast } from '@/hooks/use-toast';
 
 // Strong typing for nutrition data and units
 type FoodUnit = 'g' | 'oz' | 'cup' | 'piece' | 'serving';
@@ -110,6 +111,7 @@ const validateNutritionInputs = (calories: string, carbs: string, protein: strin
 
 export default function FoodTrackerPage() {
   const [, navigate] = useLocation();
+  const { toast } = useToast();
   const [foodEntries, setFoodEntries] = useState<FoodEntry[]>([]);
   const [macroTargets, setMacroTargets] = useState<MacroTargets>({
     calories: 2000,
