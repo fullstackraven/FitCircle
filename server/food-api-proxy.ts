@@ -41,14 +41,17 @@ router.get('/search', async (req, res) => {
       return res.json({ products: [] });
     }
 
+    // Use v1 API which supports full-text search (v2 doesn't)
     const searchParams = new URLSearchParams({
       search_terms: query,
+      search_simple: '1',
+      action: 'process',
+      json: '1',
       fields: 'code,product_name,product_name_en,brands,nutriments,serving_size',
-      page_size: Math.min(parseInt(limit as string) || 10, 20).toString(),
-      sort_by: 'popularity'
+      page_size: Math.min(parseInt(limit as string) || 10, 20).toString()
     });
 
-    const apiUrl = `https://world.openfoodfacts.org/api/v2/search?${searchParams}`;
+    const apiUrl = `https://world.openfoodfacts.org/cgi/search.pl?${searchParams}`;
     
     console.log(`Making API request to: ${apiUrl}`);
     
@@ -66,37 +69,40 @@ router.get('/search', async (req, res) => {
     const data: OpenFoodFactsSearchResponse = await response.json();
     console.log(`API returned ${data.products?.length || 0} total products`);
     let products = data.products || [];
-
-    // DEBUG: Log raw products before filtering
-    console.log('Raw products before filtering:', products.slice(0, 2).map(p => ({
-      name: p.product_name || p.product_name_en,
-      brand: p.brands
-    })));
     
-    // Very relaxed filter - just ensure we have a name
+    // Log API results for debugging
+    console.log('Products from Open Food Facts:', products.slice(0, 3).map(p => ({
+      name: p.product_name || p.product_name_en || 'No name',
+      brand: p.brands || 'No brand'
+    })));
+
+    // The Open Food Facts API does ingredient-based search, not just name matching
+    // So "egg" returns products that contain eggs (like brioche, mayonnaise)
+    // Let's be more permissive and trust the API's search relevance
     products = products.filter(product => {
       const name = product.product_name || product.product_name_en || '';
       
-      // Must have a name (very permissive)
+      // Just require a valid name - trust the API's search algorithm
       if (!name || name.trim().length === 0) {
         return false;
       }
       
-      return true; // Accept all products with names for now
+      // Accept all products with names since the API already filtered by relevance
+      return true;
     });
     
-    console.log(`After permissive filtering: Found ${products.length} matching products out of ${data.products?.length || 0} total`);
+    console.log(`Using API search results (ingredient-based): ${products.length} products`);
+    
+    console.log(`Search for "${query}": Found ${products.length} matching products out of ${data.products?.length || 0} total`);
     
     // Log sample products that passed filtering
     if (products.length > 0) {
-      console.log('Products that passed filter:', products.slice(0, 2).map(p => ({
+      console.log('Filtered products:', products.slice(0, 2).map(p => ({
         name: p.product_name || p.product_name_en,
         brand: p.brands,
         hasNutriments: !!p.nutriments,
         calories: p.nutriments?.['energy-kcal_100g']
       })));
-    } else {
-      console.log('No products passed the basic name filter');
     }
 
     // Convert to our format
