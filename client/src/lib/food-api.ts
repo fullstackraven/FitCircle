@@ -34,16 +34,11 @@ export interface OpenFoodFactsSearchResponse {
 }
 
 class FoodApiService {
-  private readonly baseUrl = 'https://world.openfoodfacts.org/api/v2';
-  private readonly userAgent = 'FitCircle/1.0 (Nutrition Tracker)';
+  private readonly baseUrl = '/api/food'; // Use our backend proxy
   
   private async makeRequest<T>(url: string): Promise<T> {
     try {
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent': this.userAgent,
-        },
-      });
+      const response = await fetch(url);
       
       if (!response.ok) {
         throw new Error(`API request failed: ${response.status}`);
@@ -60,16 +55,11 @@ class FoodApiService {
    * Get product information by barcode
    */
   async getProductByBarcode(barcode: string): Promise<OpenFoodFactsProduct | null> {
-    const url = `${this.baseUrl}/product/${barcode}.json?fields=code,product_name,product_name_en,brands,nutriments,serving_size,image_url`;
+    const url = `${this.baseUrl}/product/${barcode}`;
     
     try {
-      const response = await this.makeRequest<OpenFoodFactsResponse>(url);
-      
-      if (response.status === 1 && response.product) {
-        return response.product;
-      }
-      
-      return null;
+      const response = await this.makeRequest<{product?: OpenFoodFactsProduct}>(url);
+      return response.product || null;
     } catch (error) {
       console.error(`Failed to fetch product with barcode ${barcode}:`, error);
       return null;
@@ -79,42 +69,19 @@ class FoodApiService {
   /**
    * Search for products by name
    */
-  async searchProducts(query: string, pageSize: number = 10): Promise<OpenFoodFactsProduct[]> {
+  async searchProducts(query: string, pageSize: number = 10): Promise<any[]> {
     if (!query.trim()) return [];
     
     const searchParams = new URLSearchParams({
-      search_terms: query,
-      fields: 'code,product_name,product_name_en,brands,nutriments,serving_size,image_url',
-      page_size: pageSize.toString(),
-      sort_by: 'popularity',
-      // Filter for English products and products with decent nutrition data
-      countries_tags_en: 'united-states,united-kingdom,canada,australia',
-      languages_codes: 'en'
+      query: query,
+      limit: pageSize.toString()
     });
     
     const url = `${this.baseUrl}/search?${searchParams}`;
     
     try {
-      const response = await this.makeRequest<OpenFoodFactsSearchResponse>(url);
-      let products = response.products || [];
-      
-      // Additional filtering for English names and proper search matching
-      products = products.filter(product => {
-        const name = product.product_name || product.product_name_en || '';
-        const brand = product.brands || '';
-        const searchTerm = query.toLowerCase();
-        
-        // Filter out products without English names or that don't match search
-        return name && 
-               name.length > 0 &&
-               /^[\x00-\x7F]*$/.test(name) && // ASCII only (English characters)
-               (name.toLowerCase().includes(searchTerm) || 
-                brand.toLowerCase().includes(searchTerm)) &&
-               product.nutriments && // Must have nutrition data
-               product.nutriments['energy-kcal_100g']; // Must have calorie data
-      });
-      
-      return products;
+      const response = await this.makeRequest<{products: any[]}>(url);
+      return response.products || [];
     } catch (error) {
       console.error(`Failed to search products for "${query}":`, error);
       return [];
@@ -122,9 +89,21 @@ class FoodApiService {
   }
   
   /**
-   * Convert Open Food Facts product to our FoodEntry format
+   * Convert backend API product to our FoodEntry format (now handled by backend)
    */
-  convertToFoodEntry(product: OpenFoodFactsProduct, meal: 'breakfast' | 'lunch' | 'dinner' | 'snack' = 'breakfast') {
+  convertToFoodEntry(product: any, meal: 'breakfast' | 'lunch' | 'dinner' | 'snack' = 'breakfast') {
+    // Backend now returns converted products, so we just need to update the meal
+    return {
+      ...product,
+      meal,
+      timestamp: new Date().toISOString()
+    };
+  }
+  
+  /**
+   * Legacy method for direct API conversion (kept for barcode scanner)
+   */
+  convertDirectApiToFoodEntry(product: OpenFoodFactsProduct, meal: 'breakfast' | 'lunch' | 'dinner' | 'snack' = 'breakfast') {
     const nutriments = product.nutriments || {};
     
     // Get the best available product name

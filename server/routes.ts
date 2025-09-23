@@ -5,8 +5,12 @@ import { insertWorkoutSchema, insertWorkoutLogSchema, insertSupplementSchema, in
 import Anthropic from '@anthropic-ai/sdk';
 import fs from 'fs';
 import path from 'path';
+import foodApiProxy from './food-api-proxy';
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Food API proxy routes
+  app.use('/api/food', foodApiProxy);
+  
   // Workout routes
   app.get('/api/workouts', async (req, res) => {
     try {
