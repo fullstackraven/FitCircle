@@ -46,14 +46,19 @@ class FoodApiService {
       console.log('Food API - Current hostname:', hostname);
       
       // Handle different deployment scenarios
-      if (hostname.includes('.replit.app') || hostname.includes('.replit.dev')) {
-        // Deployed or preview Replit app
+      if (hostname.includes('.replit.app')) {
+        // PWA on static hosting - need to call the dev server API
+        const devHostname = hostname.replace('.replit.app', '.replit.dev');
+        this.baseUrl = `https://${devHostname}/api/food`;
+        console.log('Food API - PWA detected, using dev server API');
+      } else if (hostname.includes('.replit.dev')) {
+        // Preview or dev environment - same origin
         this.baseUrl = `${origin}/api/food`;
       } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
         // Local development
         this.baseUrl = `${origin}/api/food`;
       } else {
-        // PWA or other deployment - try current origin first
+        // Other deployment - try current origin first
         this.baseUrl = `${origin}/api/food`;
       }
       
@@ -71,6 +76,13 @@ class FoodApiService {
       if (!response.ok) {
         console.error(`API request failed: ${response.status} ${response.statusText}`);
         throw new Error(`API request failed: ${response.status}`);
+      }
+      
+      // Defensive check: ensure we got JSON, not HTML (PWA service worker issue)
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        console.error('API returned non-JSON response:', contentType);
+        throw new Error(`Expected JSON response, got: ${contentType}`);
       }
       
       const data = await response.json();
