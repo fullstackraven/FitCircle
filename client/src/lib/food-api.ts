@@ -34,17 +34,30 @@ export interface OpenFoodFactsSearchResponse {
 }
 
 class FoodApiService {
-  private readonly baseUrl = '/api/food'; // Use our backend proxy
+  private readonly baseUrl: string;
+  
+  constructor() {
+    // For PWA compatibility, use absolute URLs
+    if (typeof window !== 'undefined') {
+      this.baseUrl = `${window.location.origin}/api/food`;
+    } else {
+      this.baseUrl = '/api/food'; // Fallback for server-side
+    }
+  }
   
   private async makeRequest<T>(url: string): Promise<T> {
     try {
+      console.log(`Making food API request to: ${url}`);
       const response = await fetch(url);
       
       if (!response.ok) {
+        console.error(`API request failed: ${response.status} ${response.statusText}`);
         throw new Error(`API request failed: ${response.status}`);
       }
       
-      return await response.json();
+      const data = await response.json();
+      console.log('Food API response received:', data);
+      return data;
     } catch (error) {
       console.error('Food API request failed:', error);
       throw error;
