@@ -9,6 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { getTodayString } from '@/lib/date-utils';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
+import { foodApiService } from '@/lib/food-api';
 
 // Strong typing for nutrition data and units
 type FoodUnit = 'g' | 'oz' | 'cup' | 'piece' | 'serving';
@@ -153,6 +154,9 @@ export default function FoodTrackerPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchMeal, setSearchMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
   const [allFoodHistory, setAllFoodHistory] = useState<FoodEntry[]>([]);
+  const [apiSearchResults, setApiSearchResults] = useState<FoodEntry[]>([]);
+  const [isSearchingApi, setIsSearchingApi] = useState(false);
+  const [searchSource, setSearchSource] = useState<'history' | 'api'>('history');
   
   // Edit states
   const [editingFood, setEditingFood] = useState<FoodEntry | null>(null);
@@ -387,7 +391,7 @@ export default function FoodTrackerPage() {
       name: editName.trim(),
       brand: editBrand.trim() || undefined,
       quantity: parseFloat(editQuantity),
-      unit: editUnit,
+      unit: editUnit as FoodUnit,
       calories: parseFloat(editCalories),
       carbs: parseFloat(editCarbs),
       protein: parseFloat(editProtein),
@@ -753,7 +757,7 @@ export default function FoodTrackerPage() {
                 </div>
                 <div>
                   <Label htmlFor="unit" className="text-xs text-gray-400">Unit</Label>
-                  <Select value={unit} onValueChange={setUnit}>
+                  <Select value={unit} onValueChange={(value) => setUnit(value as FoodUnit)}>
                     <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl" data-testid="select-unit">
                       <SelectValue placeholder="Select unit" />
                     </SelectTrigger>
