@@ -86,14 +86,35 @@ class FoodApiService {
       search_terms: query,
       fields: 'code,product_name,product_name_en,brands,nutriments,serving_size,image_url',
       page_size: pageSize.toString(),
-      sort_by: 'popularity'
+      sort_by: 'popularity',
+      // Filter for English products and products with decent nutrition data
+      countries_tags_en: 'united-states,united-kingdom,canada,australia',
+      languages_codes: 'en'
     });
     
     const url = `${this.baseUrl}/search?${searchParams}`;
     
     try {
       const response = await this.makeRequest<OpenFoodFactsSearchResponse>(url);
-      return response.products || [];
+      let products = response.products || [];
+      
+      // Additional filtering for English names and proper search matching
+      products = products.filter(product => {
+        const name = product.product_name || product.product_name_en || '';
+        const brand = product.brands || '';
+        const searchTerm = query.toLowerCase();
+        
+        // Filter out products without English names or that don't match search
+        return name && 
+               name.length > 0 &&
+               /^[\x00-\x7F]*$/.test(name) && // ASCII only (English characters)
+               (name.toLowerCase().includes(searchTerm) || 
+                brand.toLowerCase().includes(searchTerm)) &&
+               product.nutriments && // Must have nutrition data
+               product.nutriments['energy-kcal_100g']; // Must have calorie data
+      });
+      
+      return products;
     } catch (error) {
       console.error(`Failed to search products for "${query}":`, error);
       return [];

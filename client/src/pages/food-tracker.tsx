@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp, Search, X, Edit2, Save, X as Cancel } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp, Search, X, Edit2, Save, X as Cancel, ScanLine } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -822,12 +822,12 @@ export default function FoodTrackerPage() {
               <Button
                 variant="ghost"
                 size="sm"
+                onClick={() => alert('Barcode scanner functionality coming soon!')}
                 className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl"
                 data-testid="button-scan-barcode"
-                title="Scan Barcode (Coming Soon)"
-                disabled
+                title="Scan Barcode"
               >
-                📷
+                <ScanLine className="h-5 w-5" />
               </Button>
             </div>
           </div>
