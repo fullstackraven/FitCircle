@@ -179,6 +179,8 @@ export default function FoodTrackerPage() {
   const [selectedFoodForServing, setSelectedFoodForServing] = useState<FoodEntry | null>(null);
   const [servingQuantity, setServingQuantity] = useState('1');
   const [servingUnit, setServingUnit] = useState<FoodUnit>('serving');
+  const [isEditingExistingFood, setIsEditingExistingFood] = useState(false);
+  const [editingFoodId, setEditingFoodId] = useState<string | null>(null);
 
   // Check if we came from dashboard
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
@@ -392,6 +394,8 @@ export default function FoodTrackerPage() {
     setSelectedFoodForServing(food);
     setServingQuantity('1');
     setServingUnit(food.unit || 'serving');
+    setIsEditingExistingFood(false);
+    setEditingFoodId(null);
     setServingSizeOpen(true);
   };
 
@@ -403,11 +407,11 @@ export default function FoodTrackerPage() {
       // Calculate nutritional values based on serving size
       const multiplier = parseFloat(servingQuantity) || 1;
       
-      const newFood: FoodEntry = {
+      const updatedFood: FoodEntry = {
         ...selectedFoodForServing,
-        id: Date.now().toString(),
-        meal: searchMeal,
-        timestamp: new Date().toISOString(),
+        id: isEditingExistingFood ? (editingFoodId || selectedFoodForServing.id) : Date.now().toString(),
+        meal: isEditingExistingFood ? selectedFoodForServing.meal : searchMeal,
+        timestamp: isEditingExistingFood ? selectedFoodForServing.timestamp : new Date().toISOString(),
         quantity: parseFloat(servingQuantity),
         unit: servingUnit,
         calories: Math.round(selectedFoodForServing.calories * multiplier),
@@ -420,23 +424,35 @@ export default function FoodTrackerPage() {
         saturatedFat: selectedFoodForServing.saturatedFat ? Math.round(selectedFoodForServing.saturatedFat * multiplier * 10) / 10 : undefined,
       };
       
-      setFoodEntries(prev => [...prev, newFood]);
+      if (isEditingExistingFood) {
+        // Update existing food item
+        setFoodEntries(prev => prev.map(food => food.id === editingFoodId ? updatedFood : food));
+        toast({
+          title: "Food Updated",
+          description: `${selectedFoodForServing.name} (${servingQuantity} ${servingUnit}) updated`,
+        });
+      } else {
+        // Add new food item
+        setFoodEntries(prev => [...prev, updatedFood]);
+        toast({
+          title: "Food Added",
+          description: `${selectedFoodForServing.name} (${servingQuantity} ${servingUnit}) added to ${searchMeal}`,
+        });
+      }
       
-      // Close modals
+      // Close modals and reset states
       setServingSizeOpen(false);
       setSearchOpen(false);
       setSearchQuery('');
       setSelectedFoodForServing(null);
+      setIsEditingExistingFood(false);
+      setEditingFoodId(null);
       
-      toast({
-        title: "Food Added",
-        description: `${selectedFoodForServing.name} (${servingQuantity} ${servingUnit}) added to ${searchMeal}`,
-      });
     } catch (error) {
-      console.error('Error adding food with serving size:', error);
+      console.error('Error with food serving size:', error);
       toast({
         title: "Error",
-        description: "Failed to add food. Please try again.",
+        description: isEditingExistingFood ? "Failed to update food. Please try again." : "Failed to add food. Please try again.",
         variant: "destructive",
       });
     }
@@ -862,6 +878,8 @@ export default function FoodTrackerPage() {
                         setSelectedFoodForServing(entry);
                         setServingQuantity(entry.quantity.toString());
                         setServingUnit(entry.unit);
+                        setIsEditingExistingFood(true);
+                        setEditingFoodId(entry.id);
                         setServingSizeOpen(true);
                       }}
                       data-testid={`food-item-${entry.id}`}
@@ -935,6 +953,8 @@ export default function FoodTrackerPage() {
                         setSelectedFoodForServing(entry);
                         setServingQuantity(entry.quantity.toString());
                         setServingUnit(entry.unit);
+                        setIsEditingExistingFood(true);
+                        setEditingFoodId(entry.id);
                         setServingSizeOpen(true);
                       }}
                       data-testid={`food-item-${entry.id}`}
@@ -1008,6 +1028,8 @@ export default function FoodTrackerPage() {
                         setSelectedFoodForServing(entry);
                         setServingQuantity(entry.quantity.toString());
                         setServingUnit(entry.unit);
+                        setIsEditingExistingFood(true);
+                        setEditingFoodId(entry.id);
                         setServingSizeOpen(true);
                       }}
                       data-testid={`food-item-${entry.id}`}
@@ -1081,6 +1103,8 @@ export default function FoodTrackerPage() {
                         setSelectedFoodForServing(entry);
                         setServingQuantity(entry.quantity.toString());
                         setServingUnit(entry.unit);
+                        setIsEditingExistingFood(true);
+                        setEditingFoodId(entry.id);
                         setServingSizeOpen(true);
                       }}
                       data-testid={`food-item-${entry.id}`}
@@ -1123,7 +1147,7 @@ export default function FoodTrackerPage() {
           <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
-                Confirm Serving Size
+{isEditingExistingFood ? 'Edit Food' : 'Confirm Serving Size'}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -1136,7 +1160,7 @@ export default function FoodTrackerPage() {
                 </Button>
               </DialogTitle>
               <DialogDescription className="text-gray-400">
-                Adjust the serving size for {selectedFoodForServing?.name}
+{isEditingExistingFood ? 'Update' : 'Adjust'} the serving size for {selectedFoodForServing?.name}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
