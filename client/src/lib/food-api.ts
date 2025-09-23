@@ -1,7 +1,7 @@
 // Open Food Facts API integration for food search and barcode lookup
 // API Documentation: https://openfoodfacts.github.io/openfoodfacts-server/api/
 
-import commonFoodsData from '@/data/common-foods.json';
+import commonFoodsData from '@/data/comprehensive-foods.json';
 
 export interface OpenFoodFactsProduct {
   code: string;
@@ -234,7 +234,7 @@ class FoodApiService {
 
 export const foodApiService = new FoodApiService();
 
-// Helper function to get local foods for quick access
+// Helper function to get local foods for quick access  
 export const getLocalFoods = () => commonFoodsData;
 
 // Helper function to search local foods only
