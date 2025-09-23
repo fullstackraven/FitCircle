@@ -695,163 +695,123 @@ export default function FoodTrackerPage() {
           <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-lg">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
-                Add Food to {searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}
+                Add to {searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => alert('Barcode scanner functionality coming soon!')}
                   className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl"
-                  data-testid="button-scan-barcode"
+                  data-testid="button-scan"
                   title="Scan Barcode"
                 >
                   <ScanLine className="h-5 w-5" />
                 </Button>
               </DialogTitle>
-              <DialogDescription className="text-gray-400">
-                Search the food database or select from your recently added foods
-              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               
-              {/* Database Search Bar */}
-              <div>
-                <Label htmlFor="searchQuery" className="text-sm text-gray-300 flex items-center">
-                  <Search className="w-4 h-4 mr-2" />
-                  Search Food Database
-                </Label>
+              {/* Search Bar */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  id="searchQuery"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="e.g., greek yogurt, banana, chicken breast..."
-                  className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                  data-testid="input-search-query"
+                  placeholder="Search foods"
+                  className="bg-gray-700 border-gray-600 text-white rounded-xl pl-10 pr-10"
+                  data-testid="input-search"
                 />
-                {searchQuery.length > 0 && searchQuery.length < 2 && (
-                  <p className="text-xs text-yellow-400 mt-1">Type at least 2 characters to search</p>
+                {searchQuery && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white p-1"
+                    data-testid="button-clear-search"
+                  >
+                    <Cancel className="w-4 h-4" />
+                  </Button>
+                )}
+                {isSearchingApi && (
+                  <div className="absolute inset-x-0 top-full mt-1 text-center">
+                    <div className="text-xs text-gray-400">Searching...</div>
+                  </div>
                 )}
               </div>
                   
               
-              {/* Results Section */}
-              <div className="max-h-80 overflow-y-auto space-y-4">
-                
-                {/* API Search Results (when searching) */}
-                {searchQuery && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-300 mb-2 flex items-center">
-                      🌐 Food Database Results
-                      {isSearchingApi && <div className="animate-spin w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full ml-2"></div>}
-                    </h3>
-                    {isSearchingApi ? (
-                      <div className="text-center text-gray-400 py-4 text-sm">
-                        Searching food database...
-                      </div>
-                    ) : apiSearchResults.length > 0 ? (
-                      <div className="space-y-2">
-                        {apiSearchResults.map((food) => (
-                          <div key={food.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
-                            <div className="flex-1">
-                              <h4 className="font-medium text-white text-sm">
-                                {food.name}
-                                {food.brand && <span className="text-gray-400 font-normal"> • {food.brand}</span>}
-                                <span className="ml-1 inline-block w-2 h-2 bg-green-400 rounded-full" title="From food database"></span>
-                              </h4>
-                              <div className="text-xs text-gray-400 mt-1">
-                                {food.quantity}{food.unit} • {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
-                                {food.fiber && <span> • {food.fiber}g fiber</span>}
-                                {food.barcode && <span className="block text-xs text-blue-400 mt-1">#{food.barcode}</span>}
-                              </div>
-                            </div>
-                            <div className="flex flex-col space-y-1 ml-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleAddFromSearch(food)}
-                                className="text-green-400 hover:text-green-300 hover:bg-gray-600 rounded-xl text-xs px-2 py-1"
-                                data-testid={`button-add-${food.id}`}
-                              >
-                                Add
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEditFromSearch(food)}
-                                className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-xl text-xs px-2 py-1"
-                                data-testid={`button-edit-${food.id}`}
-                              >
-                                Edit
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center text-gray-500 py-4 text-sm">
-                        {searchQuery.length < 2
-                          ? 'Type at least 2 characters to search the food database'
-                          : `No foods found in database matching "${searchQuery}"`
-                        }
-                      </div>
-                    )}
-                  </div>
-                )}
-                
-                {/* Recently Added Foods History */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-300 mb-2 flex items-center">
-                    📚 Recently Added Foods
-                  </h3>
-                  {filteredFoodHistory.length > 0 ? (
-                    <div className="space-y-2">
-                      {filteredFoodHistory.slice(0, searchQuery ? 5 : 10).map((food) => (
-                        <div key={food.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
+              {/* Food List */}
+              <div className="max-h-80 overflow-y-auto">
+                {searchQuery ? (
+                  // Search Results
+                  apiSearchResults.length > 0 ? (
+                    <div className="space-y-1">
+                      {apiSearchResults.map((food) => (
+                        <div key={food.id} className="flex items-center justify-between p-3 hover:bg-gray-700/50 rounded-lg transition-colors" data-testid={`row-food-${food.id}`}>
                           <div className="flex-1">
-                            <h4 className="font-medium text-white text-sm">
+                            <div className="font-medium text-white text-sm">
                               {food.name}
-                              {food.brand && <span className="text-gray-400 font-normal"> • {food.brand}</span>}
-                            </h4>
-                            <div className="text-xs text-gray-400 mt-1">
-                              {food.quantity}{food.unit} • {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
-                              {food.fiber && <span> • {food.fiber}g fiber</span>}
-                              {food.barcode && <span className="block text-xs text-blue-400 mt-1">#{food.barcode}</span>}
+                              {food.brand && <span className="text-gray-400 font-normal text-xs ml-1">{food.brand}</span>}
+                            </div>
+                            <div className="text-xs text-gray-400 mt-0.5">
+                              {food.quantity} {food.unit}
                             </div>
                           </div>
-                          <div className="flex flex-col space-y-1 ml-2">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-sm text-gray-300">{food.calories} cal</span>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleAddFromSearch(food)}
-                              className="text-green-400 hover:text-green-300 hover:bg-gray-600 rounded-xl text-xs px-2 py-1"
+                              className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
                               data-testid={`button-add-${food.id}`}
                             >
-                              Add
+                              <Plus className="w-4 h-4" />
                             </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : !isSearchingApi ? (
+                    <div className="text-center text-gray-500 py-8 text-sm">
+                      No results found
+                    </div>
+                  ) : null
+                ) : (
+                  // Recent Foods (when no search query)
+                  filteredFoodHistory.length > 0 ? (
+                    <div className="space-y-1">
+                      {filteredFoodHistory.slice(0, 10).map((food) => (
+                        <div key={food.id} className="flex items-center justify-between p-3 hover:bg-gray-700/50 rounded-lg transition-colors" data-testid={`row-food-${food.id}`}>
+                          <div className="flex-1">
+                            <div className="font-medium text-white text-sm">
+                              {food.name}
+                              {food.brand && <span className="text-gray-400 font-normal text-xs ml-1">{food.brand}</span>}
+                            </div>
+                            <div className="text-xs text-gray-400 mt-0.5">
+                              {food.quantity} {food.unit}
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            <span className="text-sm text-gray-300">{food.calories} cal</span>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleEditFromSearch(food)}
-                              className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-xl text-xs px-2 py-1"
-                              data-testid={`button-edit-${food.id}`}
+                              onClick={() => handleAddFromSearch(food)}
+                              className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                              data-testid={`button-add-${food.id}`}
                             >
-                              Edit
+                              <Plus className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center text-gray-500 py-4 text-sm">
-                      {allFoodHistory.length === 0 
-                        ? 'No food history available yet. Start by searching for foods above!' 
-                        : searchQuery
-                        ? `No recently added foods matching "${searchQuery}"`
-                        : 'Start typing to search your recently added foods'
-                      }
+                    <div className="text-center text-gray-500 py-8 text-sm">
+                      No recent foods
                     </div>
-                  )}
-                </div>
-                
+                  )
+                )}
               </div>
                 </div>
               </DialogContent>
