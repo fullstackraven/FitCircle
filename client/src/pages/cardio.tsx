@@ -285,7 +285,7 @@ export default function CardioPage() {
                         <Plus className="w-4 h-4" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="fitcircle-dialog">
+                    <DialogContent className="fitcircle-dialog text-white">
                       <DialogHeader>
                         <DialogTitle>Add Custom Type</DialogTitle>
                         <DialogDescription>Create a new cardio type</DialogDescription>
