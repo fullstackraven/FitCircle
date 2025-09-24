@@ -285,26 +285,26 @@ export default function CardioPage() {
                         <Plus className="w-4 h-4" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="fitcircle-dialog text-white">
+                    <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700 text-white">
                       <DialogHeader>
-                        <DialogTitle>Add Custom Type</DialogTitle>
-                        <DialogDescription>Create a new cardio type</DialogDescription>
+                        <DialogTitle className="text-lg font-semibold text-center text-white">Add Custom Type</DialogTitle>
+                        <DialogDescription className="text-sm text-slate-400 text-center">Create a new cardio type</DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div>
-                          <Label>Type Name</Label>
+                          <Label className="text-sm font-medium text-white">Type Name</Label>
                           <Input
                             value={newCustomType}
                             onChange={(e) => setNewCustomType(e.target.value)}
                             placeholder="e.g., Swimming"
-                            className="fitcircle-input"
+                            className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
                           />
                         </div>
                         <div className="flex space-x-2">
                           <Button onClick={handleAddCustomType} className="flex-1">
                             Add Type
                           </Button>
-                          <Button variant="outline" onClick={() => setIsAddCustomTypeOpen(false)}>
+                          <Button variant="outline" onClick={() => setIsAddCustomTypeOpen(false)} className="border-slate-600 text-slate-300 hover:bg-slate-700">
                             Cancel
                           </Button>
                         </div>
