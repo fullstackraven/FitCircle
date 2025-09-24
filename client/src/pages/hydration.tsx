@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, Target, X } from 'lucide-react';
+import { ArrowLeft, Plus, Target, X, Edit2, Trash2 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useHydration, HydrationLog, HydrationEntry } from '@/hooks/use-hydration';
 import { Button } from '@/components/ui/button';
@@ -32,6 +32,8 @@ export default function HydrationPage() {
     currentDayOz, 
     progressPercentage, 
     addHydration, 
+    editHydrationEntry,
+    deleteHydrationEntry,
     setDailyGoal, 
     getRecentLogs, 
     getAllLogs,
@@ -52,6 +54,10 @@ export default function HydrationPage() {
   const [goalFocused, setGoalFocused] = useState(false);
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<HydrationEntry | null>(null);
+  const [editAmount, setEditAmount] = useState('');
+  const [editLiquidType, setEditLiquidType] = useState('Water');
 
   // Load goal from Goals page when it changes
   useEffect(() => {
@@ -125,6 +131,29 @@ export default function HydrationPage() {
       localStorage.setItem('fitcircle_goals', JSON.stringify(goalsObject));
       
       setIsGoalModalOpen(false);
+    }
+  };
+
+  const handleEditEntry = (entry: HydrationEntry) => {
+    setEditingEntry(entry);
+    setEditAmount(entry.amount.toString());
+    setEditLiquidType(entry.liquidType);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingEntry || !editAmount || parseFloat(editAmount) <= 0) return;
+    
+    editHydrationEntry(editingEntry.id, parseFloat(editAmount), editLiquidType);
+    setIsEditDialogOpen(false);
+    setEditingEntry(null);
+    setEditAmount('');
+    setEditLiquidType('Water');
+  };
+
+  const handleDeleteEntry = (entry: HydrationEntry) => {
+    if (confirm(`Delete ${entry.amount}oz of ${entry.liquidType} from ${entry.time}?`)) {
+      deleteHydrationEntry(entry.id);
     }
   };
 
@@ -225,12 +254,34 @@ export default function HydrationPage() {
             <div className="fitcircle-card-lg">
               <h3 className="text-lg font-semibold mb-3">Today's Intake</h3>
               <div className="space-y-2">
-                {todayEntries.slice().reverse().map((entry, index) => (
-                  <div key={index} className="flex justify-between items-center text-sm">
-                    <span className="text-slate-400">{entry.time}</span>
-                    <div className="flex items-center space-x-2">
+                {todayEntries.slice().reverse().map((entry: HydrationEntry, index: number) => (
+                  <div key={entry.id} className="flex justify-between items-center text-sm relative">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-slate-400">{entry.time}</span>
                       <span className="text-slate-300">{entry.liquidType || 'Water'}</span>
-                      <span className="text-blue-400">{entry.amount}oz</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-blue-400 font-medium">{entry.amount}oz</span>
+                      <div className="flex items-center space-x-1 ml-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditEntry(entry)}
+                          className="text-slate-400 hover:text-white p-1 h-auto"
+                          data-testid={`button-edit-entry-${entry.id}`}
+                        >
+                          <Edit2 className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteEntry(entry)}
+                          className="text-slate-400 hover:text-red-300 p-1 h-auto"
+                          data-testid={`button-delete-entry-${entry.id}`}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -482,6 +533,79 @@ export default function HydrationPage() {
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Add
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Entry Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto">
+          <DialogTitle className="text-lg font-semibold text-center">Edit Entry</DialogTitle>
+          <DialogDescription className="sr-only">
+            Edit your hydration entry
+          </DialogDescription>
+          <div className="space-y-4">
+            {/* Liquid Type Selection */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-slate-300">Liquid Type</Label>
+              <div className="grid grid-cols-4 gap-2">
+                {liquidTypes.map(type => (
+                  <button
+                    key={type}
+                    onClick={() => setEditLiquidType(type)}
+                    className={`py-2 px-3 rounded-xl text-sm font-medium transition-colors ${
+                      editLiquidType === type
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Custom Liquid Type Input */}
+              {editLiquidType === 'Custom' && (
+                <Input
+                  type="text"
+                  value={editLiquidType === 'Custom' ? editLiquidType : ''}
+                  onChange={(e) => setEditLiquidType(e.target.value)}
+                  placeholder="Enter liquid type"
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              )}
+            </div>
+            
+            {/* Amount Input */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-slate-300">Amount (oz)</Label>
+              <Input
+                type="number"
+                value={editAmount}
+                onChange={(e) => setEditAmount(e.target.value)}
+                placeholder="Enter amount"
+                className="bg-slate-700 border-slate-600 text-white"
+                data-testid="input-edit-amount"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex space-x-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setIsEditDialogOpen(false)}
+                className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSaveEdit}
+                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                data-testid="button-save-edit"
+              >
+                Save Changes
               </Button>
             </div>
           </div>
