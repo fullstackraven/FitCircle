@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Target, X } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { useHydration } from '@/hooks/use-hydration';
+import { useHydration, HydrationLog, HydrationEntry } from '@/hooks/use-hydration';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -131,7 +131,7 @@ export default function HydrationPage() {
   const quickAddAmounts = [12, 16, 24, 34, 36];
   const recentLogs = getAllLogs();
   const todayEntries = getTodayEntries();
-  const monthlyLogs = groupLogsByMonth(recentLogs.reduce((acc, log) => ({ ...acc, [log.date]: log }), {}));
+  const monthlyLogs = groupLogsByMonth(recentLogs.reduce((acc, log) => ({ ...acc, [log.date]: log }), {})) as { [monthName: string]: HydrationLog[] };
 
   // Calculate progress ring
   const circumference = 2 * Math.PI * 120;
@@ -272,7 +272,7 @@ export default function HydrationPage() {
                     </CollapsibleTrigger>
                     
                     <CollapsibleContent className="space-y-2 mt-2">
-                      {monthLogs.map((log) => (
+                      {monthLogs.map((log: HydrationLog) => (
                         <div key={log.date} className="fitcircle-card ml-4">
                           <div className="flex justify-between items-center mb-3">
                             <span className="text-white font-medium">
@@ -292,7 +292,7 @@ export default function HydrationPage() {
                           
                           {/* Show detailed entries for this day */}
                           <div className="space-y-1">
-                            {(expandedDays.has(log.date) ? log.entries : log.entries.slice(0, 3)).map((entry, index) => (
+                            {(expandedDays.has(log.date) ? log.entries : log.entries.slice(0, 3)).map((entry: HydrationEntry, index: number) => (
                               <div key={index} className="flex justify-between items-center text-xs">
                                 <span className="text-slate-500">{entry.time}</span>
                                 <div className="flex items-center space-x-1">
