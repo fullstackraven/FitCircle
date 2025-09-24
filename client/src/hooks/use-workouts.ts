@@ -637,14 +637,22 @@ export function useWorkouts() {
       if (isToday) {
         // For today, check ALL current workouts (including newly added ones)
         let allGoalsMet = true;
+        console.log('Checking today\'s completion for consistency calculation:', {
+          date: dateStr,
+          workoutCount: workoutArray.length,
+          dayLog: dayLog
+        });
+        
         workoutArray.forEach(workout => {
           const count = getCountFromLogEntry(dayLog[workout.id]);
           monthlyReps += count;
+          console.log(`Workout ${workout.name}: count=${count}, goal=${workout.dailyGoal}, met=${count >= workout.dailyGoal}`);
           if (count < workout.dailyGoal) {
             allGoalsMet = false;
           }
         });
         
+        console.log('All goals met for today:', allGoalsMet);
         if (allGoalsMet) {
           monthlyCompletedDays++;
         }
@@ -752,14 +760,22 @@ export function useWorkouts() {
       if (isToday) {
         // For today, check ALL current workouts (including newly added ones)
         let allGoalsMet = true;
+        console.log('Total Stats - Checking today\'s completion:', {
+          date: dateStr,
+          workoutCount: workoutArray.length,
+          dayLog: dayLog
+        });
+        
         workoutArray.forEach(workout => {
           const count = getCountFromLogEntry(dayLog[workout.id]);
           totalReps += count;
+          console.log(`Total Stats - Workout ${workout.name}: count=${count}, goal=${workout.dailyGoal}, met=${count >= workout.dailyGoal}`);
           if (count < workout.dailyGoal) {
             allGoalsMet = false;
           }
         });
         
+        console.log('Total Stats - All goals met for today:', allGoalsMet);
         if (allGoalsMet) {
           totalCompletedDays++;
         }
