@@ -258,7 +258,7 @@ export default function CardioPage() {
               Log Cardio
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
+          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700 text-white">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold text-center text-white">Add Cardio Entry</DialogTitle>
               <DialogDescription className="text-sm text-slate-400 text-center">
@@ -482,7 +482,7 @@ export default function CardioPage() {
 
         {/* Edit Entry Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
+          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700 text-white">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold text-center text-white">Edit Cardio Entry</DialogTitle>
               <DialogDescription className="text-sm text-slate-400 text-center">
