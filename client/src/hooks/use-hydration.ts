@@ -3,6 +3,7 @@ import { getTodayString, getCurrentTime } from '@/lib/date-utils';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 export interface HydrationEntry {
+  id: string;
   time: string;
   amount: number;
   liquidType: string;
@@ -38,13 +39,17 @@ export function useHydration() {
     
     const saved = safeParseJSON(localStorage.getItem(STORAGE_KEYS.HYDRATION), defaultData);
     
-    // Migrate liquid type if not present
+    // Migrate liquid type and add IDs if not present
     if (saved.logs) {
       Object.values(saved.logs).forEach((dayLog: any) => {
         if (dayLog.entries) {
-          dayLog.entries.forEach((entry: any) => {
+          dayLog.entries.forEach((entry: any, index: number) => {
             if (!entry.liquidType) {
               entry.liquidType = 'Water';
+            }
+            // Add unique ID if missing (for existing entries)
+            if (!entry.id) {
+              entry.id = `${dayLog.date}-${entry.time}-${index}-${Date.now()}`;
             }
           });
         }
@@ -96,10 +101,17 @@ export function useHydration() {
       const newCurrentDayOz = prev.currentDayOz + amountOz;
       const todayLog = prev.logs[today] || { date: today, totalOz: 0, entries: [] };
       
+      const newEntry: HydrationEntry = {
+        id: Date.now().toString(),
+        time: currentTime,
+        amount: amountOz,
+        liquidType
+      };
+      
       const updatedLog = {
         ...todayLog,
         totalOz: todayLog.totalOz + amountOz,
-        entries: [...todayLog.entries, { time: currentTime, amount: amountOz, liquidType }]
+        entries: [...todayLog.entries, newEntry]
       };
 
       return {
@@ -117,6 +129,69 @@ export function useHydration() {
     setData(prev => ({ ...prev, dailyGoalOz: goalOz }));
     // Sync with goals page
     localStorage.setItem('fitcircle_goal_hydration', goalOz.toString());
+  };
+
+  const editHydrationEntry = (entryId: string, newAmount: number, newLiquidType: string = 'Water') => {
+    setData(prev => {
+      const updatedLogs = { ...prev.logs };
+      let totalDifference = 0;
+      
+      // Find and update the entry across all logs
+      Object.keys(updatedLogs).forEach(date => {
+        const log = updatedLogs[date];
+        const entryIndex = log.entries.findIndex(entry => entry.id === entryId);
+        
+        if (entryIndex !== -1) {
+          const oldAmount = log.entries[entryIndex].amount;
+          totalDifference = newAmount - oldAmount;
+          
+          // Update the entry
+          log.entries[entryIndex] = {
+            ...log.entries[entryIndex],
+            amount: newAmount,
+            liquidType: newLiquidType
+          };
+          
+          // Update the log's total
+          log.totalOz += totalDifference;
+        }
+      });
+      
+      return {
+        ...prev,
+        currentDayOz: prev.currentDayOz + totalDifference,
+        logs: updatedLogs
+      };
+    });
+  };
+
+  const deleteHydrationEntry = (entryId: string) => {
+    setData(prev => {
+      const updatedLogs = { ...prev.logs };
+      let deletedAmount = 0;
+      
+      // Find and remove the entry across all logs
+      Object.keys(updatedLogs).forEach(date => {
+        const log = updatedLogs[date];
+        const entryIndex = log.entries.findIndex(entry => entry.id === entryId);
+        
+        if (entryIndex !== -1) {
+          deletedAmount = log.entries[entryIndex].amount;
+          
+          // Remove the entry
+          log.entries.splice(entryIndex, 1);
+          
+          // Update the log's total
+          log.totalOz -= deletedAmount;
+        }
+      });
+      
+      return {
+        ...prev,
+        currentDayOz: prev.currentDayOz - deletedAmount,
+        logs: updatedLogs
+      };
+    });
   };
 
   const getProgressPercentage = () => {
@@ -192,6 +267,8 @@ export function useHydration() {
     progressPercentage: getProgressPercentage(),
     hasUserGoal: Boolean(localStorage.getItem('fitcircle_goal_hydration')), // Flag indicating if user has set a goal
     addHydration,
+    editHydrationEntry,
+    deleteHydrationEntry,
     setDailyGoal,
     getRecentLogs,
     getAllLogs,
