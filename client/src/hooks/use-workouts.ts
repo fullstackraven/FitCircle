@@ -635,25 +635,20 @@ export function useWorkouts() {
       const isToday = dateStr === today;
       
       if (isToday) {
-        // For today, check ALL current workouts (including newly added ones)
-        let allGoalsMet = true;
-        console.log('Checking today\'s completion for consistency calculation:', {
-          date: dateStr,
-          workoutCount: workoutArray.length,
-          dayLog: dayLog
-        });
+        // For today, check only workouts scheduled for today
+        const todayDayOfWeek = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+        const todaysScheduledWorkouts = workoutArray.filter(workout => isWorkoutActiveOnDay(workout, todayDayOfWeek));
         
-        workoutArray.forEach(workout => {
+        let allGoalsMet = true;
+        
+        todaysScheduledWorkouts.forEach(workout => {
           const count = getCountFromLogEntry(dayLog[workout.id]);
           monthlyReps += count;
-          console.log(`Workout ${workout.name}: count=${count}, goal=${workout.dailyGoal}, met=${count >= workout.dailyGoal}`);
           if (count < workout.dailyGoal) {
             allGoalsMet = false;
           }
         });
-        
-        console.log('All goals met for today:', allGoalsMet);
-        if (allGoalsMet) {
+        if (allGoalsMet && todaysScheduledWorkouts.length > 0) {
           monthlyCompletedDays++;
         }
       } else {
@@ -758,25 +753,20 @@ export function useWorkouts() {
       const isToday = dateStr === today;
       
       if (isToday) {
-        // For today, check ALL current workouts (including newly added ones)
-        let allGoalsMet = true;
-        console.log('Total Stats - Checking today\'s completion:', {
-          date: dateStr,
-          workoutCount: workoutArray.length,
-          dayLog: dayLog
-        });
+        // For today, check only workouts scheduled for today
+        const todayDayOfWeek = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+        const todaysScheduledWorkouts = workoutArray.filter(workout => isWorkoutActiveOnDay(workout, todayDayOfWeek));
         
-        workoutArray.forEach(workout => {
+        let allGoalsMet = true;
+        
+        todaysScheduledWorkouts.forEach(workout => {
           const count = getCountFromLogEntry(dayLog[workout.id]);
           totalReps += count;
-          console.log(`Total Stats - Workout ${workout.name}: count=${count}, goal=${workout.dailyGoal}, met=${count >= workout.dailyGoal}`);
           if (count < workout.dailyGoal) {
             allGoalsMet = false;
           }
         });
-        
-        console.log('Total Stats - All goals met for today:', allGoalsMet);
-        if (allGoalsMet) {
+        if (allGoalsMet && todaysScheduledWorkouts.length > 0) {
           totalCompletedDays++;
         }
       } else {
