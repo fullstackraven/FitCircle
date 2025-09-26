@@ -121,6 +121,11 @@ export function useMeditation() {
     const dailyGoal = getDailyGoal();
     const weeklyGoal = dailyGoal * 7; // 7 days worth of daily goals
     
+    console.log('=== Meditation Last 7 Days Debug ===');
+    console.log('Today:', today.toLocaleDateString('en-US'));
+    console.log('Seven days ago:', sevenDaysAgo.toLocaleDateString('en-US'));
+    console.log('All logs:', logs);
+    
     for (let i = 0; i < 7; i++) {
       const checkDate = new Date(sevenDaysAgo);
       checkDate.setDate(sevenDaysAgo.getDate() + i);
@@ -131,8 +136,13 @@ export function useMeditation() {
         return log.date === dateString;
       });
       
-      totalMinutes += dayLogs.reduce((sum, log) => sum + log.duration, 0);
+      const dayMinutes = dayLogs.reduce((sum, log) => sum + log.duration, 0);
+      console.log(`Day ${i} (${dateString}): ${dayMinutes} minutes from ${dayLogs.length} logs`);
+      totalMinutes += dayMinutes;
     }
+    
+    console.log('Total minutes calculated:', totalMinutes);
+    console.log('=== End Debug ===');
     
     const averageMinutes = totalMinutes / 7; // Average over 7 days (including zero days)
     const goalProgress = weeklyGoal > 0 ? Math.min((totalMinutes / weeklyGoal) * 100, 100) : 0;
