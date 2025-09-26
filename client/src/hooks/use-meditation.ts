@@ -113,37 +113,20 @@ export function useMeditation() {
 
   // Get last 7 days meditation stats
   const getLast7DaysProgress = () => {
-    const today = new Date();
-    const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(today.getDate() - 6); // Last 7 days including today
+    const now = new Date();
+    const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000)); // Exactly 7 days ago
     
-    let totalMinutes = 0;
+    // Filter logs from the last 7 days based on completedAt timestamp
+    const recentLogs = logs.filter(log => {
+      const logDate = new Date(log.completedAt);
+      return logDate >= sevenDaysAgo && logDate <= now;
+    });
+    
+    // Sum up the durations
+    const totalMinutes = recentLogs.reduce((sum, log) => sum + log.duration, 0);
+    
     const dailyGoal = getDailyGoal();
     const weeklyGoal = dailyGoal * 7; // 7 days worth of daily goals
-    
-    console.log('=== Meditation Last 7 Days Debug ===');
-    console.log('Today:', today.toLocaleDateString('en-US'));
-    console.log('Seven days ago:', sevenDaysAgo.toLocaleDateString('en-US'));
-    console.log('All logs:', logs);
-    
-    for (let i = 0; i < 7; i++) {
-      const checkDate = new Date(sevenDaysAgo);
-      checkDate.setDate(sevenDaysAgo.getDate() + i);
-      const dateString = checkDate.toLocaleDateString('en-US'); // MM/DD/YYYY format
-      
-      const dayLogs = logs.filter(log => {
-        // Direct string comparison using MM/DD/YYYY format
-        return log.date === dateString;
-      });
-      
-      const dayMinutes = dayLogs.reduce((sum, log) => sum + log.duration, 0);
-      console.log(`Day ${i} (${dateString}): ${dayMinutes} minutes from ${dayLogs.length} logs`);
-      totalMinutes += dayMinutes;
-    }
-    
-    console.log('Total minutes calculated:', totalMinutes);
-    console.log('=== End Debug ===');
-    
     const averageMinutes = totalMinutes / 7; // Average over 7 days (including zero days)
     const goalProgress = weeklyGoal > 0 ? Math.min((totalMinutes / weeklyGoal) * 100, 100) : 0;
     const remaining = Math.max(0, weeklyGoal - totalMinutes);
