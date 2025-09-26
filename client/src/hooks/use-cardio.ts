@@ -248,20 +248,13 @@ export function useCardio() {
   };
 
   const getWeeklyProgress = () => {
-    const today = new Date();
+    const now = new Date();
+    const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000)); // Exactly 7 days ago
     
-    // For "This Week" calculation, use rolling 7 days ending today
-    // This ensures we always show recent progress, not empty weeks
-    const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(today.getDate() - 6); // Go back 6 days (today + 6 = 7 days total)
-    sevenDaysAgo.setHours(0, 0, 0, 0);
-    
-    const endOfPeriod = new Date(today);
-    endOfPeriod.setHours(23, 59, 59, 999);
-    
+    // Filter entries from the last 7 days based on date
     const weekEntries = data.entries.filter(entry => {
       const entryDate = new Date(entry.date + 'T00:00:00');
-      return entryDate >= sevenDaysAgo && entryDate <= endOfPeriod;
+      return entryDate >= sevenDaysAgo && entryDate <= now;
     });
 
     const totalDuration = weekEntries.reduce((sum, entry) => sum + entry.duration, 0);
@@ -283,23 +276,20 @@ export function useCardio() {
   };
 
   const getLast7DaysAverage = () => {
-    const last7Days = [];
-    const today = new Date();
+    const now = new Date();
+    const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000)); // Exactly 7 days ago
     
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      
-      const dayEntries = data.entries.filter(entry => entry.date === dateStr);
-      const dayTotal = data.goal.type === 'duration'
-        ? dayEntries.reduce((sum, entry) => sum + entry.duration, 0)
-        : dayEntries.reduce((sum, entry) => sum + (entry.distance || 0), 0);
-      
-      last7Days.push(dayTotal);
-    }
+    // Filter entries from the last 7 days
+    const recentEntries = data.entries.filter(entry => {
+      const entryDate = new Date(entry.date + 'T00:00:00');
+      return entryDate >= sevenDaysAgo && entryDate <= now;
+    });
 
-    const average = last7Days.reduce((sum, day) => sum + day, 0) / 7;
+    const totalValue = data.goal.type === 'duration'
+      ? recentEntries.reduce((sum, entry) => sum + entry.duration, 0)
+      : recentEntries.reduce((sum, entry) => sum + (entry.distance || 0), 0);
+
+    const average = totalValue / 7; // Average over 7 days (including zero days)
     const progressToGoal = data.goal.target > 0 ? (average / data.goal.target) * 100 : 0;
 
     return {

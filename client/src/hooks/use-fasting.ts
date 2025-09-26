@@ -47,47 +47,32 @@ export function useFasting() {
 
   // Get last 7 days fasting stats
   const getLast7DaysProgress = () => {
-    const today = new Date();
-    const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(today.getDate() - 6); // Last 7 days including today
+    const now = new Date();
+    const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000)); // Exactly 7 days ago
+    
+    // Filter to only fasting logs from the last 7 days
+    const recentLogs = logs.filter(log => {
+      const logDate = new Date(log.loggedAt);
+      return logDate >= sevenDaysAgo && logDate <= now;
+    });
     
     let totalHours = 0;
     let fastingDays = 0;
     const dailyGoal = parseFloat(localStorage.getItem('fitcircle_goal_fasting') || '16'); // Default 16h
     const weeklyGoal = dailyGoal * 7; // 7 days worth of daily goals
     
-    for (let i = 0; i < 7; i++) {
-      const checkDate = new Date(sevenDaysAgo);
-      checkDate.setDate(sevenDaysAgo.getDate() + i);
+    // Calculate total hours from recent fasting logs
+    recentLogs.forEach(log => {
+      const startDateTime = new Date(`${log.startDate}T${log.startTime}`);
+      const endDateTime = new Date(`${log.endDate}T${log.endTime}`);
       
-      // Calculate how many hours of fasting occurred on this specific day
-      let dayHours = 0;
-      
-      logs.forEach(log => {
-        const startDateTime = new Date(`${log.startDate}T${log.startTime}`);
-        const endDateTime = new Date(`${log.endDate}T${log.endTime}`);
-        
-        // Check if this fast overlaps with the current day
-        const dayStart = new Date(checkDate);
-        dayStart.setHours(0, 0, 0, 0);
-        const dayEnd = new Date(checkDate);
-        dayEnd.setHours(23, 59, 59, 999);
-        
-        // Calculate overlap between fast period and this day
-        const overlapStart = new Date(Math.max(startDateTime.getTime(), dayStart.getTime()));
-        const overlapEnd = new Date(Math.min(endDateTime.getTime(), dayEnd.getTime()));
-        
-        if (overlapStart < overlapEnd) {
-          const overlapMinutes = (overlapEnd.getTime() - overlapStart.getTime()) / (1000 * 60);
-          dayHours += overlapMinutes / 60;
-        }
-      });
-      
-      if (dayHours > 0) {
-        totalHours += dayHours;
+      // Calculate total duration of this fast
+      const fastDurationHours = (endDateTime.getTime() - startDateTime.getTime()) / (1000 * 60 * 60);
+      totalHours += fastDurationHours;
+      if (fastDurationHours > 0) {
         fastingDays++;
       }
-    }
+    });
     
     const averageHours = totalHours / 7; // Average over 7 days (including zero days)
     const goalProgress = weeklyGoal > 0 ? Math.min((totalHours / weeklyGoal) * 100, 100) : 0;

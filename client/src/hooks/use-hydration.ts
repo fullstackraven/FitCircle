@@ -218,24 +218,19 @@ export function useHydration() {
 
   // Get last 7 days hydration stats
   const getLast7DaysProgress = () => {
-    const today = new Date();
-    const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(today.getDate() - 6); // Last 7 days including today
+    const now = new Date();
+    const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000)); // Exactly 7 days ago
     
-    let totalOz = 0;
+    // Filter logs from the last 7 days based on date (hydration logs use date strings)
+    const recentLogs = Object.values(data.logs).filter(log => {
+      const logDate = new Date(log.date);
+      return logDate >= sevenDaysAgo && logDate <= now;
+    });
+    
+    // Sum up the total ounces
+    const totalOz = recentLogs.reduce((sum, log) => sum + log.totalOz, 0);
+    
     const weeklyGoal = data.dailyGoalOz * 7; // 7 days worth of daily goals
-    
-    for (let i = 0; i < 7; i++) {
-      const checkDate = new Date(sevenDaysAgo);
-      checkDate.setDate(sevenDaysAgo.getDate() + i);
-      const dateString = checkDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
-      
-      const dayLog = data.logs[dateString];
-      if (dayLog) {
-        totalOz += dayLog.totalOz;
-      }
-    }
-    
     const averageOz = totalOz / 7; // Average over 7 days (including zero days)
     const goalProgress = weeklyGoal > 0 ? Math.min((totalOz / weeklyGoal) * 100, 100) : 0;
     const remaining = Math.max(0, weeklyGoal - totalOz);
