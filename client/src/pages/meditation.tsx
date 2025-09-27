@@ -47,6 +47,7 @@ export default function MeditationPage() {
   const [inputMinutesFocused, setInputMinutesFocused] = useState(false);
   const [goalMinutesFocused, setGoalMinutesFocused] = useState(false);
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
+  const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     // Initialize goal input with current goal value from hook
@@ -55,6 +56,17 @@ export default function MeditationPage() {
   
   // Group logs by month for display (using legacy compatibility)
   const monthlyLogs = groupLogsByMonth(logs);
+  
+  // Get today's sessions for the "Today's Meditation" section
+  const getTodaySessions = () => {
+    const today = new Date().toLocaleDateString('en-US');
+    const todayLogKey = Object.keys(dailyLogs).find(date => {
+      return new Date(date).toLocaleDateString('en-US') === today;
+    });
+    return todayLogKey ? dailyLogs[todayLogKey].sessions : [];
+  };
+  
+  const todaySessions = getTodaySessions();
   
   // Listen for goal changes from other pages
   useEffect(() => {
@@ -388,6 +400,28 @@ export default function MeditationPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Today's Meditation */}
+        {todaySessions.length > 0 && (
+          <div className="fitcircle-card-lg mb-6">
+            <h3 className="text-lg font-semibold mb-3">Today's Meditation</h3>
+            <div className="space-y-2">
+              {todaySessions.slice().reverse().map((session: MeditationSession, index: number) => (
+                <div key={session.id} className="flex justify-between items-center text-sm relative">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-slate-400">{session.time}</span>
+                    <span className="text-slate-300">Meditation</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-purple-400 font-medium text-sm">
+                      {session.duration}min
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Meditation Controls */}
         <div className="flex flex-col items-center mb-8">
