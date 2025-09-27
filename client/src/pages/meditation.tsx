@@ -446,11 +446,11 @@ export default function MeditationPage() {
         </div>
 
         {/* Today's Meditation */}
-        {todaySessions.length > 0 && (
-          <div className="fitcircle-card-lg mb-6">
-            <h3 className="text-lg font-semibold mb-3">Today's Meditation</h3>
-            <div className="space-y-2">
-              {todaySessions.slice().reverse().map((session: MeditationSession, index: number) => (
+        <div className="fitcircle-card-lg mb-6">
+          <h3 className="text-lg font-semibold mb-3">Today's Meditation</h3>
+          <div className="space-y-2">
+            {todaySessions.length > 0 ? (
+              todaySessions.slice().reverse().map((session: MeditationSession, index: number) => (
                 <div key={session.id} className="flex justify-between items-center text-sm relative">
                   <div className="flex items-center space-x-3">
                     <span className="text-slate-400">{session.time}</span>
@@ -462,10 +462,14 @@ export default function MeditationPage() {
                     </span>
                   </div>
                 </div>
-              ))}
-            </div>
+              ))
+            ) : (
+              <div className="text-center text-slate-500 py-4 text-sm">
+                No meditation sessions today yet
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Meditation Log - Daily Aggregation */}
         <div className="space-y-4">
