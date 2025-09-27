@@ -59,10 +59,8 @@ export default function MeditationPage() {
   
   // Get today's sessions for the "Today's Meditation" section
   const getTodaySessions = () => {
-    const today = new Date().toLocaleDateString('en-US');
-    const todayLogKey = Object.keys(dailyLogs).find(date => {
-      return new Date(date).toLocaleDateString('en-US') === today;
-    });
+    const today = getTodayString(); // Use YYYY-MM-DD format to match stored keys
+    const todayLogKey = Object.keys(dailyLogs).find(date => date === today);
     return todayLogKey ? dailyLogs[todayLogKey].sessions : [];
   };
   
@@ -512,11 +510,31 @@ export default function MeditationPage() {
                       <div key={log.date} className="fitcircle-card ml-4">
                         <div className="flex justify-between items-center mb-3">
                           <span className="text-white font-medium">
-                            {new Date(log.date + 'T00:00:00').toLocaleDateString('en-US', { 
-                              weekday: 'short', 
-                              month: 'short', 
-                              day: 'numeric' 
-                            })}
+                            {(() => {
+                              try {
+                                // Handle both YYYY-MM-DD and other date formats
+                                let dateToFormat;
+                                if (log.date.includes('-')) {
+                                  // YYYY-MM-DD format
+                                  dateToFormat = new Date(log.date + 'T00:00:00');
+                                } else {
+                                  // Other formats, try direct parsing
+                                  dateToFormat = new Date(log.date);
+                                }
+                                
+                                if (isNaN(dateToFormat.getTime())) {
+                                  return log.date; // Fallback to raw date string
+                                }
+                                
+                                return dateToFormat.toLocaleDateString('en-US', { 
+                                  weekday: 'short', 
+                                  month: 'short', 
+                                  day: 'numeric' 
+                                });
+                              } catch (e) {
+                                return log.date; // Fallback to raw date string
+                              }
+                            })()}
                           </span>
                           <div className="flex items-center space-x-2">
                             <span className="text-purple-400 font-semibold text-sm">

@@ -102,10 +102,8 @@ export default function CardioPage() {
   
   // Get today's sessions for the "Today's Cardio" section
   const getTodaySessions = () => {
-    const today = new Date().toLocaleDateString('en-US');
-    const todayLogKey = Object.keys(data.dailyLogs).find(date => {
-      return new Date(date).toLocaleDateString('en-US') === today;
-    });
+    const today = getTodayString(); // Use YYYY-MM-DD format to match stored keys
+    const todayLogKey = Object.keys(data.dailyLogs).find(date => date === today);
     return todayLogKey ? data.dailyLogs[todayLogKey].sessions : [];
   };
   

@@ -156,7 +156,7 @@ export function useCardio() {
           
           const session: CardioSession = {
             id: entry.id,
-            time: new Date(entry.timestamp).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+            time: new Date(entry.timestamp).toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' }),
             type: entry.type,
             duration: entry.duration,
             distance: entry.distance,
@@ -250,7 +250,7 @@ export function useCardio() {
 
   const addCardioEntry = (type: string, duration: number, distance?: number, notes?: string) => {
     const today = getTodayString();
-    const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+    const currentTime = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
     
     const newSession: CardioSession = {
       id: Date.now().toString(),
