@@ -219,6 +219,24 @@ export default function CardioPage() {
       `${hours}h ${remainingMins}min`;
   };
 
+  // Helper function to convert 24-hour time to 12-hour format for display
+  const formatTimeFor12Hour = (timeString: string): string => {
+    // If it's already in 12-hour format (contains AM/PM), return as-is
+    if (timeString.includes('AM') || timeString.includes('PM')) {
+      return timeString;
+    }
+    
+    // If it's in 24-hour format (HH:MM), convert it
+    if (timeString.match(/^\d{1,2}:\d{2}$/)) {
+      const [hours, minutes] = timeString.split(':').map(Number);
+      const date = new Date();
+      date.setHours(hours, minutes, 0, 0);
+      return date.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
+    }
+    
+    return timeString; // Return as-is if format is unrecognized
+  };
+
   return (
     <div className="fitcircle-page">
       <div className="fitcircle-container">
@@ -406,7 +424,7 @@ export default function CardioPage() {
               {todaySessions.slice().reverse().map((session: CardioSession, index: number) => (
                 <div key={session.id} className="flex justify-between items-center text-sm relative">
                   <div className="flex items-center space-x-3">
-                    <span className="text-slate-400">{session.time}</span>
+                    <span className="text-slate-400">{formatTimeFor12Hour(session.time)}</span>
                     <span className="text-slate-300">{session.type}</span>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -530,7 +548,7 @@ export default function CardioPage() {
                           {(expandedDays.has(log.date) ? log.sessions : log.sessions.slice(0, 3)).map((session, index) => (
                             <div key={session.id} className="flex justify-between items-center text-xs">
                               <div className="flex items-center space-x-2">
-                                <span className="text-slate-500">{session.time}</span>
+                                <span className="text-slate-500">{formatTimeFor12Hour(session.time)}</span>
                                 <span className="text-slate-400">{session.type}</span>
                               </div>
                               <div className="flex items-center space-x-1">
