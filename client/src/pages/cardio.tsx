@@ -280,72 +280,6 @@ export default function CardioPage() {
           </CardContent>
         </Card>
 
-        {/* Today's Cardio */}
-        {todaySessions.length > 0 && (
-          <div className="fitcircle-card-lg mb-6">
-            <h3 className="text-lg font-semibold mb-3">Today's Cardio</h3>
-            <div className="space-y-2">
-              {todaySessions.slice().reverse().map((session: CardioSession, index: number) => (
-                <div key={session.id} className="flex justify-between items-center text-sm relative">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-slate-400">{session.time}</span>
-                    <span className="text-slate-300">{session.type}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="flex flex-col items-end space-y-1">
-                      {session.duration > 0 && (
-                        <span className="text-green-400 font-medium text-xs">
-                          {formatDuration(session.duration)}
-                        </span>
-                      )}
-                      {session.distance && session.distance > 0 && (
-                        <span className="text-blue-400 font-medium text-xs">
-                          {session.distance}mi
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-1 ml-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setEditingEntry(session);
-                          setNewEntry({
-                            type: session.type,
-                            duration: session.duration.toString(),
-                            distance: session.distance?.toString() || '',
-                            notes: session.notes || ''
-                          });
-                          setIsEditDialogOpen(true);
-                        }}
-                        className="text-slate-400 hover:text-white p-1 h-auto"
-                        data-testid={`button-edit-session-${session.id}`}
-                      >
-                        <Edit2 className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          // Find which date this entry belongs to
-                          const entryToDelete = allSessions.find(entry => entry.id === session.id);
-                          if (entryToDelete && confirm('Are you sure you want to delete this cardio session?')) {
-                            deleteCardioSession(entryToDelete.date, session.id);
-                          }
-                        }}
-                        className="text-slate-400 hover:text-red-300 p-1 h-auto"
-                        data-testid={`button-delete-session-${session.id}`}
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Add Entry Button */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
@@ -456,6 +390,72 @@ export default function CardioPage() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Today's Cardio */}
+        {todaySessions.length > 0 && (
+          <div className="fitcircle-card-lg mb-6">
+            <h3 className="text-lg font-semibold mb-3">Today's Cardio</h3>
+            <div className="space-y-2">
+              {todaySessions.slice().reverse().map((session: CardioSession, index: number) => (
+                <div key={session.id} className="flex justify-between items-center text-sm relative">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-slate-400">{session.time}</span>
+                    <span className="text-slate-300">{session.type}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="flex flex-col items-end space-y-1">
+                      {session.duration > 0 && (
+                        <span className="text-green-400 font-medium text-xs">
+                          {formatDuration(session.duration)}
+                        </span>
+                      )}
+                      {session.distance && session.distance > 0 && (
+                        <span className="text-blue-400 font-medium text-xs">
+                          {session.distance}mi
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-1 ml-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingEntry(session);
+                          setNewEntry({
+                            type: session.type,
+                            duration: session.duration.toString(),
+                            distance: session.distance?.toString() || '',
+                            notes: session.notes || ''
+                          });
+                          setIsEditDialogOpen(true);
+                        }}
+                        className="text-slate-400 hover:text-white p-1 h-auto"
+                        data-testid={`button-edit-session-${session.id}`}
+                      >
+                        <Edit2 className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          // Find which date this entry belongs to
+                          const entryToDelete = allSessions.find(entry => entry.id === session.id);
+                          if (entryToDelete && confirm('Are you sure you want to delete this cardio session?')) {
+                            deleteCardioSession(entryToDelete.date, session.id);
+                          }
+                        }}
+                        className="text-slate-400 hover:text-red-300 p-1 h-auto"
+                        data-testid={`button-delete-session-${session.id}`}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Cardio Log - Daily Aggregation */}
         <div className="space-y-4">

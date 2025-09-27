@@ -399,28 +399,6 @@ export default function MeditationPage() {
           </CardContent>
         </Card>
 
-        {/* Today's Meditation */}
-        {todaySessions.length > 0 && (
-          <div className="fitcircle-card-lg mb-6">
-            <h3 className="text-lg font-semibold mb-3">Today's Meditation</h3>
-            <div className="space-y-2">
-              {todaySessions.slice().reverse().map((session: MeditationSession, index: number) => (
-                <div key={session.id} className="flex justify-between items-center text-sm relative">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-slate-400">{session.time}</span>
-                    <span className="text-slate-300">Meditation</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-purple-400 font-medium text-sm">
-                      {session.duration}min
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Meditation Controls */}
         <div className="flex flex-col items-center mb-8">
           {!isActive ? (
@@ -466,6 +444,28 @@ export default function MeditationPage() {
             </div>
           )}
         </div>
+
+        {/* Today's Meditation */}
+        {todaySessions.length > 0 && (
+          <div className="fitcircle-card-lg mb-6">
+            <h3 className="text-lg font-semibold mb-3">Today's Meditation</h3>
+            <div className="space-y-2">
+              {todaySessions.slice().reverse().map((session: MeditationSession, index: number) => (
+                <div key={session.id} className="flex justify-between items-center text-sm relative">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-slate-400">{session.time}</span>
+                    <span className="text-slate-300">Meditation</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-purple-400 font-medium text-sm">
+                      {session.duration}min
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Meditation Log - Daily Aggregation */}
         <div className="space-y-4">
