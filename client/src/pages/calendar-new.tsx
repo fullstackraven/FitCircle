@@ -15,6 +15,7 @@ import { useWorkouts } from "@/hooks/use-workouts";
 import { useSupplements } from "@/hooks/use-supplements";
 import { useRecovery } from "@/hooks/use-recovery";
 import { useEnergyLevel } from "@/hooks/use-energy-level";
+import { RecentActivityWidget } from "@/components/dashboard-widgets/RecentActivityWidget";
 import {
   format,
   startOfMonth,
@@ -245,6 +246,18 @@ export default function CalendarPage() {
           </div>
           <ChevronRight className="w-5 h-5 text-slate-400" />
         </button>
+
+        {/* Recent Activity Panel */}
+        <div data-testid="recent-activity-panel">
+          <RecentActivityWidget widget={{
+            id: 'recent-activity',
+            type: 'recent-activity',
+            title: 'Recent Activity',
+            enabled: true,
+            position: 2,
+            size: 'large'
+          }} />
+        </div>
 
       </div>
     </div>
