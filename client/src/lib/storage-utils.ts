@@ -36,6 +36,7 @@ export const STORAGE_KEYS = {
   CARDIO: 'fitcircle_cardio_data',
   RECOVERY: 'fitcircle_recovery_data',
   WORKOUT_LOGS: 'workout-tracker-logs',
+  DASHBOARD_WIDGETS: 'fitcircle_dashboard_widgets',
   // Legacy individual goal keys (for backward compatibility)
   GOAL_HYDRATION: 'fitcircle_goal_hydration',
   GOAL_MEDITATION: 'fitcircle_goal_meditation',
