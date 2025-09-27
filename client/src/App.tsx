@@ -26,7 +26,6 @@ import WellnessPage from "@/pages/wellness";
 
 // import TrainerPage from "@/pages/trainer";
 import NotFound from "@/pages/not-found";
-import FloatingRemindersButton from "@/components/FloatingRemindersButton";
 import BottomNavigation from "@/components/BottomNavigation";
 
 function Router() {
@@ -66,7 +65,6 @@ function App() {
   return (
     <div>
       <Router />
-      <FloatingRemindersButton />
       <BottomNavigation />
     </div>
   );

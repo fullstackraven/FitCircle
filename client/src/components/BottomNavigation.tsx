@@ -1,4 +1,4 @@
-import { Home, CalendarDays, Dumbbell, Grid3X3 } from 'lucide-react';
+import { Home, CalendarDays, Dumbbell, Grid2X2, CheckSquare } from 'lucide-react';
 import { useLocation } from 'wouter';
 
 export default function BottomNavigation() {
@@ -22,8 +22,13 @@ export default function BottomNavigation() {
     },
     {
       path: '/wellness',
-      icon: Grid3X3,
+      icon: Grid2X2,
       label: 'Wellness'
+    },
+    {
+      path: '/reminders',
+      icon: CheckSquare,
+      label: 'Reminders'
     }
   ];
 
@@ -45,7 +50,7 @@ export default function BottomNavigation() {
               }`}
             >
               <Icon className="w-5 h-5 mb-1" />
-              <span className="text-xs font-medium">{item.label}</span>
+              <span className="text-xs font-light text-[11px]">{item.label}</span>
             </button>
           );
         })}
