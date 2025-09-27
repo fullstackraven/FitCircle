@@ -11,7 +11,7 @@ export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {
   const recentActivity = getRecentActivity();
 
   if (widget.size === 'small') {
-    const todaysTotal = recentActivity[0]?.total || 0;
+    const todaysTotal = recentActivity[0]?.totalReps || 0;
     
     return (
       <div className="fitcircle-card">
@@ -47,7 +47,7 @@ export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {
           recentActivity.slice(0, 7).map((day, index) => (
             <div key={index} className="flex justify-between items-center">
               <div className="text-slate-300">{day.date}</div>
-              <div className="text-white font-medium">{day.total} reps</div>
+              <div className="text-white font-medium">{day.totalReps} reps</div>
             </div>
           ))
         )}

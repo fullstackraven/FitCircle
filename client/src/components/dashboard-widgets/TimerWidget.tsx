@@ -70,7 +70,7 @@ export function TimerWidget({ widget, onOpenTimer }: TimerWidgetProps) {
                 onClick={handlePauseResume}
                 className="p-1 rounded bg-slate-700 hover:bg-slate-600 transition-colors"
               >
-                {isPaused ? <Play className="w-3 h-3 text-white" /> : <Pause className="w-3 h-3 text-white" />}
+                {!timerState.isRunning ? <Play className="w-3 h-3 text-white" /> : <Pause className="w-3 h-3 text-white" />}
               </button>
               <button
                 onClick={handleStop}
