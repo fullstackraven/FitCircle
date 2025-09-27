@@ -82,7 +82,7 @@ export function DailyJournal() {
 
         <h1 className="text-xl font-bold text-white">Daily Journal</h1>
         <button
-          onClick={() => navigate("/journal-log")}
+          onClick={() => navigate(`/journal-log${fromWellness ? '?from=wellness' : ''}`)}
           className="text-slate-500 hover:text-white transition-colors"
           title="View all journal entries"
         >

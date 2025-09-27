@@ -7,6 +7,10 @@ import { format, parseISO, isValid } from "date-fns";
 export function JournalLog() {
   const [, navigate] = useLocation();
   const { getAllJournalEntries } = useWorkouts();
+  
+  // Check if we came from wellness page
+  const urlParams = new URLSearchParams(window.location.search);
+  const fromWellness = urlParams.get('from') === 'wellness';
 
   // Get all journal entries
   const allJournalEntries = getAllJournalEntries();
@@ -34,7 +38,7 @@ export function JournalLog() {
     });
 
   const handleEntryClick = (dateString: string) => {
-    navigate(`/daily-journal?date=${dateString}`);
+    navigate(`/daily-journal?date=${dateString}${fromWellness ? '&from=wellness' : ''}`);
   };
 
   const truncateText = (text: string, maxLength: number = 100) => {
@@ -71,7 +75,7 @@ export function JournalLog() {
     <div className="p-4 max-w-3xl mx-auto min-h-screen pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="flex items-center justify-between mb-6">
         <button
-          onClick={() => navigate("/daily-journal")}
+          onClick={() => navigate(`/daily-journal${fromWellness ? '?from=wellness' : ''}`)}
           className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
           title="Back to Daily Journal"
         >
