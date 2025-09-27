@@ -227,62 +227,6 @@ export default function Home() {
       {/* Quote of the Day */}
       {!isQuoteHidden && <QuoteOfTheDay />}
 
-      {/* Start Workout Session Section */}
-      <section className="mb-8">
-        <div className="bg-slate-800 rounded-xl p-6">
-          <div className="flex flex-col items-center space-y-4">
-            {!isWorkoutActive ? (
-              <>
-                <button
-                  onClick={startWorkout}
-                  className="text-black font-bold py-4 px-6 rounded-xl flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 transform hover:scale-105 w-full max-w-xs"
-                  style={{
-                    background: 'linear-gradient(135deg, #00ff41 0%, #00cc33 100%)',
-                    boxShadow: '0 0 10px rgba(0, 255, 65, 0.2)'
-                  }}
-                >
-                  <Play className="w-5 h-5 text-black" />
-                  <span className="text-base text-black whitespace-nowrap">Start Workout Session</span>
-                </button>
-                <p className="text-sm text-slate-400 text-center">Start a Workout Session to track the duration of your workouts</p>
-              </>
-            ) : (
-              <div className="w-full flex flex-col items-center space-y-4">
-                <div className="bg-slate-700 rounded-xl py-4 px-6 flex items-center justify-between w-full max-w-xs" style={{ minHeight: '56px' }}>
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-3 h-3 rounded-full ${isWorkoutPaused ? 'bg-yellow-400' : 'bg-green-400 animate-pulse'}`}></div>
-                    <span className="text-white font-mono text-xl">{getCurrentSessionDuration()}</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <button
-                      onClick={stopWorkout}
-                      className="w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
-                      title="Stop workout"
-                    >
-                      <StopCircle className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={isWorkoutPaused ? resumeWorkout : pauseWorkout}
-                      className="w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-colors"
-                      title={isWorkoutPaused ? "Resume workout" : "Pause workout"}
-                    >
-                      {isWorkoutPaused ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
-                    </button>
-                    <button
-                      onClick={resetWorkout}
-                      className="w-10 h-10 bg-slate-600 hover:bg-slate-700 text-white rounded-full flex items-center justify-center transition-colors"
-                      title="Reset without saving"
-                    >
-                      <RotateCcw className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-                <p className="text-sm text-slate-400 text-center">Workout session in progress</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
 
       {/* Dashboard Widgets Section */}
       <section className="mb-8">

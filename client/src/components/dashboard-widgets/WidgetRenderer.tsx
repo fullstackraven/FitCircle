@@ -6,8 +6,6 @@ import { HydrationWidget } from './HydrationWidget';
 import { CardioWidget } from './CardioWidget';
 import { TimerWidget } from './TimerWidget';
 import { QuoteWidget } from './QuoteWidget';
-import { GoalsWidget } from './GoalsWidget';
-import { RecentActivityWidget } from './RecentActivityWidget';
 
 interface WidgetRendererProps {
   widget: DashboardWidget;
@@ -47,9 +45,11 @@ export function WidgetRenderer({ widget, onWorkoutClick, onNavigate, onOpenTimer
       case 'quote':
         return <QuoteWidget widget={widget} />;
       case 'goals':
-        return <GoalsWidget widget={widget} onClick={() => onNavigate?.('/goals')} />;
+        // TODO: Create GoalsWidget component
+        return <div className="fitcircle-card p-4"><p className="text-slate-400">Goals widget coming soon</p></div>;
       case 'recent-activity':
-        return <RecentActivityWidget widget={widget} />;
+        // TODO: Create RecentActivityWidget component  
+        return <div className="fitcircle-card p-4"><p className="text-slate-400">Recent activity widget coming soon</p></div>;
       default:
         return null;
     }
