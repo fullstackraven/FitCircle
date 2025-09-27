@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity, Timer, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp, Zap } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
 import { useTimer } from '@/hooks/use-timer';
 import { useWorkoutDuration } from '@/hooks/use-workout-duration';
-import { useMeditation } from '@/hooks/use-meditation';
-import { useHydration } from '@/hooks/use-hydration';
-import { useFasting } from '@/hooks/use-fasting';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
@@ -51,10 +48,6 @@ export default function Home() {
     getCurrentSessionDuration 
   } = useWorkoutDuration();
 
-  // Snippet hooks
-  const { getTodayMinutes, getDailyGoal: getMeditationGoal } = useMeditation();
-  const { currentDayOz, dailyGoalOz } = useHydration();
-  const fasting = useFasting();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
@@ -287,94 +280,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Activity Snippets */}
-      <section className="mb-8 space-y-4">
-        {/* Meditation Snippet */}
-        <div 
-          className="bg-slate-800 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-750 transition-colors"
-          onClick={() => navigate('/meditation')}
-        >
-          <div className="flex items-center space-x-3">
-            <Brain className="w-5 h-5 text-purple-400" />
-            <div>
-              <div className="text-white font-medium">Meditation</div>
-              <div className="text-slate-300 text-sm">
-                {getTodayMinutes()}min of {getMeditationGoal()}min
-              </div>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-slate-300 text-sm">
-              {Math.round((getTodayMinutes() / getMeditationGoal()) * 100)}%
-            </div>
-            <div className="text-slate-400 text-xs">Complete</div>
-          </div>
-        </div>
-
-        {/* Hydration Snippet */}
-        <div 
-          className="bg-slate-800 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-750 transition-colors"
-          onClick={() => navigate('/hydration')}
-        >
-          <div className="flex items-center space-x-3">
-            <Droplet className="w-5 h-5 text-blue-400" />
-            <div>
-              <div className="text-white font-medium">Hydration</div>
-              <div className="text-slate-300 text-sm">
-                {currentDayOz}oz of {dailyGoalOz}oz
-              </div>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-slate-300 text-sm">
-              {Math.round((currentDayOz / dailyGoalOz) * 100)}%
-            </div>
-            <div className="text-slate-400 text-xs">Complete</div>
-          </div>
-        </div>
-
-        {/* Cardio Snippet */}
-        <div 
-          className="bg-slate-800 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-750 transition-colors"
-          onClick={() => navigate('/cardio')}
-        >
-          <div className="flex items-center space-x-3">
-            <Activity className="w-5 h-5 text-orange-400" />
-            <div>
-              <div className="text-white font-medium">Cardio</div>
-              <div className="text-slate-300 text-sm">
-                23min of 45min
-              </div>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-slate-300 text-sm">51%</div>
-            <div className="text-slate-400 text-xs">Complete</div>
-          </div>
-        </div>
-
-        {/* Intermittent Fasting Snippet */}
-        <div 
-          className="bg-slate-800 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-750 transition-colors"
-          onClick={() => navigate('/fasting')}
-        >
-          <div className="flex items-center space-x-3">
-            <Timer className="w-5 h-5 text-green-400" />
-            <div>
-              <div className="text-white font-medium">Intermittent Fasting</div>
-              <div className="text-slate-300 text-sm">
-                16:8 Method
-              </div>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-slate-300 text-sm">
-              Inactive
-            </div>
-            <div className="text-slate-400 text-xs">Status</div>
-          </div>
-        </div>
-      </section>
 
       {/* Workout Circles Grid */}
       <section className="mb-8">
