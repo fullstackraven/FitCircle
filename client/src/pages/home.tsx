@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity, Timer, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity, Timer, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp, Sliders } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
 import { useTimer } from '@/hooks/use-timer';
 import { useWorkoutDuration } from '@/hooks/use-workout-duration';
+import { useDashboardWidgets } from '@/hooks/use-dashboard-widgets';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
+import { WidgetRenderer } from '@/components/dashboard-widgets/WidgetRenderer';
+import { WidgetSettings } from '@/components/dashboard-widgets/WidgetSettings';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -47,6 +50,7 @@ export default function Home() {
     resumeWorkout, 
     getCurrentSessionDuration 
   } = useWorkoutDuration();
+  const { getEnabledWidgets } = useDashboardWidgets();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
@@ -60,6 +64,7 @@ export default function Home() {
   const [isAllWorkoutsOpen, setIsAllWorkoutsOpen] = useState(false);
   const [isRecentActivityOpen, setIsRecentActivityOpen] = useState(false);
   const [isThisWeekOpen, setIsThisWeekOpen] = useState(false);
+  const [isWidgetSettingsOpen, setIsWidgetSettingsOpen] = useState(false);
 
   // Check if we should open dashboard on load
   useEffect(() => {
@@ -276,6 +281,32 @@ export default function Home() {
               </div>
             )}
           </div>
+        </div>
+      </section>
+
+      {/* Dashboard Widgets Section */}
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-white">Dashboard</h2>
+          <button
+            onClick={() => setIsWidgetSettingsOpen(true)}
+            className="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors"
+          >
+            <Sliders className="w-4 h-4" />
+            <span className="text-sm">Customize</span>
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          {getEnabledWidgets().map((widget) => (
+            <WidgetRenderer
+              key={widget.id}
+              widget={widget}
+              onWorkoutClick={handleWorkoutClick}
+              onNavigate={navigate}
+              onOpenTimer={() => setIsTimerOpen(true)}
+            />
+          ))}
         </div>
       </section>
 
@@ -995,6 +1026,12 @@ export default function Home() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Widget Settings Dialog */}
+      <WidgetSettings 
+        isOpen={isWidgetSettingsOpen} 
+        onClose={() => setIsWidgetSettingsOpen(false)} 
+      />
 
     </div>
   );
