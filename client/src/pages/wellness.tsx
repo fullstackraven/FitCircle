@@ -59,7 +59,7 @@ export default function WellnessPage() {
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>
           </button>
-          <h1 className="fitcircle-page-title">Wellness</h1>
+          <h1 className="fitcircle-page-title">Logs</h1>
           <div className="w-16"></div> {/* Spacer */}
         </div>
 

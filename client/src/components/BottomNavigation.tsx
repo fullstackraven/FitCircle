@@ -1,6 +1,5 @@
-import { Home, CalendarDays, Dumbbell, CheckSquare } from 'lucide-react';
+import { Home, CalendarDays, Dumbbell, CheckSquare, Folder } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { LotusIcon } from './LotusIcon';
 
 export default function BottomNavigation() {
   const [location, navigate] = useLocation();
@@ -23,8 +22,8 @@ export default function BottomNavigation() {
     },
     {
       path: '/wellness',
-      icon: LotusIcon,
-      label: 'Wellness'
+      icon: Folder,
+      label: 'Logs'
     },
     {
       path: '/reminders',
