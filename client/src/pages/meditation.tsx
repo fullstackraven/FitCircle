@@ -12,9 +12,7 @@ import { useMeditation, type MeditationLog } from '@/hooks/use-meditation';
 import { useGoals } from '@/hooks/use-goals';
 import { 
   calculateMeditation7DayAverage, 
-  calculateMeditationProgress, 
-  getMeditationGoal, 
-  setMeditationGoal 
+  calculateMeditationProgress 
 } from '@/utils/meditation-calc';
 import { groupLogsByMonth, getTodayString, getDateString } from '@/lib/date-utils';
 
@@ -51,9 +49,9 @@ export default function MeditationPage() {
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    // Initialize goal input with current goal value from shared utility
-    setGoalMinutesInput(getMeditationGoal().toString());
-  }, []);
+    // Initialize goal input with current goal value from hook
+    setGoalMinutesInput(getDailyGoal().toString());
+  }, [getDailyGoal]);
   
   // Group logs by month for display
   const monthlyLogs = groupLogsByMonth(logs);
@@ -62,7 +60,7 @@ export default function MeditationPage() {
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'fitcircle_goal_meditation') {
-        setGoalMinutesInput(getMeditationGoal().toString());
+        setGoalMinutesInput(getDailyGoal().toString());
       }
     };
     
@@ -71,7 +69,7 @@ export default function MeditationPage() {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, []);
+  }, [getDailyGoal]);
 
   useEffect(() => {
     if (isActive && !isPaused && timeLeft > 0) {
@@ -257,8 +255,16 @@ export default function MeditationPage() {
       return;
     }
     
-    // Use shared utility for goal saving with cross-page sync
-    setMeditationGoal(minutesGoal);
+    // Set goal in localStorage with cross-page sync
+    localStorage.setItem('fitcircle_goal_meditation', minutesGoal.toString());
+    
+    // Trigger storage event for cross-page synchronization
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'fitcircle_goal_meditation',
+      newValue: minutesGoal.toString(),
+      oldValue: localStorage.getItem('fitcircle_goal_meditation'),
+      storageArea: localStorage
+    }));
     
     await updateGoal('meditationMinutes', minutesGoal);
     setIsGoalModalOpen(false);

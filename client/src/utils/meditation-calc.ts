@@ -42,7 +42,7 @@ export const calculateMeditationProgress = (logs: MeditationSession[], goalMinut
 
 export const getMeditationGoal = (): number => {
   const goalValue = localStorage.getItem('fitcircle_goal_meditation');
-  return goalValue ? parseFloat(goalValue) : 10;
+  return goalValue ? parseFloat(goalValue) : 20;
 };
 
 export const setMeditationGoal = (goalMinutes: number): void => {
