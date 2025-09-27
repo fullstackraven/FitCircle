@@ -43,7 +43,7 @@ export default function BottomNavigation() {
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
-              className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-colors ${
+              className={`flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-colors ${
                 isActive 
                   ? 'text-white bg-slate-800/50' 
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
