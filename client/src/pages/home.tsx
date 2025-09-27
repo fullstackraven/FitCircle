@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity, Timer, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp, Sliders } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Brain, Droplet, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Activity, Timer, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp, Zap } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
 import { useTimer } from '@/hooks/use-timer';
 import { useWorkoutDuration } from '@/hooks/use-workout-duration';
-import { useDashboardWidgets } from '@/hooks/use-dashboard-widgets';
+import { useMeditation } from '@/hooks/use-meditation';
+import { useHydration } from '@/hooks/use-hydration';
+import { useFasting } from '@/hooks/use-fasting';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
-import { WidgetRenderer } from '@/components/dashboard-widgets/WidgetRenderer';
-import { WidgetSettings } from '@/components/dashboard-widgets/WidgetSettings';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -50,7 +50,11 @@ export default function Home() {
     resumeWorkout, 
     getCurrentSessionDuration 
   } = useWorkoutDuration();
-  const { getEnabledWidgets } = useDashboardWidgets();
+
+  // Snippet hooks
+  const { getTodaysTotal: getMeditationTotal, getDailyGoal: getMeditationGoal } = useMeditation();
+  const { getTodaysTotal: getHydrationTotal, getDailyGoal: getHydrationGoal } = useHydration();
+  const { getCurrentFast, isCurrentlyFasting } = useFasting();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
@@ -64,7 +68,6 @@ export default function Home() {
   const [isAllWorkoutsOpen, setIsAllWorkoutsOpen] = useState(false);
   const [isRecentActivityOpen, setIsRecentActivityOpen] = useState(false);
   const [isThisWeekOpen, setIsThisWeekOpen] = useState(false);
-  const [isWidgetSettingsOpen, setIsWidgetSettingsOpen] = useState(false);
 
   // Check if we should open dashboard on load
   useEffect(() => {
@@ -227,30 +230,153 @@ export default function Home() {
       {/* Quote of the Day */}
       {!isQuoteHidden && <QuoteOfTheDay />}
 
-
-      {/* Dashboard Widgets Section */}
+      {/* Start Workout Session Section */}
       <section className="mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white">Dashboard</h2>
-          <button
-            onClick={() => setIsWidgetSettingsOpen(true)}
-            className="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors"
-          >
-            <Sliders className="w-4 h-4" />
-            <span className="text-sm">Customize</span>
-          </button>
+        <div className="bg-slate-800 rounded-xl p-6">
+          <div className="flex flex-col items-center space-y-4">
+            {!isWorkoutActive ? (
+              <>
+                <button
+                  onClick={startWorkout}
+                  className="text-black font-bold py-4 px-6 rounded-xl flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 transform hover:scale-105 w-full max-w-xs"
+                  style={{
+                    background: 'linear-gradient(135deg, #00ff41 0%, #00cc33 100%)',
+                    boxShadow: '0 0 10px rgba(0, 255, 65, 0.2)'
+                  }}
+                >
+                  <Play className="w-5 h-5 text-black" />
+                  <span className="text-base text-black whitespace-nowrap">Start Workout Session</span>
+                </button>
+                <p className="text-sm text-slate-400 text-center">Start a Workout Session to track the duration of your workouts</p>
+              </>
+            ) : (
+              <div className="w-full flex flex-col items-center space-y-4">
+                <div className="bg-slate-700 rounded-xl py-4 px-6 flex items-center justify-between w-full max-w-xs" style={{ minHeight: '56px' }}>
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-3 h-3 rounded-full ${isWorkoutPaused ? 'bg-yellow-400' : 'bg-green-400 animate-pulse'}`}></div>
+                    <span className="text-white font-mono text-xl">{getCurrentSessionDuration()}</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={stopWorkout}
+                      className="w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
+                      title="Stop workout"
+                    >
+                      <StopCircle className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={isWorkoutPaused ? resumeWorkout : pauseWorkout}
+                      className="w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-colors"
+                      title={isWorkoutPaused ? "Resume workout" : "Pause workout"}
+                    >
+                      {isWorkoutPaused ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
+                    </button>
+                    <button
+                      onClick={resetWorkout}
+                      className="w-10 h-10 bg-slate-600 hover:bg-slate-700 text-white rounded-full flex items-center justify-center transition-colors"
+                      title="Reset without saving"
+                    >
+                      <RotateCcw className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+                <p className="text-sm text-slate-400 text-center">Workout session in progress</p>
+              </div>
+            )}
+          </div>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {getEnabledWidgets().map((widget) => (
-            <WidgetRenderer
-              key={widget.id}
-              widget={widget}
-              onWorkoutClick={handleWorkoutClick}
-              onNavigate={navigate}
-              onOpenTimer={() => setIsTimerOpen(true)}
-            />
-          ))}
+      </section>
+
+      {/* Activity Snippets */}
+      <section className="mb-8 space-y-4">
+        {/* Meditation Snippet */}
+        <div 
+          className="bg-slate-800 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-750 transition-colors"
+          onClick={() => navigate('/meditation')}
+        >
+          <div className="flex items-center space-x-3">
+            <Brain className="w-5 h-5 text-purple-400" />
+            <div>
+              <div className="text-white font-medium">Meditation</div>
+              <div className="text-slate-300 text-sm">
+                {getMeditationTotal()}min of {getMeditationGoal()}min
+              </div>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-slate-300 text-sm">
+              {Math.round((getMeditationTotal() / getMeditationGoal()) * 100)}%
+            </div>
+            <div className="text-slate-400 text-xs">Complete</div>
+          </div>
+        </div>
+
+        {/* Hydration Snippet */}
+        <div 
+          className="bg-slate-800 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-750 transition-colors"
+          onClick={() => navigate('/hydration')}
+        >
+          <div className="flex items-center space-x-3">
+            <Droplet className="w-5 h-5 text-blue-400" />
+            <div>
+              <div className="text-white font-medium">Hydration</div>
+              <div className="text-slate-300 text-sm">
+                {getHydrationTotal()}oz of {getHydrationGoal()}oz
+              </div>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-slate-300 text-sm">
+              {Math.round((getHydrationTotal() / getHydrationGoal()) * 100)}%
+            </div>
+            <div className="text-slate-400 text-xs">Complete</div>
+          </div>
+        </div>
+
+        {/* Cardio Snippet */}
+        <div 
+          className="bg-slate-800 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-750 transition-colors"
+          onClick={() => navigate('/cardio')}
+        >
+          <div className="flex items-center space-x-3">
+            <Activity className="w-5 h-5 text-orange-400" />
+            <div>
+              <div className="text-white font-medium">Cardio</div>
+              <div className="text-slate-300 text-sm">
+                23min of 45min
+              </div>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-slate-300 text-sm">51%</div>
+            <div className="text-slate-400 text-xs">Complete</div>
+          </div>
+        </div>
+
+        {/* Intermittent Fasting Snippet */}
+        <div 
+          className="bg-slate-800 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-750 transition-colors"
+          onClick={() => navigate('/fasting')}
+        >
+          <div className="flex items-center space-x-3">
+            <Timer className="w-5 h-5 text-green-400" />
+            <div>
+              <div className="text-white font-medium">Intermittent Fasting</div>
+              <div className="text-slate-300 text-sm">
+                {isCurrentlyFasting() ? (
+                  `${getCurrentFast()?.duration || '0h 0m'} elapsed`
+                ) : (
+                  'Not currently fasting'
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-slate-300 text-sm">
+              {isCurrentlyFasting() ? 'Active' : 'Inactive'}
+            </div>
+            <div className="text-slate-400 text-xs">Status</div>
+          </div>
         </div>
       </section>
 
@@ -970,12 +1096,6 @@ export default function Home() {
           )}
         </DialogContent>
       </Dialog>
-
-      {/* Widget Settings Dialog */}
-      <WidgetSettings 
-        isOpen={isWidgetSettingsOpen} 
-        onClose={() => setIsWidgetSettingsOpen(false)} 
-      />
 
     </div>
   );
