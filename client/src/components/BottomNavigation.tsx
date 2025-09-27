@@ -1,5 +1,6 @@
-import { Home, CalendarDays, Dumbbell, Heart, CheckSquare } from 'lucide-react';
+import { Home, CalendarDays, Dumbbell, CheckSquare } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { LotusIcon } from './LotusIcon';
 
 export default function BottomNavigation() {
   const [location, navigate] = useLocation();
@@ -22,7 +23,7 @@ export default function BottomNavigation() {
     },
     {
       path: '/wellness',
-      icon: Heart,
+      icon: LotusIcon,
       label: 'Wellness'
     },
     {
