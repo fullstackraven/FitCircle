@@ -2,6 +2,20 @@ import { useState, useEffect, useRef } from 'react';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 import { getTodayString, getDateString } from '@/lib/date-utils';
 
+export interface MeditationSession {
+  id: string;
+  time: string;
+  duration: number; // in minutes
+  completedAt: string;
+}
+
+export interface MeditationDailyLog {
+  date: string;
+  totalMinutes: number;
+  sessions: MeditationSession[];
+}
+
+// Legacy interface for migration
 export interface MeditationLog {
   id: string;
   date: string;
@@ -10,23 +24,56 @@ export interface MeditationLog {
   completedAt: string;
 }
 
+interface MeditationData {
+  dailyLogs: { [date: string]: MeditationDailyLog };
+  lastDate: string;
+  currentDayMinutes: number;
+  // Legacy field for migration
+  logs?: MeditationLog[];
+}
+
+const defaultData: MeditationData = {
+  dailyLogs: {},
+  lastDate: getTodayString(),
+  currentDayMinutes: 0
+};
+
 export function useMeditation() {
   const migrationCompleted = useRef(false);
   
-  const [logs, setLogs] = useState<MeditationLog[]>(() => {
-    const rawLogs = safeParseJSON(localStorage.getItem(STORAGE_KEYS.MEDITATION), []);
+  const [data, setData] = useState<MeditationData>(() => {
+    let dataToLoad = defaultData;
+    let legacyLogs: MeditationLog[] = [];
+    // Try to load from storage
+    const storedData = localStorage.getItem(STORAGE_KEYS.MEDITATION);
+    if (storedData) {
+      const parsed = safeParseJSON(storedData, []);
+      // Check if this is new format (has dailyLogs) or legacy format (array of logs)
+      if (Array.isArray(parsed)) {
+        legacyLogs = parsed;
+      } else if (parsed && typeof parsed === 'object') {
+        const parsedObj = parsed as any;
+        if (parsedObj.dailyLogs && !parsedObj.logs) {
+          // New format, use as is
+          dataToLoad = parsedObj;
+        } else if (parsedObj.logs || Array.isArray(parsedObj.logs)) {
+          // Legacy format stored in object
+          legacyLogs = parsedObj.logs || [];
+          dataToLoad = { ...defaultData, ...parsedObj };
+        }
+      }
+    }
     
-    // Check if migration is needed
-    const needsMigration = rawLogs.some((log: MeditationLog) => log.date && log.date.includes('-'));
-    
-    if (needsMigration && !migrationCompleted.current) {
-      // Migrate date formats: convert YYYY-MM-DD to MM/DD/YYYY
-      const migratedLogs = rawLogs.map((log: MeditationLog) => {
+    // Migration: Convert legacy logs to daily aggregation if needed
+    if (legacyLogs.length > 0) {
+      console.log('Migrating', legacyLogs.length, 'meditation logs to daily aggregation format');
+      
+      // First handle date format migration if needed
+      const migratedLogs = legacyLogs.map((log: MeditationLog) => {
         if (log.date && log.date.includes('-')) {
           try {
             const date = new Date(log.date);
             const convertedDate = date.toLocaleDateString('en-US');
-            console.log(`Migrating meditation log date: ${log.date} → ${convertedDate}`);
             return { ...log, date: convertedDate };
           } catch (error) {
             console.error('Failed to convert meditation date:', log.date, error);
@@ -36,60 +83,190 @@ export function useMeditation() {
         return log;
       });
       
-      // Save migrated data immediately
-      try {
-        localStorage.setItem(STORAGE_KEYS.MEDITATION, JSON.stringify(migratedLogs));
-        migrationCompleted.current = true;
-        console.log('Meditation date migration completed');
-      } catch (error) {
-        console.error('Failed to save migrated meditation data:', error);
-      }
+      // Group by date and create daily logs
+      const dailyLogs: { [date: string]: MeditationDailyLog } = {};
       
-      return migratedLogs;
+      migratedLogs.forEach(log => {
+        const dateKey = log.date;
+        if (!dailyLogs[dateKey]) {
+          dailyLogs[dateKey] = {
+            date: dateKey,
+            totalMinutes: 0,
+            sessions: []
+          };
+        }
+        
+        const session: MeditationSession = {
+          id: log.id,
+          time: log.time,
+          duration: log.duration,
+          completedAt: log.completedAt
+        };
+        
+        dailyLogs[dateKey].sessions.push(session);
+        dailyLogs[dateKey].totalMinutes += log.duration;
+      });
+      
+      dataToLoad.dailyLogs = dailyLogs;
+      console.log('Migration completed:', Object.keys(dailyLogs).length, 'daily logs created');
     }
     
-    return rawLogs;
+    // Calculate current day totals
+    const today = getTodayString();
+    const todayLogUS = Object.keys(dataToLoad.dailyLogs).find(date => {
+      return new Date(date).toLocaleDateString('en-US') === new Date().toLocaleDateString('en-US');
+    });
+    const currentDayMinutes = todayLogUS ? dataToLoad.dailyLogs[todayLogUS].totalMinutes : 0;
+    
+    return { ...dataToLoad, lastDate: today, currentDayMinutes };
   });
 
   // Save to localStorage whenever data changes
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEYS.MEDITATION, JSON.stringify(logs));
+      localStorage.setItem(STORAGE_KEYS.MEDITATION, JSON.stringify(data));
     } catch (error) {
       console.error('Failed to save meditation data:', error);
     }
-  }, [logs]);
+  }, [data]);
+
+  // Reset daily data if date has changed
+  useEffect(() => {
+    const checkDateChange = () => {
+      const today = new Date().toLocaleDateString('en-US');
+      const todayLogKey = Object.keys(data.dailyLogs).find(date => {
+        return new Date(date).toLocaleDateString('en-US') === today;
+      });
+      const currentMinutes = todayLogKey ? data.dailyLogs[todayLogKey].totalMinutes : 0;
+      
+      if (data.lastDate && data.lastDate !== getTodayString()) {
+        setData(prev => ({
+          ...prev,
+          lastDate: getTodayString(),
+          currentDayMinutes: currentMinutes
+        }));
+      }
+    };
+
+    checkDateChange();
+    const interval = setInterval(checkDateChange, 60000);
+    return () => clearInterval(interval);
+  }, [data.lastDate, data.dailyLogs]);
 
   // Removed redundant migration effect - now handled in useState initializer
 
-  const addLog = (log: Omit<MeditationLog, 'id' | 'completedAt'>) => {
-    const newLog: MeditationLog = {
-      ...log,
+  const addSession = (duration: number) => {
+    const today = new Date().toLocaleDateString('en-US');
+    const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+    
+    const newSession: MeditationSession = {
       id: Date.now().toString(),
+      time: currentTime,
+      duration,
       completedAt: new Date().toISOString()
     };
-    setLogs(prev => [...prev, newLog]);
+
+    setData(prev => {
+      const todayLog = prev.dailyLogs[today] || { date: today, totalMinutes: 0, sessions: [] };
+      
+      const updatedLog = {
+        ...todayLog,
+        totalMinutes: todayLog.totalMinutes + duration,
+        sessions: [...todayLog.sessions, newSession]
+      };
+
+      return {
+        ...prev,
+        currentDayMinutes: prev.currentDayMinutes + duration,
+        dailyLogs: {
+          ...prev.dailyLogs,
+          [today]: updatedLog
+        }
+      };
+    });
   };
 
-  const updateLog = (id: string, updates: Partial<MeditationLog>) => {
-    setLogs(prev => prev.map(log => 
-      log.id === id ? { ...log, ...updates } : log
-    ));
+  const updateSession = (date: string, id: string, updates: Partial<MeditationSession>) => {
+    setData(prev => {
+      const dayLog = prev.dailyLogs[date];
+      if (!dayLog) return prev;
+      
+      const oldSession = dayLog.sessions.find(s => s.id === id);
+      if (!oldSession) return prev;
+      
+      const updatedSessions = dayLog.sessions.map(session => 
+        session.id === id ? { ...session, ...updates } : session
+      );
+      
+      // Recalculate total minutes
+      const totalMinutes = updatedSessions.reduce((sum, session) => sum + session.duration, 0);
+      
+      const updatedLog = {
+        ...dayLog,
+        totalMinutes,
+        sessions: updatedSessions
+      };
+      
+      // Update current day minutes if it's today
+      const isToday = new Date(date).toLocaleDateString('en-US') === new Date().toLocaleDateString('en-US');
+      
+      return {
+        ...prev,
+        currentDayMinutes: isToday ? totalMinutes : prev.currentDayMinutes,
+        dailyLogs: {
+          ...prev.dailyLogs,
+          [date]: updatedLog
+        }
+      };
+    });
   };
 
-  const deleteLog = (id: string) => {
-    setLogs(prev => prev.filter(log => log.id !== id));
+  const deleteSession = (date: string, id: string) => {
+    setData(prev => {
+      const dayLog = prev.dailyLogs[date];
+      if (!dayLog) return prev;
+      
+      const sessionToDelete = dayLog.sessions.find(s => s.id === id);
+      if (!sessionToDelete) return prev;
+      
+      const updatedSessions = dayLog.sessions.filter(session => session.id !== id);
+      
+      // Recalculate total minutes
+      const totalMinutes = updatedSessions.reduce((sum, session) => sum + session.duration, 0);
+      
+      const updatedLog = {
+        ...dayLog,
+        totalMinutes,
+        sessions: updatedSessions
+      };
+      
+      // Remove the log entirely if no sessions remain
+      const newDailyLogs = { ...prev.dailyLogs };
+      if (updatedSessions.length === 0) {
+        delete newDailyLogs[date];
+      } else {
+        newDailyLogs[date] = updatedLog;
+      }
+      
+      // Update current day minutes if it's today
+      const isToday = new Date(date).toLocaleDateString('en-US') === new Date().toLocaleDateString('en-US');
+      
+      return {
+        ...prev,
+        currentDayMinutes: isToday ? totalMinutes : prev.currentDayMinutes,
+        dailyLogs: newDailyLogs
+      };
+    });
   };
 
   // Get today's total meditation minutes
   const getTodayMinutes = (): number => {
     const today = new Date().toLocaleDateString('en-US'); // MM/DD/YYYY format
-    const todayLogs = logs.filter(log => {
-      // Direct string comparison using MM/DD/YYYY format
-      return log.date === today;
+    const todayLogKey = Object.keys(data.dailyLogs).find(date => {
+      return new Date(date).toLocaleDateString('en-US') === today;
     });
     
-    return todayLogs.reduce((total, log) => total + log.duration, 0);
+    return todayLogKey ? data.dailyLogs[todayLogKey].totalMinutes : 0;
   };
 
   // Get daily goal from localStorage (shared with Goals page)
@@ -111,15 +288,15 @@ export function useMeditation() {
     return getTodayMinutes() >= getDailyGoal();
   };
 
-  // Get last 10 logs meditation stats
+  // Get last 10 daily logs meditation stats
   const getLast10LogsProgress = () => {
-    // Get the most recent 10 logs regardless of date
-    const recentLogs = logs
-      .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+    // Get the most recent 10 daily logs regardless of date
+    const recentLogs = Object.values(data.dailyLogs)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 10);
     
     // Sum up the durations
-    const totalMinutes = recentLogs.reduce((sum, log) => sum + log.duration, 0);
+    const totalMinutes = recentLogs.reduce((sum, log) => sum + log.totalMinutes, 0);
     
     const dailyGoal = getDailyGoal();
     const targetGoal = dailyGoal * 10; // 10 logs worth of daily goals
@@ -140,29 +317,34 @@ export function useMeditation() {
   // Get all-time goal percentage for goal modal
   const getAllTimeGoalPercentage = (): number => {
     const goalMinutes = getDailyGoal();
-    if (goalMinutes === 0 || logs.length === 0) return 0;
-    
-    // Group logs by date and calculate daily totals
-    const dailyTotals: { [date: string]: number } = {};
-    logs.forEach(session => {
-      const sessionDate = new Date(session.date);
-      const dateKey = sessionDate.toISOString().split('T')[0];
-      dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
-    });
+    const dailyLogsCount = Object.keys(data.dailyLogs).length;
+    if (goalMinutes === 0 || dailyLogsCount === 0) return 0;
     
     // Calculate average daily minutes across all days with meditation
-    const allDailyMinutes = Object.values(dailyTotals);
-    const averageMinutes = allDailyMinutes.reduce((sum, minutes) => sum + minutes, 0) / allDailyMinutes.length;
+    const totalMinutes = Object.values(data.dailyLogs).reduce((sum, log) => sum + log.totalMinutes, 0);
+    const averageMinutes = totalMinutes / dailyLogsCount;
     
     return Math.min((averageMinutes / goalMinutes) * 100, 100);
   };
 
+  // Legacy compatibility: get all sessions as flat array for UI compatibility
+  const getAllSessions = () => {
+    return Object.values(data.dailyLogs).flatMap(dayLog => 
+      dayLog.sessions.map(session => ({
+        ...session,
+        date: dayLog.date
+      }))
+    );
+  };
+
   return {
-    logs,
+    logs: getAllSessions(), // For backward compatibility
+    dailyLogs: data.dailyLogs,
     hasUserGoal: Boolean(localStorage.getItem('fitcircle_goal_meditation')), // Flag indicating if user has set a goal
-    addLog,
-    updateLog,
-    deleteLog,
+    addLog: addSession, // Legacy alias
+    addSession,
+    updateSession,
+    deleteSession,
     getTodayMinutes,
     getDailyGoal,
     getProgressPercentage,
