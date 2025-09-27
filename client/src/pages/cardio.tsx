@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Target, Plus, Edit2, Trash2, Clock, MapPin, FileText, Save, X, Activity } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { useCardio, CardioEntry } from '@/hooks/use-cardio';
+import { useCardio, CardioEntry, CardioSession } from '@/hooks/use-cardio';
 import { GoalCircle } from '@/components/GoalCircle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,8 +17,8 @@ export default function CardioPage() {
   const [, navigate] = useLocation();
   const {
     addCardioEntry,
-    updateCardioEntry,
-    deleteCardioEntry,
+    updateCardioSession,
+    deleteCardioSession,
     updateGoal,
     addCustomType,
     getAllCardioTypes,
@@ -47,7 +47,7 @@ export default function CardioPage() {
   const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddCustomTypeOpen, setIsAddCustomTypeOpen] = useState(false);
-  const [editingEntry, setEditingEntry] = useState<CardioEntry | null>(null);
+  const [editingEntry, setEditingEntry] = useState<CardioSession | null>(null);
   
   // Goal dialog state
   const [goalInput, setGoalInput] = useState('');
@@ -71,7 +71,7 @@ export default function CardioPage() {
 
   // Calculate daily goal target for the circle  
   const dailyGoalTarget = data.goal.target; // Daily goal target
-  const todaysValue = data.goal.type === 'duration' ? todaysProgress.duration : todaysProgress.distance;
+  const todaysValue = data.goal.type === 'duration' ? todaysProgress.today.duration : todaysProgress.today.distance;
   const progressPercentage = dailyGoalTarget > 0 ? Math.min((todaysValue / dailyGoalTarget) * 100, 100) : 0;
 
   const resetAddForm = () => {
@@ -87,13 +87,14 @@ export default function CardioPage() {
   const allSessions = Object.values(data.dailyLogs || {}).flatMap(dayLog => 
     dayLog.sessions.map(session => ({
       ...session,
-      date: dayLog.date
+      date: dayLog.date,
+      timestamp: new Date(dayLog.date + ' ' + session.time).getTime()
     }))
   );
   
   // Get recent activity - all entries sorted by date/time (most recent first)  
   const recentActivity = allSessions
-    .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+    .sort((a, b) => b.timestamp - a.timestamp);
     
   // Group all entries by month
   const monthlyLogs = groupLogsByMonth(recentActivity);
@@ -127,7 +128,14 @@ export default function CardioPage() {
       notes: newEntry.notes || undefined
     };
 
-    updateCardioSession(editingEntry.date, editingEntry.id, updatedEntry);
+    // Find the date for this session
+    const sessionDate = Object.entries(data.dailyLogs).find(([date, dayLog]) => 
+      dayLog.sessions.some(s => s.id === editingEntry.id)
+    )?.[0];
+    
+    if (sessionDate) {
+      updateCardioSession(sessionDate, editingEntry.id, updatedEntry);
+    }
     setEditingEntry(null);
     resetAddForm();
     setIsEditDialogOpen(false);
