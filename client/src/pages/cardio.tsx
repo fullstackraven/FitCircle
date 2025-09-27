@@ -62,6 +62,7 @@ export default function CardioPage() {
   });
   const [newCustomType, setNewCustomType] = useState('');
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
+  const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
 
   const todaysProgress = getTodaysProgress();
   const weeklyProgress = getWeeklyProgress();
@@ -98,6 +99,17 @@ export default function CardioPage() {
     
   // Group all entries by month
   const monthlyLogs = groupLogsByMonth(recentActivity);
+  
+  // Get today's sessions for the "Today's Cardio" section
+  const getTodaySessions = () => {
+    const today = new Date().toLocaleDateString('en-US');
+    const todayLogKey = Object.keys(data.dailyLogs).find(date => {
+      return new Date(date).toLocaleDateString('en-US') === today;
+    });
+    return todayLogKey ? data.dailyLogs[todayLogKey].sessions : [];
+  };
+  
+  const todaySessions = getTodaySessions();
 
   const handleAddEntry = () => {
     if (!newEntry.type || (!newEntry.duration && !newEntry.distance)) {
@@ -270,6 +282,72 @@ export default function CardioPage() {
           </CardContent>
         </Card>
 
+        {/* Today's Cardio */}
+        {todaySessions.length > 0 && (
+          <div className="fitcircle-card-lg mb-6">
+            <h3 className="text-lg font-semibold mb-3">Today's Cardio</h3>
+            <div className="space-y-2">
+              {todaySessions.slice().reverse().map((session: CardioSession, index: number) => (
+                <div key={session.id} className="flex justify-between items-center text-sm relative">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-slate-400">{session.time}</span>
+                    <span className="text-slate-300">{session.type}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="flex flex-col items-end space-y-1">
+                      {session.duration > 0 && (
+                        <span className="text-green-400 font-medium text-xs">
+                          {formatDuration(session.duration)}
+                        </span>
+                      )}
+                      {session.distance && session.distance > 0 && (
+                        <span className="text-blue-400 font-medium text-xs">
+                          {session.distance}mi
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-1 ml-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingEntry(session);
+                          setNewEntry({
+                            type: session.type,
+                            duration: session.duration.toString(),
+                            distance: session.distance?.toString() || '',
+                            notes: session.notes || ''
+                          });
+                          setIsEditDialogOpen(true);
+                        }}
+                        className="text-slate-400 hover:text-white p-1 h-auto"
+                        data-testid={`button-edit-session-${session.id}`}
+                      >
+                        <Edit2 className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          // Find which date this entry belongs to
+                          const entryToDelete = allSessions.find(entry => entry.id === session.id);
+                          if (entryToDelete && confirm('Are you sure you want to delete this cardio session?')) {
+                            deleteCardioSession(entryToDelete.date, session.id);
+                          }
+                        }}
+                        className="text-slate-400 hover:text-red-300 p-1 h-auto"
+                        data-testid={`button-delete-session-${session.id}`}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Add Entry Button */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
@@ -381,12 +459,12 @@ export default function CardioPage() {
           </DialogContent>
         </Dialog>
 
-        {/* Cardio Log - Monthly Sections */}
+        {/* Cardio Log - Daily Aggregation */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Cardio Log</h3>
           <div className="space-y-3">
-            {Object.keys(monthlyLogs).length > 0 ? (
-              Object.entries(monthlyLogs).map(([monthName, monthEntries]) => (
+            {Object.keys(data.dailyLogs).length > 0 ? (
+              Object.entries(groupLogsByMonth(Object.values(data.dailyLogs))).map(([monthName, monthLogs]) => (
                 <Collapsible
                   key={monthName}
                   open={expandedMonths.has(monthName)}
@@ -405,7 +483,7 @@ export default function CardioPage() {
                       <div className="flex justify-between items-center">
                         <span className="text-white font-medium">{monthName}</span>
                         <div className="flex items-center space-x-2">
-                          <span className="text-green-400 text-sm">{monthEntries.length} workouts</span>
+                          <span className="text-green-400 text-sm">{monthLogs.length} days</span>
                           <span className="text-slate-400">
                             {expandedMonths.has(monthName) ? '−' : '+'}
                           </span>
@@ -414,74 +492,73 @@ export default function CardioPage() {
                     </button>
                   </CollapsibleTrigger>
                   
-                  <CollapsibleContent className="space-y-3 mt-2">
-                    {monthEntries.map(entry => (
-                      <Card key={entry.id} className="fitcircle-card ml-4">
-                        <CardContent className="p-4 relative">
-                          <div className="pr-16">
-                            {/* Header/Title at the top */}
-                            <div className="mb-3">
-                              <h4 className="text-green-400 font-semibold capitalize text-lg">{entry.type}</h4>
-                            </div>
-                            
-                            {/* Date and details organized below */}
-                            <div className="space-y-2">
-                              <div className="text-sm text-slate-400 font-medium">
-                                {entry.date}
-                              </div>
-                              
-                              <div className="flex items-center space-x-4 text-sm text-slate-300">
-                                {entry.duration > 0 && (
-                                  <div className="flex items-center space-x-1">
-                                    <Clock className="w-4 h-4" />
-                                    <span>{formatDuration(entry.duration)}</span>
-                                  </div>
-                                )}
-                                {entry.distance && entry.distance > 0 && (
-                                  <div className="flex items-center space-x-1">
-                                    <MapPin className="w-4 h-4" />
-                                    <span>{entry.distance} mi</span>
-                                  </div>
-                                )}
-                              </div>
-                              
-                              {entry.notes && (
-                                <div className="flex items-start space-x-1 text-sm text-slate-300">
-                                  <FileText className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                                  <span className="break-words">{entry.notes}</span>
-                                </div>
-                              )}
-                            </div>
+                  <CollapsibleContent className="space-y-2 mt-2">
+                    {monthLogs.map((log) => (
+                      <div key={log.date} className="fitcircle-card ml-4">
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="text-white font-medium">
+                            {new Date(log.date + 'T00:00:00').toLocaleDateString('en-US', { 
+                              weekday: 'short', 
+                              month: 'short', 
+                              day: 'numeric' 
+                            })}
+                          </span>
+                          <div className="flex items-center space-x-2">
+                            {log.totalDuration > 0 && (
+                              <span className="text-green-400 font-semibold text-sm">
+                                {formatDuration(log.totalDuration)}
+                              </span>
+                            )}
+                            {log.totalDistance > 0 && (
+                              <span className="text-blue-400 font-semibold text-sm">
+                                {log.totalDistance.toFixed(1)}mi
+                              </span>
+                            )}
                           </div>
-                          <div className="absolute top-3 right-3 flex items-center space-x-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
+                        </div>
+                        <div className="text-xs text-slate-400 mb-2">
+                          {log.sessions.length} sessions
+                        </div>
+                        
+                        {/* Show detailed sessions for this day */}
+                        <div className="space-y-1">
+                          {(expandedDays.has(log.date) ? log.sessions : log.sessions.slice(0, 3)).map((session, index) => (
+                            <div key={session.id} className="flex justify-between items-center text-xs">
+                              <div className="flex items-center space-x-2">
+                                <span className="text-slate-500">{session.time}</span>
+                                <span className="text-slate-400">{session.type}</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                {session.duration > 0 && (
+                                  <span className="text-slate-300">{formatDuration(session.duration)}</span>
+                                )}
+                                {session.distance && session.distance > 0 && (
+                                  <span className="text-slate-300">{session.distance}mi</span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                          {log.sessions.length > 3 && (
+                            <button
                               onClick={() => {
-                                setEditingEntry(entry);
-                                setNewEntry({
-                                  type: entry.type,
-                                  duration: entry.duration.toString(),
-                                  distance: entry.distance?.toString() || '',
-                                  notes: entry.notes || ''
-                                });
-                                setIsEditDialogOpen(true);
+                                const newExpanded = new Set(expandedDays);
+                                if (newExpanded.has(log.date)) {
+                                  newExpanded.delete(log.date);
+                                } else {
+                                  newExpanded.add(log.date);
+                                }
+                                setExpandedDays(newExpanded);
                               }}
-                              className="text-slate-400 hover:text-white p-1 h-auto"
+                              className="text-xs text-slate-500 hover:text-slate-300 text-center mt-1 w-full transition-colors"
                             >
-                              <Edit2 className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteEntry(entry.id)}
-                              className="text-slate-400 hover:text-red-300 p-1 h-auto"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
+                              {expandedDays.has(log.date) 
+                                ? 'Show less' 
+                                : `+${log.sessions.length - 3} more sessions`
+                              }
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     ))}
                   </CollapsibleContent>
                 </Collapsible>
