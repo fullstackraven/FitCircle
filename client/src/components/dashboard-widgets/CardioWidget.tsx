@@ -13,7 +13,7 @@ export function CardioWidget({ widget, onClick }: CardioWidgetProps) {
   const goal = data.goal;
   
   const todaysProgress = getTodaysProgress();
-  const progressValue = goal.type === 'duration' ? todaysProgress.duration : todaysProgress.distance;
+  const progressValue = goal.type === 'duration' ? todaysProgress.today.duration : todaysProgress.today.distance;
   const progressPercentage = goal.target > 0 ? Math.min((progressValue / goal.target) * 100, 100) : 0;
   const isGoalReached = progressValue >= goal.target;
 
