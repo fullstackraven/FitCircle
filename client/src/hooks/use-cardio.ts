@@ -275,27 +275,29 @@ export function useCardio() {
     };
   };
 
-  const getLast7DaysAverage = () => {
-    const now = new Date();
-    const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000)); // Exactly 7 days ago
-    
-    // Filter entries from the last 7 days
-    const recentEntries = data.entries.filter(entry => {
-      const entryDate = new Date(entry.date + 'T00:00:00');
-      return entryDate >= sevenDaysAgo && entryDate <= now;
-    });
+  const getLast10LogsAverage = () => {
+    // Get the most recent 10 entries regardless of date
+    const recentEntries = data.entries
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 10);
 
     const totalValue = data.goal.type === 'duration'
       ? recentEntries.reduce((sum, entry) => sum + entry.duration, 0)
       : recentEntries.reduce((sum, entry) => sum + (entry.distance || 0), 0);
 
-    const average = totalValue / 7; // Average over 7 days (including zero days)
+    const average = recentEntries.length > 0 ? totalValue / recentEntries.length : 0;
     const progressToGoal = data.goal.target > 0 ? (average / data.goal.target) * 100 : 0;
+    const targetGoal = data.goal.target * 10; // 10 logs worth of target goal
+    const goalProgress = targetGoal > 0 ? Math.min((totalValue / targetGoal) * 100, 100) : 0;
 
     return {
       average: Math.round(average * 10) / 10,
+      totalValue: Math.round(totalValue * 10) / 10,
+      targetGoal: Math.round(targetGoal * 10) / 10,
       progressToGoal: Math.min(progressToGoal, 100),
-      dailyTarget: Math.round(data.goal.target * 10) / 10
+      goalProgress: Math.round(goalProgress * 10) / 10,
+      dailyTarget: Math.round(data.goal.target * 10) / 10,
+      logsCount: recentEntries.length
     };
   };
 
@@ -346,7 +348,7 @@ export function useCardio() {
     getTodaysCardio,
     getTodaysProgress,
     getWeeklyProgress,
-    getLast7DaysAverage,
+    getLast10LogsAverage,
     getCardioStats,
     getAllTimeGoalPercentage,
     getAllTimeAverage

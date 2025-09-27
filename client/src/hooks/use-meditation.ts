@@ -111,32 +111,29 @@ export function useMeditation() {
     return getTodayMinutes() >= getDailyGoal();
   };
 
-  // Get last 7 days meditation stats
-  const getLast7DaysProgress = () => {
-    const now = new Date();
-    const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000)); // Exactly 7 days ago
-    
-    // Filter logs from the last 7 days based on completedAt timestamp
-    const recentLogs = logs.filter(log => {
-      const logDate = new Date(log.completedAt);
-      return logDate >= sevenDaysAgo && logDate <= now;
-    });
+  // Get last 10 logs meditation stats
+  const getLast10LogsProgress = () => {
+    // Get the most recent 10 logs regardless of date
+    const recentLogs = logs
+      .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+      .slice(0, 10);
     
     // Sum up the durations
     const totalMinutes = recentLogs.reduce((sum, log) => sum + log.duration, 0);
     
     const dailyGoal = getDailyGoal();
-    const weeklyGoal = dailyGoal * 7; // 7 days worth of daily goals
-    const averageMinutes = totalMinutes / 7; // Average over 7 days (including zero days)
-    const goalProgress = weeklyGoal > 0 ? Math.min((totalMinutes / weeklyGoal) * 100, 100) : 0;
-    const remaining = Math.max(0, weeklyGoal - totalMinutes);
+    const targetGoal = dailyGoal * 10; // 10 logs worth of daily goals
+    const averageMinutes = recentLogs.length > 0 ? totalMinutes / recentLogs.length : 0;
+    const goalProgress = targetGoal > 0 ? Math.min((totalMinutes / targetGoal) * 100, 100) : 0;
+    const remaining = Math.max(0, targetGoal - totalMinutes);
     
     return {
       totalMinutes: Math.round(totalMinutes),
       averageMinutes: Math.round(averageMinutes * 10) / 10,
-      weeklyGoal,
+      targetGoal,
       goalProgress: Math.round(goalProgress * 10) / 10, // Round to 1 decimal
-      remaining: Math.round(remaining)
+      remaining: Math.round(remaining),
+      logsCount: recentLogs.length
     };
   };
 
@@ -170,7 +167,7 @@ export function useMeditation() {
     getDailyGoal,
     getProgressPercentage,
     isGoalReached,
-    getLast7DaysProgress,
+    getLast10LogsProgress,
     getAllTimeGoalPercentage
   };
 }

@@ -216,31 +216,28 @@ export function useHydration() {
     return todayLog?.entries || [];
   };
 
-  // Get last 7 days hydration stats
-  const getLast7DaysProgress = () => {
-    const now = new Date();
-    const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000)); // Exactly 7 days ago
-    
-    // Filter logs from the last 7 days based on date (hydration logs use date strings)
-    const recentLogs = Object.values(data.logs).filter(log => {
-      const logDate = new Date(log.date);
-      return logDate >= sevenDaysAgo && logDate <= now;
-    });
+  // Get last 10 logs hydration stats
+  const getLast10LogsProgress = () => {
+    // Get the most recent 10 logs regardless of date
+    const recentLogs = Object.values(data.logs)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 10);
     
     // Sum up the total ounces
     const totalOz = recentLogs.reduce((sum, log) => sum + log.totalOz, 0);
     
-    const weeklyGoal = data.dailyGoalOz * 7; // 7 days worth of daily goals
-    const averageOz = totalOz / 7; // Average over 7 days (including zero days)
-    const goalProgress = weeklyGoal > 0 ? Math.min((totalOz / weeklyGoal) * 100, 100) : 0;
-    const remaining = Math.max(0, weeklyGoal - totalOz);
+    const targetGoal = data.dailyGoalOz * 10; // 10 logs worth of daily goals
+    const averageOz = recentLogs.length > 0 ? totalOz / recentLogs.length : 0;
+    const goalProgress = targetGoal > 0 ? Math.min((totalOz / targetGoal) * 100, 100) : 0;
+    const remaining = Math.max(0, targetGoal - totalOz);
     
     return {
       totalOz: Math.round(totalOz),
       averageOz: Math.round(averageOz * 10) / 10,
-      weeklyGoal,
+      targetGoal,
       goalProgress: Math.round(goalProgress * 10) / 10, // Round to 1 decimal
-      remaining: Math.round(remaining)
+      remaining: Math.round(remaining),
+      logsCount: recentLogs.length
     };
   };
 
@@ -269,7 +266,7 @@ export function useHydration() {
     getAllLogs,
     getTodayEntries,
     isGoalReached: data.currentDayOz >= data.dailyGoalOz,
-    getLast7DaysProgress,
+    getLast10LogsProgress,
     getAllTimeGoalPercentage
   };
 }

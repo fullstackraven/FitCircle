@@ -45,21 +45,17 @@ export function useFasting() {
     setLogs(prev => prev.filter(log => log.id !== id));
   };
 
-  // Get last 7 days fasting stats
-  const getLast7DaysProgress = () => {
-    const now = new Date();
-    const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000)); // Exactly 7 days ago
-    
-    // Filter to only fasting logs from the last 7 days
-    const recentLogs = logs.filter(log => {
-      const logDate = new Date(log.loggedAt);
-      return logDate >= sevenDaysAgo && logDate <= now;
-    });
+  // Get last 10 logs fasting stats
+  const getLast10LogsProgress = () => {
+    // Get the most recent 10 logs regardless of date
+    const recentLogs = logs
+      .sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime())
+      .slice(0, 10);
     
     let totalHours = 0;
     let fastingDays = 0;
     const dailyGoal = parseFloat(localStorage.getItem('fitcircle_goal_fasting') || '16'); // Default 16h
-    const weeklyGoal = dailyGoal * 7; // 7 days worth of daily goals
+    const targetGoal = dailyGoal * 10; // 10 logs worth of daily goals
     
     // Calculate total hours from recent fasting logs
     recentLogs.forEach(log => {
@@ -74,16 +70,17 @@ export function useFasting() {
       }
     });
     
-    const averageHours = totalHours / 7; // Average over 7 days (including zero days)
-    const goalProgress = weeklyGoal > 0 ? Math.min((totalHours / weeklyGoal) * 100, 100) : 0;
-    const remaining = Math.max(0, weeklyGoal - totalHours);
+    const averageHours = recentLogs.length > 0 ? totalHours / recentLogs.length : 0;
+    const goalProgress = targetGoal > 0 ? Math.min((totalHours / targetGoal) * 100, 100) : 0;
+    const remaining = Math.max(0, targetGoal - totalHours);
     
     return {
       totalHours: Math.round(totalHours * 10) / 10,
       averageHours: Math.round(averageHours * 10) / 10,
-      weeklyGoal,
+      targetGoal,
       goalProgress: Math.round(goalProgress * 10) / 10,
-      remaining: Math.round(remaining * 10) / 10
+      remaining: Math.round(remaining * 10) / 10,
+      logsCount: recentLogs.length
     };
   };
 
@@ -102,7 +99,7 @@ export function useFasting() {
     addLog,
     updateLog,
     deleteLog,
-    getLast7DaysProgress,
+    getLast10LogsProgress,
     getAllTimeGoalPercentage
   };
 }
