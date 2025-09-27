@@ -163,6 +163,17 @@ export function EnergyLevelPage() {
   const [, navigate] = useLocation();
   const { getEnergyLevel, setEnergyLevelForDate } = useEnergyLevel();
   const [energyLevel, setEnergyLevel] = useState(0);
+  
+  // Check if we came from wellness page
+  const fromWellness = document.referrer.includes('/wellness');
+  
+  const handleBack = () => {
+    if (fromWellness) {
+      navigate('/wellness');
+    } else {
+      navigate('/calendar');
+    }
+  };
 
   useEffect(() => {
     // Load today's energy level
@@ -209,9 +220,9 @@ export function EnergyLevelPage() {
     <div className="p-4 max-w-3xl mx-auto min-h-screen pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="flex items-center justify-between mb-6">
         <button
-          onClick={() => navigate("/calendar")}
+          onClick={handleBack}
           className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
-          title="Back to Calendar"
+          title="Back"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>Back</span>

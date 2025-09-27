@@ -16,6 +16,17 @@ export function SupplementsPage() {
     editSupplement 
   } = useSupplements();
   
+  // Check if we came from wellness page
+  const fromWellness = document.referrer.includes('/wellness');
+  
+  const handleBack = () => {
+    if (fromWellness) {
+      navigate('/wellness');
+    } else {
+      navigate('/calendar');
+    }
+  };
+  
   const [tempSupplementLogs, setTempSupplementLogs] = useState<{id: number, name: string, taken: boolean}[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isManageOpen, setIsManageOpen] = useState(false);
@@ -90,9 +101,9 @@ export function SupplementsPage() {
       <div className="fitcircle-container">
         <div className="flex items-center justify-between mb-8">
           <button
-            onClick={() => navigate("/calendar")}
+            onClick={handleBack}
             className="fitcircle-back-button"
-            title="Back to Calendar"
+            title="Back"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>

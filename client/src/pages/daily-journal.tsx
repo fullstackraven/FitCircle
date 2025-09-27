@@ -10,6 +10,17 @@ export function DailyJournal() {
   const [journalText, setJournalText] = useState("");
   const [currentDate, setCurrentDate] = useState("");
   const [lastSaved, setLastSaved] = useState<string | null>(null);
+  
+  // Check if we came from wellness page
+  const fromWellness = document.referrer.includes('/wellness');
+  
+  const handleBack = () => {
+    if (fromWellness) {
+      navigate('/wellness');
+    } else {
+      navigate('/calendar');
+    }
+  };
 
   useEffect(() => {
     // Check for date parameter in URL
@@ -60,9 +71,9 @@ export function DailyJournal() {
       {/* Header */}
       <div className="flex items-center justify-between p-4 mb-2">
         <button
-          onClick={() => navigate("/calendar")}
+          onClick={handleBack}
           className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
-          title="Back to Calendar"
+          title="Back"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>Back</span>
