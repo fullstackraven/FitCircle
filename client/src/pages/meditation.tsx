@@ -469,17 +469,17 @@ export default function MeditationPage() {
           )}
         </div>
 
-        {/* Meditation Log - Monthly Sections */}
+        {/* Meditation Log - Daily Aggregation */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Meditation Log</h3>
           <div className="space-y-3">
-            {Object.keys(monthlyLogs).length === 0 ? (
+            {Object.keys(dailyLogs).length === 0 ? (
               <div className="text-center py-8 text-slate-400">
                 <p>No meditation sessions yet.</p>
                 <p className="text-sm mt-2">Complete a meditation session to see your log here.</p>
               </div>
             ) : (
-              Object.entries(monthlyLogs).map(([monthName, monthLogs]) => (
+              Object.entries(groupLogsByMonth(Object.values(dailyLogs))).map(([monthName, monthLogs]) => (
                 <Collapsible
                   key={monthName}
                   open={expandedMonths.has(monthName)}
@@ -498,7 +498,7 @@ export default function MeditationPage() {
                       <div className="flex justify-between items-center">
                         <span className="text-white font-medium">{monthName}</span>
                         <div className="flex items-center space-x-2">
-                          <span className="text-purple-400 text-sm">{monthLogs.length} sessions</span>
+                          <span className="text-purple-400 text-sm">{monthLogs.length} days</span>
                           <span className="text-slate-400">
                             {expandedMonths.has(monthName) ? '−' : '+'}
                           </span>
@@ -508,24 +508,61 @@ export default function MeditationPage() {
                   </CollapsibleTrigger>
                   
                   <CollapsibleContent className="space-y-2 mt-2">
-                    {monthLogs
-                      .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
-                      .map((log) => (
-                        <div key={log.id} className="bg-slate-800 rounded-xl p-4 ml-4">
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <div className="text-sm text-slate-300">
-                                {log.date} at {log.time}
-                              </div>
-                              <div className="text-lg font-semibold text-purple-400">
-                                {log.duration} minute{log.duration !== 1 ? 's' : ''}
-                              </div>
-                            </div>
-                            <div className="text-2xl">🧘‍♂️</div>
+                    {monthLogs.map((log) => (
+                      <div key={log.date} className="fitcircle-card ml-4">
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="text-white font-medium">
+                            {new Date(log.date + 'T00:00:00').toLocaleDateString('en-US', { 
+                              weekday: 'short', 
+                              month: 'short', 
+                              day: 'numeric' 
+                            })}
+                          </span>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-purple-400 font-semibold text-sm">
+                              {log.totalMinutes}min
+                            </span>
                           </div>
                         </div>
-                      ))
-                    }
+                        <div className="text-xs text-slate-400 mb-2">
+                          {log.sessions.length} sessions
+                        </div>
+                        
+                        {/* Show detailed sessions for this day */}
+                        <div className="space-y-1">
+                          {(expandedDays.has(log.date) ? log.sessions : log.sessions.slice(0, 3)).map((session, index) => (
+                            <div key={session.id} className="flex justify-between items-center text-xs">
+                              <div className="flex items-center space-x-2">
+                                <span className="text-slate-500">{session.time}</span>
+                                <span className="text-slate-400">Meditation</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <span className="text-slate-300">{session.duration}min</span>
+                              </div>
+                            </div>
+                          ))}
+                          {log.sessions.length > 3 && (
+                            <button
+                              onClick={() => {
+                                const newExpanded = new Set(expandedDays);
+                                if (newExpanded.has(log.date)) {
+                                  newExpanded.delete(log.date);
+                                } else {
+                                  newExpanded.add(log.date);
+                                }
+                                setExpandedDays(newExpanded);
+                              }}
+                              className="text-xs text-slate-500 hover:text-slate-300 text-center mt-1 w-full transition-colors"
+                            >
+                              {expandedDays.has(log.date) 
+                                ? 'Show less' 
+                                : `+${log.sessions.length - 3} more sessions`
+                              }
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </CollapsibleContent>
                 </Collapsible>
               ))
