@@ -83,9 +83,17 @@ export default function CardioPage() {
     });
   };
 
+  // Get all sessions as flat array for grouping (using legacy compatibility)
+  const allSessions = Object.values(data.dailyLogs || {}).flatMap(dayLog => 
+    dayLog.sessions.map(session => ({
+      ...session,
+      date: dayLog.date
+    }))
+  );
+  
   // Get recent activity - all entries sorted by date/time (most recent first)  
-  const recentActivity = data.entries
-    .sort((a, b) => b.timestamp - a.timestamp);
+  const recentActivity = allSessions
+    .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
     
   // Group all entries by month
   const monthlyLogs = groupLogsByMonth(recentActivity);
@@ -119,7 +127,7 @@ export default function CardioPage() {
       notes: newEntry.notes || undefined
     };
 
-    updateCardioEntry(editingEntry.id, updatedEntry);
+    updateCardioSession(editingEntry.date, editingEntry.id, updatedEntry);
     setEditingEntry(null);
     resetAddForm();
     setIsEditDialogOpen(false);
@@ -127,7 +135,11 @@ export default function CardioPage() {
 
   const handleDeleteEntry = (id: string) => {
     if (confirm('Are you sure you want to delete this cardio entry?')) {
-      deleteCardioEntry(id);
+      // Find which date this entry belongs to
+      const entryToDelete = allSessions.find(entry => entry.id === id);
+      if (entryToDelete) {
+        deleteCardioSession(entryToDelete.date, id);
+      }
     }
   };
 
@@ -226,7 +238,7 @@ export default function CardioPage() {
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-green-400">
-                  {data.goal.type === 'duration' ? formatDuration(weeklyProgress.duration) : `${weeklyProgress.distance.toFixed(1)}mi`}
+                  {data.goal.type === 'duration' ? formatDuration(weeklyProgress.totalDuration) : `${weeklyProgress.totalDistance.toFixed(1)}mi`}
                 </div>
                 <div className="text-sm text-slate-400">Completed</div>
               </div>
@@ -571,14 +583,14 @@ export default function CardioPage() {
                   const targetValue = parseFloat(goalInput) || data.goal.target || 0;
                   if (targetValue === 0) return 0;
                   
-                  const { averageDuration, averageDistance } = getAllTimeCardioAverage(data.entries);
+                  const { averageDuration, averageDistance } = getAllTimeCardioAverage(allSessions);
                   const currentAverage = data.goal.type === 'duration' ? averageDuration : averageDistance;
                   return Math.min(100, (currentAverage / targetValue) * 100);
                 })()}
                 color="rgb(34, 197, 94)"
                 size={120}
                 currentValue={(() => {
-                  const { averageDuration, averageDistance } = getAllTimeCardioAverage(data.entries);
+                  const { averageDuration, averageDistance } = getAllTimeCardioAverage(allSessions);
                   return data.goal.type === 'duration' ? averageDuration : averageDistance;
                 })()}
                 goalValue={parseFloat(goalInput) || data.goal.target || 0}
