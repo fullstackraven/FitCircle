@@ -23,7 +23,7 @@ export function TimerWidget({ widget, onOpenTimer }: TimerWidgetProps) {
   const hasActiveTimer = timerState.isRunning || isWorkoutActive;
   const isPaused = !timerState.isRunning || isWorkoutPaused;
   const displayTime = isWorkoutActive 
-    ? formatTime(getCurrentSessionDuration()) 
+    ? getCurrentSessionDuration() 
     : formatTime(timerState.remainingTime);
 
   const handlePauseResume = () => {
