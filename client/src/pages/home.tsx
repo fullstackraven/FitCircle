@@ -566,42 +566,6 @@ export default function Home() {
 
 
 
-      {/* Recent Activity Section - Collapsible */}
-      {!isRecentActivityHidden && recentActivity.length > 0 && (
-        <section className="mb-8">
-          <Collapsible open={isRecentActivityOpen} onOpenChange={setIsRecentActivityOpen}>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-between bg-slate-800 border-slate-700 text-white hover:bg-slate-700 py-4 h-auto rounded-xl mb-4"
-              >
-                <span className="text-lg font-semibold">Recent Activity</span>
-                {isRecentActivityOpen ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="space-y-3">
-                {recentActivity.map((day) => (
-                  <div key={day.dateString} className="bg-slate-800 rounded-xl p-4">
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="font-medium text-slate-300">{day.date}</span>
-                      <span className="text-sm text-slate-400">{typeof day.totalReps === 'number' ? day.totalReps : 0} total</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      {day.workouts.filter(w => w.count > 0).map((workout) => (
-                        <div key={workout.id} className="text-center">
-                          <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)} mx-auto mb-1`}></div>
-                          <span className="text-sm font-medium text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        </section>
-      )}
 
       {/* All Workouts Section */}
       {workouts.length > 0 && (
