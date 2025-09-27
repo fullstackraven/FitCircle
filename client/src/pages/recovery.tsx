@@ -11,7 +11,8 @@ export default function RecoveryPage() {
   const { getTotalStats } = useWorkouts();
   
   // Check if we came from wellness page
-  const fromWellness = document.referrer.includes('/wellness');
+  const urlParams = new URLSearchParams(window.location.search);
+  const fromWellness = urlParams.get('from') === 'wellness';
   
   const handleBack = () => {
     if (fromWellness) {

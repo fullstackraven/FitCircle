@@ -70,7 +70,7 @@ export default function WellnessPage() {
             return (
               <button
                 key={feature.id}
-                onClick={() => navigate(feature.path)}
+                onClick={() => navigate(`${feature.path}?from=wellness`)}
                 className={`aspect-square p-6 ${feature.bgColor} ${feature.hoverBg} rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 flex flex-col items-center justify-center space-y-4`}
               >
                 <Icon className={`w-8 h-8 ${feature.color}`} />
