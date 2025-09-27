@@ -39,7 +39,7 @@ export default function HydrationPage() {
     getAllLogs,
     getTodayEntries,
     isGoalReached,
-    getLast7DaysProgress,
+    getLast10LogsProgress,
     getAllTimeGoalPercentage
   } = useHydration();
 
@@ -210,28 +210,28 @@ export default function HydrationPage() {
           </div>
           )}
 
-          {/* Last 7 Days Progress Stats */}
+          {/* Last 10 Logs Progress Stats */}
           <Card className="fitcircle-card-lg">
             <CardContent className="p-4">
-              <h3 className="text-lg font-semibold mb-3 text-center">Last 7 Days</h3>
+              <h3 className="text-lg font-semibold mb-3 text-center">Last 10 Logs</h3>
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-bold text-blue-400">
-                    {getLast7DaysProgress().totalOz}oz
+                    {getLast10LogsProgress().totalOz}oz
                   </div>
                   <div className="text-sm text-slate-400">Completed</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-blue-400">
-                    {getLast7DaysProgress().averageOz}oz
+                    {getLast10LogsProgress().averageOz}oz
                   </div>
                   <div className="text-sm text-slate-400">Daily Average</div>
                 </div>
               </div>
-              {getLast7DaysProgress().remaining > 0 && (
+              {getLast10LogsProgress().remaining > 0 && (
                 <div className="mt-3 text-center text-slate-300">
                   <span className="text-sm">
-                    {getLast7DaysProgress().remaining} ounces remaining
+                    {getLast10LogsProgress().remaining} ounces remaining
                   </span>
                 </div>
               )}

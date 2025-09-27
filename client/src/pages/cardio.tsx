@@ -24,7 +24,7 @@ export default function CardioPage() {
     getAllCardioTypes,
     getTodaysProgress,
     getWeeklyProgress,
-    getLast7DaysAverage,
+    getLast10LogsAverage,
     getCardioStats,
     getAllTimeGoalPercentage,
     data
@@ -65,7 +65,7 @@ export default function CardioPage() {
 
   const todaysProgress = getTodaysProgress();
   const weeklyProgress = getWeeklyProgress();
-  const last7DaysAverage = getLast7DaysAverage();
+  const last10LogsAverage = getLast10LogsAverage();
   const stats = getCardioStats();
   const cardioTypes = getAllCardioTypes();
 
@@ -222,7 +222,7 @@ export default function CardioPage() {
         {/* Weekly Progress Stats */}
         <Card className="fitcircle-card-lg mb-6">
           <CardContent className="p-4">
-            <h3 className="text-lg font-semibold mb-3 text-center">Last 7 Days</h3>
+            <h3 className="text-lg font-semibold mb-3 text-center">Last 10 Logs</h3>
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-green-400">
@@ -232,7 +232,7 @@ export default function CardioPage() {
               </div>
               <div>
                 <div className="text-2xl font-bold text-green-400">
-                  {data.goal.type === 'duration' ? `${getLast7DaysAverage().average}min` : `${getLast7DaysAverage().average}mi`}
+                  {data.goal.type === 'duration' ? `${getLast10LogsAverage().average}min` : `${getLast10LogsAverage().average}mi`}
                 </div>
                 <div className="text-sm text-slate-400">Daily Average</div>
               </div>
