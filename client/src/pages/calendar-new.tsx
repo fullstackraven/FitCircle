@@ -246,53 +246,6 @@ export default function CalendarPage() {
           <ChevronRight className="w-5 h-5 text-slate-400" />
         </button>
 
-        {/* Recovery Panel */}
-        <button
-          onClick={() => navigate("/recovery")}
-          className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
-        >
-          <div className="flex items-center space-x-3">
-            <Heart className="w-5 h-5 text-orange-400" />
-            <span className="text-white font-medium">Recovery</span>
-          </div>
-          <ChevronRight className="w-5 h-5 text-slate-400" />
-        </button>
-
-        {/* Daily Journal Panel */}
-        <button
-          onClick={() => navigate("/daily-journal")}
-          className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
-        >
-          <div className="flex items-center space-x-3">
-            <BookOpen className="w-5 h-5 text-purple-400" />
-            <span className="text-white font-medium">Daily Journal</span>
-          </div>
-          <ChevronRight className="w-5 h-5 text-slate-400" />
-        </button>
-
-        {/* Energy Level Panel */}
-        <button
-          onClick={() => navigate("/energy-level")}
-          className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
-        >
-          <div className="flex items-center space-x-3">
-            <Zap className="w-5 h-5 text-yellow-400" />
-            <span className="text-white font-medium">Energy Level</span>
-          </div>
-          <ChevronRight className="w-5 h-5 text-slate-400" />
-        </button>
-
-        {/* Supplements Panel */}
-        <button
-          onClick={() => navigate("/supplements-page")}
-          className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
-        >
-          <div className="flex items-center space-x-3">
-            <Pill className="w-5 h-5 text-blue-400" />
-            <span className="text-white font-medium">Supplements</span>
-          </div>
-          <ChevronRight className="w-5 h-5 text-slate-400" />
-        </button>
       </div>
     </div>
   );
