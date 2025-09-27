@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, Eye, EyeOff, Move, RotateCcw } from 'lucide-react';
+import { Settings, Eye, EyeOff, Move, RotateCcw, ChevronUp, ChevronDown } from 'lucide-react';
 import { DashboardWidget, useDashboardWidgets } from '@/hooks/use-dashboard-widgets';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ interface WidgetSettingsProps {
 }
 
 export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
-  const { widgets, toggleWidget, resetToDefaults, getAvailableWidgets } = useDashboardWidgets();
+  const { widgets, toggleWidget, reorderWidgets, resetToDefaults, getAvailableWidgets } = useDashboardWidgets();
   const [isDragMode, setIsDragMode] = useState(false);
 
   const availableWidgets = getAvailableWidgets();
@@ -29,6 +29,19 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
       case 'large': return 'Large';
       default: return 'Medium';
     }
+  };
+
+  const moveWidget = (widgetId: string, direction: 'up' | 'down') => {
+    const currentWidget = availableWidgets.find(w => w.id === widgetId);
+    if (!currentWidget) return;
+
+    const currentPosition = currentWidget.position;
+    const newPosition = direction === 'up' ? currentPosition - 1 : currentPosition + 1;
+    
+    // Check bounds
+    if (newPosition < 0 || newPosition >= availableWidgets.length) return;
+
+    reorderWidgets(widgetId, newPosition);
   };
 
   return (
@@ -104,9 +117,26 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
                     ) : (
                       <EyeOff className="w-4 h-4 text-slate-400" />
                     )}
-                    {isDragMode && (
-                      <Move className="w-4 h-4 text-slate-400 cursor-grab" />
-                    )}
+                    
+                    {/* Reorder Controls */}
+                    <div className="flex flex-col">
+                      <button
+                        onClick={() => moveWidget(widget.id, 'up')}
+                        disabled={widget.position === 0}
+                        className="p-1 hover:bg-slate-700 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Move up"
+                      >
+                        <ChevronUp className="w-3 h-3 text-slate-400" />
+                      </button>
+                      <button
+                        onClick={() => moveWidget(widget.id, 'down')}
+                        disabled={widget.position === availableWidgets.length - 1}
+                        className="p-1 hover:bg-slate-700 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Move down"
+                      >
+                        <ChevronDown className="w-3 h-3 text-slate-400" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

@@ -114,21 +114,27 @@ export function useDashboardWidgets() {
 
   const reorderWidgets = (widgetId: string, newPosition: number) => {
     setWidgets(prev => {
-      const widget = prev.find(w => w.id === widgetId);
-      if (!widget) return prev;
+      const currentWidget = prev.find(w => w.id === widgetId);
+      if (!currentWidget) return prev;
 
-      const otherWidgets = prev.filter(w => w.id !== widgetId);
+      const oldPosition = currentWidget.position;
       
-      // Update positions
-      const updatedWidgets = otherWidgets.map(w => {
-        if (w.position >= newPosition) {
-          return { ...w, position: w.position + 1 };
-        }
-        return w;
-      });
+      // If moving to the same position, no change needed
+      if (oldPosition === newPosition) return prev;
 
-      return [...updatedWidgets, { ...widget, position: newPosition }]
-        .sort((a, b) => a.position - b.position);
+      return prev.map(widget => {
+        if (widget.id === widgetId) {
+          // Update the target widget position
+          return { ...widget, position: newPosition };
+        } else if (oldPosition < newPosition && widget.position > oldPosition && widget.position <= newPosition) {
+          // Moving down: shift widgets between old and new position up
+          return { ...widget, position: widget.position - 1 };
+        } else if (oldPosition > newPosition && widget.position >= newPosition && widget.position < oldPosition) {
+          // Moving up: shift widgets between new and old position down
+          return { ...widget, position: widget.position + 1 };
+        }
+        return widget;
+      }).sort((a, b) => a.position - b.position);
     });
   };
 
