@@ -1,5 +1,6 @@
 import { DashboardWidget } from '@/hooks/use-dashboard-widgets';
 import { WorkoutWidget } from './WorkoutWidget';
+import { WorkoutSessionWidget } from './WorkoutSessionWidget';
 import { MeditationWidget } from './MeditationWidget';
 import { HydrationWidget } from './HydrationWidget';
 import { CardioWidget } from './CardioWidget';
@@ -33,6 +34,8 @@ export function WidgetRenderer({ widget, onWorkoutClick, onNavigate, onOpenTimer
     switch (widget.type) {
       case 'workout':
         return <WorkoutWidget widget={widget} onWorkoutClick={onWorkoutClick} />;
+      case 'workout-session':
+        return <WorkoutSessionWidget widget={widget} />;
       case 'meditation':
         return <MeditationWidget widget={widget} onClick={() => onNavigate?.('/meditation')} />;
       case 'hydration':

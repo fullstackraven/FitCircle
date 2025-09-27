@@ -3,7 +3,7 @@ import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 export interface DashboardWidget {
   id: string;
-  type: 'workout' | 'meditation' | 'hydration' | 'cardio' | 'fasting' | 'goals' | 'quote' | 'timer' | 'recent-activity';
+  type: 'workout' | 'workout-session' | 'meditation' | 'hydration' | 'cardio' | 'fasting' | 'goals' | 'quote' | 'timer' | 'recent-activity';
   title: string;
   enabled: boolean;
   position: number;
@@ -13,11 +13,19 @@ export interface DashboardWidget {
 
 const defaultWidgets: DashboardWidget[] = [
   {
+    id: 'workout-session',
+    type: 'workout-session',
+    title: 'Workout Session',
+    enabled: true,
+    position: 0,
+    size: 'large'
+  },
+  {
     id: 'quote',
     type: 'quote',
     title: 'Quote of the Day',
     enabled: true,
-    position: 0,
+    position: 1,
     size: 'medium'
   },
   {
@@ -25,39 +33,39 @@ const defaultWidgets: DashboardWidget[] = [
     type: 'workout',
     title: "Today's Workouts",
     enabled: true,
-    position: 1,
+    position: 2,
     size: 'large'
   },
   {
     id: 'timer',
     type: 'timer',
     title: 'Workout Timer',
-    enabled: true,
-    position: 2,
+    enabled: false,
+    position: 3,
     size: 'medium'
   },
   {
     id: 'meditation-progress',
     type: 'meditation',
     title: 'Meditation Progress',
-    enabled: true,
-    position: 3,
+    enabled: false,
+    position: 4,
     size: 'small'
   },
   {
     id: 'hydration-progress',
     type: 'hydration',
     title: 'Hydration Progress',
-    enabled: true,
-    position: 4,
+    enabled: false,
+    position: 5,
     size: 'small'
   },
   {
     id: 'cardio-progress',
     type: 'cardio',
     title: 'Cardio Progress',
-    enabled: true,
-    position: 5,
+    enabled: false,
+    position: 6,
     size: 'small'
   },
   {
@@ -65,7 +73,7 @@ const defaultWidgets: DashboardWidget[] = [
     type: 'goals',
     title: 'Goals Overview',
     enabled: false,
-    position: 6,
+    position: 7,
     size: 'medium'
   },
   {
@@ -73,7 +81,7 @@ const defaultWidgets: DashboardWidget[] = [
     type: 'recent-activity',
     title: 'Recent Activity',
     enabled: false,
-    position: 7,
+    position: 8,
     size: 'large'
   }
 ];
