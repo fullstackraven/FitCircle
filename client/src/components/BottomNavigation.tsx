@@ -1,4 +1,4 @@
-import { Home, CalendarDays, Dumbbell, Grid2X2, CheckSquare } from 'lucide-react';
+import { Home, CalendarDays, Dumbbell, Heart, CheckSquare } from 'lucide-react';
 import { useLocation } from 'wouter';
 
 export default function BottomNavigation() {
@@ -22,7 +22,7 @@ export default function BottomNavigation() {
     },
     {
       path: '/wellness',
-      icon: Grid2X2,
+      icon: Heart,
       label: 'Wellness'
     },
     {
