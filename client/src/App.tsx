@@ -21,10 +21,13 @@ import { EnergyLevelPage } from "@/pages/energy-level";
 import { SupplementsPage } from "@/pages/supplements";
 import RecoveryPage from "@/pages/recovery";
 import { DynamicOverview } from "@/pages/dynamic-overview";
+import RoutinesPage from "@/pages/routines";
+import WellnessPage from "@/pages/wellness";
 
 // import TrainerPage from "@/pages/trainer";
 import NotFound from "@/pages/not-found";
 import FloatingRemindersButton from "@/components/FloatingRemindersButton";
+import BottomNavigation from "@/components/BottomNavigation";
 
 function Router() {
   return (
@@ -46,6 +49,8 @@ function Router() {
       <Route path="/supplements-page" component={SupplementsPage} />
       <Route path="/recovery" component={RecoveryPage} />
       <Route path="/dynamic-overview/:date" component={({ params }) => <DynamicOverview selectedDate={params.date} />} />
+      <Route path="/routines" component={RoutinesPage} />
+      <Route path="/wellness" component={WellnessPage} />
       {/* REMOVED: Bug reporting route removed per user request */}
 
       <Route path="/reminders" component={RemindersPage} />
@@ -62,6 +67,7 @@ function App() {
     <div>
       <Router />
       <FloatingRemindersButton />
+      <BottomNavigation />
     </div>
   );
 }
