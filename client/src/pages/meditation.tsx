@@ -210,6 +210,21 @@ export default function MeditationPage() {
   };
 
   const stopMeditation = () => {
+    // Calculate elapsed time before stopping
+    const elapsedSeconds = totalDuration - timeLeft;
+    const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+    
+    // Only log if there's at least 1 minute of elapsed time
+    if (elapsedMinutes >= 1) {
+      const now = new Date();
+      addLog({
+        date: now.toLocaleDateString('en-US'), // MM/DD/YYYY format to match existing logs
+        time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        duration: elapsedMinutes
+      });
+    }
+    
+    // Reset timer state
     setIsActive(false);
     setIsPaused(false);
     setTimeLeft(0);
