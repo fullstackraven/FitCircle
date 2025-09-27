@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { GoalCircle } from '@/components/GoalCircle';
-import { useMeditation, type MeditationLog } from '@/hooks/use-meditation';
+import { useMeditation, type MeditationLog, type MeditationSession } from '@/hooks/use-meditation';
 import { useGoals } from '@/hooks/use-goals';
 import { 
   calculateMeditation7DayAverage, 
@@ -30,7 +30,7 @@ export default function MeditationPage() {
       navigate('/');
     }
   };
-  const { logs, addLog, getTodayMinutes, getDailyGoal, getProgressPercentage, isGoalReached, getLast10LogsProgress, getAllTimeGoalPercentage } = useMeditation();
+  const { logs, dailyLogs, addLog, addSession, getTodayMinutes, getDailyGoal, getProgressPercentage, isGoalReached, getLast10LogsProgress, getAllTimeGoalPercentage } = useMeditation();
   const { goals, updateGoal } = useGoals();
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -53,7 +53,7 @@ export default function MeditationPage() {
     setGoalMinutesInput(getDailyGoal().toString());
   }, [getDailyGoal]);
   
-  // Group logs by month for display
+  // Group logs by month for display (using legacy compatibility)
   const monthlyLogs = groupLogsByMonth(logs);
   
   // Listen for goal changes from other pages
@@ -165,13 +165,8 @@ export default function MeditationPage() {
     setShowCompletion(true);
     setTimeout(() => setShowCompletion(false), 3000);
     
-    // Create meditation log entry
-    const now = new Date();
-    addLog({
-      date: now.toLocaleDateString('en-US'), // MM/DD/YYYY format to match existing logs
-      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      duration: Math.floor(totalDuration / 60)
-    });
+    // Create meditation session entry
+    addSession(Math.floor(totalDuration / 60));
   };
 
   const startMeditation = async () => {
@@ -214,12 +209,7 @@ export default function MeditationPage() {
     
     // Only log if there's at least 1 minute of elapsed time
     if (elapsedMinutes >= 1) {
-      const now = new Date();
-      addLog({
-        date: now.toLocaleDateString('en-US'), // MM/DD/YYYY format to match existing logs
-        time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        duration: elapsedMinutes
-      });
+      addSession(elapsedMinutes);
     }
     
     // Reset timer state
