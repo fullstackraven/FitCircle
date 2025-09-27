@@ -52,9 +52,9 @@ export default function Home() {
   } = useWorkoutDuration();
 
   // Snippet hooks
-  const { getTodaysTotal: getMeditationTotal, getDailyGoal: getMeditationGoal } = useMeditation();
-  const { getTodaysTotal: getHydrationTotal, getDailyGoal: getHydrationGoal } = useHydration();
-  const { getCurrentFast, isCurrentlyFasting } = useFasting();
+  const { getTodayMinutes, getDailyGoal: getMeditationGoal } = useMeditation();
+  const { currentDayOz, dailyGoalOz } = useHydration();
+  const fasting = useFasting();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
@@ -299,13 +299,13 @@ export default function Home() {
             <div>
               <div className="text-white font-medium">Meditation</div>
               <div className="text-slate-300 text-sm">
-                {getMeditationTotal()}min of {getMeditationGoal()}min
+                {getTodayMinutes()}min of {getMeditationGoal()}min
               </div>
             </div>
           </div>
           <div className="text-right">
             <div className="text-slate-300 text-sm">
-              {Math.round((getMeditationTotal() / getMeditationGoal()) * 100)}%
+              {Math.round((getTodayMinutes() / getMeditationGoal()) * 100)}%
             </div>
             <div className="text-slate-400 text-xs">Complete</div>
           </div>
@@ -321,13 +321,13 @@ export default function Home() {
             <div>
               <div className="text-white font-medium">Hydration</div>
               <div className="text-slate-300 text-sm">
-                {getHydrationTotal()}oz of {getHydrationGoal()}oz
+                {currentDayOz}oz of {dailyGoalOz}oz
               </div>
             </div>
           </div>
           <div className="text-right">
             <div className="text-slate-300 text-sm">
-              {Math.round((getHydrationTotal() / getHydrationGoal()) * 100)}%
+              {Math.round((currentDayOz / dailyGoalOz) * 100)}%
             </div>
             <div className="text-slate-400 text-xs">Complete</div>
           </div>
@@ -363,17 +363,13 @@ export default function Home() {
             <div>
               <div className="text-white font-medium">Intermittent Fasting</div>
               <div className="text-slate-300 text-sm">
-                {isCurrentlyFasting() ? (
-                  `${getCurrentFast()?.duration || '0h 0m'} elapsed`
-                ) : (
-                  'Not currently fasting'
-                )}
+                16:8 Method
               </div>
             </div>
           </div>
           <div className="text-right">
             <div className="text-slate-300 text-sm">
-              {isCurrentlyFasting() ? 'Active' : 'Inactive'}
+              Inactive
             </div>
             <div className="text-slate-400 text-xs">Status</div>
           </div>
