@@ -1,0 +1,29 @@
+
+I've moved Cardio, Fasting, Meditation, Hydration, Measurements, and Food Tracker from the dashboard to the Logs page. Can you check the Logs page to see all these features are now available there in the correct order?
+12 hours ago
+Rearrange wellness log entries to improve user navigation
+4 minutes of work
+Two issues:
+
+Cardio color should be green, fasting color should be orange, meditation should be purple
+Similar issue as before with recovery, supplements, journal and energy, back button traveling to calendar- the back button for the cardio, fasting, meditation, hydration, measurements and food tracker travel back to home page not log page
+11 hours ago
+I've fixed both issues - the colors are now correct (Cardio=green, Fasting=orange, Meditation=purple) and all back buttons now return to the Logs page. Can you test one of the moved features like Cardio to confirm the back button works correctly?
+11 hours ago
+Update activity colors and navigation for better user experience
+2 minutes of work
+The back buttons can be removed from the calendar, routines, logs and reminders main pages because the nav bar eliminates the need for a back button on those main pages
+15 minutes ago
+I've removed the back buttons from all main pages (Calendar, Routines, Logs, Reminders) and centered the headers. Can you check that the navigation feels cleaner now?
+13 minutes ago
+Remove redundant back buttons from main navigation pages
+1 minute of work
+Calendar header doesn't look centered and the Routines header has the plus button right next to the header text - please make sure the plus button stays fixed to the top right corner and the header is perfectly centered
+11 minutes ago
+I've fixed both header issues - the Calendar header should now be perfectly centered, and the Routines plus button is now in the top right corner with the header centered. Can you check that both pages look correct now?
+10 minutes ago
+Improve header centering and button placement on key app pages
+1 minute of work
+Can we ensure that the entire app, especially all the sub-pages in the logs page use Eastern Standard time to reset - this is my current location times zone! Last night I woke up and checked the app at 2am (which would've been this morning) and some of the sub-pages like cardio etc hadn't updated/reset from yesterday
+6 minutes ago
+Instead of using time zones because this approach seems to be flawed some how, could we use the users phone current time and have the app reset at when the phone time changes to 12am every time? That way we aren't relying on time zones but just a fixed time during the day regardless of zone

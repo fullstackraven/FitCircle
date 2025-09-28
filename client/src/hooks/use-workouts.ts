@@ -376,7 +376,7 @@ export function useWorkouts() {
       const isYesterday = dateString === getDateString(yesterday);
       
       const formattedDate = isYesterday ? 'Yesterday' : 
-        date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); // Keep display format as local
 
       const totalReps = Object.values(dayLog || {}).reduce((sum: number, logEntry: number | WorkoutLogEntry) => {
         if (typeof logEntry === 'number') {

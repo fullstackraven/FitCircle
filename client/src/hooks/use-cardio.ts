@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
-import { getTodayString, getAllTimeCardioAverage } from '@/lib/date-utils';
+import { getTodayString, getAllTimeCardioAverage, getCurrentTime } from '@/lib/date-utils';
 
 export interface CardioSession {
   id: string;
@@ -127,7 +127,7 @@ export function useCardio() {
             
             let date = entry.date;
             if (!date && entry.timestamp) {
-              date = new Date(entry.timestamp).toLocaleDateString('en-CA');
+              date = getTodayString(); // Use consistent date format
             }
             if (!date) {
               date = getTodayString();
@@ -156,7 +156,7 @@ export function useCardio() {
           
           const session: CardioSession = {
             id: entry.id,
-            time: new Date(entry.timestamp).toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' }),
+            time: getCurrentTime(), // Use consistent time format
             type: entry.type,
             duration: entry.duration,
             distance: entry.distance,
@@ -250,7 +250,7 @@ export function useCardio() {
 
   const addCardioEntry = (type: string, duration: number, distance?: number, notes?: string) => {
     const today = getTodayString();
-    const currentTime = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
+    const currentTime = getCurrentTime(); // Use consistent time format
     
     const newSession: CardioSession = {
       id: Date.now().toString(),
