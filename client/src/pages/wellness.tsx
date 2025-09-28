@@ -1,12 +1,9 @@
-import { ArrowLeft, Heart, BookOpen, Zap, Pill, Activity, Clock, Brain, Droplet, User, UtensilsCrossed } from 'lucide-react';
+import { Heart, BookOpen, Zap, Pill, Activity, Clock, Brain, Droplet, User, UtensilsCrossed } from 'lucide-react';
 import { useLocation } from 'wouter';
 
 export default function WellnessPage() {
   const [, navigate] = useLocation();
 
-  const handleBack = () => {
-    navigate('/');
-  };
 
   const wellnessFeatures = [
     // Moved from dashboard in specified order
@@ -107,16 +104,8 @@ export default function WellnessPage() {
     <div className="fitcircle-page pb-20">
       <div className="fitcircle-container">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back</span>
-          </button>
+        <div className="flex items-center justify-center mb-8">
           <h1 className="fitcircle-page-title">Logs</h1>
-          <div className="w-16"></div> {/* Spacer */}
         </div>
 
         {/* Wellness Features Grid */}

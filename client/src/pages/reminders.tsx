@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Plus, Check, ChevronDown, ChevronRight, MoreHorizontal, Edit3, Trash2 } from 'lucide-react';
+import { Plus, Check, ChevronDown, ChevronRight, MoreHorizontal, Edit3, Trash2 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useReminders } from '@/hooks/use-reminders';
 
@@ -21,9 +21,6 @@ export default function RemindersPage() {
   const activeReminders = reminders.filter(r => !r.completed);
   const completedReminders = reminders.filter(r => r.completed);
 
-  const handleBack = () => {
-    navigate('/');
-  };
 
   const handleAddReminder = (keepFormOpen = false) => {
     if (newReminderText.trim()) {
@@ -138,16 +135,8 @@ export default function RemindersPage() {
     <div className="min-h-screen pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="container mx-auto p-4 max-w-md">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back</span>
-          </button>
+        <div className="flex items-center justify-center mb-8">
           <h1 className="text-2xl font-bold text-white">Reminders</h1>
-          <div className="w-16"></div> {/* Spacer for centering */}
         </div>
 
         {/* Active Reminders List */}

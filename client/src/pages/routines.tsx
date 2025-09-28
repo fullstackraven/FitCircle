@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Edit, ChevronUp, ChevronDown, Plus } from 'lucide-react';
+import { Edit, ChevronUp, ChevronDown, Plus } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { getColorClass } from '@/lib/color-utils';
@@ -43,9 +43,6 @@ export default function RoutinesPage() {
   const routines = getRoutineArray() || [];
   const availableColors = getAvailableColors();
 
-  const handleBack = () => {
-    navigate('/');
-  };
 
   const handleAddRoutine = () => {
     setEditingRoutine(null);
@@ -115,14 +112,7 @@ export default function RoutinesPage() {
     <div className="fitcircle-page pb-20"> {/* Added pb-20 for bottom nav space */}
       <div className="fitcircle-container">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back</span>
-          </button>
+        <div className="flex items-center justify-center mb-8">
           <h1 className="fitcircle-page-title">Routines</h1>
           {routines.length > 0 ? (
             <button

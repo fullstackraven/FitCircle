@@ -3,7 +3,6 @@ import {
   ChevronLeft,
   ChevronRight,
   CheckCircle,
-  ArrowLeft,
   BarChart3,
   BookOpen,
   Zap,
@@ -143,16 +142,7 @@ export default function CalendarPage() {
 
   return (
     <div className="p-4 max-w-3xl mx-auto min-h-screen pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={() => navigate("/")}
-          className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
-          title="Back to Home"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back</span>
-        </button>
-
+      <div className="flex items-center justify-center mb-6">
         <div className="flex items-center space-x-4">
           <button
             onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
