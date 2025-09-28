@@ -15,6 +15,7 @@ export default function RoutinesPage() {
   const [editingWorkout, setEditingWorkout] = useState<any>(null);
   const [isRoutineModalOpen, setIsRoutineModalOpen] = useState(false);
   const [editingRoutine, setEditingRoutine] = useState<any>(null);
+  const [expandedRoutines, setExpandedRoutines] = useState<Set<string>>(new Set());
 
   const { 
     getWorkoutArray, 
@@ -68,6 +69,18 @@ export default function RoutinesPage() {
 
   const handleDeleteRoutine = (routineId: string) => {
     deleteRoutine(routineId);
+  };
+
+  const toggleRoutineExpansion = (routineId: string) => {
+    setExpandedRoutines(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(routineId)) {
+        newSet.delete(routineId);
+      } else {
+        newSet.add(routineId);
+      }
+      return newSet;
+    });
   };
 
   const handleEditWorkout = (workout: any) => {
@@ -148,53 +161,76 @@ export default function RoutinesPage() {
               const routineWorkouts = getWorkoutsByDays(routine.selectedDays);
               const daysText = getScheduledDaysText(routine.selectedDays);
               
+              const isExpanded = expandedRoutines.has(routine.id);
+              
               return (
-                <div key={routine.id} className="bg-slate-800 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h3 className="text-lg font-semibold text-white">{routine.name}</h3>
-                      <p className="text-sm text-slate-400">{daysText}</p>
-                    </div>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleEditRoutine(routine)}
-                        className="p-2 text-slate-400 hover:text-slate-200 transition-colors"
-                        data-testid={`button-edit-routine-${routine.id}`}
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteRoutine(routine.id)}
-                        className="p-2 text-slate-400 hover:text-red-400 transition-colors"
-                        data-testid={`button-delete-routine-${routine.id}`}
-                      >
-                        ×
-                      </button>
+                <div key={routine.id} className="bg-slate-800 rounded-xl overflow-hidden">
+                  {/* Routine Header - Clickable */}
+                  <div 
+                    className="p-4 cursor-pointer hover:bg-slate-750 transition-colors"
+                    onClick={() => toggleRoutineExpansion(routine.id)}
+                    data-testid={`routine-header-${routine.id}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3">
+                          <div>
+                            <h3 className="text-lg font-semibold text-white">{routine.name}</h3>
+                            <p className="text-sm text-slate-400">{daysText}</p>
+                          </div>
+                          <ChevronDown 
+                            className={`w-5 h-5 text-slate-400 transition-transform ${
+                              isExpanded ? 'rotate-180' : ''
+                            }`}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => handleEditRoutine(routine)}
+                          className="p-2 text-slate-400 hover:text-slate-200 transition-colors"
+                          data-testid={`button-edit-routine-${routine.id}`}
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteRoutine(routine.id)}
+                          className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+                          data-testid={`button-delete-routine-${routine.id}`}
+                        >
+                          ×
+                        </button>
+                      </div>
                     </div>
                   </div>
                   
-                  {routineWorkouts.length > 0 ? (
-                    <div className="space-y-2">
-                      <p className="text-xs text-slate-500 mb-2">
-                        {routineWorkouts.length} workout{routineWorkouts.length !== 1 ? 's' : ''} scheduled for these days:
-                      </p>
-                      {routineWorkouts.map((workout) => (
-                        <div key={workout.id} className="flex items-center space-x-3 p-2 bg-slate-700 rounded-lg">
-                          <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)}`} />
-                          <div className="flex-1">
-                            <span className="text-white text-sm font-medium">{workout.name}</span>
-                            <span className="text-xs text-slate-400 ml-2">Goal: {workout.dailyGoal}</span>
-                            {workout.weightLbs && (
-                              <span className="text-xs text-slate-400 ml-1">• {workout.weightLbs}lbs</span>
-                            )}
-                          </div>
+                  {/* Expandable Content */}
+                  {isExpanded && (
+                    <div className="px-4 pb-4">
+                      {routineWorkouts.length > 0 ? (
+                        <div className="space-y-2">
+                          <p className="text-xs text-slate-500 mb-2">
+                            {routineWorkouts.length} workout{routineWorkouts.length !== 1 ? 's' : ''} scheduled for these days:
+                          </p>
+                          {routineWorkouts.map((workout) => (
+                            <div key={workout.id} className="flex items-center space-x-3 p-2 bg-slate-700 rounded-xl">
+                              <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)}`} />
+                              <div className="flex-1">
+                                <span className="text-white text-sm font-medium">{workout.name}</span>
+                                <span className="text-xs text-slate-400 ml-2">Goal: {workout.dailyGoal}</span>
+                                {workout.weightLbs && (
+                                  <span className="text-xs text-slate-400 ml-1">• {workout.weightLbs}lbs</span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-4 text-slate-400">
-                      <p className="text-sm">No workouts scheduled for these days yet.</p>
-                      <p className="text-xs">Add workouts and set their schedule to see them here.</p>
+                      ) : (
+                        <div className="text-center py-4 text-slate-400 bg-slate-700 rounded-xl">
+                          <p className="text-sm">No workouts scheduled for these days yet.</p>
+                          <p className="text-xs">Add workouts and set their schedule to see them here.</p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
