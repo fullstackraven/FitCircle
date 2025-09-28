@@ -1,5 +1,6 @@
 import { Home, CalendarDays, Dumbbell, CheckSquare, Folder } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { createPortal } from 'react-dom';
 
 export default function BottomNavigation() {
   const [location, navigate] = useLocation();
@@ -32,34 +33,25 @@ export default function BottomNavigation() {
     }
   ];
 
-  return (
+  // Render navigation via portal to document.body to avoid containing block issues
+  return createPortal(
     <nav 
       className="navigation-bar-absolute"
       style={{
-        position: 'fixed !important' as any,
-        bottom: '0px !important' as any,
-        left: '0px !important' as any,
-        right: '0px !important' as any,
-        height: '88px !important' as any,
+        position: 'fixed',
+        bottom: '0px',
+        left: '0px',
+        right: '0px',
+        width: '100%',
+        height: '88px',
         backgroundColor: 'rgba(15, 23, 42, 0.95)',
         borderTop: '1px solid rgb(51, 65, 85)',
-        zIndex: 2147483647, // Maximum z-index value
-        backdropFilter: 'none !important' as any,
-        WebkitBackdropFilter: 'none !important' as any,
-        display: 'flex !important' as any,
-        alignItems: 'center !important' as any,
-        justifyContent: 'center !important' as any,
-        padding: '12px 8px 24px 8px',
-        boxSizing: 'border-box',
-        isolation: 'isolate',
-        contain: 'strict', // Strongest containment
-        willChange: 'transform',
-        transform: 'translate3d(0, 0, 0) !important' as any,
-        WebkitTransform: 'translate3d(0, 0, 0) !important' as any,
-        transformStyle: 'preserve-3d',
-        WebkitTransformStyle: 'preserve-3d',
-        backfaceVisibility: 'hidden',
-        WebkitBackfaceVisibility: 'hidden'
+        zIndex: 1000, // Reasonable z-index
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '12px 8px calc(24px + env(safe-area-inset-bottom)) 8px', // Safe area padding
+        boxSizing: 'border-box'
       }}
     >
       <div 
@@ -127,6 +119,7 @@ export default function BottomNavigation() {
           );
         })}
       </div>
-    </nav>
+    </nav>,
+    document.body
   );
 }

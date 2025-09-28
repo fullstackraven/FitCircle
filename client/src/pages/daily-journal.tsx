@@ -74,7 +74,7 @@ export function DailyJournal() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+    <div className="flex flex-col" style={{ backgroundColor: 'hsl(222, 47%, 11%)', height: '100dvh' }}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 mb-2">
         <button
@@ -106,16 +106,17 @@ export function DailyJournal() {
         )}
       </div>
 
-      {/* Main writing area - full screen like Notes app */}
-      <div className="px-4 mb-32">
+      {/* Main writing area - flexbox layout */}
+      <div className="flex-1 px-4 pb-32 flex flex-col">
         <textarea
           value={journalText}
           onChange={(e) => setJournalText(e.target.value)}
           placeholder="Start writing..."
-          className="w-full min-h-[calc(100vh-280px)] p-0 bg-transparent text-white border-none resize-none focus:outline-none text-base leading-relaxed placeholder-slate-500"
+          className="flex-1 w-full p-0 bg-transparent text-white border-none resize-none focus:outline-none text-base leading-relaxed placeholder-slate-500"
           style={{
             lineHeight: '1.6',
-            touchAction: 'manipulation' // Prevent layout changes during touch
+            touchAction: 'manipulation',
+            minHeight: '200px' // Minimum height instead of vh-based
           }}
           autoComplete="off"
           autoCorrect="off"
