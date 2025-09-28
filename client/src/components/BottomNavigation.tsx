@@ -34,13 +34,15 @@ export default function BottomNavigation() {
 
   return (
     <div 
-      className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-2 py-3 pb-6 z-50"
+      className="bottom-navigation-fixed fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-2 py-3 pb-6 z-50"
       style={{ 
         position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
-        zIndex: 9999
+        zIndex: 9999,
+        transform: 'none',
+        willChange: 'auto'
       }}
     >
       <div className="flex justify-around items-center max-w-md mx-auto">
