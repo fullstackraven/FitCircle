@@ -160,8 +160,6 @@ export default function CalendarPage() {
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
-
-        <div className="w-[42px]" />
       </div>
 
       <div className="grid grid-cols-7 gap-2 text-center text-xs text-slate-400 mb-2">

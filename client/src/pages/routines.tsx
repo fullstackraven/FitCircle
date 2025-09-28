@@ -112,18 +112,16 @@ export default function RoutinesPage() {
     <div className="fitcircle-page pb-20"> {/* Added pb-20 for bottom nav space */}
       <div className="fitcircle-container">
         {/* Header */}
-        <div className="flex items-center justify-center mb-8">
+        <div className="relative flex items-center justify-center mb-8">
           <h1 className="fitcircle-page-title">Routines</h1>
-          {routines.length > 0 ? (
+          {routines.length > 0 && (
             <button
               onClick={handleAddRoutine}
-              className="w-8 h-8 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center transition-colors"
+              className="absolute right-0 w-8 h-8 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center transition-colors"
               data-testid="button-add-routine-header"
             >
               <Plus className="w-5 h-5 text-white" />
             </button>
-          ) : (
-            <div className="w-16"></div>
           )}
         </div>
 
