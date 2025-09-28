@@ -39,8 +39,7 @@ export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {
         return matchingRoutines[0].name;
       }
       
-      // If multiple routines match, try to pick the best one based on completed workouts
-      // For now, return the first matching routine
+      // If multiple routines match, return the first matching routine
       return matchingRoutines[0].name;
     } catch (error) {
       return null;
