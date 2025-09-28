@@ -141,7 +141,7 @@ export default function CalendarPage() {
   }
 
   return (
-    <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', paddingBottom: 'var(--bottom-nav-padding)' }}>
+    <div className="p-4 max-w-3xl mx-auto min-h-dvh pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="flex items-center justify-center mb-6">
         <div className="flex items-center space-x-4">
           <button
