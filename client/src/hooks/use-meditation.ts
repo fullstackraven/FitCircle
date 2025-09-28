@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
-import { getTodayString, getDateString } from '@/lib/date-utils';
+import { getTodayString, getDateString, getCurrentTime24 } from '@/lib/date-utils';
 
 export interface MeditationSession {
   id: string;
@@ -133,9 +133,10 @@ export function useMeditation() {
   // Reset daily data if date has changed
   useEffect(() => {
     const checkDateChange = () => {
-      const today = new Date().toLocaleDateString('en-US');
+      const today = getTodayString(); // Use Eastern Time
       const todayLogKey = Object.keys(data.dailyLogs).find(date => {
-        return new Date(date).toLocaleDateString('en-US') === today;
+        // Convert stored date to Eastern Time format for comparison
+        return date === today;
       });
       const currentMinutes = todayLogKey ? data.dailyLogs[todayLogKey].totalMinutes : 0;
       
@@ -156,8 +157,8 @@ export function useMeditation() {
   // Removed redundant migration effect - now handled in useState initializer
 
   const addSession = (duration: number) => {
-    const today = new Date().toLocaleDateString('en-US');
-    const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+    const today = getTodayString(); // Use Eastern Time YYYY-MM-DD format
+    const currentTime = getCurrentTime24(); // Use Eastern Time 24-hour format
     
     const newSession: MeditationSession = {
       id: Date.now().toString(),
@@ -208,7 +209,7 @@ export function useMeditation() {
       };
       
       // Update current day minutes if it's today
-      const isToday = new Date(date).toLocaleDateString('en-US') === new Date().toLocaleDateString('en-US');
+      const isToday = date === getTodayString(); // Use Eastern Time comparison
       
       return {
         ...prev,
@@ -249,7 +250,7 @@ export function useMeditation() {
       }
       
       // Update current day minutes if it's today
-      const isToday = new Date(date).toLocaleDateString('en-US') === new Date().toLocaleDateString('en-US');
+      const isToday = date === getTodayString(); // Use Eastern Time comparison
       
       return {
         ...prev,
@@ -261,9 +262,9 @@ export function useMeditation() {
 
   // Get today's total meditation minutes
   const getTodayMinutes = (): number => {
-    const today = new Date().toLocaleDateString('en-US'); // MM/DD/YYYY format
+    const today = getTodayString(); // Use Eastern Time YYYY-MM-DD format
     const todayLogKey = Object.keys(data.dailyLogs).find(date => {
-      return new Date(date).toLocaleDateString('en-US') === today;
+      return date === today; // Direct comparison with Eastern Time date
     });
     
     return todayLogKey ? data.dailyLogs[todayLogKey].totalMinutes : 0;
