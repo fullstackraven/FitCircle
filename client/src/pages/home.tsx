@@ -103,16 +103,6 @@ export default function Home() {
   const routines = getRoutineArray();
   const todaysRoutine = routines.find(routine => routine.selectedDays.includes(today));
   
-  // Show toast when there are no workouts for today but there is a routine
-  useEffect(() => {
-    if (todaysRoutine && todaysWorkouts.length === 0) {
-      toast({
-        title: "No workouts scheduled for today!",
-        description: "Enjoy an active recovery day!",
-        duration: 4000,
-      });
-    }
-  }, [todaysRoutine, todaysWorkouts.length, toast]);
 
   // Get current week's days with scheduled workouts
   const getWeekDays = () => {
@@ -302,6 +292,14 @@ export default function Home() {
           )}
         </div>
         <div className="space-y-6 p-8 overflow-visible">
+          {/* No Workouts Message */}
+          {todaysRoutine && todaysWorkouts.length === 0 && (
+            <div className="bg-slate-800 rounded-xl p-6 text-center">
+              <h3 className="text-lg font-semibold text-white mb-2">No workouts scheduled for today!</h3>
+              <p className="text-slate-300">Enjoy an active recovery day!</p>
+            </div>
+          )}
+
           {/* Workout Circles Grid */}
           {todaysWorkouts.length > 0 && (
             <div className="grid grid-cols-2 gap-x-20 gap-y-4 justify-items-center">
