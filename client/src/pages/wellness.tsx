@@ -1,4 +1,4 @@
-import { ArrowLeft, Heart, BookOpen, Zap, Pill } from 'lucide-react';
+import { ArrowLeft, Heart, BookOpen, Zap, Pill, Activity, Clock, Brain, Droplet, User, UtensilsCrossed } from 'lucide-react';
 import { useLocation } from 'wouter';
 
 export default function WellnessPage() {
@@ -9,6 +9,62 @@ export default function WellnessPage() {
   };
 
   const wellnessFeatures = [
+    // Moved from dashboard in specified order
+    {
+      id: 'cardio',
+      title: 'Cardio',
+      icon: Activity,
+      color: 'text-red-400',
+      bgColor: 'bg-red-400/10',
+      hoverBg: 'hover:bg-red-400/20',
+      path: '/cardio'
+    },
+    {
+      id: 'fasting',
+      title: 'Intermittent Fasting',
+      icon: Clock,
+      color: 'text-indigo-400',
+      bgColor: 'bg-indigo-400/10',
+      hoverBg: 'hover:bg-indigo-400/20',
+      path: '/fasting'
+    },
+    {
+      id: 'meditation',
+      title: 'Meditation',
+      icon: Brain,
+      color: 'text-green-400',
+      bgColor: 'bg-green-400/10',
+      hoverBg: 'hover:bg-green-400/20',
+      path: '/meditation'
+    },
+    {
+      id: 'hydration',
+      title: 'Hydration',
+      icon: Droplet,
+      color: 'text-cyan-400',
+      bgColor: 'bg-cyan-400/10',
+      hoverBg: 'hover:bg-cyan-400/20',
+      path: '/hydration'
+    },
+    {
+      id: 'measurements',
+      title: 'Measurements',
+      icon: User,
+      color: 'text-teal-400',
+      bgColor: 'bg-teal-400/10',
+      hoverBg: 'hover:bg-teal-400/20',
+      path: '/measurements'
+    },
+    {
+      id: 'food-tracker',
+      title: 'Food Tracker',
+      icon: UtensilsCrossed,
+      color: 'text-amber-400',
+      bgColor: 'bg-amber-400/10',
+      hoverBg: 'hover:bg-amber-400/20',
+      path: '/food-tracker'
+    },
+    // Original wellness features
     {
       id: 'recovery',
       title: 'Recovery',

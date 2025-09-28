@@ -585,18 +585,6 @@ export default function Home() {
 
             {/* Dashboard Menu Items */}
             <div className="flex-1 py-4">
-              {/* Measurements */}
-              <div 
-                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                  navigate('/measurements?from=dashboard');
-                }}
-              >
-                <User className="w-5 h-5 text-slate-400" />
-                <span className="text-white">Measurements</span>
-              </div>
-
               {/* Fitness Calculator */}
               <div 
                 className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
@@ -607,66 +595,6 @@ export default function Home() {
               >
                 <Calculator className="w-5 h-5 text-slate-400" />
                 <span className="text-white">Fitness Calculator</span>
-              </div>
-
-              {/* Food Tracker */}
-              <div 
-                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                  navigate('/food-tracker?from=dashboard');
-                }}
-              >
-                <UtensilsCrossed className="w-5 h-5 text-slate-400" />
-                <span className="text-white">Food Tracker</span>
-              </div>
-
-              {/* Cardio */}
-              <div 
-                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                  navigate('/cardio?from=dashboard');
-                }}
-              >
-                <Activity className="w-5 h-5 text-slate-400" />
-                <span className="text-white">Cardio</span>
-              </div>
-
-              {/* Intermittent Fasting */}
-              <div 
-                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                  navigate('/fasting?from=dashboard');
-                }}
-              >
-                <Clock className="w-5 h-5 text-slate-400" />
-                <span className="text-white">Intermittent Fasting</span>
-              </div>
-
-              {/* Meditation */}
-              <div 
-                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                  navigate('/meditation?from=dashboard');
-                }}
-              >
-                <Brain className="w-5 h-5 text-slate-400" />
-                <span className="text-white">Meditation</span>
-              </div>
-
-              {/* Hydration */}
-              <div 
-                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                  navigate('/hydration?from=dashboard');
-                }}
-              >
-                <Droplet className="w-5 h-5 text-slate-400" />
-                <span className="text-white">Hydration</span>
               </div>
 
               {/* Goals */}
