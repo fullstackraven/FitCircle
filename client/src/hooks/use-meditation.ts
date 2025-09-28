@@ -71,9 +71,13 @@ export function useMeditation() {
       // First handle date format migration if needed
       const migratedLogs = legacyLogs.map((log: MeditationLog) => {
         if (log.date && log.date.includes('-')) {
+          // Keep YYYY-MM-DD format for consistency
+          return log;
+        } else if (log.date && log.date.includes('/')) {
+          // Convert MM/DD/YYYY to YYYY-MM-DD format
           try {
-            const date = new Date(log.date);
-            const convertedDate = date.toLocaleDateString('en-US');
+            const [month, day, year] = log.date.split('/').map(Number);
+            const convertedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             return { ...log, date: convertedDate };
           } catch (error) {
             console.error('Failed to convert meditation date:', log.date, error);
@@ -111,12 +115,29 @@ export function useMeditation() {
       console.log('Migration completed:', Object.keys(dailyLogs).length, 'daily logs created');
     }
     
+    // Fix any existing dates that are in MM/DD/YYYY format and convert to YYYY-MM-DD
+    const fixedDailyLogs: { [date: string]: MeditationDailyLog } = {};
+    Object.entries(dataToLoad.dailyLogs).forEach(([dateKey, log]) => {
+      let fixedDateKey = dateKey;
+      if (dateKey.includes('/')) {
+        // Convert MM/DD/YYYY to YYYY-MM-DD format
+        try {
+          const [month, day, year] = dateKey.split('/').map(Number);
+          fixedDateKey = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        } catch (error) {
+          console.error('Failed to convert existing meditation date:', dateKey, error);
+        }
+      }
+      fixedDailyLogs[fixedDateKey] = { ...log, date: fixedDateKey };
+    });
+    dataToLoad.dailyLogs = fixedDailyLogs;
+
     // Calculate current day totals
     const today = getTodayString();
-    const todayLogUS = Object.keys(dataToLoad.dailyLogs).find(date => {
-      return new Date(date).toLocaleDateString('en-US') === new Date().toLocaleDateString('en-US');
+    const todayLogKey = Object.keys(dataToLoad.dailyLogs).find(date => {
+      return date === today; // Direct comparison with YYYY-MM-DD format
     });
-    const currentDayMinutes = todayLogUS ? dataToLoad.dailyLogs[todayLogUS].totalMinutes : 0;
+    const currentDayMinutes = todayLogKey ? dataToLoad.dailyLogs[todayLogKey].totalMinutes : 0;
     
     return { ...dataToLoad, lastDate: today, currentDayMinutes };
   });
