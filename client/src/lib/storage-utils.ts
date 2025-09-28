@@ -42,5 +42,10 @@ export const STORAGE_KEYS = {
   GOAL_MEDITATION: 'fitcircle_goal_meditation',
   GOAL_FASTING: 'fitcircle_goal_fasting',
   GOAL_WEIGHT: 'fitcircle_goal_weight',
-  GOAL_BODYFAT: 'fitcircle_goal_bodyfat'
+  GOAL_BODYFAT: 'fitcircle_goal_bodyfat',
+  // Energy and supplements
+  ENERGY_LEVELS: 'fitcircle_energy_levels',
+  SUPPLEMENT_LOGS: 'fitcircle_supplement_logs',
+  // Control settings
+  CONTROL_SETTINGS: 'fitcircle_control_settings'
 } as const;

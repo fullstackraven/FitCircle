@@ -17,7 +17,7 @@ const defaultSettings: ControlSettings = {
 
 export function useControls() {
   const [settings, setSettings] = useState<ControlSettings>(() => {
-    return safeParseJSON(localStorage.getItem('fitcircle_control_settings'), defaultSettings);
+    return safeParseJSON(localStorage.getItem(STORAGE_KEYS.CONTROL_SETTINGS), defaultSettings);
   });
 
   // Save settings to localStorage whenever they change
@@ -25,7 +25,7 @@ export function useControls() {
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
     try {
-      localStorage.setItem('fitcircle_control_settings', JSON.stringify(newSettings));
+      localStorage.setItem(STORAGE_KEYS.CONTROL_SETTINGS, JSON.stringify(newSettings));
     } catch (error) {
       console.error('Failed to save control settings:', error);
     }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ArrowLeft, Zap, Undo2, Calendar } from "lucide-react";
 import { useLocation } from "wouter";
 import { useEnergyLevel } from "../hooks/use-energy-level";
-import { format } from "date-fns";
+import { getDateString } from '@/lib/date-utils';
 
 // Enhanced Energy Level Trend Visualization Component
 const EnergyTrendVisualization = () => {
@@ -16,10 +16,10 @@ const EnergyTrendVisualization = () => {
   for (let i = 13; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
-    const dateStr = format(date, 'yyyy-MM-dd');
+    const dateStr = getDateString(date);
     const energy = energyData[dateStr] || 0;
     last14Days.push({
-      date: format(date, 'MM/dd'),
+      date: date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }),
       energy: energy,
       dateStr: dateStr
     });
@@ -31,7 +31,7 @@ const EnergyTrendVisualization = () => {
     ? (nonZeroEnergies.reduce((sum, day) => sum + day.energy, 0) / nonZeroEnergies.length).toFixed(1)
     : '0';
   const daysLogged = nonZeroEnergies.length;
-  const todayEnergy = energyData[format(today, 'yyyy-MM-dd')] || 0;
+  const todayEnergy = energyData[getDateString(today)] || 0;
 
   // Create SVG path for the trend line
   const createPath = (data: Array<{ date: string; energy: number; dateStr: string }>) => {
