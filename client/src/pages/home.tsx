@@ -294,9 +294,13 @@ export default function Home() {
 
       {/* Workout Circles Grid */}
       <section className="mb-8">
-        {todaysWorkouts.length > 0 && (
-          <h2 className="text-xl font-semibold mb-4 text-white">Today's Workouts</h2>
-        )}
+        {/* Always show Today's Workout section */}
+        <div className="text-center mb-4">
+          <h2 className="text-xl font-semibold text-white">Today's Workout</h2>
+          {todaysRoutine && (
+            <p className="text-lg text-slate-300 mt-1">{todaysRoutine.name}</p>
+          )}
+        </div>
         <div className="space-y-6 p-8 overflow-visible">
           {/* Workout Circles Grid */}
           {todaysWorkouts.length > 0 && (
