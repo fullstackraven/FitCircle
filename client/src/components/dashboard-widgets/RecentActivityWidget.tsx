@@ -15,7 +15,9 @@ export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {
   // Helper function to get routine name for a specific date
   const getRoutineForDate = (dateString: string, dayWorkouts: any[]) => {
     try {
-      const date = new Date(dateString);
+      // Parse the date string directly to avoid timezone issues
+      const [year, month, day] = dateString.split('-').map(Number);
+      const date = new Date(year, month - 1, day); // month is 0-indexed
       const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
       
       // Find workouts that were actually completed on this day
