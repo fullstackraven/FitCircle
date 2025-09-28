@@ -905,9 +905,11 @@ export function useWorkouts() {
 
   const getWorkoutsByDays = (selectedDays: number[]) => {
     return Object.values(data.workouts || {}).filter(workout => {
+      // Handle workouts with no schedule (considered daily - all days)
       if (!workout.scheduledDays || workout.scheduledDays.length === 0) {
-        return true; // Workouts with no schedule are considered daily (all days)
+        return true;
       }
+      // Check if any of the selected days match the workout's scheduled days
       return selectedDays.some(day => workout.scheduledDays!.includes(day));
     });
   };

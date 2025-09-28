@@ -1,28 +1,36 @@
 import { useState } from 'react';
-import { ArrowLeft, Edit, ChevronUp, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Edit, ChevronUp, ChevronDown, Plus } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { getColorClass } from '@/lib/color-utils';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { WorkoutModal } from '@/components/workout-modal';
+import { RoutineModal } from '@/components/routine-modal';
 
 export default function RoutinesPage() {
   const [, navigate] = useLocation();
   const [isEditWorkoutsOpen, setIsEditWorkoutsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingWorkout, setEditingWorkout] = useState<any>(null);
+  const [isRoutineModalOpen, setIsRoutineModalOpen] = useState(false);
+  const [editingRoutine, setEditingRoutine] = useState<any>(null);
 
   const { 
     getWorkoutArray, 
     addWorkout, 
     deleteWorkout, 
     updateWorkout, 
-    getAvailableColors
+    getAvailableColors,
+    addRoutine,
+    updateRoutine,
+    deleteRoutine,
+    getRoutineArray,
+    getWorkoutsByDays
   } = useWorkouts();
 
   const getScheduledDaysText = (scheduledDays: number[]): string => {
-    if (!scheduledDays || scheduledDays.length === 7) return 'Daily';
+    if (!scheduledDays || scheduledDays.length === 0 || scheduledDays.length === 7) return 'Daily';
     if (scheduledDays.length === 5 && scheduledDays.every(day => day >= 1 && day <= 5)) return 'Weekdays';
     if (scheduledDays.length === 2 && scheduledDays.includes(0) && scheduledDays.includes(6)) return 'Weekends';
     
@@ -31,10 +39,35 @@ export default function RoutinesPage() {
   };
   
   const workouts = getWorkoutArray() || [];
+  const routines = getRoutineArray() || [];
   const availableColors = getAvailableColors();
 
   const handleBack = () => {
     navigate('/');
+  };
+
+  const handleAddRoutine = () => {
+    setEditingRoutine(null);
+    setIsRoutineModalOpen(true);
+  };
+
+  const handleEditRoutine = (routine: any) => {
+    setEditingRoutine(routine);
+    setIsRoutineModalOpen(true);
+  };
+
+  const handleSaveRoutine = (name: string, selectedDays: number[]) => {
+    if (editingRoutine) {
+      updateRoutine(editingRoutine.id, name, selectedDays);
+    } else {
+      addRoutine(name, selectedDays);
+    }
+    setIsRoutineModalOpen(false);
+    setEditingRoutine(null);
+  };
+
+  const handleDeleteRoutine = (routineId: string) => {
+    deleteRoutine(routineId);
   };
 
   const handleEditWorkout = (workout: any) => {
@@ -80,6 +113,83 @@ export default function RoutinesPage() {
           <h1 className="fitcircle-page-title">Routines</h1>
           <div className="w-16"></div> {/* Spacer */}
         </div>
+
+        {/* Add Routines Section */}
+        <section className="mb-8">
+          <button
+            onClick={handleAddRoutine}
+            className="w-full p-8 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors border-2 border-dashed border-slate-600 hover:border-slate-500"
+            data-testid="button-add-routine"
+          >
+            <div className="flex flex-col items-center space-y-3">
+              <Plus className="w-8 h-8 text-slate-400" />
+              <div className="text-lg font-semibold text-white">Tap to Add Routines</div>
+              <div className="text-sm text-slate-400">Create workout routines for specific days</div>
+            </div>
+          </button>
+        </section>
+
+        {/* Display Existing Routines */}
+        {routines.length > 0 && (
+          <section className="mb-8 space-y-4">
+            {routines.map((routine) => {
+              const routineWorkouts = getWorkoutsByDays(routine.selectedDays);
+              const daysText = getScheduledDaysText(routine.selectedDays);
+              
+              return (
+                <div key={routine.id} className="bg-slate-800 rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">{routine.name}</h3>
+                      <p className="text-sm text-slate-400">{daysText}</p>
+                    </div>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEditRoutine(routine)}
+                        className="p-2 text-slate-400 hover:text-slate-200 transition-colors"
+                        data-testid={`button-edit-routine-${routine.id}`}
+                      >
+                        <Edit size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteRoutine(routine.id)}
+                        className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+                        data-testid={`button-delete-routine-${routine.id}`}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {routineWorkouts.length > 0 ? (
+                    <div className="space-y-2">
+                      <p className="text-xs text-slate-500 mb-2">
+                        {routineWorkouts.length} workout{routineWorkouts.length !== 1 ? 's' : ''} scheduled for these days:
+                      </p>
+                      {routineWorkouts.map((workout) => (
+                        <div key={workout.id} className="flex items-center space-x-3 p-2 bg-slate-700 rounded-lg">
+                          <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)}`} />
+                          <div className="flex-1">
+                            <span className="text-white text-sm font-medium">{workout.name}</span>
+                            <span className="text-xs text-slate-400 ml-2">Goal: {workout.dailyGoal}</span>
+                            {workout.weightLbs && (
+                              <span className="text-xs text-slate-400 ml-1">• {workout.weightLbs}lbs</span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-slate-400">
+                      <p className="text-sm">No workouts scheduled for these days yet.</p>
+                      <p className="text-xs">Add workouts and set their schedule to see them here.</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </section>
+        )}
 
         {/* Edit Workouts Section */}
         <section className="mb-8">
@@ -172,6 +282,16 @@ export default function RoutinesPage() {
         onDelete={handleDeleteWorkout}
         availableColors={availableColors}
         editingWorkout={editingWorkout}
+      />
+
+      <RoutineModal
+        isOpen={isRoutineModalOpen}
+        onClose={() => {
+          setIsRoutineModalOpen(false);
+          setEditingRoutine(null);
+        }}
+        onSave={handleSaveRoutine}
+        editingRoutine={editingRoutine}
       />
     </div>
   );
