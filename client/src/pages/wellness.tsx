@@ -78,7 +78,7 @@ export default function WellnessPage() {
       color: 'text-purple-400', 
       bgColor: 'bg-purple-400/10',
       hoverBg: 'hover:bg-purple-400/20',
-      path: '/daily-journal'
+      path: '/journal-log'
     },
     {
       id: 'energy',
