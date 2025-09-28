@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Calendar, FileText, Check } from "lucide-react";
+import { Plus, Calendar, FileText } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { format, parseISO, isValid } from "date-fns";
@@ -14,7 +14,6 @@ export function JournalLog() {
   const [journalText, setJournalText] = useState("");
   const [currentDate, setCurrentDate] = useState("");
   const [lastSaved, setLastSaved] = useState<string | null>(null);
-  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
   
   // Check if we came from wellness page
   const urlParams = new URLSearchParams(window.location.search);
@@ -91,14 +90,8 @@ export function JournalLog() {
       addJournalEntry(currentDate, journalText);
       setLastSaved(new Date().toISOString());
       
-      // Show success confirmation
-      setShowSaveConfirmation(true);
-      setTimeout(() => {
-        setShowSaveConfirmation(false);
-        setIsModalOpen(false);
-        // Refresh the page to show new entry
-        window.location.reload();
-      }, 1500);
+      // Close modal and return to journal log
+      setIsModalOpen(false);
     }
   };
 
@@ -242,15 +235,6 @@ export function JournalLog() {
               />
             </div>
 
-            {/* Save confirmation toast */}
-            {showSaveConfirmation && (
-              <div className="absolute top-20 left-4 right-4 z-50 flex justify-center">
-                <div className="bg-green-600 text-white px-4 py-3 rounded-xl flex items-center space-x-2 shadow-lg">
-                  <Check className="w-5 h-5" />
-                  <span>Journal entry saved successfully!</span>
-                </div>
-              </div>
-            )}
 
             {/* Save button */}
             <div className="px-4 py-3 border-t border-slate-600">
