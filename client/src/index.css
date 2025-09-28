@@ -59,7 +59,10 @@
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
-    z-index: 9999 !important;
+    z-index: 99999 !important;
+    isolation: isolate !important;
+    contain: layout style paint !important;
+    pointer-events: auto !important;
     transform: none !important;
     will-change: auto !important;
   }

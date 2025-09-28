@@ -64,13 +64,13 @@ export default function BottomNavigation() {
     <div 
       className="bottom-navigation-fixed fixed bottom-0 left-0 right-0 bg-slate-900/95 border-t border-slate-800 px-2 py-3 z-50"
       style={{ 
-        position: 'fixed !important',
-        bottom: 'env(safe-area-inset-bottom, 0) !important',
-        left: '0 !important',
-        right: '0 !important',
+        position: 'fixed',
+        bottom: 'env(safe-area-inset-bottom, 0)',
+        left: 0,
+        right: 0,
         zIndex: 99999,
-        transform: 'none !important',
-        willChange: 'auto !important',
+        transform: 'none',
+        willChange: 'auto',
         paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0))',
         isolation: 'isolate',
         contain: 'layout style paint',
