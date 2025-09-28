@@ -14,27 +14,27 @@ export default function WellnessPage() {
       id: 'cardio',
       title: 'Cardio',
       icon: Activity,
-      color: 'text-red-400',
-      bgColor: 'bg-red-400/10',
-      hoverBg: 'hover:bg-red-400/20',
+      color: 'text-green-400',
+      bgColor: 'bg-green-400/10',
+      hoverBg: 'hover:bg-green-400/20',
       path: '/cardio'
     },
     {
       id: 'fasting',
       title: 'Intermittent Fasting',
       icon: Clock,
-      color: 'text-indigo-400',
-      bgColor: 'bg-indigo-400/10',
-      hoverBg: 'hover:bg-indigo-400/20',
+      color: 'text-orange-400',
+      bgColor: 'bg-orange-400/10',
+      hoverBg: 'hover:bg-orange-400/20',
       path: '/fasting'
     },
     {
       id: 'meditation',
       title: 'Meditation',
       icon: Brain,
-      color: 'text-green-400',
-      bgColor: 'bg-green-400/10',
-      hoverBg: 'hover:bg-green-400/20',
+      color: 'text-purple-400',
+      bgColor: 'bg-purple-400/10',
+      hoverBg: 'hover:bg-purple-400/20',
       path: '/meditation'
     },
     {
