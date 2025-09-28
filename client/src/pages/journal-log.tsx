@@ -1,12 +1,20 @@
-import React from "react";
-import { ArrowLeft, Calendar, FileText } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Plus, Calendar, FileText, Check } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { format, parseISO, isValid } from "date-fns";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export function JournalLog() {
   const [, navigate] = useLocation();
-  const { getAllJournalEntries } = useWorkouts();
+  const { getAllJournalEntries, getJournalEntry, getJournalEntryWithTimestamp, addJournalEntry } = useWorkouts();
+  
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [journalText, setJournalText] = useState("");
+  const [currentDate, setCurrentDate] = useState("");
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
   
   // Check if we came from wellness page
   const urlParams = new URLSearchParams(window.location.search);
@@ -71,20 +79,55 @@ export function JournalLog() {
     return `${Math.floor(diffDays / 365)} years ago`;
   };
 
+  const handleJournalSubmit = () => {
+    if (journalText.trim()) {
+      addJournalEntry(currentDate, journalText);
+      setLastSaved(new Date().toISOString());
+      
+      // Show success confirmation
+      setShowSaveConfirmation(true);
+      setTimeout(() => {
+        setShowSaveConfirmation(false);
+        setIsModalOpen(false);
+        // Refresh the page to show new entry
+        window.location.reload();
+      }, 1500);
+    }
+  };
+
+  const getDisplayDate = () => {
+    if (!currentDate) return format(new Date(), "MMMM d, yyyy");
+    const date = new Date(currentDate + 'T00:00:00');
+    return format(date, "MMMM d, yyyy");
+  };
+
   return (
     <div className="p-4 max-w-3xl mx-auto min-h-screen pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={() => navigate(`/daily-journal${fromWellness ? '?from=wellness' : ''}`)}
-          className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
-          title="Back to Daily Journal"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back</span>
-        </button>
-
-        <h1 className="text-xl font-bold text-white">Journal Log</h1>
         <div className="w-[42px]" />
+        <h1 className="text-xl font-bold text-white">Journal Log</h1>
+        <button
+          onClick={() => {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const dateStr = `${year}-${month}-${day}`;
+            
+            setCurrentDate(dateStr);
+            const entry = getJournalEntry(dateStr);
+            setJournalText(entry || '');
+            
+            const entryWithTimestamp = getJournalEntryWithTimestamp(dateStr);
+            setLastSaved(entryWithTimestamp?.timestamp || null);
+            
+            setIsModalOpen(true);
+          }}
+          className="text-slate-400 hover:text-white transition-colors"
+          title="Write new journal entry"
+        >
+          <Plus className="w-5 h-5" />
+        </button>
       </div>
 
       <div className="space-y-4">
@@ -127,7 +170,22 @@ export function JournalLog() {
               Start writing in your daily journal to see entries here
             </p>
             <button
-              onClick={() => navigate("/daily-journal")}
+              onClick={() => {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                const dateStr = `${year}-${month}-${day}`;
+                
+                setCurrentDate(dateStr);
+                const entry = getJournalEntry(dateStr);
+                setJournalText(entry || '');
+                
+                const entryWithTimestamp = getJournalEntryWithTimestamp(dateStr);
+                setLastSaved(entryWithTimestamp?.timestamp || null);
+                
+                setIsModalOpen(true);
+              }}
               className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors"
             >
               Write Your First Entry
@@ -135,6 +193,68 @@ export function JournalLog() {
           </div>
         )}
       </div>
+
+      {/* Journal Entry Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] p-0 bg-slate-900 border-slate-700 overflow-hidden">
+          <div className="flex flex-col h-[80vh]" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+            {/* Modal Header */}
+            <DialogHeader className="px-4 py-4 border-b border-slate-700">
+              <DialogTitle className="text-xl font-bold text-white text-center">Daily Journal</DialogTitle>
+            </DialogHeader>
+
+            {/* Date indicator */}
+            <div className="px-4 py-2 border-b border-slate-700">
+              <p className="text-sm text-slate-400">{getDisplayDate()}</p>
+              {lastSaved && (
+                <p className="text-xs text-slate-500 mt-1">
+                  Last saved: {format(new Date(lastSaved), "MMM d, yyyy 'at' h:mm a")}
+                </p>
+              )}
+            </div>
+
+            {/* Main writing area */}
+            <div className="flex-1 px-4 py-4 flex flex-col overflow-hidden">
+              <textarea
+                value={journalText}
+                onChange={(e) => setJournalText(e.target.value)}
+                placeholder="Start writing..."
+                className="flex-1 w-full p-0 bg-transparent text-white border-none resize-none focus:outline-none text-base leading-relaxed placeholder-slate-500"
+                style={{
+                  lineHeight: '1.6',
+                  touchAction: 'manipulation',
+                  minHeight: '200px'
+                }}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck="false"
+              />
+            </div>
+
+            {/* Save confirmation toast */}
+            {showSaveConfirmation && (
+              <div className="absolute top-20 left-4 right-4 z-50 flex justify-center">
+                <div className="bg-green-600 text-white px-4 py-3 rounded-xl flex items-center space-x-2 shadow-lg">
+                  <Check className="w-5 h-5" />
+                  <span>Journal entry saved successfully!</span>
+                </div>
+              </div>
+            )}
+
+            {/* Save button */}
+            <div className="px-4 py-4 border-t border-slate-700">
+              <button
+                onClick={handleJournalSubmit}
+                className="w-full px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors font-medium shadow-lg"
+                data-testid="button-save-journal"
+              >
+                Save Entry
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
