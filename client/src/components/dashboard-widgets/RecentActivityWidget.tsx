@@ -12,9 +12,12 @@ export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {
   const recentActivity = getRecentActivity();
   const routines = getRoutineArray() || [];
 
-  // Helper function to get routine name for a specific date based on completed workouts
+  // Helper function to get routine name for a specific date
   const getRoutineForDate = (dateString: string, dayWorkouts: any[]) => {
     try {
+      const date = new Date(dateString);
+      const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      
       // Find workouts that were actually completed on this day
       const completedWorkouts = dayWorkouts.filter(workout => workout.count > 0);
       
@@ -22,15 +25,23 @@ export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {
         return null;
       }
       
-      // Find the routine that these workouts belong to
-      // Check the routineId of the first completed workout
-      const firstWorkout = completedWorkouts[0];
-      if (firstWorkout.routineId) {
-        const routine = routines.find(r => r.id === firstWorkout.routineId);
-        return routine ? routine.name : null;
+      // Find routines that are scheduled for this day of the week
+      const matchingRoutines = routines.filter(routine => 
+        routine.selectedDays.includes(dayOfWeek)
+      );
+      
+      if (matchingRoutines.length === 0) {
+        return null;
       }
       
-      return null;
+      // If only one routine matches, return it
+      if (matchingRoutines.length === 1) {
+        return matchingRoutines[0].name;
+      }
+      
+      // If multiple routines match, try to pick the best one based on completed workouts
+      // For now, return the first matching routine
+      return matchingRoutines[0].name;
     } catch (error) {
       return null;
     }
