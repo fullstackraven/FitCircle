@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { DaySelector } from './DaySelector';
 
 interface RoutineModalProps {
   isOpen: boolean;
@@ -11,15 +12,6 @@ interface RoutineModalProps {
   editingRoutine?: { id: string; name: string; selectedDays: number[] } | null;
 }
 
-const DAYS = [
-  { index: 0, name: 'Sunday', short: 'Sun' },
-  { index: 1, name: 'Monday', short: 'Mon' },
-  { index: 2, name: 'Tuesday', short: 'Tue' },
-  { index: 3, name: 'Wednesday', short: 'Wed' },
-  { index: 4, name: 'Thursday', short: 'Thu' },
-  { index: 5, name: 'Friday', short: 'Fri' },
-  { index: 6, name: 'Saturday', short: 'Sat' }
-];
 
 export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: RoutineModalProps) {
   const [routineName, setRoutineName] = useState('');
@@ -50,13 +42,6 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
     }
   };
 
-  const handleDayToggle = (dayIndex: number) => {
-    setSelectedDays(prev => 
-      prev.includes(dayIndex) 
-        ? prev.filter(d => d !== dayIndex)
-        : [...prev, dayIndex].sort()
-    );
-  };
 
   const handleClose = () => {
     resetForm();
@@ -95,33 +80,16 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
           </div>
 
           {/* Day Selection */}
-          <div className="space-y-3">
-            <Label className="text-sm font-medium text-slate-300">
-              Select Days
-            </Label>
-            <div className="grid grid-cols-2 gap-2">
-              {DAYS.map((day) => (
-                <button
-                  key={day.index}
-                  type="button"
-                  onClick={() => handleDayToggle(day.index)}
-                  className={`p-3 rounded-xl text-sm font-medium transition-colors ${
-                    selectedDays.includes(day.index)
-                      ? 'bg-green-600 text-white'
-                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                  }`}
-                  data-testid={`button-day-${day.short.toLowerCase()}`}
-                >
-                  {day.name}
-                </button>
-              ))}
-            </div>
-            {selectedDays.length === 0 && (
-              <p className="text-xs text-slate-400">
-                Please select at least one day for this routine.
-              </p>
-            )}
-          </div>
+          <DaySelector
+            selectedDays={selectedDays}
+            onSelectionChange={setSelectedDays}
+            className="space-y-2"
+          />
+          {selectedDays.length === 0 && (
+            <p className="text-xs text-slate-400 mt-2">
+              Please select at least one day for this routine.
+            </p>
+          )}
         </div>
 
         {/* Action Buttons */}
