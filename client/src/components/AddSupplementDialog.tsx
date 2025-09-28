@@ -64,7 +64,7 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
           <Plus className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-md">
+      <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-md rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-white">Add New Supplement</DialogTitle>
           <DialogDescription className="text-slate-400">

@@ -449,7 +449,7 @@ export default function HydrationPage() {
 
       {/* Add Liquid Dialog */}
       <Dialog open={isHydrationDialogOpen} onOpenChange={setIsHydrationDialogOpen}>
-        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto">
+        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl">
           <DialogTitle className="text-lg font-semibold text-center">Add Liquid</DialogTitle>
           <DialogDescription className="sr-only">
             Add liquid consumption to your hydration tracking
@@ -536,7 +536,7 @@ export default function HydrationPage() {
 
       {/* Edit Entry Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto">
+        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl">
           <DialogTitle className="text-lg font-semibold text-center">Edit Entry</DialogTitle>
           <DialogDescription className="sr-only">
             Edit your hydration entry

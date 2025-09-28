@@ -308,7 +308,7 @@ export default function CardioPage() {
               Log Cardio
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700 text-white">
+          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700 text-white rounded-2xl">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold text-center text-white">Add Cardio Entry</DialogTitle>
               <DialogDescription className="text-sm text-slate-400 text-center">
@@ -335,7 +335,7 @@ export default function CardioPage() {
                         <Plus className="w-4 h-4" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700 text-white">
+                    <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700 text-white rounded-2xl">
                       <DialogHeader>
                         <DialogTitle className="text-lg font-semibold text-center text-white">Add Custom Type</DialogTitle>
                         <DialogDescription className="text-sm text-slate-400 text-center">Create a new cardio type</DialogDescription>
@@ -597,7 +597,7 @@ export default function CardioPage() {
 
         {/* Edit Entry Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700 text-white">
+          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700 text-white rounded-2xl">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold text-center text-white">Edit Cardio Entry</DialogTitle>
               <DialogDescription className="text-sm text-slate-400 text-center">

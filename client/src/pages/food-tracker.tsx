@@ -827,7 +827,7 @@ export default function FoodTrackerPage() {
 
         {/* Search Dialog - triggered by meal 'Add food' buttons */}
         <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-lg">
+          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-lg">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 Add to {searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}
@@ -1261,7 +1261,7 @@ export default function FoodTrackerPage() {
 
         {/* Serving Size Modal */}
         <Dialog open={servingSizeOpen} onOpenChange={setServingSizeOpen}>
-          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-md">
+          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-md">
             <DialogHeader>
               <DialogTitle>Edit Food</DialogTitle>
               <DialogDescription className="text-gray-400">
@@ -1373,7 +1373,7 @@ export default function FoodTrackerPage() {
         {/* Edit Food Modal */}
         {editingFood && (
           <Dialog open={!!editingFood} onOpenChange={() => setEditingFood(null)}>
-            <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-md">
+            <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-md">
               <DialogHeader>
                 <DialogTitle>Edit Food</DialogTitle>
                 <DialogDescription className="text-gray-400">
@@ -1468,7 +1468,7 @@ export default function FoodTrackerPage() {
 
         {/* Custom Food Dialog */}
         <Dialog open={customFoodOpen} onOpenChange={setCustomFoodOpen}>
-          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-xl max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create Custom Food for {customFoodMeal.charAt(0).toUpperCase() + customFoodMeal.slice(1)}</DialogTitle>
               <DialogDescription>

@@ -67,7 +67,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
+      <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700 rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-center text-white">
             {editingWorkout ? 'Edit Workout' : 'Add New Workout'}

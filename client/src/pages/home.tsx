@@ -635,7 +635,7 @@ export default function Home() {
 
       {/* Timer Dialog */}
       <Dialog open={isTimerOpen} onOpenChange={setIsTimerOpen}>
-        <DialogContent className="bg-slate-800 text-white border-slate-700 max-w-md">
+        <DialogContent className="bg-slate-800 text-white border-slate-700 max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle>Workout Timer</DialogTitle>
             <DialogDescription className="text-slate-400 text-center">

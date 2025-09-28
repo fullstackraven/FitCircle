@@ -46,7 +46,7 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-slate-800 border-slate-700 text-white">
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-slate-800 border-slate-700 text-white rounded-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <Settings className="w-5 h-5" />
