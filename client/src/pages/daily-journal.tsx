@@ -114,8 +114,13 @@ export function DailyJournal() {
           placeholder="Start writing..."
           className="w-full min-h-[calc(100vh-280px)] p-0 bg-transparent text-white border-none resize-none focus:outline-none text-base leading-relaxed placeholder-slate-500"
           style={{
-            lineHeight: '1.6'
+            lineHeight: '1.6',
+            touchAction: 'manipulation' // Prevent layout changes during touch
           }}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
         />
       </div>
 

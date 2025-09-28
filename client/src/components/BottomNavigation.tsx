@@ -36,26 +36,30 @@ export default function BottomNavigation() {
     <nav 
       className="navigation-bar-absolute"
       style={{
-        position: 'fixed',
-        bottom: '0px',
-        left: '0px',
-        right: '0px',
-        height: '88px',
+        position: 'fixed !important' as any,
+        bottom: '0px !important' as any,
+        left: '0px !important' as any,
+        right: '0px !important' as any,
+        height: '88px !important' as any,
         backgroundColor: 'rgba(15, 23, 42, 0.95)',
         borderTop: '1px solid rgb(51, 65, 85)',
-        zIndex: '999999',
-        backdropFilter: 'none',
-        WebkitBackdropFilter: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        zIndex: 2147483647, // Maximum z-index value
+        backdropFilter: 'none !important' as any,
+        WebkitBackdropFilter: 'none !important' as any,
+        display: 'flex !important' as any,
+        alignItems: 'center !important' as any,
+        justifyContent: 'center !important' as any,
         padding: '12px 8px 24px 8px',
         boxSizing: 'border-box',
         isolation: 'isolate',
-        contain: 'layout style paint',
-        willChange: 'auto',
-        transform: 'translateZ(0)',
-        WebkitTransform: 'translateZ(0)'
+        contain: 'strict', // Strongest containment
+        willChange: 'transform',
+        transform: 'translate3d(0, 0, 0) !important' as any,
+        WebkitTransform: 'translate3d(0, 0, 0) !important' as any,
+        transformStyle: 'preserve-3d',
+        WebkitTransformStyle: 'preserve-3d',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden'
       }}
     >
       <div 
