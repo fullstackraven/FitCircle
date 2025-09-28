@@ -31,6 +31,7 @@ export interface DailyLog {
 export interface Routine {
   id: string;
   name: string;
+  selectedDays: number[]; // Array of day indices (0=Sunday, 1=Monday, etc.)
   createdAt: string;
 }
 
@@ -830,11 +831,12 @@ export function useWorkouts() {
   };
 
   // Routine management functions
-  const addRoutine = (name: string) => {
+  const addRoutine = (name: string, selectedDays: number[]) => {
     const id = Date.now().toString();
     const newRoutine: Routine = {
       id,
       name,
+      selectedDays,
       createdAt: new Date().toISOString()
     };
 
@@ -845,12 +847,16 @@ export function useWorkouts() {
     return id;
   };
 
-  const updateRoutine = (routineId: string, name: string) => {
+  const updateRoutine = (routineId: string, name: string, selectedDays?: number[]) => {
     setData(prev => ({
       ...prev,
       routines: {
         ...prev.routines,
-        [routineId]: { ...prev.routines[routineId], name }
+        [routineId]: { 
+          ...prev.routines[routineId], 
+          name,
+          ...(selectedDays !== undefined ? { selectedDays } : {})
+        }
       }
     }));
   };
@@ -897,6 +903,15 @@ export function useWorkouts() {
     );
   };
 
+  const getWorkoutsByDays = (selectedDays: number[]) => {
+    return Object.values(data.workouts || {}).filter(workout => {
+      if (!workout.scheduledDays || workout.scheduledDays.length === 0) {
+        return true; // Workouts with no schedule are considered daily (all days)
+      }
+      return selectedDays.some(day => workout.scheduledDays!.includes(day));
+    });
+  };
+
   // Helper function to check if workout should be active on given day
   const isWorkoutActiveOnDay = (workout: Workout, dayOfWeek: number) => {
     if (!workout.scheduledDays || workout.scheduledDays.length === 0) {
@@ -937,6 +952,7 @@ export function useWorkouts() {
     assignWorkoutToRoutine,
     getRoutineArray,
     getWorkoutsByRoutine,
+    getWorkoutsByDays,
     isWorkoutActiveOnDay,
   };
 }
