@@ -203,18 +203,18 @@ export function JournalLog() {
 
       {/* Journal Entry Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] p-0 bg-slate-900 border-slate-700 overflow-hidden">
-          <div className="flex flex-col h-[80vh]" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+        <DialogContent className="max-w-2xl max-h-[75vh] p-0 bg-slate-800 border-slate-600 overflow-hidden rounded-2xl">
+          <div className="flex flex-col h-[70vh]" style={{ backgroundColor: 'hsl(222, 47%, 15%)' }}>
             {/* Modal Header */}
-            <DialogHeader className="px-4 py-4 border-b border-slate-700">
-              <DialogTitle className="text-xl font-bold text-white text-center">Daily Journal</DialogTitle>
+            <DialogHeader className="px-4 py-3 border-b border-slate-600">
+              <DialogTitle className="text-lg font-bold text-white text-center">Daily Journal</DialogTitle>
               <DialogDescription className="text-slate-400 text-center text-sm">
                 Write your thoughts and reflections for today
               </DialogDescription>
             </DialogHeader>
 
             {/* Date indicator */}
-            <div className="px-4 py-2 border-b border-slate-700">
+            <div className="px-4 py-2 border-b border-slate-600">
               <p className="text-sm text-slate-400">{getDisplayDate()}</p>
               {lastSaved && (
                 <p className="text-xs text-slate-500 mt-1">
@@ -253,10 +253,10 @@ export function JournalLog() {
             )}
 
             {/* Save button */}
-            <div className="px-4 py-4 border-t border-slate-700">
+            <div className="px-4 py-3 border-t border-slate-600">
               <button
                 onClick={handleJournalSubmit}
-                className="w-full px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors font-medium shadow-lg"
+                className="w-full px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors font-medium shadow-lg"
                 data-testid="button-save-journal"
               >
                 Save Entry
