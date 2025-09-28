@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
-import { getTodayString, getDateString, getCurrentTime24 } from '@/lib/date-utils';
+import { getTodayString, getDateString, getCurrentTime } from '@/lib/date-utils';
 
 export interface MeditationSession {
   id: string;
@@ -178,8 +178,8 @@ export function useMeditation() {
   // Removed redundant migration effect - now handled in useState initializer
 
   const addSession = (duration: number) => {
-    const today = getTodayString(); // Use Eastern Time YYYY-MM-DD format
-    const currentTime = getCurrentTime24(); // Use Eastern Time 24-hour format
+    const today = getTodayString(); // Use local time YYYY-MM-DD format
+    const currentTime = getCurrentTime(); // Use local time 12-hour format with AM/PM
     
     const newSession: MeditationSession = {
       id: Date.now().toString(),
