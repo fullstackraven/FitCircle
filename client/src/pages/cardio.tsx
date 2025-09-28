@@ -511,7 +511,7 @@ export default function CardioPage() {
                   </CollapsibleTrigger>
                   
                   <CollapsibleContent className="space-y-2 mt-2">
-                    {monthLogs.map((log) => (
+                    {monthLogs.sort((a, b) => b.date.localeCompare(a.date)).map((log) => (
                       <div key={log.date} className="fitcircle-card ml-4">
                         <div className="flex justify-between items-center mb-3">
                           <span className="text-white font-medium">
