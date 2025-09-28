@@ -34,12 +34,7 @@ export default function CardioPage() {
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
 
   const handleBack = () => {
-    if (fromDashboard) {
-      sessionStorage.setItem('fitcircle_dashboard_open', 'true');
-      navigate('/');
-    } else {
-      navigate('/');
-    }
+    navigate('/wellness');
   };
 
   // State for modals and forms

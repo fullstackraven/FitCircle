@@ -40,12 +40,7 @@ export default function MeasurementsPage() {
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
   
   const handleBack = () => {
-    if (fromDashboard) {
-      sessionStorage.setItem('fitcircle_dashboard_open', 'true');
-      navigate('/');
-    } else {
-      navigate('/');
-    }
+    navigate('/wellness');
   };
   const { addMeasurement, getLatestValue, getValueTrend, getChartData } = useMeasurements();
   

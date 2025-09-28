@@ -20,12 +20,7 @@ export default function HydrationPage() {
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
   
   const handleBack = () => {
-    if (fromDashboard) {
-      sessionStorage.setItem('fitcircle_dashboard_open', 'true');
-      navigate('/');
-    } else {
-      navigate('/');
-    }
+    navigate('/wellness');
   };
   const { 
     dailyGoalOz, 

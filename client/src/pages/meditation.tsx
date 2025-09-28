@@ -23,12 +23,7 @@ export default function MeditationPage() {
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
   
   const handleBack = () => {
-    if (fromDashboard) {
-      sessionStorage.setItem('fitcircle_dashboard_open', 'true');
-      navigate('/');
-    } else {
-      navigate('/');
-    }
+    navigate('/wellness');
   };
   const { logs, dailyLogs, addLog, addSession, getTodayMinutes, getDailyGoal, getProgressPercentage, isGoalReached, getLast10LogsProgress, getAllTimeGoalPercentage } = useMeditation();
   const { goals, updateGoal } = useGoals();

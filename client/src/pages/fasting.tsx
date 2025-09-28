@@ -18,12 +18,7 @@ export default function FastingPage() {
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
   
   const handleBack = () => {
-    if (fromDashboard) {
-      sessionStorage.setItem('fitcircle_dashboard_open', 'true');
-      navigate('/');
-    } else {
-      navigate('/');
-    }
+    navigate('/wellness');
   };
   const { logs, addLog, updateLog, deleteLog, getLast10LogsProgress } = useFasting();
   const { goals, updateGoal } = useGoals();
