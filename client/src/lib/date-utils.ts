@@ -1,40 +1,42 @@
 // Master timezone and date utilities for consistent app-wide date handling
 // All pages and hooks MUST use these functions for date operations
+// TIMEZONE: All dates and times use Eastern Time (EST/EDT) for daily resets
 
 /**
- * Gets today's date string in the user's local timezone
+ * Gets today's date string in Eastern Time (EST/EDT)
  * Format: YYYY-MM-DD
  * This is the master function for getting "today" throughout the app
  */
 export function getTodayString(): string {
   const today = new Date();
-  // Use toLocaleDateString to ensure we get the user's local date regardless of timezone
-  const localDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000));
-  const year = localDate.getFullYear();
-  const month = String(localDate.getMonth() + 1).padStart(2, '0');
-  const day = String(localDate.getDate()).padStart(2, '0');
+  // Use Eastern Time (automatically handles EST/EDT transition)
+  const easternDate = new Date(today.toLocaleString("en-US", {timeZone: "America/New_York"}));
+  const year = easternDate.getFullYear();
+  const month = String(easternDate.getMonth() + 1).padStart(2, '0');
+  const day = String(easternDate.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 
 /**
- * Gets a date string from a Date object in the user's local timezone
+ * Gets a date string from a Date object in Eastern Time (EST/EDT)
  * Format: YYYY-MM-DD
  */
 export function getDateString(date: Date): string {
-  // Ensure we get the local date, not UTC
-  const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-  const year = localDate.getFullYear();
-  const month = String(localDate.getMonth() + 1).padStart(2, '0');
-  const day = String(localDate.getDate()).padStart(2, '0');
+  // Convert to Eastern Time (automatically handles EST/EDT transition)
+  const easternDate = new Date(date.toLocaleString("en-US", {timeZone: "America/New_York"}));
+  const year = easternDate.getFullYear();
+  const month = String(easternDate.getMonth() + 1).padStart(2, '0');
+  const day = String(easternDate.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 
 /**
- * Gets current time in user's local timezone  
+ * Gets current time in Eastern Time (EST/EDT)
  * Format: HH:MM AM/PM
  */
 export function getCurrentTime(): string {
   return new Date().toLocaleTimeString('en-US', { 
+    timeZone: 'America/New_York',
     hour: '2-digit', 
     minute: '2-digit',
     hour12: true 
@@ -42,40 +44,49 @@ export function getCurrentTime(): string {
 }
 
 /**
- * Gets current time in 24-hour format for input fields
+ * Gets current time in 24-hour format for input fields in Eastern Time (EST/EDT)
  * Format: HH:MM
  */
 export function getCurrentTime24(): string {
   const now = new Date();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
+  // Convert to Eastern Time
+  const easternTime = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
+  const hours = String(easternTime.getHours()).padStart(2, '0');
+  const minutes = String(easternTime.getMinutes()).padStart(2, '0');
   return `${hours}:${minutes}`;
 }
 
 /**
- * Converts a date string to user's local date (handles timezone issues)
+ * Converts a date string to Eastern Time date (handles timezone issues)
  * Input: YYYY-MM-DD string or MM/DD/YYYY string (for backward compatibility)
- * Output: Date object in user's local timezone
+ * Output: Date object in Eastern Time
  */
 export function parseLocalDate(dateString: string): Date {
   // Handle both YYYY-MM-DD and MM/DD/YYYY formats
   if (dateString.includes('/')) {
     // Handle MM/DD/YYYY format (legacy meditation entries)
     const [month, day, year] = dateString.split('/').map(Number);
-    return new Date(year, month - 1, day); // month is 0-indexed
+    // Create date in Eastern Time
+    const utcDate = new Date(Date.UTC(year, month - 1, day, 12, 0, 0)); // noon UTC to avoid timezone edge cases
+    return new Date(utcDate.toLocaleString("en-US", {timeZone: "America/New_York"}));
   } else {
     // Handle YYYY-MM-DD format (standard)
     const [year, month, day] = dateString.split('-').map(Number);
-    return new Date(year, month - 1, day); // month is 0-indexed
+    // Create date in Eastern Time
+    const utcDate = new Date(Date.UTC(year, month - 1, day, 12, 0, 0)); // noon UTC to avoid timezone edge cases
+    return new Date(utcDate.toLocaleString("en-US", {timeZone: "America/New_York"}));
   }
 }
 
 /**
- * Gets yesterday's date string in user's local timezone
+ * Gets yesterday's date string in Eastern Time (EST/EDT)
  * Format: YYYY-MM-DD
  */
 export function getYesterdayString(): string {
-  const yesterday = new Date();
+  // Get current time in Eastern Time, then subtract 1 day
+  const now = new Date();
+  const easternNow = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
+  const yesterday = new Date(easternNow);
   yesterday.setDate(yesterday.getDate() - 1);
   return getDateString(yesterday);
 }
