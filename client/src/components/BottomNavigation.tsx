@@ -1,5 +1,6 @@
 import { Home, CalendarDays, Dumbbell, CheckSquare, Folder } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { createPortal } from 'react-dom';
 
 export default function BottomNavigation() {
   const [location, navigate] = useLocation();
@@ -32,17 +33,18 @@ export default function BottomNavigation() {
     }
   ];
 
-  return (
+  const navigationElement = (
     <div 
-      className="bottom-navigation-fixed fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-2 py-3 pb-6 z-50"
+      className="bottom-navigation-fixed fixed bottom-0 left-0 right-0 bg-slate-900/95 border-t border-slate-800 px-2 py-3 z-50"
       style={{ 
         position: 'fixed',
-        bottom: 0,
+        bottom: 'env(safe-area-inset-bottom, 0)',
         left: 0,
         right: 0,
         zIndex: 9999,
         transform: 'none',
-        willChange: 'auto'
+        willChange: 'auto',
+        paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0))'
       }}
     >
       <div className="flex justify-around items-center max-w-md mx-auto">
@@ -68,4 +70,7 @@ export default function BottomNavigation() {
       </div>
     </div>
   );
+
+  // Render via portal to document.body to isolate from modal DOM changes
+  return typeof document !== 'undefined' ? createPortal(navigationElement, document.body) : null;
 }
