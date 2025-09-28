@@ -12,23 +12,25 @@ export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {
   const recentActivity = getRecentActivity();
   const routines = getRoutineArray() || [];
 
-  // Helper function to get routine name for a specific date
-  const getRoutineForDate = (dateString: string) => {
+  // Helper function to get routine name for a specific date based on completed workouts
+  const getRoutineForDate = (dateString: string, dayWorkouts: any[]) => {
     try {
-      const date = new Date(dateString);
-      const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      // Find workouts that were actually completed on this day
+      const completedWorkouts = dayWorkouts.filter(workout => workout.count > 0);
       
-      // Find routines that include this day of the week
-      const matchingRoutines = routines.filter(routine => 
-        routine.selectedDays.includes(dayOfWeek)
-      );
-      
-      if (matchingRoutines.length === 0) {
+      if (completedWorkouts.length === 0) {
         return null;
       }
       
-      // Return the first matching routine name
-      return matchingRoutines[0].name;
+      // Find the routine that these workouts belong to
+      // Check the routineId of the first completed workout
+      const firstWorkout = completedWorkouts[0];
+      if (firstWorkout.routineId) {
+        const routine = routines.find(r => r.id === firstWorkout.routineId);
+        return routine ? routine.name : null;
+      }
+      
+      return null;
     } catch (error) {
       return null;
     }
@@ -69,7 +71,7 @@ export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {
           </div>
         ) : (
           recentActivity.slice(0, 7).map((day, index) => {
-            const routineName = getRoutineForDate(day.dateString);
+            const routineName = getRoutineForDate(day.dateString, day.workouts);
             return (
               <div key={index} className="flex justify-between items-center">
                 <div className="flex flex-col">
