@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 interface ControlSettings {
   hideQuoteOfTheDay: boolean;
@@ -6,7 +7,7 @@ interface ControlSettings {
   hideRecentActivity: boolean;
 }
 
-const CONTROLS_STORAGE_KEY = 'fitcircle_control_settings';
+// Using existing STORAGE_KEYS pattern for consistency
 
 const defaultSettings: ControlSettings = {
   hideQuoteOfTheDay: false,
@@ -16,15 +17,7 @@ const defaultSettings: ControlSettings = {
 
 export function useControls() {
   const [settings, setSettings] = useState<ControlSettings>(() => {
-    const saved = localStorage.getItem(CONTROLS_STORAGE_KEY);
-    if (saved) {
-      try {
-        return { ...defaultSettings, ...JSON.parse(saved) };
-      } catch (error) {
-        console.error('Failed to parse control settings:', error);
-      }
-    }
-    return defaultSettings;
+    return safeParseJSON(localStorage.getItem('fitcircle_control_settings'), defaultSettings);
   });
 
   // Save settings to localStorage whenever they change
@@ -32,7 +25,7 @@ export function useControls() {
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
     try {
-      localStorage.setItem(CONTROLS_STORAGE_KEY, JSON.stringify(newSettings));
+      localStorage.setItem('fitcircle_control_settings', JSON.stringify(newSettings));
     } catch (error) {
       console.error('Failed to save control settings:', error);
     }

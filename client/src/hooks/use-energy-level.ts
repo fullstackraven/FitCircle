@@ -1,35 +1,17 @@
 import { format } from "date-fns";
+import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
+import { getTodayString } from '@/lib/date-utils';
 
 export function useEnergyLevel() {
   const getEnergyLevel = (date: Date) => {
     const dateKey = format(date, 'yyyy-MM-dd');
-    const energyData = localStorage.getItem('fitcircle_energy_levels');
-    if (energyData) {
-      try {
-        const parsed = JSON.parse(energyData);
-        return parsed[dateKey] || 0;
-      } catch (error) {
-        console.warn('Failed to parse energy levels data:', error);
-        return 0;
-      }
-    }
-    return 0;
+    const parsed = safeParseJSON(localStorage.getItem('fitcircle_energy_levels'), {});
+    return parsed[dateKey] || 0;
   };
 
   const setEnergyLevelForDate = (date: Date, level: number) => {
     const dateKey = format(date, 'yyyy-MM-dd');
-    const energyData = localStorage.getItem('fitcircle_energy_levels');
-    let parsed = {};
-    
-    if (energyData) {
-      try {
-        parsed = JSON.parse(energyData);
-      } catch (error) {
-        console.warn('Failed to parse energy levels data, creating new:', error);
-        parsed = {};
-      }
-    }
-    
+    const parsed: { [key: string]: number } = safeParseJSON(localStorage.getItem('fitcircle_energy_levels'), {});
     parsed[dateKey] = level;
     
     try {
@@ -44,16 +26,7 @@ export function useEnergyLevel() {
   };
 
   const getEnergyLevelData = () => {
-    const energyData = localStorage.getItem('fitcircle_energy_levels');
-    if (energyData) {
-      try {
-        return JSON.parse(energyData);
-      } catch (error) {
-        console.warn('Failed to parse energy levels data:', error);
-        return {};
-      }
-    }
-    return {};
+    return safeParseJSON(localStorage.getItem('fitcircle_energy_levels'), {});
   };
 
   return {

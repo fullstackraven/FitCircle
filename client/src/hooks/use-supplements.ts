@@ -1,5 +1,6 @@
 import type { Supplement } from '@shared/schema';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
+import { getTodayString } from '@/lib/date-utils';
 
 interface LocalSupplement {
   id: number;
@@ -151,7 +152,7 @@ export function useSupplements() {
     
     // Calculate current streak (consecutive days with at least one supplement)
     let currentStreak = 0;
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayString();
     let checkDate = today;
     
     // Count backwards from today to find current streak
