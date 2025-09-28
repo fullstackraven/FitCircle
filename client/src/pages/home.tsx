@@ -567,54 +567,6 @@ export default function Home() {
 
 
 
-      {/* All Workouts Section */}
-      {workouts.length > 0 && (
-        <section className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <Collapsible open={isAllWorkoutsOpen} onOpenChange={setIsAllWorkoutsOpen} className="flex-1">
-              <CollapsibleTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between bg-slate-800 border-slate-700 text-white hover:bg-slate-700 py-4 h-auto rounded-xl"
-                >
-                  <span className="text-lg font-semibold">All Workouts</span>
-                  {isAllWorkoutsOpen ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
-                </Button>
-              </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="space-y-3 bg-slate-800 rounded-xl p-4">
-                {workouts.map((workout) => {
-                  const scheduledDaysText = getScheduledDaysText(workout.scheduledDays || [0,1,2,3,4,5,6]);
-                  return (
-                    <div 
-                      key={workout.id} 
-                      className="flex items-center justify-between p-4 bg-slate-700 rounded-xl"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)}`} />
-                        <div>
-                          <div className="text-white font-medium">{workout.name}</div>
-                          <div className="text-xs text-slate-400">
-                            {scheduledDaysText} • Goal: {workout.dailyGoal}
-                            {workout.weightLbs && ` • ${workout.weightLbs}lbs`}
-                          </div>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => handleEditWorkout(workout)}
-                        className="text-slate-400 hover:text-slate-200 transition-colors"
-                      >
-                        <Edit size={16} />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </CollapsibleContent>
-            </Collapsible>
-          </div>
-        </section>
-      )}
 
 
       <WorkoutModal
