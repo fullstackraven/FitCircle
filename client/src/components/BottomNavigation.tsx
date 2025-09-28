@@ -43,14 +43,14 @@ export default function BottomNavigation() {
         left: '0px',
         right: '0px',
         width: '100%',
-        height: '88px',
+        height: 'var(--bottom-nav-height)',
         backgroundColor: 'rgba(15, 23, 42, 0.95)',
         borderTop: '1px solid rgb(51, 65, 85)',
         zIndex: 1000, // Reasonable z-index
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '12px 8px calc(24px + env(safe-area-inset-bottom)) 8px', // Safe area padding
+        padding: 'calc(12px + env(safe-area-inset-top)) 8px calc(24px + env(safe-area-inset-bottom)) 8px', // Safe area padding
         boxSizing: 'border-box'
       }}
     >

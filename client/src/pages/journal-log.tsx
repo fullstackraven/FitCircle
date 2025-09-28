@@ -90,7 +90,9 @@ export function JournalLog() {
       addJournalEntry(currentDate, journalText);
       setLastSaved(new Date().toISOString());
       
-      // Close modal and return to journal log
+      // Ensure body scroll lock is cleaned up and close modal
+      document.body.style.overflow = '';
+      document.body.style.position = '';
       setIsModalOpen(false);
     }
   };
@@ -102,7 +104,7 @@ export function JournalLog() {
   };
 
   return (
-    <div className="p-4 max-w-3xl mx-auto min-h-screen pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+    <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', paddingBottom: 'var(--bottom-nav-padding)' }}>
       <div className="flex items-center justify-between mb-6">
         <div className="w-[42px]" />
         <h1 className="text-xl font-bold text-white">Journal Log</h1>
