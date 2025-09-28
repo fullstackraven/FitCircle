@@ -111,23 +111,35 @@ export default function RoutinesPage() {
             <span>Back</span>
           </button>
           <h1 className="fitcircle-page-title">Routines</h1>
-          <div className="w-16"></div> {/* Spacer */}
+          {routines.length > 0 ? (
+            <button
+              onClick={handleAddRoutine}
+              className="w-8 h-8 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center transition-colors"
+              data-testid="button-add-routine-header"
+            >
+              <Plus className="w-5 h-5 text-white" />
+            </button>
+          ) : (
+            <div className="w-16"></div>
+          )}
         </div>
 
-        {/* Add Routines Section */}
-        <section className="mb-8">
-          <button
-            onClick={handleAddRoutine}
-            className="w-full p-8 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors border-2 border-dashed border-slate-600 hover:border-slate-500"
-            data-testid="button-add-routine"
-          >
-            <div className="flex flex-col items-center space-y-3">
-              <Plus className="w-8 h-8 text-slate-400" />
-              <div className="text-lg font-semibold text-white">Tap to Add Routines</div>
-              <div className="text-sm text-slate-400">Create workout routines for specific days</div>
-            </div>
-          </button>
-        </section>
+        {/* Add Routines Section - Only show when no routines exist */}
+        {routines.length === 0 && (
+          <section className="mb-8">
+            <button
+              onClick={handleAddRoutine}
+              className="w-full p-8 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors border-2 border-dashed border-slate-600 hover:border-slate-500"
+              data-testid="button-add-routine"
+            >
+              <div className="flex flex-col items-center space-y-3">
+                <Plus className="w-8 h-8 text-slate-400" />
+                <div className="text-lg font-semibold text-white">Tap to Add Routines</div>
+                <div className="text-sm text-slate-400">Create workout routines for specific days</div>
+              </div>
+            </button>
+          </section>
+        )}
 
         {/* Display Existing Routines */}
         {routines.length > 0 && (
