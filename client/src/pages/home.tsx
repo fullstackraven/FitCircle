@@ -5,6 +5,7 @@ import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
 import { useTimer } from '@/hooks/use-timer';
 import { useWorkoutDuration } from '@/hooks/use-workout-duration';
+import { useToast } from '@/hooks/use-toast';
 import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
@@ -20,6 +21,7 @@ import { getColorClass } from '@/lib/color-utils';
 export default function Home() {
   const [, navigate] = useLocation();
   const { isQuoteHidden, isTodaysTotalsHidden, isRecentActivityHidden } = useControls();
+  const { toast } = useToast();
 
   const {
     addWorkout,
@@ -33,7 +35,9 @@ export default function Home() {
     getAvailableColors,
     getWorkoutArray,
     canAddMoreWorkouts,
-    isWorkoutActiveOnDay
+    isWorkoutActiveOnDay,
+    getRoutineArray,
+    getWorkoutsByDays
   } = useWorkouts();
 
   const { timerState, startTimer, startTimerFromSeconds, pauseTimer, resumeTimer, resetTimer, formatTime, getProgress } = useTimer();
@@ -94,6 +98,21 @@ export default function Home() {
   // Filter workouts that should be active today
   const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
   const todaysWorkouts = workouts.filter(workout => isWorkoutActiveOnDay(workout, today));
+  
+  // Get today's routine
+  const routines = getRoutineArray();
+  const todaysRoutine = routines.find(routine => routine.selectedDays.includes(today));
+  
+  // Show toast when there are no workouts for today but there is a routine
+  useEffect(() => {
+    if (todaysRoutine && todaysWorkouts.length === 0) {
+      toast({
+        title: "No workouts scheduled for today!",
+        description: "Enjoy an active recovery day!",
+        duration: 4000,
+      });
+    }
+  }, [todaysRoutine, todaysWorkouts.length, toast]);
 
   // Get current week's days with scheduled workouts
   const getWeekDays = () => {
