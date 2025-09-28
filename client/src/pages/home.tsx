@@ -63,7 +63,6 @@ export default function Home() {
   const [timerMinutes, setTimerMinutes] = useState<string>('0');
   const [timerSeconds, setTimerSeconds] = useState<string>('0');
   const [isRecentActivityOpen, setIsRecentActivityOpen] = useState(false);
-  const [isThisWeekOpen, setIsThisWeekOpen] = useState(false);
 
   // Check if we should open dashboard on load
   useEffect(() => {
@@ -542,47 +541,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* This Week Section */}
-      {workouts.length > 0 && (
-        <section className="mb-8">
-          <Collapsible open={isThisWeekOpen} onOpenChange={setIsThisWeekOpen}>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-between bg-slate-800 border-slate-700 text-white hover:bg-slate-700 py-4 h-auto rounded-xl mb-4"
-              >
-                <span className="text-lg font-semibold">This Week</span>
-                {isThisWeekOpen ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="space-y-3">
-                {weekDays.map((day) => (
-                  <div key={day.dayOfWeek} className="bg-slate-800 rounded-xl p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="font-medium text-slate-300">{day.name}</span>
-                      <span className="text-sm text-slate-400">{day.date}</span>
-                    </div>
-                    {day.workouts.length > 0 ? (
-                      <div className="space-y-2">
-                        {day.workouts.map((workout) => (
-                          <div key={workout.id} className="flex items-center space-x-3 py-2">
-                            <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)}`} />
-                            <span className="text-white text-sm">{workout.name}</span>
-                            <span className="text-xs text-slate-400">Goal: {workout.dailyGoal}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-sm text-slate-400">No workouts scheduled</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        </section>
-      )}
 
 
 
