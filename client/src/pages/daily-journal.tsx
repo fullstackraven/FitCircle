@@ -68,7 +68,7 @@ export function DailyJournal() {
   };
 
   return (
-    <div className="min-h-screen pb-20" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 mb-2">
         <button

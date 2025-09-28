@@ -162,7 +162,7 @@ export default function HydrationPage() {
   const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
 
   return (
-    <div className="fitcircle-page pb-20">
+    <div className="fitcircle-page">
       <div className="fitcircle-container">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

@@ -101,7 +101,7 @@ export default function WellnessPage() {
   ];
 
   return (
-    <div className="fitcircle-page pb-20">
+    <div className="fitcircle-page">
       <div className="fitcircle-container">
         {/* Header */}
         <div className="flex items-center justify-center mb-8">

@@ -45,6 +45,8 @@
     /* Disable browser swipe navigation */
     overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
+    /* Add padding for bottom navigation */
+    padding-bottom: 88px;
   }
 
   /* Disable swipe gestures on all containers */
@@ -53,18 +55,10 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Force bottom navigation to stay fixed */
-  .bottom-navigation-fixed {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    z-index: 99999 !important;
-    isolation: isolate !important;
-    contain: layout style paint !important;
-    pointer-events: auto !important;
-    transform: none !important;
-    will-change: auto !important;
+  /* Global padding for all page containers to avoid nav bar overlap */
+  .min-h-screen {
+    padding-bottom: 88px !important;
+    box-sizing: border-box;
   }
 }
 
