@@ -58,7 +58,6 @@ export default function Home() {
   const [timerHours, setTimerHours] = useState<string>('0');
   const [timerMinutes, setTimerMinutes] = useState<string>('0');
   const [timerSeconds, setTimerSeconds] = useState<string>('0');
-  const [isAllWorkoutsOpen, setIsAllWorkoutsOpen] = useState(false);
   const [isRecentActivityOpen, setIsRecentActivityOpen] = useState(false);
   const [isThisWeekOpen, setIsThisWeekOpen] = useState(false);
 
