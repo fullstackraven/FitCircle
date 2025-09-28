@@ -47,6 +47,9 @@
     -webkit-overflow-scrolling: touch;
     /* Add padding for bottom navigation */
     padding-bottom: 88px;
+    margin: 0;
+    position: relative;
+    min-height: 100vh;
   }
 
   /* Disable swipe gestures on all containers */
@@ -59,6 +62,44 @@
   .min-h-screen {
     padding-bottom: 88px !important;
     box-sizing: border-box;
+  }
+
+  /* Absolute navigation bar styles with maximum specificity */
+  .navigation-bar-absolute {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 999999 !important;
+    height: 88px !important;
+    background-color: rgba(15, 23, 42, 0.95) !important;
+    border-top: 1px solid rgb(51, 65, 85) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 12px 8px 24px 8px !important;
+    box-sizing: border-box !important;
+    isolation: isolate !important;
+    contain: layout style paint !important;
+    will-change: auto !important;
+    transform: translateZ(0) !important;
+    -webkit-transform: translateZ(0) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Prevent any modal or overlay from affecting navigation */
+  body.modal-open .navigation-bar-absolute,
+  body[style*="overflow"] .navigation-bar-absolute,
+  body[style*="position"] .navigation-bar-absolute,
+  .navigation-bar-absolute {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 999999 !important;
+    transform: translateZ(0) !important;
+    -webkit-transform: translateZ(0) !important;
   }
 }
 
