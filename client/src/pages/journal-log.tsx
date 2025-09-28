@@ -3,7 +3,7 @@ import { Plus, Calendar, FileText, Check } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { format, parseISO, isValid } from "date-fns";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export function JournalLog() {
   const [, navigate] = useLocation();
@@ -46,7 +46,14 @@ export function JournalLog() {
     });
 
   const handleEntryClick = (dateString: string) => {
-    navigate(`/daily-journal?date=${dateString}${fromWellness ? '&from=wellness' : ''}`);
+    setCurrentDate(dateString);
+    const entry = getJournalEntry(dateString);
+    setJournalText(entry || '');
+    
+    const entryWithTimestamp = getJournalEntryWithTimestamp(dateString);
+    setLastSaved(entryWithTimestamp?.timestamp || null);
+    
+    setIsModalOpen(true);
   };
 
   const truncateText = (text: string, maxLength: number = 100) => {
@@ -201,6 +208,9 @@ export function JournalLog() {
             {/* Modal Header */}
             <DialogHeader className="px-4 py-4 border-b border-slate-700">
               <DialogTitle className="text-xl font-bold text-white text-center">Daily Journal</DialogTitle>
+              <DialogDescription className="text-slate-400 text-center text-sm">
+                Write your thoughts and reflections for today
+              </DialogDescription>
             </DialogHeader>
 
             {/* Date indicator */}
