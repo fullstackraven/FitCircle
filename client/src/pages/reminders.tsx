@@ -132,7 +132,7 @@ export default function RemindersPage() {
   };
 
   return (
-    <div className="min-h-screen pb-32" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+    <div className="min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', paddingBottom: 'var(--bottom-nav-padding)' }}>
       <div className="container mx-auto p-4 max-w-md">
         {/* Header */}
         <div className="flex items-center justify-center mb-8">
