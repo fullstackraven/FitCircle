@@ -101,6 +101,14 @@
     transform: translateZ(0) !important;
     -webkit-transform: translateZ(0) !important;
   }
+
+  /* Animation for save confirmation toast */
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-10px); }
+    20% { opacity: 1; transform: translateY(0); }
+    80% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); }
+  }
 }
 
 /* FitCircle Design System */

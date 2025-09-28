@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, BookOpen, Calendar, FileText } from "lucide-react";
+import { ArrowLeft, BookOpen, Calendar, FileText, Check } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { format } from "date-fns";
@@ -10,6 +10,7 @@ export function DailyJournal() {
   const [journalText, setJournalText] = useState("");
   const [currentDate, setCurrentDate] = useState("");
   const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
   
   // Check if we came from wellness page
   const urlParams = new URLSearchParams(window.location.search);
@@ -57,7 +58,12 @@ export function DailyJournal() {
     if (journalText.trim()) {
       addJournalEntry(currentDate, journalText);
       setLastSaved(new Date().toISOString());
-      alert('Journal entry saved successfully!');
+      
+      // Show success confirmation instead of native alert
+      setShowSaveConfirmation(true);
+      setTimeout(() => {
+        setShowSaveConfirmation(false);
+      }, 2000);
     }
   };
 
@@ -112,6 +118,21 @@ export function DailyJournal() {
           }}
         />
       </div>
+
+      {/* Save confirmation toast */}
+      {showSaveConfirmation && (
+        <div 
+          className="fixed top-20 left-4 right-4 z-50 flex justify-center"
+          style={{
+            animation: 'fadeInOut 2s ease-in-out'
+          }}
+        >
+          <div className="bg-green-600 text-white px-4 py-3 rounded-xl flex items-center space-x-2 shadow-lg">
+            <Check className="w-5 h-5" />
+            <span>Journal entry saved successfully!</span>
+          </div>
+        </div>
+      )}
 
       {/* Floating save button - positioned above nav bar */}
       <div className="fixed bottom-24 left-4 right-4 z-40">
