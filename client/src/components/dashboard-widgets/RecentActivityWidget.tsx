@@ -1,14 +1,38 @@
 import { useWorkouts } from '@/hooks/use-workouts';
 import { Clock } from 'lucide-react';
 import { DashboardWidget } from '@/hooks/use-dashboard-widgets';
+import { format, parse } from 'date-fns';
 
 interface RecentActivityWidgetProps {
   widget: DashboardWidget;
 }
 
 export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {
-  const { getRecentActivity } = useWorkouts();
+  const { getRecentActivity, getRoutineArray } = useWorkouts();
   const recentActivity = getRecentActivity();
+  const routines = getRoutineArray() || [];
+
+  // Helper function to get routine name for a specific date
+  const getRoutineForDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      
+      // Find routines that include this day of the week
+      const matchingRoutines = routines.filter(routine => 
+        routine.selectedDays.includes(dayOfWeek)
+      );
+      
+      if (matchingRoutines.length === 0) {
+        return null;
+      }
+      
+      // Return the first matching routine name
+      return matchingRoutines[0].name;
+    } catch (error) {
+      return null;
+    }
+  };
 
   if (widget.size === 'small') {
     const todaysTotal = recentActivity[0]?.totalReps || 0;
@@ -44,12 +68,20 @@ export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {
             <p>No recent activity</p>
           </div>
         ) : (
-          recentActivity.slice(0, 7).map((day, index) => (
-            <div key={index} className="flex justify-between items-center">
-              <div className="text-slate-300">{day.date}</div>
-              <div className="text-white font-medium">{day.totalReps} reps</div>
-            </div>
-          ))
+          recentActivity.slice(0, 7).map((day, index) => {
+            const routineName = getRoutineForDate(day.dateString);
+            return (
+              <div key={index} className="flex justify-between items-center">
+                <div className="flex flex-col">
+                  <div className="text-slate-300">{day.date}</div>
+                  {routineName && (
+                    <div className="text-xs text-slate-400 mt-1">{routineName}</div>
+                  )}
+                </div>
+                <div className="text-white font-medium">{day.totalReps} reps</div>
+              </div>
+            );
+          })
         )}
       </div>
     </div>
