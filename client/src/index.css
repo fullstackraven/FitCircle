@@ -63,14 +63,11 @@
 
   /* CSS Grid App Layout - eliminates PWA positioning issues */
   .app-grid-layout {
-    display: grid;
-    grid-template-rows: 1fr auto;
     min-height: 100vh;
     min-height: 100dvh;
   }
 
   .app-content {
-    overflow-y: auto;
     overflow-x: hidden;
   }
 

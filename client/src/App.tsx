@@ -68,8 +68,8 @@ function App() {
         <main className="app-content">
           <Router />
         </main>
-        <BottomNavigation />
       </div>
+      <BottomNavigation />
     </ScrollLockProvider>
   );
 }
