@@ -74,7 +74,12 @@
     overflow-x: hidden;
   }
 
-  /* No padding needed for floating dock navigation */
+  /* Extra padding for floating dock navigation */
+  .min-h-screen, 
+  .min-h-dvh {
+    padding-bottom: 120px !important;
+    box-sizing: border-box;
+  }
 
   /* PWA-specific adjustments */
   @media (display-mode: standalone) {

@@ -70,9 +70,9 @@ export default function BottomNavigation() {
     >
       <nav 
         style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.95)',
+          backgroundColor: 'rgba(30, 41, 59, 0.95)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(51, 65, 85, 0.3)',
+          border: '1px solid rgba(148, 163, 184, 0.4)',
           borderRadius: '24px',
           padding: '12px 20px',
           display: 'flex',
