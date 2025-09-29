@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { safeParseJSON, STORAGE_KEYS } from '@/lib/storage-utils';
 
 export interface Reminder {
   id: string;
@@ -9,34 +10,35 @@ export interface Reminder {
 
 export function useReminders() {
   const [reminders, setReminders] = useState<Reminder[]>(() => {
-    const saved = localStorage.getItem('fitcircle_reminders');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        // Filter out any old notes data and keep only reminders
-        if (Array.isArray(parsed)) {
-          return parsed.filter((item: any) => 
-            !item.type || item.type === 'reminder'
-          ).map((item: any) => ({
-            id: item.id,
-            text: item.text,
-            completed: item.completed || false,
-            createdAt: item.createdAt
-          }));
-        }
-      } catch (error) {
-        console.error('Failed to parse reminders:', error);
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.REMINDERS);
+      const parsed = safeParseJSON(saved, []);
+      
+      // Filter out any old notes data and keep only reminders
+      if (Array.isArray(parsed)) {
+        return parsed.filter((item: any) => 
+          !item.type || item.type === 'reminder'
+        ).map((item: any) => ({
+          id: item.id || Date.now().toString(),
+          text: item.text || '',
+          completed: item.completed || false,
+          createdAt: item.createdAt || new Date().toISOString()
+        }));
       }
+      return [];
+    } catch (error) {
+      console.error('Error initializing reminders:', error);
+      return [];
     }
-    return [];
   });
 
   // Save to localStorage whenever reminders change
   useEffect(() => {
     try {
-      localStorage.setItem('fitcircle_reminders', JSON.stringify(reminders));
+      localStorage.setItem(STORAGE_KEYS.REMINDERS, JSON.stringify(reminders));
       // Clean up old notes data
       localStorage.removeItem('fitcircle_notes');
+      console.log('Reminders saved:', reminders.length, 'items');
     } catch (error) {
       console.error('Failed to save reminders:', error);
     }

@@ -180,7 +180,7 @@ export default function RemindersPage() {
                     className="flex-1 min-w-0 cursor-pointer"
                     onClick={() => startEditing(reminder)}
                   >
-                    <p className="text-base text-white">
+                    <p className="text-base text-white break-words whitespace-pre-wrap">
                       {reminder.text}
                     </p>
                   </div>
@@ -356,7 +356,7 @@ export default function RemindersPage() {
                             className="flex-1 min-w-0 cursor-pointer"
                             onClick={() => !selectMode && startEditing(reminder)}
                           >
-                            <p className="text-base line-through text-slate-500">
+                            <p className="text-base line-through text-slate-500 break-words whitespace-pre-wrap">
                               {reminder.text}
                             </p>
                           </div>
