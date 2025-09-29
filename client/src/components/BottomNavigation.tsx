@@ -148,13 +148,11 @@ export default function BottomNavigation() {
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.3)';
                     e.currentTarget.style.color = 'white';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
                     e.currentTarget.style.color = 'rgb(148, 163, 184)';
                   }
                 }}
