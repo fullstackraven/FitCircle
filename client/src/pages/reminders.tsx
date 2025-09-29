@@ -234,8 +234,10 @@ export default function RemindersPage() {
               onKeyDown={handleKeyPress}
               onBlur={() => {
                 setNewReminderFocused(false);
-                if (!newReminderText.trim()) {
-                  setShowAddForm(false);
+                if (newReminderText.trim()) {
+                  handleAddReminder(); // Auto-save if there's text
+                } else {
+                  setShowAddForm(false); // Hide form if no text
                 }
               }}
               placeholder={newReminderFocused ? "" : "New Reminder"}
