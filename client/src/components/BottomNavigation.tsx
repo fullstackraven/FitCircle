@@ -65,92 +65,106 @@ export default function BottomNavigation() {
     }
   ];
 
-  // Fixed positioning that stays visible during scroll
+  // Ultra-stable positioning with containment isolation
   return (
-    <nav 
-      className="navigation-bar-fixed"
+    <div
       style={{
         position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
-        width: '100%',
+        width: '100vw',
         height: 'var(--bottom-nav-height)',
-        backgroundColor: 'rgba(15, 23, 42, 0.95)',
-        borderTop: '1px solid rgb(51, 65, 85)',
-        zIndex: 1000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '12px 8px calc(24px + env(safe-area-inset-bottom)) 8px',
-        boxSizing: 'border-box'
+        zIndex: 9999,
+        pointerEvents: 'none',
+        contain: 'layout style paint',
+        isolation: 'isolate',
+        transform: 'translateZ(0)',
+        WebkitTransform: 'translateZ(0)'
       }}
     >
-      <div 
+      <nav 
         style={{
-          display: 'flex',
-          justifyContent: 'space-around',
-          alignItems: 'center',
+          position: 'relative',
           width: '100%',
-          maxWidth: '448px',
-          margin: '0 auto'
+          height: '100%',
+          backgroundColor: 'rgba(15, 23, 42, 0.95)',
+          borderTop: '1px solid rgb(51, 65, 85)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '12px 8px calc(24px + env(safe-area-inset-bottom)) 8px',
+          boxSizing: 'border-box',
+          pointerEvents: 'auto'
         }}
       >
-        {navItems.map((item) => {
-          const isActive = location === item.path;
-          const Icon = item.icon;
-          
-          return (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '8px 12px',
-                borderRadius: '12px',
-                border: 'none',
-                backgroundColor: isActive ? 'rgba(51, 65, 85, 0.5)' : 'transparent',
-                color: isActive ? 'white' : 'rgb(148, 163, 184)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                outline: 'none'
-              }}
-              onMouseEnter={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.3)';
-                  e.currentTarget.style.color = 'white';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = 'rgb(148, 163, 184)';
-                }
-              }}
-            >
-              <Icon 
+        <div 
+          style={{
+            display: 'flex',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+            width: '100%',
+            maxWidth: '400px',
+            margin: '0 auto',
+            padding: '0 16px'
+          }}
+        >
+          {navItems.map((item) => {
+            const isActive = location === item.path;
+            const Icon = item.icon;
+            
+            return (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
                 style={{
-                  width: '20px',
-                  height: '20px',
-                  marginBottom: '4px'
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '8px 12px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  backgroundColor: isActive ? 'rgba(51, 65, 85, 0.5)' : 'transparent',
+                  color: isActive ? 'white' : 'rgb(148, 163, 184)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  outline: 'none'
                 }}
-              />
-              <span 
-                style={{
-                  fontSize: '11px',
-                  fontWeight: '300',
-                  lineHeight: '1'
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.3)';
+                    e.currentTarget.style.color = 'white';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = 'rgb(148, 163, 184)';
+                  }
                 }}
               >
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    </nav>
+                <Icon 
+                  style={{
+                    width: '20px',
+                    height: '20px',
+                    marginBottom: '4px'
+                  }}
+                />
+                <span 
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: '300',
+                    lineHeight: '1'
+                  }}
+                >
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+    </div>
   );
 }
