@@ -90,10 +90,31 @@ export function JournalLog() {
       addJournalEntry(currentDate, journalText);
       setLastSaved(new Date().toISOString());
       
-      // Ensure body scroll lock is cleaned up and close modal
-      document.body.style.overflow = '';
-      document.body.style.position = '';
+      // Close modal first
       setIsModalOpen(false);
+      
+      // Comprehensive scroll lock cleanup with timeout to ensure Dialog cleanup is complete
+      setTimeout(() => {
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.width = '';
+        document.body.style.height = '';
+        document.body.classList.remove('modal-open');
+        document.documentElement.style.overflow = '';
+        document.documentElement.style.position = '';
+        
+        // Force a reflow to ensure nav bar repositions correctly
+        const navBar = document.querySelector('.navigation-bar-absolute');
+        if (navBar) {
+          (navBar as HTMLElement).style.transform = 'translateZ(0)';
+          requestAnimationFrame(() => {
+            (navBar as HTMLElement).style.transform = '';
+          });
+        }
+      }, 100);
     }
   };
 
@@ -197,7 +218,33 @@ export function JournalLog() {
       </div>
 
       {/* Journal Entry Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog open={isModalOpen} onOpenChange={(open) => {
+        setIsModalOpen(open);
+        // If dialog is closing, ensure scroll lock cleanup
+        if (!open) {
+          setTimeout(() => {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            document.body.style.width = '';
+            document.body.style.height = '';
+            document.body.classList.remove('modal-open');
+            document.documentElement.style.overflow = '';
+            document.documentElement.style.position = '';
+            
+            // Force nav bar reposition
+            const navBar = document.querySelector('.navigation-bar-absolute');
+            if (navBar) {
+              (navBar as HTMLElement).style.transform = 'translateZ(0)';
+              requestAnimationFrame(() => {
+                (navBar as HTMLElement).style.transform = '';
+              });
+            }
+          }, 100);
+        }
+      }}>
         <DialogContent className="max-w-2xl max-h-[75vh] p-0 bg-slate-800 border-slate-600 overflow-hidden rounded-2xl">
           <div className="flex flex-col h-[70vh]" style={{ backgroundColor: 'hsl(222, 47%, 15%)' }}>
             {/* Modal Header */}
