@@ -52,39 +52,46 @@ export default function BottomNavigation() {
     }
   ];
 
-  // Visual viewport-aware navigation that follows keyboard state
+  // Floating dock-style navigation
   return (
-    <nav 
+    <div
       style={{
         position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        width: '100%',
-        height: 'var(--bottom-nav-height)',
-        backgroundColor: 'rgba(15, 23, 42, 0.95)',
-        borderTop: '1px solid rgb(51, 65, 85)',
+        bottom: '24px',
+        left: '50%',
+        transform: 'translateX(-50%)',
         zIndex: 9999,
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
-        padding: '20px 8px calc(16px + env(safe-area-inset-bottom)) 8px',
-        boxSizing: 'border-box',
-        transform: 'translateY(calc(var(--keyboard-offset, 0px) * -1))',
-        willChange: 'transform',
-        transition: 'transform 0.2s ease-out'
+        width: '100%',
+        padding: '0 16px',
+        boxSizing: 'border-box'
       }}
     >
-      <div 
+      <nav 
         style={{
+          backgroundColor: 'rgba(15, 23, 42, 0.95)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(51, 65, 85, 0.3)',
+          borderRadius: '24px',
+          padding: '12px 20px',
           display: 'flex',
-          justifyContent: 'space-around',
           alignItems: 'center',
-          width: '100%',
-          margin: '0 auto',
-          padding: '0 12px'
+          justifyContent: 'center',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          maxWidth: '400px',
+          width: '100%'
         }}
       >
+        <div 
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            gap: '8px'
+          }}
+        >
         {navItems.map((item) => {
           const isActive = location === item.path;
           const Icon = item.icon;
@@ -98,7 +105,7 @@ export default function BottomNavigation() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '12px 16px',
+                padding: '10px 12px',
                 borderRadius: '16px',
                 border: 'none',
                 backgroundColor: isActive ? 'rgba(51, 65, 85, 0.5)' : 'transparent',
@@ -106,8 +113,8 @@ export default function BottomNavigation() {
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 outline: 'none',
-                minWidth: '64px',
-                minHeight: '56px',
+                minWidth: '56px',
+                minHeight: '52px',
                 gap: '4px'
               }}
               onMouseEnter={(e) => {
@@ -142,7 +149,8 @@ export default function BottomNavigation() {
             </button>
           );
         })}
-      </div>
-    </nav>
+        </div>
+      </nav>
+    </div>
   );
 }
