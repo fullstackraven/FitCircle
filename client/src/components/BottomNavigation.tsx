@@ -5,19 +5,6 @@ import { useLocation } from 'wouter';
 export default function BottomNavigation() {
   const [location, navigate] = useLocation();
 
-  // Defensive cleanup of any residual body styles from modals on route changes
-  React.useEffect(() => {
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.left = '';
-    document.body.style.right = '';
-    document.body.style.width = '';
-    document.body.style.height = '';
-    document.documentElement.style.overflow = '';
-    document.documentElement.style.position = '';
-  }, [location]);
-
   // Hide navigation on wellness sub-pages
   const wellnessSubPages = [
     '/cardio',
@@ -65,108 +52,97 @@ export default function BottomNavigation() {
     }
   ];
 
-  // Ultra-stable positioning with containment isolation
+  // Visual viewport-aware navigation that follows keyboard state
   return (
-    <div
+    <nav 
       style={{
         position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
-        width: '100vw',
+        width: '100%',
         height: 'var(--bottom-nav-height)',
+        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+        borderTop: '1px solid rgb(51, 65, 85)',
         zIndex: 9999,
-        pointerEvents: 'none',
-        contain: 'layout style paint',
-        isolation: 'isolate',
-        transform: 'translateZ(0)',
-        WebkitTransform: 'translateZ(0)'
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px 8px calc(16px + env(safe-area-inset-bottom)) 8px',
+        boxSizing: 'border-box',
+        transform: 'translateY(calc(var(--keyboard-offset, 0px) * -1))',
+        willChange: 'transform',
+        transition: 'transform 0.2s ease-out'
       }}
     >
-      <nav 
+      <div 
         style={{
-          position: 'relative',
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(15, 23, 42, 0.95)',
-          borderTop: '1px solid rgb(51, 65, 85)',
           display: 'flex',
+          justifyContent: 'space-around',
           alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px 8px calc(16px + env(safe-area-inset-bottom)) 8px',
-          boxSizing: 'border-box',
-          pointerEvents: 'auto'
+          width: '100%',
+          margin: '0 auto',
+          padding: '0 12px'
         }}
       >
-        <div 
-          style={{
-            display: 'flex',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            width: '100%',
-            margin: '0 auto',
-            padding: '0 12px'
-          }}
-        >
-          {navItems.map((item) => {
-            const isActive = location === item.path;
-            const Icon = item.icon;
-            
-            return (
-              <button
-                key={item.path}
-                onClick={() => navigate(item.path)}
+        {navItems.map((item) => {
+          const isActive = location === item.path;
+          const Icon = item.icon;
+          
+          return (
+            <button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '12px 16px',
+                borderRadius: '16px',
+                border: 'none',
+                backgroundColor: isActive ? 'rgba(51, 65, 85, 0.5)' : 'transparent',
+                color: isActive ? 'white' : 'rgb(148, 163, 184)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                outline: 'none',
+                minWidth: '64px',
+                minHeight: '56px',
+                gap: '4px'
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.3)';
+                  e.currentTarget.style.color = 'white';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = 'rgb(148, 163, 184)';
+                }
+              }}
+            >
+              <Icon 
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '4px',
-                  padding: '12px 16px',
-                  borderRadius: '16px',
-                  minWidth: '64px',
-                  minHeight: '56px',
-                  border: 'none',
-                  backgroundColor: isActive ? 'rgba(51, 65, 85, 0.5)' : 'transparent',
-                  color: isActive ? 'white' : 'rgb(148, 163, 184)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  outline: 'none'
+                  width: '28px',
+                  height: '28px',
+                  marginBottom: '4px'
                 }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.3)';
-                    e.currentTarget.style.color = 'white';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = 'rgb(148, 163, 184)';
-                  }
+              />
+              <span 
+                style={{
+                  fontSize: '11px',
+                  fontWeight: '300',
+                  lineHeight: '1'
                 }}
               >
-                <Icon 
-                  style={{
-                    width: '28px',
-                    height: '28px',
-                    marginBottom: '4px'
-                  }}
-                />
-                <span 
-                  style={{
-                    fontSize: '11px',
-                    fontWeight: '300',
-                    lineHeight: '1'
-                  }}
-                >
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </nav>
-    </div>
+                {item.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </nav>
   );
 }

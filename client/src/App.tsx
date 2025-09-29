@@ -1,4 +1,3 @@
-
 import { Switch, Route } from "wouter";
 
 import Home from "@/pages/home";
@@ -27,6 +26,8 @@ import WellnessPage from "@/pages/wellness";
 // import TrainerPage from "@/pages/trainer";
 import NotFound from "@/pages/not-found";
 import BottomNavigation from "@/components/BottomNavigation";
+import ViewportController from "@/components/ViewportController";
+import { ScrollLockProvider } from "@/contexts/ScrollLockContext";
 
 function Router() {
   return (
@@ -63,12 +64,15 @@ function Router() {
 
 function App() {
   return (
-    <div className="app-grid-layout">
-      <main className="app-content">
-        <Router />
-      </main>
-      <BottomNavigation />
-    </div>
+    <ScrollLockProvider>
+      <ViewportController />
+      <div className="app-grid-layout">
+        <main className="app-content">
+          <Router />
+        </main>
+        <BottomNavigation />
+      </div>
+    </ScrollLockProvider>
   );
 }
 

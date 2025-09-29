@@ -4,10 +4,12 @@ import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { format, parseISO, isValid } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useScrollLock } from "@/contexts/ScrollLockContext";
 
 export function JournalLog() {
   const [, navigate] = useLocation();
   const { getAllJournalEntries, getJournalEntry, getJournalEntryWithTimestamp, addJournalEntry } = useWorkouts();
+  const { lockScroll, unlockScroll } = useScrollLock();
   
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,6 +55,7 @@ export function JournalLog() {
     setLastSaved(entryWithTimestamp?.timestamp || null);
     
     setIsModalOpen(true);
+    lockScroll();
   };
 
   const truncateText = (text: string, maxLength: number = 100) => {
@@ -93,29 +96,17 @@ export function JournalLog() {
       // Close modal first
       setIsModalOpen(false);
       
-      // Comprehensive scroll lock cleanup with timeout to ensure Dialog cleanup is complete
-      setTimeout(() => {
-        document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.left = '';
-        document.body.style.right = '';
-        document.body.style.width = '';
-        document.body.style.height = '';
-        document.body.classList.remove('modal-open');
-        document.documentElement.style.overflow = '';
-        document.documentElement.style.position = '';
-        
-        // Force a reflow to ensure nav bar repositions correctly
-        const navBar = document.querySelector('.navigation-bar-absolute');
-        if (navBar) {
-          (navBar as HTMLElement).style.transform = 'translateZ(0)';
-          requestAnimationFrame(() => {
-            (navBar as HTMLElement).style.transform = '';
-          });
-        }
-      }, 100);
+      // Clean up scroll lock
+      unlockScroll();
     }
+  };
+
+  // Handle modal close (including ESC key, click outside, etc.)
+  const handleModalClose = (open: boolean) => {
+    if (!open) {
+      unlockScroll();
+    }
+    setIsModalOpen(open);
   };
 
   const getDisplayDate = () => {
@@ -151,6 +142,7 @@ export function JournalLog() {
             setLastSaved(entryWithTimestamp?.timestamp || null);
             
             setIsModalOpen(true);
+            lockScroll();
           }}
           className="text-slate-400 hover:text-white transition-colors"
           title="Write new journal entry"
@@ -214,6 +206,7 @@ export function JournalLog() {
                 setLastSaved(entryWithTimestamp?.timestamp || null);
                 
                 setIsModalOpen(true);
+                lockScroll();
               }}
               className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors"
             >
@@ -224,7 +217,7 @@ export function JournalLog() {
       </div>
 
       {/* Journal Entry Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen} modal={false}>
+      <Dialog open={isModalOpen} onOpenChange={handleModalClose} modal={false}>
         <DialogContent className="max-w-2xl max-h-[75vh] p-0 bg-slate-800 border-slate-600 overflow-hidden rounded-2xl">
           <div className="flex flex-col h-[70vh]" style={{ backgroundColor: 'hsl(222, 47%, 15%)' }}>
             {/* Modal Header */}
