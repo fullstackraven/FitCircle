@@ -74,12 +74,7 @@
     overflow-x: hidden;
   }
 
-  /* Restore padding for fixed navigation overlay */
-  .min-h-screen, 
-  .min-h-dvh {
-    padding-bottom: calc(var(--bottom-nav-padding) + var(--pwa-extra-padding)) !important;
-    box-sizing: border-box;
-  }
+  /* No padding needed for floating dock navigation */
 
   /* PWA-specific adjustments */
   @media (display-mode: standalone) {
@@ -113,7 +108,6 @@
   .fitcircle-page {
     @apply min-h-dvh text-white;
     background-color: hsl(222, 47%, 11%);
-    padding-bottom: var(--bottom-nav-padding);
   }
   
   .fitcircle-container {

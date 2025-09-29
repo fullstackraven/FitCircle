@@ -92,63 +92,63 @@ export default function BottomNavigation() {
             gap: '8px'
           }}
         >
-        {navItems.map((item) => {
-          const isActive = location === item.path;
-          const Icon = item.icon;
-          
-          return (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '10px 12px',
-                borderRadius: '16px',
-                border: 'none',
-                backgroundColor: isActive ? 'rgba(51, 65, 85, 0.5)' : 'transparent',
-                color: isActive ? 'white' : 'rgb(148, 163, 184)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                outline: 'none',
-                minWidth: '56px',
-                minHeight: '52px',
-                gap: '4px'
-              }}
-              onMouseEnter={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.3)';
-                  e.currentTarget.style.color = 'white';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = 'rgb(148, 163, 184)';
-                }
-              }}
-            >
-              <Icon 
+          {navItems.map((item) => {
+            const isActive = location === item.path;
+            const Icon = item.icon;
+            
+            return (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
                 style={{
-                  width: '28px',
-                  height: '28px',
-                  marginBottom: '4px'
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '10px 12px',
+                  borderRadius: '16px',
+                  border: 'none',
+                  backgroundColor: isActive ? 'rgba(51, 65, 85, 0.5)' : 'transparent',
+                  color: isActive ? 'white' : 'rgb(148, 163, 184)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  outline: 'none',
+                  minWidth: '56px',
+                  minHeight: '52px',
+                  gap: '4px'
                 }}
-              />
-              <span 
-                style={{
-                  fontSize: '11px',
-                  fontWeight: '300',
-                  lineHeight: '1'
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.3)';
+                    e.currentTarget.style.color = 'white';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = 'rgb(148, 163, 184)';
+                  }
                 }}
               >
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
+                <Icon 
+                  style={{
+                    width: '28px',
+                    height: '28px',
+                    marginBottom: '4px'
+                  }}
+                />
+                <span 
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: '300',
+                    lineHeight: '1'
+                  }}
+                >
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </nav>
     </div>
