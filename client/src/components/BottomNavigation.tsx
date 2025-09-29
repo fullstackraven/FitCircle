@@ -105,7 +105,7 @@ export default function BottomNavigation() {
             alignItems: 'center',
             width: '100%',
             margin: '0 auto',
-            padding: '0 20px'
+            padding: '0 12px'
           }}
         >
           {navItems.map((item) => {
@@ -148,8 +148,8 @@ export default function BottomNavigation() {
               >
                 <Icon 
                   style={{
-                    width: '24px',
-                    height: '24px',
+                    width: '28px',
+                    height: '28px',
                     marginBottom: '4px'
                   }}
                 />
