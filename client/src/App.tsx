@@ -26,7 +26,6 @@ import WellnessPage from "@/pages/wellness";
 // import TrainerPage from "@/pages/trainer";
 import NotFound from "@/pages/not-found";
 import BottomNavigation from "@/components/BottomNavigation";
-import ViewportController from "@/components/ViewportController";
 import { ScrollLockProvider } from "@/contexts/ScrollLockContext";
 
 function Router() {
@@ -65,7 +64,6 @@ function Router() {
 function App() {
   return (
     <ScrollLockProvider>
-      <ViewportController />
       <div className="app-grid-layout">
         <main className="app-content">
           <Router />
