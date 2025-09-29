@@ -3,6 +3,7 @@ import { ArrowLeft, Zap, Undo2, Calendar } from "lucide-react";
 import { useLocation } from "wouter";
 import { useEnergyLevel } from "../hooks/use-energy-level";
 import { getDateString } from '@/lib/date-utils';
+import { format } from 'date-fns';
 
 // Enhanced Energy Level Trend Visualization Component
 const EnergyTrendVisualization = () => {
