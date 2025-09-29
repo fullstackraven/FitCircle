@@ -134,7 +134,7 @@ export default function BottomNavigation() {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '10px 12px',
+                  padding: '14px 16px',
                   borderRadius: '16px',
                   border: 'none',
                   backgroundColor: isActive ? 'rgba(51, 65, 85, 0.5)' : 'transparent',
@@ -142,8 +142,8 @@ export default function BottomNavigation() {
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   outline: 'none',
-                  minWidth: '56px',
-                  minHeight: '52px',
+                  minWidth: '64px',
+                  minHeight: '60px',
                   gap: '4px'
                 }}
                 onMouseEnter={(e) => {
