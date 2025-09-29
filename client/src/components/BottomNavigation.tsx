@@ -101,12 +101,11 @@ export default function BottomNavigation() {
         <div 
           style={{
             display: 'flex',
-            justifyContent: 'space-evenly',
+            justifyContent: 'space-around',
             alignItems: 'center',
             width: '100%',
-            maxWidth: '400px',
             margin: '0 auto',
-            padding: '0 8px'
+            padding: '0 20px'
           }}
         >
           {navItems.map((item) => {
@@ -122,8 +121,11 @@ export default function BottomNavigation() {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '8px 6px',
-                  borderRadius: '12px',
+                  gap: '4px',
+                  padding: '12px 16px',
+                  borderRadius: '16px',
+                  minWidth: '64px',
+                  minHeight: '56px',
                   border: 'none',
                   backgroundColor: isActive ? 'rgba(51, 65, 85, 0.5)' : 'transparent',
                   color: isActive ? 'white' : 'rgb(148, 163, 184)',
