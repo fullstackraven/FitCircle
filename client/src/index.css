@@ -32,7 +32,7 @@
     --chart-5: 340 75% 55%;
     
     /* Navigation variables */
-    --bottom-nav-height: 88px;
+    --bottom-nav-height: 110px;
     --bottom-nav-padding: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
     --pwa-extra-padding: 0px;
   }
@@ -84,7 +84,7 @@
   /* PWA-specific adjustments */
   @media (display-mode: standalone) {
     :root {
-      --pwa-extra-padding: 20px;
+      --pwa-extra-padding: 40px;
     }
     
     body {
@@ -109,7 +109,7 @@
     left: 0 !important;
     right: 0 !important;
     z-index: 999999 !important;
-    height: 88px !important;
+    height: 110px !important;
     background-color: rgba(15, 23, 42, 0.95) !important;
     border-top: 1px solid rgb(51, 65, 85) !important;
     display: flex !important;
