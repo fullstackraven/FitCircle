@@ -74,10 +74,10 @@
     overflow-x: hidden;
   }
 
-  /* Grid layout - no padding needed since nav is in document flow */
+  /* Restore padding for fixed navigation overlay */
   .min-h-screen, 
   .min-h-dvh {
-    padding-bottom: 0 !important;
+    padding-bottom: calc(var(--bottom-nav-padding) + var(--pwa-extra-padding)) !important;
     box-sizing: border-box;
   }
 

@@ -65,19 +65,25 @@ export default function BottomNavigation() {
     }
   ];
 
-  // Use CSS Grid layout - navigation is part of document flow
+  // Fixed positioning that stays visible during scroll
   return (
     <nav 
-      className="navigation-bar-grid"
+      className="navigation-bar-fixed"
       style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        width: '100%',
+        height: 'var(--bottom-nav-height)',
         backgroundColor: 'rgba(15, 23, 42, 0.95)',
         borderTop: '1px solid rgb(51, 65, 85)',
+        zIndex: 1000,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: '12px 8px calc(24px + env(safe-area-inset-bottom)) 8px',
-        boxSizing: 'border-box',
-        height: 'var(--bottom-nav-height)'
+        boxSizing: 'border-box'
       }}
     >
       <div 
