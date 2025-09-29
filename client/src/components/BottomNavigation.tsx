@@ -33,7 +33,30 @@ export default function BottomNavigation() {
     }
   ];
 
-  // Render navigation via portal to document.body to avoid containing block issues
+  // Create a completely isolated navigation container
+  // This prevents any body style changes from affecting navigation positioning
+  const createIsolatedContainer = () => {
+    let container = document.getElementById('nav-isolation-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'nav-isolation-container';
+      container.style.cssText = `
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        pointer-events: none !important;
+        z-index: 999998 !important;
+        isolation: isolate !important;
+        contain: layout style paint !important;
+      `;
+      document.documentElement.appendChild(container);
+    }
+    return container;
+  };
+
+  // Render navigation in isolated container
   return createPortal(
     <nav 
       className="navigation-bar-absolute"
@@ -46,12 +69,19 @@ export default function BottomNavigation() {
         height: 'var(--bottom-nav-height)',
         backgroundColor: 'rgba(15, 23, 42, 0.95)',
         borderTop: '1px solid rgb(51, 65, 85)',
-        zIndex: 1000, // Reasonable z-index
+        zIndex: 999999, // Match CSS z-index for consistency
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 'calc(12px + env(safe-area-inset-top)) 8px calc(24px + env(safe-area-inset-bottom)) 8px', // Safe area padding
-        boxSizing: 'border-box'
+        padding: 'calc(12px + env(safe-area-inset-top)) 8px calc(24px + env(safe-area-inset-bottom)) 8px',
+        boxSizing: 'border-box',
+        // PWA stability fixes - enhanced isolation
+        transform: 'translateZ(0)',
+        willChange: 'transform',
+        WebkitTransform: 'translateZ(0)',
+        contain: 'layout style paint',
+        isolation: 'isolate',
+        pointerEvents: 'auto' // Re-enable pointer events for nav bar
       }}
     >
       <div 
@@ -120,6 +150,6 @@ export default function BottomNavigation() {
         })}
       </div>
     </nav>,
-    document.body
+    createIsolatedContainer()
   );
 }
