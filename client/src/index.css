@@ -81,9 +81,9 @@
       padding-right: env(safe-area-inset-right);
     }
     
-    /* More aggressive PWA navigation bar positioning */
+    /* Fixed PWA navigation bar positioning - no double safe-area */
     .navigation-bar-absolute {
-      bottom: env(safe-area-inset-bottom) !important;
+      bottom: 0 !important;
       margin-bottom: 0 !important;
       padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
     }

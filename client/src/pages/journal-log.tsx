@@ -224,7 +224,7 @@ export function JournalLog() {
       </div>
 
       {/* Journal Entry Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen} modal={false}>
         <DialogContent className="max-w-2xl max-h-[75vh] p-0 bg-slate-800 border-slate-600 overflow-hidden rounded-2xl">
           <div className="flex flex-col h-[70vh]" style={{ backgroundColor: 'hsl(222, 47%, 15%)' }}>
             {/* Modal Header */}

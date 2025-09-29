@@ -1,8 +1,22 @@
+import React from 'react';
 import { Home, CalendarDays, Dumbbell, CheckSquare, Folder } from 'lucide-react';
 import { useLocation } from 'wouter';
 
 export default function BottomNavigation() {
   const [location, navigate] = useLocation();
+
+  // Defensive cleanup of any residual body styles from modals on route changes
+  React.useEffect(() => {
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    document.body.style.height = '';
+    document.documentElement.style.overflow = '';
+    document.documentElement.style.position = '';
+  }, [location]);
 
   // Hide navigation on wellness sub-pages
   const wellnessSubPages = [
