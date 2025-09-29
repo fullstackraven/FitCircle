@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Home, CalendarDays, Dumbbell, CheckSquare, Folder } from 'lucide-react';
 import { useLocation } from 'wouter';
 
 export default function BottomNavigation() {
   const [location, navigate] = useLocation();
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
   // Hide navigation on wellness sub-pages
   const wellnessSubPages = [
@@ -19,8 +20,36 @@ export default function BottomNavigation() {
     '/supplements-page'
   ];
 
-  // Don't render navigation on wellness sub-pages
-  if (wellnessSubPages.includes(location)) {
+  // Keyboard detection for hiding dock
+  useEffect(() => {
+    if (!window.visualViewport) {
+      return;
+    }
+
+    const handleViewportChange = () => {
+      const viewport = window.visualViewport!;
+      const windowHeight = window.innerHeight;
+      
+      // Consider keyboard open if viewport height is significantly smaller
+      const keyboardThreshold = 150; // pixels
+      const keyboardOffset = windowHeight - viewport.height - viewport.offsetTop;
+      setIsKeyboardOpen(keyboardOffset > keyboardThreshold);
+    };
+
+    window.visualViewport.addEventListener('resize', handleViewportChange);
+    window.visualViewport.addEventListener('scroll', handleViewportChange);
+    
+    // Initial check
+    handleViewportChange();
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleViewportChange);
+      window.visualViewport?.removeEventListener('scroll', handleViewportChange);
+    };
+  }, []);
+
+  // Don't render navigation on wellness sub-pages or when keyboard is open
+  if (wellnessSubPages.includes(location) || isKeyboardOpen) {
     return null;
   }
 
