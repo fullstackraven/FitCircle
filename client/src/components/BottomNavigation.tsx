@@ -4,7 +4,7 @@ import { useLocation } from 'wouter';
 
 export default function BottomNavigation() {
   const [location, navigate] = useLocation();
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
 
   // Hide navigation on wellness sub-pages
   const wellnessSubPages = [
@@ -30,10 +30,9 @@ export default function BottomNavigation() {
       const viewport = window.visualViewport!;
       const windowHeight = window.innerHeight;
       
-      // Consider keyboard open if viewport height is significantly smaller
-      const keyboardThreshold = 150; // pixels
-      const keyboardOffset = windowHeight - viewport.height - viewport.offsetTop;
-      setIsKeyboardOpen(keyboardOffset > keyboardThreshold);
+      // Calculate how much the viewport has shrunk due to keyboard
+      const currentKeyboardOffset = Math.max(0, windowHeight - viewport.height - viewport.offsetTop);
+      setKeyboardOffset(currentKeyboardOffset);
     };
 
     window.visualViewport.addEventListener('resize', handleViewportChange);
@@ -48,8 +47,8 @@ export default function BottomNavigation() {
     };
   }, []);
 
-  // Don't render navigation on wellness sub-pages or when keyboard is open
-  if (wellnessSubPages.includes(location) || isKeyboardOpen) {
+  // Don't render navigation on wellness sub-pages
+  if (wellnessSubPages.includes(location)) {
     return null;
   }
 
@@ -86,7 +85,7 @@ export default function BottomNavigation() {
     <div
       style={{
         position: 'fixed',
-        bottom: '24px',
+        bottom: keyboardOffset > 0 ? `${keyboardOffset + 16}px` : '24px',
         left: '50%',
         transform: 'translateX(-50%)',
         zIndex: 9999,
@@ -94,7 +93,8 @@ export default function BottomNavigation() {
         justifyContent: 'center',
         width: '100%',
         padding: '0 16px',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        transition: 'bottom 0.2s ease-out'
       }}
     >
       <nav 
