@@ -1,9 +1,27 @@
 import { Home, CalendarDays, Dumbbell, CheckSquare, Folder } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { createPortal } from 'react-dom';
 
 export default function BottomNavigation() {
   const [location, navigate] = useLocation();
+
+  // Hide navigation on wellness sub-pages
+  const wellnessSubPages = [
+    '/cardio',
+    '/fasting', 
+    '/meditation',
+    '/hydration',
+    '/measurements',
+    '/food-tracker',
+    '/recovery',
+    '/journal-log',
+    '/energy-level',
+    '/supplements-page'
+  ];
+
+  // Don't render navigation on wellness sub-pages
+  if (wellnessSubPages.includes(location)) {
+    return null;
+  }
 
   const navItems = [
     {
@@ -33,31 +51,8 @@ export default function BottomNavigation() {
     }
   ];
 
-  // Create a completely isolated navigation container
-  // This prevents any body style changes from affecting navigation positioning
-  const createIsolatedContainer = () => {
-    let container = document.getElementById('nav-isolation-container');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'nav-isolation-container';
-      container.style.cssText = `
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        pointer-events: none !important;
-        z-index: 999998 !important;
-        isolation: isolate !important;
-        contain: layout style paint !important;
-      `;
-      document.documentElement.appendChild(container);
-    }
-    return container;
-  };
-
-  // Render navigation in isolated container
-  return createPortal(
+  // Render navigation normally since sub-pages don't show it
+  return (
     <nav 
       className="navigation-bar-absolute"
       style={{
@@ -69,19 +64,12 @@ export default function BottomNavigation() {
         height: 'var(--bottom-nav-height)',
         backgroundColor: 'rgba(15, 23, 42, 0.95)',
         borderTop: '1px solid rgb(51, 65, 85)',
-        zIndex: 999999, // Match CSS z-index for consistency
+        zIndex: 1000,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: 'calc(12px + env(safe-area-inset-top)) 8px calc(24px + env(safe-area-inset-bottom)) 8px',
-        boxSizing: 'border-box',
-        // PWA stability fixes - enhanced isolation
-        transform: 'translateZ(0)',
-        willChange: 'transform',
-        WebkitTransform: 'translateZ(0)',
-        contain: 'layout style paint',
-        isolation: 'isolate',
-        pointerEvents: 'auto' // Re-enable pointer events for nav bar
+        boxSizing: 'border-box'
       }}
     >
       <div 
@@ -149,7 +137,6 @@ export default function BottomNavigation() {
           );
         })}
       </div>
-    </nav>,
-    createIsolatedContainer()
+    </nav>
   );
 }

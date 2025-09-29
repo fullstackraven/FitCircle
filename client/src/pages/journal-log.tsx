@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Calendar, FileText } from "lucide-react";
+import { Plus, Calendar, FileText, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { format, parseISO, isValid } from "date-fns";
@@ -125,9 +125,15 @@ export function JournalLog() {
   };
 
   return (
-    <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', paddingBottom: 'var(--bottom-nav-padding)' }}>
+    <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       <div className="flex items-center justify-between mb-6">
-        <div className="w-[42px]" />
+        <button
+          onClick={() => navigate('/wellness')}
+          className="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors"
+          data-testid="button-back"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
         <h1 className="text-xl font-bold text-white">Journal Log</h1>
         <button
           onClick={() => {
@@ -218,33 +224,7 @@ export function JournalLog() {
       </div>
 
       {/* Journal Entry Modal */}
-      <Dialog open={isModalOpen} onOpenChange={(open) => {
-        setIsModalOpen(open);
-        // If dialog is closing, ensure scroll lock cleanup
-        if (!open) {
-          setTimeout(() => {
-            document.body.style.overflow = '';
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.left = '';
-            document.body.style.right = '';
-            document.body.style.width = '';
-            document.body.style.height = '';
-            document.body.classList.remove('modal-open');
-            document.documentElement.style.overflow = '';
-            document.documentElement.style.position = '';
-            
-            // Force nav bar reposition
-            const navBar = document.querySelector('.navigation-bar-absolute');
-            if (navBar) {
-              (navBar as HTMLElement).style.transform = 'translateZ(0)';
-              requestAnimationFrame(() => {
-                (navBar as HTMLElement).style.transform = '';
-              });
-            }
-          }, 100);
-        }
-      }}>
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-2xl max-h-[75vh] p-0 bg-slate-800 border-slate-600 overflow-hidden rounded-2xl">
           <div className="flex flex-col h-[70vh]" style={{ backgroundColor: 'hsl(222, 47%, 15%)' }}>
             {/* Modal Header */}
