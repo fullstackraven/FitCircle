@@ -19,7 +19,7 @@ export default function RemindersPage() {
   const [editFocused, setEditFocused] = useState(false);
 
   const activeReminders = reminders.filter(r => !r.completed);
-  const completedReminders = reminders.filter(r => r.completed);
+  const completedReminders = reminders.filter(r => r.completed).reverse();
 
 
   const handleAddReminder = (keepFormOpen = false) => {
