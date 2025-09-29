@@ -93,7 +93,7 @@ export default function BottomNavigation() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '12px 8px calc(24px + env(safe-area-inset-bottom)) 8px',
+          padding: '20px 8px calc(16px + env(safe-area-inset-bottom)) 8px',
           boxSizing: 'border-box',
           pointerEvents: 'auto'
         }}
@@ -106,7 +106,7 @@ export default function BottomNavigation() {
             width: '100%',
             maxWidth: '400px',
             margin: '0 auto',
-            padding: '0 16px'
+            padding: '0 8px'
           }}
         >
           {navItems.map((item) => {
@@ -122,7 +122,7 @@ export default function BottomNavigation() {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '8px 12px',
+                  padding: '8px 6px',
                   borderRadius: '12px',
                   border: 'none',
                   backgroundColor: isActive ? 'rgba(51, 65, 85, 0.5)' : 'transparent',
@@ -146,8 +146,8 @@ export default function BottomNavigation() {
               >
                 <Icon 
                   style={{
-                    width: '20px',
-                    height: '20px',
+                    width: '24px',
+                    height: '24px',
                     marginBottom: '4px'
                   }}
                 />
