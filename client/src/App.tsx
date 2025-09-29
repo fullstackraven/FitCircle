@@ -63,8 +63,10 @@ function Router() {
 
 function App() {
   return (
-    <div>
-      <Router />
+    <div className="app-grid-layout">
+      <main className="app-content">
+        <Router />
+      </main>
       <BottomNavigation />
     </div>
   );

@@ -61,10 +61,23 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Global padding for all page containers to avoid nav bar overlap */
+  /* CSS Grid App Layout - eliminates PWA positioning issues */
+  .app-grid-layout {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .app-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Grid layout - no padding needed since nav is in document flow */
   .min-h-screen, 
   .min-h-dvh {
-    padding-bottom: calc(var(--bottom-nav-padding) + var(--pwa-extra-padding)) !important;
+    padding-bottom: 0 !important;
     box-sizing: border-box;
   }
 
