@@ -41,12 +41,10 @@
         }
         
         // Check if this is a cache clearing request and skip SW registration
-        if (window.location.search.includes('clear=true')) {
-          // Cache clearing mode - skipping service worker
-          return;
-        }
+        const shouldSkipRegistration = window.location.search.includes('clear=true');
         
-        navigator.serviceWorker.register("/sw.js")
+        if (!shouldSkipRegistration) {
+          navigator.serviceWorker.register("/sw.js")
           .then((registration) => {
             // Service Worker registered successfully
             
@@ -75,6 +73,7 @@
           .catch((error) => {
             // Service Worker registration failed
           });
+        }
       }
     </script>
   </body>
