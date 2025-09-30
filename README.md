@@ -77,7 +77,8 @@ A comprehensive, fully offline fitness and wellness tracking Progressive Web App
 - **Consistent Styling**: Unified "fitcircle" design language across all pages
 - **Dark Theme**: Elegant slate color scheme with vibrant accent colors
 - **Responsive Layout**: Optimized for mobile devices with tablet support
-- **PWA Ready**: Progressive Web App with offline capabilities and native installation
+- **iOS PWA Optimized**: Native-like app experience with perfect safe area handling for notched iPhones
+- **Overlay Navigation**: Content scrolls behind semi-transparent dock with blur effects
 - **Accessibility**: High contrast design with screen reader support
 
 ### 🎨 Advanced UI Components
@@ -279,6 +280,14 @@ The app exports complete app state as JSON, including:
 
 ## 📋 Current Status & Recent Updates
 
+### iOS PWA Optimization (September 2025)
+- ✅ **Safe Area Handling**: Perfect iOS safe area support for notched devices (iPhone X+)
+- ✅ **App-Shell Layout**: Implemented position: fixed layout pattern for stable PWA experience
+- ✅ **Overlay Effects**: Content scrolls behind semi-transparent dock and status bar with blur
+- ✅ **Z-Index Stacking**: Proper layering (shell: 0, content: 1, dock: 1000) for iOS compatibility
+- ✅ **Viewport Bounce Fix**: Eliminated Safari/iOS navigation bouncing issues
+- ✅ **PWA Enhancement**: Seamless standalone app experience with proper safe area overlays
+
 ### Completed Features (August 2025)
 - ✅ **Complete UI Consistency**: Unified styling across all 20+ pages
 - ✅ **Comprehensive Error Handling**: Safe localStorage operations with recovery
@@ -289,10 +298,11 @@ The app exports complete app state as JSON, including:
 
 ### Core Architecture Achievements
 - ✅ **Zero Server Dependencies**: 100% client-side operation
-- ✅ **PWA Functionality**: Service worker for offline capabilities  
+- ✅ **PWA Functionality**: Service worker for offline capabilities with iOS optimization
 - ✅ **Data Migration System**: Automatic updates preserving historical data
 - ✅ **Mobile Optimization**: Touch-first design with large interactive elements
 - ✅ **Privacy by Design**: Complete user data ownership and control
+- ✅ **iOS Native Feel**: App-shell pattern with safe area overlays for iPhone/iPad
 
 ## 🔮 Potential Future Enhancements
 

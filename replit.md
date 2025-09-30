@@ -67,7 +67,19 @@ Preferred communication style: Simple, everyday language.
 - **Cloud AI**: Claude 4.0 Sonnet (used as foundation).
 - **Open-source alternatives (recommended for future cost-free implementation)**: Ollama + Open WebUI, Jan, LlamaGPT.
 
-## Recent Architecture Changes (August 2025)
+## Recent Architecture Changes
+
+### iOS PWA Safe Area Optimization (September 2025)
+- **App-Shell Layout Pattern**: Implemented position: fixed app-shell layout to properly handle iOS safe areas (notch and home indicator).
+- **Safe Area Overlaying**: Both top status bar and bottom dock now properly overlay safe areas using z-index stacking (app-shell: 0, content: 1, dock: 1000).
+- **Transparent Dock Design**: Removed solid background from dock container, allowing content to scroll behind semi-transparent, blurred navigation with backdrop-filter.
+- **Viewport Configuration**: Optimized viewport-fit=cover and apple-mobile-web-app-status-bar-style=black-translucent for seamless PWA experience.
+- **Content Padding Strategy**: Smart padding implementation - top uses calc(env(safe-area-inset-top) + 16px), bottom uses 90px for dock space, dock handles its own safe-area-inset-bottom.
+- **Visual Consistency**: Achieved iOS-like overlay effect where content scrolls behind both status bar and dock with proper blur effects.
+- **Eliminated Bounce Issues**: Fixed Safari/iOS viewport bouncing by using fixed positioning instead of flex-based layout for critical UI elements.
+- **PWA Enhancement**: Improved standalone PWA experience with proper safe area handling for notched devices (iPhone X and later).
+
+### Architecture Changes (August 2025)
 
 ### Comprehensive Bug Prevention & Error Handling (August 19, 2025)
 - **Complete localStorage Error Handling**: Added try-catch blocks around all 30+ localStorage operations across all hooks and components to prevent data corruption crashes.
