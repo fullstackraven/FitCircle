@@ -81,6 +81,7 @@
     width: 100%;
     overflow: hidden;
     position: relative;
+    padding-top: env(safe-area-inset-top);
   }
 
   /* Scrollable content area */
@@ -90,6 +91,7 @@
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
+    padding: 16px;
   }
 
   /* Dock at bottom of flex layout - no position fixed */
