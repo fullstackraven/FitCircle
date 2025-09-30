@@ -1,0 +1,153 @@
+You’ve run into a classic iOS/Safari PWA quirk:
+	•	When an input is focused, iOS shows the system keyboard and shrinks the visual viewport.
+	•	When the keyboard dismisses, Safari re-expands the viewport and tries to restore scroll.
+	•	If your layout uses position: fixed + 100vh (or anything derived from window.innerHeight) the element temporarily “floats,” then snaps back as the viewport size changes. That’s the “spongy/bouncy” jump you’re seeing.
+
+Below is a battle-tested setup that stops the jumping and keeps your dock rock-solid.
+
+⸻
+
+1) Head meta (one-time)
+
+Make sure your PWA has full-screen layout and safe-area support.
+
+<!-- index.html -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+
+⸻
+
+2) CSS: use dynamic viewport units + safe-area, and pad the page
+
+Avoid raw 100vh and anchor the dock with the safe-area inset. Give the content permanent bottom padding so it never scrolls under the dock.
+
+/* Root height that works across iOS versions */
+:root {
+  /* will be set from JS as a px value; fallback to 1dvh on modern iOS */
+  --app-dvh: 1dvh;
+  --dock-h: 72px; /* your dock height */
+}
+
+/* Make the page at least as tall as the dynamic viewport */
+html, body, #root { height: 100%; }
+.app {
+  min-height: calc(var(--app-dvh) * 100);
+  /* Prevent rubber-band from dragging the fixed bar */
+  overscroll-behavior-y: contain;
+}
+
+/* Your scrollable area should never hide behind the dock */
+.main-scroll {
+  min-height: calc(var(--app-dvh) * 100);
+  padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom));
+}
+
+/* The dock itself */
+.dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: env(safe-area-inset-bottom);
+  height: var(--dock-h);
+  /* Stability hints to WebKit during viewport changes */
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  z-index: 1000;
+}
+
+/* Optional: when the keyboard is open, either keep the dock visible
+   above the keyboard or hide it—choose ONE of the two blocks below */
+
+/* OPTION A: keep the dock pinned to the visible bottom (above keyboard) */
+.keyboard-open .dock {
+  transform: translateY(calc(var(--kb-offset, 0px) * -1)); /* moves up */
+}
+
+/* OPTION B: hide the dock while typing (often simplest) */
+/*
+.keyboard-open .dock {
+  opacity: 0; pointer-events: none;
+  transition: opacity 120ms ease;
+}
+*/
+
+Why this works:
+	•	1dvh (dynamic viewport height) tracks the visual viewport on iOS 16.4+.
+	•	For older iOS, we set --app-dvh from JS (next section).
+	•	bottom: env(safe-area-inset-bottom) anchors into the notch area correctly.
+	•	Permanent padding-bottom on the content prevents “scroll under” + jump when Safari resizes.
+
+⸻
+
+3) JS: track the real (visual) viewport & keyboard state
+
+Use the VisualViewport API when present; fall back to innerHeight. Update a CSS variable so layout always reflects the current viewport, and optionally move/hide the dock during keyboard use.
+
+// appViewport.ts (run once at app start, e.g., in App.tsx useEffect)
+function applyViewportVars() {
+  const vv = window.visualViewport;
+  const vh = (vv?.height ?? window.innerHeight) * 0.01;
+  document.documentElement.style.setProperty('--app-dvh', `${vh}px`);
+
+  // kb-offset is how much shorter the visual viewport is vs the layout viewport
+  const kbOffset = Math.max(0, window.innerHeight - (vv?.height ?? window.innerHeight));
+  document.documentElement.style.setProperty('--kb-offset', `${kbOffset}px`);
+
+  // Toggle a class while keyboard is up (threshold ~80px works well)
+  const keyboardOpen = kbOffset > 80;
+  document.documentElement.classList.toggle('keyboard-open', keyboardOpen);
+}
+
+// keep things in sync across common viewport changes
+applyViewportVars();
+
+window.addEventListener('resize', applyViewportVars);
+window.addEventListener('orientationchange', () => setTimeout(applyViewportVars, 250));
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', applyViewportVars);
+  window.visualViewport.addEventListener('scroll', applyViewportVars); // iOS fires this when the keyboard slides
+}
+
+// Optional: when an input blurs, give Safari a tick to settle before recomputing,
+// which avoids one last “bounce” on certain iOS builds.
+document.addEventListener('focusout', () => setTimeout(applyViewportVars, 150), true);
+
+
+⸻
+
+4) Common pitfalls that cause the “bounce”
+	•	Using 100vh anywhere in the scrolling container (wrappers, sections, modals). Replace with min-height: 100svh (smallest), 100dvh (dynamic), or the --app-dvh approach above.
+	•	No bottom padding for the content. Without padding-bottom: dockHeight + safe-area, Safari can “reveal” content underneath, then snap your dock.
+	•	Transforming/animating an ancestor of the fixed element. If a parent has transform, filter, or will-change, position: fixed behaves like absolute relative to that ancestor in WebKit. Keep the dock outside transformed containers.
+	•	Using overflow: hidden on body and scrolling a nested div without the padding fix—this exacerbates the snap.
+	•	Height JS based on window.innerHeight only. That value doesn’t track the visual viewport on focus; use visualViewport.height when available.
+
+⸻
+
+5) Minimal React example (fits your stack)
+
+// App.tsx
+useEffect(() => {
+  // paste applyViewportVars() and listeners from section 3 here
+}, []);
+
+return (
+  <div className="app">
+    <main className="main-scroll">
+      {/* your content */}
+    </main>
+    <nav className="dock">…icons…</nav>
+  </div>
+);
+
+
+⸻
+
+TL;DR (what’s happening + quick fix)
+	•	It’s not your state logic; it’s iOS visual-viewport resizing on keyboard show/hide.
+	•	Use viewport-fit=cover, safe-area insets, dynamic viewport units (or the --app-dvh polyfill), and give your content permanent bottom padding.
+	•	Optionally detect the keyboard via VisualViewport and either pin the dock above the keyboard or hide it while typing.
+
+If you paste in the CSS + JS above, your dock should stop bouncing and remain fixed—both after editing text and during normal scrolling. If you want, share your current index.html, the dock CSS, and the component tree around your scroll container and I’ll tailor the snippet precisely to your codebase.

@@ -7,6 +7,35 @@ import { Router } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 
+// Viewport tracking for iOS Safari PWA stability
+function applyViewportVars() {
+  const vv = window.visualViewport;
+  const vh = (vv?.height ?? window.innerHeight) * 0.01;
+  document.documentElement.style.setProperty('--app-dvh', `${vh}px`);
+
+  // kb-offset is how much shorter the visual viewport is vs the layout viewport
+  const kbOffset = Math.max(0, window.innerHeight - (vv?.height ?? window.innerHeight));
+  document.documentElement.style.setProperty('--kb-offset', `${kbOffset}px`);
+
+  // Toggle a class while keyboard is up (threshold ~80px works well)
+  const keyboardOpen = kbOffset > 80;
+  document.documentElement.classList.toggle('keyboard-open', keyboardOpen);
+}
+
+// Initialize viewport tracking
+applyViewportVars();
+
+window.addEventListener('resize', applyViewportVars);
+window.addEventListener('orientationchange', () => setTimeout(applyViewportVars, 250));
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', applyViewportVars);
+  window.visualViewport.addEventListener('scroll', applyViewportVars);
+}
+
+// Give Safari a tick to settle after input blur to avoid one last "bounce"
+document.addEventListener('focusout', () => setTimeout(applyViewportVars, 150), true);
+
 // Completely disable browser swipe navigation
 let startX = 0;
 let startY = 0;

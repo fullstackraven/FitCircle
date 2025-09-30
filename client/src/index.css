@@ -31,6 +31,11 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     
+    /* Dynamic viewport and dock variables for iOS stability */
+    --app-dvh: 1vh; /* Will be set from JS; fallback to 1vh */
+    --dock-h: 88px; /* Actual dock height including padding */
+    --kb-offset: 0px; /* Keyboard offset, set from JS */
+    
     /* Navigation variables */
     --bottom-nav-height: 110px;
     --bottom-nav-padding: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
@@ -43,16 +48,20 @@
     @apply border-border;
   }
   
+  html, body, #root {
+    height: 100%;
+  }
+
   body {
     @apply bg-background text-foreground;
     background-color: hsl(222, 47%, 11%);
     color: hsl(210, 40%, 98%);
-    /* Disable browser swipe navigation */
+    /* Disable browser swipe navigation and prevent rubber-band bounce */
+    overscroll-behavior-y: contain;
     overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
     margin: 0;
     position: relative;
-    min-height: 100dvh;
   }
 
   /* Disable swipe gestures on all containers */
@@ -61,20 +70,22 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* CSS Grid App Layout - eliminates PWA positioning issues */
+  /* App layout with dynamic viewport height */
   .app-grid-layout {
-    min-height: 100vh;
-    min-height: 100dvh;
+    min-height: calc(var(--app-dvh) * 100);
+    overscroll-behavior-y: contain;
   }
 
   .app-content {
     overflow-x: hidden;
+    min-height: calc(var(--app-dvh) * 100);
+    padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom) + 24px);
   }
 
   /* Extra padding for floating dock navigation */
   .min-h-screen, 
   .min-h-dvh {
-    padding-bottom: 180px !important;
+    padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom) + 24px) !important;
     box-sizing: border-box;
   }
 

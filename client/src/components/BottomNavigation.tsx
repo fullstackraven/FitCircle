@@ -105,14 +105,17 @@ export default function BottomNavigation() {
         position: 'fixed',
         bottom: baseBottom,
         left: '50%',
-        transform: `translate(-50%, ${translateY}px)`,
+        transform: `translate(-50%, ${translateY}px) translateZ(0)`,
         zIndex: 9999,
         display: 'flex',
         justifyContent: 'center',
         width: '100%',
         padding: '0 16px',
         boxSizing: 'border-box',
-        transition: 'transform 0.2s ease-out'
+        transition: 'transform 0.2s ease-out',
+        willChange: 'transform',
+        backfaceVisibility: 'hidden' as const,
+        WebkitBackfaceVisibility: 'hidden' as const
       }}
     >
       <nav 
