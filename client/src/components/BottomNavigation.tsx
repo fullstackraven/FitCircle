@@ -58,6 +58,7 @@ export default function BottomNavigation() {
         justifyContent: 'center',
         width: '100%',
         padding: '0 16px',
+        paddingBottom: `max(16px, env(safe-area-inset-bottom))`,
         boxSizing: 'border-box'
       }}
     >
