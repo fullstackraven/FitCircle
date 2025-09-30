@@ -74,12 +74,14 @@ function App() {
 
   return (
     <ScrollLockProvider>
-      <div key={shellKey} className="app-grid-layout">
+      <div key={shellKey} className="app-shell">
         <main ref={scrollRef} className="app-content">
           <Router />
         </main>
+        <div ref={dockRef} className="app-dock">
+          <BottomNavigation />
+        </div>
       </div>
-      <BottomNavigation ref={dockRef} />
     </ScrollLockProvider>
   );
 }

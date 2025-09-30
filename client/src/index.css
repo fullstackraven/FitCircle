@@ -50,6 +50,7 @@
   
   html, body, #root {
     height: 100%;
+    overflow: hidden;
   }
 
   body {
@@ -61,7 +62,8 @@
     overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
     margin: 0;
-    position: relative;
+    position: fixed;
+    width: 100%;
   }
 
   /* Disable swipe gestures on all containers */
@@ -70,22 +72,37 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* App layout with dynamic viewport height */
-  .app-grid-layout {
-    min-height: calc(var(--app-dvh) * 100);
+  /* App-shell layout: fixed height flex container */
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Scrollable content area */
+  .app-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
   }
 
-  .app-content {
-    overflow-x: hidden;
-    min-height: calc(var(--app-dvh) * 100);
-    padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom) + 24px);
+  /* Dock at bottom of flex layout - no position fixed */
+  .app-dock {
+    flex-shrink: 0;
+    width: 100%;
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
-  /* Extra padding for floating dock navigation */
+  /* Extra padding for pages (no longer needed but keep for compatibility) */
   .min-h-screen, 
   .min-h-dvh {
-    padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom) + 24px) !important;
+    min-height: auto;
     box-sizing: border-box;
   }
 

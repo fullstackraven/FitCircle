@@ -1,10 +1,8 @@
-import React, { useState, useEffect, forwardRef } from 'react';
 import { Home, CalendarDays, Dumbbell, CheckSquare, Folder } from 'lucide-react';
 import { useLocation } from 'wouter';
 
-const BottomNavigation = forwardRef<HTMLDivElement>((props, ref) => {
+export default function BottomNavigation() {
   const [location, navigate] = useLocation();
-  const [keyboardState, setKeyboardState] = useState({ open: false, offset: 0 });
 
   // Hide navigation on wellness sub-pages
   const wellnessSubPages = [
@@ -19,48 +17,6 @@ const BottomNavigation = forwardRef<HTMLDivElement>((props, ref) => {
     '/energy-level',
     '/supplements-page'
   ];
-
-  // Robust keyboard detection - only update on resize and focus events, NOT scroll
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-
-    let timerId: number | null = null;
-
-    const compute = () => {
-      const docHeight = document.documentElement.clientHeight;
-      const keyboardHeight = Math.max(0, docHeight - (vv.height + vv.offsetTop));
-      const open = keyboardHeight > 80; // Threshold to determine if keyboard is truly open
-      setKeyboardState({ open, offset: open ? keyboardHeight : 0 });
-    };
-
-    // Deferred update helps with iOS keyboard dismissal timing
-    const deferredCompute = () => {
-      if (timerId !== null) clearTimeout(timerId);
-      timerId = window.setTimeout(compute, 50);
-    };
-
-    vv.addEventListener('resize', compute);
-    window.addEventListener('focusin', compute);
-    window.addEventListener('focusout', deferredCompute);
-    
-    // Initial check
-    compute();
-
-    return () => {
-      if (timerId !== null) clearTimeout(timerId);
-      vv.removeEventListener('resize', compute);
-      window.removeEventListener('focusin', compute);
-      window.removeEventListener('focusout', deferredCompute);
-    };
-  }, []);
-
-  // Reset keyboard state on route change to avoid stale values
-  useEffect(() => {
-    setTimeout(() => {
-      setKeyboardState({ open: false, offset: 0 });
-    }, 0);
-  }, [location]);
 
   // Don't render navigation on wellness sub-pages
   if (wellnessSubPages.includes(location)) {
@@ -95,28 +51,14 @@ const BottomNavigation = forwardRef<HTMLDivElement>((props, ref) => {
     }
   ];
 
-  // Floating dock-style navigation with stable bottom position
-  const baseBottom = 'calc(env(safe-area-inset-bottom) + 24px)';
-  const translateY = keyboardState.open ? -(keyboardState.offset + 16) : 0;
-
   return (
     <div
-      ref={ref}
       style={{
-        position: 'fixed',
-        bottom: baseBottom,
-        left: '50%',
-        transform: `translate(-50%, ${translateY}px) translateZ(0)`,
-        zIndex: 9999,
         display: 'flex',
         justifyContent: 'center',
         width: '100%',
-        padding: '0 16px',
-        boxSizing: 'border-box',
-        transition: 'transform 0.2s ease-out',
-        willChange: 'transform',
-        backfaceVisibility: 'hidden' as const,
-        WebkitBackfaceVisibility: 'hidden' as const
+        padding: '24px 16px',
+        boxSizing: 'border-box'
       }}
     >
       <nav 
@@ -202,8 +144,4 @@ const BottomNavigation = forwardRef<HTMLDivElement>((props, ref) => {
       </nav>
     </div>
   );
-});
-
-BottomNavigation.displayName = 'BottomNavigation';
-
-export default BottomNavigation;
+}
