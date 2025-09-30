@@ -96,8 +96,8 @@
   .app-dock {
     flex-shrink: 0;
     width: 100%;
-    padding-bottom: max(8px, env(safe-area-inset-bottom));
-    background-color: transparent;
+    padding-bottom: env(safe-area-inset-bottom);
+    background-color: hsl(222, 47%, 11%);
   }
 
   /* Extra padding for pages (no longer needed but keep for compatibility) */
