@@ -72,15 +72,6 @@ function App() {
     dockEl: dockRef.current,
   });
 
-  // Handle navigation after reload
-  useEffect(() => {
-    const pendingPath = sessionStorage.getItem('fitcircle_pending_navigation');
-    if (pendingPath) {
-      sessionStorage.removeItem('fitcircle_pending_navigation');
-      window.history.replaceState({}, '', pendingPath);
-    }
-  }, []);
-
   return (
     <ScrollLockProvider>
       <div key={shellKey} className="app-grid-layout">

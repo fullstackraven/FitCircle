@@ -6,19 +6,6 @@ const BottomNavigation = forwardRef<HTMLDivElement>((props, ref) => {
   const [location, navigate] = useLocation();
   const [keyboardState, setKeyboardState] = useState({ open: false, offset: 0 });
 
-  // Track text input to trigger reload on navigation
-  useEffect(() => {
-    const handleFocus = (e: FocusEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-        sessionStorage.setItem('fitcircle_text_input_occurred', 'true');
-      }
-    };
-
-    document.addEventListener('focusin', handleFocus);
-    return () => document.removeEventListener('focusin', handleFocus);
-  }, []);
-
   // Hide navigation on wellness sub-pages
   const wellnessSubPages = [
     '/cardio',
@@ -108,18 +95,6 @@ const BottomNavigation = forwardRef<HTMLDivElement>((props, ref) => {
     }
   ];
 
-  const handleNavigation = (path: string) => {
-    const textInputOccurred = sessionStorage.getItem('fitcircle_text_input_occurred') === 'true';
-    
-    if (textInputOccurred && location !== path) {
-      sessionStorage.removeItem('fitcircle_text_input_occurred');
-      sessionStorage.setItem('fitcircle_pending_navigation', path);
-      window.location.reload();
-    } else {
-      navigate(path);
-    }
-  };
-
   // Floating dock-style navigation with stable bottom position
   const baseBottom = 'calc(env(safe-area-inset-bottom) + 24px)';
   const translateY = keyboardState.open ? -(keyboardState.offset + 16) : 0;
@@ -175,7 +150,7 @@ const BottomNavigation = forwardRef<HTMLDivElement>((props, ref) => {
             return (
               <button
                 key={item.path}
-                onClick={() => handleNavigation(item.path)}
+                onClick={() => navigate(item.path)}
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
