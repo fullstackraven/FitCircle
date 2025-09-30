@@ -57,7 +57,7 @@ export default function BottomNavigation() {
         display: 'flex',
         justifyContent: 'center',
         width: '100%',
-        padding: '24px 16px',
+        padding: '12px 16px 16px 16px',
         boxSizing: 'border-box'
       }}
     >
