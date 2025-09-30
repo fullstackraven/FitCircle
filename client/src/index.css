@@ -74,7 +74,7 @@
   /* Extra padding for floating dock navigation */
   .min-h-screen, 
   .min-h-dvh {
-    padding-bottom: 120px !important;
+    padding-bottom: 180px !important;
     box-sizing: border-box;
   }
 

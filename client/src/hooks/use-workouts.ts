@@ -361,7 +361,7 @@ export function useWorkouts() {
     const dates = [];
     const today = new Date();
 
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 0; i < 7; i++) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
       dates.push(date);
@@ -373,10 +373,11 @@ export function useWorkouts() {
 
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
+      const isToday = dateString === getDateString(today);
       const isYesterday = dateString === getDateString(yesterday);
       
-      const formattedDate = isYesterday ? 'Yesterday' : 
-        date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); // Keep display format as local
+      const formattedDate = isToday ? 'Today' : (isYesterday ? 'Yesterday' : 
+        date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })); // Keep display format as local
 
       const totalReps = Object.values(dayLog || {}).reduce((sum: number, logEntry: number | WorkoutLogEntry) => {
         if (typeof logEntry === 'number') {
