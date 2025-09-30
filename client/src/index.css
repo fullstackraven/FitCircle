@@ -98,7 +98,7 @@
     padding-top: calc(env(safe-area-inset-top) + 16px);
     padding-left: 16px;
     padding-right: 16px;
-    padding-bottom: calc(90px + env(safe-area-inset-bottom));
+    padding-bottom: 90px;
     z-index: 1;
   }
 
