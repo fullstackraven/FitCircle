@@ -1,5 +1,5 @@
 import { Switch, Route } from "wouter";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 import Home from "@/pages/home";
 import CalendarPage from "@/pages/calendar-new";
@@ -71,6 +71,15 @@ function App() {
     scrollEl: scrollRef.current,
     dockEl: dockRef.current,
   });
+
+  // Handle navigation after reload
+  useEffect(() => {
+    const pendingPath = sessionStorage.getItem('fitcircle_pending_navigation');
+    if (pendingPath) {
+      sessionStorage.removeItem('fitcircle_pending_navigation');
+      window.history.replaceState({}, '', pendingPath);
+    }
+  }, []);
 
   return (
     <ScrollLockProvider>

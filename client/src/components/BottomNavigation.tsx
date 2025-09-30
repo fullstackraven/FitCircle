@@ -113,7 +113,8 @@ const BottomNavigation = forwardRef<HTMLDivElement>((props, ref) => {
     
     if (textInputOccurred && location !== path) {
       sessionStorage.removeItem('fitcircle_text_input_occurred');
-      window.location.href = path;
+      sessionStorage.setItem('fitcircle_pending_navigation', path);
+      window.location.reload();
     } else {
       navigate(path);
     }
