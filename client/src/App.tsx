@@ -1,4 +1,5 @@
 import { Switch, Route } from "wouter";
+import { useRef } from "react";
 
 import Home from "@/pages/home";
 import CalendarPage from "@/pages/calendar-new";
@@ -27,6 +28,7 @@ import WellnessPage from "@/pages/wellness";
 import NotFound from "@/pages/not-found";
 import BottomNavigation from "@/components/BottomNavigation";
 import { ScrollLockProvider } from "@/contexts/ScrollLockContext";
+import { useIOSViewportGuard } from "@/hooks/useIOSViewportGuard";
 
 function Router() {
   return (
@@ -62,14 +64,22 @@ function Router() {
 }
 
 function App() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const dockRef = useRef<HTMLDivElement>(null);
+
+  const { shellKey } = useIOSViewportGuard({
+    scrollEl: scrollRef.current,
+    dockEl: dockRef.current,
+  });
+
   return (
     <ScrollLockProvider>
-      <div className="app-grid-layout">
-        <main className="app-content">
+      <div key={shellKey} className="app-grid-layout">
+        <main ref={scrollRef} className="app-content">
           <Router />
         </main>
       </div>
-      <BottomNavigation />
+      <BottomNavigation ref={dockRef} />
     </ScrollLockProvider>
   );
 }

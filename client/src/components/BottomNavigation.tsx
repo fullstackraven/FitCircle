@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { Home, CalendarDays, Dumbbell, CheckSquare, Folder } from 'lucide-react';
 import { useLocation } from 'wouter';
 
-export default function BottomNavigation() {
+const BottomNavigation = forwardRef<HTMLDivElement>((props, ref) => {
   const [location, navigate] = useLocation();
   const [keyboardState, setKeyboardState] = useState({ open: false, offset: 0 });
 
@@ -101,6 +101,7 @@ export default function BottomNavigation() {
 
   return (
     <div
+      ref={ref}
       style={{
         position: 'fixed',
         bottom: baseBottom,
@@ -201,4 +202,8 @@ export default function BottomNavigation() {
       </nav>
     </div>
   );
-}
+});
+
+BottomNavigation.displayName = 'BottomNavigation';
+
+export default BottomNavigation;

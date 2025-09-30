@@ -1,0 +1,177 @@
+Short answer: yes—treat Safari’s “bounce state” as a detectable condition and immediately normalize your layout. Here’s a small, drop-in React hook that (a) detects the Safari viewport glitch, (b) updates your CSS vars, and (c) forces a clean reflow/compose so the dock snaps back without needing a full app restart.
+
+⸻
+
+1) Add the hook
+
+// useIOSViewportGuard.ts
+import { useEffect, useRef, useState } from "react";
+
+/**
+ * Keeps a bottom dock stable on iOS by:
+ * - tracking the Visual Viewport
+ * - detecting the "toolbar/keyboard bounce" state
+ * - normalizing CSS vars and forcing a harmless reflow/repaint
+ */
+export function useIOSViewportGuard(opts: {
+  scrollEl?: HTMLElement | null;  // your main scroll container (not <body>)
+  dockEl?: HTMLElement | null;    // the bottom dock element
+  keyboardThreshold?: number;     // px reduction that implies keyboard is open
+  glitchDebounceMs?: number;      // debounce for rapid viewport events
+}) {
+  const {
+    scrollEl,
+    dockEl,
+    keyboardThreshold = 80,
+    glitchDebounceMs = 120,
+  } = opts;
+
+  const raf = useRef<number | null>(null);
+  const lastH = useRef<number>(0);
+  const [shellKey, setShellKey] = useState(0); // optional "hard reset" remount
+
+  function applyViewportVars() {
+    const vv = (window as any).visualViewport as VisualViewport | undefined;
+    const vh = (vv?.height ?? window.innerHeight) * 0.01;
+    document.documentElement.style.setProperty("--app-dvh", `${vh}px`);
+
+    const kbOffset = Math.max(0, window.innerHeight - (vv?.height ?? window.innerHeight));
+    document.documentElement.style.setProperty("--kb-offset", `${kbOffset}px`);
+    document.documentElement.classList.toggle("keyboard-open", kbOffset > keyboardThreshold);
+  }
+
+  function forceStableReflow() {
+    // 1) Update vars to current visual viewport
+    applyViewportVars();
+
+    // 2) Briefly freeze and unfreeze the scroll container to kill inertia/rubber-band
+    if (scrollEl) {
+      const prev = scrollEl.style.overflow;
+      scrollEl.style.overflow = "hidden";
+      // force layout:
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      scrollEl.offsetHeight;
+      scrollEl.style.overflow = prev || "auto";
+    }
+
+    // 3) Nudge the dock onto its own compositor layer and back (stops "bouncy" translate)
+    if (dockEl) {
+      const prev = dockEl.style.transform;
+      dockEl.style.willChange = "transform";
+      dockEl.style.transform = "translateZ(0)";
+      // force layout:
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      dockEl.offsetHeight;
+      dockEl.style.transform = prev || "";
+      dockEl.style.willChange = "";
+    }
+  }
+
+  function maybeNormalizeGlitch() {
+    const vv = (window as any).visualViewport as VisualViewport | undefined;
+    const h = vv?.height ?? window.innerHeight;
+
+    // Heuristic: after a blur or toolbar change, iOS fires a quick sequence
+    // of resize/scroll where height jumps > 40px and document has no focused input.
+    const heightJump = Math.abs(h - (lastH.current || h));
+    const noFocus = document.activeElement === document.body || !document.activeElement;
+
+    // "Glitch" = big height jump, no text input focused, AND we are not actively in keyboard-open state.
+    const kbOffset = Math.max(0, window.innerHeight - h);
+    const keyboardOpen = kbOffset > keyboardThreshold;
+
+    if (!keyboardOpen && noFocus && heightJump > 40) {
+      // Soft reset layout immediately; if it still looks off we can remount shell.
+      forceStableReflow();
+
+      // Optional "hard reset" remount if needed
+      // setShellKey(k => k + 1);
+    }
+
+    lastH.current = h;
+  }
+
+  useEffect(() => {
+    // Initial sync
+    applyViewportVars();
+    lastH.current = (window as any).visualViewport?.height ?? window.innerHeight;
+
+    const onVVChange = () => {
+      if (raf.current) cancelAnimationFrame(raf.current);
+      raf.current = requestAnimationFrame(() => {
+        applyViewportVars();
+        // debounce the glitch check slightly
+        setTimeout(maybeNormalizeGlitch, glitchDebounceMs);
+      });
+    };
+
+    const onResize = onVVChange;
+
+    const vv = (window as any).visualViewport as VisualViewport | undefined;
+    vv?.addEventListener("resize", onVVChange);
+    vv?.addEventListener("scroll", onVVChange); // fires during toolbar/keyboard slide
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
+
+    // When inputs blur, iOS often snaps the toolbar—normalize right after.
+    const onFocusOut = () => setTimeout(onVVChange, 150);
+    document.addEventListener("focusout", onFocusOut, true);
+
+    return () => {
+      vv?.removeEventListener("resize", onVVChange);
+      vv?.removeEventListener("scroll", onVVChange);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+      document.removeEventListener("focusout", onFocusOut, true);
+      if (raf.current) cancelAnimationFrame(raf.current);
+    };
+  }, [scrollEl, dockEl, keyboardThreshold, glitchDebounceMs]);
+
+  return { shellKey, hardReset: () => setShellKey(k => k + 1), normalizeNow: forceStableReflow };
+}
+
+
+⸻
+
+2) Use it in your App shell
+
+// App.tsx (example)
+import { useEffect, useRef } from "react";
+import { useIOSViewportGuard } from "./useIOSViewportGuard";
+
+export default function App() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const dockRef = useRef<HTMLDivElement>(null);
+
+  const { shellKey, hardReset, normalizeNow } = useIOSViewportGuard({
+    scrollEl: scrollRef.current,
+    dockEl: dockRef.current,
+  });
+
+  // Optional: call normalizeNow() after any state that inserts/removes blocks near the bottom
+  useEffect(() => {
+    // e.g., after saving text, once your state is committed:
+    // normalizeNow();
+  }, [/* your save state */]);
+
+  return (
+    <div key={shellKey} className="app-shell">
+      <main ref={scrollRef} className="app-scroll">
+        {/* ... app contents ... */}
+      </main>
+      <nav ref={dockRef} className="app-dock">{/* icons */}</nav>
+    </div>
+  );
+}
+
+
+⸻
+
+3) What this gives you
+	•	Detection: compares visualViewport.height with innerHeight, watches for large jumps when no input is focused (classic “toolbar snap”).
+	•	Soft reset: updates your --app-dvh var, briefly freezes/unfreezes the scroll container (kills iOS rubber-band), and forces the dock onto/off its own compositor layer to eliminate the bounce.
+	•	Hard reset (optional): increments a key on the shell to remount the outer container if you still see a rare stuck state.
+
+Tip: also ensure the meta + CSS from earlier are in place (viewport-fit=cover, content padding for the dock, dock outside any transformed parents, and the “scroll inside a fixed-height shell” pattern). The guard above is the safety net that overrides Safari’s state when it misreports the viewport after keyboard/toolbar transitions.
+
+If you paste this in and wire scrollRef/dockRef to your actual elements, you should be able to trigger the bounce and see it self-correct within ~100–150ms.
