@@ -81,7 +81,6 @@
     width: 100%;
     overflow: hidden;
     position: relative;
-    padding-top: env(safe-area-inset-top);
   }
 
   /* Scrollable content area */
@@ -91,14 +90,16 @@
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
-    padding: 16px;
+    padding: env(safe-area-inset-top) 16px 16px 16px;
   }
 
-  /* Dock at bottom of flex layout - no position fixed */
+  /* Dock at bottom of flex layout - extends into safe area */
   .app-dock {
     flex-shrink: 0;
     width: 100%;
     background-color: hsl(222, 47%, 11%);
+    margin-bottom: calc(-1 * env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   /* Extra padding for pages (no longer needed but keep for compatibility) */

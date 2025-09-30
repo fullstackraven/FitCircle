@@ -57,8 +57,7 @@ export default function BottomNavigation() {
         display: 'flex',
         justifyContent: 'center',
         width: '100%',
-        padding: '0 16px',
-        paddingBottom: `max(16px, env(safe-area-inset-bottom))`,
+        padding: '0 16px 16px 16px',
         boxSizing: 'border-box'
       }}
     >
