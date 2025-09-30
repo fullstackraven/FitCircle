@@ -4,7 +4,7 @@ import { useLocation } from 'wouter';
 
 export default function BottomNavigation() {
   const [location, navigate] = useLocation();
-  const [keyboardOffset, setKeyboardOffset] = useState(0);
+  const [keyboardState, setKeyboardState] = useState({ open: false, offset: 0 });
 
   // Hide navigation on wellness sub-pages
   const wellnessSubPages = [
@@ -20,32 +20,47 @@ export default function BottomNavigation() {
     '/supplements-page'
   ];
 
-  // Keyboard detection for hiding dock
+  // Robust keyboard detection - only update on resize and focus events, NOT scroll
   useEffect(() => {
-    if (!window.visualViewport) {
-      return;
-    }
+    const vv = window.visualViewport;
+    if (!vv) return;
 
-    const handleViewportChange = () => {
-      const viewport = window.visualViewport!;
-      const windowHeight = window.innerHeight;
-      
-      // Calculate how much the viewport has shrunk due to keyboard
-      const currentKeyboardOffset = Math.max(0, windowHeight - viewport.height - viewport.offsetTop);
-      setKeyboardOffset(currentKeyboardOffset);
+    let timerId: number | null = null;
+
+    const compute = () => {
+      const docHeight = document.documentElement.clientHeight;
+      const keyboardHeight = Math.max(0, docHeight - (vv.height + vv.offsetTop));
+      const open = keyboardHeight > 80; // Threshold to determine if keyboard is truly open
+      setKeyboardState({ open, offset: open ? keyboardHeight : 0 });
     };
 
-    window.visualViewport.addEventListener('resize', handleViewportChange);
-    window.visualViewport.addEventListener('scroll', handleViewportChange);
+    // Deferred update helps with iOS keyboard dismissal timing
+    const deferredCompute = () => {
+      if (timerId !== null) clearTimeout(timerId);
+      timerId = window.setTimeout(compute, 50);
+    };
+
+    vv.addEventListener('resize', compute);
+    window.addEventListener('focusin', compute);
+    window.addEventListener('focusout', deferredCompute);
     
     // Initial check
-    handleViewportChange();
+    compute();
 
     return () => {
-      window.visualViewport?.removeEventListener('resize', handleViewportChange);
-      window.visualViewport?.removeEventListener('scroll', handleViewportChange);
+      if (timerId !== null) clearTimeout(timerId);
+      vv.removeEventListener('resize', compute);
+      window.removeEventListener('focusin', compute);
+      window.removeEventListener('focusout', deferredCompute);
     };
   }, []);
+
+  // Reset keyboard state on route change to avoid stale values
+  useEffect(() => {
+    setTimeout(() => {
+      setKeyboardState({ open: false, offset: 0 });
+    }, 0);
+  }, [location]);
 
   // Don't render navigation on wellness sub-pages
   if (wellnessSubPages.includes(location)) {
@@ -80,21 +95,24 @@ export default function BottomNavigation() {
     }
   ];
 
-  // Floating dock-style navigation
+  // Floating dock-style navigation with stable bottom position
+  const baseBottom = 'calc(env(safe-area-inset-bottom) + 24px)';
+  const translateY = keyboardState.open ? -(keyboardState.offset + 16) : 0;
+
   return (
     <div
       style={{
         position: 'fixed',
-        bottom: keyboardOffset > 0 ? `${keyboardOffset + 16}px` : '24px',
+        bottom: baseBottom,
         left: '50%',
-        transform: 'translateX(-50%)',
+        transform: `translate(-50%, ${translateY}px)`,
         zIndex: 9999,
         display: 'flex',
         justifyContent: 'center',
         width: '100%',
         padding: '0 16px',
         boxSizing: 'border-box',
-        transition: 'bottom 0.2s ease-out'
+        transition: 'transform 0.2s ease-out'
       }}
     >
       <nav 
