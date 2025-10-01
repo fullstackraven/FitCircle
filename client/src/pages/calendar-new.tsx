@@ -252,7 +252,7 @@ export default function CalendarPage() {
                 const totalReps = getTotalRepsForDate(date);
                 const isRecovery = isRecoveryDay(`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
                 const barHeightPercent = Math.min((totalReps / 800) * 100, 100);
-                const barHeight = totalReps > 0 ? Math.max(barHeightPercent, 5) : 0;
+                const barHeight = isRecovery ? 100 : (totalReps > 0 ? Math.max(barHeightPercent, 5) : 0);
                 const barColor = isRecovery ? '#ff8c00' : '#00ff41';
                 
                 return (
