@@ -502,7 +502,7 @@ export default function CalendarPage() {
               setViewMode('monthly');
             }
           }}
-          className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors text-slate-300"
+          className="text-slate-400 hover:text-white transition-colors"
           data-testid="button-toggle-view"
         >
           {viewMode === 'monthly' ? <BarChart3 className="w-5 h-5" /> : <CalendarIcon className="w-5 h-5" />}
