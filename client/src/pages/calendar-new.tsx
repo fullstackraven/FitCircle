@@ -9,9 +9,13 @@ import {
   Pill,
   Heart,
   Calendar as CalendarIcon,
-  CalendarDays
+  CalendarDays,
+  Menu,
+  Settings,
+  Calculator
 } from "lucide-react";
 import { useLocation } from "wouter";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useWorkouts } from "@/hooks/use-workouts";
 import { useSupplements } from "@/hooks/use-supplements";
 import { useRecovery } from "@/hooks/use-recovery";
@@ -98,6 +102,21 @@ export default function CalendarPage() {
   const [currentWeek, setCurrentWeek] = useState(new Date());
   const [viewMode, setViewMode] = useState<'monthly' | 'weekly'>('monthly');
   const [weeklyPage, setWeeklyPage] = useState<WeeklyViewPage>('workouts');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
+
+  // Check if we should open dashboard on load
+  useEffect(() => {
+    const shouldOpenDashboard = new URLSearchParams(window.location.search).get('dashboard') === 'open';
+    const dashboardState = sessionStorage.getItem('fitcircle_dashboard_open');
+    
+    if (shouldOpenDashboard || dashboardState === 'true') {
+      setIsSidebarOpen(true);
+      // Clear the URL parameter and session storage
+      window.history.replaceState({}, '', '/calendar');
+      sessionStorage.removeItem('fitcircle_dashboard_open');
+    }
+  }, []);
 
   // Handle date click - navigate to dynamic overview
   const handleDateClick = (date: Date) => {
@@ -466,8 +485,24 @@ export default function CalendarPage() {
 
   return (
     <div className="max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', '--bottom-nav-padding': '200px' } as React.CSSProperties}>
-      {/* Header with view toggle - Sticky */}
-      <div className="sticky top-0 z-50 bg-[hsl(222,47%,11%)] px-4 pb-4 flex items-center justify-between" style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}>
+      {/* Universal Fixed Header */}
+      <header className="sticky top-0 z-50 bg-[hsl(222,47%,11%)] pb-4" style={{ paddingTop: 'max(24px, env(safe-area-inset-top))' }}>
+        <div className="relative text-center max-w-md mx-auto px-4">
+          {/* Hamburger Menu Icon */}
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="absolute top-0 left-4 text-slate-400 hover:text-white transition-colors"
+            title="Open Menu"
+          >
+            <Menu size={22} />
+          </button>
+
+          <h1 className="text-2xl font-bold text-white">FitCircle</h1>
+        </div>
+      </header>
+
+      {/* Calendar Controls - below universal header */}
+      <div className="px-4 pb-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(subMonths(currentMonth, 1)) : setCurrentWeek(subWeeks(currentWeek, 1))}
@@ -656,6 +691,65 @@ export default function CalendarPage() {
           </div>
         </div>
       </div>
+
+      {/* Sidebar Dashboard */}
+      <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+        <SheetContent side="left" className="w-80 bg-slate-900 border-slate-700">
+          <SheetHeader className="sr-only">
+            <SheetTitle>Navigation Menu</SheetTitle>
+          </SheetHeader>
+          <div className="flex flex-col h-full">
+            {/* User Profile Section */}
+            <div 
+              className="flex items-center space-x-3 p-4 border-b border-slate-700 cursor-pointer hover:bg-slate-800 transition-colors"
+              onClick={() => {
+                setIsSidebarOpen(false);
+                navigate('/profile?from=dashboard');
+              }}
+            >
+              <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center border-2 border-green-400">
+                <CheckCircle className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <div className="text-white font-medium">{userName}</div>
+                <div className="text-slate-400 text-xs">view profile</div>
+              </div>
+            </div>
+
+            {/* Dashboard Menu Items */}
+            <div className="flex-1 py-4">
+              {/* Fitness Calculator */}
+              <div 
+                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  navigate('/fitness-calculator?from=dashboard');
+                }}
+              >
+                <Calculator className="w-5 h-5 text-slate-400" />
+                <span className="text-white">Fitness Calculator</span>
+              </div>
+
+              {/* Settings */}
+              <div 
+                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  navigate('/settings?from=dashboard');
+                }}
+              >
+                <Settings className="w-5 h-5 text-slate-400" />
+                <span className="text-white">Settings</span>
+              </div>
+            </div>
+
+            {/* Version */}
+            <div className="p-4 border-t border-slate-700">
+              <div className="text-slate-500 text-xs text-center">Version 2.1.0</div>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

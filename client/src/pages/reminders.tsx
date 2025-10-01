@@ -1,13 +1,27 @@
-import { useState } from 'react';
-import { Plus, Check, ChevronDown, ChevronRight, MoreHorizontal, Edit3, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Check, ChevronDown, ChevronRight, MoreHorizontal, Edit3, Trash2, Menu, Settings, Calculator, CheckCircle } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useReminders } from '@/hooks/use-reminders';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
 export default function RemindersPage() {
   const [, navigate] = useLocation();
   const { reminders, addReminder, updateReminder, deleteReminder, toggleReminder } = useReminders();
   
   const [showAddForm, setShowAddForm] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
+
+  useEffect(() => {
+    const shouldOpenDashboard = new URLSearchParams(window.location.search).get('dashboard') === 'open';
+    const dashboardState = sessionStorage.getItem('fitcircle_dashboard_open');
+    
+    if (shouldOpenDashboard || dashboardState === 'true') {
+      setIsSidebarOpen(true);
+      window.history.replaceState({}, '', '/reminders');
+      sessionStorage.removeItem('fitcircle_dashboard_open');
+    }
+  }, []);
   const [newReminderText, setNewReminderText] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
@@ -133,10 +147,24 @@ export default function RemindersPage() {
 
   return (
     <div className="min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', paddingBottom: 'var(--bottom-nav-padding)' }}>
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-50 bg-[hsl(222,47%,11%)] px-4 pb-4" style={{ paddingTop: 'max(24px, env(safe-area-inset-top))' }}>
+      {/* Universal Fixed Header */}
+      <header className="sticky top-0 z-50 bg-[hsl(222,47%,11%)] pb-4" style={{ paddingTop: 'max(24px, env(safe-area-inset-top))' }}>
+        <div className="relative text-center max-w-md mx-auto px-4">
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="absolute top-0 left-0 text-slate-400 hover:text-white transition-colors"
+            title="Open Menu"
+          >
+            <Menu size={22} />
+          </button>
+          <h1 className="text-2xl font-bold text-white">FitCircle</h1>
+        </div>
+      </header>
+
+      {/* Page Title */}
+      <div className="px-4 pb-4">
         <div className="flex items-center justify-center max-w-md mx-auto">
-          <h1 className="text-2xl font-bold text-white">Reminders</h1>
+          <h2 className="text-2xl font-bold text-white">Reminders</h2>
         </div>
       </div>
 
@@ -410,6 +438,60 @@ export default function RemindersPage() {
           </div>
         )}
       </div>
+
+      {/* Sidebar Dashboard */}
+      <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+        <SheetContent side="left" className="w-80 bg-slate-900 border-slate-700">
+          <SheetHeader className="sr-only">
+            <SheetTitle>Navigation Menu</SheetTitle>
+          </SheetHeader>
+          <div className="flex flex-col h-full">
+            <div 
+              className="flex items-center space-x-3 p-4 border-b border-slate-700 cursor-pointer hover:bg-slate-800 transition-colors"
+              onClick={() => {
+                setIsSidebarOpen(false);
+                navigate('/profile?from=dashboard');
+              }}
+            >
+              <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center border-2 border-green-400">
+                <CheckCircle className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <div className="text-white font-medium">{userName}</div>
+                <div className="text-slate-400 text-xs">view profile</div>
+              </div>
+            </div>
+
+            <div className="flex-1 py-4">
+              <div 
+                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  navigate('/fitness-calculator?from=dashboard');
+                }}
+              >
+                <Calculator className="w-5 h-5 text-slate-400" />
+                <span className="text-white">Fitness Calculator</span>
+              </div>
+
+              <div 
+                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  navigate('/settings?from=dashboard');
+                }}
+              >
+                <Settings className="w-5 h-5 text-slate-400" />
+                <span className="text-white">Settings</span>
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-slate-700">
+              <div className="text-slate-500 text-xs text-center">Version 2.1.0</div>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
