@@ -244,7 +244,7 @@ export default function RoutinesPage() {
         {routines.length > 0 && (
           <button
             onClick={handleAddRoutine}
-            className="w-full py-3 mb-8 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors border border-slate-700 flex items-center justify-center space-x-2"
+            className="w-full py-3 mb-8 bg-green-600 hover:bg-green-700 rounded-xl transition-colors flex items-center justify-center space-x-2"
             data-testid="button-create-routine"
           >
             <span className="text-white font-medium">Create Routine</span>
