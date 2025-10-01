@@ -260,7 +260,7 @@ export default function CalendarPage() {
                     <div className="w-full flex items-end justify-center" style={{ height: '120px' }}>
                       {totalReps > 0 || isRecovery ? (
                         <div 
-                          className="w-full max-w-[35px] rounded-t-lg transition-all"
+                          className="w-full max-w-[35px] rounded-t-2xl transition-all"
                           style={{
                             height: `${barHeight}%`,
                             backgroundColor: barColor,
@@ -268,7 +268,7 @@ export default function CalendarPage() {
                           }}
                         />
                       ) : (
-                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded" />
+                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded-full" />
                       )}
                     </div>
                     <div className="text-xs text-slate-400">{dayNames[index]}</div>
@@ -376,7 +376,7 @@ export default function CalendarPage() {
                     <div className="w-full flex items-end justify-center" style={{ height: '120px' }}>
                       {hasJournal ? (
                         <div 
-                          className="w-full max-w-[35px] rounded-t-lg transition-all"
+                          className="w-full max-w-[35px] rounded-t-2xl transition-all"
                           style={{
                             height: '100%',
                             backgroundColor: '#c084fc',
@@ -384,7 +384,7 @@ export default function CalendarPage() {
                           }}
                         />
                       ) : (
-                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded" />
+                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded-full" />
                       )}
                     </div>
                     <div className="text-xs text-slate-400">{dayNames[index]}</div>
@@ -409,7 +409,7 @@ export default function CalendarPage() {
                     <div className="w-full flex items-end justify-center" style={{ height: '120px' }}>
                       {hasEnergy ? (
                         <div 
-                          className="w-full max-w-[35px] rounded-t-lg transition-all"
+                          className="w-full max-w-[35px] rounded-t-2xl transition-all"
                           style={{
                             height: '100%',
                             backgroundColor: '#facc15',
@@ -417,7 +417,7 @@ export default function CalendarPage() {
                           }}
                         />
                       ) : (
-                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded" />
+                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded-full" />
                       )}
                     </div>
                     <div className="text-xs text-slate-400">{dayNames[index]}</div>
@@ -443,7 +443,7 @@ export default function CalendarPage() {
                     <div className="w-full flex items-end justify-center" style={{ height: '120px' }}>
                       {hasSupplements ? (
                         <div 
-                          className="w-full max-w-[35px] rounded-t-lg transition-all"
+                          className="w-full max-w-[35px] rounded-t-2xl transition-all"
                           style={{
                             height: '100%',
                             backgroundColor: '#60a5fa',
@@ -451,7 +451,7 @@ export default function CalendarPage() {
                           }}
                         />
                       ) : (
-                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded" />
+                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded-full" />
                       )}
                     </div>
                     <div className="text-xs text-slate-400">{dayNames[index]}</div>
