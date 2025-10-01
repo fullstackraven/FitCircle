@@ -33,7 +33,8 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     getWorkoutLogsForDate, 
     editWorkoutForDate, 
     getJournalEntry, 
-    addJournalEntry 
+    addJournalEntry,
+    isWorkoutActiveOnDay
   } = useWorkouts();
   const { supplements: allSupplements, getSupplementLogsForDate, setSupplementLog, createSupplement } = useSupplements();
   const { getEnergyLevel, setEnergyLevelForDate } = useEnergyLevel();
@@ -64,6 +65,14 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     const supplementLogsData = getSupplementLogsForDate(selectedDate);
     const recoveryData = isRecoveryDay(selectedDate);
 
+    // Get day of week for filtering (0 = Sunday, 6 = Saturday)
+    const dayOfWeek = selectedDateObj.getDay();
+    
+    // Filter workouts to only show those scheduled for this day of the week
+    const filteredWorkouts = workoutData.filter(workout => 
+      isWorkoutActiveOnDay(workout, dayOfWeek)
+    );
+
     // Combine all supplements with their status for this date
     const supplementLogs = allSupplements.map(supplement => ({
       id: supplement.id,
@@ -71,7 +80,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
       taken: supplementLogsData[supplement.id] || false
     }));
 
-    setWorkouts(workoutData);
+    setWorkouts(filteredWorkouts);
     setJournalText(journalData || '');
     setEnergyLevel(energyData);
     setSupplementLogs(supplementLogs);
