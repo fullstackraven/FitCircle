@@ -466,9 +466,9 @@ export default function CalendarPage() {
 
   return (
     <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', '--bottom-nav-padding': '200px' } as React.CSSProperties}>
-      {/* Header with centered title */}
-      <div className="flex items-center justify-between mb-6 relative">
-        <div className="flex items-center space-x-2">
+      {/* Header with view toggle */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-4">
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(subMonths(currentMonth, 1)) : setCurrentWeek(subWeeks(currentWeek, 1))}
             className="text-slate-400 hover:text-white transition"
@@ -476,9 +476,9 @@ export default function CalendarPage() {
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <div className="text-sm text-slate-400 min-w-[110px] text-center">
-            {viewMode === 'monthly' ? format(currentMonth, "MMM yyyy") : format(getWeekDays()[0], "MMM d")}
-          </div>
+          <h2 className="text-lg font-semibold text-white">
+            {viewMode === 'monthly' ? format(currentMonth, "MMMM yyyy") : getWeekRangeString()}
+          </h2>
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(addMonths(currentMonth, 1)) : setCurrentWeek(addWeeks(currentWeek, 1))}
             className="text-slate-400 hover:text-white transition"
@@ -487,8 +487,6 @@ export default function CalendarPage() {
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
-
-        <h1 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold text-white">Calendar</h1>
         
         {/* Toggle button */}
         <button
