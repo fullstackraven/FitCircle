@@ -122,7 +122,7 @@ export default function WellnessPage() {
         <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-0 left-0 text-slate-400 hover:text-white transition-colors"
+            className="absolute top-0 left-4 text-slate-400 hover:text-white transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />

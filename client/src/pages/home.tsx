@@ -210,7 +210,7 @@ export default function Home() {
           {/* Hamburger Menu Icon */}
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-0 left-0 text-slate-400 hover:text-white transition-colors"
+            className="absolute top-0 left-4 text-slate-400 hover:text-white transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />
