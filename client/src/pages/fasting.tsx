@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { GoalCircle } from '@/components/GoalCircle';
 import { useFasting, type FastingLog } from '@/hooks/use-fasting';
 import { useGoals } from '@/hooks/use-goals';
@@ -22,7 +23,7 @@ export default function FastingPage() {
   };
   const { logs, addLog, updateLog, deleteLog, getLast10LogsProgress } = useFasting();
   const { goals, updateGoal } = useGoals();
-  const [isLogging, setIsLogging] = useState(false);
+  const [isFastingDialogOpen, setIsFastingDialogOpen] = useState(false);
   const [editingLog, setEditingLog] = useState<FastingLog | null>(null);
   
   // Form state
@@ -155,7 +156,7 @@ export default function FastingPage() {
     setStartTime('');
     setEndDate('');
     setEndTime('');
-    setIsLogging(false);
+    setIsFastingDialogOpen(false);
   };
 
   const handleEditLog = (log: FastingLog) => {
@@ -164,7 +165,7 @@ export default function FastingPage() {
     setStartTime(log.startTime);
     setEndDate(log.endDate);
     setEndTime(log.endTime);
-    setIsLogging(true);
+    setIsFastingDialogOpen(true);
   };
 
   const handleDeleteLog = (logId: string) => {
@@ -179,7 +180,7 @@ export default function FastingPage() {
     setStartTime('');
     setEndDate('');
     setEndTime('');
-    setIsLogging(false);
+    setIsFastingDialogOpen(false);
   };
 
   const handleSetGoal = async () => {
@@ -288,115 +289,24 @@ export default function FastingPage() {
         </Card>
 
         {/* Add Fasting Log Button */}
-        {!isLogging && (
-          <div className="mb-8">
-            <Button
-              onClick={() => {
-                // Initialize form with current date/time using master timezone utilities
-                const currentDate = getTodayString();
-                const currentTime = getCurrentTime24();
-                setStartDate(currentDate);
-                setStartTime(currentTime);
-                setEndDate(currentDate);
-                setEndTime(currentTime);
-                setIsLogging(true);
-              }}
-              className="w-full bg-amber-600 hover:bg-amber-700 flex items-center justify-center space-x-2"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add Fast</span>
-            </Button>
-          </div>
-        )}
-
-        {/* Log Fast Form */}
-        {isLogging && (
-          <div className="mb-8 fitcircle-card-lg">
-            <h2 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-              <Clock className="w-5 h-5" />
-              <span>{editingLog ? 'Edit Fast' : 'Log Fast'}</span>
-            </h2>
-            
-            <div className="space-y-4">
-              {/* Start Date & Time */}
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Start Fast</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                  />
-                  <Input
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                  />
-                </div>
-              </div>
-
-              {/* End Date & Time */}
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">End Fast</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                  />
-                  <Input
-                    type="time"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                  />
-                </div>
-              </div>
-
-              {/* Duration Display */}
-              {currentDuration > 0 && (
-                <div className="text-center">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Duration</label>
-                  <div className="bg-slate-700 rounded-xl p-4">
-                    {/* Heat Bar */}
-                    <div className="mb-2">
-                      <div className="w-full bg-slate-600 rounded-full h-2">
-                        <div 
-                          className={`h-2 rounded-full transition-all duration-500 ${getHeatBarColor(currentDuration / 60)}`}
-                          style={{ width: getHeatBarWidth(currentDuration / 60) }}
-                        ></div>
-                      </div>
-                    </div>
-                    {/* Duration Text */}
-                    <div className="text-2xl font-bold text-white font-mono">
-                      {formatDuration(currentDuration)}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Buttons */}
-              <div className="flex space-x-2">
-                <Button
-                  onClick={handleLogFast}
-                  className="flex-1 bg-green-600 hover:bg-green-700"
-                >
-                  {editingLog ? 'Update Fast' : 'Log Fast'}
-                </Button>
-                <Button
-                  onClick={handleCancelEdit}
-                  variant="outline"
-                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+        <div className="mb-8">
+          <Button
+            onClick={() => {
+              // Initialize form with current date/time using master timezone utilities
+              const currentDate = getTodayString();
+              const currentTime = getCurrentTime24();
+              setStartDate(currentDate);
+              setStartTime(currentTime);
+              setEndDate(currentDate);
+              setEndTime(currentTime);
+              setIsFastingDialogOpen(true);
+            }}
+            className="w-full bg-amber-600 hover:bg-amber-700 flex items-center justify-center space-x-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Fast</span>
+          </Button>
+        </div>
 
         {/* Fasting Log - Monthly Sections */}
         <div className="space-y-4">
@@ -600,6 +510,96 @@ export default function FastingPage() {
         </div>
       )}
 
+      {/* Log Fast Dialog */}
+      <Dialog open={isFastingDialogOpen} onOpenChange={setIsFastingDialogOpen}>
+        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl">
+          <DialogTitle className="text-lg font-semibold text-center">
+            {editingLog ? 'Edit Fast' : 'Log Fast'}
+          </DialogTitle>
+          <DialogDescription className="sr-only">
+            Log your intermittent fasting period by entering start and end times
+          </DialogDescription>
+          
+          <div className="space-y-4">
+            {/* Start Date & Time */}
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Start Fast</label>
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+                <Input
+                  type="time"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+            </div>
+
+            {/* End Date & Time */}
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">End Fast</label>
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+                <Input
+                  type="time"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+            </div>
+
+            {/* Duration Display */}
+            {currentDuration > 0 && (
+              <div className="text-center">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Duration</label>
+                <div className="bg-slate-700 rounded-xl p-4">
+                  {/* Heat Bar */}
+                  <div className="mb-2">
+                    <div className="w-full bg-slate-600 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full transition-all duration-500 ${getHeatBarColor(currentDuration / 60)}`}
+                        style={{ width: getHeatBarWidth(currentDuration / 60) }}
+                      ></div>
+                    </div>
+                  </div>
+                  {/* Duration Text */}
+                  <div className="text-2xl font-bold text-white font-mono">
+                    {formatDuration(currentDuration)}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Buttons */}
+            <div className="flex space-x-2">
+              <Button
+                onClick={handleCancelEdit}
+                variant="outline"
+                className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleLogFast}
+                className="flex-1 bg-green-600 hover:bg-green-700"
+              >
+                {editingLog ? 'Update Fast' : 'Log Fast'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
     </div>
   );
