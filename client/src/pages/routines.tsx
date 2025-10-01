@@ -161,19 +161,17 @@ export default function RoutinesPage() {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center space-x-3">
-                          <div>
-                            <h3 className="text-lg font-semibold text-white">{routine.name}</h3>
-                            <p className="text-sm text-slate-400">{daysText}</p>
-                          </div>
-                          <ChevronDown 
-                            className={`w-5 h-5 text-slate-400 transition-transform ${
-                              isExpanded ? 'rotate-180' : ''
-                            }`}
-                          />
+                        <div>
+                          <h3 className="text-lg font-semibold text-white">{routine.name}</h3>
+                          <p className="text-sm text-slate-400">{daysText}</p>
                         </div>
                       </div>
-                      <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center space-x-3" onClick={(e) => e.stopPropagation()}>
+                        <ChevronDown 
+                          className={`w-5 h-5 text-slate-400 transition-transform ${
+                            isExpanded ? 'rotate-180' : ''
+                          }`}
+                        />
                         <button
                           onClick={() => handleEditRoutine(routine)}
                           className="p-2 text-slate-400 hover:text-slate-200 transition-colors"
