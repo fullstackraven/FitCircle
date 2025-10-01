@@ -662,7 +662,7 @@ export default function MeditationPage() {
 
       {/* Start Meditation Dialog */}
       <Dialog open={isMeditationDialogOpen} onOpenChange={setIsMeditationDialogOpen}>
-        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl">
+        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl !top-[20%] !translate-y-0 sm:!top-[50%] sm:!-translate-y-1/2">
           <DialogTitle className="text-lg font-semibold text-center">Start Meditation</DialogTitle>
           <DialogDescription className="sr-only">
             Set meditation duration and start your session
@@ -689,6 +689,7 @@ export default function MeditationPage() {
                 setIsMeditationDialogOpen(false);
               }}
               className="w-full bg-blue-600 hover:bg-blue-700"
+              data-testid="button-start-meditation"
             >
               <Play className="w-4 h-4 mr-2" />
               Start Meditation
