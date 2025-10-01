@@ -512,49 +512,50 @@ export default function FastingPage() {
 
       {/* Log Fast Dialog */}
       <Dialog open={isFastingDialogOpen} onOpenChange={setIsFastingDialogOpen}>
-        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl">
-          <DialogTitle className="text-lg font-semibold text-center">
+        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-md mx-auto rounded-2xl p-6">
+          <DialogTitle className="text-lg font-semibold text-center mb-4">
             {editingLog ? 'Edit Fast' : 'Log Fast'}
           </DialogTitle>
           <DialogDescription className="sr-only">
             Log your intermittent fasting period by entering start and end times
           </DialogDescription>
           
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Start Date & Time */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Start Fast</label>
-              <div className="grid grid-cols-2 gap-2">
+              <label className="block text-sm font-medium text-slate-300 mb-3">Start Fast</label>
+              <div className="space-y-3">
                 <Input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-slate-700 border-slate-600 text-white w-full text-base"
+                  autoFocus={false}
                 />
                 <Input
                   type="time"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-slate-700 border-slate-600 text-white w-full text-base"
                 />
               </div>
             </div>
 
             {/* End Date & Time */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">End Fast</label>
-              <div className="grid grid-cols-2 gap-2">
+              <label className="block text-sm font-medium text-slate-300 mb-3">End Fast</label>
+              <div className="space-y-3">
                 <Input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-slate-700 border-slate-600 text-white w-full text-base"
                 />
                 <Input
                   type="time"
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-slate-700 border-slate-600 text-white w-full text-base"
                 />
               </div>
             </div>
@@ -562,10 +563,10 @@ export default function FastingPage() {
             {/* Duration Display */}
             {currentDuration > 0 && (
               <div className="text-center">
-                <label className="block text-sm font-medium text-slate-300 mb-2">Duration</label>
+                <label className="block text-sm font-medium text-slate-300 mb-3">Duration</label>
                 <div className="bg-slate-700 rounded-xl p-4">
                   {/* Heat Bar */}
-                  <div className="mb-2">
+                  <div className="mb-3">
                     <div className="w-full bg-slate-600 rounded-full h-2">
                       <div 
                         className={`h-2 rounded-full transition-all duration-500 ${getHeatBarColor(currentDuration / 60)}`}
@@ -582,7 +583,7 @@ export default function FastingPage() {
             )}
 
             {/* Buttons */}
-            <div className="flex space-x-2">
+            <div className="flex space-x-3 pt-2">
               <Button
                 onClick={handleCancelEdit}
                 variant="outline"
