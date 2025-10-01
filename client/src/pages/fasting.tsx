@@ -523,11 +523,11 @@ export default function FastingPage() {
             Log your intermittent fasting period by entering start and end times
           </DialogDescription>
           
-          <div className="space-y-4 px-1">
+          <div className="space-y-4">
             {/* Start Date & Time */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">Start Fast</label>
-              <div className="space-y-2">
+              <div className="space-y-2 max-w-[280px] mx-auto">
                 <Input
                   type="date"
                   value={startDate}
@@ -546,7 +546,7 @@ export default function FastingPage() {
             {/* End Date & Time */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">End Fast</label>
-              <div className="space-y-2">
+              <div className="space-y-2 max-w-[280px] mx-auto">
                 <Input
                   type="date"
                   value={endDate}
