@@ -127,12 +127,30 @@
     }
     
     body {
-      /* Enhanced safe area handling for PWA */
-      padding-top: env(safe-area-inset-top);
+      /* Enhanced safe area handling for PWA - only sides, top handled by app-content */
       padding-left: env(safe-area-inset-left);
       padding-right: env(safe-area-inset-right);
     }
     
+  }
+  
+  /* Fixed header for nav bar pages */
+  .fitcircle-fixed-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: hsl(222, 47%, 11%);
+    padding-top: env(safe-area-inset-top);
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px;
+  }
+  
+  /* Adjust content padding when using fixed header */
+  .fitcircle-content-with-fixed-header {
+    padding-top: 0 !important;
   }
 
 

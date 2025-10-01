@@ -201,23 +201,23 @@ export default function Home() {
 
   return (
     <div 
-      className="container mx-auto px-4 py-6 max-w-md min-h-screen text-white"
+      className="container mx-auto px-4 max-w-md min-h-screen text-white"
       style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}
     >
-      {/* Header Section */}
-      <header className="relative text-center mb-8">
-        {/* Hamburger Menu Icon */}
-        <button
-          onClick={() => setIsSidebarOpen(true)}
-          className="absolute top-0 left-0 text-slate-400 hover:text-white transition-colors"
-          title="Open Menu"
-        >
-          <Menu size={22} />
-        </button>
+      {/* Header Section - Sticky */}
+      <header className="sticky top-0 z-50 bg-[hsl(222,47%,11%)] pb-4" style={{ paddingTop: 'max(24px, env(safe-area-inset-top))' }}>
+        <div className="relative text-center">
+          {/* Hamburger Menu Icon */}
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="absolute top-0 left-0 text-slate-400 hover:text-white transition-colors"
+            title="Open Menu"
+          >
+            <Menu size={22} />
+          </button>
 
-        <h1 className="text-2xl font-bold mb-4 text-white">FitCircle</h1>
-
-        {/* Calendar View Icon */}
+          <h1 className="text-2xl font-bold text-white">FitCircle</h1>
+        </div>
       </header>
 
       {/* Quote of the Day */}

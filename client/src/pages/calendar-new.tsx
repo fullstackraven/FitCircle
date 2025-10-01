@@ -465,9 +465,9 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', '--bottom-nav-padding': '200px' } as React.CSSProperties}>
-      {/* Header with view toggle */}
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', '--bottom-nav-padding': '200px' } as React.CSSProperties}>
+      {/* Header with view toggle - Sticky */}
+      <div className="sticky top-0 z-50 bg-[hsl(222,47%,11%)] px-4 pb-4 flex items-center justify-between" style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}>
         <div className="flex items-center space-x-4">
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(subMonths(currentMonth, 1)) : setCurrentWeek(subWeeks(currentWeek, 1))}
@@ -508,8 +508,10 @@ export default function CalendarPage() {
         </button>
       </div>
 
-      {/* Monthly View */}
-      {viewMode === 'monthly' && (
+      {/* Content Wrapper */}
+      <div className="px-4">
+        {/* Monthly View */}
+        {viewMode === 'monthly' && (
         <>
           <div className="grid grid-cols-7 gap-2 text-center text-xs text-slate-400 mb-2">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => (
@@ -570,11 +572,11 @@ export default function CalendarPage() {
             })}
           </div>
         </>
-      )}
+        )}
 
-      {/* Weekly View */}
-      {viewMode === 'weekly' && (
-        <div className="space-y-6 mb-6">
+        {/* Weekly View */}
+        {viewMode === 'weekly' && (
+          <div className="space-y-6 mb-6">
           {/* Weekly content */}
           <div className="bg-slate-900 rounded-xl p-4">
             {renderWeeklyContent()}
@@ -624,33 +626,34 @@ export default function CalendarPage() {
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-        </div>
-      )}
-
-      {/* Navigation Panels - Always visible */}
-      <div className="mt-8 space-y-3">
-        {/* Workout Statistics Panel */}
-        <button
-          onClick={() => navigate("/workout-statistics")}
-          className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
-        >
-          <div className="flex items-center space-x-3">
-            <BarChart3 className="w-5 h-5 text-green-400" />
-            <span className="text-white font-medium">Workout Statistics</span>
           </div>
-          <ChevronRight className="w-5 h-5 text-slate-400" />
-        </button>
+        )}
 
-        {/* Recent Activity Panel */}
-        <div data-testid="recent-activity-panel">
-          <RecentActivityWidget widget={{
-            id: 'recent-activity',
-            type: 'recent-activity',
-            title: 'Recent Activity',
-            enabled: true,
-            position: 2,
-            size: 'large'
-          }} />
+        {/* Navigation Panels - Always visible */}
+        <div className="mt-8 space-y-3">
+          {/* Workout Statistics Panel */}
+          <button
+            onClick={() => navigate("/workout-statistics")}
+            className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
+          >
+            <div className="flex items-center space-x-3">
+              <BarChart3 className="w-5 h-5 text-green-400" />
+              <span className="text-white font-medium">Workout Statistics</span>
+            </div>
+            <ChevronRight className="w-5 h-5 text-slate-400" />
+          </button>
+
+          {/* Recent Activity Panel */}
+          <div data-testid="recent-activity-panel">
+            <RecentActivityWidget widget={{
+              id: 'recent-activity',
+              type: 'recent-activity',
+              title: 'Recent Activity',
+              enabled: true,
+              position: 2,
+              size: 'large'
+            }} />
+          </div>
         </div>
       </div>
     </div>

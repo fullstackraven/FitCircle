@@ -133,11 +133,14 @@ export default function RemindersPage() {
 
   return (
     <div className="min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', paddingBottom: 'var(--bottom-nav-padding)' }}>
-      <div className="container mx-auto p-4 max-w-md">
-        {/* Header */}
-        <div className="flex items-center justify-center mb-8">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-50 bg-[hsl(222,47%,11%)] px-4 pb-4" style={{ paddingTop: 'max(24px, env(safe-area-inset-top))' }}>
+        <div className="flex items-center justify-center max-w-md mx-auto">
           <h1 className="text-2xl font-bold text-white">Reminders</h1>
         </div>
+      </div>
+
+      <div className="container mx-auto px-4 max-w-md">
 
         {/* Active Reminders List */}
         <div className="space-y-1 mb-6">

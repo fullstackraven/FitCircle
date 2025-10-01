@@ -110,9 +110,9 @@ export default function RoutinesPage() {
 
   return (
     <div className="fitcircle-page pb-20"> {/* Added pb-20 for bottom nav space */}
-      <div className="fitcircle-container">
-        {/* Header */}
-        <div className="relative flex items-center justify-center mb-8">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-50 bg-[hsl(222,47%,11%)] px-4 pb-4" style={{ paddingTop: 'max(24px, env(safe-area-inset-top))' }}>
+        <div className="relative flex items-center justify-center max-w-md mx-auto">
           <h1 className="fitcircle-page-title">Routines</h1>
           {routines.length > 0 && (
             <button
@@ -124,7 +124,9 @@ export default function RoutinesPage() {
             </button>
           )}
         </div>
+      </div>
 
+      <div className="fitcircle-container">
         {/* Add Routines Section - Only show when no routines exist */}
         {routines.length === 0 && (
           <section className="mb-8">
