@@ -285,80 +285,71 @@ export default function CalendarPage() {
         return (
           <div className="space-y-3">
             <h3 className="text-center text-base font-semibold text-white mb-3">DURATION</h3>
-            <div className="relative h-40 px-2">
-              <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                {/* Grid lines */}
-                {[0, 25, 50, 75, 100].map((percent) => (
-                  <line
-                    key={percent}
-                    x1="0"
-                    y1={100 - percent}
-                    x2="100"
-                    y2={100 - percent}
-                    stroke="rgba(100, 116, 139, 0.2)"
-                    strokeWidth="0.5"
+            <div className="h-40 px-2">
+              <div className="relative h-[120px]">
+                <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  {/* Grid lines */}
+                  {[0, 25, 50, 75, 100].map((percent) => (
+                    <line
+                      key={percent}
+                      x1="0"
+                      y1={100 - percent}
+                      x2="100"
+                      y2={100 - percent}
+                      stroke="rgba(100, 116, 139, 0.2)"
+                      strokeWidth="0.5"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  ))}
+                  
+                  {/* Duration line - connects all points */}
+                  <polyline
+                    points={weekDays.map((date, index) => {
+                      const duration = getTotalDurationForDate(date);
+                      const maxDuration = Math.max(...weekDays.map(d => getTotalDurationForDate(d)), 60);
+                      const x = (index / 6) * 100;
+                      const y = 100 - ((duration / maxDuration) * 100);
+                      return `${x},${y}`;
+                    }).join(' ')}
+                    fill="none"
+                    stroke="#00ff41"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     vectorEffect="non-scaling-stroke"
+                    style={{ filter: 'drop-shadow(0 0 4px rgba(0, 255, 65, 0.5))' }}
                   />
-                ))}
-                
-                {/* Duration line - connects all points */}
-                <polyline
-                  points={weekDays.map((date, index) => {
+                  
+                  {/* Data points */}
+                  {weekDays.map((date, index) => {
                     const duration = getTotalDurationForDate(date);
                     const maxDuration = Math.max(...weekDays.map(d => getTotalDurationForDate(d)), 60);
                     const x = (index / 6) * 100;
                     const y = 100 - ((duration / maxDuration) * 100);
-                    return `${x},${y}`;
-                  }).join(' ')}
-                  fill="none"
-                  stroke="#00ff41"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  vectorEffect="non-scaling-stroke"
-                  style={{ filter: 'drop-shadow(0 0 4px rgba(0, 255, 65, 0.5))' }}
-                />
-                
-                {/* Data points */}
-                {weekDays.map((date, index) => {
-                  const duration = getTotalDurationForDate(date);
-                  const maxDuration = Math.max(...weekDays.map(d => getTotalDurationForDate(d)), 60);
-                  const x = (index / 6) * 100;
-                  const y = 100 - ((duration / maxDuration) * 100);
-                  
-                  return (
-                    <circle
-                      key={index}
-                      cx={x}
-                      cy={y}
-                      r="2"
-                      fill="#00ff41"
-                      vectorEffect="non-scaling-stroke"
-                      style={{ filter: 'drop-shadow(0 0 4px rgba(0, 255, 65, 0.5))' }}
-                    />
-                  );
-                })}
-              </svg>
+                    
+                    return (
+                      <circle
+                        key={index}
+                        cx={x}
+                        cy={y}
+                        r="2"
+                        fill="#00ff41"
+                        vectorEffect="non-scaling-stroke"
+                        style={{ filter: 'drop-shadow(0 0 4px rgba(0, 255, 65, 0.5))' }}
+                      />
+                    );
+                  })}
+                </svg>
+              </div>
               
               {/* Day labels */}
-              <div className="flex justify-between mt-2">
+              <div className="flex justify-between mt-1">
                 {dayNames.map((name, index) => (
                   <div key={index} className="text-xs text-slate-400 flex-1 text-center">{name}</div>
                 ))}
               </div>
-              
-              {/* Duration values */}
-              <div className="flex justify-between mt-1">
-                {weekDays.map((date, index) => {
-                  const duration = getTotalDurationForDate(date);
-                  return (
-                    <div key={index} className="text-xs text-slate-500 flex-1 text-center">
-                      {duration > 0 ? `${duration}m` : '-'}
-                    </div>
-                  );
-                })}
-              </div>
             </div>
+            <div className="text-center text-xs text-slate-500 mt-2">Minutes per day</div>
           </div>
         );
 
