@@ -31,15 +31,14 @@ export default function RecoveryPage() {
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={handleBack}
-          className="text-slate-400 hover:text-white transition-colors flex items-center space-x-2"
+          className="text-slate-400 hover:text-white transition-colors"
           title="Back"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span>Back</span>
         </button>
 
         <h1 className="text-xl font-bold text-white">Recovery</h1>
-        <div className="w-[42px]" />
+        <div className="w-5" />
       </div>
 
       <div className="space-y-6">

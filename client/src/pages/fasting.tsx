@@ -221,10 +221,9 @@ export default function FastingPage() {
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={handleBack}
-            className="fitcircle-back-button"
+            className="text-slate-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span>Back</span>
           </button>
           <h1 className="fitcircle-page-title">Fasting</h1>
           <button
