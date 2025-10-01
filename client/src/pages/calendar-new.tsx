@@ -246,24 +246,29 @@ export default function CalendarPage() {
         return (
           <div className="space-y-4">
             <h3 className="text-center text-lg font-semibold text-white mb-6">WORKOUTS</h3>
-            <div className="flex items-end justify-between h-64 px-2">
+            <div className="flex items-end justify-between h-64 px-2 gap-2">
               {weekDays.map((date, index) => {
                 const totalReps = getTotalRepsForDate(date);
                 const isRecovery = isRecoveryDay(`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
-                const barHeight = Math.min((totalReps / 800) * 100, 100);
+                const barHeightPercent = Math.min((totalReps / 800) * 100, 100);
+                const barHeight = totalReps > 0 ? Math.max(barHeightPercent, 5) : 0;
                 const barColor = isRecovery ? '#ff8c00' : '#00ff41';
                 
                 return (
                   <div key={index} className="flex-1 flex flex-col items-center space-y-2">
-                    <div className="flex-1 w-full flex items-end justify-center">
-                      <div 
-                        className="w-full max-w-[40px] rounded-t-lg transition-all"
-                        style={{
-                          height: `${barHeight}%`,
-                          backgroundColor: barColor,
-                          boxShadow: `0 0 8px ${barColor}40`
-                        }}
-                      />
+                    <div className="w-full flex items-end justify-center" style={{ height: '200px' }}>
+                      {totalReps > 0 || isRecovery ? (
+                        <div 
+                          className="w-full max-w-[40px] rounded-t-lg transition-all"
+                          style={{
+                            height: `${barHeight}%`,
+                            backgroundColor: barColor,
+                            boxShadow: `0 0 8px ${barColor}40`
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full max-w-[40px] h-1 bg-slate-700 rounded" />
+                      )}
                     </div>
                     <div className="text-xs text-slate-400">{dayNames[index]}</div>
                     <div className="text-xs text-slate-500">{totalReps}</div>
@@ -357,23 +362,26 @@ export default function CalendarPage() {
         return (
           <div className="space-y-4">
             <h3 className="text-center text-lg font-semibold text-white mb-6">JOURNAL</h3>
-            <div className="flex items-end justify-between h-64 px-2">
+            <div className="flex items-end justify-between h-64 px-2 gap-2">
               {weekDays.map((date, index) => {
                 const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
                 const hasJournal = (getJournalEntry(dateStr) || "").length > 0;
-                const barHeight = hasJournal ? 100 : 0;
                 
                 return (
                   <div key={index} className="flex-1 flex flex-col items-center space-y-2">
-                    <div className="flex-1 w-full flex items-end justify-center">
-                      <div 
-                        className="w-full max-w-[40px] rounded-t-lg transition-all"
-                        style={{
-                          height: `${barHeight}%`,
-                          backgroundColor: '#c084fc',
-                          boxShadow: hasJournal ? '0 0 8px rgba(192, 132, 252, 0.4)' : 'none'
-                        }}
-                      />
+                    <div className="w-full flex items-end justify-center" style={{ height: '200px' }}>
+                      {hasJournal ? (
+                        <div 
+                          className="w-full max-w-[40px] rounded-t-lg transition-all"
+                          style={{
+                            height: '100%',
+                            backgroundColor: '#c084fc',
+                            boxShadow: '0 0 8px rgba(192, 132, 252, 0.4)'
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full max-w-[40px] h-1 bg-slate-700 rounded" />
+                      )}
                     </div>
                     <div className="text-xs text-slate-400">{dayNames[index]}</div>
                   </div>
@@ -388,22 +396,25 @@ export default function CalendarPage() {
         return (
           <div className="space-y-4">
             <h3 className="text-center text-lg font-semibold text-white mb-6">ENERGY LEVEL</h3>
-            <div className="flex items-end justify-between h-64 px-2">
+            <div className="flex items-end justify-between h-64 px-2 gap-2">
               {weekDays.map((date, index) => {
                 const hasEnergy = hasEnergyLevel(date);
-                const barHeight = hasEnergy ? 100 : 0;
                 
                 return (
                   <div key={index} className="flex-1 flex flex-col items-center space-y-2">
-                    <div className="flex-1 w-full flex items-end justify-center">
-                      <div 
-                        className="w-full max-w-[40px] rounded-t-lg transition-all"
-                        style={{
-                          height: `${barHeight}%`,
-                          backgroundColor: '#facc15',
-                          boxShadow: hasEnergy ? '0 0 8px rgba(250, 204, 21, 0.4)' : 'none'
-                        }}
-                      />
+                    <div className="w-full flex items-end justify-center" style={{ height: '200px' }}>
+                      {hasEnergy ? (
+                        <div 
+                          className="w-full max-w-[40px] rounded-t-lg transition-all"
+                          style={{
+                            height: '100%',
+                            backgroundColor: '#facc15',
+                            boxShadow: '0 0 8px rgba(250, 204, 21, 0.4)'
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full max-w-[40px] h-1 bg-slate-700 rounded" />
+                      )}
                     </div>
                     <div className="text-xs text-slate-400">{dayNames[index]}</div>
                   </div>
@@ -418,23 +429,26 @@ export default function CalendarPage() {
         return (
           <div className="space-y-4">
             <h3 className="text-center text-lg font-semibold text-white mb-6">SUPPLEMENTS</h3>
-            <div className="flex items-end justify-between h-64 px-2">
+            <div className="flex items-end justify-between h-64 px-2 gap-2">
               {weekDays.map((date, index) => {
                 const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
                 const hasSupplements = hasSupplementsForDate(dateStr);
-                const barHeight = hasSupplements ? 100 : 0;
                 
                 return (
                   <div key={index} className="flex-1 flex flex-col items-center space-y-2">
-                    <div className="flex-1 w-full flex items-end justify-center">
-                      <div 
-                        className="w-full max-w-[40px] rounded-t-lg transition-all"
-                        style={{
-                          height: `${barHeight}%`,
-                          backgroundColor: '#60a5fa',
-                          boxShadow: hasSupplements ? '0 0 8px rgba(96, 165, 250, 0.4)' : 'none'
-                        }}
-                      />
+                    <div className="w-full flex items-end justify-center" style={{ height: '200px' }}>
+                      {hasSupplements ? (
+                        <div 
+                          className="w-full max-w-[40px] rounded-t-lg transition-all"
+                          style={{
+                            height: '100%',
+                            backgroundColor: '#60a5fa',
+                            boxShadow: '0 0 8px rgba(96, 165, 250, 0.4)'
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full max-w-[40px] h-1 bg-slate-700 rounded" />
+                      )}
                     </div>
                     <div className="text-xs text-slate-400">{dayNames[index]}</div>
                   </div>
@@ -487,7 +501,7 @@ export default function CalendarPage() {
           className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors text-slate-300"
           data-testid="button-toggle-view"
         >
-          {viewMode === 'monthly' ? <CalendarDays className="w-5 h-5" /> : <CalendarIcon className="w-5 h-5" />}
+          {viewMode === 'monthly' ? <BarChart3 className="w-5 h-5" /> : <CalendarIcon className="w-5 h-5" />}
         </button>
       </div>
 
@@ -552,39 +566,12 @@ export default function CalendarPage() {
               );
             })}
           </div>
-
-          {/* Navigation Panels */}
-          <div className="mt-8 space-y-3">
-            {/* Workout Statistics Panel */}
-            <button
-              onClick={() => navigate("/workout-statistics")}
-              className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
-            >
-              <div className="flex items-center space-x-3">
-                <BarChart3 className="w-5 h-5 text-green-400" />
-                <span className="text-white font-medium">Workout Statistics</span>
-              </div>
-              <ChevronRight className="w-5 h-5 text-slate-400" />
-            </button>
-
-            {/* Recent Activity Panel */}
-            <div data-testid="recent-activity-panel">
-              <RecentActivityWidget widget={{
-                id: 'recent-activity',
-                type: 'recent-activity',
-                title: 'Recent Activity',
-                enabled: true,
-                position: 2,
-                size: 'large'
-              }} />
-            </div>
-          </div>
         </>
       )}
 
       {/* Weekly View */}
       {viewMode === 'weekly' && (
-        <div className="space-y-6">
+        <div className="space-y-6 mb-6">
           {/* Weekly content */}
           <div className="bg-slate-800 rounded-xl p-6">
             {renderWeeklyContent()}
@@ -636,6 +623,33 @@ export default function CalendarPage() {
           </div>
         </div>
       )}
+
+      {/* Navigation Panels - Always visible */}
+      <div className="mt-8 space-y-3">
+        {/* Workout Statistics Panel */}
+        <button
+          onClick={() => navigate("/workout-statistics")}
+          className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
+        >
+          <div className="flex items-center space-x-3">
+            <BarChart3 className="w-5 h-5 text-green-400" />
+            <span className="text-white font-medium">Workout Statistics</span>
+          </div>
+          <ChevronRight className="w-5 h-5 text-slate-400" />
+        </button>
+
+        {/* Recent Activity Panel */}
+        <div data-testid="recent-activity-panel">
+          <RecentActivityWidget widget={{
+            id: 'recent-activity',
+            type: 'recent-activity',
+            title: 'Recent Activity',
+            enabled: true,
+            position: 2,
+            size: 'large'
+          }} />
+        </div>
+      </div>
     </div>
   );
 }
