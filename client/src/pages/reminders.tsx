@@ -148,7 +148,7 @@ export default function RemindersPage() {
   return (
     <div className="min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', paddingBottom: 'var(--bottom-nav-padding)' }}>
       {/* Universal Fixed Header */}
-      <header className="sticky top-0 z-50 bg-[hsl(222,47%,11%)] pb-4" style={{ paddingTop: 'max(56px, env(safe-area-inset-top))' }}>
+      <header className="sticky z-50 bg-[hsl(222,47%,11%)] pb-4" style={{ top: 0, marginTop: 'calc(-1 * env(safe-area-inset-top))', paddingTop: 'calc(env(safe-area-inset-top) + 24px)' }}>
         <div className="relative text-center max-w-md mx-auto px-4">
           <button
             onClick={() => setIsSidebarOpen(true)}
