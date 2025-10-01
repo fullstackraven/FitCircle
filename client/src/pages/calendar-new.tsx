@@ -243,10 +243,11 @@ export default function CalendarPage() {
 
     switch (weeklyPage) {
       case 'workouts':
+        const weekTotalReps = weekDays.reduce((sum, date) => sum + getTotalRepsForDate(date), 0);
         return (
-          <div className="space-y-4">
-            <h3 className="text-center text-lg font-semibold text-white mb-6">WORKOUTS</h3>
-            <div className="flex items-end justify-between h-64 px-2 gap-2">
+          <div className="space-y-3">
+            <h3 className="text-center text-base font-semibold text-white mb-3">WORKOUTS</h3>
+            <div className="flex items-end justify-between h-40 px-2 gap-2">
               {weekDays.map((date, index) => {
                 const totalReps = getTotalRepsForDate(date);
                 const isRecovery = isRecoveryDay(`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
@@ -255,11 +256,11 @@ export default function CalendarPage() {
                 const barColor = isRecovery ? '#ff8c00' : '#00ff41';
                 
                 return (
-                  <div key={index} className="flex-1 flex flex-col items-center space-y-2">
-                    <div className="w-full flex items-end justify-center" style={{ height: '200px' }}>
+                  <div key={index} className="flex-1 flex flex-col items-center space-y-1">
+                    <div className="w-full flex items-end justify-center" style={{ height: '120px' }}>
                       {totalReps > 0 || isRecovery ? (
                         <div 
-                          className="w-full max-w-[40px] rounded-t-lg transition-all"
+                          className="w-full max-w-[35px] rounded-t-lg transition-all"
                           style={{
                             height: `${barHeight}%`,
                             backgroundColor: barColor,
@@ -267,7 +268,7 @@ export default function CalendarPage() {
                           }}
                         />
                       ) : (
-                        <div className="w-full max-w-[40px] h-1 bg-slate-700 rounded" />
+                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded" />
                       )}
                     </div>
                     <div className="text-xs text-slate-400">{dayNames[index]}</div>
@@ -276,43 +277,45 @@ export default function CalendarPage() {
                 );
               })}
             </div>
-            <div className="text-center text-xs text-slate-500 mt-2">Max: 800 reps</div>
+            <div className="text-center text-xs text-slate-500 mt-2">Total Reps: {weekTotalReps}</div>
           </div>
         );
 
       case 'duration':
         return (
-          <div className="space-y-4">
-            <h3 className="text-center text-lg font-semibold text-white mb-6">DURATION</h3>
-            <div className="relative h-64 px-2">
-              <svg className="w-full h-full">
+          <div className="space-y-3">
+            <h3 className="text-center text-base font-semibold text-white mb-3">DURATION</h3>
+            <div className="relative h-40 px-2">
+              <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
                 {/* Grid lines */}
                 {[0, 25, 50, 75, 100].map((percent) => (
                   <line
                     key={percent}
                     x1="0"
-                    y1={`${100 - percent}%`}
-                    x2="100%"
-                    y2={`${100 - percent}%`}
+                    y1={100 - percent}
+                    x2="100"
+                    y2={100 - percent}
                     stroke="rgba(100, 116, 139, 0.2)"
-                    strokeWidth="1"
+                    strokeWidth="0.5"
+                    vectorEffect="non-scaling-stroke"
                   />
                 ))}
                 
-                {/* Duration line */}
+                {/* Duration line - connects all points */}
                 <polyline
                   points={weekDays.map((date, index) => {
                     const duration = getTotalDurationForDate(date);
                     const maxDuration = Math.max(...weekDays.map(d => getTotalDurationForDate(d)), 60);
                     const x = (index / 6) * 100;
                     const y = 100 - ((duration / maxDuration) * 100);
-                    return `${x}%,${y}%`;
+                    return `${x},${y}`;
                   }).join(' ')}
                   fill="none"
                   stroke="#00ff41"
-                  strokeWidth="3"
+                  strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  vectorEffect="non-scaling-stroke"
                   style={{ filter: 'drop-shadow(0 0 4px rgba(0, 255, 65, 0.5))' }}
                 />
                 
@@ -326,10 +329,11 @@ export default function CalendarPage() {
                   return (
                     <circle
                       key={index}
-                      cx={`${x}%`}
-                      cy={`${y}%`}
-                      r="4"
+                      cx={x}
+                      cy={y}
+                      r="2"
                       fill="#00ff41"
+                      vectorEffect="non-scaling-stroke"
                       style={{ filter: 'drop-shadow(0 0 4px rgba(0, 255, 65, 0.5))' }}
                     />
                   );
@@ -360,19 +364,19 @@ export default function CalendarPage() {
 
       case 'journal':
         return (
-          <div className="space-y-4">
-            <h3 className="text-center text-lg font-semibold text-white mb-6">JOURNAL</h3>
-            <div className="flex items-end justify-between h-64 px-2 gap-2">
+          <div className="space-y-3">
+            <h3 className="text-center text-base font-semibold text-white mb-3">JOURNAL</h3>
+            <div className="flex items-end justify-between h-40 px-2 gap-2">
               {weekDays.map((date, index) => {
                 const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
                 const hasJournal = (getJournalEntry(dateStr) || "").length > 0;
                 
                 return (
-                  <div key={index} className="flex-1 flex flex-col items-center space-y-2">
-                    <div className="w-full flex items-end justify-center" style={{ height: '200px' }}>
+                  <div key={index} className="flex-1 flex flex-col items-center space-y-1">
+                    <div className="w-full flex items-end justify-center" style={{ height: '120px' }}>
                       {hasJournal ? (
                         <div 
-                          className="w-full max-w-[40px] rounded-t-lg transition-all"
+                          className="w-full max-w-[35px] rounded-t-lg transition-all"
                           style={{
                             height: '100%',
                             backgroundColor: '#c084fc',
@@ -380,7 +384,7 @@ export default function CalendarPage() {
                           }}
                         />
                       ) : (
-                        <div className="w-full max-w-[40px] h-1 bg-slate-700 rounded" />
+                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded" />
                       )}
                     </div>
                     <div className="text-xs text-slate-400">{dayNames[index]}</div>
@@ -394,18 +398,18 @@ export default function CalendarPage() {
 
       case 'energy':
         return (
-          <div className="space-y-4">
-            <h3 className="text-center text-lg font-semibold text-white mb-6">ENERGY LEVEL</h3>
-            <div className="flex items-end justify-between h-64 px-2 gap-2">
+          <div className="space-y-3">
+            <h3 className="text-center text-base font-semibold text-white mb-3">ENERGY LEVEL</h3>
+            <div className="flex items-end justify-between h-40 px-2 gap-2">
               {weekDays.map((date, index) => {
                 const hasEnergy = hasEnergyLevel(date);
                 
                 return (
-                  <div key={index} className="flex-1 flex flex-col items-center space-y-2">
-                    <div className="w-full flex items-end justify-center" style={{ height: '200px' }}>
+                  <div key={index} className="flex-1 flex flex-col items-center space-y-1">
+                    <div className="w-full flex items-end justify-center" style={{ height: '120px' }}>
                       {hasEnergy ? (
                         <div 
-                          className="w-full max-w-[40px] rounded-t-lg transition-all"
+                          className="w-full max-w-[35px] rounded-t-lg transition-all"
                           style={{
                             height: '100%',
                             backgroundColor: '#facc15',
@@ -413,7 +417,7 @@ export default function CalendarPage() {
                           }}
                         />
                       ) : (
-                        <div className="w-full max-w-[40px] h-1 bg-slate-700 rounded" />
+                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded" />
                       )}
                     </div>
                     <div className="text-xs text-slate-400">{dayNames[index]}</div>
@@ -427,19 +431,19 @@ export default function CalendarPage() {
 
       case 'supplements':
         return (
-          <div className="space-y-4">
-            <h3 className="text-center text-lg font-semibold text-white mb-6">SUPPLEMENTS</h3>
-            <div className="flex items-end justify-between h-64 px-2 gap-2">
+          <div className="space-y-3">
+            <h3 className="text-center text-base font-semibold text-white mb-3">SUPPLEMENTS</h3>
+            <div className="flex items-end justify-between h-40 px-2 gap-2">
               {weekDays.map((date, index) => {
                 const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
                 const hasSupplements = hasSupplementsForDate(dateStr);
                 
                 return (
-                  <div key={index} className="flex-1 flex flex-col items-center space-y-2">
-                    <div className="w-full flex items-end justify-center" style={{ height: '200px' }}>
+                  <div key={index} className="flex-1 flex flex-col items-center space-y-1">
+                    <div className="w-full flex items-end justify-center" style={{ height: '120px' }}>
                       {hasSupplements ? (
                         <div 
-                          className="w-full max-w-[40px] rounded-t-lg transition-all"
+                          className="w-full max-w-[35px] rounded-t-lg transition-all"
                           style={{
                             height: '100%',
                             backgroundColor: '#60a5fa',
@@ -447,7 +451,7 @@ export default function CalendarPage() {
                           }}
                         />
                       ) : (
-                        <div className="w-full max-w-[40px] h-1 bg-slate-700 rounded" />
+                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded" />
                       )}
                     </div>
                     <div className="text-xs text-slate-400">{dayNames[index]}</div>
@@ -573,7 +577,7 @@ export default function CalendarPage() {
       {viewMode === 'weekly' && (
         <div className="space-y-6 mb-6">
           {/* Weekly content */}
-          <div className="bg-slate-800 rounded-xl p-6">
+          <div className="bg-slate-900 rounded-xl p-4">
             {renderWeeklyContent()}
           </div>
 
