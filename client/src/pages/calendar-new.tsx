@@ -486,7 +486,7 @@ export default function CalendarPage() {
   return (
     <div className="max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', '--bottom-nav-padding': '200px' } as React.CSSProperties}>
       {/* Universal Fixed Header */}
-      <header className="sticky top-0 z-50 bg-[hsl(222,47%,11%)] pb-4" style={{ paddingTop: 'max(24px, env(safe-area-inset-top))' }}>
+      <header className="sticky top-0 z-50 bg-[hsl(222,47%,11%)] pb-4" style={{ paddingTop: 'max(56px, env(safe-area-inset-top))' }}>
         <div className="relative text-center max-w-md mx-auto px-4">
           {/* Hamburger Menu Icon */}
           <button
