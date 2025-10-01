@@ -486,8 +486,8 @@ export default function CalendarPage() {
   return (
     <div className="max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', '--bottom-nav-padding': '200px' } as React.CSSProperties}>
       {/* Universal Fixed Header */}
-      <header className="sticky z-50 bg-[hsl(222,47%,11%)] pb-4" style={{ top: 0, marginTop: 'calc(-1 * env(safe-area-inset-top))', paddingTop: 'calc(env(safe-area-inset-top) + 24px)' }}>
-        <div className="relative text-center max-w-md mx-auto px-4">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[hsl(222,47%,11%)]" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           {/* Hamburger Menu Icon */}
           <button
             onClick={() => setIsSidebarOpen(true)}
@@ -501,8 +501,10 @@ export default function CalendarPage() {
         </div>
       </header>
 
-      {/* Calendar Controls - below universal header */}
-      <div className="px-4 pb-4 flex items-center justify-between">
+      {/* Main content with top padding to offset fixed header */}
+      <div style={{ paddingTop: 'calc(env(safe-area-inset-top) + 56px)' }}>
+        {/* Calendar Controls - below universal header */}
+        <div className="px-4 pb-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(subMonths(currentMonth, 1)) : setCurrentWeek(subWeeks(currentWeek, 1))}
@@ -541,10 +543,10 @@ export default function CalendarPage() {
         >
           {viewMode === 'monthly' ? <BarChart3 className="w-5 h-5" /> : <CalendarIcon className="w-5 h-5" />}
         </button>
-      </div>
+        </div>
 
-      {/* Content Wrapper */}
-      <div className="px-4">
+        {/* Content Wrapper */}
+        <div className="px-4">
         {/* Monthly View */}
         {viewMode === 'monthly' && (
         <>
@@ -750,6 +752,7 @@ export default function CalendarPage() {
           </div>
         </SheetContent>
       </Sheet>
+      </div>
     </div>
   );
 }

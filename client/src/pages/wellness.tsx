@@ -118,8 +118,8 @@ export default function WellnessPage() {
   return (
     <div className="fitcircle-page">
       {/* Universal Fixed Header */}
-      <header className="sticky z-50 bg-[hsl(222,47%,11%)] pb-4" style={{ top: 0, marginTop: 'calc(-1 * env(safe-area-inset-top))', paddingTop: 'calc(env(safe-area-inset-top) + 24px)' }}>
-        <div className="relative text-center max-w-md mx-auto px-4">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[hsl(222,47%,11%)]" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           <button
             onClick={() => setIsSidebarOpen(true)}
             className="absolute top-0 left-0 text-slate-400 hover:text-white transition-colors"
@@ -131,7 +131,9 @@ export default function WellnessPage() {
         </div>
       </header>
       
-      <div className="fitcircle-container">
+      {/* Main content with top padding to offset fixed header */}
+      <div style={{ paddingTop: 'calc(env(safe-area-inset-top) + 56px)' }}>
+        <div className="fitcircle-container">
 
         {/* Wellness Features Grid */}
         <div className="grid grid-cols-2 gap-4">
@@ -206,6 +208,7 @@ export default function WellnessPage() {
           </div>
         </SheetContent>
       </Sheet>
+      </div>
     </div>
   );
 }

@@ -204,9 +204,9 @@ export default function Home() {
       className="container mx-auto px-4 max-w-md min-h-screen text-white"
       style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}
     >
-      {/* Header Section - Sticky */}
-      <header className="sticky z-50 bg-[hsl(222,47%,11%)] pb-4" style={{ top: 0, marginTop: 'calc(-1 * env(safe-area-inset-top))', paddingTop: 'calc(env(safe-area-inset-top) + 24px)' }}>
-        <div className="relative text-center">
+      {/* Header Section - Fixed */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[hsl(222,47%,11%)]" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="relative text-center h-14 flex items-center justify-center">
           {/* Hamburger Menu Icon */}
           <button
             onClick={() => setIsSidebarOpen(true)}
@@ -220,8 +220,10 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Quote of the Day */}
-      {!isQuoteHidden && <QuoteOfTheDay />}
+      {/* Main content with top padding to offset fixed header */}
+      <div style={{ paddingTop: 'calc(env(safe-area-inset-top) + 56px)' }}>
+        {/* Quote of the Day */}
+        {!isQuoteHidden && <QuoteOfTheDay />}
 
       {/* Start Workout Session Section */}
       <section className="mb-8">
@@ -812,6 +814,7 @@ export default function Home() {
           )}
         </DialogContent>
       </Dialog>
+      </div>
 
     </div>
   );
