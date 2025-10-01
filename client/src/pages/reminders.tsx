@@ -161,13 +161,6 @@ export default function RemindersPage() {
         </div>
       </header>
 
-      {/* Page Title */}
-      <div className="px-4 pb-4">
-        <div className="flex items-center justify-center max-w-md mx-auto">
-          <h2 className="text-2xl font-bold text-white">Reminders</h2>
-        </div>
-      </div>
-
       <div className="container mx-auto px-4 max-w-md">
 
         {/* Active Reminders List */}

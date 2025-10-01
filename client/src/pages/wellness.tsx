@@ -130,13 +130,6 @@ export default function WellnessPage() {
           <h1 className="text-2xl font-bold text-white">FitCircle</h1>
         </div>
       </header>
-
-      {/* Page Title */}
-      <div className="px-4 pb-4">
-        <div className="flex items-center justify-center max-w-md mx-auto">
-          <h2 className="fitcircle-page-title">Logs</h2>
-        </div>
-      </div>
       
       <div className="fitcircle-container">
 

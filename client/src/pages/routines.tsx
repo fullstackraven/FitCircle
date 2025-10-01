@@ -139,22 +139,6 @@ export default function RoutinesPage() {
         </div>
       </header>
 
-      {/* Page Title */}
-      <div className="px-4 pb-4">
-        <div className="relative flex items-center justify-center max-w-md mx-auto">
-          <h2 className="fitcircle-page-title">Routines</h2>
-          {routines.length > 0 && (
-            <button
-              onClick={handleAddRoutine}
-              className="absolute right-0 w-8 h-8 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center transition-colors"
-              data-testid="button-add-routine-header"
-            >
-              <Plus className="w-5 h-5 text-white" />
-            </button>
-          )}
-        </div>
-      </div>
-
       <div className="fitcircle-container">
         {/* Add Routines Section - Only show when no routines exist */}
         {routines.length === 0 && (
@@ -254,6 +238,18 @@ export default function RoutinesPage() {
               );
             })}
           </section>
+        )}
+
+        {/* Create Routine Bar Button */}
+        {routines.length > 0 && (
+          <button
+            onClick={handleAddRoutine}
+            className="w-full py-3 mb-8 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors border border-slate-700 flex items-center justify-center space-x-2"
+            data-testid="button-create-routine"
+          >
+            <span className="text-white font-medium">Create Routine</span>
+            <Plus className="w-5 h-5 text-white" />
+          </button>
         )}
 
         {/* Edit Workouts Section */}
