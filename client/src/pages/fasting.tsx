@@ -512,7 +512,10 @@ export default function FastingPage() {
 
       {/* Log Fast Dialog */}
       <Dialog open={isFastingDialogOpen} onOpenChange={setIsFastingDialogOpen}>
-        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-md mx-auto rounded-2xl">
+        <DialogContent 
+          className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           <DialogTitle className="text-lg font-semibold text-center">
             {editingLog ? 'Edit Fast' : 'Log Fast'}
           </DialogTitle>
@@ -520,17 +523,16 @@ export default function FastingPage() {
             Log your intermittent fasting period by entering start and end times
           </DialogDescription>
           
-          <div className="space-y-5">
+          <div className="space-y-4 px-1">
             {/* Start Date & Time */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-3">Start Fast</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Start Fast</label>
               <div className="space-y-2">
                 <Input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white text-base"
-                  tabIndex={-1}
                 />
                 <Input
                   type="time"
@@ -543,7 +545,7 @@ export default function FastingPage() {
 
             {/* End Date & Time */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-3">End Fast</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">End Fast</label>
               <div className="space-y-2">
                 <Input
                   type="date"
