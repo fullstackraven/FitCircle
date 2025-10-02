@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Upload, Download, Trash2, Clock, Shield } from 'lucide-react';
+import { ArrowLeft, Upload, Download, Trash2, Clock, Shield, RotateCcw } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
 import { Switch } from '@/components/ui/switch';
@@ -156,6 +156,38 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
+  // Force refresh - clear caches and reload
+  const forceRefresh = async () => {
+    try {
+      setStatus('Clearing caches and refreshing...');
+      
+      // Unregister all service workers
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of registrations) {
+          await registration.unregister();
+        }
+      }
+      
+      // Clear all caches
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        for (const cacheName of cacheNames) {
+          await caches.delete(cacheName);
+        }
+      }
+      
+      // Reload the page with a hard refresh
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    } catch (error) {
+      console.error('Force refresh failed:', error);
+      setStatus('Refresh failed. Please try again.');
+      setTimeout(() => setStatus(''), 3000);
+    }
+  };
+
   // Erase all data function
   const eraseAllData = () => {
     try {
@@ -275,6 +307,26 @@ export default function SettingsPage() {
             </div>
           )}
         </div> */}
+
+        {/* Force Refresh Section */}
+        <div className="bg-slate-800 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-white mb-4">App Updates</h2>
+          
+          <div className="space-y-4">
+            <button
+              onClick={forceRefresh}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+              data-testid="button-force-refresh"
+            >
+              <RotateCcw className="w-5 h-5" />
+              Force Refresh App
+            </button>
+            
+            <p className="text-xs text-slate-400 text-center">
+              Use this if the app looks broken or outdated. Clears all caches and reloads with fresh content.
+            </p>
+          </div>
+        </div>
 
         {/* Controls Section */}
         <div className="bg-slate-800 rounded-xl p-6 mb-6">
