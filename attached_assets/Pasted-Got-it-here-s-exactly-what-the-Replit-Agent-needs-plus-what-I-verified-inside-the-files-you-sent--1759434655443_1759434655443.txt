@@ -1,0 +1,83 @@
+Got it—here’s exactly what the Replit Agent needs, plus what I verified inside the files you sent.
+
+What I checked in your upload
+	•	client/index.html no longer contains the auto-reload listeners. ✔️
+It now only registers /sw.js and optionally calls reg.update().
+	•	client/sw.js is using a proper Network-First for navigations with a cached /index.html fallback, navigationPreload, and cache cleanup in activate. ✔️
+Cache name is bumped: fitcircle-v4-2025-10-02.
+
+This is the correct setup and should eliminate the white screen race.
+
+⸻
+
+Answer to the Agent’s question
+
+Yes — remove the two auto-reload listeners from index.html.
+Those were:
+	•	updatefound → window.location.reload()
+	•	global controllerchange → window.location.reload()
+
+Your React hook should be the only logic that triggers a reload. Having multiple listeners causes double reloads and can land the app between SW versions.
+
+⸻
+
+Tuned navigation strategy (final)
+
+Use the implementation already present in client/sw.js (summarized):
+	•	Precache the shell: ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png']
+	•	Install: cache.addAll(SHELL_URLS)
+	•	Activate: clients.claim(), enable navigationPreload, then delete old caches
+	•	Navigations (mode==='navigate'):
+	•	Try event.preloadResponse or fetch(req)
+	•	If OK & HTML, event.waitUntil(cache.put('/index.html', clone))
+	•	On error, fallback to cached /index.html
+	•	Assets (js/css): cache-first (only cache resp.ok)
+	•	Images: cache-first with network fallback
+	•	Never cache non-OK/redirect HTML as shell
+
+This matches the sw.js you provided and prevents white screens during SW updates.
+
+⸻
+
+Deploy + refresh sequence (do this to flush the old behavior)
+	1.	Deploy the current build (with CACHE_NAME = fitcircle-v4-2025-10-02).
+	2.	On each test device:
+	•	Fully quit the PWA (swipe it away).
+	•	Re-open once → the old SW serves the old shell while the new SW installs & sits waiting.
+	•	Tap your Update button (which posts SKIP_WAITING), your hook waits for controllerchange, then one reload happens.
+	3.	Verify in DevTools (Application → Service Workers):
+	•	Status: activated and is running, scope /.
+	•	Only one reload occurs.
+	•	Network shows index.html and bundle files are 200/304 (no 404s).
+
+⸻
+
+If anyone still sees a white screen
+
+It’s usually one of these—and the fixes are already covered by your new files:
+	•	A stale SW still registered under a different scope.
+➜ In DevTools, Unregister old SWs, or open /sw.js directly and refresh.
+	•	Old cache not deleted.
+➜ Bumping CACHE_NAME (already done) + cleanup in activate handles this.
+	•	Reload happened before controllerchange.
+➜ You removed the conflicting listeners; the hook now controls this path.
+	•	Cached error page as shell.
+➜ Your fetch handler only caches resp.ok HTML to /index.html—good.
+
+⸻
+
+One tiny polish for the Agent (optional)
+
+In the nav handler, add ignoreSearch: true to the success match as well (you already do this for the fallback):
+
+// When matching the cached shell, prefer ignoreSearch for SPA routes
+await c.match('/index.html', { ignoreSearch: true })
+
+(You’re already doing it on the fallback path, so this is just consistency.)
+
+⸻
+
+TL;DR for Replit Agent
+	•	✅ Keep the current sw.js (v4) exactly as in the package.
+	•	✅ Keep the simplified index.html registration (no auto reload listeners).
+	•	🚀 Deploy, hard close the PWA, reopen, press Update once → expect a single reload and no white screen.
