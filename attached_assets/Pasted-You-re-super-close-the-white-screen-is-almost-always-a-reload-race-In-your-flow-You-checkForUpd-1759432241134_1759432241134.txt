@@ -1,0 +1,182 @@
+You’re super close—the white screen is almost always a reload race. In your flow:
+	•	You checkForUpdates() → wait 500ms → if registration.waiting doesn’t exist yet, you hard-reload.
+	•	But the new SW might still be installing (not “waiting” yet). You reload into an in-between state where the active SW + cached shell don’t match the new asset URLs → blank screen.
+
+Also, if the controllerchange listener isn’t guaranteed to be attached before you call updateNow(), you can miss the event and reload at the wrong time.
+
+Below is a deterministic, race-free version that fixes those issues (no arbitrary timeouts, no reloads until the new SW controls the page).
+
+⸻
+
+Patch the page code
+
+1) Promise helpers (no setTimeouts)
+
+async function waitForWaiting(reg: ServiceWorkerRegistration, maxMs = 15000) {
+  // Already waiting?
+  if (reg.waiting) return reg.waiting;
+
+  // If installing, wait for it to become "installed" (then .waiting will appear)
+  if (reg.installing) {
+    const sw = reg.installing;
+    await new Promise<void>((resolve, reject) => {
+      const to = setTimeout(() => reject(new Error('install timeout')), maxMs);
+      const onChange = () => {
+        if (sw.state === 'installed') {
+          clearTimeout(to);
+          resolve();
+        } else if (sw.state === 'redundant') {
+          clearTimeout(to);
+          reject(new Error('install redundant'));
+        }
+      };
+      sw.addEventListener('statechange', onChange);
+    });
+    if (reg.waiting) return reg.waiting;
+  }
+
+  // Otherwise, watch for updatefound → installing → installed
+  const waiting = await new Promise<ServiceWorker | null>((resolve) => {
+    let timedOut = false;
+    const to = setTimeout(() => {
+      timedOut = true;
+      resolve(null);
+    }, maxMs);
+
+    const onUpdateFound = () => {
+      const sw = reg.installing;
+      if (!sw) return;
+      sw.addEventListener('statechange', function onChange() {
+        if (sw.state === 'installed') {
+          clearTimeout(to);
+          reg.removeEventListener('updatefound', onUpdateFound);
+          resolve(reg.waiting ?? null);
+        }
+      });
+    };
+
+    reg.addEventListener('updatefound', onUpdateFound);
+  });
+
+  return waiting;
+}
+
+function onceControllerChange(): Promise<void> {
+  return new Promise((resolve) => {
+    const handler = () => {
+      navigator.serviceWorker.removeEventListener('controllerchange', handler);
+      resolve();
+    };
+    navigator.serviceWorker.addEventListener('controllerchange', handler);
+  });
+}
+
+2) Safe updateNow (attach controller listener before posting SKIP_WAITING)
+
+const updateNow = async () => {
+  const reg = await navigator.serviceWorker.getRegistration();
+  const waiting = reg?.waiting;
+  if (!waiting) return;
+
+  const waitForControl = onceControllerChange();   // attach first
+  waiting.postMessage({ type: 'SKIP_WAITING' });   // then trigger
+  await waitForControl;                            // wait until new SW controls page
+
+  // Small iOS PWA guard: give the controller a tick before reload
+  setTimeout(() => window.location.reload(), 50);
+};
+
+3) Fix your button handler (no hard reload fallback while update is in flight)
+
+const forceRefresh = async () => {
+  try {
+    setIsRefreshing(true);
+
+    if (!('serviceWorker' in navigator)) {
+      window.location.reload();
+      return;
+    }
+
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) {
+      window.location.reload();
+      return;
+    }
+
+    // Ask the browser to check for a new SW
+    await reg.update();
+
+    // Deterministically wait for a waiting worker (or time out)
+    const waiting = await waitForWaiting(reg);
+
+    if (waiting) {
+      // Activate the new worker and reload ONLY after controllerchange
+      await updateNow();
+    } else {
+      // No new SW found after a real check — only then do a plain reload
+      window.location.reload();
+    }
+  } catch (err) {
+    console.error('Force refresh failed:', err);
+    // As a last resort, allow a normal reload (better than being stuck)
+    window.location.reload();
+  } finally {
+    setIsRefreshing(false);
+  }
+};
+
+
+⸻
+
+Service Worker must-have bits (verify these)
+
+// message: enable skipWaiting from the page
+self.addEventListener('message', (event) => {
+  if (event?.data?.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
+// activate: take control immediately so controllerchange will fire
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+// Navigation strategy: Network-first with cached index.html fallback
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  if (req.mode === 'navigate') {
+    event.respondWith((async () => {
+      try {
+        return await fetch(req);
+      } catch {
+        const c = await caches.open('app-precache-vX');
+        return (await c.match('/index.html')) || Response.error();
+      }
+    })());
+  }
+});
+
+And make sure your build/Workbox precache includes /index.html and all hashed bundles. Clean old caches in activate, not from the UI.
+
+⸻
+
+Why your current code can white-screen
+	•	The 500 ms setTimeout isn’t reliable; the new SW often needs longer to reach waiting. You end up in the else branch → reload during install → mismatched caches/assets → blank screen.
+	•	If the controllerchange listener wasn’t registered before postMessage(SKIP_WAITING), you can miss it and reload too early.
+
+⸻
+
+Quick diagnostics (1 minute)
+
+Open DevTools (remote inspect iOS if needed):
+	1.	Application → Service Workers
+	•	Tap your button → does the new SW become activated and “is running”?
+	2.	Network tab
+	•	After the reload, do your main.*.js files 200/304 or 404?
+	•	If 404, your shell is old and asking for new hashed files that aren’t cached yet.
+	3.	Console
+	•	Any runtime exceptions (often JSON/IDB schema, or module load failures)?
+
+If you still see a white screen after this patch, send me:
+	•	your SW registration snippet (how/where you register it),
+	•	your Workbox/Vite-PWA config (if you’re using one),
+	•	and any console/network errors. I’ll pinpoint the exact line.

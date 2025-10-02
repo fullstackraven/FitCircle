@@ -1,27 +1,62 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
+// Wait deterministically for a waiting worker (no race conditions)
+async function waitForWaiting(reg: ServiceWorkerRegistration, maxMs = 15000): Promise<ServiceWorker | null> {
+  if (reg.waiting) return reg.waiting;
+
+  if (reg.installing) {
+    const sw = reg.installing;
+    await new Promise<void>((resolve, reject) => {
+      const to = setTimeout(() => reject(new Error('install timeout')), maxMs);
+      const onChange = () => {
+        if (sw.state === 'installed') {
+          clearTimeout(to);
+          resolve();
+        } else if (sw.state === 'redundant') {
+          clearTimeout(to);
+          reject(new Error('install redundant'));
+        }
+      };
+      sw.addEventListener('statechange', onChange);
+    });
+    if (reg.waiting) return reg.waiting;
+  }
+
+  const waiting = await new Promise<ServiceWorker | null>((resolve) => {
+    const to = setTimeout(() => resolve(null), maxMs);
+
+    const onUpdateFound = () => {
+      const sw = reg.installing;
+      if (!sw) return;
+      sw.addEventListener('statechange', function onChange() {
+        if (sw.state === 'installed') {
+          clearTimeout(to);
+          reg.removeEventListener('updatefound', onUpdateFound);
+          resolve(reg.waiting ?? null);
+        }
+      });
+    };
+
+    reg.addEventListener('updatefound', onUpdateFound);
+  });
+
+  return waiting;
+}
+
+// Wait for controllerchange event (attach before triggering)
+function onceControllerChange(): Promise<void> {
+  return new Promise((resolve) => {
+    const handler = () => {
+      navigator.serviceWorker.removeEventListener('controllerchange', handler);
+      resolve();
+    };
+    navigator.serviceWorker.addEventListener('controllerchange', handler);
+  });
+}
+
 export function useServiceWorkerUpdate(pollMs: number = 0) {
   const [updateReady, setUpdateReady] = useState(false);
   const [installingState, setInstallingState] = useState<ServiceWorkerState | null>(null);
-  const waitingRef = useRef<ServiceWorker | null>(null);
-  const reloadedRef = useRef(false);
-  const controllerChangeHandlerRef = useRef<() => void>();
-
-  useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
-    
-    const onControllerChange = () => {
-      if (reloadedRef.current) return;
-      reloadedRef.current = true;
-      window.location.reload();
-    };
-    controllerChangeHandlerRef.current = onControllerChange;
-    navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
-    return () => {
-      const handler = controllerChangeHandlerRef.current;
-      if (handler) navigator.serviceWorker.removeEventListener("controllerchange", handler);
-    };
-  }, []);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -51,7 +86,6 @@ export function useServiceWorkerUpdate(pollMs: number = 0) {
       reg = existing;
 
       if (reg.waiting) {
-        waitingRef.current = reg.waiting;
         setUpdateReady(true);
       }
 
@@ -80,14 +114,14 @@ export function useServiceWorkerUpdate(pollMs: number = 0) {
 
   const updateNow = useCallback(async () => {
     const reg = await navigator.serviceWorker.getRegistration();
-    const waiting = reg?.waiting ?? waitingRef.current;
+    const waiting = reg?.waiting;
+    if (!waiting) return;
 
-    if (waiting) {
-      waitingRef.current = waiting;
-      waiting.postMessage({ type: "SKIP_WAITING" });
-    } else {
-      setTimeout(() => updateNow(), 300);
-    }
+    const waitForControl = onceControllerChange();
+    waiting.postMessage({ type: "SKIP_WAITING" });
+    await waitForControl;
+
+    setTimeout(() => window.location.reload(), 50);
   }, []);
 
   return {
@@ -95,5 +129,6 @@ export function useServiceWorkerUpdate(pollMs: number = 0) {
     updateNow,
     checkForUpdates,
     installingState,
+    waitForWaiting,
   };
 }
