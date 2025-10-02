@@ -8,6 +8,8 @@ export function useServiceWorkerUpdate(pollMs: number = 0) {
   const controllerChangeHandlerRef = useRef<() => void>();
 
   useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+    
     const onControllerChange = () => {
       if (reloadedRef.current) return;
       reloadedRef.current = true;
