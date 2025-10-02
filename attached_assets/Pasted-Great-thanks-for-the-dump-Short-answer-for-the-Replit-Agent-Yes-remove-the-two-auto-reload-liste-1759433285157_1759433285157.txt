@@ -1,7 +1,20 @@
-// Service Worker for FitCircle PWA
-// Network-first with cached /index.html fallback to prevent white screens
+Great—thanks for the dump. Short answer for the Replit Agent:
 
-const CACHE_NAME = 'fitcircle-v4-2025-10-02';
+Yes, remove the two auto-reload listeners in index.html (the updatefound → reload() and the global controllerchange → reload()). Your React hook should be the only place that triggers reload. Those listeners are causing a double-reload race.
+
+⸻
+
+Tuned navigation strategy for sw.js (prevents white screens)
+
+Your current nav handler is close, but two things cause blank shells on iOS/slow networks:
+	1.	You sometimes reload before the new SW controls the page, and
+	2.	Your offline fallback depends on / being cached, but index.html isn’t explicitly precached and the write on navigate isn’t guaranteed (you don’t waitUntil it).
+
+Use a classic App-Shell, Network-First (with preload) + cached /index.html fallback, and make the cache writes atomic with event.waitUntil. Also precache both / and /index.html.
+
+Drop-in sw.js changes
+
+const CACHE_NAME = 'fitcircle-v4-2025-10-02'; // bump
 const SHELL_URLS = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
 
 // Allow page to trigger immediate activation
@@ -70,6 +83,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // 2) Hashed JS/CSS: Cache-first is fine once you precache or rely on HTTP caching.
+  // If you keep network-first for assets, keep this stable and avoid caching errors pages.
   if (/\.(?:js|css|mjs)$/.test(new URL(req.url).pathname)) {
     event.respondWith((async () => {
       const c = await caches.open(CACHE_NAME);
@@ -82,7 +96,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3) Images & static: Cache-first with network fallback
+  // 3) Images & static: Cache-first with network fallback (optional)
   if (/\.(?:png|jpg|jpeg|gif|webp|svg|ico)$/.test(req.url)) {
     event.respondWith((async () => {
       const c = await caches.open(CACHE_NAME);
@@ -98,3 +112,27 @@ self.addEventListener('fetch', (event) => {
     })());
   }
 });
+
+Why this fixes the white screen
+	•	/index.html is precached and kept fresh on successful online navigations; on failure, you always have a stable shell to render.
+	•	event.waitUntil(cache.put(...)) ensures the write survives even if the SW is torn down.
+	•	navigationPreload reduces the window where a reload hits before the SW is ready.
+	•	Cleanup in activate (after clients.claim) prevents deleting the cache your just-installed SW needs.
+	•	Single reload path (your React hook) avoids double reload races.
+
+Extra guardrails (optional but helpful)
+	•	In your fetch handler, don’t cache responses that are !resp.ok or are redirects for HTML; caching error pages causes “permanent” white screens offline.
+	•	For SPAs behind client routing, always normalize the cached shell to /index.html (as above) and use ignoreSearch: true on fallback match.
+
+⸻
+
+Action list for Replit Agent
+	1.	Remove the two auto-reload listeners from client/index.html.
+	2.	Update sw.js to the strategy above (bump CACHE_NAME).
+	3.	Ensure /index.html is included in SHELL_URLS.
+	4.	Deploy, then on device: fully quit the PWA, reopen, tap your Update button—verify:
+	•	DevTools → Application → Service Workers shows activated & running.
+	•	Only one reload happens.
+	•	Network shows index.html and bundle files are 200/304 (no 404s).
+
+If you still hit a blank screen, send me the console errors and Network panel after tapping Update (especially any 404 for main.*.js).
