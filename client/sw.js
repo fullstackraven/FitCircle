@@ -9,9 +9,8 @@ const urlsToCache = [
   '/manifest.json'
 ];
 
-// Install Service Worker and skip waiting
+// Install Service Worker (don't auto-skip waiting)
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -21,6 +20,13 @@ self.addEventListener('install', (event) => {
         console.log('Cache installation failed:', error);
       })
   );
+});
+
+// Listen for SKIP_WAITING message from the app
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // Activate Service Worker and claim clients immediately
