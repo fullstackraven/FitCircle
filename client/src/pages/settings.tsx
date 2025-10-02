@@ -159,7 +159,7 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
-  // Force refresh using the service worker update hook
+  // Force refresh - NEVER clear caches here, only trigger SW update
   const forceRefresh = async () => {
     try {
       setIsRefreshing(true);
@@ -173,22 +173,18 @@ export default function SettingsPage() {
       // Check for updates first
       await checkForUpdates();
       
-      // Check if there's a waiting service worker
-      const registration = await navigator.serviceWorker.getRegistration();
-      
-      if (registration?.waiting) {
-        // There's a waiting worker, trigger update
-        updateNow();
-      } else {
-        // No waiting worker, clear caches and reload
-        if ('caches' in window) {
-          const cacheNames = await caches.keys();
-          for (const cacheName of cacheNames) {
-            await caches.delete(cacheName);
-          }
+      // Wait a bit for updates to be detected
+      setTimeout(async () => {
+        const registration = await navigator.serviceWorker.getRegistration();
+        
+        if (registration?.waiting) {
+          // There's a waiting worker, trigger update (will reload via controllerchange)
+          updateNow();
+        } else {
+          // No waiting worker available, just reload to get latest from network
+          window.location.reload();
         }
-        setTimeout(() => window.location.reload(), 500);
-      }
+      }, 500);
     } catch (error) {
       console.error('Force refresh failed:', error);
       setIsRefreshing(false);

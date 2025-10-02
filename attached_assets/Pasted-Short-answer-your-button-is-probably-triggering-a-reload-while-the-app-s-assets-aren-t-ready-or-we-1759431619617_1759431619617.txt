@@ -1,0 +1,110 @@
+Short answer: your button is probably triggering a reload while the app’s assets aren’t ready (or were just deleted), so the shell boots with missing JS and you see a white screen. The “Force Refresh” flow must never wipe caches or reload until the new SW is activated and controlling the page.
+
+Here are the most common causes (and quick fixes):
+
+Likely culprits
+	1.	You clear caches before the new SW activates.
+If the button deletes caches and then reloads, the app starts with no precache. If you’re offline/spotty (or iOS PWA networking is flaky), you get a white screen.
+	2.	Race: reload happens before skipWaiting() finishes.
+Calling reload() too early means the page still uses the old worker (or none), with a mix of old/new asset URLs.
+	3.	Precache doesn’t include everything (esp. index.html).
+If index.html or the hashed JS bundles aren’t in the precache, a cold boot after cache deletion can’t find them.
+	4.	Bad strategy for navigation requests.
+Using CacheFirst for navigate requests can serve a stale/partial index.html. Prefer NetworkFirst for navigations so an update pulls the fresh shell (with offline fallback).
+	5.	Old cache cleanup happens at the wrong time.
+Deleting “outdated” caches in the UI or in install can remove assets that the soon-to-activate SW still needs. Cleanup belongs in activate (after the new cache is ready).
+	6.	Runtime crash from persisted state.
+After update, your app loads incompatible data from localStorage/IndexedDB and dies before rendering. (White screen + console error.) Add robust JSON guards/migrations.
+	7.	Scope/URL mismatch (iOS quirks).
+start_url, scope, or a redirected path (e.g., /app/ vs /) can reload to a route the SW doesn’t cover.
+
+⸻
+
+What “safe update” should look like
+
+In the page (button logic):
+
+// 1) Only ever SKIP_WAITING, then wait for controllerchange, then reload once.
+async function updateNow() {
+  const reg = await navigator.serviceWorker.getRegistration();
+  const waiting = reg?.waiting;
+  if (!waiting) {
+    // optionally trigger a check:
+    await reg?.update();
+    return;
+  }
+  const onControllerChange = () => {
+    navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
+    // reload only AFTER the new SW takes control
+    window.location.reload();
+  };
+  navigator.serviceWorker.addEventListener('controllerchange', onControllerChange);
+  waiting.postMessage({ type: 'SKIP_WAITING' });
+}
+
+In the service worker:
+
+self.addEventListener('message', (evt) => {
+  if (evt?.data?.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
+// Install: precache new assets fully
+self.addEventListener('install', (event) => {
+  event.waitUntil((async () => {
+    const c = await caches.open('app-precache-vX'); // version this!
+    await c.addAll([
+      '/', '/index.html', '/manifest.webmanifest',
+      '/assets/main.abcd1234.js', '/assets/vendor.ef567890.js',
+      // ...everything your build outputs (or let Workbox precache)
+    ]);
+  })());
+});
+
+// Activate: claim clients & THEN clean old caches
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
+    await self.clients.claim();
+    const keep = new Set(['app-precache-vX']);
+    const names = await caches.keys();
+    await Promise.all(names.map(n => (!keep.has(n) ? caches.delete(n) : undefined)));
+  })());
+});
+
+Routing strategy (important for SPAs):
+	•	Use NetworkFirst for navigations (requests with mode: 'navigate'), with a cache fallback to /index.html.
+	•	Keep static assets (hashed JS/CSS) as CacheFirst (precache).
+
+Example (Workbox-like pseudocode):
+
+// Navigations: try network, fall back to cached shell
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  if (req.mode === 'navigate') {
+    event.respondWith((async () => {
+      try { return await fetch(req); }
+      catch { 
+        const c = await caches.open('app-precache-vX');
+        return (await c.match('/index.html')) || Response.error();
+      }
+    })());
+    return;
+  }
+  // Let Workbox or your own handlers serve assets…
+});
+
+
+⸻
+
+Quick checklist to fix your current white screen
+	•	Remove any cache clearing from the button. The button should only do postMessage(SKIP_WAITING) and wait for controllerchange → then reload.
+	•	Ensure index.html and all hashed bundles are precached.
+	•	Move cache cleanup to activate, after clients.claim().
+	•	Adopt NetworkFirst for navigations.
+	•	Version your caches (app-precache-vX) so you never delete the active one.
+	•	Open devtools (on mobile via Remote Inspect) and check:
+	•	Console errors (often shows a JSON parse or module 404).
+	•	Network tab after tap: do the JS files load or 404?
+	•	Application → Service Workers: does a new SW become “activated and is running”? Is it controlling the page?
+	•	Guard your persisted state. Wrap localStorage/IDB reads in try/catch and add schema versioning/migrations.
+
+If you paste your current button handler and service worker (or Workbox/Vite-PWA config), I’ll pinpoint the exact line causing the race and rewrite it to be bulletproof—especially for iOS standalone.
