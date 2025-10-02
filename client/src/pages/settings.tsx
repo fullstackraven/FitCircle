@@ -19,7 +19,7 @@ export default function SettingsPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
-  const { updateNow, checkForUpdates } = useServiceWorkerUpdate();
+  const { updateNow, checkForUpdates, waitForWaiting } = useServiceWorkerUpdate();
 
 
   
@@ -159,34 +159,40 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
-  // Force refresh - NEVER clear caches here, only trigger SW update
+  // Force refresh - deterministic waiting, no race conditions
   const forceRefresh = async () => {
     try {
       setIsRefreshing(true);
       
       if (!('serviceWorker' in navigator)) {
-        // No service worker support, just reload
-        setTimeout(() => window.location.reload(), 500);
+        window.location.reload();
         return;
       }
 
-      // Check for updates first
-      await checkForUpdates();
-      
-      // Wait a bit for updates to be detected
-      setTimeout(async () => {
-        const registration = await navigator.serviceWorker.getRegistration();
-        
-        if (registration?.waiting) {
-          // There's a waiting worker, trigger update (will reload via controllerchange)
-          updateNow();
-        } else {
-          // No waiting worker available, just reload to get latest from network
-          window.location.reload();
-        }
-      }, 500);
-    } catch (error) {
-      console.error('Force refresh failed:', error);
+      const reg = await navigator.serviceWorker.getRegistration();
+      if (!reg) {
+        window.location.reload();
+        return;
+      }
+
+      // Ask browser to check for new SW
+      await reg.update();
+
+      // Deterministically wait for waiting worker (no timeout race)
+      const waiting = await waitForWaiting(reg);
+
+      if (waiting) {
+        // Activate new worker and reload ONLY after controllerchange
+        await updateNow();
+      } else {
+        // No new SW found after real check - only then reload
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error('Force refresh failed:', err);
+      // Last resort: allow normal reload
+      window.location.reload();
+    } finally {
       setIsRefreshing(false);
     }
   };
