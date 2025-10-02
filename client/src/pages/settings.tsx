@@ -161,6 +161,14 @@ export default function SettingsPage() {
     try {
       setStatus('Clearing caches and refreshing...');
       
+      // Clear all caches first
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        for (const cacheName of cacheNames) {
+          await caches.delete(cacheName);
+        }
+      }
+      
       // Unregister all service workers
       if ('serviceWorker' in navigator) {
         const registrations = await navigator.serviceWorker.getRegistrations();
@@ -169,17 +177,9 @@ export default function SettingsPage() {
         }
       }
       
-      // Clear all caches
-      if ('caches' in window) {
-        const cacheNames = await caches.keys();
-        for (const cacheName of cacheNames) {
-          await caches.delete(cacheName);
-        }
-      }
-      
-      // Reload the page with a hard refresh
+      // Force a hard reload with cache busting
       setTimeout(() => {
-        window.location.reload();
+        window.location.href = window.location.href.split('?')[0] + '?refresh=' + Date.now();
       }, 500);
     } catch (error) {
       console.error('Force refresh failed:', error);
