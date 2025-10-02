@@ -1,7 +1,7 @@
 // Simple Service Worker for FitCircle PWA
 // Provides basic caching for offline functionality
 
-const CACHE_NAME = 'fitcircle-v2-2024-10-02';
+const CACHE_NAME = 'fitcircle-v3-2024-10-02';
 const urlsToCache = [
   '/',
   '/icon-192.png',
