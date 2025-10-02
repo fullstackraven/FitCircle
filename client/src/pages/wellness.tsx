@@ -179,9 +179,18 @@ export default function WellnessPage() {
             <Menu size={22} />
           </button>
           <h1 className="text-2xl font-bold text-white">FitCircle</h1>
+        </div>
+      </header>
+      
+      {/* Main content with top padding to offset fixed header */}
+      <div style={{ paddingTop: 'calc(env(safe-area-inset-top) + 56px)' }}>
+        <div className="fitcircle-container">
+
+        {/* Edit/Done Button */}
+        <div className="flex justify-end mb-4">
           <button
             onClick={() => isEditMode ? handleDone() : setIsEditMode(true)}
-            className="absolute top-0 right-4 text-slate-400 hover:text-white transition-colors flex items-center space-x-1"
+            className="text-slate-400 hover:text-white transition-colors flex items-center space-x-1"
             title={isEditMode ? "Done editing" : "Edit layout"}
             data-testid={isEditMode ? "button-done-edit" : "button-edit-layout"}
           >
@@ -195,11 +204,6 @@ export default function WellnessPage() {
             )}
           </button>
         </div>
-      </header>
-      
-      {/* Main content with top padding to offset fixed header */}
-      <div style={{ paddingTop: 'calc(env(safe-area-inset-top) + 56px)' }}>
-        <div className="fitcircle-container">
 
         {/* Wellness Features Grid */}
         <div className="grid grid-cols-2 gap-4">
@@ -209,17 +213,17 @@ export default function WellnessPage() {
               <div key={feature.id} className="relative">
                 {/* Directional Arrows in Edit Mode */}
                 {isEditMode && (
-                  <div className="absolute -top-2 -left-2 -right-2 -bottom-2 z-10 pointer-events-none">
+                  <div className="absolute top-0 left-0 right-0 bottom-0 z-10 pointer-events-none">
                     {canMoveUp(index) && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           moveItem(index, 'up');
                         }}
-                        className="absolute top-1 left-1/2 -translate-x-1/2 w-6 h-6 bg-slate-700 hover:bg-slate-600 rounded-full flex items-center justify-center pointer-events-auto transition-colors"
+                        className="absolute top-2 left-1/2 -translate-x-1/2 pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-up-${feature.id}`}
                       >
-                        <ChevronUp className="w-4 h-4 text-white" />
+                        <ChevronUp className="w-5 h-5 text-white" />
                       </button>
                     )}
                     {canMoveDown(index) && (
@@ -228,10 +232,10 @@ export default function WellnessPage() {
                           e.stopPropagation();
                           moveItem(index, 'down');
                         }}
-                        className="absolute bottom-1 left-1/2 -translate-x-1/2 w-6 h-6 bg-slate-700 hover:bg-slate-600 rounded-full flex items-center justify-center pointer-events-auto transition-colors"
+                        className="absolute bottom-2 left-1/2 -translate-x-1/2 pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-down-${feature.id}`}
                       >
-                        <ChevronDown className="w-4 h-4 text-white" />
+                        <ChevronDown className="w-5 h-5 text-white" />
                       </button>
                     )}
                     {canMoveLeft(index) && (
@@ -240,10 +244,10 @@ export default function WellnessPage() {
                           e.stopPropagation();
                           moveItem(index, 'left');
                         }}
-                        className="absolute top-1/2 -translate-y-1/2 left-1 w-6 h-6 bg-slate-700 hover:bg-slate-600 rounded-full flex items-center justify-center pointer-events-auto transition-colors"
+                        className="absolute top-1/2 -translate-y-1/2 left-2 pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-left-${feature.id}`}
                       >
-                        <ChevronLeft className="w-4 h-4 text-white" />
+                        <ChevronLeft className="w-5 h-5 text-white" />
                       </button>
                     )}
                     {canMoveRight(index) && (
@@ -252,10 +256,10 @@ export default function WellnessPage() {
                           e.stopPropagation();
                           moveItem(index, 'right');
                         }}
-                        className="absolute top-1/2 -translate-y-1/2 right-1 w-6 h-6 bg-slate-700 hover:bg-slate-600 rounded-full flex items-center justify-center pointer-events-auto transition-colors"
+                        className="absolute top-1/2 -translate-y-1/2 right-2 pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-right-${feature.id}`}
                       >
-                        <ChevronRight className="w-4 h-4 text-white" />
+                        <ChevronRight className="w-5 h-5 text-white" />
                       </button>
                     )}
                   </div>
