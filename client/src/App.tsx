@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { useRef, useEffect } from "react";
 
 import Home from "@/pages/home";
@@ -66,11 +66,19 @@ function Router() {
 function App() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const dockRef = useRef<HTMLDivElement>(null);
+  const [location] = useLocation();
 
   const { shellKey } = useIOSViewportGuard({
     scrollEl: scrollRef.current,
     dockEl: dockRef.current,
   });
+
+  // Auto-scroll to top on route change
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo(0, 0);
+    }
+  }, [location]);
 
   return (
     <ScrollLockProvider>
