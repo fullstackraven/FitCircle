@@ -46,34 +46,55 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event - Network first for CSS/JS, cache first for images
+// Fetch Event - Network first for navigations and code, cache first for images
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+  const { request } = event;
+  const url = new URL(request.url);
   
-  // Network-first strategy for CSS, JS, and HTML
-  if (url.pathname.endsWith('.css') || url.pathname.endsWith('.js') || url.pathname.endsWith('.tsx') || event.request.destination === 'document') {
+  // Network-first strategy for navigations (critical for updates)
+  if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request)
+      fetch(request)
         .then((response) => {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
+            cache.put(request, responseToCache);
+          });
+          return response;
+        })
+        .catch(async () => {
+          // Fallback to cached index.html for offline
+          const cache = await caches.open(CACHE_NAME);
+          return (await cache.match('/')) || (await cache.match('/index.html')) || Response.error();
+        })
+    );
+    return;
+  }
+  
+  // Network-first strategy for CSS, JS, and HTML
+  if (url.pathname.endsWith('.css') || url.pathname.endsWith('.js') || url.pathname.endsWith('.tsx') || request.destination === 'document') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseToCache);
           });
           return response;
         })
         .catch(() => {
-          return caches.match(event.request);
+          return caches.match(request);
         })
     );
   } else {
     // Cache-first for images and static assets
     event.respondWith(
-      caches.match(event.request)
+      caches.match(request)
         .then((response) => {
-          return response || fetch(event.request);
+          return response || fetch(request);
         })
         .catch(() => {
-          if (event.request.destination === 'document') {
+          if (request.destination === 'document') {
             return caches.match('/');
           }
         })
