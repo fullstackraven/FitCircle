@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, Upload, Download, Trash2, Clock, Shield, RotateCcw } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
+import { useServiceWorkerUpdate } from '@/hooks/use-service-worker-update';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { getTodayString } from '@/lib/date-utils';
@@ -17,6 +18,7 @@ export default function SettingsPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
+  const { updateNow, checkForUpdates } = useServiceWorkerUpdate();
 
 
   
@@ -156,45 +158,23 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
-  // Force refresh using proper PWA update pattern
+  // Force refresh using the service worker update hook
   const forceRefresh = async () => {
     try {
-      if (!('serviceWorker' in navigator)) {
-        setStatus('Service workers not supported. Refreshing...');
-        setTimeout(() => window.location.reload(), 500);
-        return;
-      }
-
       setStatus('Updating app...');
       
-      const registration = await navigator.serviceWorker.getRegistration();
-      
-      if (!registration) {
-        setStatus('No service worker found. Refreshing...');
+      if (!('serviceWorker' in navigator)) {
         setTimeout(() => window.location.reload(), 500);
         return;
       }
 
-      // If there's a waiting worker, activate it
-      if (registration.waiting) {
-        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-        
-        registration.waiting.addEventListener('statechange', (e) => {
-          const target = e.target as ServiceWorker;
-          if (target.state === 'activated') {
-            window.location.reload();
-          }
-        });
-      } else {
-        // No waiting worker, just clear caches and reload
-        if ('caches' in window) {
-          const cacheNames = await caches.keys();
-          for (const cacheName of cacheNames) {
-            await caches.delete(cacheName);
-          }
-        }
-        setTimeout(() => window.location.reload(), 500);
-      }
+      // Check for updates first
+      await checkForUpdates();
+      
+      // Wait a bit for the SW to be detected, then trigger update
+      setTimeout(() => {
+        updateNow();
+      }, 300);
     } catch (error) {
       console.error('Force refresh failed:', error);
       setStatus('Refresh failed. Please try again.');
