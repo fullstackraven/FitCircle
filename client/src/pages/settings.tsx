@@ -159,7 +159,7 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
-  // Force refresh - deterministic waiting, no race conditions
+  // Force refresh - mimic browser's natural update flow
   const forceRefresh = async () => {
     try {
       setIsRefreshing(true);
@@ -169,28 +169,22 @@ export default function SettingsPage() {
         return;
       }
 
-      const reg = await navigator.serviceWorker.getRegistration();
-      if (!reg) {
-        window.location.reload();
-        return;
+      // Nuclear option: unregister all SWs and clear caches
+      // This mimics what the browser does naturally - clean slate
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map(reg => reg.unregister()));
+
+      // Clear all caches
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
       }
 
-      // Ask browser to check for new SW
-      await reg.update();
-
-      // Deterministically wait for waiting worker (no timeout race)
-      const waiting = await waitForWaiting(reg);
-
-      if (waiting) {
-        // Activate new worker and reload ONLY after controllerchange
-        await updateNow();
-      } else {
-        // No new SW found after real check - only then reload
-        window.location.reload();
-      }
+      // Reload - fresh registration will happen automatically
+      window.location.reload();
     } catch (err) {
       console.error('Force refresh failed:', err);
-      // Last resort: allow normal reload
+      // Last resort: simple reload
       window.location.reload();
     } finally {
       setIsRefreshing(false);
@@ -333,7 +327,7 @@ export default function SettingsPage() {
             </button>
             
             <p className="text-xs text-slate-400 text-center">
-              Use this if the app looks broken or outdated. Clears all caches and reloads with fresh content.
+              Unregisters service workers, clears all caches, and reloads fresh - just like a clean install.
             </p>
           </div>
         </div>
