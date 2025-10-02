@@ -19,61 +19,16 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Simplified PWA handling - disable aggressive caching for easier updates
-      if ("serviceWorker" in navigator) {
-        // Check for force update parameter
-        const forceParams = new URLSearchParams(window.location.search);
-        if (forceParams.get('v') || forceParams.get('force')) {
-          // Clear service workers and caches on forced update
-          navigator.serviceWorker.getRegistrations().then(registrations => {
-            registrations.forEach(registration => {
-              registration.unregister();
-            });
-          });
-          
-          if ('caches' in window) {
-            caches.keys().then(cacheNames => {
-              return Promise.all(
-                cacheNames.map(cacheName => caches.delete(cacheName))
-              );
-            });
-          }
-        }
-        
-        // Check if this is a cache clearing request and skip SW registration
-        const shouldSkipRegistration = window.location.search.includes('clear=true');
-        
-        if (!shouldSkipRegistration) {
-          navigator.serviceWorker.register("/sw.js")
-          .then((registration) => {
-            // Service Worker registered successfully
-            
-            // Check for updates and auto-refresh
-            registration.addEventListener('updatefound', () => {
-              const newWorker = registration.installing;
-              if (newWorker) {
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // New version available, refreshing
-                    window.location.reload();
-                  }
-                });
-              }
-            });
-            
-            // Auto-refresh on service worker update
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-              // Service worker controller changed, reloading page
-              window.location.reload();
-            });
-            
-            // Force update check immediately
-            registration.update();
-          })
-          .catch((error) => {
-            // Service Worker registration failed
-          });
-        }
+      // Simple PWA registration - React hook handles all update logic
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(reg => {
+              // Optional: kick off update check; UI will show when ready
+              reg.update?.();
+            })
+            .catch(console.error);
+        });
       }
     </script>
   </body>

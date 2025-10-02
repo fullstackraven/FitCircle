@@ -1,0 +1,59 @@
+Yes — remove those two auto-reload listeners from index.html. They’re racing your manual “Force Refresh” flow and causing double reloads (and sometimes a blank app shell).
+
+What to change
+
+Delete in client/index.html:
+
+// ❌ remove this whole block
+registration.addEventListener('updatefound', () => {
+  const newWorker = registration.installing;
+  if (newWorker) {
+    newWorker.addEventListener('statechange', () => {
+      if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+        window.location.reload(); // AUTO-RELOAD #1
+      }
+    });
+  }
+});
+
+// ❌ and remove this too
+navigator.serviceWorker.addEventListener('controllerchange', () => {
+  window.location.reload(); // AUTO-RELOAD #2
+});
+
+Keep registration simple, and let your hook handle everything:
+
+// client/index.html (or your app bootstrap)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      .then(reg => {
+        // Optional: kick off an update check; UI will show when ready
+        reg.update?.();
+      })
+      .catch(console.error);
+  });
+}
+
+Your React hook already:
+	•	listens for controllerchange once and reloads once,
+	•	calls SKIP_WAITING only when a waiting SW exists,
+	•	provides a manual “Check for updates” and “Update” button.
+
+Why this fixes white screens
+
+With the index.html listeners present, both they and your hook reload on controllerchange/updatefound, producing:
+	•	double reloads,
+	•	reloads before the new SW activates,
+	•	mixed old/new asset caches → blank screen.
+
+Removing them makes your hook the single source of truth for updates.
+
+After deploying
+	1.	Do one hard refresh on desktop (Shift+Reload) or fully close the iOS PWA and reopen, so the old html listeners aren’t in memory.
+	2.	Verify in DevTools → Application → Service Workers:
+	•	tap your “Update” button → SW becomes activated,
+	•	one reload occurs,
+	•	no console errors / 404s on JS bundles.
+
+If anything still flashes white, send me your current sw.js fetch strategy for navigate requests and I’ll tune it (likely switch to Network-first for navigations with cached /index.html fallback).
