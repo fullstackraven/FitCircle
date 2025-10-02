@@ -156,31 +156,45 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
-  // Force refresh - clear caches and reload
+  // Force refresh using proper PWA update pattern
   const forceRefresh = async () => {
     try {
-      setStatus('Clearing caches and refreshing...');
-      
-      // Clear all caches first
-      if ('caches' in window) {
-        const cacheNames = await caches.keys();
-        for (const cacheName of cacheNames) {
-          await caches.delete(cacheName);
-        }
+      if (!('serviceWorker' in navigator)) {
+        setStatus('Service workers not supported. Refreshing...');
+        setTimeout(() => window.location.reload(), 500);
+        return;
       }
+
+      setStatus('Updating app...');
       
-      // Unregister all service workers
-      if ('serviceWorker' in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        for (const registration of registrations) {
-          await registration.unregister();
-        }
+      const registration = await navigator.serviceWorker.getRegistration();
+      
+      if (!registration) {
+        setStatus('No service worker found. Refreshing...');
+        setTimeout(() => window.location.reload(), 500);
+        return;
       }
-      
-      // Force a hard reload with cache busting
-      setTimeout(() => {
-        window.location.href = window.location.href.split('?')[0] + '?refresh=' + Date.now();
-      }, 500);
+
+      // If there's a waiting worker, activate it
+      if (registration.waiting) {
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        
+        registration.waiting.addEventListener('statechange', (e) => {
+          const target = e.target as ServiceWorker;
+          if (target.state === 'activated') {
+            window.location.reload();
+          }
+        });
+      } else {
+        // No waiting worker, just clear caches and reload
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          for (const cacheName of cacheNames) {
+            await caches.delete(cacheName);
+          }
+        }
+        setTimeout(() => window.location.reload(), 500);
+      }
     } catch (error) {
       console.error('Force refresh failed:', error);
       setStatus('Refresh failed. Please try again.');
