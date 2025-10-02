@@ -1,0 +1,222 @@
+awesome—here’s a drop-in React/TypeScript hook you can use to detect a new SW, show an “Update” button, and safely activate + reload without crashes.
+
+⸻
+
+useServiceWorkerUpdate.ts
+
+import { useEffect, useRef, useState, useCallback } from "react";
+
+/**
+ * Call this hook once near the root of your app (e.g., App.tsx).
+ * It:
+ * - Detects when a new service worker is waiting
+ * - Exposes updateNow() to trigger SKIP_WAITING then reloads after activation
+ * - Exposes checkForUpdates() to manually ping for updates (e.g., from a menu)
+ */
+export function useServiceWorkerUpdate(pollMs: number = 0) {
+  const [updateReady, setUpdateReady] = useState(false);
+  const [installingState, setInstallingState] = useState<ServiceWorkerState | null>(null);
+  const waitingRef = useRef<ServiceWorker | null>(null);
+  const reloadedRef = useRef(false);
+  const controllerChangeHandlerRef = useRef<() => void>();
+
+  // Ensure we only reload once after the new controller takes over
+  useEffect(() => {
+    const onControllerChange = () => {
+      if (reloadedRef.current) return;
+      reloadedRef.current = true;
+      // In iOS Safari standalone, window.location.reload() is fine.
+      // If you have in-memory app state to preserve, consider a soft refresh route.
+      window.location.reload();
+    };
+    controllerChangeHandlerRef.current = onControllerChange;
+    navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
+    return () => {
+      const handler = controllerChangeHandlerRef.current;
+      if (handler) navigator.serviceWorker.removeEventListener("controllerchange", handler);
+    };
+  }, []);
+
+  // Wire up SW registration events
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+
+    let reg: ServiceWorkerRegistration | null = null;
+
+    const handleInstalling = (sw: ServiceWorker | null) => {
+      if (!sw) return;
+      setInstallingState(sw.state);
+      const onStateChange = () => {
+        setInstallingState(sw.state);
+        // If it reaches "installed" and there is an existing controller,
+        // then a new version is ready (the old one is controlling the page).
+        if (sw.state === "installed" && navigator.serviceWorker.controller) {
+          // There may be a separate "waiting" SW object; prefer registration.waiting below.
+          setUpdateReady(true);
+        }
+      };
+      sw.addEventListener("statechange", onStateChange);
+    };
+
+    const onUpdateFound = () => {
+      if (!reg) return;
+      handleInstalling(reg.installing);
+    };
+
+    const primeWaiting = async () => {
+      const existing = await navigator.serviceWorker.getRegistration();
+      if (!existing) return;
+      reg = existing;
+
+      // If a worker is already waiting (e.g., you refreshed with a new build deployed)
+      if (reg.waiting) {
+        waitingRef.current = reg.waiting;
+        setUpdateReady(true);
+      }
+
+      // Track future update cycles
+      reg.addEventListener("updatefound", onUpdateFound);
+
+      // Also observe installing if present
+      if (reg.installing) handleInstalling(reg.installing);
+    };
+
+    primeWaiting();
+
+    return () => {
+      if (reg) reg.removeEventListener("updatefound", onUpdateFound);
+    };
+  }, []);
+
+  // Manually ask the browser to check for a new SW
+  const checkForUpdates = useCallback(async () => {
+    const reg = await navigator.serviceWorker.getRegistration();
+    await reg?.update(); // triggers 'updatefound' if a new SW is published
+    // If the browser already downloaded it, registration.waiting will be set soon after
+    // The hook's listeners above will flip updateReady to true.
+  }, []);
+
+  // Optional polling (set pollMs to e.g. 30 * 60 * 1000 for every 30 minutes)
+  useEffect(() => {
+    if (!pollMs) return;
+    const id = setInterval(() => { checkForUpdates(); }, pollMs);
+    return () => clearInterval(id);
+  }, [pollMs, checkForUpdates]);
+
+  // Trigger SKIP_WAITING + wait until the new controller takes over
+  const updateNow = useCallback(async () => {
+    const reg = await navigator.serviceWorker.getRegistration();
+    const waiting = reg?.waiting ?? waitingRef.current;
+
+    if (waiting) {
+      waitingRef.current = waiting;
+      // Ask the waiting SW to skip waiting
+      waiting.postMessage({ type: "SKIP_WAITING" });
+      // When SKIP_WAITING completes, the 'controllerchange' listener above will reload.
+    } else {
+      // Edge case: if we raced and the SW is still installing, try again shortly
+      setTimeout(() => updateNow(), 300);
+    }
+  }, []);
+
+  return {
+    updateReady,          // true => show your toast/banner/button
+    updateNow,            // call to activate the new SW and reload
+    checkForUpdates,      // call to manually check for a new version
+    installingState,      // 'installing' | 'installed' | etc. (optional UI)
+  };
+}
+
+
+⸻
+
+Minimal service-worker additions
+
+Make sure your service-worker is listening for the message and claims clients on activate:
+
+// service-worker.js (or sw.ts)
+
+// Allow the page to tell this SW to activate immediately
+self.addEventListener("message", (event) => {
+  if (event?.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
+// When activated, take control of open clients (tabs) right away
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+If you’re using Workbox (e.g., vite-plugin-pwa), you can achieve the same via skipWaiting: true and clientsClaim: true in the Workbox config. The manual button still helps you notify users and reload once—preventing surprise refreshes mid-task.
+
+⸻
+
+Example usage (toast/banner + button)
+
+// UpdateToast.tsx
+import React from "react";
+import { useServiceWorkerUpdate } from "./useServiceWorkerUpdate";
+
+export function UpdateToast() {
+  const { updateReady, updateNow, checkForUpdates, installingState } =
+    useServiceWorkerUpdate(/* optional pollMs e.g. 30*60*1000 */);
+
+  if (!updateReady) return (
+    <button onClick={checkForUpdates} style={{ position: "fixed", bottom: 16, right: 16 }}>
+      Check for updates
+    </button>
+  );
+
+  return (
+    <div
+      role="status"
+      style={{
+        position: "fixed",
+        left: "50%",
+        transform: "translateX(-50%)",
+        bottom: 20,
+        padding: "10px 14px",
+        borderRadius: 12,
+        boxShadow: "0 6px 20px rgba(0,0,0,0.12)",
+        background: "white",
+        display: "flex",
+        gap: 12,
+        alignItems: "center",
+        zIndex: 9999,
+      }}
+    >
+      <span>New version available {installingState ? `(${installingState})` : ""}</span>
+      <button onClick={updateNow} style={{ fontWeight: 600 }}>
+        Update
+      </button>
+    </div>
+  );
+}
+
+And include it once near the root:
+
+// App.tsx
+import React from "react";
+import { UpdateToast } from "./UpdateToast";
+
+export default function App() {
+  return (
+    <>
+      {/* your routes / pages */}
+      <UpdateToast />
+    </>
+  );
+}
+
+
+⸻
+
+Notes & gotchas
+	•	No crash risk: This pattern is safe. You wait for activation and reload once.
+	•	Unsaved work: If your app has forms/timers, consider a confirm dialog before calling updateNow().
+	•	iOS Safari (standalone): This flow works; just rely on controllerchange → reload.
+	•	Avoid loops: Don’t call location.reload() in the service worker. Only reload on the page after controllerchange.
+	•	Proactive checks: Expose a “Check for updates” menu item wired to checkForUpdates().
+
+If you want, I can tailor this to your exact build tool (Vite + vite-plugin-pwa, CRA, Next.js, etc.) and wire it to your existing dock UI.
