@@ -84,10 +84,6 @@ const EnergyTrendVisualization = ({ showAllTime }: { showAllTime: boolean }) => 
 
   return (
     <div className="bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-xl p-6 border border-purple-500/20">
-      <h2 className="text-lg font-semibold text-white mb-4">
-        {showAllTime ? 'All Time Energy Level Trends' : 'Energy Level Trends (14 Days)'}
-      </h2>
-      
       {/* Statistics Cards */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="text-center">
