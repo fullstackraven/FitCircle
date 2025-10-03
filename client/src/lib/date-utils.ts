@@ -161,8 +161,9 @@ export function groupLogsByMonth<T>(logs: T[] | { [key: string]: T }, dateField:
   const sortedMonths: { [monthName: string]: T[] } = {};
   Object.keys(monthGroups)
     .sort((a, b) => {
-      const dateA = new Date(a);
-      const dateB = new Date(b);
+      // Parse "Month Year" format (e.g., "October 2025")
+      const dateA = new Date(a + ' 1'); // Add day to make it parseable
+      const dateB = new Date(b + ' 1');
       return dateB.getTime() - dateA.getTime();
     })
     .forEach(month => {
