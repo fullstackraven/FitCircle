@@ -106,7 +106,7 @@ const EnergyTrendVisualization = ({ showAllTime }: { showAllTime: boolean }) => 
 
       {/* Trend Line Chart */}
       <div className="relative mb-4">
-        <svg width="100%" height="120" viewBox="0 0 300 120" className="overflow-visible">
+        <svg width="100%" height="120" viewBox="0 0 320 120" className="overflow-visible">
           {/* Grid lines */}
           {[...Array(6)].map((_, i) => (
             <line
@@ -118,6 +118,20 @@ const EnergyTrendVisualization = ({ showAllTime }: { showAllTime: boolean }) => 
               stroke="rgba(255,255,255,0.1)"
               strokeWidth="1"
             />
+          ))}
+          
+          {/* Y-axis labels */}
+          {[10, 8, 6, 4, 2, 0].map((value, i) => (
+            <text
+              key={value}
+              x="290"
+              y={20 + (i * 16) + 4}
+              fill="rgba(148, 163, 184, 0.6)"
+              fontSize="10"
+              textAnchor="start"
+            >
+              {value}
+            </text>
           ))}
           
           {/* Trend line */}
@@ -264,7 +278,7 @@ export function EnergyLevelPage() {
             </div>
             <button
               onClick={() => setShowAllTime(!showAllTime)}
-              className="p-2 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-700"
+              className="p-2 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-700 focus:outline-none"
               title={showAllTime ? "Show 14 Days" : "Show All Time"}
             >
               <Repeat className="w-5 h-5" />
