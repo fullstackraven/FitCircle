@@ -55,7 +55,7 @@ const EnergyTrendVisualization = ({ showAllTime }: { showAllTime: boolean }) => 
   // Create SVG path for the trend line
   const createPath = (data: Array<{ date: string; energy: number; dateStr: string }>) => {
     const width = 300;
-    const height = 80;
+    const height = 140;
     const padding = 20;
     
     const validData = data.filter(d => d.energy > 0);
@@ -106,15 +106,15 @@ const EnergyTrendVisualization = ({ showAllTime }: { showAllTime: boolean }) => 
 
       {/* Trend Line Chart */}
       <div className="relative mb-4">
-        <svg width="100%" height="120" viewBox="0 0 320 120" className="overflow-visible">
+        <svg width="100%" height="180" viewBox="0 0 320 180" className="overflow-visible">
           {/* Grid lines */}
           {[...Array(6)].map((_, i) => (
             <line
               key={i}
               x1="20"
-              y1={20 + (i * 16)}
+              y1={20 + (i * 24)}
               x2="280"
-              y2={20 + (i * 16)}
+              y2={20 + (i * 24)}
               stroke="rgba(255,255,255,0.1)"
               strokeWidth="1"
             />
@@ -125,7 +125,7 @@ const EnergyTrendVisualization = ({ showAllTime }: { showAllTime: boolean }) => 
             <text
               key={value}
               x="290"
-              y={20 + (i * 16) + 4}
+              y={20 + (i * 24) + 4}
               fill="rgba(148, 163, 184, 0.6)"
               fontSize="10"
               textAnchor="start"
@@ -150,7 +150,7 @@ const EnergyTrendVisualization = ({ showAllTime }: { showAllTime: boolean }) => 
           {!showAllTime && last14Days.filter(d => d.energy > 0).map((point, index) => {
             const dataIndex = last14Days.findIndex(d => d.dateStr === point.dateStr);
             const x = 20 + (dataIndex * (260 / (last14Days.length - 1)));
-            const y = 100 - (point.energy * 8);
+            const y = 160 - (point.energy * 12);
             
             return (
               <circle
