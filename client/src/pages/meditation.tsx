@@ -482,7 +482,14 @@ export default function MeditationPage() {
                 <p className="text-sm mt-2">Complete a meditation session to see your log here.</p>
               </div>
             ) : (
-              Object.entries(groupLogsByMonth(Object.values(dailyLogs))).map(([monthName, monthLogs]) => (
+              Object.entries(groupLogsByMonth(Object.values(dailyLogs)))
+                .sort(([monthA], [monthB]) => {
+                  // Sort months from newest to oldest
+                  const dateA = new Date(monthA);
+                  const dateB = new Date(monthB);
+                  return dateB.getTime() - dateA.getTime();
+                })
+                .map(([monthName, monthLogs]) => (
                 <Collapsible
                   key={monthName}
                   open={expandedMonths.has(monthName)}
