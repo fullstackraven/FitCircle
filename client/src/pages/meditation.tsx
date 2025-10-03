@@ -367,44 +367,16 @@ export default function MeditationPage() {
         </div>
 
         {!isActive && isGoalReached() && (
-          <div className="text-purple-400 font-medium text-center -mt-4 mb-8">
+          <div className="text-purple-400 font-medium text-center -mt-4 mb-6">
             🧘‍♂️ Daily goal achieved!
           </div>
         )}
 
-        {/* Last 7 Days Progress Stats */}
-        <Card className="fitcircle-card-lg mb-6">
-          <CardContent className="p-4">
-            <h3 className="text-lg font-semibold mb-3 text-center">Last 10 Logs</h3>
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-purple-400">
-                  {getLast10LogsProgress().totalMinutes}min
-                </div>
-                <div className="text-sm text-slate-400">Completed</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-purple-400">
-                  {getLast10LogsProgress().averageMinutes}min
-                </div>
-                <div className="text-sm text-slate-400">Average per Log</div>
-              </div>
-            </div>
-            {getLast10LogsProgress().remaining > 0 && (
-              <div className="mt-3 text-center text-slate-300">
-                <span className="text-sm">
-                  {getLast10LogsProgress().remaining} minutes remaining
-                </span>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
         {/* Meditation Controls */}
-        <div className="flex flex-col items-center mb-8">
+        <div className="flex flex-col items-center mb-6">
           {!isActive ? (
             /* Add Meditation Button */
-            <div className="mb-8 w-full max-w-sm">
+            <div className="w-full max-w-sm">
               <Button
                 onClick={() => setIsMeditationDialogOpen(true)}
                 className="w-full bg-purple-600 hover:bg-purple-700 flex items-center justify-center space-x-2"
@@ -471,6 +443,34 @@ export default function MeditationPage() {
             )}
           </div>
         </div>
+
+        {/* Last 7 Days Progress Stats */}
+        <Card className="fitcircle-card-lg mb-6">
+          <CardContent className="p-4">
+            <h3 className="text-lg font-semibold mb-3 text-center">Last 10 Logs</h3>
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div>
+                <div className="text-2xl font-bold text-purple-400">
+                  {getLast10LogsProgress().totalMinutes}min
+                </div>
+                <div className="text-sm text-slate-400">Completed</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-purple-400">
+                  {getLast10LogsProgress().averageMinutes}min
+                </div>
+                <div className="text-sm text-slate-400">Average per Log</div>
+              </div>
+            </div>
+            {getLast10LogsProgress().remaining > 0 && (
+              <div className="mt-3 text-center text-slate-300">
+                <span className="text-sm">
+                  {getLast10LogsProgress().remaining} minutes remaining
+                </span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Meditation Log - Daily Aggregation */}
         <div className="space-y-4">
