@@ -289,7 +289,7 @@ export default function FastingPage() {
         </Card>
 
         {/* Add Fasting Log Button */}
-        <div className="mb-8">
+        <div className="mb-6">
           <Button
             onClick={() => {
               // Initialize form with current date/time using master timezone utilities
@@ -306,6 +306,42 @@ export default function FastingPage() {
             <Plus className="w-4 h-4" />
             <span>Add Fast</span>
           </Button>
+        </div>
+
+        {/* Today's Fast */}
+        <div className="fitcircle-card-lg mb-8">
+          <h3 className="text-lg font-semibold mb-3">Today's Fast</h3>
+          <div className="space-y-2">
+            {(() => {
+              const today = getTodayString();
+              const todayFasts = logs.filter(log => isToday(log.startDate) || isToday(log.endDate));
+              
+              if (todayFasts.length > 0) {
+                return todayFasts.slice().reverse().map((fast) => {
+                  const hours = fast.duration / 60;
+                  return (
+                    <div key={fast.id} className="flex justify-between items-center text-sm">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-slate-400">{fast.startTime}</span>
+                        <span className="text-slate-300">Fasting</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-amber-400 font-medium text-sm">
+                          {hours.toFixed(1)}h
+                        </span>
+                      </div>
+                    </div>
+                  );
+                });
+              } else {
+                return (
+                  <div className="text-center text-slate-500 py-4 text-sm">
+                    No fasts today yet
+                  </div>
+                );
+              }
+            })()}
+          </div>
         </div>
 
         {/* Fasting Log - Monthly Sections */}
