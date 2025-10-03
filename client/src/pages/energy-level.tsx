@@ -132,8 +132,8 @@ const EnergyTrendVisualization = ({ showAllTime }: { showAllTime: boolean }) => 
             />
           )}
           
-          {/* Data points */}
-          {last14Days.filter(d => d.energy > 0).map((point, index) => {
+          {/* Data points - only show in 14-day view */}
+          {!showAllTime && last14Days.filter(d => d.energy > 0).map((point, index) => {
             const dataIndex = last14Days.findIndex(d => d.dateStr === point.dateStr);
             const x = 20 + (dataIndex * (260 / (last14Days.length - 1)));
             const y = 100 - (point.energy * 8);
