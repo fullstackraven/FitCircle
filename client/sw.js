@@ -1,7 +1,7 @@
 // Service Worker for FitCircle PWA
 // Network-first with cached /index.html fallback to prevent white screens
 
-const CACHE_NAME = 'fitcircle-v4-2025-10-02';
+const CACHE_NAME = 'fitcircle-v5-2025-10-03';
 const SHELL_URLS = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
 
 // Allow page to trigger immediate activation

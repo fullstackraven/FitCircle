@@ -159,7 +159,7 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
-  // Force refresh - mimic browser's natural update flow
+  // Force refresh - update service worker while preserving localStorage
   const forceRefresh = async () => {
     try {
       setIsRefreshing(true);
@@ -169,22 +169,36 @@ export default function SettingsPage() {
         return;
       }
 
-      // Nuclear option: unregister all SWs and clear caches
-      // This mimics what the browser does naturally - clean slate
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(registrations.map(reg => reg.unregister()));
-
-      // Clear all caches
+      // Strategy: Clear only service worker caches, preserve localStorage
+      // This forces the SW to fetch fresh assets without losing user data
+      
+      // Step 1: Clear all service worker caches (but NOT localStorage)
       if ('caches' in window) {
         const cacheNames = await caches.keys();
         await Promise.all(cacheNames.map(name => caches.delete(name)));
       }
 
-      // Reload - fresh registration will happen automatically
+      // Step 2: Force service worker to check for updates
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (registration) {
+        await registration.update();
+        
+        // Step 3: If there's a waiting worker, activate it immediately
+        if (registration.waiting) {
+          const waitForControl = new Promise<void>((resolve) => {
+            navigator.serviceWorker.addEventListener('controllerchange', () => resolve(), { once: true });
+          });
+          
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+          await waitForControl;
+        }
+      }
+
+      // Step 4: Reload to get fresh assets (localStorage is preserved)
       window.location.reload();
     } catch (err) {
       console.error('Force refresh failed:', err);
-      // Last resort: simple reload
+      // Fallback: simple reload (still preserves localStorage)
       window.location.reload();
     } finally {
       setIsRefreshing(false);
