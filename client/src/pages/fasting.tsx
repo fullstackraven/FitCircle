@@ -319,10 +319,17 @@ export default function FastingPage() {
               if (todayFasts.length > 0) {
                 return todayFasts.slice().reverse().map((fast) => {
                   const hours = fast.duration / 60;
+                  // Convert 24hr time to 12hr format
+                  const [hoursStr, minutes] = fast.startTime.split(':');
+                  const hour = parseInt(hoursStr);
+                  const ampm = hour >= 12 ? 'PM' : 'AM';
+                  const hour12 = hour % 12 || 12;
+                  const time12hr = `${hour12}:${minutes} ${ampm}`;
+                  
                   return (
                     <div key={fast.id} className="flex justify-between items-center text-sm">
                       <div className="flex items-center space-x-3">
-                        <span className="text-slate-400">{fast.startTime}</span>
+                        <span className="text-slate-400">{time12hr}</span>
                         <span className="text-slate-300">Fasting</span>
                       </div>
                       <div className="flex items-center space-x-2">
