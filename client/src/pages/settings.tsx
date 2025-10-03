@@ -159,9 +159,10 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
-  // Soft reload - simple reload like closing and reopening the app
+  // Soft reload - simulate closing and reopening the app
+  // Uses fresh navigation instead of reload() to avoid iOS PWA white screen bug
   const forceRefresh = () => {
-    window.location.reload();
+    window.location.href = '/?refresh=' + Date.now();
   };
 
   // Erase all data function
