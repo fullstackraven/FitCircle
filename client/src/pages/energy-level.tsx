@@ -1,30 +1,48 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Zap, Undo2, Calendar } from "lucide-react";
+import { ArrowLeft, Zap, Undo2, Calendar, Repeat } from "lucide-react";
 import { useLocation } from "wouter";
 import { useEnergyLevel } from "../hooks/use-energy-level";
 import { getDateString } from '@/lib/date-utils';
 import { format } from 'date-fns';
 
 // Enhanced Energy Level Trend Visualization Component
-const EnergyTrendVisualization = () => {
+const EnergyTrendVisualization = ({ showAllTime }: { showAllTime: boolean }) => {
   const { getEnergyLevelData } = useEnergyLevel();
   const energyData = getEnergyLevelData();
   
-  // Get last 14 days of data for better trend analysis
-  const last14Days: Array<{ date: string; energy: number; dateStr: string }> = [];
+  // Get data based on view mode
+  const trendData: Array<{ date: string; energy: number; dateStr: string }> = [];
   const today = new Date();
   
-  for (let i = 13; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    const dateStr = getDateString(date);
-    const energy = energyData[dateStr] || 0;
-    last14Days.push({
-      date: date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }),
-      energy: energy,
-      dateStr: dateStr
-    });
+  if (showAllTime) {
+    // Get all-time data
+    const allDates = Object.keys(energyData).sort();
+    if (allDates.length > 0) {
+      allDates.forEach(dateStr => {
+        const date = new Date(dateStr + 'T00:00:00');
+        trendData.push({
+          date: date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }),
+          energy: (energyData as any)[dateStr] || 0,
+          dateStr: dateStr
+        });
+      });
+    }
+  } else {
+    // Get last 14 days of data
+    for (let i = 13; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = getDateString(date);
+      const energy = (energyData as any)[dateStr] || 0;
+      trendData.push({
+        date: date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }),
+        energy: energy,
+        dateStr: dateStr
+      });
+    }
   }
+  
+  const last14Days = trendData;
 
   // Calculate statistics
   const nonZeroEnergies = last14Days.filter(day => day.energy > 0);
@@ -32,7 +50,7 @@ const EnergyTrendVisualization = () => {
     ? (nonZeroEnergies.reduce((sum, day) => sum + day.energy, 0) / nonZeroEnergies.length).toFixed(1)
     : '0';
   const daysLogged = nonZeroEnergies.length;
-  const todayEnergy = energyData[getDateString(today)] || 0;
+  const todayEnergy = (energyData as any)[getDateString(today)] || 0;
 
   // Create SVG path for the trend line
   const createPath = (data: Array<{ date: string; energy: number; dateStr: string }>) => {
@@ -66,7 +84,9 @@ const EnergyTrendVisualization = () => {
 
   return (
     <div className="bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-xl p-6 border border-purple-500/20">
-      <h2 className="text-lg font-semibold text-white mb-4">Energy Level Trends</h2>
+      <h2 className="text-lg font-semibold text-white mb-4">
+        {showAllTime ? 'All Time Energy Level Trends' : 'Energy Level Trends (14 Days)'}
+      </h2>
       
       {/* Statistics Cards */}
       <div className="grid grid-cols-3 gap-4 mb-6">
@@ -164,6 +184,7 @@ export function EnergyLevelPage() {
   const [, navigate] = useLocation();
   const { getEnergyLevel, setEnergyLevelForDate } = useEnergyLevel();
   const [energyLevel, setEnergyLevel] = useState(0);
+  const [showAllTime, setShowAllTime] = useState(false);
   
   // Check if we came from wellness page
   const urlParams = new URLSearchParams(window.location.search);
@@ -236,11 +257,20 @@ export function EnergyLevelPage() {
       <div className="space-y-6">
         {/* Energy Level Trend */}
         <div className="bg-slate-800 rounded-xl p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <Zap className="w-6 h-6 text-yellow-400" />
-            <h2 className="text-lg font-semibold text-white">Energy Trends</h2>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <Zap className="w-6 h-6 text-yellow-400" />
+              <h2 className="text-lg font-semibold text-white">Energy Trends</h2>
+            </div>
+            <button
+              onClick={() => setShowAllTime(!showAllTime)}
+              className="p-2 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-700"
+              title={showAllTime ? "Show 14 Days" : "Show All Time"}
+            >
+              <Repeat className="w-5 h-5" />
+            </button>
           </div>
-          <EnergyTrendVisualization />
+          <EnergyTrendVisualization showAllTime={showAllTime} />
         </div>
 
         {/* Today's Energy Level */}
