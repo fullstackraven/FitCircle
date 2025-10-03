@@ -159,50 +159,9 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
-  // Force refresh - update service worker while preserving localStorage
-  const forceRefresh = async () => {
-    try {
-      setIsRefreshing(true);
-      
-      if (!('serviceWorker' in navigator)) {
-        window.location.reload();
-        return;
-      }
-
-      // Strategy: Clear only service worker caches, preserve localStorage
-      // This forces the SW to fetch fresh assets without losing user data
-      
-      // Step 1: Clear all service worker caches (but NOT localStorage)
-      if ('caches' in window) {
-        const cacheNames = await caches.keys();
-        await Promise.all(cacheNames.map(name => caches.delete(name)));
-      }
-
-      // Step 2: Force service worker to check for updates
-      const registration = await navigator.serviceWorker.getRegistration();
-      if (registration) {
-        await registration.update();
-        
-        // Step 3: If there's a waiting worker, activate it immediately
-        if (registration.waiting) {
-          const waitForControl = new Promise<void>((resolve) => {
-            navigator.serviceWorker.addEventListener('controllerchange', () => resolve(), { once: true });
-          });
-          
-          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-          await waitForControl;
-        }
-      }
-
-      // Step 4: Reload to get fresh assets (localStorage is preserved)
-      window.location.reload();
-    } catch (err) {
-      console.error('Force refresh failed:', err);
-      // Fallback: simple reload (still preserves localStorage)
-      window.location.reload();
-    } finally {
-      setIsRefreshing(false);
-    }
+  // Soft reload - simple reload like closing and reopening the app
+  const forceRefresh = () => {
+    window.location.reload();
   };
 
   // Erase all data function
@@ -341,7 +300,7 @@ export default function SettingsPage() {
             </button>
             
             <p className="text-xs text-slate-400 text-center">
-              Unregisters service workers, clears all caches, and reloads fresh - just like a clean install.
+              Reloads the app, just like closing and reopening it. Your data stays safe.
             </p>
           </div>
         </div>
