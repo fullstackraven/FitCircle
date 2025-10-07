@@ -118,9 +118,10 @@ export function DailyJournal() {
             minHeight: '200px' // Minimum height instead of vh-based
           }}
           autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck="false"
+          autoCorrect="on"
+          autoCapitalize="sentences"
+          spellCheck={true}
+          data-testid="textarea-journal-entry"
         />
       </div>
 
