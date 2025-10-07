@@ -215,6 +215,11 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     return 'text-green-400';
   };
 
+  const getJournalWordCount = () => {
+    if (!journalText.trim()) return 0;
+    return journalText.trim().split(/\s+/).length;
+  };
+
   return (
     <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', paddingBottom: 'var(--bottom-nav-padding)' }}>
       <div className="flex items-center justify-between mb-6">
@@ -346,9 +351,14 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
 
         {/* Journal Entry */}
         <div className="bg-slate-800 rounded-xl p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <BookOpen className="w-5 h-5 text-purple-400" />
-            <h3 className="text-lg font-semibold text-white">Journal Entry</h3>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <BookOpen className="w-5 h-5 text-purple-400" />
+              <h3 className="text-lg font-semibold text-white">Journal Entry</h3>
+            </div>
+            <p className="text-xs text-slate-500" data-testid="text-journal-word-count">
+              {getJournalWordCount()} {getJournalWordCount() === 1 ? 'word' : 'words'}
+            </p>
           </div>
           <div className="space-y-4">
             <textarea
@@ -356,6 +366,11 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
               onChange={(e) => setJournalText(e.target.value)}
               placeholder="Write your journal entry for this day..."
               className="w-full h-32 p-3 bg-slate-700 text-white rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+              autoComplete="off"
+              autoCorrect="on"
+              autoCapitalize="sentences"
+              spellCheck={true}
+              data-testid="textarea-journal-entry"
             />
             <button
               onClick={handleJournalSave}
