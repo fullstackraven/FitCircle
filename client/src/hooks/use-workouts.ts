@@ -557,6 +557,17 @@ export function useWorkouts() {
     return data.journalEntries || {};
   };
 
+  const deleteJournalEntry = (date: string) => {
+    setData(prev => {
+      const newJournalEntries = { ...prev.journalEntries };
+      delete newJournalEntries[date];
+      return {
+        ...prev,
+        journalEntries: newJournalEntries
+      };
+    });
+  };
+
   // Get statistics for current month only
   const getMonthlyStats = (year: number, month: number) => {
     const workoutArray = Object.values(data.workouts || {});
@@ -944,6 +955,7 @@ export function useWorkouts() {
     getJournalEntry,
     getJournalEntryWithTimestamp,
     getAllJournalEntries,
+    deleteJournalEntry,
     getMonthlyStats,
     getTotalStats,
     getIndividualWorkoutTotals,

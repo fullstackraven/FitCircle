@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Calendar, FileText, ArrowLeft } from "lucide-react";
+import { Plus, Calendar, FileText, ArrowLeft, Trash2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { format, parseISO, isValid } from "date-fns";
@@ -8,7 +8,7 @@ import { useScrollLock } from "@/contexts/ScrollLockContext";
 
 export function JournalLog() {
   const [, navigate] = useLocation();
-  const { getAllJournalEntries, getJournalEntry, getJournalEntryWithTimestamp, addJournalEntry } = useWorkouts();
+  const { getAllJournalEntries, getJournalEntry, getJournalEntryWithTimestamp, addJournalEntry, deleteJournalEntry } = useWorkouts();
   const { lockScroll, unlockScroll } = useScrollLock();
   
   // Modal state
@@ -113,6 +113,19 @@ export function JournalLog() {
     if (!currentDate) return format(new Date(), "MMMM d, yyyy");
     const date = new Date(currentDate + 'T00:00:00');
     return format(date, "MMMM d, yyyy");
+  };
+
+  const getWordCount = () => {
+    if (!journalText.trim()) return 0;
+    return journalText.trim().split(/\s+/).length;
+  };
+
+  const handleDeleteEntry = () => {
+    if (confirm('Are you sure you want to delete this journal entry? This action cannot be undone.')) {
+      deleteJournalEntry(currentDate);
+      setIsModalOpen(false);
+      unlockScroll();
+    }
   };
 
   return (
@@ -230,7 +243,12 @@ export function JournalLog() {
 
             {/* Date indicator */}
             <div className="px-4 py-2 border-b border-slate-600">
-              <p className="text-sm text-slate-400">{getDisplayDate()}</p>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-slate-400">{getDisplayDate()}</p>
+                <p className="text-xs text-slate-500" data-testid="text-word-count">
+                  {getWordCount()} {getWordCount() === 1 ? 'word' : 'words'}
+                </p>
+              </div>
               {lastSaved && (
                 <p className="text-xs text-slate-500 mt-1">
                   Last saved: {format(new Date(lastSaved), "MMM d, yyyy 'at' h:mm a")}
@@ -251,22 +269,35 @@ export function JournalLog() {
                   minHeight: '200px'
                 }}
                 autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck="false"
+                autoCorrect="on"
+                autoCapitalize="sentences"
+                spellCheck={true}
+                data-testid="textarea-journal-entry"
               />
             </div>
 
 
-            {/* Save button */}
+            {/* Action buttons */}
             <div className="px-4 py-3 border-t border-slate-600">
-              <button
-                onClick={handleJournalSubmit}
-                className="w-full px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors font-medium shadow-lg"
-                data-testid="button-save-journal"
-              >
-                Save Entry
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleJournalSubmit}
+                  className="flex-1 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors font-medium shadow-lg"
+                  data-testid="button-save-journal"
+                >
+                  Save Entry
+                </button>
+                {lastSaved && (
+                  <button
+                    onClick={handleDeleteEntry}
+                    className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-colors font-medium shadow-lg flex items-center gap-2"
+                    data-testid="button-delete-journal"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </DialogContent>
