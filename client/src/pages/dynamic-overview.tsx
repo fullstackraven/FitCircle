@@ -7,6 +7,13 @@ import { useEnergyLevel } from "@/hooks/use-energy-level";
 import { useRecovery } from "@/hooks/use-recovery";
 import { useWorkoutDuration } from "@/hooks/use-workout-duration";
 import { format } from "date-fns";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const colorClassMap: { [key: string]: string } = {
   green: 'workout-green',
@@ -39,7 +46,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
   const { supplements: allSupplements, getSupplementLogsForDate, setSupplementLog, createSupplement } = useSupplements();
   const { getEnergyLevel, setEnergyLevelForDate } = useEnergyLevel();
   const { isRecoveryDay, toggleRecoveryDay } = useRecovery();
-  const { getWorkoutDurationForDate, formatDuration } = useWorkoutDuration();
+  const { getWorkoutDurationForDate, formatDuration, updateWorkoutDurationForDate } = useWorkoutDuration();
 
   const [workouts, setWorkouts] = useState<any[]>([]);
   const [journalText, setJournalText] = useState("");
@@ -54,6 +61,12 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
   const [isAddingSuplement, setIsAddingSupplement] = useState(false);
   const [newSupplementName, setNewSupplementName] = useState("");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Duration edit modal state
+  const [isDurationModalOpen, setIsDurationModalOpen] = useState(false);
+  const [editHours, setEditHours] = useState("");
+  const [editMinutes, setEditMinutes] = useState("");
+  const [editSeconds, setEditSeconds] = useState("");
 
   const selectedDateObj = new Date(selectedDate + 'T00:00:00');
 
@@ -162,6 +175,39 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     setIsRecovery(!isRecovery);
   };
 
+  const handleOpenDurationModal = () => {
+    const currentDuration = getWorkoutDurationForDate(selectedDate);
+    const hours = Math.floor(currentDuration / 3600);
+    const minutes = Math.floor((currentDuration % 3600) / 60);
+    const seconds = currentDuration % 60;
+    
+    setEditHours(hours.toString());
+    setEditMinutes(minutes.toString());
+    setEditSeconds(seconds.toString());
+    setIsDurationModalOpen(true);
+  };
+
+  const handleSaveDuration = () => {
+    const hours = parseInt(editHours) || 0;
+    const minutes = parseInt(editMinutes) || 0;
+    const seconds = parseInt(editSeconds) || 0;
+    
+    const totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
+    
+    if (totalSeconds > 0) {
+      updateWorkoutDurationForDate(selectedDate, totalSeconds);
+      setIsDurationModalOpen(false);
+      setRefreshTrigger(prev => prev + 1);
+    }
+  };
+
+  const getEditDurationTotal = () => {
+    const hours = parseInt(editHours) || 0;
+    const minutes = parseInt(editMinutes) || 0;
+    const seconds = parseInt(editSeconds) || 0;
+    return (hours * 3600) + (minutes * 60) + seconds;
+  };
+
   const getEnergyColor = (level: number) => {
     if (level === 0) return 'text-slate-500';
     if (level <= 3) return 'text-red-400';
@@ -255,7 +301,11 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
             {(() => {
               const workoutDuration = getWorkoutDurationForDate(selectedDate);
               return workoutDuration > 0 ? (
-                <div className="mt-4 p-3 bg-slate-700 rounded-xl">
+                <button
+                  onClick={handleOpenDurationModal}
+                  className="mt-4 p-3 bg-slate-700 rounded-xl w-full hover:bg-slate-600 transition-colors"
+                  data-testid="button-edit-workout-duration"
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <Timer className="w-4 h-4 text-green-400" />
@@ -263,7 +313,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                     </div>
                     <span className="text-sm font-bold text-green-400">{formatDuration(workoutDuration)}</span>
                   </div>
-                </div>
+                </button>
               ) : null;
             })()}
           </div>
@@ -437,6 +487,81 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
           )}
         </div>
       </div>
+
+      {/* Duration Edit Modal */}
+      <Dialog open={isDurationModalOpen} onOpenChange={setIsDurationModalOpen}>
+        <DialogContent className="bg-slate-800 text-white border-slate-700">
+          <DialogHeader>
+            <DialogTitle>Edit Workout Duration</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-slate-400">
+              Adjust the total workout duration for {format(selectedDateObj, "MMMM d, yyyy")}
+            </p>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm text-slate-400 block mb-2">Hours</label>
+                <input
+                  type="number"
+                  value={editHours}
+                  onChange={(e) => setEditHours(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:outline-none focus:border-green-400"
+                  min="0"
+                  data-testid="input-duration-hours"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-slate-400 block mb-2">Minutes</label>
+                <input
+                  type="number"
+                  value={editMinutes}
+                  onChange={(e) => setEditMinutes(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:outline-none focus:border-green-400"
+                  min="0"
+                  max="59"
+                  data-testid="input-duration-minutes"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-slate-400 block mb-2">Seconds</label>
+                <input
+                  type="number"
+                  value={editSeconds}
+                  onChange={(e) => setEditSeconds(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:outline-none focus:border-green-400"
+                  min="0"
+                  max="59"
+                  data-testid="input-duration-seconds"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            {getEditDurationTotal() === 0 && (
+              <p className="text-sm text-red-400 flex-1 text-center sm:text-left">
+                Duration must be greater than 0
+              </p>
+            )}
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setIsDurationModalOpen(false)}
+                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+                data-testid="button-cancel-duration"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveDuration}
+                disabled={getEditDurationTotal() === 0}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
+                data-testid="button-save-duration"
+              >
+                Save Duration
+              </button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
