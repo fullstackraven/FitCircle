@@ -73,6 +73,11 @@ export function DailyJournal() {
     return format(date, "MMMM d, yyyy");
   };
 
+  const getWordCount = () => {
+    if (!journalText.trim()) return 0;
+    return journalText.trim().split(/\s+/).length;
+  };
+
   return (
     <div className="flex flex-col" style={{ backgroundColor: 'hsl(222, 47%, 11%)', height: '100dvh' }}>
       {/* Header */}
@@ -97,7 +102,12 @@ export function DailyJournal() {
 
       {/* Date indicator */}
       <div className="px-4 mb-4">
-        <p className="text-sm text-slate-400">{getDisplayDate()}</p>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-slate-400">{getDisplayDate()}</p>
+          <p className="text-xs text-slate-500" data-testid="text-word-count">
+            {getWordCount()} {getWordCount() === 1 ? 'word' : 'words'}
+          </p>
+        </div>
         {lastSaved && (
           <p className="text-xs text-slate-500 mt-1">
             Last saved: {format(new Date(lastSaved), "MMM d, yyyy 'at' h:mm a")}
