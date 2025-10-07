@@ -186,6 +186,40 @@ export const useWorkoutDuration = () => {
     return formatDuration(currentTime);
   }, [currentTime, formatDuration]);
 
+  const updateWorkoutDurationForDate = useCallback((dateString: string, newDurationSeconds: number) => {
+    // Validate duration is positive
+    if (newDurationSeconds <= 0) return;
+
+    // Find all sessions for this date
+    const sessionsForDate = data.completedSessions.filter(session => session.date === dateString);
+    
+    if (sessionsForDate.length === 0) return;
+
+    // Get the earliest session's start time to preserve the original start
+    const earliestSession = sessionsForDate.reduce((earliest, current) => 
+      (current.startTime < earliest.startTime) ? current : earliest
+    );
+
+    // Create a single consolidated session with the new duration
+    const updatedSession: WorkoutSession = {
+      date: dateString,
+      startTime: earliestSession.startTime,
+      duration: newDurationSeconds,
+      endTime: earliestSession.startTime + (newDurationSeconds * 1000)
+    };
+
+    // Remove all sessions for this date and add the updated one
+    const sessionsWithoutDate = data.completedSessions.filter(session => session.date !== dateString);
+    const updatedSessions = [...sessionsWithoutDate, updatedSession];
+
+    const newData = {
+      ...data,
+      completedSessions: updatedSessions
+    };
+
+    saveData(newData);
+  }, [data, saveData]);
+
   return {
     isActive,
     isPaused,
@@ -196,6 +230,7 @@ export const useWorkoutDuration = () => {
     pauseWorkout,
     resumeWorkout,
     getWorkoutDurationForDate,
+    updateWorkoutDurationForDate,
     formatDuration,
     getTodaysWorkoutDuration,
     getCurrentSessionDuration,
