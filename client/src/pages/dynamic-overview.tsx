@@ -77,13 +77,11 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     const energyData = getEnergyLevel(selectedDateObj);
     const supplementLogsData = getSupplementLogsForDate(selectedDate);
     const recoveryData = isRecoveryDay(selectedDate);
-
-    // Get day of week for filtering (0 = Sunday, 6 = Saturday)
-    const dayOfWeek = selectedDateObj.getDay();
     
-    // Filter workouts to only show those scheduled for this day of the week
+    // Filter workouts to show only those with activity (count > 0) on this date
+    // This ensures historical workouts remain visible regardless of current schedule
     const filteredWorkouts = workoutData.filter(workout => 
-      isWorkoutActiveOnDay(workout, dayOfWeek)
+      workout.count > 0
     );
 
     // Combine all supplements with their status for this date
