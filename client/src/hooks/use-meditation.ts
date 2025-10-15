@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
-import { getTodayString, getDateString, getCurrentTime } from '@/lib/date-utils';
+import { getTodayString, getDateString, getCurrentTime, getAllTimeMeditationAverage } from '@/lib/date-utils';
 
 export interface MeditationSession {
   id: string;
@@ -351,12 +351,20 @@ export function useMeditation() {
   // Get all-time goal percentage for goal modal
   const getAllTimeGoalPercentage = (): number => {
     const goalMinutes = getDailyGoal();
-    const dailyLogsCount = Object.keys(data.dailyLogs).length;
-    if (goalMinutes === 0 || dailyLogsCount === 0) return 0;
+    if (goalMinutes === 0) return 0;
     
-    // Calculate average daily minutes across all days with meditation
-    const totalMinutes = Object.values(data.dailyLogs).reduce((sum, log) => sum + log.totalMinutes, 0);
-    const averageMinutes = totalMinutes / dailyLogsCount;
+    // Convert dailyLogs to array format for the utility function
+    const allSessions = Object.values(data.dailyLogs).flatMap(log => 
+      log.sessions.map(session => ({
+        date: log.date,
+        duration: session.duration
+      }))
+    );
+    
+    if (allSessions.length === 0) return 0;
+    
+    // Use the utility function that properly factors in missed days as zeros
+    const { averageMinutes } = getAllTimeMeditationAverage(allSessions);
     
     return Math.min((averageMinutes / goalMinutes) * 100, 100);
   };

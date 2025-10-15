@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getTodayString, getCurrentTime } from '@/lib/date-utils';
+import { getTodayString, getCurrentTime, getAllTimeHydrationAverage } from '@/lib/date-utils';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 export interface HydrationEntry {
@@ -258,14 +258,15 @@ export function useHydration() {
 
   // Get all-time goal percentage for goal modal
   const getAllTimeGoalPercentage = (): number => {
-    const allLogs = Object.values(data.logs);
-    if (allLogs.length === 0) return 0;
+    if (Object.keys(data.logs).length === 0) return 0;
     
-    const totalOz = allLogs.reduce((sum, log) => sum + (log.totalOz || 0), 0);
-    const averageOz = totalOz / allLogs.length;
     const goalOz = data.dailyGoalOz || 64;
+    if (goalOz === 0) return 0;
     
-    return goalOz > 0 ? Math.min((averageOz / goalOz) * 100, 100) : 0;
+    // Use the utility function that properly factors in missed days as zeros
+    const { averageOz } = getAllTimeHydrationAverage(data.logs);
+    
+    return Math.min((averageOz / goalOz) * 100, 100);
   };
 
   return {
