@@ -546,7 +546,7 @@ export default function CalendarPage() {
         </div>
 
         {/* Content Wrapper */}
-        <div className="px-4">
+        <div className="px-4" style={{ paddingBottom: '200px' }}>
         {/* Monthly View */}
         {viewMode === 'monthly' && (
         <>
