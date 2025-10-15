@@ -62,7 +62,8 @@ export function useFasting() {
     const totalHours = logHours.reduce((sum, hours) => sum + hours, 0);
     const dailyGoal = parseFloat(localStorage.getItem('fitcircle_goal_fasting') || '16'); // Default 16h
     const targetGoal = dailyGoal * 10; // 10 logs worth of daily goals
-    const averageHours = recentLogs.length > 0 ? totalHours / recentLogs.length : 0;
+    // Always divide by 10, even if there are fewer logs (missing logs count as 0)
+    const averageHours = totalHours / 10;
     const goalProgress = targetGoal > 0 ? Math.min((totalHours / targetGoal) * 100, 100) : 0;
     const remaining = Math.max(0, targetGoal - totalHours);
     
