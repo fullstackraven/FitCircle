@@ -218,18 +218,33 @@ export function useHydration() {
 
   // Get last 10 logs hydration stats
   const getLast10LogsProgress = () => {
-    // Get the most recent 10 logs regardless of date
-    const recentLogs = Object.values(data.logs)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 10);
+    // Get the last 10 calendar days (today and previous 9 days)
+    const last10Days: string[] = [];
+    for (let i = 0; i < 10; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      last10Days.push(`${year}-${month}-${day}`);
+    }
+    
+    // For each of the last 10 days, get the hydration ounces (or 0 if no log)
+    const dailyOz = last10Days.map(dateKey => {
+      const log = data.logs[dateKey];
+      return log ? log.totalOz : 0;
+    });
     
     // Sum up the total ounces
-    const totalOz = recentLogs.reduce((sum, log) => sum + log.totalOz, 0);
+    const totalOz = dailyOz.reduce((sum, oz) => sum + oz, 0);
     
-    const targetGoal = data.dailyGoalOz * 10; // 10 logs worth of daily goals
-    const averageOz = recentLogs.length > 0 ? totalOz / recentLogs.length : 0;
+    const targetGoal = data.dailyGoalOz * 10; // 10 days worth of daily goals
+    const averageOz = totalOz / 10; // Always divide by 10 days
     const goalProgress = targetGoal > 0 ? Math.min((totalOz / targetGoal) * 100, 100) : 0;
     const remaining = Math.max(0, targetGoal - totalOz);
+    
+    // Count how many days actually have logs
+    const logsCount = dailyOz.filter(oz => oz > 0).length;
     
     return {
       totalOz: Math.round(totalOz),
@@ -237,7 +252,7 @@ export function useHydration() {
       targetGoal,
       goalProgress: Math.round(goalProgress * 10) / 10, // Round to 1 decimal
       remaining: Math.round(remaining),
-      logsCount: recentLogs.length
+      logsCount // Number of days with actual logs (for display purposes)
     };
   };
 

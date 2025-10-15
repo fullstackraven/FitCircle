@@ -47,32 +47,54 @@ export function useFasting() {
 
   // Get last 10 logs fasting stats
   const getLast10LogsProgress = () => {
-    // Get the most recent 10 logs regardless of date
-    const recentLogs = logs
-      .sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime())
-      .slice(0, 10);
+    // Get the last 10 calendar days (today and previous 9 days)
+    const last10Days: string[] = [];
+    for (let i = 0; i < 10; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      last10Days.push(`${year}-${month}-${day}`);
+    }
     
-    let totalHours = 0;
-    let fastingDays = 0;
-    const dailyGoal = parseFloat(localStorage.getItem('fitcircle_goal_fasting') || '16'); // Default 16h
-    const targetGoal = dailyGoal * 10; // 10 logs worth of daily goals
-    
-    // Calculate total hours from recent fasting logs
-    recentLogs.forEach(log => {
-      const startDateTime = new Date(`${log.startDate}T${log.startTime}`);
-      const endDateTime = new Date(`${log.endDate}T${log.endTime}`);
+    // For each of the last 10 days, calculate total fasting hours (including partial hours from multi-day fasts)
+    const dailyHours = last10Days.map(dateKey => {
+      let totalHoursForDay = 0;
       
-      // Calculate total duration of this fast
-      const fastDurationHours = (endDateTime.getTime() - startDateTime.getTime()) / (1000 * 60 * 60);
-      totalHours += fastDurationHours;
-      if (fastDurationHours > 0) {
-        fastingDays++;
-      }
+      // Check each fast to see if it overlaps with this day
+      logs.forEach(log => {
+        const startDateTime = new Date(`${log.startDate}T${log.startTime}`);
+        const endDateTime = new Date(`${log.endDate}T${log.endTime}`);
+        
+        // Get the start and end of the current day
+        const dayStart = new Date(`${dateKey}T00:00:00`);
+        const dayEnd = new Date(`${dateKey}T23:59:59.999`);
+        
+        // Check if the fast overlaps with this day
+        if (startDateTime <= dayEnd && endDateTime >= dayStart) {
+          // Calculate the overlapping period
+          const overlapStart = startDateTime > dayStart ? startDateTime : dayStart;
+          const overlapEnd = endDateTime < dayEnd ? endDateTime : dayEnd;
+          
+          // Calculate hours for this day
+          const hoursForDay = (overlapEnd.getTime() - overlapStart.getTime()) / (1000 * 60 * 60);
+          totalHoursForDay += hoursForDay;
+        }
+      });
+      
+      return totalHoursForDay;
     });
     
-    const averageHours = recentLogs.length > 0 ? totalHours / recentLogs.length : 0;
+    const totalHours = dailyHours.reduce((sum, hours) => sum + hours, 0);
+    const dailyGoal = parseFloat(localStorage.getItem('fitcircle_goal_fasting') || '16'); // Default 16h
+    const targetGoal = dailyGoal * 10; // 10 days worth of daily goals
+    const averageHours = totalHours / 10; // Always divide by 10 days
     const goalProgress = targetGoal > 0 ? Math.min((totalHours / targetGoal) * 100, 100) : 0;
     const remaining = Math.max(0, targetGoal - totalHours);
+    
+    // Count how many days actually have fasting hours
+    const logsCount = dailyHours.filter(hours => hours > 0).length;
     
     return {
       totalHours: Math.round(totalHours * 10) / 10,
@@ -80,7 +102,7 @@ export function useFasting() {
       targetGoal,
       goalProgress: Math.round(goalProgress * 10) / 10,
       remaining: Math.round(remaining * 10) / 10,
-      logsCount: recentLogs.length
+      logsCount // Number of days with actual fasting hours (for display purposes)
     };
   };
 

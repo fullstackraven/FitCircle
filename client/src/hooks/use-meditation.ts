@@ -312,19 +312,31 @@ export function useMeditation() {
 
   // Get last 10 daily logs meditation stats
   const getLast10LogsProgress = () => {
-    // Get the most recent 10 daily logs regardless of date
-    const recentLogs = Object.values(data.dailyLogs)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 10);
+    // Get the last 10 calendar days (today and previous 9 days)
+    const last10Days: string[] = [];
+    for (let i = 0; i < 10; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      last10Days.push(getDateString(date));
+    }
+    
+    // For each of the last 10 days, get the meditation minutes (or 0 if no log)
+    const dailyMinutes = last10Days.map(dateKey => {
+      const log = data.dailyLogs[dateKey];
+      return log ? log.totalMinutes : 0;
+    });
     
     // Sum up the durations
-    const totalMinutes = recentLogs.reduce((sum, log) => sum + log.totalMinutes, 0);
+    const totalMinutes = dailyMinutes.reduce((sum, minutes) => sum + minutes, 0);
     
     const dailyGoal = getDailyGoal();
-    const targetGoal = dailyGoal * 10; // 10 logs worth of daily goals
-    const averageMinutes = recentLogs.length > 0 ? totalMinutes / recentLogs.length : 0;
+    const targetGoal = dailyGoal * 10; // 10 days worth of daily goals
+    const averageMinutes = totalMinutes / 10; // Always divide by 10 days
     const goalProgress = targetGoal > 0 ? Math.min((totalMinutes / targetGoal) * 100, 100) : 0;
     const remaining = Math.max(0, targetGoal - totalMinutes);
+    
+    // Count how many days actually have logs
+    const logsCount = dailyMinutes.filter(minutes => minutes > 0).length;
     
     return {
       totalMinutes: Math.round(totalMinutes),
@@ -332,7 +344,7 @@ export function useMeditation() {
       targetGoal,
       goalProgress: Math.round(goalProgress * 10) / 10, // Round to 1 decimal
       remaining: Math.round(remaining),
-      logsCount: recentLogs.length
+      logsCount // Number of days with actual logs (for display purposes)
     };
   };
 
