@@ -106,8 +106,15 @@ export function useMeasurements() {
     return 'neutral';
   };
 
-  const getChartData = (type: keyof MeasurementData, days: number = 30) => {
+  const getChartData = (type: keyof MeasurementData, days?: number) => {
     const entries = data[type];
+    
+    // If no days specified, return all historical data
+    if (days === undefined) {
+      return entries;
+    }
+    
+    // Otherwise filter by date range
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
     
