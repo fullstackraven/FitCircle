@@ -433,7 +433,7 @@ export function useWorkouts() {
     return applicableGoal;
   };
 
-  const updateWorkout = (workoutId: string, name?: string, newGoal?: number, weightLbs?: number, scheduledDays?: number[]) => {
+  const updateWorkout = (workoutId: string, name?: string, newGoal?: number, weightLbs?: number, scheduledDays?: number[], color?: string) => {
     setData(prev => {
       const currentWorkout = prev.workouts[workoutId];
       const isGoalChanged = newGoal !== undefined && newGoal !== currentWorkout?.dailyGoal;
@@ -461,6 +461,7 @@ export function useWorkouts() {
             ...(newGoal !== undefined ? { dailyGoal: newGoal } : {}),
             ...(weightLbs !== undefined ? { weightLbs: weightLbs > 0 ? weightLbs : undefined } : {}),
             ...(scheduledDays !== undefined ? { scheduledDays } : {}),
+            ...(color !== undefined ? { color } : {}),
             ...(isGoalChanged ? { goalHistory: updatedGoalHistory } : {})
           }
         }

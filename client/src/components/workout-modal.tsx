@@ -192,7 +192,12 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-2">
               <div className="grid grid-cols-6 gap-2 p-3 bg-slate-700 rounded-lg">
-                {(editingWorkout ? [...availableColors, editingWorkout.color] : availableColors).map((color) => (
+                {(editingWorkout 
+                  ? availableColors.includes(editingWorkout.color) 
+                    ? availableColors 
+                    : [...availableColors, editingWorkout.color]
+                  : availableColors
+                ).map((color) => (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
