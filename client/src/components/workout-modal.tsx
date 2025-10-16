@@ -15,10 +15,11 @@ interface WorkoutModalProps {
   onDelete?: (workoutId: string) => void;
   availableColors: string[];
   editingWorkout?: { id: string; name: string; color: string; dailyGoal: number; weightLbs?: number; scheduledDays?: number[] } | null;
+  preSelectedDays?: number[];
 }
 
 
-export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColors, editingWorkout }: WorkoutModalProps) {
+export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColors, editingWorkout, preSelectedDays }: WorkoutModalProps) {
   const [workoutName, setWorkoutName] = useState('');
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || 'green');
   const [dailyGoal, setDailyGoal] = useState<number | string>(10);
@@ -29,7 +30,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
   const [weightFocused, setWeightFocused] = useState(false);
   const [isColorSectionOpen, setIsColorSectionOpen] = useState(false);
 
-  // Initialize form when editing
+  // Initialize form when editing or when preSelectedDays is provided
   useEffect(() => {
     if (editingWorkout) {
       setWorkoutName(editingWorkout.name);
@@ -37,10 +38,13 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
       setDailyGoal(editingWorkout.dailyGoal);
       setWeightLbs(editingWorkout.weightLbs || '');
       setScheduledDays(editingWorkout.scheduledDays || [0, 1, 2, 3, 4, 5, 6]);
+    } else if (isOpen && preSelectedDays) {
+      // When opening a new workout with pre-selected days (from a routine)
+      setScheduledDays(preSelectedDays);
     } else if (!isOpen) {
       resetForm();
     }
-  }, [editingWorkout, isOpen]);
+  }, [editingWorkout, isOpen, preSelectedDays]);
 
   const handleSave = () => {
     const finalGoal = typeof dailyGoal === 'string' ? parseInt(dailyGoal) || 1 : dailyGoal;

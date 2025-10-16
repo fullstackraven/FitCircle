@@ -19,6 +19,7 @@ export default function RoutinesPage() {
   const [expandedRoutines, setExpandedRoutines] = useState<Set<string>>(new Set());
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
+  const [preSelectedDays, setPreSelectedDays] = useState<number[] | undefined>(undefined);
 
   // Check if we should open dashboard on load
   useEffect(() => {
@@ -234,6 +235,20 @@ export default function RoutinesPage() {
                           <p className="text-xs">Add workouts and set their schedule to see them here.</p>
                         </div>
                       )}
+                      
+                      {/* Add Workout Button for this routine */}
+                      <button
+                        onClick={() => {
+                          setPreSelectedDays(routine.selectedDays);
+                          setEditingWorkout(null);
+                          setIsModalOpen(true);
+                        }}
+                        className="w-full mt-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl transition-colors flex items-center justify-center space-x-2 text-slate-300 hover:text-white"
+                        data-testid={`button-add-workout-${routine.id}`}
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span className="text-sm font-medium">Add Workout</span>
+                      </button>
                     </div>
                   )}
                 </div>
@@ -340,11 +355,13 @@ export default function RoutinesPage() {
         onClose={() => {
           setIsModalOpen(false);
           setEditingWorkout(null);
+          setPreSelectedDays(undefined);
         }}
         onSave={handleAddWorkout}
         onDelete={handleDeleteWorkout}
         availableColors={availableColors}
         editingWorkout={editingWorkout}
+        preSelectedDays={preSelectedDays}
       />
 
       <RoutineModal
