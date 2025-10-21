@@ -1058,7 +1058,7 @@ export default function FoodTrackerPage() {
                         {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
                       </h3>
                       <div className="text-xs text-gray-400 mt-1">
-                        {entry.quantity}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
+                        {entry.quantity * (entry.servings || 1)}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
                         {entry.fiber && <span> • {Math.round(entry.fiber * (entry.servings || 1))}g fiber</span>}
                       </div>
                     </div>
@@ -1126,7 +1126,7 @@ export default function FoodTrackerPage() {
                         {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
                       </h3>
                       <div className="text-xs text-gray-400 mt-1">
-                        {entry.quantity}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
+                        {entry.quantity * (entry.servings || 1)}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
                         {entry.fiber && <span> • {Math.round(entry.fiber * (entry.servings || 1))}g fiber</span>}
                       </div>
                     </div>
@@ -1194,7 +1194,7 @@ export default function FoodTrackerPage() {
                         {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
                       </h3>
                       <div className="text-xs text-gray-400 mt-1">
-                        {entry.quantity}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
+                        {entry.quantity * (entry.servings || 1)}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
                         {entry.fiber && <span> • {Math.round(entry.fiber * (entry.servings || 1))}g fiber</span>}
                       </div>
                     </div>
@@ -1262,7 +1262,7 @@ export default function FoodTrackerPage() {
                         {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
                       </h3>
                       <div className="text-xs text-gray-400 mt-1">
-                        {entry.quantity}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
+                        {entry.quantity * (entry.servings || 1)}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
                         {entry.fiber && <span> • {Math.round(entry.fiber * (entry.servings || 1))}g fiber</span>}
                       </div>
                     </div>
