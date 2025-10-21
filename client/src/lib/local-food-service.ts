@@ -312,8 +312,12 @@ export class LocalFoodService {
   // Add custom food to IndexedDB
   async addCustomFood(input: CustomFoodInput): Promise<AddCustomFoodResponse> {
     try {
-      // Validate required fields
-      if (!input.name?.trim() || !input.calories || !input.carbs || !input.protein || !input.fat) {
+      // Validate required fields (allow 0 values, only reject undefined/NaN)
+      if (!input.name?.trim() || 
+          input.calories === undefined || Number.isNaN(input.calories) ||
+          input.carbs === undefined || Number.isNaN(input.carbs) ||
+          input.protein === undefined || Number.isNaN(input.protein) ||
+          input.fat === undefined || Number.isNaN(input.fat)) {
         return {
           success: false,
           error: 'Missing required fields: name, calories, carbs, protein, and fat are required.'
