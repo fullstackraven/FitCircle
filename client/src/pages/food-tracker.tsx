@@ -455,48 +455,65 @@ export default function FoodTrackerPage() {
       return;
     }
 
+    const foodInput = {
+      name: customFoodData.name.trim(),
+      brand: customFoodData.brand.trim() || undefined,
+      quantity: parseFloat(customFoodData.quantity) || 100,
+      unit: customFoodData.unit,
+      calories: parseFloat(customFoodData.calories),
+      carbs: parseFloat(customFoodData.carbs),
+      protein: parseFloat(customFoodData.protein),
+      fat: parseFloat(customFoodData.fat),
+      fiber: customFoodData.fiber ? parseFloat(customFoodData.fiber) : undefined,
+      sugar: customFoodData.sugar ? parseFloat(customFoodData.sugar) : undefined,
+      sodium: customFoodData.sodium ? parseFloat(customFoodData.sodium) : undefined,
+      saturatedFat: customFoodData.saturatedFat ? parseFloat(customFoodData.saturatedFat) : undefined,
+      potassium: customFoodData.potassium ? parseFloat(customFoodData.potassium) : undefined,
+      cholesterol: customFoodData.cholesterol ? parseFloat(customFoodData.cholesterol) : undefined,
+      vitaminA: customFoodData.vitaminA ? parseFloat(customFoodData.vitaminA) : undefined,
+      vitaminC: customFoodData.vitaminC ? parseFloat(customFoodData.vitaminC) : undefined,
+      calcium: customFoodData.calcium ? parseFloat(customFoodData.calcium) : undefined,
+      iron: customFoodData.iron ? parseFloat(customFoodData.iron) : undefined
+    };
+
     try {
-      // Save the food item to database with base values only
-      const result = await localFoodService.addCustomFood({
-        name: customFoodData.name.trim(),
-        brand: customFoodData.brand.trim() || undefined,
-        quantity: parseFloat(customFoodData.quantity) || 100,
-        unit: customFoodData.unit,
-        calories: parseFloat(customFoodData.calories),
-        carbs: parseFloat(customFoodData.carbs),
-        protein: parseFloat(customFoodData.protein),
-        fat: parseFloat(customFoodData.fat),
-        fiber: customFoodData.fiber ? parseFloat(customFoodData.fiber) : undefined,
-        sugar: customFoodData.sugar ? parseFloat(customFoodData.sugar) : undefined,
-        sodium: customFoodData.sodium ? parseFloat(customFoodData.sodium) : undefined,
-        saturatedFat: customFoodData.saturatedFat ? parseFloat(customFoodData.saturatedFat) : undefined,
-        potassium: customFoodData.potassium ? parseFloat(customFoodData.potassium) : undefined,
-        cholesterol: customFoodData.cholesterol ? parseFloat(customFoodData.cholesterol) : undefined,
-        vitaminA: customFoodData.vitaminA ? parseFloat(customFoodData.vitaminA) : undefined,
-        vitaminC: customFoodData.vitaminC ? parseFloat(customFoodData.vitaminC) : undefined,
-        calcium: customFoodData.calcium ? parseFloat(customFoodData.calcium) : undefined,
-        iron: customFoodData.iron ? parseFloat(customFoodData.iron) : undefined
-      });
+      let result;
+      
+      // Check if we're editing an existing food or creating a new one
+      if (editingEntryId) {
+        // Update existing food
+        result = await localFoodService.updateCustomFood(editingEntryId, foodInput);
+      } else {
+        // Create new food
+        result = await localFoodService.addCustomFood(foodInput);
+      }
 
       if (result.success && result.food) {
         toast({
-          title: "Food Created Successfully!",
-          description: `${result.food.name} has been saved to your food database.`
+          title: editingEntryId ? "Food Updated Successfully!" : "Food Created Successfully!",
+          description: `${result.food.name} has been ${editingEntryId ? 'updated in' : 'saved to'} your food database.`
         });
 
+        // Refresh search results if we have a search query
+        if (searchQuery) {
+          const results = await localFoodService.searchProducts(searchQuery);
+          setSearchResults(results);
+        }
+
         setCustomFoodOpen(false);
+        setEditingEntryId(null); // Clear editing state
       } else {
         toast({
-          title: "Failed to Create Food",
-          description: result.error || "Something went wrong while creating your custom food.",
+          title: editingEntryId ? "Failed to Update Food" : "Failed to Create Food",
+          description: result.error || `Something went wrong while ${editingEntryId ? 'updating' : 'creating'} your custom food.`,
           variant: "destructive"
         });
       }
     } catch (error) {
-      console.error('Error creating custom food:', error);
+      console.error('Error saving custom food:', error);
       toast({
         title: "Error",
-        description: "Failed to create custom food. Please try again.",
+        description: `Failed to ${editingEntryId ? 'update' : 'create'} custom food. Please try again.`,
         variant: "destructive"
       });
     }
@@ -556,6 +573,72 @@ export default function FoodTrackerPage() {
     setAddEntryMeal(searchMeal);
     setSearchOpen(false);
     setAddEntryOpen(true);
+  };
+
+  // Function to edit a food item from search/recent (opens Custom Food modal with existing values)
+  const handleEditFoodFromSearch = (food: LocalFoodItem) => {
+    setCustomFoodData({
+      name: food.name,
+      brand: food.brand || '',
+      quantity: food.quantity.toString(),
+      unit: food.unit,
+      calories: food.calories.toString(),
+      carbs: food.carbs.toString(),
+      protein: food.protein.toString(),
+      fat: food.fat.toString(),
+      fiber: food.fiber?.toString() || '',
+      sugar: food.sugar?.toString() || '',
+      sodium: food.sodium?.toString() || '',
+      saturatedFat: food.saturatedFat?.toString() || '',
+      potassium: food.potassium?.toString() || '',
+      cholesterol: food.cholesterol?.toString() || '',
+      vitaminA: food.vitaminA?.toString() || '',
+      vitaminC: food.vitaminC?.toString() || '',
+      calcium: food.calcium?.toString() || '',
+      iron: food.iron?.toString() || ''
+    });
+    setEditingEntryId(food.id); // Store ID to know we're editing
+    setSearchOpen(false);
+    setCustomFoodOpen(true);
+  };
+
+  // Function to delete food from database with confirmation
+  const handleDeleteFoodFromDatabase = async (food: LocalFoodItem) => {
+    // Show confirmation prompt
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${food.name}"${food.brand ? ` by ${food.brand}` : ''} from your database? This action cannot be undone.`
+    );
+    
+    if (!confirmed) return;
+
+    try {
+      const result = await localFoodService.deleteCustomFood(food.id);
+      
+      if (result.success) {
+        toast({
+          title: "Food Deleted",
+          description: `${food.name} has been removed from your database.`
+        });
+        
+        // Refresh the search results if there's a search query
+        if (searchQuery) {
+          const results = await localFoodService.searchProducts(searchQuery);
+          setSearchResults(results);
+        }
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to delete food.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred while deleting the food.",
+        variant: "destructive"
+      });
+    }
   };
 
   // Function to open the simple Edit Entry modal (adjust servings/meal only)
@@ -925,11 +1008,32 @@ export default function FoodTrackerPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
+                                onClick={() => handleEditFoodFromSearch(food)}
+                                className="text-slate-400 hover:text-slate-200 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                                data-testid={`button-edit-${food.id}`}
+                                title="Edit food"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => handleAddFromSearch(food)}
                                 className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
                                 data-testid={`button-add-${food.id}`}
+                                title="Add to meal"
                               >
                                 <Plus className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteFoodFromDatabase(food)}
+                                className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                                data-testid={`button-delete-db-${food.id}`}
+                                title="Delete from database"
+                              >
+                                <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
                           </div>
@@ -964,11 +1068,32 @@ export default function FoodTrackerPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
+                                onClick={() => handleEditFoodFromSearch(food)}
+                                className="text-slate-400 hover:text-slate-200 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                                data-testid={`button-edit-${food.id}`}
+                                title="Edit food"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => handleAddFromSearch(food)}
                                 className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
                                 data-testid={`button-add-${food.id}`}
+                                title="Add to meal"
                               >
                                 <Plus className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteFoodFromDatabase(food)}
+                                className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                                data-testid={`button-delete-db-${food.id}`}
+                                title="Delete from database"
+                              >
+                                <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
                           </div>
@@ -1654,7 +1779,10 @@ export default function FoodTrackerPage() {
               {/* Action Buttons */}
               <div className="flex space-x-3 pt-4 border-t border-gray-600">
                 <Button
-                  onClick={() => setCustomFoodOpen(false)}
+                  onClick={() => {
+                    setCustomFoodOpen(false);
+                    setEditingEntryId(null);
+                  }}
                   variant="outline"
                   className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
                   data-testid="button-cancel-custom"
