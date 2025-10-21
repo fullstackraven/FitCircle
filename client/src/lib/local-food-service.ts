@@ -351,10 +351,10 @@ export class LocalFoodService {
           carbs: customFood.carbs * multiplier,
           protein: customFood.protein * multiplier,
           fat: customFood.fat * multiplier,
-          fiber: customFood.fiber ? customFood.fiber * multiplier : undefined,
-          sugar: customFood.sugar ? customFood.sugar * multiplier : undefined,
-          sodium: customFood.sodium ? customFood.sodium * multiplier : undefined,
-          saturatedFat: customFood.saturatedFat ? customFood.saturatedFat * multiplier : undefined
+          fiber: customFood.fiber !== undefined ? customFood.fiber * multiplier : undefined,
+          sugar: customFood.sugar !== undefined ? customFood.sugar * multiplier : undefined,
+          sodium: customFood.sodium !== undefined ? customFood.sodium * multiplier : undefined,
+          saturatedFat: customFood.saturatedFat !== undefined ? customFood.saturatedFat * multiplier : undefined
         };
       }
 
