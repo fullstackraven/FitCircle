@@ -1550,9 +1550,8 @@ export default function FoodTrackerPage() {
                     <Label htmlFor="custom-calories" className="text-white">Calories</Label>
                     <Input
                       id="custom-calories"
-                      type="number"
-                      step="0.1"
-                      min="0"
+                      type="text"
+                      inputMode="numeric"
                       value={customFoodData.calories}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, calories: e.target.value }))}
                       placeholder="0"
@@ -1565,9 +1564,8 @@ export default function FoodTrackerPage() {
                     <Label htmlFor="custom-carbs" className="text-white">Carbs (g)</Label>
                     <Input
                       id="custom-carbs"
-                      type="number"
-                      step="0.1"
-                      min="0"
+                      type="text"
+                      inputMode="numeric"
                       value={customFoodData.carbs}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, carbs: e.target.value }))}
                       placeholder="0"
@@ -1580,9 +1578,8 @@ export default function FoodTrackerPage() {
                     <Label htmlFor="custom-protein" className="text-white">Protein (g)</Label>
                     <Input
                       id="custom-protein"
-                      type="number"
-                      step="0.1"
-                      min="0"
+                      type="text"
+                      inputMode="numeric"
                       value={customFoodData.protein}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, protein: e.target.value }))}
                       placeholder="0"
@@ -1595,9 +1592,8 @@ export default function FoodTrackerPage() {
                     <Label htmlFor="custom-fat" className="text-white">Fat (g)</Label>
                     <Input
                       id="custom-fat"
-                      type="number"
-                      step="0.1"
-                      min="0"
+                      type="text"
+                      inputMode="numeric"
                       value={customFoodData.fat}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, fat: e.target.value }))}
                       placeholder="0"
