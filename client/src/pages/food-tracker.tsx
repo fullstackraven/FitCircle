@@ -185,6 +185,12 @@ export default function FoodTrackerPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null); // Track entry being edited
   
+  // Edit Entry Modal states (simple modal for adjusting servings/meal)
+  const [editEntryOpen, setEditEntryOpen] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<FoodEntry | null>(null);
+  const [editEntryServings, setEditEntryServings] = useState('1');
+  const [editEntryMeal, setEditEntryMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
+  
   // Edit states
   const [editingFood, setEditingFood] = useState<FoodEntry | null>(null);
   const [editName, setEditName] = useState('');
@@ -443,30 +449,51 @@ export default function FoodTrackerPage() {
     }
 
     try {
-      // Check if we're editing an existing entry
-      if (editingEntryId) {
-        // Update existing entry
-        const updatedEntry: FoodEntry = {
-          id: editingEntryId,
-          name: customFoodData.name.trim(),
-          brand: customFoodData.brand.trim() || undefined,
-          quantity: parseFloat(customFoodData.quantity) || 100,
-          unit: customFoodData.unit,
-          calories: parseFloat(customFoodData.calories),
-          carbs: parseFloat(customFoodData.carbs),
-          protein: parseFloat(customFoodData.protein),
-          fat: parseFloat(customFoodData.fat),
-          fiber: customFoodData.fiber ? parseFloat(customFoodData.fiber) : undefined,
-          sugar: customFoodData.sugar ? parseFloat(customFoodData.sugar) : undefined,
-          sodium: customFoodData.sodium ? parseFloat(customFoodData.sodium) : undefined,
-          saturatedFat: customFoodData.saturatedFat ? parseFloat(customFoodData.saturatedFat) : undefined,
-          meal: customFoodMeal,
-          timestamp: new Date().toISOString()
+      // Calculate multiplier from number of servings
+      const servingsMultiplier = parseFloat(customFoodServings) || 1;
+      
+      // Save the BASE food item with original single-serving values (NO multiplier)
+      const result = await localFoodService.addCustomFood({
+        name: customFoodData.name.trim(),
+        brand: customFoodData.brand.trim() || undefined,
+        quantity: parseFloat(customFoodData.quantity) || 100,
+        unit: customFoodData.unit,
+        calories: parseFloat(customFoodData.calories),
+        carbs: parseFloat(customFoodData.carbs),
+        protein: parseFloat(customFoodData.protein),
+        fat: parseFloat(customFoodData.fat),
+        fiber: customFoodData.fiber ? parseFloat(customFoodData.fiber) : undefined,
+        sugar: customFoodData.sugar ? parseFloat(customFoodData.sugar) : undefined,
+        sodium: customFoodData.sodium ? parseFloat(customFoodData.sodium) : undefined,
+        saturatedFat: customFoodData.saturatedFat ? parseFloat(customFoodData.saturatedFat) : undefined,
+        potassium: customFoodData.potassium ? parseFloat(customFoodData.potassium) : undefined,
+        cholesterol: customFoodData.cholesterol ? parseFloat(customFoodData.cholesterol) : undefined,
+        vitaminA: customFoodData.vitaminA ? parseFloat(customFoodData.vitaminA) : undefined,
+        vitaminC: customFoodData.vitaminC ? parseFloat(customFoodData.vitaminC) : undefined,
+        calcium: customFoodData.calcium ? parseFloat(customFoodData.calcium) : undefined,
+        iron: customFoodData.iron ? parseFloat(customFoodData.iron) : undefined
+      });
+
+      if (result.success && result.food) {
+        // Convert the saved food to our format
+        const baseFoodEntry: FoodEntry = localFoodService.convertToFoodEntry(result.food, customFoodMeal);
+        
+        // Apply servings multiplier ONLY to the log entry (not the base food item)
+        const multipliedFoodEntry: FoodEntry = {
+          ...baseFoodEntry,
+          quantity: baseFoodEntry.quantity * servingsMultiplier,
+          calories: baseFoodEntry.calories * servingsMultiplier,
+          carbs: baseFoodEntry.carbs * servingsMultiplier,
+          protein: baseFoodEntry.protein * servingsMultiplier,
+          fat: baseFoodEntry.fat * servingsMultiplier,
+          fiber: baseFoodEntry.fiber ? baseFoodEntry.fiber * servingsMultiplier : undefined,
+          sugar: baseFoodEntry.sugar ? baseFoodEntry.sugar * servingsMultiplier : undefined,
+          sodium: baseFoodEntry.sodium ? baseFoodEntry.sodium * servingsMultiplier : undefined,
+          saturatedFat: baseFoodEntry.saturatedFat ? baseFoodEntry.saturatedFat * servingsMultiplier : undefined
         };
 
-        const updatedEntries = foodEntries.map(entry => 
-          entry.id === editingEntryId ? updatedEntry : entry
-        );
+        // Add to today's food entries
+        const updatedEntries = [...foodEntries, multipliedFoodEntry];
         setFoodEntries(updatedEntries);
 
         // Save to localStorage
@@ -478,82 +505,17 @@ export default function FoodTrackerPage() {
         }
 
         toast({
-          title: "Food Updated Successfully!",
-          description: `${updatedEntry.name} has been updated.`
+          title: "Food Added Successfully!",
+          description: result.message || `${result.food.name} has been added to your ${customFoodMeal}.`
         });
 
         setCustomFoodOpen(false);
-        setEditingEntryId(null);
       } else {
-        // Add new entry
-        // Calculate multiplier from number of servings
-        const servingsMultiplier = parseFloat(customFoodServings) || 1;
-        
-        // Save the BASE food item with original single-serving values (NO multiplier)
-        const result = await localFoodService.addCustomFood({
-          name: customFoodData.name.trim(),
-          brand: customFoodData.brand.trim() || undefined,
-          quantity: parseFloat(customFoodData.quantity) || 100,
-          unit: customFoodData.unit,
-          calories: parseFloat(customFoodData.calories),
-          carbs: parseFloat(customFoodData.carbs),
-          protein: parseFloat(customFoodData.protein),
-          fat: parseFloat(customFoodData.fat),
-          fiber: customFoodData.fiber ? parseFloat(customFoodData.fiber) : undefined,
-          sugar: customFoodData.sugar ? parseFloat(customFoodData.sugar) : undefined,
-          sodium: customFoodData.sodium ? parseFloat(customFoodData.sodium) : undefined,
-          saturatedFat: customFoodData.saturatedFat ? parseFloat(customFoodData.saturatedFat) : undefined,
-          potassium: customFoodData.potassium ? parseFloat(customFoodData.potassium) : undefined,
-          cholesterol: customFoodData.cholesterol ? parseFloat(customFoodData.cholesterol) : undefined,
-          vitaminA: customFoodData.vitaminA ? parseFloat(customFoodData.vitaminA) : undefined,
-          vitaminC: customFoodData.vitaminC ? parseFloat(customFoodData.vitaminC) : undefined,
-          calcium: customFoodData.calcium ? parseFloat(customFoodData.calcium) : undefined,
-          iron: customFoodData.iron ? parseFloat(customFoodData.iron) : undefined
+        toast({
+          title: "Failed to Add Food",
+          description: result.error || "Something went wrong while adding your custom food.",
+          variant: "destructive"
         });
-
-        if (result.success && result.food) {
-          // Convert the saved food to our format
-          const baseFoodEntry: FoodEntry = localFoodService.convertToFoodEntry(result.food, customFoodMeal);
-          
-          // Apply servings multiplier ONLY to the log entry (not the base food item)
-          const multipliedFoodEntry: FoodEntry = {
-            ...baseFoodEntry,
-            quantity: baseFoodEntry.quantity * servingsMultiplier,
-            calories: baseFoodEntry.calories * servingsMultiplier,
-            carbs: baseFoodEntry.carbs * servingsMultiplier,
-            protein: baseFoodEntry.protein * servingsMultiplier,
-            fat: baseFoodEntry.fat * servingsMultiplier,
-            fiber: baseFoodEntry.fiber ? baseFoodEntry.fiber * servingsMultiplier : undefined,
-            sugar: baseFoodEntry.sugar ? baseFoodEntry.sugar * servingsMultiplier : undefined,
-            sodium: baseFoodEntry.sodium ? baseFoodEntry.sodium * servingsMultiplier : undefined,
-            saturatedFat: baseFoodEntry.saturatedFat ? baseFoodEntry.saturatedFat * servingsMultiplier : undefined
-          };
-
-          // Add to today's food entries
-          const updatedEntries = [...foodEntries, multipliedFoodEntry];
-          setFoodEntries(updatedEntries);
-
-          // Save to localStorage
-          const today = getTodayString();
-          try {
-            localStorage.setItem(STORAGE_KEYS.FOOD_TRACKER + today, JSON.stringify(updatedEntries));
-          } catch (error) {
-            console.error('Error saving food entries to localStorage:', error);
-          }
-
-          toast({
-            title: "Food Added Successfully!",
-            description: result.message || `${result.food.name} has been added to your ${customFoodMeal}.`
-          });
-
-          setCustomFoodOpen(false);
-        } else {
-          toast({
-            title: "Failed to Add Food",
-            description: result.error || "Something went wrong while adding your custom food.",
-            variant: "destructive"
-          });
-        }
       }
     } catch (error) {
       console.error('Error adding custom food:', error);
@@ -567,7 +529,6 @@ export default function FoodTrackerPage() {
 
   // Function to open custom food modal with pre-populated data from search
   const handleAddFromSearch = (food: LocalFoodItem) => {
-    setEditingEntryId(null); // Clear editing mode
     setCustomFoodMeal(searchMeal);
     setCustomFoodData({
       name: food.name,
@@ -596,7 +557,6 @@ export default function FoodTrackerPage() {
 
   // Function to open custom food modal to edit a food's nutritional values
   const handleEditFoodFromSearch = (food: LocalFoodItem) => {
-    setEditingEntryId(null); // Clear editing mode
     setCustomFoodMeal(searchMeal);
     setCustomFoodData({
       name: food.name,
@@ -623,32 +583,67 @@ export default function FoodTrackerPage() {
     setCustomFoodOpen(true);
   };
 
-  // Function to edit an existing food entry from meal sections
+  // Function to open the simple Edit Entry modal (adjust servings/meal only)
   const handleEditFoodEntry = (entry: FoodEntry) => {
-    setEditingEntryId(entry.id);
-    setCustomFoodMeal(entry.meal);
-    setCustomFoodData({
-      name: entry.name,
-      brand: entry.brand || '',
-      quantity: entry.quantity.toString(),
-      unit: entry.unit,
-      calories: entry.calories.toString(),
-      carbs: entry.carbs.toString(),
-      protein: entry.protein.toString(),
-      fat: entry.fat.toString(),
-      fiber: entry.fiber?.toString() || '',
-      sugar: entry.sugar?.toString() || '',
-      sodium: entry.sodium?.toString() || '',
-      saturatedFat: entry.saturatedFat?.toString() || '',
-      potassium: '',
-      cholesterol: '',
-      vitaminA: '',
-      vitaminC: '',
-      calcium: '',
-      iron: ''
+    setEditingEntry(entry);
+    setEditEntryServings((entry.quantity / 100).toString()); // Assuming base serving is 100
+    setEditEntryMeal(entry.meal);
+    setEditEntryOpen(true);
+  };
+
+  // Function to save the edited entry (servings/meal changes)
+  const handleSaveEditEntry = () => {
+    if (!editingEntry) return;
+
+    const servingsMultiplier = parseFloat(editEntryServings) || 1;
+    
+    // Calculate the base per-serving values (divide current values by current quantity)
+    const currentMultiplier = editingEntry.quantity / 100; // Assuming base is 100
+    const baseCalories = editingEntry.calories / currentMultiplier;
+    const baseCarbs = editingEntry.carbs / currentMultiplier;
+    const baseProtein = editingEntry.protein / currentMultiplier;
+    const baseFat = editingEntry.fat / currentMultiplier;
+    const baseFiber = editingEntry.fiber ? editingEntry.fiber / currentMultiplier : undefined;
+    const baseSugar = editingEntry.sugar ? editingEntry.sugar / currentMultiplier : undefined;
+    const baseSodium = editingEntry.sodium ? editingEntry.sodium / currentMultiplier : undefined;
+    const baseSaturatedFat = editingEntry.saturatedFat ? editingEntry.saturatedFat / currentMultiplier : undefined;
+
+    // Create updated entry with new servings multiplier and meal
+    const updatedEntry: FoodEntry = {
+      ...editingEntry,
+      quantity: 100 * servingsMultiplier,
+      calories: baseCalories * servingsMultiplier,
+      carbs: baseCarbs * servingsMultiplier,
+      protein: baseProtein * servingsMultiplier,
+      fat: baseFat * servingsMultiplier,
+      fiber: baseFiber ? baseFiber * servingsMultiplier : undefined,
+      sugar: baseSugar ? baseSugar * servingsMultiplier : undefined,
+      sodium: baseSodium ? baseSodium * servingsMultiplier : undefined,
+      saturatedFat: baseSaturatedFat ? baseSaturatedFat * servingsMultiplier : undefined,
+      meal: editEntryMeal,
+      timestamp: new Date().toISOString()
+    };
+
+    const updatedEntries = foodEntries.map(entry => 
+      entry.id === editingEntry.id ? updatedEntry : entry
+    );
+    setFoodEntries(updatedEntries);
+
+    // Save to localStorage
+    const today = getTodayString();
+    try {
+      localStorage.setItem(STORAGE_KEYS.FOOD_TRACKER + today, JSON.stringify(updatedEntries));
+    } catch (error) {
+      console.error('Error saving food entries to localStorage:', error);
+    }
+
+    toast({
+      title: "Entry Updated!",
+      description: `${editingEntry.name} has been updated.`
     });
-    setCustomFoodServings('1'); // Reset to 1 serving
-    setCustomFoodOpen(true);
+
+    setEditEntryOpen(false);
+    setEditingEntry(null);
   };
 
   // Edit functions
@@ -1427,47 +1422,29 @@ export default function FoodTrackerPage() {
         )}
 
         {/* Custom Food Dialog */}
-        <Dialog open={customFoodOpen} onOpenChange={(open) => {
-          setCustomFoodOpen(open);
-          if (!open) {
-            setEditingEntryId(null); // Clear editing mode when modal closes
-          }
-        }}>
+        <Dialog open={customFoodOpen} onOpenChange={setCustomFoodOpen}>
           <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>
-                {editingEntryId ? 'Edit Food Entry' : `Custom Food for ${customFoodMeal.charAt(0).toUpperCase() + customFoodMeal.slice(1)}`}
-              </DialogTitle>
+              <DialogTitle>Custom Food for {customFoodMeal.charAt(0).toUpperCase() + customFoodMeal.slice(1)}</DialogTitle>
             </DialogHeader>
             
             <div className="space-y-6">
-              {/* Number of Servings - Only show when adding new food, not when editing */}
-              {!editingEntryId && (
-                <div className="space-y-2">
-                  <Label htmlFor="custom-servings" className="text-white font-semibold">Number of Servings</Label>
-                  <Input
-                    id="custom-servings"
-                    type="number"
-                    step="0.1"
-                    min="0.1"
-                    value={customFoodServings}
-                    onChange={(e) => setCustomFoodServings(e.target.value)}
-                    placeholder="1"
-                    className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                    data-testid="input-custom-servings"
-                  />
-                  <p className="text-xs text-gray-400">All nutritional values will be multiplied by this number</p>
-                </div>
-              )}
-              
-              {/* Edit Mode Note */}
-              {editingEntryId && (
-                <div className="bg-blue-900/30 border border-blue-700/50 rounded-xl p-3">
-                  <p className="text-sm text-blue-300">
-                    You're editing an existing food entry. Update the values below as needed.
-                  </p>
-                </div>
-              )}
+              {/* Number of Servings */}
+              <div className="space-y-2">
+                <Label htmlFor="custom-servings" className="text-white font-semibold">Number of Servings</Label>
+                <Input
+                  id="custom-servings"
+                  type="number"
+                  step="0.1"
+                  min="0.1"
+                  value={customFoodServings}
+                  onChange={(e) => setCustomFoodServings(e.target.value)}
+                  placeholder="1"
+                  className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                  data-testid="input-custom-servings"
+                />
+                <p className="text-xs text-gray-400">All nutritional values will be multiplied by this number</p>
+              </div>
 
               {/* Basic Information */}
               <div className="space-y-4">
@@ -1774,10 +1751,118 @@ export default function FoodTrackerPage() {
                   className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                   data-testid="button-save-custom"
                 >
-                  {editingEntryId ? 'Update Entry' : 'Save Food'}
+                  Save Food
                 </Button>
               </div>
             </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Entry Modal (Simple modal for adjusting servings and meal) */}
+        <Dialog open={editEntryOpen} onOpenChange={setEditEntryOpen}>
+          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Entry</DialogTitle>
+            </DialogHeader>
+            
+            {editingEntry && (
+              <div className="space-y-6">
+                {/* Food Name and Brand */}
+                <div>
+                  <h3 className="text-xl font-semibold text-white">{editingEntry.name}</h3>
+                  {editingEntry.brand && (
+                    <p className="text-sm text-gray-400">{editingEntry.brand}</p>
+                  )}
+                </div>
+
+                {/* Serving Size Display */}
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Serving Size</Label>
+                  <div className="bg-gray-700 border border-gray-600 rounded-xl p-3 text-right">
+                    <span className="text-blue-400">{editingEntry.quantity}{editingEntry.unit}</span>
+                  </div>
+                </div>
+
+                {/* Number of Servings */}
+                <div className="space-y-2">
+                  <Label htmlFor="edit-servings" className="text-gray-300">Number of Servings</Label>
+                  <Input
+                    id="edit-servings"
+                    type="number"
+                    step="0.1"
+                    min="0.1"
+                    value={editEntryServings}
+                    onChange={(e) => setEditEntryServings(e.target.value)}
+                    className="bg-gray-700 border-gray-600 text-white text-right rounded-xl"
+                    data-testid="input-edit-servings"
+                  />
+                </div>
+
+                {/* Meal Selection */}
+                <div className="space-y-2">
+                  <Label htmlFor="edit-meal" className="text-gray-300">Meal</Label>
+                  <Select value={editEntryMeal} onValueChange={(value: any) => setEditEntryMeal(value)}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl" id="edit-meal">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-700 border-gray-600">
+                      <SelectItem value="breakfast">Breakfast</SelectItem>
+                      <SelectItem value="lunch">Lunch</SelectItem>
+                      <SelectItem value="dinner">Dinner</SelectItem>
+                      <SelectItem value="snack">Snack</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Nutritional Summary */}
+                <div className="bg-gray-700/50 rounded-xl p-4">
+                  <div className="grid grid-cols-4 gap-3 text-center">
+                    <div>
+                      <div className="text-2xl font-bold text-white">
+                        {Math.round((editingEntry.calories / (editingEntry.quantity / 100)) * parseFloat(editEntryServings || '1'))}
+                      </div>
+                      <div className="text-xs text-gray-400">cal</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-semibold text-blue-400">
+                        {Math.round((editingEntry.carbs / (editingEntry.quantity / 100)) * parseFloat(editEntryServings || '1'))}g
+                      </div>
+                      <div className="text-xs text-gray-400">Carbs</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-semibold text-red-400">
+                        {Math.round((editingEntry.fat / (editingEntry.quantity / 100)) * parseFloat(editEntryServings || '1'))}g
+                      </div>
+                      <div className="text-xs text-gray-400">Fat</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-semibold text-green-400">
+                        {Math.round((editingEntry.protein / (editingEntry.quantity / 100)) * parseFloat(editEntryServings || '1'))}g
+                      </div>
+                      <div className="text-xs text-gray-400">Protein</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex space-x-3 pt-2">
+                  <Button
+                    onClick={() => setEditEntryOpen(false)}
+                    variant="outline"
+                    className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 rounded-xl"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSaveEditEntry}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
+                    data-testid="button-save-edit-entry"
+                  >
+                    Save
+                  </Button>
+                </div>
+              </div>
+            )}
           </DialogContent>
         </Dialog>
         
