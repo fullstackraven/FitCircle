@@ -427,8 +427,12 @@ export default function FoodTrackerPage() {
 
   // Function to handle custom food submission
   const handleCustomFoodSubmit = async () => {
-    // Validate required fields
-    if (!customFoodData.name.trim() || !customFoodData.calories || !customFoodData.carbs || !customFoodData.protein || !customFoodData.fat) {
+    // Validate required fields - allow 0 as a valid value
+    if (!customFoodData.name.trim() || 
+        customFoodData.calories === '' || 
+        customFoodData.carbs === '' || 
+        customFoodData.protein === '' || 
+        customFoodData.fat === '') {
       toast({
         title: "Missing Required Information",
         description: "Please fill in name, calories, carbs, protein, and fat.",
