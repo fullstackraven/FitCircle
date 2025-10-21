@@ -1543,15 +1543,16 @@ export default function FoodTrackerPage() {
 
               {/* Macronutrients */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-white">Macronutrients (per serving)*</h3>
+                <h3 className="text-lg font-semibold text-white">Macronutrients (per serving)</h3>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
-                    <Label htmlFor="custom-calories" className="text-white">Calories *</Label>
+                    <Label htmlFor="custom-calories" className="text-white">Calories</Label>
                     <Input
                       id="custom-calories"
                       type="number"
                       step="0.1"
+                      min="0"
                       value={customFoodData.calories}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, calories: e.target.value }))}
                       placeholder="0"
@@ -1561,11 +1562,12 @@ export default function FoodTrackerPage() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="custom-carbs" className="text-white">Carbs (g) *</Label>
+                    <Label htmlFor="custom-carbs" className="text-white">Carbs (g)</Label>
                     <Input
                       id="custom-carbs"
                       type="number"
                       step="0.1"
+                      min="0"
                       value={customFoodData.carbs}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, carbs: e.target.value }))}
                       placeholder="0"
@@ -1575,11 +1577,12 @@ export default function FoodTrackerPage() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="custom-protein" className="text-white">Protein (g) *</Label>
+                    <Label htmlFor="custom-protein" className="text-white">Protein (g)</Label>
                     <Input
                       id="custom-protein"
                       type="number"
                       step="0.1"
+                      min="0"
                       value={customFoodData.protein}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, protein: e.target.value }))}
                       placeholder="0"
@@ -1589,11 +1592,12 @@ export default function FoodTrackerPage() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="custom-fat" className="text-white">Fat (g) *</Label>
+                    <Label htmlFor="custom-fat" className="text-white">Fat (g)</Label>
                     <Input
                       id="custom-fat"
                       type="number"
                       step="0.1"
+                      min="0"
                       value={customFoodData.fat}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, fat: e.target.value }))}
                       placeholder="0"
