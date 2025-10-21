@@ -445,33 +445,48 @@ export default function FoodTrackerPage() {
       // Calculate multiplier from number of servings
       const servingsMultiplier = parseFloat(customFoodServings) || 1;
       
+      // Save the BASE food item with original single-serving values (NO multiplier)
       const result = await localFoodService.addCustomFood({
         name: customFoodData.name.trim(),
         brand: customFoodData.brand.trim() || undefined,
-        quantity: (parseFloat(customFoodData.quantity) || 100) * servingsMultiplier,
+        quantity: parseFloat(customFoodData.quantity) || 100,
         unit: customFoodData.unit,
-        calories: parseFloat(customFoodData.calories) * servingsMultiplier,
-        carbs: parseFloat(customFoodData.carbs) * servingsMultiplier,
-        protein: parseFloat(customFoodData.protein) * servingsMultiplier,
-        fat: parseFloat(customFoodData.fat) * servingsMultiplier,
-        fiber: customFoodData.fiber ? parseFloat(customFoodData.fiber) * servingsMultiplier : undefined,
-        sugar: customFoodData.sugar ? parseFloat(customFoodData.sugar) * servingsMultiplier : undefined,
-        sodium: customFoodData.sodium ? parseFloat(customFoodData.sodium) * servingsMultiplier : undefined,
-        saturatedFat: customFoodData.saturatedFat ? parseFloat(customFoodData.saturatedFat) * servingsMultiplier : undefined,
-        potassium: customFoodData.potassium ? parseFloat(customFoodData.potassium) * servingsMultiplier : undefined,
-        cholesterol: customFoodData.cholesterol ? parseFloat(customFoodData.cholesterol) * servingsMultiplier : undefined,
-        vitaminA: customFoodData.vitaminA ? parseFloat(customFoodData.vitaminA) * servingsMultiplier : undefined,
-        vitaminC: customFoodData.vitaminC ? parseFloat(customFoodData.vitaminC) * servingsMultiplier : undefined,
-        calcium: customFoodData.calcium ? parseFloat(customFoodData.calcium) * servingsMultiplier : undefined,
-        iron: customFoodData.iron ? parseFloat(customFoodData.iron) * servingsMultiplier : undefined
+        calories: parseFloat(customFoodData.calories),
+        carbs: parseFloat(customFoodData.carbs),
+        protein: parseFloat(customFoodData.protein),
+        fat: parseFloat(customFoodData.fat),
+        fiber: customFoodData.fiber ? parseFloat(customFoodData.fiber) : undefined,
+        sugar: customFoodData.sugar ? parseFloat(customFoodData.sugar) : undefined,
+        sodium: customFoodData.sodium ? parseFloat(customFoodData.sodium) : undefined,
+        saturatedFat: customFoodData.saturatedFat ? parseFloat(customFoodData.saturatedFat) : undefined,
+        potassium: customFoodData.potassium ? parseFloat(customFoodData.potassium) : undefined,
+        cholesterol: customFoodData.cholesterol ? parseFloat(customFoodData.cholesterol) : undefined,
+        vitaminA: customFoodData.vitaminA ? parseFloat(customFoodData.vitaminA) : undefined,
+        vitaminC: customFoodData.vitaminC ? parseFloat(customFoodData.vitaminC) : undefined,
+        calcium: customFoodData.calcium ? parseFloat(customFoodData.calcium) : undefined,
+        iron: customFoodData.iron ? parseFloat(customFoodData.iron) : undefined
       });
 
       if (result.success && result.food) {
-        // Convert the saved food to our format and add to meal
-        const newFoodEntry: FoodEntry = localFoodService.convertToFoodEntry(result.food, customFoodMeal);
+        // Convert the saved food to our format
+        const baseFoodEntry: FoodEntry = localFoodService.convertToFoodEntry(result.food, customFoodMeal);
+        
+        // Apply servings multiplier ONLY to the log entry (not the base food item)
+        const multipliedFoodEntry: FoodEntry = {
+          ...baseFoodEntry,
+          quantity: baseFoodEntry.quantity * servingsMultiplier,
+          calories: baseFoodEntry.calories * servingsMultiplier,
+          carbs: baseFoodEntry.carbs * servingsMultiplier,
+          protein: baseFoodEntry.protein * servingsMultiplier,
+          fat: baseFoodEntry.fat * servingsMultiplier,
+          fiber: baseFoodEntry.fiber ? baseFoodEntry.fiber * servingsMultiplier : undefined,
+          sugar: baseFoodEntry.sugar ? baseFoodEntry.sugar * servingsMultiplier : undefined,
+          sodium: baseFoodEntry.sodium ? baseFoodEntry.sodium * servingsMultiplier : undefined,
+          saturatedFat: baseFoodEntry.saturatedFat ? baseFoodEntry.saturatedFat * servingsMultiplier : undefined
+        };
 
         // Add to today's food entries
-        const updatedEntries = [...foodEntries, newFoodEntry];
+        const updatedEntries = [...foodEntries, multipliedFoodEntry];
         setFoodEntries(updatedEntries);
 
         // Save to localStorage
