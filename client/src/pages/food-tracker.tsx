@@ -1511,7 +1511,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-quantity"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.quantity}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, quantity: e.target.value }))}
                       placeholder="100"
@@ -1551,7 +1551,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-calories"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.calories}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, calories: e.target.value }))}
                       placeholder="0"
@@ -1565,7 +1565,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-carbs"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.carbs}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, carbs: e.target.value }))}
                       placeholder="0"
@@ -1579,7 +1579,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-protein"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.protein}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, protein: e.target.value }))}
                       placeholder="0"
@@ -1593,7 +1593,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-fat"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.fat}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, fat: e.target.value }))}
                       placeholder="0"
@@ -1614,7 +1614,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-fiber"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.fiber}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, fiber: e.target.value }))}
                       placeholder="0"
@@ -1628,7 +1628,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-sugar"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.sugar}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, sugar: e.target.value }))}
                       placeholder="0"
@@ -1642,7 +1642,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-sodium"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.sodium}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, sodium: e.target.value }))}
                       placeholder="0"
@@ -1656,7 +1656,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-saturated-fat"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.saturatedFat}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, saturatedFat: e.target.value }))}
                       placeholder="0"
@@ -1670,7 +1670,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-cholesterol"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.cholesterol}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, cholesterol: e.target.value }))}
                       placeholder="0"
@@ -1684,7 +1684,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-potassium"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.potassium}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, potassium: e.target.value }))}
                       placeholder="0"
@@ -1705,7 +1705,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-vitamin-a"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.vitaminA}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, vitaminA: e.target.value }))}
                       placeholder="0"
@@ -1719,7 +1719,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-vitamin-c"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.vitaminC}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, vitaminC: e.target.value }))}
                       placeholder="0"
@@ -1733,7 +1733,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-calcium"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.calcium}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, calcium: e.target.value }))}
                       placeholder="0"
@@ -1747,7 +1747,7 @@ export default function FoodTrackerPage() {
                     <Input
                       id="custom-iron"
                       type="text"
-                      inputMode="numeric"
+                      inputMode="decimal"
                       value={customFoodData.iron}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, iron: e.target.value }))}
                       placeholder="0"
