@@ -586,7 +586,7 @@ export default function FoodTrackerPage() {
   // Function to open the simple Edit Entry modal (adjust servings/meal only)
   const handleEditFoodEntry = (entry: FoodEntry) => {
     setEditingEntry(entry);
-    setEditEntryServings((entry.quantity / 100).toString()); // Assuming base serving is 100
+    setEditEntryServings('1'); // Default to 1 serving (representing the current logged amount)
     setEditEntryMeal(entry.meal);
     setEditEntryOpen(true);
   };
@@ -597,29 +597,19 @@ export default function FoodTrackerPage() {
 
     const servingsMultiplier = parseFloat(editEntryServings) || 1;
     
-    // Calculate the base per-serving values (divide current values by current quantity)
-    const currentMultiplier = editingEntry.quantity / 100; // Assuming base is 100
-    const baseCalories = editingEntry.calories / currentMultiplier;
-    const baseCarbs = editingEntry.carbs / currentMultiplier;
-    const baseProtein = editingEntry.protein / currentMultiplier;
-    const baseFat = editingEntry.fat / currentMultiplier;
-    const baseFiber = editingEntry.fiber ? editingEntry.fiber / currentMultiplier : undefined;
-    const baseSugar = editingEntry.sugar ? editingEntry.sugar / currentMultiplier : undefined;
-    const baseSodium = editingEntry.sodium ? editingEntry.sodium / currentMultiplier : undefined;
-    const baseSaturatedFat = editingEntry.saturatedFat ? editingEntry.saturatedFat / currentMultiplier : undefined;
-
-    // Create updated entry with new servings multiplier and meal
+    // The current entry represents the "base" serving (what we show as 1 serving in the modal)
+    // Multiply all values by the servings multiplier
     const updatedEntry: FoodEntry = {
       ...editingEntry,
-      quantity: 100 * servingsMultiplier,
-      calories: baseCalories * servingsMultiplier,
-      carbs: baseCarbs * servingsMultiplier,
-      protein: baseProtein * servingsMultiplier,
-      fat: baseFat * servingsMultiplier,
-      fiber: baseFiber ? baseFiber * servingsMultiplier : undefined,
-      sugar: baseSugar ? baseSugar * servingsMultiplier : undefined,
-      sodium: baseSodium ? baseSodium * servingsMultiplier : undefined,
-      saturatedFat: baseSaturatedFat ? baseSaturatedFat * servingsMultiplier : undefined,
+      quantity: editingEntry.quantity * servingsMultiplier,
+      calories: editingEntry.calories * servingsMultiplier,
+      carbs: editingEntry.carbs * servingsMultiplier,
+      protein: editingEntry.protein * servingsMultiplier,
+      fat: editingEntry.fat * servingsMultiplier,
+      fiber: editingEntry.fiber ? editingEntry.fiber * servingsMultiplier : undefined,
+      sugar: editingEntry.sugar ? editingEntry.sugar * servingsMultiplier : undefined,
+      sodium: editingEntry.sodium ? editingEntry.sodium * servingsMultiplier : undefined,
+      saturatedFat: editingEntry.saturatedFat ? editingEntry.saturatedFat * servingsMultiplier : undefined,
       meal: editEntryMeal,
       timestamp: new Date().toISOString()
     };
@@ -1819,25 +1809,25 @@ export default function FoodTrackerPage() {
                   <div className="grid grid-cols-4 gap-3 text-center">
                     <div>
                       <div className="text-2xl font-bold text-white">
-                        {Math.round((editingEntry.calories / (editingEntry.quantity / 100)) * parseFloat(editEntryServings || '1'))}
+                        {Math.round(editingEntry.calories * parseFloat(editEntryServings || '1'))}
                       </div>
                       <div className="text-xs text-gray-400">cal</div>
                     </div>
                     <div>
                       <div className="text-lg font-semibold text-blue-400">
-                        {Math.round((editingEntry.carbs / (editingEntry.quantity / 100)) * parseFloat(editEntryServings || '1'))}g
+                        {Math.round(editingEntry.carbs * parseFloat(editEntryServings || '1'))}g
                       </div>
                       <div className="text-xs text-gray-400">Carbs</div>
                     </div>
                     <div>
                       <div className="text-lg font-semibold text-red-400">
-                        {Math.round((editingEntry.fat / (editingEntry.quantity / 100)) * parseFloat(editEntryServings || '1'))}g
+                        {Math.round(editingEntry.fat * parseFloat(editEntryServings || '1'))}g
                       </div>
                       <div className="text-xs text-gray-400">Fat</div>
                     </div>
                     <div>
                       <div className="text-lg font-semibold text-green-400">
-                        {Math.round((editingEntry.protein / (editingEntry.quantity / 100)) * parseFloat(editEntryServings || '1'))}g
+                        {Math.round(editingEntry.protein * parseFloat(editEntryServings || '1'))}g
                       </div>
                       <div className="text-xs text-gray-400">Protein</div>
                     </div>
