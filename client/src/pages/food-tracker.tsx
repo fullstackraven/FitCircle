@@ -1652,7 +1652,14 @@ export default function FoodTrackerPage() {
                 </Button>
                 <Button
                   onClick={handleCustomFoodSubmit}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  disabled={
+                    !customFoodData.name.trim() || 
+                    customFoodData.calories === '' || 
+                    customFoodData.carbs === '' || 
+                    customFoodData.protein === '' || 
+                    customFoodData.fat === ''
+                  }
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                   data-testid="button-save-custom"
                 >
                   Save Food
