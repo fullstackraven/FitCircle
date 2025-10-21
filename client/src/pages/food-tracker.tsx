@@ -508,11 +508,38 @@ export default function FoodTrackerPage() {
   // Function to open serving size form
   const handleAddFromSearch = (food: FoodEntry) => {
     setSelectedFoodForServing(food);
-    setServingQuantity('1');
+    setServingQuantity(food.quantity.toString()); // Preserve original serving quantity
     setServingUnit(food.unit || 'serving');
     setIsEditingExistingFood(false);
     setEditingFoodId(null);
     setServingSizeOpen(true);
+  };
+
+  // Function to open custom food modal to edit a food's nutritional values
+  const handleEditFoodFromSearch = (food: LocalFoodItem) => {
+    setCustomFoodMeal(searchMeal);
+    setCustomFoodData({
+      name: food.name,
+      brand: food.brand || '',
+      quantity: food.quantity.toString(),
+      unit: food.unit,
+      calories: food.calories.toString(),
+      carbs: food.carbs.toString(),
+      protein: food.protein.toString(),
+      fat: food.fat.toString(),
+      fiber: food.fiber?.toString() || '',
+      sugar: food.sugar?.toString() || '',
+      sodium: food.sodium?.toString() || '',
+      saturatedFat: food.saturatedFat?.toString() || '',
+      potassium: '',
+      cholesterol: '',
+      vitaminA: '',
+      vitaminC: '',
+      calcium: '',
+      iron: ''
+    });
+    setSearchOpen(false);
+    setCustomFoodOpen(true);
   };
 
 
@@ -894,15 +921,27 @@ export default function FoodTrackerPage() {
                                 {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
                               </div>
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleAddFromSearch(localFoodService.convertToFoodEntry(food, searchMeal))}
-                              className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0 ml-3 flex-shrink-0"
-                              data-testid={`button-add-${food.id}`}
-                            >
-                              <Plus className="w-4 h-4" />
-                            </Button>
+                            <div className="flex items-center space-x-1 ml-3 flex-shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEditFoodFromSearch(food)}
+                                className="text-slate-400 hover:text-slate-200 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                                data-testid={`button-edit-${food.id}`}
+                                title="Edit macros/calories"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleAddFromSearch(localFoodService.convertToFoodEntry(food, searchMeal))}
+                                className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                                data-testid={`button-add-${food.id}`}
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -931,15 +970,27 @@ export default function FoodTrackerPage() {
                                 {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
                               </div>
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleAddFromSearch(localFoodService.convertToFoodEntry(food, searchMeal))}
-                              className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0 ml-3 flex-shrink-0"
-                              data-testid={`button-add-${food.id}`}
-                            >
-                              <Plus className="w-4 h-4" />
-                            </Button>
+                            <div className="flex items-center space-x-1 ml-3 flex-shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEditFoodFromSearch(food)}
+                                className="text-slate-400 hover:text-slate-200 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                                data-testid={`button-edit-${food.id}`}
+                                title="Edit macros/calories"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleAddFromSearch(localFoodService.convertToFoodEntry(food, searchMeal))}
+                                className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                                data-testid={`button-add-${food.id}`}
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       ))}
