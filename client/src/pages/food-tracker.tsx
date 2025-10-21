@@ -199,14 +199,6 @@ export default function FoodTrackerPage() {
   const [editSodium, setEditSodium] = useState('');
   const [editSaturatedFat, setEditSaturatedFat] = useState('');
 
-  // Serving size form states
-  const [servingSizeOpen, setServingSizeOpen] = useState(false);
-  const [selectedFoodForServing, setSelectedFoodForServing] = useState<FoodEntry | null>(null);
-  const [servingQuantity, setServingQuantity] = useState('1');
-  const [servingUnit, setServingUnit] = useState<FoodUnit>('serving');
-  const [isEditingExistingFood, setIsEditingExistingFood] = useState(false);
-  const [editingFoodId, setEditingFoodId] = useState<string | null>(null);
-
   // Check if we came from dashboard
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
   
@@ -563,66 +555,6 @@ export default function FoodTrackerPage() {
     setCustomFoodServings('1'); // Reset to 1 serving
     setSearchOpen(false);
     setCustomFoodOpen(true);
-  };
-
-
-  // Function to add food with confirmed serving size
-  const handleConfirmServingSize = async () => {
-    if (!selectedFoodForServing) return;
-    
-    try {
-      // Calculate nutritional values based on serving size
-      const multiplier = parseFloat(servingQuantity) || 1;
-      
-      const updatedFood: FoodEntry = {
-        ...selectedFoodForServing,
-        id: isEditingExistingFood ? (editingFoodId || selectedFoodForServing.id) : Date.now().toString(),
-        meal: isEditingExistingFood ? selectedFoodForServing.meal : searchMeal,
-        timestamp: isEditingExistingFood ? selectedFoodForServing.timestamp : new Date().toISOString(),
-        quantity: parseFloat(servingQuantity),
-        unit: servingUnit,
-        calories: Math.round(selectedFoodForServing.calories * multiplier),
-        carbs: Math.round(selectedFoodForServing.carbs * multiplier * 10) / 10,
-        protein: Math.round(selectedFoodForServing.protein * multiplier * 10) / 10,
-        fat: Math.round(selectedFoodForServing.fat * multiplier * 10) / 10,
-        fiber: selectedFoodForServing.fiber ? Math.round(selectedFoodForServing.fiber * multiplier * 10) / 10 : undefined,
-        sugar: selectedFoodForServing.sugar ? Math.round(selectedFoodForServing.sugar * multiplier * 10) / 10 : undefined,
-        sodium: selectedFoodForServing.sodium ? Math.round(selectedFoodForServing.sodium * multiplier) : undefined,
-        saturatedFat: selectedFoodForServing.saturatedFat ? Math.round(selectedFoodForServing.saturatedFat * multiplier * 10) / 10 : undefined,
-      };
-      
-      if (isEditingExistingFood) {
-        // Update existing food item
-        setFoodEntries(prev => prev.map(food => food.id === editingFoodId ? updatedFood : food));
-        toast({
-          title: "Food Updated",
-          description: `${selectedFoodForServing.name} (${servingQuantity} ${servingUnit}) updated`,
-        });
-      } else {
-        // Add new food item
-        setFoodEntries(prev => [...prev, updatedFood]);
-        toast({
-          title: "Food Added",
-          description: `${selectedFoodForServing.name} (${servingQuantity} ${servingUnit}) added to ${searchMeal}`,
-        });
-      }
-      
-      // Close modals and reset states
-      setServingSizeOpen(false);
-      setSearchOpen(false);
-      setSearchQuery('');
-      setSelectedFoodForServing(null);
-      setIsEditingExistingFood(false);
-      setEditingFoodId(null);
-      
-    } catch (error) {
-      console.error('Error with food serving size:', error);
-      toast({
-        title: "Error",
-        description: isEditingExistingFood ? "Failed to update food. Please try again." : "Failed to add food. Please try again.",
-        variant: "destructive",
-      });
-    }
   };
 
   // Edit functions
@@ -1051,17 +983,9 @@ export default function FoodTrackerPage() {
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
                 {getMealEntries('breakfast').map((entry) => (
-                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start hover:bg-gray-600 transition-colors cursor-pointer">
+                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                     <div 
                       className="flex-1"
-                      onClick={() => {
-                        setSelectedFoodForServing(entry);
-                        setServingQuantity(entry.quantity.toString());
-                        setServingUnit(entry.unit);
-                        setIsEditingExistingFood(true);
-                        setEditingFoodId(entry.id);
-                        setServingSizeOpen(true);
-                      }}
                       data-testid={`food-item-${entry.id}`}
                     >
                       <h3 className="font-medium text-white text-sm">
@@ -1126,17 +1050,9 @@ export default function FoodTrackerPage() {
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
                 {getMealEntries('lunch').map((entry) => (
-                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start hover:bg-gray-600 transition-colors cursor-pointer">
+                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                     <div 
                       className="flex-1"
-                      onClick={() => {
-                        setSelectedFoodForServing(entry);
-                        setServingQuantity(entry.quantity.toString());
-                        setServingUnit(entry.unit);
-                        setIsEditingExistingFood(true);
-                        setEditingFoodId(entry.id);
-                        setServingSizeOpen(true);
-                      }}
                       data-testid={`food-item-${entry.id}`}
                     >
                       <h3 className="font-medium text-white text-sm">
@@ -1201,17 +1117,9 @@ export default function FoodTrackerPage() {
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
                 {getMealEntries('dinner').map((entry) => (
-                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start hover:bg-gray-600 transition-colors cursor-pointer">
+                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                     <div 
                       className="flex-1"
-                      onClick={() => {
-                        setSelectedFoodForServing(entry);
-                        setServingQuantity(entry.quantity.toString());
-                        setServingUnit(entry.unit);
-                        setIsEditingExistingFood(true);
-                        setEditingFoodId(entry.id);
-                        setServingSizeOpen(true);
-                      }}
                       data-testid={`food-item-${entry.id}`}
                     >
                       <h3 className="font-medium text-white text-sm">
@@ -1276,17 +1184,9 @@ export default function FoodTrackerPage() {
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
                 {getMealEntries('snack').map((entry) => (
-                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start hover:bg-gray-600 transition-colors cursor-pointer">
+                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
                     <div 
                       className="flex-1"
-                      onClick={() => {
-                        setSelectedFoodForServing(entry);
-                        setServingQuantity(entry.quantity.toString());
-                        setServingUnit(entry.unit);
-                        setIsEditingExistingFood(true);
-                        setEditingFoodId(entry.id);
-                        setServingSizeOpen(true);
-                      }}
                       data-testid={`food-item-${entry.id}`}
                     >
                       <h3 className="font-medium text-white text-sm">
@@ -1331,117 +1231,6 @@ export default function FoodTrackerPage() {
             </CollapsibleContent>
           </Collapsible>
         </div>
-
-        {/* Serving Size Modal */}
-        <Dialog open={servingSizeOpen} onOpenChange={setServingSizeOpen}>
-          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-md">
-            <DialogHeader>
-              <DialogTitle>Edit Food</DialogTitle>
-              <DialogDescription className="text-gray-400">
-                Update the serving size for {selectedFoodForServing?.name}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              
-              {/* Food Info Card */}
-              {selectedFoodForServing && (
-                <div className="bg-gray-700/80 rounded-xl p-4">
-                  <div className="text-white font-medium">
-                    {selectedFoodForServing.name}
-                    {selectedFoodForServing.brand && <span className="text-gray-400 font-normal"> • {selectedFoodForServing.brand}</span>}
-                  </div>
-                  <div className="text-sm text-gray-400 mt-1">
-                    Per {selectedFoodForServing.quantity}{selectedFoodForServing.unit}: {selectedFoodForServing.calories} cal • {selectedFoodForServing.carbs}g carbs • {selectedFoodForServing.protein}g protein • {selectedFoodForServing.fat}g fat
-                  </div>
-                </div>
-              )}
-              
-              {/* Your Serving Size Section */}
-              <div className="bg-blue-900/30 rounded-xl p-4">
-                <div className="flex items-center mb-3">
-                  <div className="w-1 h-5 bg-blue-400 rounded-full mr-3"></div>
-                  <span className="text-white font-medium">Your Serving Size</span>
-                </div>
-                <div className="flex space-x-3">
-                  <div className="flex-1">
-                    <Label className="text-xs text-gray-400 block mb-1">Quantity</Label>
-                    <Input
-                      type="number"
-                      value={servingQuantity}
-                      onChange={(e) => setServingQuantity(e.target.value)}
-                      placeholder="1"
-                      className="bg-gray-700 border-gray-600 text-white rounded-xl text-lg h-12"
-                      data-testid="input-serving-quantity"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <Label className="text-xs text-gray-400 block mb-1">Unit</Label>
-                    <Select value={servingUnit} onValueChange={(value) => setServingUnit(value as FoodUnit)}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl h-12" data-testid="select-serving-unit">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600">
-                        <SelectItem value="g" className="text-white hover:bg-gray-600">grams</SelectItem>
-                        <SelectItem value="oz" className="text-white hover:bg-gray-600">ounces</SelectItem>
-                        <SelectItem value="cup" className="text-white hover:bg-gray-600">cups</SelectItem>
-                        <SelectItem value="piece" className="text-white hover:bg-gray-600">pieces</SelectItem>
-                        <SelectItem value="serving" className="text-white hover:bg-gray-600">servings</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Nutrition Preview */}
-              {selectedFoodForServing && servingQuantity && (
-                <div className="bg-gray-700/50 rounded-xl p-4">
-                  <div className="flex items-center mb-3">
-                    <div className="w-3 h-3 bg-green-400 rounded-full mr-2"></div>
-                    <span className="text-white font-medium">Nutrition for {servingQuantity} {servingUnit}:</span>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Calories:</span>
-                      <span className="text-white font-medium">{Math.round(selectedFoodForServing.calories * (parseFloat(servingQuantity) || 1))}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Carbs:</span>
-                      <span className="text-white font-medium">{Math.round(selectedFoodForServing.carbs * (parseFloat(servingQuantity) || 1) * 10) / 10}g</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Protein:</span>
-                      <span className="text-white font-medium">{Math.round(selectedFoodForServing.protein * (parseFloat(servingQuantity) || 1) * 10) / 10}g</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Fat:</span>
-                      <span className="text-white font-medium">{Math.round(selectedFoodForServing.fat * (parseFloat(servingQuantity) || 1) * 10) / 10}g</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Action Buttons */}
-              <div className="flex space-x-3 pt-2">
-                <Button 
-                  onClick={handleConfirmServingSize}
-                  disabled={!servingQuantity || parseFloat(servingQuantity) <= 0}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl h-12 font-medium"
-                  data-testid="button-confirm-serving"
-                >
-                  {isEditingExistingFood ? 'Update Food' : `Add to ${searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}`}
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => setServingSizeOpen(false)}
-                  className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 rounded-xl h-12 font-medium"
-                  data-testid="button-cancel-serving"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
 
         {/* Edit Food Modal */}
         {editingFood && (
