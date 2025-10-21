@@ -180,6 +180,7 @@ export default function FoodTrackerPage() {
     calcium: '',
     iron: ''
   });
+  const [customFoodServings, setCustomFoodServings] = useState('1'); // Number of servings multiplier
   const [searchResults, setSearchResults] = useState<LocalFoodItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   
@@ -445,25 +446,28 @@ export default function FoodTrackerPage() {
     }
 
     try {
+      // Calculate multiplier from number of servings
+      const servingsMultiplier = parseFloat(customFoodServings) || 1;
+      
       const result = await localFoodService.addCustomFood({
         name: customFoodData.name.trim(),
         brand: customFoodData.brand.trim() || undefined,
-        quantity: parseFloat(customFoodData.quantity) || 100,
+        quantity: (parseFloat(customFoodData.quantity) || 100) * servingsMultiplier,
         unit: customFoodData.unit,
-        calories: parseFloat(customFoodData.calories),
-        carbs: parseFloat(customFoodData.carbs),
-        protein: parseFloat(customFoodData.protein),
-        fat: parseFloat(customFoodData.fat),
-        fiber: customFoodData.fiber ? parseFloat(customFoodData.fiber) : undefined,
-        sugar: customFoodData.sugar ? parseFloat(customFoodData.sugar) : undefined,
-        sodium: customFoodData.sodium ? parseFloat(customFoodData.sodium) : undefined,
-        saturatedFat: customFoodData.saturatedFat ? parseFloat(customFoodData.saturatedFat) : undefined,
-        potassium: customFoodData.potassium ? parseFloat(customFoodData.potassium) : undefined,
-        cholesterol: customFoodData.cholesterol ? parseFloat(customFoodData.cholesterol) : undefined,
-        vitaminA: customFoodData.vitaminA ? parseFloat(customFoodData.vitaminA) : undefined,
-        vitaminC: customFoodData.vitaminC ? parseFloat(customFoodData.vitaminC) : undefined,
-        calcium: customFoodData.calcium ? parseFloat(customFoodData.calcium) : undefined,
-        iron: customFoodData.iron ? parseFloat(customFoodData.iron) : undefined
+        calories: parseFloat(customFoodData.calories) * servingsMultiplier,
+        carbs: parseFloat(customFoodData.carbs) * servingsMultiplier,
+        protein: parseFloat(customFoodData.protein) * servingsMultiplier,
+        fat: parseFloat(customFoodData.fat) * servingsMultiplier,
+        fiber: customFoodData.fiber ? parseFloat(customFoodData.fiber) * servingsMultiplier : undefined,
+        sugar: customFoodData.sugar ? parseFloat(customFoodData.sugar) * servingsMultiplier : undefined,
+        sodium: customFoodData.sodium ? parseFloat(customFoodData.sodium) * servingsMultiplier : undefined,
+        saturatedFat: customFoodData.saturatedFat ? parseFloat(customFoodData.saturatedFat) * servingsMultiplier : undefined,
+        potassium: customFoodData.potassium ? parseFloat(customFoodData.potassium) * servingsMultiplier : undefined,
+        cholesterol: customFoodData.cholesterol ? parseFloat(customFoodData.cholesterol) * servingsMultiplier : undefined,
+        vitaminA: customFoodData.vitaminA ? parseFloat(customFoodData.vitaminA) * servingsMultiplier : undefined,
+        vitaminC: customFoodData.vitaminC ? parseFloat(customFoodData.vitaminC) * servingsMultiplier : undefined,
+        calcium: customFoodData.calcium ? parseFloat(customFoodData.calcium) * servingsMultiplier : undefined,
+        iron: customFoodData.iron ? parseFloat(customFoodData.iron) * servingsMultiplier : undefined
       });
 
       if (result.success && result.food) {
@@ -505,14 +509,32 @@ export default function FoodTrackerPage() {
     }
   };
 
-  // Function to open serving size form
-  const handleAddFromSearch = (food: FoodEntry) => {
-    setSelectedFoodForServing(food);
-    setServingQuantity(food.quantity.toString()); // Preserve original serving quantity
-    setServingUnit(food.unit || 'serving');
-    setIsEditingExistingFood(false);
-    setEditingFoodId(null);
-    setServingSizeOpen(true);
+  // Function to open custom food modal with pre-populated data from search
+  const handleAddFromSearch = (food: LocalFoodItem) => {
+    setCustomFoodMeal(searchMeal);
+    setCustomFoodData({
+      name: food.name,
+      brand: food.brand || '',
+      quantity: food.quantity.toString(),
+      unit: food.unit,
+      calories: food.calories.toString(),
+      carbs: food.carbs.toString(),
+      protein: food.protein.toString(),
+      fat: food.fat.toString(),
+      fiber: food.fiber?.toString() || '',
+      sugar: food.sugar?.toString() || '',
+      sodium: food.sodium?.toString() || '',
+      saturatedFat: food.saturatedFat?.toString() || '',
+      potassium: '',
+      cholesterol: '',
+      vitaminA: '',
+      vitaminC: '',
+      calcium: '',
+      iron: ''
+    });
+    setCustomFoodServings('1'); // Reset to 1 serving
+    setSearchOpen(false);
+    setCustomFoodOpen(true);
   };
 
   // Function to open custom food modal to edit a food's nutritional values
@@ -538,6 +560,7 @@ export default function FoodTrackerPage() {
       calcium: '',
       iron: ''
     });
+    setCustomFoodServings('1'); // Reset to 1 serving
     setSearchOpen(false);
     setCustomFoodOpen(true);
   };
@@ -935,7 +958,7 @@ export default function FoodTrackerPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => handleAddFromSearch(localFoodService.convertToFoodEntry(food, searchMeal))}
+                                onClick={() => handleAddFromSearch(food)}
                                 className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
                                 data-testid={`button-add-${food.id}`}
                               >
@@ -984,7 +1007,7 @@ export default function FoodTrackerPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => handleAddFromSearch(localFoodService.convertToFoodEntry(food, searchMeal))}
+                                onClick={() => handleAddFromSearch(food)}
                                 className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
                                 data-testid={`button-add-${food.id}`}
                               >
