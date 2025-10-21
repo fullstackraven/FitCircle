@@ -441,39 +441,41 @@ export default function FoodTrackerPage() {
 
   // Function to handle custom food submission (just save to database, don't log)
   const handleCustomFoodSubmit = async () => {
-    // Validate required fields - allow 0 as a valid value
-    if (!customFoodData.name.trim() || 
-        customFoodData.calories === '' || 
-        customFoodData.carbs === '' || 
-        customFoodData.protein === '' || 
-        customFoodData.fat === '') {
+    // Validate required field (name only)
+    if (!customFoodData.name.trim()) {
       toast({
         title: "Missing Required Information",
-        description: "Please fill in name, calories, carbs, protein, and fat.",
+        description: "Please fill in the food name.",
         variant: "destructive"
       });
       return;
     }
 
+    // Parse values, defaulting to 0 if empty or invalid
+    const parseOrDefault = (value: string) => {
+      const parsed = parseFloat(value);
+      return isNaN(parsed) ? 0 : parsed;
+    };
+
     const foodInput = {
       name: customFoodData.name.trim(),
       brand: customFoodData.brand.trim() || undefined,
-      quantity: parseFloat(customFoodData.quantity) || 100,
+      quantity: parseOrDefault(customFoodData.quantity) || 100,
       unit: customFoodData.unit,
-      calories: parseFloat(customFoodData.calories),
-      carbs: parseFloat(customFoodData.carbs),
-      protein: parseFloat(customFoodData.protein),
-      fat: parseFloat(customFoodData.fat),
-      fiber: customFoodData.fiber ? parseFloat(customFoodData.fiber) : undefined,
-      sugar: customFoodData.sugar ? parseFloat(customFoodData.sugar) : undefined,
-      sodium: customFoodData.sodium ? parseFloat(customFoodData.sodium) : undefined,
-      saturatedFat: customFoodData.saturatedFat ? parseFloat(customFoodData.saturatedFat) : undefined,
-      potassium: customFoodData.potassium ? parseFloat(customFoodData.potassium) : undefined,
-      cholesterol: customFoodData.cholesterol ? parseFloat(customFoodData.cholesterol) : undefined,
-      vitaminA: customFoodData.vitaminA ? parseFloat(customFoodData.vitaminA) : undefined,
-      vitaminC: customFoodData.vitaminC ? parseFloat(customFoodData.vitaminC) : undefined,
-      calcium: customFoodData.calcium ? parseFloat(customFoodData.calcium) : undefined,
-      iron: customFoodData.iron ? parseFloat(customFoodData.iron) : undefined
+      calories: parseOrDefault(customFoodData.calories),
+      carbs: parseOrDefault(customFoodData.carbs),
+      protein: parseOrDefault(customFoodData.protein),
+      fat: parseOrDefault(customFoodData.fat),
+      fiber: customFoodData.fiber ? parseOrDefault(customFoodData.fiber) : undefined,
+      sugar: customFoodData.sugar ? parseOrDefault(customFoodData.sugar) : undefined,
+      sodium: customFoodData.sodium ? parseOrDefault(customFoodData.sodium) : undefined,
+      saturatedFat: customFoodData.saturatedFat ? parseOrDefault(customFoodData.saturatedFat) : undefined,
+      potassium: customFoodData.potassium ? parseOrDefault(customFoodData.potassium) : undefined,
+      cholesterol: customFoodData.cholesterol ? parseOrDefault(customFoodData.cholesterol) : undefined,
+      vitaminA: customFoodData.vitaminA ? parseOrDefault(customFoodData.vitaminA) : undefined,
+      vitaminC: customFoodData.vitaminC ? parseOrDefault(customFoodData.vitaminC) : undefined,
+      calcium: customFoodData.calcium ? parseOrDefault(customFoodData.calcium) : undefined,
+      iron: customFoodData.iron ? parseOrDefault(customFoodData.iron) : undefined
     };
 
     try {
@@ -1068,32 +1070,12 @@ export default function FoodTrackerPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => handleEditFoodFromSearch(food)}
-                                className="text-slate-400 hover:text-slate-200 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
-                                data-testid={`button-edit-${food.id}`}
-                                title="Edit food"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
                                 onClick={() => handleAddFromSearch(food)}
                                 className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
                                 data-testid={`button-add-${food.id}`}
                                 title="Add to meal"
                               >
                                 <Plus className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDeleteFoodFromDatabase(food)}
-                                className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
-                                data-testid={`button-delete-db-${food.id}`}
-                                title="Delete from database"
-                              >
-                                <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
                           </div>
