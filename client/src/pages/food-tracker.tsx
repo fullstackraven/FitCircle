@@ -181,12 +181,17 @@ export default function FoodTrackerPage() {
     calcium: '',
     iron: ''
   });
-  const [customFoodServings, setCustomFoodServings] = useState('1'); // Number of servings multiplier
   const [searchResults, setSearchResults] = useState<LocalFoodItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null); // Track entry being edited
   
-  // Edit Entry Modal states (simple modal for adjusting servings/meal)
+  // Add Entry Modal states (when adding from search/recent)
+  const [addEntryOpen, setAddEntryOpen] = useState(false);
+  const [addingFood, setAddingFood] = useState<LocalFoodItem | null>(null);
+  const [addEntryServings, setAddEntryServings] = useState('1');
+  const [addEntryMeal, setAddEntryMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
+  
+  // Edit Entry Modal states (when editing logged food in meals)
   const [editEntryOpen, setEditEntryOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<FoodEntry | null>(null);
   const [editEntryServings, setEditEntryServings] = useState('1');
@@ -434,7 +439,7 @@ export default function FoodTrackerPage() {
     setCustomFoodOpen(true);
   };
 
-  // Function to handle custom food submission
+  // Function to handle custom food submission (just save to database, don't log)
   const handleCustomFoodSubmit = async () => {
     // Validate required fields - allow 0 as a valid value
     if (!customFoodData.name.trim() || 
@@ -451,10 +456,7 @@ export default function FoodTrackerPage() {
     }
 
     try {
-      // Calculate multiplier from number of servings
-      const servingsMultiplier = parseFloat(customFoodServings) || 1;
-      
-      // Save the BASE food item with original single-serving values (NO multiplier)
+      // Save the food item to database with base values only
       const result = await localFoodService.addCustomFood({
         name: customFoodData.name.trim(),
         brand: customFoodData.brand.trim() || undefined,
@@ -477,104 +479,83 @@ export default function FoodTrackerPage() {
       });
 
       if (result.success && result.food) {
-        // Convert the saved food to our format with base values
-        const baseFoodEntry: FoodEntry = localFoodService.convertToFoodEntry(result.food, customFoodMeal);
-        
-        // Store base values with servings field (NO multiplication of nutritional values)
-        const foodEntryWithServings: FoodEntry = {
-          ...baseFoodEntry,
-          servings: servingsMultiplier
-        };
-
-        // Add to today's food entries
-        const updatedEntries = [...foodEntries, foodEntryWithServings];
-        setFoodEntries(updatedEntries);
-
-        // Save to localStorage
-        const today = getTodayString();
-        try {
-          localStorage.setItem(STORAGE_KEYS.FOOD_TRACKER + today, JSON.stringify(updatedEntries));
-        } catch (error) {
-          console.error('Error saving food entries to localStorage:', error);
-        }
-
         toast({
-          title: "Food Added Successfully!",
-          description: result.message || `${result.food.name} has been added to your ${customFoodMeal}.`
+          title: "Food Created Successfully!",
+          description: `${result.food.name} has been saved to your food database.`
         });
 
         setCustomFoodOpen(false);
       } else {
         toast({
-          title: "Failed to Add Food",
-          description: result.error || "Something went wrong while adding your custom food.",
+          title: "Failed to Create Food",
+          description: result.error || "Something went wrong while creating your custom food.",
           variant: "destructive"
         });
       }
     } catch (error) {
-      console.error('Error adding custom food:', error);
+      console.error('Error creating custom food:', error);
       toast({
         title: "Error",
-        description: "Failed to add custom food. Please try again.",
+        description: "Failed to create custom food. Please try again.",
         variant: "destructive"
       });
     }
   };
 
-  // Function to open custom food modal with pre-populated data from search
-  const handleAddFromSearch = (food: LocalFoodItem) => {
-    setCustomFoodMeal(searchMeal);
-    setCustomFoodData({
-      name: food.name,
-      brand: food.brand || '',
-      quantity: food.quantity.toString(),
-      unit: food.unit,
-      calories: food.calories.toString(),
-      carbs: food.carbs.toString(),
-      protein: food.protein.toString(),
-      fat: food.fat.toString(),
-      fiber: food.fiber?.toString() || '',
-      sugar: food.sugar?.toString() || '',
-      sodium: food.sodium?.toString() || '',
-      saturatedFat: food.saturatedFat?.toString() || '',
-      potassium: '',
-      cholesterol: '',
-      vitaminA: '',
-      vitaminC: '',
-      calcium: '',
-      iron: ''
+  // Function to handle Add Entry submission (log food with servings)
+  const handleSubmitAddEntry = () => {
+    if (!addingFood) return;
+
+    const servings = parseFloat(addEntryServings) || 1;
+
+    // Convert food to entry format with servings
+    const newEntry: FoodEntry = {
+      id: Date.now().toString(),
+      name: addingFood.name,
+      brand: addingFood.brand,
+      barcode: addingFood.barcode,
+      quantity: addingFood.quantity,
+      unit: addingFood.unit,
+      calories: addingFood.calories,
+      carbs: addingFood.carbs,
+      protein: addingFood.protein,
+      fat: addingFood.fat,
+      fiber: addingFood.fiber,
+      sugar: addingFood.sugar,
+      sodium: addingFood.sodium,
+      saturatedFat: addingFood.saturatedFat,
+      servings: servings,
+      meal: addEntryMeal,
+      timestamp: new Date().toISOString()
+    };
+
+    const updatedEntries = [...foodEntries, newEntry];
+    setFoodEntries(updatedEntries);
+
+    // Save to localStorage
+    const today = getTodayString();
+    try {
+      localStorage.setItem(STORAGE_KEYS.FOOD_TRACKER + today, JSON.stringify(updatedEntries));
+    } catch (error) {
+      console.error('Error saving food entries to localStorage:', error);
+    }
+
+    toast({
+      title: "Food Logged!",
+      description: `${addingFood.name} has been added to your ${addEntryMeal}.`
     });
-    setCustomFoodServings('1'); // Reset to 1 serving
-    setSearchOpen(false);
-    setCustomFoodOpen(true);
+
+    setAddEntryOpen(false);
+    setAddingFood(null);
   };
 
-  // Function to open custom food modal to edit a food's nutritional values
-  const handleEditFoodFromSearch = (food: LocalFoodItem) => {
-    setCustomFoodMeal(searchMeal);
-    setCustomFoodData({
-      name: food.name,
-      brand: food.brand || '',
-      quantity: food.quantity.toString(),
-      unit: food.unit,
-      calories: food.calories.toString(),
-      carbs: food.carbs.toString(),
-      protein: food.protein.toString(),
-      fat: food.fat.toString(),
-      fiber: food.fiber?.toString() || '',
-      sugar: food.sugar?.toString() || '',
-      sodium: food.sodium?.toString() || '',
-      saturatedFat: food.saturatedFat?.toString() || '',
-      potassium: '',
-      cholesterol: '',
-      vitaminA: '',
-      vitaminC: '',
-      calcium: '',
-      iron: ''
-    });
-    setCustomFoodServings('1'); // Reset to 1 serving
+  // Function to open Add Entry modal when clicking + on a food from search/recent
+  const handleAddFromSearch = (food: LocalFoodItem) => {
+    setAddingFood(food);
+    setAddEntryServings('1'); // Default to 1 serving
+    setAddEntryMeal(searchMeal);
     setSearchOpen(false);
-    setCustomFoodOpen(true);
+    setAddEntryOpen(true);
   };
 
   // Function to open the simple Edit Entry modal (adjust servings/meal only)
@@ -944,16 +925,6 @@ export default function FoodTrackerPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => handleEditFoodFromSearch(food)}
-                                className="text-slate-400 hover:text-slate-200 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
-                                data-testid={`button-edit-${food.id}`}
-                                title="Edit macros/calories"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
                                 onClick={() => handleAddFromSearch(food)}
                                 className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
                                 data-testid={`button-add-${food.id}`}
@@ -990,16 +961,6 @@ export default function FoodTrackerPage() {
                               </div>
                             </div>
                             <div className="flex items-center space-x-1 ml-3 flex-shrink-0">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEditFoodFromSearch(food)}
-                                className="text-slate-400 hover:text-slate-200 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
-                                data-testid={`button-edit-${food.id}`}
-                                title="Edit macros/calories"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -1400,27 +1361,13 @@ export default function FoodTrackerPage() {
         <Dialog open={customFoodOpen} onOpenChange={setCustomFoodOpen}>
           <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Custom Food for {customFoodMeal.charAt(0).toUpperCase() + customFoodMeal.slice(1)}</DialogTitle>
+              <DialogTitle>Create Custom Food</DialogTitle>
+              <DialogDescription className="text-gray-400">
+                Add a new food item to your database with nutritional information
+              </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-6">
-              {/* Number of Servings */}
-              <div className="space-y-2">
-                <Label htmlFor="custom-servings" className="text-white font-semibold">Number of Servings</Label>
-                <Input
-                  id="custom-servings"
-                  type="number"
-                  step="0.1"
-                  min="0.1"
-                  value={customFoodServings}
-                  onChange={(e) => setCustomFoodServings(e.target.value)}
-                  placeholder="1"
-                  className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                  data-testid="input-custom-servings"
-                />
-                <p className="text-xs text-gray-400">All nutritional values will be multiplied by this number</p>
-              </div>
-
               {/* Basic Information */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white">Basic Information</h3>
@@ -1730,6 +1677,114 @@ export default function FoodTrackerPage() {
                 </Button>
               </div>
             </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Add Entry Modal (When adding food from search/recent) */}
+        <Dialog open={addEntryOpen} onOpenChange={setAddEntryOpen}>
+          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add Entry</DialogTitle>
+            </DialogHeader>
+            
+            {addingFood && (
+              <div className="space-y-6">
+                {/* Food Name and Brand */}
+                <div>
+                  <h3 className="text-xl font-semibold text-white">{addingFood.name}</h3>
+                  {addingFood.brand && (
+                    <p className="text-sm text-gray-400">{addingFood.brand}</p>
+                  )}
+                </div>
+
+                {/* Serving Size Display */}
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Serving Size</Label>
+                  <div className="bg-gray-700 border border-gray-600 rounded-xl p-3 text-right">
+                    <span className="text-blue-400">{addingFood.quantity}{addingFood.unit}</span>
+                  </div>
+                </div>
+
+                {/* Number of Servings */}
+                <div className="space-y-2">
+                  <Label htmlFor="add-servings" className="text-gray-300">Number of Servings</Label>
+                  <Input
+                    id="add-servings"
+                    type="number"
+                    step="0.1"
+                    min="0.1"
+                    value={addEntryServings}
+                    onChange={(e) => setAddEntryServings(e.target.value)}
+                    className="bg-gray-700 border-gray-600 text-white text-right rounded-xl"
+                    data-testid="input-add-servings"
+                  />
+                </div>
+
+                {/* Meal Selection */}
+                <div className="space-y-2">
+                  <Label htmlFor="add-meal" className="text-gray-300">Meal</Label>
+                  <Select value={addEntryMeal} onValueChange={(value: any) => setAddEntryMeal(value)}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl" id="add-meal">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-700 border-gray-600">
+                      <SelectItem value="breakfast">Breakfast</SelectItem>
+                      <SelectItem value="lunch">Lunch</SelectItem>
+                      <SelectItem value="dinner">Dinner</SelectItem>
+                      <SelectItem value="snack">Snack</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Nutritional Summary */}
+                <div className="bg-gray-700/50 rounded-xl p-4">
+                  <div className="grid grid-cols-4 gap-3 text-center">
+                    <div>
+                      <div className="text-2xl font-bold text-white">
+                        {Math.round(addingFood.calories * parseFloat(addEntryServings || '1'))}
+                      </div>
+                      <div className="text-xs text-gray-400">cal</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-semibold text-blue-400">
+                        {Math.round(addingFood.carbs * parseFloat(addEntryServings || '1'))}g
+                      </div>
+                      <div className="text-xs text-gray-400">Carbs</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-semibold text-red-400">
+                        {Math.round(addingFood.fat * parseFloat(addEntryServings || '1'))}g
+                      </div>
+                      <div className="text-xs text-gray-400">Fat</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-semibold text-green-400">
+                        {Math.round(addingFood.protein * parseFloat(addEntryServings || '1'))}g
+                      </div>
+                      <div className="text-xs text-gray-400">Protein</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex space-x-3 pt-2">
+                  <Button
+                    onClick={() => setAddEntryOpen(false)}
+                    variant="outline"
+                    className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 rounded-xl"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSubmitAddEntry}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
+                    data-testid="button-save-add-entry"
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
+            )}
           </DialogContent>
         </Dialog>
 
