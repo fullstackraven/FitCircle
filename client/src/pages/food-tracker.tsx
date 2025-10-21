@@ -1543,13 +1543,27 @@ export default function FoodTrackerPage() {
         <Dialog open={customFoodOpen} onOpenChange={setCustomFoodOpen}>
           <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Create Custom Food for {customFoodMeal.charAt(0).toUpperCase() + customFoodMeal.slice(1)}</DialogTitle>
-              <DialogDescription>
-                Add your own food with comprehensive nutritional information. Required fields are marked with *.
-              </DialogDescription>
+              <DialogTitle>Custom Food for {customFoodMeal.charAt(0).toUpperCase() + customFoodMeal.slice(1)}</DialogTitle>
             </DialogHeader>
             
             <div className="space-y-6">
+              {/* Number of Servings */}
+              <div className="space-y-2">
+                <Label htmlFor="custom-servings" className="text-white font-semibold">Number of Servings</Label>
+                <Input
+                  id="custom-servings"
+                  type="number"
+                  step="0.1"
+                  min="0.1"
+                  value={customFoodServings}
+                  onChange={(e) => setCustomFoodServings(e.target.value)}
+                  placeholder="1"
+                  className="bg-gray-700 border-gray-600 text-white rounded-xl"
+                  data-testid="input-custom-servings"
+                />
+                <p className="text-xs text-gray-400">All nutritional values will be multiplied by this number</p>
+              </div>
+
               {/* Basic Information */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white">Basic Information</h3>
