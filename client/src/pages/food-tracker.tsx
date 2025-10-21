@@ -35,6 +35,7 @@ interface FoodEntry {
   // Serving info
   quantity: number;
   unit: FoodUnit;
+  servings?: number; // Number of servings multiplier (defaults to 1)
   
   // Basic macros (calculated for actual serving)
   calories: number;
@@ -334,6 +335,7 @@ export default function FoodTrackerPage() {
       sugar: sugarNum,
       sodium: sodiumNum,
       saturatedFat: saturatedFatNum,
+      servings: 1,
       meal: selectedMeal,
       timestamp: new Date().toISOString()
     };
@@ -475,25 +477,17 @@ export default function FoodTrackerPage() {
       });
 
       if (result.success && result.food) {
-        // Convert the saved food to our format
+        // Convert the saved food to our format with base values
         const baseFoodEntry: FoodEntry = localFoodService.convertToFoodEntry(result.food, customFoodMeal);
         
-        // Apply servings multiplier ONLY to the log entry (not the base food item)
-        const multipliedFoodEntry: FoodEntry = {
+        // Store base values with servings field (NO multiplication of nutritional values)
+        const foodEntryWithServings: FoodEntry = {
           ...baseFoodEntry,
-          quantity: baseFoodEntry.quantity * servingsMultiplier,
-          calories: baseFoodEntry.calories * servingsMultiplier,
-          carbs: baseFoodEntry.carbs * servingsMultiplier,
-          protein: baseFoodEntry.protein * servingsMultiplier,
-          fat: baseFoodEntry.fat * servingsMultiplier,
-          fiber: baseFoodEntry.fiber ? baseFoodEntry.fiber * servingsMultiplier : undefined,
-          sugar: baseFoodEntry.sugar ? baseFoodEntry.sugar * servingsMultiplier : undefined,
-          sodium: baseFoodEntry.sodium ? baseFoodEntry.sodium * servingsMultiplier : undefined,
-          saturatedFat: baseFoodEntry.saturatedFat ? baseFoodEntry.saturatedFat * servingsMultiplier : undefined
+          servings: servingsMultiplier
         };
 
         // Add to today's food entries
-        const updatedEntries = [...foodEntries, multipliedFoodEntry];
+        const updatedEntries = [...foodEntries, foodEntryWithServings];
         setFoodEntries(updatedEntries);
 
         // Save to localStorage
@@ -586,7 +580,7 @@ export default function FoodTrackerPage() {
   // Function to open the simple Edit Entry modal (adjust servings/meal only)
   const handleEditFoodEntry = (entry: FoodEntry) => {
     setEditingEntry(entry);
-    setEditEntryServings('1'); // Default to 1 serving (representing the current logged amount)
+    setEditEntryServings((entry.servings || 1).toString()); // Show current servings value
     setEditEntryMeal(entry.meal);
     setEditEntryOpen(true);
   };
@@ -595,21 +589,12 @@ export default function FoodTrackerPage() {
   const handleSaveEditEntry = () => {
     if (!editingEntry) return;
 
-    const servingsMultiplier = parseFloat(editEntryServings) || 1;
+    const newServings = parseFloat(editEntryServings) || 1;
     
-    // The current entry represents the "base" serving (what we show as 1 serving in the modal)
-    // Multiply all values by the servings multiplier
+    // ONLY update servings and meal - base nutritional values stay unchanged
     const updatedEntry: FoodEntry = {
       ...editingEntry,
-      quantity: editingEntry.quantity * servingsMultiplier,
-      calories: editingEntry.calories * servingsMultiplier,
-      carbs: editingEntry.carbs * servingsMultiplier,
-      protein: editingEntry.protein * servingsMultiplier,
-      fat: editingEntry.fat * servingsMultiplier,
-      fiber: editingEntry.fiber ? editingEntry.fiber * servingsMultiplier : undefined,
-      sugar: editingEntry.sugar ? editingEntry.sugar * servingsMultiplier : undefined,
-      sodium: editingEntry.sodium ? editingEntry.sodium * servingsMultiplier : undefined,
-      saturatedFat: editingEntry.saturatedFat ? editingEntry.saturatedFat * servingsMultiplier : undefined,
+      servings: newServings,
       meal: editEntryMeal,
       timestamp: new Date().toISOString()
     };
@@ -716,10 +701,10 @@ export default function FoodTrackerPage() {
   // Calculate totals
   const totals = foodEntries.reduce(
     (acc, entry) => ({
-      calories: acc.calories + entry.calories,
-      carbs: acc.carbs + entry.carbs,
-      protein: acc.protein + entry.protein,
-      fat: acc.fat + entry.fat
+      calories: acc.calories + (entry.calories * (entry.servings || 1)),
+      carbs: acc.carbs + (entry.carbs * (entry.servings || 1)),
+      protein: acc.protein + (entry.protein * (entry.servings || 1)),
+      fat: acc.fat + (entry.fat * (entry.servings || 1))
     }),
     { calories: 0, carbs: 0, protein: 0, fat: 0 }
   );
@@ -738,10 +723,10 @@ export default function FoodTrackerPage() {
     const mealEntries = getMealEntries(meal);
     return mealEntries.reduce(
       (acc, entry) => ({
-        calories: acc.calories + entry.calories,
-        carbs: acc.carbs + entry.carbs,
-        protein: acc.protein + entry.protein,
-        fat: acc.fat + entry.fat
+        calories: acc.calories + (entry.calories * (entry.servings || 1)),
+        carbs: acc.carbs + (entry.carbs * (entry.servings || 1)),
+        protein: acc.protein + (entry.protein * (entry.servings || 1)),
+        fat: acc.fat + (entry.fat * (entry.servings || 1))
       }),
       { calories: 0, carbs: 0, protein: 0, fat: 0 }
     );
@@ -1073,8 +1058,8 @@ export default function FoodTrackerPage() {
                         {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
                       </h3>
                       <div className="text-xs text-gray-400 mt-1">
-                        {entry.quantity}{entry.unit} • {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
-                        {entry.fiber && <span> • {entry.fiber}g fiber</span>}
+                        {entry.quantity}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
+                        {entry.fiber && <span> • {Math.round(entry.fiber * (entry.servings || 1))}g fiber</span>}
                       </div>
                     </div>
                     <Button
@@ -1141,8 +1126,8 @@ export default function FoodTrackerPage() {
                         {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
                       </h3>
                       <div className="text-xs text-gray-400 mt-1">
-                        {entry.quantity}{entry.unit} • {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
-                        {entry.fiber && <span> • {entry.fiber}g fiber</span>}
+                        {entry.quantity}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
+                        {entry.fiber && <span> • {Math.round(entry.fiber * (entry.servings || 1))}g fiber</span>}
                       </div>
                     </div>
                     <Button
@@ -1209,8 +1194,8 @@ export default function FoodTrackerPage() {
                         {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
                       </h3>
                       <div className="text-xs text-gray-400 mt-1">
-                        {entry.quantity}{entry.unit} • {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
-                        {entry.fiber && <span> • {entry.fiber}g fiber</span>}
+                        {entry.quantity}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
+                        {entry.fiber && <span> • {Math.round(entry.fiber * (entry.servings || 1))}g fiber</span>}
                       </div>
                     </div>
                     <Button
@@ -1277,8 +1262,8 @@ export default function FoodTrackerPage() {
                         {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
                       </h3>
                       <div className="text-xs text-gray-400 mt-1">
-                        {entry.quantity}{entry.unit} • {entry.calories} cal • {entry.carbs}g carbs • {entry.protein}g protein • {entry.fat}g fat
-                        {entry.fiber && <span> • {entry.fiber}g fiber</span>}
+                        {entry.quantity}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
+                        {entry.fiber && <span> • {Math.round(entry.fiber * (entry.servings || 1))}g fiber</span>}
                       </div>
                     </div>
                     <Button

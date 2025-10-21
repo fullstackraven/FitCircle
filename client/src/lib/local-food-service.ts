@@ -24,6 +24,7 @@ export interface FoodEntry {
   vitaminC?: number;
   calcium?: number;
   iron?: number;
+  servings?: number; // Number of servings multiplier (defaults to 1)
   meal: 'breakfast' | 'lunch' | 'dinner' | 'snack';
   timestamp: string;
   nutritionPer100g?: {
