@@ -909,18 +909,12 @@ export default function FoodTrackerPage() {
           </button>
           
           <div 
-            className="min-w-[140px] text-center cursor-pointer"
-            onClick={goToToday}
+            className="min-w-[140px] text-center"
             data-testid="button-date-display"
           >
             <div className="text-lg font-semibold text-white">
               {getDateDisplayText()}
             </div>
-            {!isToday(selectedDate) && (
-              <div className="text-xs text-slate-400">
-                Tap to return to today
-              </div>
-            )}
           </div>
           
           <button
