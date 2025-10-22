@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search, X, Edit2, Save, X as Cancel } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search, X, Edit2, Save, X as Cancel, Calculator } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { getTodayString, getDateString, parseLocalDate, isToday } from '@/lib/da
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 import { localFoodService, LocalFoodItem, FoodEntry as LocalFoodEntry, FoodUnit as LocalFoodUnit } from '@/lib/local-food-service';
 import { useToast } from '@/hooks/use-toast';
+import FitnessCalculator from '@/pages/fitness-calculator';
 
 // Strong typing for nutrition data and units
 type FoodUnit = 'g' | 'oz' | 'cup' | 'piece' | 'serving';
@@ -212,6 +213,9 @@ export default function FoodTrackerPage() {
   const [editSugar, setEditSugar] = useState('');
   const [editSodium, setEditSodium] = useState('');
   const [editSaturatedFat, setEditSaturatedFat] = useState('');
+
+  // Calculator modal state
+  const [calculatorOpen, setCalculatorOpen] = useState(false);
 
   // Check if we came from dashboard
   const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
@@ -891,11 +895,18 @@ export default function FoodTrackerPage() {
           <button
             onClick={handleBack}
             className="text-slate-400 hover:text-white transition-colors"
+            data-testid="button-back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="fitcircle-page-title">Food Tracker</h1>
-          <div className="w-5" />
+          <button
+            onClick={() => setCalculatorOpen(true)}
+            className="text-slate-400 hover:text-white transition-colors"
+            data-testid="button-calculator"
+          >
+            <Calculator className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Date Navigation */}
@@ -2066,6 +2077,13 @@ export default function FoodTrackerPage() {
                 </div>
               </div>
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Fitness Calculator Modal */}
+        <Dialog open={calculatorOpen} onOpenChange={setCalculatorOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border-slate-700">
+            <FitnessCalculator />
           </DialogContent>
         </Dialog>
         
