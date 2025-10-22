@@ -3,7 +3,6 @@ import { useRef, useEffect } from "react";
 
 import Home from "@/pages/home";
 import CalendarPage from "@/pages/calendar-new";
-import FitnessCalculatorPage from "@/pages/fitness-calculator";
 import FoodTrackerPage from "@/pages/food-tracker";
 // REMOVED: Bug reporting feature removed per user request
 import ProfilePage from "@/pages/profile";
@@ -40,7 +39,6 @@ function Router() {
       <Route path="/fasting" component={FastingPage} />
       <Route path="/meditation" component={MeditationPage} />
       <Route path="/hydration" component={HydrationPage} />
-      <Route path="/fitness-calculator" component={FitnessCalculatorPage} />
       <Route path="/food-tracker" component={FoodTrackerPage} />
       <Route path="/cardio" component={CardioPage} />
       <Route path="/workout-statistics" component={WorkoutStatistics} />

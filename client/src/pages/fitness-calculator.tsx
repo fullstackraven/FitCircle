@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useRoute } from "wouter";
-import { ArrowLeft, Calculator, Target, Activity } from 'lucide-react';
+import { useLocation } from "wouter";
+import { Calculator, Target, Activity } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,9 +16,6 @@ interface UserData {
 
 export default function FitnessCalculator() {
   const [, navigate] = useLocation();
-  const [, params] = useRoute("/fitness-calculator");
-  const searchParams = new URLSearchParams(window.location.search);
-  const fromDashboard = searchParams.get('from') === 'dashboard';
 
   // User data from measurements
   const [userData, setUserData] = useState<UserData>({
@@ -128,16 +125,6 @@ export default function FitnessCalculator() {
     localStorage.setItem('fitness_calc_custom_fat', customFat);
   }, [customFat]);
 
-  const handleBack = () => {
-    if (fromDashboard) {
-      // Use sessionStorage to signal dashboard should open
-      sessionStorage.setItem('fitcircle_dashboard_open', 'true');
-      navigate('/');
-    } else {
-      navigate('/');
-    }
-  };
-
   // BMR calculation using Mifflin-St Jeor Equation
   const calculateBMR = () => {
     const heightCm = userData.height * 2.54;
@@ -241,15 +228,8 @@ export default function FitnessCalculator() {
     <div className="fitcircle-page">
       <div className="fitcircle-container">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
+        <div className="text-center mb-8">
           <h1 className="fitcircle-page-title">Fitness Calculator</h1>
-          <div className="w-5"></div>
         </div>
 
         <div className="space-y-8">
