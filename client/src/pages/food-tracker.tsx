@@ -909,7 +909,8 @@ export default function FoodTrackerPage() {
           </button>
           
           <div 
-            className="min-w-[140px] text-center"
+            className="min-w-[140px] text-center cursor-pointer"
+            onClick={goToToday}
             data-testid="button-date-display"
           >
             <div className="text-lg font-semibold text-white">
