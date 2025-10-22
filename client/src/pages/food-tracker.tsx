@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp, Search, X, Edit2, Save, X as Cancel } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search, X, Edit2, Save, X as Cancel } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { getTodayString } from '@/lib/date-utils';
+import { getTodayString, getDateString, parseLocalDate, isToday } from '@/lib/date-utils';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 import { localFoodService, LocalFoodItem, FoodEntry as LocalFoodEntry, FoodUnit as LocalFoodUnit } from '@/lib/local-food-service';
 import { useToast } from '@/hooks/use-toast';
@@ -113,6 +113,7 @@ const validateNutritionInputs = (calories: string, carbs: string, protein: strin
 export default function FoodTrackerPage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
   const [foodEntries, setFoodEntries] = useState<FoodEntry[]>([]);
   const [macroTargets, setMacroTargets] = useState<MacroTargets>({
     calories: 2000,
@@ -219,11 +220,46 @@ export default function FoodTrackerPage() {
     navigate('/wellness');
   };
 
-  // Load data on component mount
-  useEffect(() => {
-    // Load today's food entries
+  // Date navigation functions
+  const goToPreviousDay = () => {
+    const currentDate = parseLocalDate(selectedDate);
+    currentDate.setDate(currentDate.getDate() - 1);
+    setSelectedDate(getDateString(currentDate));
+  };
+
+  const goToNextDay = () => {
+    const currentDate = parseLocalDate(selectedDate);
+    currentDate.setDate(currentDate.getDate() + 1);
+    const nextDay = getDateString(currentDate);
     const today = getTodayString();
-    const stored = safeParseJSON(localStorage.getItem(`fitcircle_food_${today}`), []);
+    
+    // Don't allow navigating beyond today
+    if (nextDay <= today) {
+      setSelectedDate(nextDay);
+    }
+  };
+
+  const goToToday = () => {
+    setSelectedDate(getTodayString());
+  };
+
+  const getDateDisplayText = () => {
+    if (isToday(selectedDate)) {
+      return 'Today';
+    }
+    
+    const date = parseLocalDate(selectedDate);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+    });
+  };
+
+  // Load data when selected date changes
+  useEffect(() => {
+    // Load food entries for selected date
+    const stored = safeParseJSON(localStorage.getItem(`fitcircle_food_${selectedDate}`), []);
     setFoodEntries(stored);
 
     // Load macro targets directly from what fitness calculator displays/stores
@@ -254,13 +290,12 @@ export default function FoodTrackerPage() {
     // Set up polling for changes from fitness calculator
     const interval = setInterval(loadMacroTargets, 2000);
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedDate]);
 
-  // Save food entries whenever they change
+  // Save food entries whenever they change (to the selected date)
   useEffect(() => {
-    const today = getTodayString();
-    localStorage.setItem(`fitcircle_food_${today}`, JSON.stringify(foodEntries));
-  }, [foodEntries]);
+    localStorage.setItem(`fitcircle_food_${selectedDate}`, JSON.stringify(foodEntries));
+  }, [foodEntries, selectedDate]);
 
   // Load all food history for search functionality
   useEffect(() => {
@@ -861,6 +896,45 @@ export default function FoodTrackerPage() {
           </button>
           <h1 className="fitcircle-page-title">Food Tracker</h1>
           <div className="w-5" />
+        </div>
+
+        {/* Date Navigation */}
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <button
+            onClick={goToPreviousDay}
+            className="text-slate-400 hover:text-white transition-colors p-2 rounded-xl hover:bg-slate-800"
+            data-testid="button-previous-day"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          
+          <div 
+            className="min-w-[140px] text-center cursor-pointer"
+            onClick={goToToday}
+            data-testid="button-date-display"
+          >
+            <div className="text-lg font-semibold text-white">
+              {getDateDisplayText()}
+            </div>
+            {!isToday(selectedDate) && (
+              <div className="text-xs text-slate-400">
+                Tap to return to today
+              </div>
+            )}
+          </div>
+          
+          <button
+            onClick={goToNextDay}
+            disabled={isToday(selectedDate)}
+            className={`transition-colors p-2 rounded-xl ${
+              isToday(selectedDate) 
+                ? 'text-slate-600 cursor-not-allowed' 
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+            data-testid="button-next-day"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
         </div>
 
         {/* Large Circular Calorie Progress */}
