@@ -309,17 +309,6 @@ export default function WellnessPage() {
                 className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
                 onClick={() => {
                   setIsSidebarOpen(false);
-                  navigate('/fitness-calculator?from=dashboard');
-                }}
-              >
-                <Calculator className="w-5 h-5 text-slate-400" />
-                <span className="text-white">Fitness Calculator</span>
-              </div>
-
-              <div 
-                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
-                onClick={() => {
-                  setIsSidebarOpen(false);
                   navigate('/settings?from=dashboard');
                 }}
               >

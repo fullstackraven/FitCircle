@@ -301,7 +301,7 @@ export default function FitnessCalculator() {
                 <button
                   key={goal.value}
                   onClick={() => setGoalType(goal.value)}
-                  className={`p-3 rounded-xl border-2 transition-colors text-sm ${
+                  className={`p-3 rounded-xl border-2 transition-colors text-sm flex items-center justify-center ${
                     goalType === goal.value 
                       ? `border-${goal.color}-500 bg-${goal.color}-500/20 text-${goal.color}-400` 
                       : 'border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500'
@@ -464,17 +464,17 @@ export default function FitnessCalculator() {
 
             {/* Macro Cards */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-slate-700 rounded-xl p-4 text-center">
+              <div className="bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-orange-400 font-semibold mb-2">Carbs</div>
                 <div className="text-2xl font-bold text-white">{macros.carbs.grams}g</div>
                 <div className="text-sm text-slate-400">{macros.carbs.percent}%</div>
               </div>
-              <div className="bg-slate-700 rounded-xl p-4 text-center">
+              <div className="bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-red-400 font-semibold mb-2">Protein</div>
                 <div className="text-2xl font-bold text-white">{macros.protein.grams}g</div>
                 <div className="text-sm text-slate-400">{macros.protein.percent}%</div>
               </div>
-              <div className="bg-slate-700 rounded-xl p-4 text-center">
+              <div className="bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-yellow-400 font-semibold mb-2">Fat</div>
                 <div className="text-2xl font-bold text-white">{macros.fat.grams}g</div>
                 <div className="text-sm text-slate-400">{macros.fat.percent}%</div>
