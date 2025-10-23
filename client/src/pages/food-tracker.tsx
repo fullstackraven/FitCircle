@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search, X, Edit2, Save, X as Cancel, Calculator } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search, X, Edit2, Save, X as Cancel, Calculator, Download } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -109,6 +109,61 @@ const validateNutritionInputs = (calories: string, carbs: string, protein: strin
              caloriesNum >= 0 && carbsNum >= 0 && proteinNum >= 0 && fatNum >= 0 && quantityNum > 0,
     values: { caloriesNum, carbsNum, proteinNum, fatNum, quantityNum }
   };
+};
+
+// Export food database helper
+const exportFoodDatabaseAsCSV = async () => {
+  const allFoods = await localFoodService.getAllFoods();
+  
+  // CSV Headers
+  const headers = [
+    'Name',
+    'Brand',
+    'Quantity',
+    'Unit',
+    'Calories',
+    'Carbs (g)',
+    'Protein (g)',
+    'Fat (g)',
+    'Fiber (g)',
+    'Sugar (g)',
+    'Sodium (mg)',
+    'Saturated Fat (g)'
+  ];
+  
+  // Create CSV rows
+  const rows = allFoods.map((food: LocalFoodItem) => [
+    `"${food.name.replace(/"/g, '""')}"`, // Escape quotes in name
+    food.brand ? `"${food.brand.replace(/"/g, '""')}"` : '',
+    food.quantity,
+    food.unit,
+    food.calories,
+    food.carbs,
+    food.protein,
+    food.fat,
+    food.fiber || '',
+    food.sugar || '',
+    food.sodium || '',
+    food.saturatedFat || ''
+  ]);
+  
+  // Combine headers and rows
+  const csvContent = [
+    headers.join(','),
+    ...rows.map((row: (string | number)[]) => row.join(','))
+  ].join('\n');
+  
+  // Create blob and download
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'food-database.csv');
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 export default function FoodTrackerPage() {
@@ -900,13 +955,28 @@ export default function FoodTrackerPage() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="fitcircle-page-title">Food Tracker</h1>
-          <button
-            onClick={() => setCalculatorOpen(true)}
-            className="text-slate-400 hover:text-white transition-colors"
-            data-testid="button-calculator"
-          >
-            <Calculator className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={async () => {
+                await exportFoodDatabaseAsCSV();
+                toast({
+                  title: "Database Exported",
+                  description: `${(await localFoodService.getAllFoods()).length} food items exported to CSV`
+                });
+              }}
+              className="text-slate-400 hover:text-white transition-colors"
+              data-testid="button-export"
+            >
+              <Download className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setCalculatorOpen(true)}
+              className="text-slate-400 hover:text-white transition-colors"
+              data-testid="button-calculator"
+            >
+              <Calculator className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Date Navigation */}

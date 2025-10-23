@@ -464,6 +464,12 @@ export class LocalFoodService {
   async getCustomFoods(): Promise<LocalFoodItem[]> {
     return await this.customFoodStore.getAllFoods();
   }
+
+  // Get all foods (local database + custom foods)
+  async getAllFoods(): Promise<LocalFoodItem[]> {
+    const customFoods = await this.customFoodStore.getAllFoods();
+    return [...this.localFoods, ...customFoods];
+  }
 }
 
 // Create and export a singleton instance
