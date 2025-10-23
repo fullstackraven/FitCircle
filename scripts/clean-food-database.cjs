@@ -6,68 +6,68 @@ const foods = JSON.parse(fs.readFileSync(foodsPath, 'utf8'));
 
 console.log(`Starting cleanup. Current size: ${foods.length} items\n`);
 
-// Drinks and liquids that should never be "baked"
-const drinksAndLiquids = [
-  'milk', 'water', 'juice', 'soda', 'beer', 'wine', 'champagne', 'whiskey',
-  'vodka', 'rum', 'gin', 'tequila', 'coffee', 'tea', 'latte', 'cappuccino',
-  'espresso', 'smoothie', 'shake', 'cola', 'lemonade', 'sports drink'
+// Legitimate "grass-fed" items (only meat and dairy)
+const legitimateGrassFed = [
+  'beef', 'steak', 'brisket', 'ribeye', 'sirloin', 'tenderloin', 'ground beef',
+  'burger', 'cow', 'cattle', 'veal', 'lamb', 'goat', 'bison', 'buffalo',
+  'milk', 'cheese', 'butter', 'yogurt', 'cream', 'dairy', 'whey'
 ];
 
-// Things that should never be "boneless"
-const neverBoneless = [
-  'milk', 'cheese', 'yogurt', 'butter', 'cream', 'water', 'juice', 'soda',
-  'wine', 'beer', 'coffee', 'tea', 'oil', 'vinegar', 'sauce', 'bread',
-  'rice', 'pasta', 'noodles', 'cereal', 'oatmeal', 'quinoa', 'flour',
-  'sugar', 'salt', 'pepper', 'spice', 'herb', 'nut', 'seed', 'vegetable',
-  'fruit', 'berry', 'melon', 'citrus', 'apple', 'banana', 'orange'
+// Legitimate "free-range" items (only poultry and eggs)
+const legitimateFreeRange = [
+  'chicken', 'turkey', 'duck', 'goose', 'egg', 'poultry', 'hen'
+];
+
+// Legitimate "boiled" items
+const legitimateBoiled = [
+  'egg', 'potato', 'sweet potato', 'corn', 'carrot', 'broccoli', 'cabbage',
+  'spinach', 'kale', 'green beans', 'peas', 'beet', 'turnip', 'rice',
+  'pasta', 'noodle', 'spaghetti', 'macaroni', 'shrimp', 'lobster', 'crab',
+  'chicken', 'peanut', 'edamame', 'artichoke', 'asparagus', 'brussels sprouts',
+  'cauliflower', 'beans', 'lentils', 'chickpeas', 'dumpling'
+];
+
+// Things that should never be boiled
+const neverBoiled = [
+  'water', 'milk', 'juice', 'soda', 'wine', 'beer', 'champagne', 'coffee',
+  'tea', 'oil', 'butter', 'cheese', 'bread', 'cake', 'cookie', 'cracker',
+  'chip', 'cereal', 'granola', 'yogurt', 'smoothie', 'shake'
 ];
 
 const filteredFoods = foods.filter(food => {
   const name = (food.name || '').toLowerCase();
   
-  // Remove "Baked [drink/liquid]"
-  const hasBakedDrink = drinksAndLiquids.some(drink => {
-    return name.includes(`baked ${drink}`) || 
-           name.includes(`baked ${drink}s`);
-  });
-  
-  if (hasBakedDrink) {
-    console.log(`Removing nonsensical: ${food.name}`);
-    return false;
+  // Check for nonsensical "grass-fed" items
+  if (name.includes('grass-fed') || name.includes('grass fed')) {
+    const isLegitimate = legitimateGrassFed.some(item => name.includes(item));
+    if (!isLegitimate) {
+      console.log(`Removing nonsensical grass-fed: ${food.name}`);
+      return false;
+    }
   }
   
-  // Remove "Boneless [anything that never has bones]"
-  if (name.includes('boneless ')) {
-    const hasNonsenseBoneless = neverBoneless.some(item => 
-      name.includes(item)
-    );
+  // Check for nonsensical "free-range" items
+  if (name.includes('free-range') || name.includes('free range')) {
+    const isLegitimate = legitimateFreeRange.some(item => name.includes(item));
+    if (!isLegitimate) {
+      console.log(`Removing nonsensical free-range: ${food.name}`);
+      return false;
+    }
+  }
+  
+  // Check for nonsensical "boiled" items
+  if (name.includes('boiled')) {
+    // First check if it's something that should never be boiled
+    const isNeverBoiled = neverBoiled.some(item => name.includes(item));
+    if (isNeverBoiled) {
+      console.log(`Removing nonsensical boiled: ${food.name}`);
+      return false;
+    }
     
-    if (hasNonsenseBoneless) {
-      console.log(`Removing nonsensical: ${food.name}`);
-      return false;
-    }
-  }
-  
-  // Remove "Skinless Baked [anything]" - this combo is always nonsense
-  if (name.includes('skinless baked')) {
-    console.log(`Removing nonsensical: ${food.name}`);
-    return false;
-  }
-  
-  // Remove "Boneless Baked [drink]"
-  if (name.includes('boneless baked')) {
-    const hasDrink = drinksAndLiquids.some(drink => name.includes(drink));
-    if (hasDrink) {
-      console.log(`Removing nonsensical: ${food.name}`);
-      return false;
-    }
-  }
-  
-  // Remove "Organic Baked [drink]"
-  if (name.includes('organic baked')) {
-    const hasDrink = drinksAndLiquids.some(drink => name.includes(drink));
-    if (hasDrink) {
-      console.log(`Removing nonsensical: ${food.name}`);
+    // Then check if it's a legitimate boiled item
+    const isLegitimate = legitimateBoiled.some(item => name.includes(item));
+    if (!isLegitimate) {
+      console.log(`Removing nonsensical boiled: ${food.name}`);
       return false;
     }
   }
