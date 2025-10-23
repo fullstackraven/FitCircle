@@ -81,7 +81,7 @@ export default function FoodDatabasePage() {
           setAllFoods(prev => prev.filter(f => f.id !== foodId));
           toast({
             title: "Deleted",
-            description: `"${foodName}" removed from database`
+            description: `"${foodName}" permanently removed`
           });
         } else {
           toast({
@@ -91,12 +91,22 @@ export default function FoodDatabasePage() {
           });
         }
       } else {
-        // For built-in foods, just remove from local state
-        setAllFoods(prev => prev.filter(f => f.id !== foodId));
-        toast({
-          title: "Deleted",
-          description: `"${foodName}" removed from view`
-        });
+        // For built-in foods, mark as deleted permanently
+        const result = localFoodService.deleteBuiltInFood(foodId);
+        
+        if (result.success) {
+          setAllFoods(prev => prev.filter(f => f.id !== foodId));
+          toast({
+            title: "Deleted",
+            description: `"${foodName}" permanently removed`
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: result.error || "Failed to delete food",
+            variant: "destructive"
+          });
+        }
       }
     } catch (error) {
       console.error('Error deleting food:', error);

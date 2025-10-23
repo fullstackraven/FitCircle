@@ -186,12 +186,57 @@ export class LocalFoodService {
   private customFoodStore: CustomFoodStore;
   private localFoods: LocalFoodItem[];
   private searchIndex: Map<string, LocalFoodItem[]>;
+  private deletedBuiltInFoodIds: Set<string>;
+  private readonly DELETED_FOODS_KEY = 'fitcircle_deleted_builtin_foods';
 
   constructor() {
     this.customFoodStore = new CustomFoodStore();
     this.localFoods = comprehensiveFoods as LocalFoodItem[];
     this.searchIndex = new Map();
+    this.deletedBuiltInFoodIds = this.loadDeletedFoodIds();
     this.buildSearchIndex();
+  }
+
+  // Load deleted food IDs from localStorage
+  private loadDeletedFoodIds(): Set<string> {
+    try {
+      const stored = localStorage.getItem(this.DELETED_FOODS_KEY);
+      if (stored) {
+        return new Set(JSON.parse(stored));
+      }
+    } catch (error) {
+      console.error('Error loading deleted food IDs:', error);
+    }
+    return new Set();
+  }
+
+  // Save deleted food IDs to localStorage
+  private saveDeletedFoodIds(): void {
+    try {
+      localStorage.setItem(this.DELETED_FOODS_KEY, JSON.stringify(Array.from(this.deletedBuiltInFoodIds)));
+    } catch (error) {
+      console.error('Error saving deleted food IDs:', error);
+    }
+  }
+
+  // Mark a built-in food as deleted
+  deleteBuiltInFood(id: string): { success: boolean; error?: string } {
+    try {
+      this.deletedBuiltInFoodIds.add(id);
+      this.saveDeletedFoodIds();
+      return { success: true };
+    } catch (error) {
+      console.error('Error deleting built-in food:', error);
+      return {
+        success: false,
+        error: 'Failed to delete food. Please try again.'
+      };
+    }
+  }
+
+  // Filter out deleted built-in foods
+  private filterDeletedFoods(foods: LocalFoodItem[]): LocalFoodItem[] {
+    return foods.filter(food => !this.deletedBuiltInFoodIds.has(food.id));
   }
 
   // Build a search index for faster lookups
@@ -230,7 +275,9 @@ export class LocalFoodService {
     try {
       // Get custom foods from IndexedDB
       const customFoods = await this.customFoodStore.getAllFoods();
-      const allFoods = [...this.localFoods, ...customFoods];
+      // Filter out deleted built-in foods
+      const availableBuiltInFoods = this.filterDeletedFoods(this.localFoods);
+      const allFoods = [...availableBuiltInFoods, ...customFoods];
 
       const normalizedQuery = query.toLowerCase().trim();
       const queryWords = normalizedQuery.split(' ').filter(word => word.length >= 2);
@@ -485,7 +532,9 @@ export class LocalFoodService {
   // Get all foods (local database + custom foods)
   async getAllFoods(): Promise<LocalFoodItem[]> {
     const customFoods = await this.customFoodStore.getAllFoods();
-    return [...this.localFoods, ...customFoods];
+    // Filter out deleted built-in foods
+    const availableBuiltInFoods = this.filterDeletedFoods(this.localFoods);
+    return [...availableBuiltInFoods, ...customFoods];
   }
 }
 
