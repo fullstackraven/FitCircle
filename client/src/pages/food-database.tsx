@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { ArrowLeft, Search, Trash2 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { List } from 'react-window';
@@ -35,7 +35,8 @@ export default function FoodDatabasePage() {
     };
 
     loadFoods();
-  }, [toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Filter foods based on search query
   const filteredFoods = useMemo(() => {
@@ -52,7 +53,7 @@ export default function FoodDatabasePage() {
   }, [allFoods, searchQuery]);
 
   // Handle delete
-  const handleDelete = async (foodId: string, foodName: string) => {
+  const handleDelete = useCallback(async (foodId: string, foodName: string) => {
     // Only allow deleting custom foods
     if (!foodId.startsWith('custom-')) {
       toast({
@@ -88,14 +89,15 @@ export default function FoodDatabasePage() {
         variant: "destructive"
       });
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleBack = () => {
     navigate('/food-tracker');
   };
 
   // Row renderer for virtualized list
-  const Row = ({ index, style }: { index: number; style?: React.CSSProperties }) => {
+  const Row = useCallback(({ index, style }: { index: number; style?: React.CSSProperties }) => {
     const food = filteredFoods[index];
     if (!food) return null;
     const isCustom = food.id.startsWith('custom-');
@@ -166,7 +168,7 @@ export default function FoodDatabasePage() {
         </Card>
       </div>
     );
-  };
+  }, [filteredFoods, handleDelete]);
 
   return (
     <div className="fitcircle-page">
