@@ -40,47 +40,57 @@ export default function FoodDatabasePage() {
     };
   }, []);
 
-  // Filter foods based on search query
+  // Filter foods based on search query and sort custom foods first
   const filteredFoods = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return allFoods;
+    let foods = allFoods;
+    
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      foods = allFoods.filter(food => {
+        const name = food.name.toLowerCase();
+        const brand = food.brand?.toLowerCase() || '';
+        return name.includes(query) || brand.includes(query);
+      });
     }
-
-    const query = searchQuery.toLowerCase().trim();
-    return allFoods.filter(food => {
-      const name = food.name.toLowerCase();
-      const brand = food.brand?.toLowerCase() || '';
-      return name.includes(query) || brand.includes(query);
+    
+    // Sort: custom foods first, then alphabetically by name
+    return foods.sort((a, b) => {
+      const aIsCustom = a.id.startsWith('custom-');
+      const bIsCustom = b.id.startsWith('custom-');
+      
+      if (aIsCustom && !bIsCustom) return -1;
+      if (!aIsCustom && bIsCustom) return 1;
+      return a.name.localeCompare(b.name);
     });
   }, [allFoods, searchQuery]);
 
   // Handle delete
   const handleDelete = async (foodId: string, foodName: string) => {
-    // Only allow deleting custom foods
-    if (!foodId.startsWith('custom-')) {
-      toast({
-        title: "Cannot Delete",
-        description: "Only custom foods can be deleted",
-        variant: "destructive"
-      });
-      return;
-    }
-
+    const isCustom = foodId.startsWith('custom-');
+    
     try {
-      const result = await localFoodService.deleteCustomFood(foodId);
-      
-      if (result.success) {
-        // Remove from local state
+      if (isCustom) {
+        const result = await localFoodService.deleteCustomFood(foodId);
+        
+        if (result.success) {
+          setAllFoods(prev => prev.filter(f => f.id !== foodId));
+          toast({
+            title: "Deleted",
+            description: `"${foodName}" removed from database`
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: result.error || "Failed to delete food",
+            variant: "destructive"
+          });
+        }
+      } else {
+        // For built-in foods, just remove from local state
         setAllFoods(prev => prev.filter(f => f.id !== foodId));
         toast({
           title: "Deleted",
-          description: `"${foodName}" removed from database`
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: result.error || "Failed to delete food",
-          variant: "destructive"
+          description: `"${foodName}" removed from view`
         });
       }
     } catch (error) {
@@ -134,7 +144,7 @@ export default function FoodDatabasePage() {
             'Loading...'
           ) : (
             <>
-              Showing {filteredFoods.length.toLocaleString()} of {allFoods.length.toLocaleString()} foods
+              {filteredFoods.length.toLocaleString()} foods total ({allFoods.filter(f => f.id.startsWith('custom-')).length} custom)
             </>
           )}
         </div>
@@ -204,14 +214,9 @@ export default function FoodDatabasePage() {
                       {/* Delete Button */}
                       <Button
                         onClick={() => handleDelete(food.id, food.name)}
-                        disabled={!isCustom}
                         variant="ghost"
                         size="sm"
-                        className={`flex-shrink-0 ${
-                          isCustom 
-                            ? 'text-red-400 hover:text-red-300 hover:bg-red-950' 
-                            : 'text-slate-600 cursor-not-allowed'
-                        }`}
+                        className="flex-shrink-0 text-red-400 hover:text-red-300 hover:bg-red-950"
                         data-testid={`button-delete-${food.id}`}
                       >
                         <Trash2 className="w-4 h-4" />
