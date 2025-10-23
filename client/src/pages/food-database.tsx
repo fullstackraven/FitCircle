@@ -1,7 +1,6 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, Search, Trash2 } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { List } from 'react-window';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -17,25 +16,28 @@ export default function FoodDatabasePage() {
 
   // Load all foods on mount
   useEffect(() => {
+    let isMounted = true;
+    
     const loadFoods = async () => {
       try {
-        setLoading(true);
         const foods = await localFoodService.getAllFoods();
-        setAllFoods(foods);
+        if (isMounted) {
+          setAllFoods(foods);
+          setLoading(false);
+        }
       } catch (error) {
         console.error('Error loading foods:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load food database",
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     loadFoods();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Filter foods based on search query
@@ -53,7 +55,7 @@ export default function FoodDatabasePage() {
   }, [allFoods, searchQuery]);
 
   // Handle delete
-  const handleDelete = useCallback(async (foodId: string, foodName: string) => {
+  const handleDelete = async (foodId: string, foodName: string) => {
     // Only allow deleting custom foods
     if (!foodId.startsWith('custom-')) {
       toast({
@@ -89,86 +91,11 @@ export default function FoodDatabasePage() {
         variant: "destructive"
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
   const handleBack = () => {
     navigate('/food-tracker');
   };
-
-  // Row renderer for virtualized list
-  const Row = useCallback(({ index, style }: { index: number; style?: React.CSSProperties }) => {
-    const food = filteredFoods[index];
-    if (!food) return null;
-    const isCustom = food.id.startsWith('custom-');
-    
-    return (
-      <div style={style} className="px-1 py-1">
-        <Card 
-          className="p-4 bg-slate-800 border-slate-700 rounded-xl"
-          data-testid={`card-food-${food.id}`}
-        >
-          <div className="flex items-center justify-between gap-4">
-            {/* Food Info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-medium text-white truncate" data-testid={`text-name-${food.id}`}>
-                  {food.name}
-                </h3>
-                {isCustom && (
-                  <span className="px-2 py-0.5 text-xs bg-green-600 text-white rounded-xl">
-                    Custom
-                  </span>
-                )}
-              </div>
-              {food.brand && (
-                <p className="text-sm text-slate-400 truncate mb-2" data-testid={`text-brand-${food.id}`}>
-                  {food.brand}
-                </p>
-              )}
-              
-              {/* Macros */}
-              <div className="flex flex-wrap gap-2 text-xs">
-                <div className="px-2 py-1 bg-slate-700 rounded-xl" data-testid={`text-calories-${food.id}`}>
-                  <span className="text-slate-400">Cal:</span> <span className="text-white font-medium">{food.calories}</span>
-                </div>
-                <div className="px-2 py-1 bg-slate-700 rounded-xl" data-testid={`text-carbs-${food.id}`}>
-                  <span className="text-slate-400">C:</span> <span className="text-white font-medium">{food.carbs}g</span>
-                </div>
-                <div className="px-2 py-1 bg-slate-700 rounded-xl" data-testid={`text-protein-${food.id}`}>
-                  <span className="text-slate-400">P:</span> <span className="text-white font-medium">{food.protein}g</span>
-                </div>
-                <div className="px-2 py-1 bg-slate-700 rounded-xl" data-testid={`text-fat-${food.id}`}>
-                  <span className="text-slate-400">F:</span> <span className="text-white font-medium">{food.fat}g</span>
-                </div>
-              </div>
-              
-              {/* Serving Size */}
-              <div className="text-xs text-slate-500 mt-2">
-                Per {food.quantity}{food.unit}
-              </div>
-            </div>
-
-            {/* Delete Button */}
-            <Button
-              onClick={() => handleDelete(food.id, food.name)}
-              disabled={!isCustom}
-              variant="ghost"
-              size="sm"
-              className={`flex-shrink-0 ${
-                isCustom 
-                  ? 'text-red-400 hover:text-red-300 hover:bg-red-950' 
-                  : 'text-slate-600 cursor-not-allowed'
-              }`}
-              data-testid={`button-delete-${food.id}`}
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          </div>
-        </Card>
-      </div>
-    );
-  }, [filteredFoods, handleDelete]);
 
   return (
     <div className="fitcircle-page">
@@ -213,7 +140,7 @@ export default function FoodDatabasePage() {
         </div>
 
         {/* Food List */}
-        <div className="pb-24">
+        <div className="pb-24 overflow-y-auto max-h-[calc(100vh-300px)]">
           {loading ? (
             <div className="text-center text-slate-400 py-12">
               Loading food database...
@@ -223,14 +150,82 @@ export default function FoodDatabasePage() {
               {searchQuery ? 'No foods found matching your search' : 'No foods in database'}
             </div>
           ) : (
-            <List
-              rowHeight={160}
-              rowCount={filteredFoods.length}
-              rowComponent={Row}
-              rowProps={{}}
-              defaultHeight={window.innerHeight - 280}
-              style={{ width: '100%' }}
-            />
+            <div className="space-y-2">
+              {filteredFoods.slice(0, 100).map((food) => {
+                const isCustom = food.id.startsWith('custom-');
+                
+                return (
+                  <Card 
+                    key={food.id}
+                    className="p-4 bg-slate-800 border-slate-700 rounded-xl"
+                    data-testid={`card-food-${food.id}`}
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      {/* Food Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-medium text-white truncate" data-testid={`text-name-${food.id}`}>
+                            {food.name}
+                          </h3>
+                          {isCustom && (
+                            <span className="px-2 py-0.5 text-xs bg-green-600 text-white rounded-xl">
+                              Custom
+                            </span>
+                          )}
+                        </div>
+                        {food.brand && (
+                          <p className="text-sm text-slate-400 truncate mb-2" data-testid={`text-brand-${food.id}`}>
+                            {food.brand}
+                          </p>
+                        )}
+                        
+                        {/* Macros */}
+                        <div className="flex flex-wrap gap-2 text-xs">
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl" data-testid={`text-calories-${food.id}`}>
+                            <span className="text-slate-400">Cal:</span> <span className="text-white font-medium">{food.calories}</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl" data-testid={`text-carbs-${food.id}`}>
+                            <span className="text-slate-400">C:</span> <span className="text-white font-medium">{food.carbs}g</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl" data-testid={`text-protein-${food.id}`}>
+                            <span className="text-slate-400">P:</span> <span className="text-white font-medium">{food.protein}g</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl" data-testid={`text-fat-${food.id}`}>
+                            <span className="text-slate-400">F:</span> <span className="text-white font-medium">{food.fat}g</span>
+                          </div>
+                        </div>
+                        
+                        {/* Serving Size */}
+                        <div className="text-xs text-slate-500 mt-2">
+                          Per {food.quantity}{food.unit}
+                        </div>
+                      </div>
+
+                      {/* Delete Button */}
+                      <Button
+                        onClick={() => handleDelete(food.id, food.name)}
+                        disabled={!isCustom}
+                        variant="ghost"
+                        size="sm"
+                        className={`flex-shrink-0 ${
+                          isCustom 
+                            ? 'text-red-400 hover:text-red-300 hover:bg-red-950' 
+                            : 'text-slate-600 cursor-not-allowed'
+                        }`}
+                        data-testid={`button-delete-${food.id}`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </Card>
+                );
+              })}
+              {filteredFoods.length > 100 && (
+                <div className="text-center text-slate-400 py-4 text-sm">
+                  Showing first 100 results. Use search to narrow down.
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
