@@ -5,6 +5,7 @@ import Home from "@/pages/home";
 import CalendarPage from "@/pages/calendar-new";
 import FoodTrackerPage from "@/pages/food-tracker";
 import FoodDatabasePage from "@/pages/food-database";
+import RestoreCustomFoodsPage from "@/pages/restore-custom-foods";
 // REMOVED: Bug reporting feature removed per user request
 import ProfilePage from "@/pages/profile";
 import MeasurementsPage from "@/pages/measurements";
@@ -42,6 +43,7 @@ function Router() {
       <Route path="/hydration" component={HydrationPage} />
       <Route path="/food-tracker" component={FoodTrackerPage} />
       <Route path="/food-database" component={FoodDatabasePage} />
+      <Route path="/restore-custom-foods" component={RestoreCustomFoodsPage} />
       <Route path="/cardio" component={CardioPage} />
       <Route path="/workout-statistics" component={WorkoutStatistics} />
       <Route path="/daily-journal" component={DailyJournal} />
