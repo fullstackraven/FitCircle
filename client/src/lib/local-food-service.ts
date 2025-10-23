@@ -465,6 +465,23 @@ export class LocalFoodService {
     return await this.customFoodStore.getAllFoods();
   }
 
+  // Clear all custom foods
+  async clearAllCustomFoods(): Promise<{ success: boolean; error?: string }> {
+    try {
+      const customFoods = await this.customFoodStore.getAllFoods();
+      for (const food of customFoods) {
+        await this.customFoodStore.deleteFood(food.id);
+      }
+      return { success: true };
+    } catch (error) {
+      console.error('Error clearing custom foods:', error);
+      return {
+        success: false,
+        error: 'Failed to clear custom foods. Please try again.'
+      };
+    }
+  }
+
   // Get all foods (local database + custom foods)
   async getAllFoods(): Promise<LocalFoodItem[]> {
     const customFoods = await this.customFoodStore.getAllFoods();

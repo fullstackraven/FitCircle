@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { getTodayString } from '@/lib/date-utils';
 import { STORAGE_KEYS } from '@/lib/storage-utils';
+import { localFoodService } from '@/lib/local-food-service';
 
 
 export default function SettingsPage() {
@@ -36,7 +37,7 @@ export default function SettingsPage() {
   };
 
   // Export complete localStorage data as JSON
-  const exportSnapshot = () => {
+  const exportSnapshot = async () => {
     setIsExporting(true);
     try {
       // Get all localStorage data
@@ -55,6 +56,13 @@ export default function SettingsPage() {
             }
           }
         }
+      }
+      
+      // Get custom foods from IndexedDB
+      const customFoods = await localFoodService.getCustomFoods();
+      if (customFoods.length > 0) {
+        completeSnapshot['__indexeddb_custom_foods'] = customFoods;
+        console.log(`Backing up ${customFoods.length} custom foods`);
       }
       
       const blob = new Blob([JSON.stringify(completeSnapshot, null, 2)], { type: 'application/json' });
@@ -89,7 +97,7 @@ export default function SettingsPage() {
     setStatus('Restoring data...');
     
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const content = e.target?.result as string;
         // File content processed for export
@@ -101,9 +109,16 @@ export default function SettingsPage() {
           throw new Error('Invalid file format');
         }
         
+        // Extract custom foods if present
+        const customFoods = snapshot['__indexeddb_custom_foods'];
+        delete snapshot['__indexeddb_custom_foods']; // Remove from snapshot so it's not stored in localStorage
+        
         // Clear localStorage first
         // Clearing localStorage...
         localStorage.clear();
+        
+        // Clear custom foods from IndexedDB before restoring
+        await localFoodService.clearAllCustomFoods();
         
         let count = 0;
         let errors = 0;
@@ -127,6 +142,20 @@ export default function SettingsPage() {
             console.error(`Failed to restore key "${key}":`, error);
             errors++;
           }
+        }
+        
+        // Restore custom foods to IndexedDB
+        if (customFoods && Array.isArray(customFoods) && customFoods.length > 0) {
+          console.log(`Restoring ${customFoods.length} custom foods to IndexedDB...`);
+          for (const food of customFoods) {
+            try {
+              await localFoodService.addCustomFood(food);
+            } catch (error) {
+              console.error('Failed to restore custom food:', food.name, error);
+              errors++;
+            }
+          }
+          console.log(`Restored ${customFoods.length} custom foods`);
         }
         
         console.log(`Restoration complete: ${count} items restored, ${errors} errors`);
@@ -166,10 +195,14 @@ export default function SettingsPage() {
   };
 
   // Erase all data function
-  const eraseAllData = () => {
+  const eraseAllData = async () => {
     try {
       // Clear all localStorage data
       localStorage.clear();
+      
+      // Clear all custom foods from IndexedDB
+      await localFoodService.clearAllCustomFoods();
+      
       setStatus('All data has been erased successfully!');
       setShowEraseConfirm(false);
       
