@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { ArrowLeft, Search, Trash2, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,7 @@ export default function FoodDatabasePage() {
   const [editingFood, setEditingFood] = useState<LocalFoodItem | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Load all foods on mount
   useEffect(() => {
@@ -87,6 +88,13 @@ export default function FoodDatabasePage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
+
+  // Scroll to top when page changes
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  }, [currentPage]);
 
   // Handle delete
   const handleDelete = async (foodId: string, foodName: string) => {
@@ -220,7 +228,7 @@ export default function FoodDatabasePage() {
         </div>
 
         {/* Food List */}
-        <div className="pb-24 overflow-y-auto max-h-[calc(100vh-300px)]">
+        <div ref={scrollContainerRef} className="pb-24 overflow-y-auto max-h-[calc(100vh-300px)]">
           {loading ? (
             <div className="text-center text-slate-400 py-12">
               Loading food database...
