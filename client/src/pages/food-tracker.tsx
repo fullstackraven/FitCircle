@@ -421,14 +421,14 @@ export default function FoodTrackerPage() {
   
   // Local search with throttling
   const performLocalSearch = async (query: string) => {
-    if (!query.trim() || query.length < 2) {
+    if (!query.trim()) {
       setSearchResults([]);
       return;
     }
     
     setIsSearching(true);
     try {
-      const products = await localFoodService.searchProducts(query, 8);
+      const products = await localFoodService.searchProducts(query, 20);
       setSearchResults(products);
     } catch (error) {
       console.error('Local search failed:', error);
@@ -1083,7 +1083,7 @@ export default function FoodTrackerPage() {
                   
               
               {/* Food List */}
-              <div className="max-h-80 overflow-y-auto">
+              <div className="max-h-96 overflow-y-auto pr-1">
                 {searchQuery ? (
                   // Search Results
                   searchResults.length > 0 ? (
