@@ -246,22 +246,22 @@ export default function FoodDatabasePage() {
                 return (
                   <Card 
                     key={food.id}
-                    className="p-4 bg-slate-800 border-slate-700 rounded-xl"
+                    className="p-4 bg-slate-800 border-slate-700 rounded-xl relative"
                     data-testid={`card-food-${food.id}`}
                   >
+                    {/* Custom Badge - Fixed to top-right */}
+                    {isCustom && (
+                      <span className="absolute top-3 right-3 px-2 py-0.5 text-xs bg-green-600 text-white rounded-xl">
+                        Custom
+                      </span>
+                    )}
+                    
                     <div className="flex items-center justify-between gap-4">
                       {/* Food Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <h3 className="font-medium text-white" data-testid={`text-name-${food.id}`}>
-                            {food.name}
-                          </h3>
-                          {isCustom && (
-                            <span className="px-2 py-0.5 text-xs bg-green-600 text-white rounded-xl flex-shrink-0">
-                              Custom
-                            </span>
-                          )}
-                        </div>
+                      <div className="flex-1 min-w-0 pr-16">
+                        <h3 className="font-medium text-white mb-1" data-testid={`text-name-${food.id}`}>
+                          {food.name}
+                        </h3>
                         {food.brand && (
                           <p className="text-sm text-slate-400 truncate mb-2" data-testid={`text-brand-${food.id}`}>
                             {food.brand}
