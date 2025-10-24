@@ -1,10 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
-import { ArrowLeft, Search, Trash2 } from 'lucide-react';
+import { ArrowLeft, Search, Trash2, Pencil } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { localFoodService, LocalFoodItem } from '@/lib/local-food-service';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { localFoodService, LocalFoodItem, FoodUnit } from '@/lib/local-food-service';
 import { useToast } from '@/hooks/use-toast';
 
 export default function FoodDatabasePage() {
@@ -13,6 +16,8 @@ export default function FoodDatabasePage() {
   const [allFoods, setAllFoods] = useState<LocalFoodItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [editingFood, setEditingFood] = useState<LocalFoodItem | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   // Load all foods on mount
   useEffect(() => {
@@ -71,48 +76,84 @@ export default function FoodDatabasePage() {
 
   // Handle delete
   const handleDelete = async (foodId: string, foodName: string) => {
-    const isCustom = foodId.startsWith('custom-');
-    
     try {
-      if (isCustom) {
-        const result = await localFoodService.deleteCustomFood(foodId);
-        
-        if (result.success) {
-          setAllFoods(prev => prev.filter(f => f.id !== foodId));
-          toast({
-            title: "Deleted",
-            description: `"${foodName}" permanently removed`
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: result.error || "Failed to delete food",
-            variant: "destructive"
-          });
-        }
+      const result = await localFoodService.deleteFood(foodId);
+      
+      if (result.success) {
+        setAllFoods(prev => prev.filter(f => f.id !== foodId));
+        toast({
+          title: "Deleted",
+          description: `"${foodName}" permanently removed`
+        });
       } else {
-        // For built-in foods, mark as deleted permanently
-        const result = localFoodService.deleteBuiltInFood(foodId);
-        
-        if (result.success) {
-          setAllFoods(prev => prev.filter(f => f.id !== foodId));
-          toast({
-            title: "Deleted",
-            description: `"${foodName}" permanently removed`
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: result.error || "Failed to delete food",
-            variant: "destructive"
-          });
-        }
+        toast({
+          title: "Error",
+          description: result.error || "Failed to delete food",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Error deleting food:', error);
       toast({
         title: "Error",
         description: "Failed to delete food",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Handle edit
+  const handleEdit = (food: LocalFoodItem) => {
+    setEditingFood({ ...food });
+    setEditDialogOpen(true);
+  };
+
+  // Handle save edit
+  const handleSaveEdit = async () => {
+    if (!editingFood) return;
+
+    try {
+      const result = await localFoodService.updateFood(editingFood.id, {
+        name: editingFood.name,
+        brand: editingFood.brand,
+        quantity: editingFood.quantity,
+        unit: editingFood.unit,
+        calories: editingFood.calories,
+        carbs: editingFood.carbs,
+        protein: editingFood.protein,
+        fat: editingFood.fat,
+        fiber: editingFood.fiber,
+        sugar: editingFood.sugar,
+        sodium: editingFood.sodium,
+        saturatedFat: editingFood.saturatedFat,
+        potassium: editingFood.potassium,
+        cholesterol: editingFood.cholesterol,
+        vitaminA: editingFood.vitaminA,
+        vitaminC: editingFood.vitaminC,
+        calcium: editingFood.calcium,
+        iron: editingFood.iron
+      });
+
+      if (result.success && result.food) {
+        setAllFoods(prev => prev.map(f => f.id === editingFood.id ? result.food! : f));
+        setEditDialogOpen(false);
+        setEditingFood(null);
+        toast({
+          title: "Updated",
+          description: `"${result.food.name}" has been updated`
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to update food",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error updating food:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update food",
         variant: "destructive"
       });
     }
@@ -226,16 +267,27 @@ export default function FoodDatabasePage() {
                         </div>
                       </div>
 
-                      {/* Delete Button */}
-                      <Button
-                        onClick={() => handleDelete(food.id, food.name)}
-                        variant="ghost"
-                        size="sm"
-                        className="flex-shrink-0 text-red-400 hover:text-red-300 hover:bg-red-950"
-                        data-testid={`button-delete-${food.id}`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      {/* Action Buttons */}
+                      <div className="flex gap-2 flex-shrink-0">
+                        <Button
+                          onClick={() => handleEdit(food)}
+                          variant="ghost"
+                          size="sm"
+                          className="text-blue-400 hover:text-blue-300 hover:bg-blue-950"
+                          data-testid={`button-edit-${food.id}`}
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          onClick={() => handleDelete(food.id, food.name)}
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-400 hover:text-red-300 hover:bg-red-950"
+                          data-testid={`button-delete-${food.id}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </Card>
                 );
@@ -249,6 +301,194 @@ export default function FoodDatabasePage() {
           )}
         </div>
       </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Food</DialogTitle>
+          </DialogHeader>
+          
+          {editingFood && (
+            <div className="space-y-4 mt-4">
+              {/* Name */}
+              <div>
+                <Label htmlFor="edit-name">Name *</Label>
+                <Input
+                  id="edit-name"
+                  value={editingFood.name}
+                  onChange={(e) => setEditingFood({ ...editingFood, name: e.target.value })}
+                  className="bg-slate-800 border-slate-700 text-white"
+                  data-testid="input-edit-name"
+                />
+              </div>
+
+              {/* Brand */}
+              <div>
+                <Label htmlFor="edit-brand">Brand</Label>
+                <Input
+                  id="edit-brand"
+                  value={editingFood.brand || ''}
+                  onChange={(e) => setEditingFood({ ...editingFood, brand: e.target.value })}
+                  className="bg-slate-800 border-slate-700 text-white"
+                  data-testid="input-edit-brand"
+                />
+              </div>
+
+              {/* Serving Size */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-quantity">Quantity *</Label>
+                  <Input
+                    id="edit-quantity"
+                    type="number"
+                    value={editingFood.quantity}
+                    onChange={(e) => setEditingFood({ ...editingFood, quantity: parseFloat(e.target.value) || 0 })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="input-edit-quantity"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-unit">Unit *</Label>
+                  <Select
+                    value={editingFood.unit}
+                    onValueChange={(value: FoodUnit) => setEditingFood({ ...editingFood, unit: value })}
+                  >
+                    <SelectTrigger className="bg-slate-800 border-slate-700 text-white" data-testid="select-edit-unit">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                      <SelectItem value="g">g</SelectItem>
+                      <SelectItem value="oz">oz</SelectItem>
+                      <SelectItem value="cup">cup</SelectItem>
+                      <SelectItem value="piece">piece</SelectItem>
+                      <SelectItem value="serving">serving</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Macros */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-calories">Calories *</Label>
+                  <Input
+                    id="edit-calories"
+                    type="number"
+                    value={editingFood.calories}
+                    onChange={(e) => setEditingFood({ ...editingFood, calories: parseFloat(e.target.value) || 0 })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="input-edit-calories"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-carbs">Carbs (g) *</Label>
+                  <Input
+                    id="edit-carbs"
+                    type="number"
+                    value={editingFood.carbs}
+                    onChange={(e) => setEditingFood({ ...editingFood, carbs: parseFloat(e.target.value) || 0 })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="input-edit-carbs"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-protein">Protein (g) *</Label>
+                  <Input
+                    id="edit-protein"
+                    type="number"
+                    value={editingFood.protein}
+                    onChange={(e) => setEditingFood({ ...editingFood, protein: parseFloat(e.target.value) || 0 })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="input-edit-protein"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-fat">Fat (g) *</Label>
+                  <Input
+                    id="edit-fat"
+                    type="number"
+                    value={editingFood.fat}
+                    onChange={(e) => setEditingFood({ ...editingFood, fat: parseFloat(e.target.value) || 0 })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="input-edit-fat"
+                  />
+                </div>
+              </div>
+
+              {/* Optional Fields */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-fiber">Fiber (g)</Label>
+                  <Input
+                    id="edit-fiber"
+                    type="number"
+                    value={editingFood.fiber || ''}
+                    onChange={(e) => setEditingFood({ ...editingFood, fiber: e.target.value ? parseFloat(e.target.value) : undefined })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="input-edit-fiber"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-sugar">Sugar (g)</Label>
+                  <Input
+                    id="edit-sugar"
+                    type="number"
+                    value={editingFood.sugar || ''}
+                    onChange={(e) => setEditingFood({ ...editingFood, sugar: e.target.value ? parseFloat(e.target.value) : undefined })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="input-edit-sugar"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-sodium">Sodium (mg)</Label>
+                  <Input
+                    id="edit-sodium"
+                    type="number"
+                    value={editingFood.sodium || ''}
+                    onChange={(e) => setEditingFood({ ...editingFood, sodium: e.target.value ? parseFloat(e.target.value) : undefined })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="input-edit-sodium"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-saturatedFat">Sat Fat (g)</Label>
+                  <Input
+                    id="edit-saturatedFat"
+                    type="number"
+                    value={editingFood.saturatedFat || ''}
+                    onChange={(e) => setEditingFood({ ...editingFood, saturatedFat: e.target.value ? parseFloat(e.target.value) : undefined })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="input-edit-saturatedFat"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4">
+                <Button
+                  onClick={() => {
+                    setEditDialogOpen(false);
+                    setEditingFood(null);
+                  }}
+                  variant="outline"
+                  className="flex-1 border-slate-700 text-slate-300 hover:bg-slate-800"
+                  data-testid="button-cancel-edit"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSaveEdit}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  data-testid="button-save-edit"
+                >
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
