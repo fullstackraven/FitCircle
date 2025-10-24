@@ -1212,33 +1212,59 @@ export default function FoodTrackerPage() {
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
                 {getMealEntries('breakfast').map((entry) => (
-                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
-                    <div 
-                      className="flex-1 cursor-pointer hover:bg-gray-600/30 -m-3 p-3 rounded-xl transition-colors"
-                      onClick={() => handleEditFoodEntry(entry)}
-                      data-testid={`food-item-${entry.id}`}
-                    >
-                      <h3 className="font-medium text-white text-sm">
-                        {entry.name}
-                        {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
-                      </h3>
-                      <div className="text-xs text-gray-400 mt-1">
-                        {entry.quantity * (entry.servings || 1)}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
-                        {entry.fiber && <span> • {Math.round(entry.fiber * (entry.servings || 1))}g fiber</span>}
+                  <div 
+                    key={entry.id} 
+                    className="bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
+                    onClick={() => handleEditFoodEntry(entry)}
+                    data-testid={`food-item-${entry.id}`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-white mb-1">
+                          {entry.name}
+                        </h3>
+                        {entry.brand && (
+                          <p className="text-sm text-slate-400 mb-2">
+                            {entry.brand}
+                          </p>
+                        )}
+                        
+                        {/* Macros */}
+                        <div className="flex flex-wrap gap-2 text-xs mb-2">
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">Cal:</span> <span className="text-white font-medium">{Math.round(entry.calories * (entry.servings || 1))}</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">C:</span> <span className="text-white font-medium">{Math.round(entry.carbs * (entry.servings || 1))}g</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">P:</span> <span className="text-white font-medium">{Math.round(entry.protein * (entry.servings || 1))}g</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">F:</span> <span className="text-white font-medium">{Math.round(entry.fat * (entry.servings || 1))}g</span>
+                          </div>
+                        </div>
+                        
+                        {/* Serving Size */}
+                        <div className="text-xs text-slate-500">
+                          Per {entry.quantity * (entry.servings || 1)}{entry.unit}
+                        </div>
                       </div>
+                      
+                      {/* Delete Button */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteFood(entry.id);
+                        }}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-950 flex-shrink-0"
+                        data-testid={`button-delete-${entry.id}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteFood(entry.id);
-                      }}
-                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1 ml-2"
-                      data-testid={`button-delete-${entry.id}`}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
                   </div>
                 ))}
                 {getMealEntries('breakfast').length === 0 && (
@@ -1280,33 +1306,59 @@ export default function FoodTrackerPage() {
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
                 {getMealEntries('lunch').map((entry) => (
-                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
-                    <div 
-                      className="flex-1 cursor-pointer hover:bg-gray-600/30 -m-3 p-3 rounded-xl transition-colors"
-                      onClick={() => handleEditFoodEntry(entry)}
-                      data-testid={`food-item-${entry.id}`}
-                    >
-                      <h3 className="font-medium text-white text-sm">
-                        {entry.name}
-                        {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
-                      </h3>
-                      <div className="text-xs text-gray-400 mt-1">
-                        {entry.quantity * (entry.servings || 1)}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
-                        {entry.fiber && <span> • {Math.round(entry.fiber * (entry.servings || 1))}g fiber</span>}
+                  <div 
+                    key={entry.id} 
+                    className="bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
+                    onClick={() => handleEditFoodEntry(entry)}
+                    data-testid={`food-item-${entry.id}`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-white mb-1">
+                          {entry.name}
+                        </h3>
+                        {entry.brand && (
+                          <p className="text-sm text-slate-400 mb-2">
+                            {entry.brand}
+                          </p>
+                        )}
+                        
+                        {/* Macros */}
+                        <div className="flex flex-wrap gap-2 text-xs mb-2">
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">Cal:</span> <span className="text-white font-medium">{Math.round(entry.calories * (entry.servings || 1))}</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">C:</span> <span className="text-white font-medium">{Math.round(entry.carbs * (entry.servings || 1))}g</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">P:</span> <span className="text-white font-medium">{Math.round(entry.protein * (entry.servings || 1))}g</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">F:</span> <span className="text-white font-medium">{Math.round(entry.fat * (entry.servings || 1))}g</span>
+                          </div>
+                        </div>
+                        
+                        {/* Serving Size */}
+                        <div className="text-xs text-slate-500">
+                          Per {entry.quantity * (entry.servings || 1)}{entry.unit}
+                        </div>
                       </div>
+                      
+                      {/* Delete Button */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteFood(entry.id);
+                        }}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-950 flex-shrink-0"
+                        data-testid={`button-delete-${entry.id}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteFood(entry.id);
-                      }}
-                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1 ml-2"
-                      data-testid={`button-delete-${entry.id}`}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
                   </div>
                 ))}
                 {getMealEntries('lunch').length === 0 && (
@@ -1348,33 +1400,59 @@ export default function FoodTrackerPage() {
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
                 {getMealEntries('dinner').map((entry) => (
-                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
-                    <div 
-                      className="flex-1 cursor-pointer hover:bg-gray-600/30 -m-3 p-3 rounded-xl transition-colors"
-                      onClick={() => handleEditFoodEntry(entry)}
-                      data-testid={`food-item-${entry.id}`}
-                    >
-                      <h3 className="font-medium text-white text-sm">
-                        {entry.name}
-                        {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
-                      </h3>
-                      <div className="text-xs text-gray-400 mt-1">
-                        {entry.quantity * (entry.servings || 1)}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
-                        {entry.fiber && <span> • {Math.round(entry.fiber * (entry.servings || 1))}g fiber</span>}
+                  <div 
+                    key={entry.id} 
+                    className="bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
+                    onClick={() => handleEditFoodEntry(entry)}
+                    data-testid={`food-item-${entry.id}`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-white mb-1">
+                          {entry.name}
+                        </h3>
+                        {entry.brand && (
+                          <p className="text-sm text-slate-400 mb-2">
+                            {entry.brand}
+                          </p>
+                        )}
+                        
+                        {/* Macros */}
+                        <div className="flex flex-wrap gap-2 text-xs mb-2">
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">Cal:</span> <span className="text-white font-medium">{Math.round(entry.calories * (entry.servings || 1))}</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">C:</span> <span className="text-white font-medium">{Math.round(entry.carbs * (entry.servings || 1))}g</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">P:</span> <span className="text-white font-medium">{Math.round(entry.protein * (entry.servings || 1))}g</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">F:</span> <span className="text-white font-medium">{Math.round(entry.fat * (entry.servings || 1))}g</span>
+                          </div>
+                        </div>
+                        
+                        {/* Serving Size */}
+                        <div className="text-xs text-slate-500">
+                          Per {entry.quantity * (entry.servings || 1)}{entry.unit}
+                        </div>
                       </div>
+                      
+                      {/* Delete Button */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteFood(entry.id);
+                        }}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-950 flex-shrink-0"
+                        data-testid={`button-delete-${entry.id}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteFood(entry.id);
-                      }}
-                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1 ml-2"
-                      data-testid={`button-delete-${entry.id}`}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
                   </div>
                 ))}
                 {getMealEntries('dinner').length === 0 && (
@@ -1416,33 +1494,59 @@ export default function FoodTrackerPage() {
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
                 {getMealEntries('snack').map((entry) => (
-                  <div key={entry.id} className="bg-gray-700 rounded-xl p-3 flex justify-between items-start">
-                    <div 
-                      className="flex-1 cursor-pointer hover:bg-gray-600/30 -m-3 p-3 rounded-xl transition-colors"
-                      onClick={() => handleEditFoodEntry(entry)}
-                      data-testid={`food-item-${entry.id}`}
-                    >
-                      <h3 className="font-medium text-white text-sm">
-                        {entry.name}
-                        {entry.brand && <span className="text-gray-400 font-normal"> • {entry.brand}</span>}
-                      </h3>
-                      <div className="text-xs text-gray-400 mt-1">
-                        {entry.quantity * (entry.servings || 1)}{entry.unit} • {Math.round(entry.calories * (entry.servings || 1))} cal • {Math.round(entry.carbs * (entry.servings || 1))}g carbs • {Math.round(entry.protein * (entry.servings || 1))}g protein • {Math.round(entry.fat * (entry.servings || 1))}g fat
-                        {entry.fiber && <span> • {Math.round(entry.fiber * (entry.servings || 1))}g fiber</span>}
+                  <div 
+                    key={entry.id} 
+                    className="bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
+                    onClick={() => handleEditFoodEntry(entry)}
+                    data-testid={`food-item-${entry.id}`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-white mb-1">
+                          {entry.name}
+                        </h3>
+                        {entry.brand && (
+                          <p className="text-sm text-slate-400 mb-2">
+                            {entry.brand}
+                          </p>
+                        )}
+                        
+                        {/* Macros */}
+                        <div className="flex flex-wrap gap-2 text-xs mb-2">
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">Cal:</span> <span className="text-white font-medium">{Math.round(entry.calories * (entry.servings || 1))}</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">C:</span> <span className="text-white font-medium">{Math.round(entry.carbs * (entry.servings || 1))}g</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">P:</span> <span className="text-white font-medium">{Math.round(entry.protein * (entry.servings || 1))}g</span>
+                          </div>
+                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                            <span className="text-slate-400">F:</span> <span className="text-white font-medium">{Math.round(entry.fat * (entry.servings || 1))}g</span>
+                          </div>
+                        </div>
+                        
+                        {/* Serving Size */}
+                        <div className="text-xs text-slate-500">
+                          Per {entry.quantity * (entry.servings || 1)}{entry.unit}
+                        </div>
                       </div>
+                      
+                      {/* Delete Button */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteFood(entry.id);
+                        }}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-950 flex-shrink-0"
+                        data-testid={`button-delete-${entry.id}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteFood(entry.id);
-                      }}
-                      className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-xl p-1 ml-2"
-                      data-testid={`button-delete-${entry.id}`}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
                   </div>
                 ))}
                 {getMealEntries('snack').length === 0 && (
