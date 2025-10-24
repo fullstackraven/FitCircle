@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { ArrowLeft, Search, Trash2, Pencil } from 'lucide-react';
+import { ArrowLeft, Search, Trash2, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { localFoodService, LocalFoodItem, FoodUnit } from '@/lib/local-food-service';
 import { useToast } from '@/hooks/use-toast';
 
+const ITEMS_PER_PAGE = 100;
+
 export default function FoodDatabasePage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
@@ -18,6 +20,7 @@ export default function FoodDatabasePage() {
   const [loading, setLoading] = useState(true);
   const [editingFood, setEditingFood] = useState<LocalFoodItem | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Load all foods on mount
   useEffect(() => {
@@ -73,6 +76,17 @@ export default function FoodDatabasePage() {
       return a.name.localeCompare(b.name);
     });
   }, [allFoods, searchQuery]);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredFoods.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedFoods = filteredFoods.slice(startIndex, endIndex);
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   // Handle delete
   const handleDelete = async (foodId: string, foodName: string) => {
@@ -206,7 +220,7 @@ export default function FoodDatabasePage() {
         </div>
 
         {/* Food List */}
-        <div className="pb-24 overflow-y-auto max-h-[calc(100vh-300px)]">
+        <div className="pb-24">
           {loading ? (
             <div className="text-center text-slate-400 py-12">
               Loading food database...
@@ -216,8 +230,9 @@ export default function FoodDatabasePage() {
               {searchQuery ? 'No foods found matching your search' : 'No foods in database'}
             </div>
           ) : (
-            <div className="space-y-2">
-              {filteredFoods.slice(0, 100).map((food) => {
+            <>
+              <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-400px)]">
+                {paginatedFoods.map((food) => {
                 const isCustom = food.id.startsWith('custom-');
                 
                 return (
@@ -292,12 +307,41 @@ export default function FoodDatabasePage() {
                   </Card>
                 );
               })}
-              {filteredFoods.length > 100 && (
-                <div className="text-center text-slate-400 py-4 text-sm">
-                  Showing first 100 results. Use search to narrow down.
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="mt-6 flex items-center justify-center gap-4">
+                  <Button
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    variant="ghost"
+                    size="sm"
+                    className="text-slate-400 hover:text-white disabled:opacity-30"
+                    data-testid="button-prev-page"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </Button>
+                  
+                  <div className="flex items-center gap-2 text-sm text-slate-400">
+                    <span className="font-medium text-white">{currentPage}</span>
+                    <span>•••</span>
+                    <span>{totalPages}</span>
+                  </div>
+                  
+                  <Button
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    variant="ghost"
+                    size="sm"
+                    className="text-slate-400 hover:text-white disabled:opacity-30"
+                    data-testid="button-next-page"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </Button>
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
       </div>
