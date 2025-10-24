@@ -252,12 +252,12 @@ export default function FoodDatabasePage() {
                     <div className="flex items-center justify-between gap-4">
                       {/* Food Info */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-medium text-white truncate" data-testid={`text-name-${food.id}`}>
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <h3 className="font-medium text-white" data-testid={`text-name-${food.id}`}>
                             {food.name}
                           </h3>
                           {isCustom && (
-                            <span className="px-2 py-0.5 text-xs bg-green-600 text-white rounded-xl">
+                            <span className="px-2 py-0.5 text-xs bg-green-600 text-white rounded-xl flex-shrink-0">
                               Custom
                             </span>
                           )}
