@@ -1035,13 +1035,13 @@ export default function FoodTrackerPage() {
 
         {/* Search Dialog - triggered by meal 'Add food' buttons */}
         <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-lg">
+          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 Add to {searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}
               </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
               
               {/* Search Bar */}
               <div className="relative">
@@ -1083,7 +1083,7 @@ export default function FoodTrackerPage() {
                   
               
               {/* Food List */}
-              <div className="max-h-96 overflow-y-auto pr-1">
+              <div className="flex-1 overflow-y-auto pr-1 min-h-0">
                 {searchQuery ? (
                   // Search Results
                   searchResults.length > 0 ? (

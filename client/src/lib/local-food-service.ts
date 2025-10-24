@@ -245,7 +245,7 @@ export class LocalFoodService {
       const words = searchKey.split(' ');
       
       words.forEach(word => {
-        if (word.length >= 2) {
+        if (word.length >= 1) {
           if (!this.searchIndex.has(word)) {
             this.searchIndex.set(word, []);
           }
@@ -265,14 +265,14 @@ export class LocalFoodService {
 
   // Search products with local data only
   async searchProducts(query: string, limit: number = 20): Promise<LocalFoodItem[]> {
-    if (!query || query.trim().length < 2) {
+    if (!query || query.trim().length < 1) {
       return [];
     }
 
     try {
       const allFoods = this.getFoodsFromStorage();
       const normalizedQuery = query.toLowerCase().trim();
-      const queryWords = normalizedQuery.split(' ').filter(word => word.length >= 2);
+      const queryWords = normalizedQuery.split(' ').filter(word => word.length >= 1);
       
       // Score-based search
       const searchResults: { food: LocalFoodItem; score: number }[] = [];
