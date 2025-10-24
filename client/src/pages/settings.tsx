@@ -36,11 +36,11 @@ export default function SettingsPage() {
     }
   };
 
-  // Export complete localStorage data as JSON
+  // Export complete localStorage data as JSON (includes food database)
   const exportSnapshot = async () => {
     setIsExporting(true);
     try {
-      // Get all localStorage data
+      // Get all localStorage data (includes food database)
       const completeSnapshot: Record<string, any> = {};
       
       for (let i = 0; i < localStorage.length; i++) {
@@ -58,12 +58,9 @@ export default function SettingsPage() {
         }
       }
       
-      // Get custom foods from IndexedDB
-      const customFoods = await localFoodService.getCustomFoods();
-      if (customFoods.length > 0) {
-        completeSnapshot['__indexeddb_custom_foods'] = customFoods;
-        console.log(`Backing up ${customFoods.length} custom foods`);
-      }
+      // Food database is already in localStorage as 'fitcircle_food_database'
+      const foodCount = completeSnapshot['fitcircle_food_database']?.length || 0;
+      console.log(`Backing up ${Object.keys(completeSnapshot).length} items (including ${foodCount} foods)`);
       
       const blob = new Blob([JSON.stringify(completeSnapshot, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -91,7 +88,7 @@ export default function SettingsPage() {
     }
   };
 
-  // Import data to localStorage from JSON
+  // Import data to localStorage from JSON (includes food database)
   const importSnapshot = (file: File) => {
     setIsImporting(true);
     setStatus('Restoring data...');
@@ -100,32 +97,23 @@ export default function SettingsPage() {
     reader.onload = async (e) => {
       try {
         const content = e.target?.result as string;
-        // File content processed for export
-        
         const snapshot = JSON.parse(content);
-        // Snapshot keys parsed successfully
         
         if (typeof snapshot !== 'object' || !snapshot) {
           throw new Error('Invalid file format');
         }
         
-        // Extract custom foods if present
-        const customFoods = snapshot['__indexeddb_custom_foods'];
-        delete snapshot['__indexeddb_custom_foods']; // Remove from snapshot so it's not stored in localStorage
+        // Handle legacy backups with IndexedDB custom foods
+        const legacyCustomFoods = snapshot['__indexeddb_custom_foods'];
+        delete snapshot['__indexeddb_custom_foods']; // Remove from snapshot
         
         // Clear localStorage first
-        // Clearing localStorage...
         localStorage.clear();
-        
-        // Clear custom foods from IndexedDB before restoring
-        await localFoodService.clearAllCustomFoods();
         
         let count = 0;
         let errors = 0;
         
         for (const [key, value] of Object.entries(snapshot)) {
-          // Processing key restoration
-          
           // Skip invalid keys that contain functions or are clearly invalid
           if (typeof value === 'function' || key === 'setItem' || key.includes('function')) {
             console.log(`Skipping invalid key during restore: ${key}`);
@@ -133,7 +121,7 @@ export default function SettingsPage() {
           }
           
           try {
-            // Store all data in localStorage
+            // Store all data in localStorage (including food database)
             const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
             localStorage.setItem(key, stringValue);
             count++;
@@ -144,21 +132,17 @@ export default function SettingsPage() {
           }
         }
         
-        // Restore custom foods to IndexedDB
-        if (customFoods && Array.isArray(customFoods) && customFoods.length > 0) {
-          console.log(`Restoring ${customFoods.length} custom foods to IndexedDB...`);
-          for (const food of customFoods) {
-            try {
-              await localFoodService.addCustomFood(food);
-            } catch (error) {
-              console.error('Failed to restore custom food:', food.name, error);
-              errors++;
-            }
-          }
-          console.log(`Restored ${customFoods.length} custom foods`);
+        // Handle legacy custom foods from IndexedDB backups
+        if (legacyCustomFoods && Array.isArray(legacyCustomFoods) && legacyCustomFoods.length > 0) {
+          console.log(`Migrating ${legacyCustomFoods.length} legacy custom foods to localStorage...`);
+          const existingFoods = snapshot['fitcircle_food_database'] || [];
+          const allFoods = [...existingFoods, ...legacyCustomFoods];
+          localStorage.setItem('fitcircle_food_database', JSON.stringify(allFoods));
+          console.log(`Migrated ${legacyCustomFoods.length} legacy custom foods`);
         }
         
-        console.log(`Restoration complete: ${count} items restored, ${errors} errors`);
+        const foodCount = snapshot['fitcircle_food_database']?.length || 0;
+        console.log(`Restoration complete: ${count} items restored (including ${foodCount} foods), ${errors} errors`);
         setStatus(`Successfully restored ${count} items!${errors > 0 ? ` (${errors} errors)` : ''}`);
         
         setTimeout(() => {
@@ -194,14 +178,11 @@ export default function SettingsPage() {
     window.location.href = '/?refresh=' + Date.now();
   };
 
-  // Erase all data function
+  // Erase all data function (clears localStorage including food database)
   const eraseAllData = async () => {
     try {
-      // Clear all localStorage data
+      // Clear all localStorage data (includes food database)
       localStorage.clear();
-      
-      // Clear all custom foods from IndexedDB
-      await localFoodService.clearAllCustomFoods();
       
       setStatus('All data has been erased successfully!');
       setShowEraseConfirm(false);
