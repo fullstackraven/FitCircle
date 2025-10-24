@@ -1089,26 +1089,47 @@ export default function FoodTrackerPage() {
                   searchResults.length > 0 ? (
                     <div className="space-y-2">
                       {searchResults.map((food) => (
-                        <div key={food.id} className="bg-gray-700/30 border border-gray-600/50 rounded-xl p-3 hover:bg-gray-700/50 transition-colors" data-testid={`row-food-${food.id}`}>
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="font-medium text-white text-sm">
+                        <div key={food.id} className="bg-slate-800 border border-slate-700 rounded-xl p-4 hover:bg-slate-700/50 transition-colors" data-testid={`row-food-${food.id}`}>
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-medium text-white mb-1">
                                 {food.name}
-                                {food.brand && <span className="text-gray-400 font-normal text-xs ml-1">{food.brand}</span>}
+                              </h3>
+                              {food.brand && (
+                                <p className="text-sm text-slate-400 mb-2">
+                                  {food.brand}
+                                </p>
+                              )}
+                              
+                              {/* Macros */}
+                              <div className="flex flex-wrap gap-2 text-xs mb-2">
+                                <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                                  <span className="text-slate-400">Cal:</span> <span className="text-white font-medium">{food.calories}</span>
+                                </div>
+                                <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                                  <span className="text-slate-400">C:</span> <span className="text-white font-medium">{food.carbs}g</span>
+                                </div>
+                                <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                                  <span className="text-slate-400">P:</span> <span className="text-white font-medium">{food.protein}g</span>
+                                </div>
+                                <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                                  <span className="text-slate-400">F:</span> <span className="text-white font-medium">{food.fat}g</span>
+                                </div>
                               </div>
-                              <div className="text-xs text-gray-400 mt-0.5">
-                                {food.quantity} {food.unit}
-                              </div>
-                              <div className="text-xs text-gray-400 mt-1">
-                                {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
+                              
+                              {/* Serving Size */}
+                              <div className="text-xs text-slate-500">
+                                Per {food.quantity}{food.unit}
                               </div>
                             </div>
-                            <div className="flex items-center space-x-1 ml-3 flex-shrink-0">
+                            
+                            {/* Action Buttons */}
+                            <div className="flex gap-2 flex-shrink-0">
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleEditFoodFromSearch(food)}
-                                className="text-slate-400 hover:text-slate-200 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                                className="text-slate-400 hover:text-slate-200 hover:bg-slate-600"
                                 data-testid={`button-edit-${food.id}`}
                                 title="Edit food"
                               >
@@ -1118,7 +1139,7 @@ export default function FoodTrackerPage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleAddFromSearch(food)}
-                                className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                                className="text-blue-400 hover:text-blue-300 hover:bg-blue-950"
                                 data-testid={`button-add-${food.id}`}
                                 title="Add to meal"
                               >
@@ -1128,7 +1149,7 @@ export default function FoodTrackerPage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleDeleteFoodFromDatabase(food)}
-                                className="text-red-400 hover:text-red-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                                className="text-red-400 hover:text-red-300 hover:bg-red-950"
                                 data-testid={`button-delete-db-${food.id}`}
                                 title="Delete from database"
                               >
@@ -1149,26 +1170,47 @@ export default function FoodTrackerPage() {
                   filteredFoodHistory.length > 0 ? (
                     <div className="space-y-2">
                       {filteredFoodHistory.slice(0, 10).map((food) => (
-                        <div key={food.id} className="bg-gray-700/30 border border-gray-600/50 rounded-xl p-3 hover:bg-gray-700/50 transition-colors" data-testid={`row-food-${food.id}`}>
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="font-medium text-white text-sm">
+                        <div key={food.id} className="bg-slate-800 border border-slate-700 rounded-xl p-4 hover:bg-slate-700/50 transition-colors" data-testid={`row-food-${food.id}`}>
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-medium text-white mb-1">
                                 {food.name}
-                                {food.brand && <span className="text-gray-400 font-normal text-xs ml-1">{food.brand}</span>}
+                              </h3>
+                              {food.brand && (
+                                <p className="text-sm text-slate-400 mb-2">
+                                  {food.brand}
+                                </p>
+                              )}
+                              
+                              {/* Macros */}
+                              <div className="flex flex-wrap gap-2 text-xs mb-2">
+                                <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                                  <span className="text-slate-400">Cal:</span> <span className="text-white font-medium">{food.calories}</span>
+                                </div>
+                                <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                                  <span className="text-slate-400">C:</span> <span className="text-white font-medium">{food.carbs}g</span>
+                                </div>
+                                <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                                  <span className="text-slate-400">P:</span> <span className="text-white font-medium">{food.protein}g</span>
+                                </div>
+                                <div className="px-2 py-1 bg-slate-700 rounded-xl">
+                                  <span className="text-slate-400">F:</span> <span className="text-white font-medium">{food.fat}g</span>
+                                </div>
                               </div>
-                              <div className="text-xs text-gray-400 mt-0.5">
-                                {food.quantity} {food.unit}
-                              </div>
-                              <div className="text-xs text-gray-400 mt-1">
-                                {food.calories} cal • {food.carbs}g carbs • {food.protein}g protein • {food.fat}g fat
+                              
+                              {/* Serving Size */}
+                              <div className="text-xs text-slate-500">
+                                Per {food.quantity}{food.unit}
                               </div>
                             </div>
-                            <div className="flex items-center space-x-1 ml-3 flex-shrink-0">
+                            
+                            {/* Add Button */}
+                            <div className="flex gap-2 flex-shrink-0">
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleAddFromSearch(food)}
-                                className="text-blue-400 hover:text-blue-300 hover:bg-gray-600 rounded-full w-8 h-8 p-0"
+                                className="text-blue-400 hover:text-blue-300 hover:bg-blue-950"
                                 data-testid={`button-add-${food.id}`}
                                 title="Add to meal"
                               >
