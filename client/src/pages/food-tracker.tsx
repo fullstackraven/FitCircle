@@ -264,7 +264,8 @@ export default function FoodTrackerPage() {
   useEffect(() => {
     // Load food entries for selected date
     const stored = safeParseJSON(localStorage.getItem(`fitcircle_food_${selectedDate}`), []);
-    setFoodEntries(stored);
+    // Ensure stored is an array
+    setFoodEntries(Array.isArray(stored) ? stored : []);
 
     // Load macro targets directly from what fitness calculator displays/stores
     const loadMacroTargets = () => {
@@ -311,7 +312,14 @@ export default function FoodTrackerPage() {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key && key.startsWith('fitcircle_food_')) {
-          const entries = safeParseJSON(localStorage.getItem(key), []) as FoodEntry[];
+          const entries = safeParseJSON(localStorage.getItem(key), []);
+          
+          // Ensure entries is an array before iterating
+          if (!Array.isArray(entries)) {
+            console.warn(`Invalid data format for key ${key}, skipping`);
+            continue;
+          }
+          
           entries.forEach(entry => {
             // Handle legacy entries that might not have the new fields
             const enhancedEntry: FoodEntry = {
