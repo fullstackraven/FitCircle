@@ -263,7 +263,7 @@ export default function FoodDatabasePage() {
                           {food.name}
                         </h3>
                         {food.brand && (
-                          <p className="text-sm text-slate-400 truncate mb-2" data-testid={`text-brand-${food.id}`}>
+                          <p className="text-sm text-slate-400 mb-2" data-testid={`text-brand-${food.id}`}>
                             {food.brand}
                           </p>
                         )}
