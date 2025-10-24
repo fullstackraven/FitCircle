@@ -38,6 +38,7 @@ export interface FoodEntry {
     saturatedFat?: number;
   };
 }
+
 export interface LocalFoodItem {
   id: string;
   name: string;
@@ -99,7 +100,7 @@ export interface AddCustomFoodResponse {
   error?: string;
 }
 
-// IndexedDB helper for custom foods
+// IndexedDB helper for migration only
 class CustomFoodStore {
   private dbName = 'FitCircleCustomFoods';
   private storeName = 'foods';
@@ -124,27 +125,6 @@ class CustomFoodStore {
     });
   }
 
-  async addFood(food: LocalFoodItem): Promise<void> {
-    const db = await this.openDB();
-    const transaction = db.transaction([this.storeName], 'readwrite');
-    const store = transaction.objectStore(this.storeName);
-    await store.add(food);
-  }
-
-  async updateFood(food: LocalFoodItem): Promise<void> {
-    const db = await this.openDB();
-    const transaction = db.transaction([this.storeName], 'readwrite');
-    const store = transaction.objectStore(this.storeName);
-    await store.put(food);
-  }
-
-  async deleteFood(id: string): Promise<void> {
-    const db = await this.openDB();
-    const transaction = db.transaction([this.storeName], 'readwrite');
-    const store = transaction.objectStore(this.storeName);
-    await store.delete(id);
-  }
-
   async getAllFoods(): Promise<LocalFoodItem[]> {
     try {
       const db = await this.openDB();
@@ -161,89 +141,106 @@ class CustomFoodStore {
       return [];
     }
   }
-
-  async getFoodByBarcode(barcode: string): Promise<LocalFoodItem | null> {
-    try {
-      const db = await this.openDB();
-      const transaction = db.transaction([this.storeName], 'readonly');
-      const store = transaction.objectStore(this.storeName);
-      const index = store.index('barcode');
-      
-      return new Promise((resolve, reject) => {
-        const request = index.get(barcode);
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve(request.result || null);
-      });
-    } catch (error) {
-      console.error('Error getting food by barcode from IndexedDB:', error);
-      return null;
-    }
-  }
 }
 
 // Local Food Service class
 export class LocalFoodService {
-  private customFoodStore: CustomFoodStore;
-  private localFoods: LocalFoodItem[];
   private searchIndex: Map<string, LocalFoodItem[]>;
-  private deletedBuiltInFoodIds: Set<string>;
-  private readonly DELETED_FOODS_KEY = 'fitcircle_deleted_builtin_foods';
+  private readonly FOOD_DATABASE_KEY = 'fitcircle_food_database';
+  private readonly MIGRATION_FLAG_KEY = 'fitcircle_food_database_migrated';
 
   constructor() {
-    this.customFoodStore = new CustomFoodStore();
-    this.localFoods = comprehensiveFoods as LocalFoodItem[];
     this.searchIndex = new Map();
-    this.deletedBuiltInFoodIds = this.loadDeletedFoodIds();
-    this.buildSearchIndex();
+    this.migrateToLocalStorage();
   }
 
-  // Load deleted food IDs from localStorage
-  private loadDeletedFoodIds(): Set<string> {
+  // Migrate from JSON and IndexedDB to localStorage (one-time operation)
+  private async migrateToLocalStorage(): Promise<void> {
     try {
-      const stored = localStorage.getItem(this.DELETED_FOODS_KEY);
+      const migrated = localStorage.getItem(this.MIGRATION_FLAG_KEY);
+      
+      if (!migrated) {
+        console.log('First load: Migrating food database to localStorage...');
+        
+        // Get custom foods from IndexedDB
+        const customFoodStore = new CustomFoodStore();
+        const customFoods = await customFoodStore.getAllFoods();
+        console.log(`Found ${customFoods.length} custom foods in IndexedDB`);
+        
+        // Get built-in foods from JSON
+        const builtInFoods = comprehensiveFoods as LocalFoodItem[];
+        console.log(`Found ${builtInFoods.length} built-in foods from JSON`);
+        
+        // Load previously deleted built-in food IDs
+        const deletedIds = this.loadLegacyDeletedFoodIds();
+        
+        // Filter out deleted built-in foods
+        const activeBuiltInFoods = builtInFoods.filter(food => !deletedIds.has(food.id));
+        console.log(`Keeping ${activeBuiltInFoods.length} built-in foods (${deletedIds.size} were deleted)`);
+        
+        // Combine all foods
+        const allFoods = [...activeBuiltInFoods, ...customFoods];
+        
+        // Save to localStorage
+        localStorage.setItem(this.FOOD_DATABASE_KEY, JSON.stringify(allFoods));
+        localStorage.setItem(this.MIGRATION_FLAG_KEY, 'true');
+        
+        console.log(`✅ Migration complete: ${allFoods.length} foods saved to localStorage`);
+        
+        // Clean up legacy deleted food IDs
+        localStorage.removeItem('fitcircle_deleted_builtin_foods');
+      }
+      
+      // Build search index
+      this.buildSearchIndex();
+    } catch (error) {
+      console.error('Error during migration:', error);
+    }
+  }
+
+  // Load legacy deleted food IDs from old system
+  private loadLegacyDeletedFoodIds(): Set<string> {
+    try {
+      const stored = localStorage.getItem('fitcircle_deleted_builtin_foods');
       if (stored) {
         return new Set(JSON.parse(stored));
       }
     } catch (error) {
-      console.error('Error loading deleted food IDs:', error);
+      console.error('Error loading legacy deleted food IDs:', error);
     }
     return new Set();
   }
 
-  // Save deleted food IDs to localStorage
-  private saveDeletedFoodIds(): void {
+  // Get all foods from localStorage
+  private getFoodsFromStorage(): LocalFoodItem[] {
     try {
-      localStorage.setItem(this.DELETED_FOODS_KEY, JSON.stringify(Array.from(this.deletedBuiltInFoodIds)));
+      const stored = localStorage.getItem(this.FOOD_DATABASE_KEY);
+      if (stored) {
+        return JSON.parse(stored);
+      }
     } catch (error) {
-      console.error('Error saving deleted food IDs:', error);
+      console.error('Error loading foods from localStorage:', error);
     }
+    return [];
   }
 
-  // Mark a built-in food as deleted
-  deleteBuiltInFood(id: string): { success: boolean; error?: string } {
+  // Save all foods to localStorage
+  private saveFoodsToStorage(foods: LocalFoodItem[]): void {
     try {
-      this.deletedBuiltInFoodIds.add(id);
-      this.saveDeletedFoodIds();
-      return { success: true };
+      localStorage.setItem(this.FOOD_DATABASE_KEY, JSON.stringify(foods));
     } catch (error) {
-      console.error('Error deleting built-in food:', error);
-      return {
-        success: false,
-        error: 'Failed to delete food. Please try again.'
-      };
+      console.error('Error saving foods to localStorage:', error);
     }
-  }
-
-  // Filter out deleted built-in foods
-  private filterDeletedFoods(foods: LocalFoodItem[]): LocalFoodItem[] {
-    return foods.filter(food => !this.deletedBuiltInFoodIds.has(food.id));
   }
 
   // Build a search index for faster lookups
   private buildSearchIndex(): void {
-    console.log(`Building search index for ${this.localFoods.length} foods...`);
+    const foods = this.getFoodsFromStorage();
+    console.log(`Building search index for ${foods.length} foods...`);
     
-    this.localFoods.forEach(food => {
+    this.searchIndex.clear();
+    
+    foods.forEach(food => {
       const searchKey = this.getSearchKey(food);
       const words = searchKey.split(' ');
       
@@ -273,12 +270,7 @@ export class LocalFoodService {
     }
 
     try {
-      // Get custom foods from IndexedDB
-      const customFoods = await this.customFoodStore.getAllFoods();
-      // Filter out deleted built-in foods
-      const availableBuiltInFoods = this.filterDeletedFoods(this.localFoods);
-      const allFoods = [...availableBuiltInFoods, ...customFoods];
-
+      const allFoods = this.getFoodsFromStorage();
       const normalizedQuery = query.toLowerCase().trim();
       const queryWords = normalizedQuery.split(' ').filter(word => word.length >= 2);
       
@@ -340,23 +332,16 @@ export class LocalFoodService {
   // Get product by barcode from local data
   async getProductByBarcode(barcode: string): Promise<LocalFoodItem | null> {
     try {
-      // Check custom foods first
-      const customFood = await this.customFoodStore.getFoodByBarcode(barcode);
-      if (customFood) {
-        return customFood;
-      }
-
-      // Check comprehensive foods
-      const localFood = this.localFoods.find(food => food.barcode === barcode);
-      return localFood || null;
-
+      const foods = this.getFoodsFromStorage();
+      const food = foods.find(f => f.barcode === barcode);
+      return food || null;
     } catch (error) {
       console.error('Error getting product by barcode:', error);
       return null;
     }
   }
 
-  // Add custom food to IndexedDB
+  // Add custom food (now stored in localStorage)
   async addCustomFood(input: CustomFoodInput): Promise<AddCustomFoodResponse> {
     try {
       // Validate required fields (allow 0 values, only reject undefined/NaN)
@@ -409,8 +394,11 @@ export class LocalFoodService {
         };
       }
 
-      // Save to IndexedDB
-      await this.customFoodStore.addFood(customFood);
+      // Add to localStorage
+      const foods = this.getFoodsFromStorage();
+      foods.push(customFood);
+      this.saveFoodsToStorage(foods);
+      this.buildSearchIndex();
 
       console.log('Custom food added successfully:', customFood.name);
       return {
@@ -426,6 +414,114 @@ export class LocalFoodService {
         error: 'Failed to save custom food. Please try again.'
       };
     }
+  }
+
+  // Update food (works for both built-in and custom foods)
+  async updateFood(id: string, input: Partial<CustomFoodInput>): Promise<AddCustomFoodResponse> {
+    try {
+      const foods = this.getFoodsFromStorage();
+      const foodIndex = foods.findIndex(food => food.id === id);
+      
+      if (foodIndex === -1) {
+        return {
+          success: false,
+          error: 'Food not found.'
+        };
+      }
+
+      const existingFood = foods[foodIndex];
+      const updatedFood: LocalFoodItem = {
+        ...existingFood,
+        ...input,
+        id: existingFood.id // Ensure ID doesn't change
+      };
+
+      // Recalculate nutrition per 100g if quantity changed
+      if (input.quantity && input.quantity !== 100) {
+        const multiplier = 100 / input.quantity;
+        updatedFood.nutritionPer100g = {
+          calories: updatedFood.calories * multiplier,
+          carbs: updatedFood.carbs * multiplier,
+          protein: updatedFood.protein * multiplier,
+          fat: updatedFood.fat * multiplier,
+          fiber: updatedFood.fiber !== undefined ? updatedFood.fiber * multiplier : undefined,
+          sugar: updatedFood.sugar !== undefined ? updatedFood.sugar * multiplier : undefined,
+          sodium: updatedFood.sodium !== undefined ? updatedFood.sodium * multiplier : undefined,
+          saturatedFat: updatedFood.saturatedFat !== undefined ? updatedFood.saturatedFat * multiplier : undefined
+        };
+      }
+
+      foods[foodIndex] = updatedFood;
+      this.saveFoodsToStorage(foods);
+      this.buildSearchIndex();
+
+      return {
+        success: true,
+        food: updatedFood,
+        message: `"${updatedFood.name}" has been updated.`
+      };
+
+    } catch (error) {
+      console.error('Error updating food:', error);
+      return {
+        success: false,
+        error: 'Failed to update food. Please try again.'
+      };
+    }
+  }
+
+  // Delete food (works for both built-in and custom foods)
+  async deleteFood(id: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const foods = this.getFoodsFromStorage();
+      const filteredFoods = foods.filter(food => food.id !== id);
+      
+      if (filteredFoods.length === foods.length) {
+        return {
+          success: false,
+          error: 'Food not found.'
+        };
+      }
+
+      this.saveFoodsToStorage(filteredFoods);
+      this.buildSearchIndex();
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error deleting food:', error);
+      return {
+        success: false,
+        error: 'Failed to delete food. Please try again.'
+      };
+    }
+  }
+
+  // Legacy method for compatibility - now just calls deleteFood
+  deleteBuiltInFood(id: string): { success: boolean; error?: string } {
+    const foods = this.getFoodsFromStorage();
+    const filteredFoods = foods.filter(food => food.id !== id);
+    
+    if (filteredFoods.length === foods.length) {
+      return {
+        success: false,
+        error: 'Food not found.'
+      };
+    }
+
+    this.saveFoodsToStorage(filteredFoods);
+    this.buildSearchIndex();
+    
+    return { success: true };
+  }
+
+  // Legacy method for compatibility - now just calls deleteFood
+  async deleteCustomFood(id: string): Promise<{ success: boolean; error?: string }> {
+    return this.deleteFood(id);
+  }
+
+  // Legacy method for compatibility
+  async updateCustomFood(id: string, input: Partial<CustomFoodInput>): Promise<AddCustomFoodResponse> {
+    return this.updateFood(id, input);
   }
 
   // Convert LocalFoodItem to FoodEntry format
@@ -457,68 +553,19 @@ export class LocalFoodService {
     };
   }
 
-  // Update custom food
-  async updateCustomFood(id: string, input: Partial<CustomFoodInput>): Promise<AddCustomFoodResponse> {
-    try {
-      const customFoods = await this.customFoodStore.getAllFoods();
-      const existingFood = customFoods.find(food => food.id === id);
-      
-      if (!existingFood) {
-        return {
-          success: false,
-          error: 'Custom food not found.'
-        };
-      }
-
-      const updatedFood: LocalFoodItem = {
-        ...existingFood,
-        ...input,
-        id: existingFood.id // Ensure ID doesn't change
-      };
-
-      await this.customFoodStore.updateFood(updatedFood);
-
-      return {
-        success: true,
-        food: updatedFood,
-        message: `"${updatedFood.name}" has been updated.`
-      };
-
-    } catch (error) {
-      console.error('Error updating custom food:', error);
-      return {
-        success: false,
-        error: 'Failed to update custom food. Please try again.'
-      };
-    }
-  }
-
-  // Delete custom food
-  async deleteCustomFood(id: string): Promise<{ success: boolean; error?: string }> {
-    try {
-      await this.customFoodStore.deleteFood(id);
-      return { success: true };
-    } catch (error) {
-      console.error('Error deleting custom food:', error);
-      return {
-        success: false,
-        error: 'Failed to delete custom food. Please try again.'
-      };
-    }
-  }
-
   // Get all custom foods
   async getCustomFoods(): Promise<LocalFoodItem[]> {
-    return await this.customFoodStore.getAllFoods();
+    const foods = this.getFoodsFromStorage();
+    return foods.filter(food => food.id.startsWith('custom-'));
   }
 
   // Clear all custom foods
   async clearAllCustomFoods(): Promise<{ success: boolean; error?: string }> {
     try {
-      const customFoods = await this.customFoodStore.getAllFoods();
-      for (const food of customFoods) {
-        await this.customFoodStore.deleteFood(food.id);
-      }
+      const foods = this.getFoodsFromStorage();
+      const nonCustomFoods = foods.filter(food => !food.id.startsWith('custom-'));
+      this.saveFoodsToStorage(nonCustomFoods);
+      this.buildSearchIndex();
       return { success: true };
     } catch (error) {
       console.error('Error clearing custom foods:', error);
@@ -529,12 +576,29 @@ export class LocalFoodService {
     }
   }
 
-  // Get all foods (local database + custom foods)
+  // Get all foods from localStorage
   async getAllFoods(): Promise<LocalFoodItem[]> {
-    const customFoods = await this.customFoodStore.getAllFoods();
-    // Filter out deleted built-in foods
-    const availableBuiltInFoods = this.filterDeletedFoods(this.localFoods);
-    return [...availableBuiltInFoods, ...customFoods];
+    return this.getFoodsFromStorage();
+  }
+
+  // Get food database for backup
+  getFoodDatabaseForBackup(): LocalFoodItem[] {
+    return this.getFoodsFromStorage();
+  }
+
+  // Restore food database from backup
+  restoreFoodDatabase(foods: LocalFoodItem[]): { success: boolean; error?: string } {
+    try {
+      this.saveFoodsToStorage(foods);
+      this.buildSearchIndex();
+      return { success: true };
+    } catch (error) {
+      console.error('Error restoring food database:', error);
+      return {
+        success: false,
+        error: 'Failed to restore food database. Please try again.'
+      };
+    }
   }
 }
 
