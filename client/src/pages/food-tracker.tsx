@@ -1083,13 +1083,13 @@ export default function FoodTrackerPage() {
                   
               
               {/* Food List */}
-              <div className="flex-1 overflow-y-auto pr-1 min-h-0">
+              <div className="flex-1 overflow-y-auto pr-1 min-h-0 touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
                 {searchQuery ? (
                   // Search Results
                   searchResults.length > 0 ? (
                     <div className="space-y-2">
                       {searchResults.map((food) => (
-                        <div key={food.id} className="bg-slate-800 border border-slate-700 rounded-xl p-4 hover:bg-slate-700/50 transition-colors" data-testid={`row-food-${food.id}`}>
+                        <div key={food.id} className="bg-slate-800 border border-slate-700 rounded-xl p-4 transition-colors" data-testid={`row-food-${food.id}`}>
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
                               <h3 className="font-medium text-white mb-1">
@@ -1170,7 +1170,7 @@ export default function FoodTrackerPage() {
                   filteredFoodHistory.length > 0 ? (
                     <div className="space-y-2">
                       {filteredFoodHistory.slice(0, 10).map((food) => (
-                        <div key={food.id} className="bg-slate-800 border border-slate-700 rounded-xl p-4 hover:bg-slate-700/50 transition-colors" data-testid={`row-food-${food.id}`}>
+                        <div key={food.id} className="bg-slate-800 border border-slate-700 rounded-xl p-4 transition-colors" data-testid={`row-food-${food.id}`}>
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
                               <h3 className="font-medium text-white mb-1">
