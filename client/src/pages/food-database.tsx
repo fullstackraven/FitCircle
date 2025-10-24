@@ -220,7 +220,7 @@ export default function FoodDatabasePage() {
         </div>
 
         {/* Food List */}
-        <div className="pb-24">
+        <div className="pb-24 overflow-y-auto max-h-[calc(100vh-300px)]">
           {loading ? (
             <div className="text-center text-slate-400 py-12">
               Loading food database...
@@ -231,7 +231,7 @@ export default function FoodDatabasePage() {
             </div>
           ) : (
             <>
-              <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-400px)]">
+              <div className="space-y-2">
                 {paginatedFoods.map((food) => {
                 const isCustom = food.id.startsWith('custom-');
                 
@@ -309,9 +309,9 @@ export default function FoodDatabasePage() {
               })}
               </div>
 
-              {/* Pagination Controls */}
+              {/* Pagination Controls - appears at bottom of list */}
               {totalPages > 1 && (
-                <div className="mt-6 flex items-center justify-center gap-4">
+                <div className="mt-8 mb-4 flex items-center justify-center gap-4">
                   <Button
                     onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                     disabled={currentPage === 1}
