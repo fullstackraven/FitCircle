@@ -24,10 +24,12 @@ Preferred communication style: Simple, everyday language.
 - **Development**: Hot reloading with Vite middleware integration.
 
 ### Data Storage & Persistence
-- **Primary Storage**: Local browser localStorage for all workout data, historical logs, measurements, hydration, meditation, and goals.
+- **Primary Storage**: Local browser localStorage for all workout data, historical logs, measurements, hydration, meditation, goals, and food database.
+- **Food Database**: Fully editable 480-item food database stored in localStorage (reduced from 29,766 to eliminate nonsensical items). Includes 465 built-in foods and supports unlimited custom foods.
+- **Migration System**: One-time automatic migration from JSON and IndexedDB to localStorage on first load, preserving all existing data.
 - **Persistence Strategy**: Automatic localStorage sync on every data change, with structured JSON.
 - **Storage Management**: Standardized storage keys and `safeParseJSON` utility for error handling.
-- **Backup & Recovery**: Comprehensive localStorage snapshot system for export/import.
+- **Backup & Recovery**: Comprehensive localStorage snapshot system for export/import, including full food database with backward compatibility for legacy backups.
 - **Database (Future)**: PostgreSQL with Neon serverless driver and Drizzle ORM for potential server-side data.
 
 ### Key Features & Design Patterns
@@ -38,7 +40,7 @@ Preferred communication style: Simple, everyday language.
 - **Wellness Score**: Aggregate score on Goals page based on various metrics.
 - **AI Trainer Chatbot**: Intelligent AI trainer (Claude 4.0 Sonnet based, currently hidden) for personalized advice.
 - **Energy Level Tracking**: Circular tap interface (1-10 scale) on calendar page with daily logging.
-- **Food Tracker**: Macro tracking with real-time data synchronization.
+- **Food Tracker**: Macro tracking with real-time data synchronization. Features a localStorage-based food database (480 foods, 98.4% reduced from original 29,766) with full CRUD capabilities - add, edit, delete any food item through the database UI.
 - **Quote System**: 46 inspirational quotes with deterministic daily selection.
 - **Error Handling**: Comprehensive try-catch blocks and null checks across all localStorage operations and data processing for stability.
 - **Code Optimization**: Centralized utilities, standardized storage management, and reduced unused UI components (17 removed).
