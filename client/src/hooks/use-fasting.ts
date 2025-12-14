@@ -45,24 +45,42 @@ export function useFasting() {
     setLogs(prev => prev.filter(log => log.id !== id));
   };
 
-  // Get last 10 logs fasting stats
+  // Get last 10 CALENDAR DAYS fasting stats (not just logged days)
+  // Days without logs count as 0
   const getLast10LogsProgress = () => {
-    // Get the most recent 10 fasting logs
-    const recentLogs = logs
-      .sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime())
-      .slice(0, 10);
-    
-    // Calculate total hours from each log
-    const logHours = recentLogs.map(log => {
-      const startDateTime = new Date(`${log.startDate}T${log.startTime}`);
-      const endDateTime = new Date(`${log.endDate}T${log.endTime}`);
-      return (endDateTime.getTime() - startDateTime.getTime()) / (1000 * 60 * 60);
-    });
-    
-    const totalHours = logHours.reduce((sum, hours) => sum + hours, 0);
-    const dailyGoal = parseFloat(localStorage.getItem('fitcircle_goal_fasting') || '16'); // Default 16h
-    const targetGoal = dailyGoal * 10; // 10 logs worth of daily goals
-    // Always divide by 10, even if there are fewer logs (missing logs count as 0)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let totalHours = 0;
+    let daysWithLogs = 0;
+
+    // Check each of the last 10 calendar days
+    for (let i = 0; i < 10; i++) {
+      const checkDate = new Date(today);
+      checkDate.setDate(today.getDate() - i);
+      const dateStr = checkDate.toISOString().split('T')[0];
+      
+      // Find logs that ended on this date
+      const dayLogs = logs.filter(log => log.endDate === dateStr);
+      
+      // Sum up hours for fasts that ended on this day
+      dayLogs.forEach(log => {
+        const startDateTime = new Date(`${log.startDate}T${log.startTime}`);
+        const endDateTime = new Date(`${log.endDate}T${log.endTime}`);
+        const hours = (endDateTime.getTime() - startDateTime.getTime()) / (1000 * 60 * 60);
+        if (hours > 0 && hours < 48) { // Valid fasting duration
+          totalHours += hours;
+        }
+      });
+      
+      if (dayLogs.length > 0) {
+        daysWithLogs++;
+      }
+      // Days without logs contribute 0 (already 0)
+    }
+
+    const dailyGoal = parseFloat(localStorage.getItem('fitcircle_goal_fasting') || '16');
+    const targetGoal = dailyGoal * 10; // 10 days worth of daily goals
+    // Always divide by 10 calendar days, not just logged days
     const averageHours = totalHours / 10;
     const goalProgress = targetGoal > 0 ? Math.min((totalHours / targetGoal) * 100, 100) : 0;
     const remaining = Math.max(0, targetGoal - totalHours);
@@ -73,7 +91,7 @@ export function useFasting() {
       targetGoal,
       goalProgress: Math.round(goalProgress * 10) / 10,
       remaining: Math.round(remaining * 10) / 10,
-      logsCount: recentLogs.length
+      logsCount: daysWithLogs
     };
   };
 

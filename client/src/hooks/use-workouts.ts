@@ -701,7 +701,10 @@ export function useWorkouts() {
       }
     });
 
-    const monthlyConsistency = daysInRange > 0 ? (monthlyCompletedDays / daysInRange) * 100 : 0;
+    // Cap consistency at 100% maximum
+    const monthlyConsistency = daysInRange > 0 
+      ? Math.min((monthlyCompletedDays / daysInRange) * 100, 100) 
+      : 0;
 
     return {
       monthlyReps,

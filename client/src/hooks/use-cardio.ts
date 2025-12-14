@@ -482,18 +482,30 @@ export function useCardio() {
   };
 
   const getLast10LogsAverage = () => {
-    // Get the most recent 10 daily logs regardless of date
-    const recentLogs = Object.values(data.dailyLogs)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 10);
+    // Calculate average over the last 10 CALENDAR DAYS (not just logged days)
+    // Days without activity count as 0
+    const today = new Date(getTodayString() + 'T00:00:00');
+    let totalValue = 0;
+    let daysWithLogs = 0;
 
-    const totalValue = data.goal.type === 'duration'
-      ? recentLogs.reduce((sum, log) => sum + log.totalDuration, 0)
-      : recentLogs.reduce((sum, log) => sum + log.totalDistance, 0);
+    // Check each of the last 10 calendar days
+    for (let i = 0; i < 10; i++) {
+      const checkDate = new Date(today);
+      checkDate.setDate(today.getDate() - i);
+      const dateStr = checkDate.toISOString().split('T')[0];
+      
+      const dayLog = data.dailyLogs[dateStr];
+      if (dayLog) {
+        totalValue += data.goal.type === 'duration' ? dayLog.totalDuration : dayLog.totalDistance;
+        daysWithLogs++;
+      }
+      // Days without logs contribute 0 to total (already 0)
+    }
 
-    const average = recentLogs.length > 0 ? totalValue / recentLogs.length : 0;
+    // Always divide by 10 calendar days, not just logged days
+    const average = totalValue / 10;
     const progressToGoal = data.goal.target > 0 ? (average / data.goal.target) * 100 : 0;
-    const targetGoal = data.goal.target * 10; // 10 logs worth of target goal
+    const targetGoal = data.goal.target * 10; // 10 days worth of target goal
     const goalProgress = targetGoal > 0 ? Math.min((totalValue / targetGoal) * 100, 100) : 0;
 
     return {
@@ -503,7 +515,7 @@ export function useCardio() {
       progressToGoal: Math.min(progressToGoal, 100),
       goalProgress: Math.round(goalProgress * 10) / 10,
       dailyTarget: Math.round(data.goal.target * 10) / 10,
-      logsCount: recentLogs.length
+      logsCount: daysWithLogs
     };
   };
 
