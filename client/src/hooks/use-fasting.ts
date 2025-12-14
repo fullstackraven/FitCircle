@@ -49,15 +49,18 @@ export function useFasting() {
   // Days without logs count as 0
   const getLast10LogsProgress = () => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
     let totalHours = 0;
     let daysWithLogs = 0;
 
-    // Check each of the last 10 calendar days
+    // Check each of the last 10 calendar days using LOCAL date strings
     for (let i = 0; i < 10; i++) {
       const checkDate = new Date(today);
       checkDate.setDate(today.getDate() - i);
-      const dateStr = checkDate.toISOString().split('T')[0];
+      // Use local date formatting for consistent timezone handling (not toISOString which is UTC)
+      const year = checkDate.getFullYear();
+      const month = String(checkDate.getMonth() + 1).padStart(2, '0');
+      const day = String(checkDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
       
       // Find logs that ended on this date
       const dayLogs = logs.filter(log => log.endDate === dateStr);

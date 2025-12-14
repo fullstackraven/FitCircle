@@ -484,15 +484,19 @@ export function useCardio() {
   const getLast10LogsAverage = () => {
     // Calculate average over the last 10 CALENDAR DAYS (not just logged days)
     // Days without activity count as 0
-    const today = new Date(getTodayString() + 'T00:00:00');
+    const today = new Date();
     let totalValue = 0;
     let daysWithLogs = 0;
 
-    // Check each of the last 10 calendar days
+    // Check each of the last 10 calendar days using LOCAL date strings
     for (let i = 0; i < 10; i++) {
       const checkDate = new Date(today);
       checkDate.setDate(today.getDate() - i);
-      const dateStr = checkDate.toISOString().split('T')[0];
+      // Use getDateString for consistent local timezone handling (not toISOString which is UTC)
+      const year = checkDate.getFullYear();
+      const month = String(checkDate.getMonth() + 1).padStart(2, '0');
+      const day = String(checkDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
       
       const dayLog = data.dailyLogs[dateStr];
       if (dayLog) {
