@@ -691,9 +691,11 @@ export function useWorkouts() {
     });
 
     // Add recovery days as completed days (for consistency calculation only)
+    // BUT exclude today - today should only be "completed" if goals are met, not just because it's a recovery day
     recoveryDays.forEach((dateStr: string) => {
+      if (dateStr === today) return; // Today is already handled above - don't double count as recovery
       const date = new Date(dateStr + 'T00:00:00');
-      if (date.getFullYear() === year && date.getMonth() === month && dateStr <= today) {
+      if (date.getFullYear() === year && date.getMonth() === month && dateStr < today) {
         // Only count recovery days if there's no workout logged for that day
         const dayLog = data.dailyLogs[dateStr] || {};
         const hasWorkouts = workoutArray.some(w => getCountFromLogEntry(dayLog[w.id]) > 0);
