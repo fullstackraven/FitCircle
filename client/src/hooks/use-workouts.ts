@@ -585,20 +585,44 @@ export function useWorkouts() {
       };
     }
 
-    // Find first workout date in this specific month
-    let firstWorkoutDateInMonth: string | null = null;
+    // Get recovery days first (needed to find first active date)
+    const recoveryData = localStorage.getItem('fitcircle_recovery_data');
+    let recoveryDays: string[] = [];
+    if (recoveryData) {
+      try {
+        const parsed = JSON.parse(recoveryData);
+        recoveryDays = parsed.recoveryDays || [];
+      } catch (error) {
+        recoveryDays = [];
+      }
+    }
+
+    // Find first active date in this month (either workout OR recovery day)
+    let firstActiveDateInMonth: string | null = null;
+    
+    // Check workout days
     Object.keys(data.dailyLogs || {}).forEach(dateStr => {
       const date = new Date(dateStr + 'T00:00:00');
       if (date.getFullYear() === year && date.getMonth() === month) {
         const dayLog = data.dailyLogs[dateStr];
         const hasAnyReps = workoutArray.some(w => getCountFromLogEntry(dayLog[w.id]) > 0);
-        if (hasAnyReps && (!firstWorkoutDateInMonth || dateStr < firstWorkoutDateInMonth)) {
-          firstWorkoutDateInMonth = dateStr;
+        if (hasAnyReps && (!firstActiveDateInMonth || dateStr < firstActiveDateInMonth)) {
+          firstActiveDateInMonth = dateStr;
+        }
+      }
+    });
+    
+    // Check recovery days in this month
+    recoveryDays.forEach(dateStr => {
+      const date = new Date(dateStr + 'T00:00:00');
+      if (date.getFullYear() === year && date.getMonth() === month) {
+        if (!firstActiveDateInMonth || dateStr < firstActiveDateInMonth) {
+          firstActiveDateInMonth = dateStr;
         }
       }
     });
 
-    if (!firstWorkoutDateInMonth) {
+    if (!firstActiveDateInMonth) {
       return {
         monthlyReps: 0,
         monthlyCompletedDays: 0,
@@ -611,22 +635,10 @@ export function useWorkouts() {
     const isCurrentMonth = (todayDate.getFullYear() === year && todayDate.getMonth() === month);
     const endDateStr = isCurrentMonth ? today : getDateString(new Date(year, month + 1, 0));
     
-    // Calculate days in range (from first workout to end date)
-    const firstDate = new Date(firstWorkoutDateInMonth + 'T00:00:00');
+    // Calculate days in range (from first active date to end date)
+    const firstDate = new Date(firstActiveDateInMonth + 'T00:00:00');
     const endDate = new Date(endDateStr + 'T00:00:00');
     const daysInRange = Math.floor((endDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-
-    // Get recovery days
-    const recoveryData = localStorage.getItem('fitcircle_recovery_data');
-    let recoveryDays: string[] = [];
-    if (recoveryData) {
-      try {
-        const parsed = JSON.parse(recoveryData);
-        recoveryDays = parsed.recoveryDays || [];
-      } catch (error) {
-        recoveryDays = [];
-      }
-    }
 
     // Iterate through each day from first workout to end date (same approach as getTotalStats)
     for (let d = new Date(firstDate); d <= endDate; d.setDate(d.getDate() + 1)) {
