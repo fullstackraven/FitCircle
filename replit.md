@@ -45,6 +45,17 @@ Preferred communication style: Simple, everyday language.
 - **Error Handling**: Comprehensive try-catch blocks and null checks across all localStorage operations and data processing for stability.
 - **Code Optimization**: Centralized utilities, standardized storage management, and reduced unused UI components (17 removed).
 
+## Recent Changes (December 2025)
+
+### Bug Fixes
+- **Timezone Handling**: All date operations now use local timezone helpers (`getTodayString()`, `getDateString()`) instead of `.toISOString().split('T')[0]` to prevent UTC vs local timezone mismatches. Fixed in: use-supplements.ts, meditation-calc.ts, use-goals.ts, goals-utils.ts.
+- **Workout Consistency Calculations**: Rewrote `getMonthlyStats` and `getTotalStats` in use-workouts.ts to use day-by-day iteration from first active date. Recovery days now count as completed days but only when no workout was logged (mutual exclusivity prevents double-counting). Consistency capped at 100%.
+- **PWA Caching**: Updated cache name to `fitcircle-v6-2025-12-15`, switched JS/CSS to network-first strategy to prevent stale code, fixed service worker registration path from `/service-worker.js` to `/sw.js`.
+
+### Design Decisions
+- **Date Utilities**: All new date formatting should use helpers from `client/src/lib/date-utils.ts` (`getTodayString`, `getDateString`) to maintain timezone consistency.
+- **Recovery Days**: Stored in localStorage under `fitcircle_recovery_data`, included when determining "first active date" for consistency calculations.
+
 ## External Dependencies
 
 ### Core Framework Dependencies
