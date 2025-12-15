@@ -713,17 +713,38 @@ export function useWorkouts() {
       };
     }
 
-    // Find first workout date across all logs
-    let firstWorkoutDate: string | null = null;
+    // Get recovery days first (needed to find first active date)
+    const recoveryData = localStorage.getItem('fitcircle_recovery_data');
+    let recoveryDays: string[] = [];
+    if (recoveryData) {
+      try {
+        const parsed = JSON.parse(recoveryData);
+        recoveryDays = parsed.recoveryDays || [];
+      } catch (error) {
+        recoveryDays = [];
+      }
+    }
+
+    // Find first active date (either workout OR recovery day)
+    let firstActiveDate: string | null = null;
+    
+    // Check workout days
     Object.keys(data.dailyLogs).forEach(dateStr => {
       const dayLog = data.dailyLogs[dateStr];
       const hasAnyReps = workoutArray.some(w => getCountFromLogEntry(dayLog[w.id]) > 0);
-      if (hasAnyReps && (!firstWorkoutDate || dateStr < firstWorkoutDate)) {
-        firstWorkoutDate = dateStr;
+      if (hasAnyReps && (!firstActiveDate || dateStr < firstActiveDate)) {
+        firstActiveDate = dateStr;
+      }
+    });
+    
+    // Check recovery days
+    recoveryDays.forEach(dateStr => {
+      if (!firstActiveDate || dateStr < firstActiveDate) {
+        firstActiveDate = dateStr;
       }
     });
 
-    if (!firstWorkoutDate) {
+    if (!firstActiveDate) {
       return {
         totalReps: 0,
         totalCompletedDays: 0,
@@ -731,35 +752,23 @@ export function useWorkouts() {
       };
     }
 
-    // Calculate total expected days from first workout to today
-    const firstDate = new Date(firstWorkoutDate + 'T00:00:00');
+    // Calculate total expected days from first active date to today
+    const firstDate = new Date(firstActiveDate + 'T00:00:00');
     const todayDate = new Date(today + 'T00:00:00');
     totalExpectedDays = Math.floor((todayDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
-    // Get recovery days from localStorage to include in consistency calculation
-    const recoveryData = localStorage.getItem('fitcircle_recovery_data');
-    let recoveryDays = [];
-    if (recoveryData) {
-      try {
-        const parsed = JSON.parse(recoveryData);
-        recoveryDays = parsed.recoveryDays || [];
-      } catch (error) {
-        console.warn('Failed to parse recovery data in getTotalStats:', error);
-        recoveryDays = [];
-      }
-    }
-
-    // Count all completed days and total reps across entire history
-    Object.entries(data.dailyLogs).forEach(([dateStr, dayLog]) => {
+    // Iterate through each day from first active date to today (same approach as getMonthlyStats)
+    for (let d = new Date(firstDate); d <= todayDate; d.setDate(d.getDate() + 1)) {
+      const dateStr = getDateString(d);
+      const dayLog = data.dailyLogs[dateStr] || {};
       const isToday = dateStr === today;
-      
+
       if (isToday) {
-        // For today, check only workouts scheduled for today
-        const todayDayOfWeek = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+        // For today: check scheduled workouts against current goals
+        const todayDayOfWeek = new Date().getDay();
         const todaysScheduledWorkouts = workoutArray.filter(workout => isWorkoutActiveOnDay(workout, todayDayOfWeek));
         
         let allGoalsMet = true;
-        
         todaysScheduledWorkouts.forEach(workout => {
           const count = getCountFromLogEntry(dayLog[workout.id]);
           totalReps += count;
@@ -771,11 +780,10 @@ export function useWorkouts() {
           totalCompletedDays++;
         }
       } else {
-        // For past days, only check workouts that actually have logged reps
+        // For past days: check only workouts that have logged reps
         const workoutsWithReps = workoutArray.filter(w => getCountFromLogEntry(dayLog[w.id]) > 0);
         if (workoutsWithReps.length > 0) {
           let allGoalsMet = true;
-          
           workoutsWithReps.forEach(workout => {
             const logEntry = dayLog[workout.id];
             const count = getCountFromLogEntry(logEntry);
@@ -785,25 +793,15 @@ export function useWorkouts() {
               allGoalsMet = false;
             }
           });
-          
           if (allGoalsMet) {
             totalCompletedDays++;
           }
-        }
-      }
-    });
-
-    // Add recovery days as completed days (for consistency calculation only)
-    recoveryDays.forEach((dateStr: string) => {
-      if (dateStr <= today) {
-        // Only count recovery days if there's no workout logged for that day
-        const dayLog = data.dailyLogs[dateStr] || {};
-        const hasWorkouts = workoutArray.some(w => getCountFromLogEntry(dayLog[w.id]) > 0);
-        if (!hasWorkouts) {
+        } else if (recoveryDays.includes(dateStr)) {
+          // Count recovery days as completed (only if no workout was logged)
           totalCompletedDays++;
         }
       }
-    });
+    }
 
     const totalConsistency = totalExpectedDays > 0 ? (totalCompletedDays / totalExpectedDays) * 100 : 0;
 

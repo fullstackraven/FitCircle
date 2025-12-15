@@ -21,7 +21,10 @@ export const calculateMeditation7DayAverage = (logs: MeditationSession[]): numbe
     if (dateValue) {
       const sessionDate = new Date(dateValue);
       if (sessionDate >= last7Days && session.duration) {
-        const dateKey = sessionDate.toISOString().split('T')[0];
+        const year = sessionDate.getFullYear();
+        const month = String(sessionDate.getMonth() + 1).padStart(2, '0');
+        const day = String(sessionDate.getDate()).padStart(2, '0');
+        const dateKey = `${year}-${month}-${day}`;
         dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
       }
     }

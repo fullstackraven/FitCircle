@@ -162,7 +162,10 @@ export function getMeditationProgress(): GoalProgress {
       if (dateValue) {
         const sessionDate = new Date(dateValue);
         if (sessionDate >= last7Days && session.duration) {
-          const dateKey = sessionDate.toISOString().split('T')[0];
+          const year = sessionDate.getFullYear();
+          const month = String(sessionDate.getMonth() + 1).padStart(2, '0');
+          const day = String(sessionDate.getDate()).padStart(2, '0');
+          const dateKey = `${year}-${month}-${day}`;
           dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
         }
       }
@@ -252,8 +255,10 @@ export function getWorkoutConsistencyProgress(): GoalProgress {
     for (let i = 0; i < 30; i++) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      last30Days.push(dateStr);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      last30Days.push(`${year}-${month}-${day}`);
     }
     
     let workoutDays = 0;
@@ -267,7 +272,8 @@ export function getWorkoutConsistencyProgress(): GoalProgress {
       });
       
       // Check if it was a recovery day
-      const isRecoveryDay = recovery?.recoveryDays && Array.isArray(recovery.recoveryDays) ? recovery.recoveryDays.includes(date) : false;
+      const recoveryDaysArray = (recovery?.recoveryDays || []) as string[];
+      const isRecoveryDay = recoveryDaysArray.includes(date);
       
       if (hasWorkout || isRecoveryDay) {
         if (hasWorkout) workoutDays++;
@@ -304,7 +310,10 @@ export function getCardioProgress(): { miles: GoalProgress; minutes: GoalProgres
     for (let i = 0; i < 7; i++) {
       const date = new Date(startOfWeek);
       date.setDate(startOfWeek.getDate() + i);
-      weekDates.push(date.toISOString().split('T')[0]);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      weekDates.push(`${year}-${month}-${day}`);
     }
     
     Object.values(cardioData.logs).forEach((exerciseLogs: any) => {

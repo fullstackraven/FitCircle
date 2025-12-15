@@ -134,7 +134,10 @@ export function useGoals() {
       meditationLogs.forEach((session: any) => {
         const sessionDate = new Date(session.completedAt || session.date);
         if (sessionDate >= last7Days && session.duration) {
-          const dateKey = sessionDate.toISOString().split('T')[0];
+          const year = sessionDate.getFullYear();
+          const month = String(sessionDate.getMonth() + 1).padStart(2, '0');
+          const day = String(sessionDate.getDate()).padStart(2, '0');
+          const dateKey = `${year}-${month}-${day}`;
           dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
         }
       });

@@ -1,7 +1,7 @@
 // Service Worker for FitCircle PWA
 // Network-first with cached /index.html fallback to prevent white screens
 
-const CACHE_NAME = 'fitcircle-v5-2025-10-03';
+const CACHE_NAME = 'fitcircle-v6-2025-12-15';
 const SHELL_URLS = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
 
 // Allow page to trigger immediate activation
@@ -69,15 +69,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2) Hashed JS/CSS: Cache-first is fine once you precache or rely on HTTP caching.
+  // 2) JS/CSS: Network-first to ensure code updates are applied immediately
   if (/\.(?:js|css|mjs)$/.test(new URL(req.url).pathname)) {
     event.respondWith((async () => {
       const c = await caches.open(CACHE_NAME);
-      const hit = await c.match(req);
-      if (hit) return hit;
-      const resp = await fetch(req);
-      if (resp.ok) event.waitUntil(c.put(req, resp.clone()));
-      return resp;
+      try {
+        const resp = await fetch(req);
+        if (resp.ok) event.waitUntil(c.put(req, resp.clone()));
+        return resp;
+      } catch {
+        const hit = await c.match(req);
+        return hit || Response.error();
+      }
     })());
     return;
   }
