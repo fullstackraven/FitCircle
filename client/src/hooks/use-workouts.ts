@@ -569,7 +569,7 @@ export function useWorkouts() {
     });
   };
 
-  // Get statistics for current month only
+  // Get statistics for current month only - mirrors getTotalStats logic
   const getMonthlyStats = (year: number, month: number) => {
     const workoutArray = Object.values(data.workouts || {});
     const today = getTodayString();
@@ -587,21 +587,13 @@ export function useWorkouts() {
 
     // Find first workout date in this specific month
     let firstWorkoutDateInMonth: string | null = null;
-    let lastWorkoutDateInMonth: string | null = null;
-
-    // Get all dates in this month with workout data
     Object.keys(data.dailyLogs || {}).forEach(dateStr => {
       const date = new Date(dateStr + 'T00:00:00');
       if (date.getFullYear() === year && date.getMonth() === month) {
         const dayLog = data.dailyLogs[dateStr];
         const hasAnyReps = workoutArray.some(w => getCountFromLogEntry(dayLog[w.id]) > 0);
-        if (hasAnyReps) {
-          if (!firstWorkoutDateInMonth || dateStr < firstWorkoutDateInMonth) {
-            firstWorkoutDateInMonth = dateStr;
-          }
-          if (!lastWorkoutDateInMonth || dateStr > lastWorkoutDateInMonth) {
-            lastWorkoutDateInMonth = dateStr;
-          }
+        if (hasAnyReps && (!firstWorkoutDateInMonth || dateStr < firstWorkoutDateInMonth)) {
+          firstWorkoutDateInMonth = dateStr;
         }
       }
     });
@@ -614,98 +606,74 @@ export function useWorkouts() {
       };
     }
 
-    // Count days from first workout in month to last day of month (or today if current month)
+    // Determine the end date (today if current month, else last day of month)
     const todayDate = new Date();
     const isCurrentMonth = (todayDate.getFullYear() === year && todayDate.getMonth() === month);
+    const endDateStr = isCurrentMonth ? today : getDateString(new Date(year, month + 1, 0));
     
+    // Calculate days in range (from first workout to end date)
     const firstDate = new Date(firstWorkoutDateInMonth + 'T00:00:00');
-    const lastDate = isCurrentMonth ? 
-      new Date(today + 'T00:00:00') : 
-      new Date(year, month + 1, 0); // Last day of month
-      
-    const daysInRange = Math.floor((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    const endDate = new Date(endDateStr + 'T00:00:00');
+    const daysInRange = Math.floor((endDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
-    // Get recovery days from localStorage to include in consistency calculation
+    // Get recovery days
     const recoveryData = localStorage.getItem('fitcircle_recovery_data');
-    let recoveryDays = [];
+    let recoveryDays: string[] = [];
     if (recoveryData) {
       try {
         const parsed = JSON.parse(recoveryData);
         recoveryDays = parsed.recoveryDays || [];
       } catch (error) {
-        console.warn('Failed to parse recovery data in getMonthlyStats:', error);
         recoveryDays = [];
       }
     }
 
-    // Count only completed days and reps in this specific month
-    // First, handle today separately if it's in the current month (even if no dailyLog entry exists)
-    let todayHandled = false;
-    if (isCurrentMonth) {
-      const todayDayOfWeek = new Date().getDay();
-      const todaysScheduledWorkouts = workoutArray.filter(workout => isWorkoutActiveOnDay(workout, todayDayOfWeek));
-      const todayLog = data.dailyLogs[today] || {};
-      
-      let allGoalsMet = true;
-      todaysScheduledWorkouts.forEach(workout => {
-        const count = getCountFromLogEntry(todayLog[workout.id]);
-        monthlyReps += count;
-        if (count < workout.dailyGoal) {
-          allGoalsMet = false;
-        }
-      });
-      if (allGoalsMet && todaysScheduledWorkouts.length > 0) {
-        monthlyCompletedDays++;
-      }
-      todayHandled = true;
-    }
+    // Iterate through each day from first workout to end date (same approach as getTotalStats)
+    for (let d = new Date(firstDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      const dateStr = getDateString(d);
+      const dayLog = data.dailyLogs[dateStr] || {};
+      const isToday = dateStr === today;
 
-    // Then handle all other days from dailyLogs
-    Object.entries(data.dailyLogs || {}).forEach(([dateStr, dayLog]) => {
-      const date = new Date(dateStr + 'T00:00:00');
-      
-      // Only count days in this specific month
-      if (date.getFullYear() !== year || date.getMonth() !== month) return;
-      if (dateStr > today) return; // Skip future days
-      if (dateStr === today) return; // Already handled today above
-      
-      // For past days, only check workouts that actually have logged reps
-      const workoutsWithReps = workoutArray.filter(w => getCountFromLogEntry(dayLog[w.id]) > 0);
-      if (workoutsWithReps.length > 0) {
-        let allGoalsMet = true;
+      if (isToday) {
+        // For today: check scheduled workouts against current goals
+        const todayDayOfWeek = new Date().getDay();
+        const todaysScheduledWorkouts = workoutArray.filter(workout => isWorkoutActiveOnDay(workout, todayDayOfWeek));
         
-        workoutsWithReps.forEach(workout => {
-          const logEntry = dayLog[workout.id];
-          const count = getCountFromLogEntry(logEntry);
-          const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : workout.dailyGoal;
+        let allGoalsMet = true;
+        todaysScheduledWorkouts.forEach(workout => {
+          const count = getCountFromLogEntry(dayLog[workout.id]);
           monthlyReps += count;
-          if (count < goalAtTime) {
+          if (count < workout.dailyGoal) {
             allGoalsMet = false;
           }
         });
-        
-        if (allGoalsMet) {
+        if (allGoalsMet && todaysScheduledWorkouts.length > 0) {
+          monthlyCompletedDays++;
+        }
+      } else {
+        // For past days: check only workouts that have logged reps
+        const workoutsWithReps = workoutArray.filter(w => getCountFromLogEntry(dayLog[w.id]) > 0);
+        if (workoutsWithReps.length > 0) {
+          let allGoalsMet = true;
+          workoutsWithReps.forEach(workout => {
+            const logEntry = dayLog[workout.id];
+            const count = getCountFromLogEntry(logEntry);
+            const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : workout.dailyGoal;
+            monthlyReps += count;
+            if (count < goalAtTime) {
+              allGoalsMet = false;
+            }
+          });
+          if (allGoalsMet) {
+            monthlyCompletedDays++;
+          }
+        } else if (recoveryDays.includes(dateStr)) {
+          // Count recovery days as completed (only if no workout was logged)
           monthlyCompletedDays++;
         }
       }
-    });
+    }
 
-    // Add recovery days as completed days (for consistency calculation only)
-    // BUT exclude today - today should only be "completed" if goals are met, not just because it's a recovery day
-    recoveryDays.forEach((dateStr: string) => {
-      if (dateStr === today) return; // Today is already handled above - don't double count as recovery
-      const date = new Date(dateStr + 'T00:00:00');
-      if (date.getFullYear() === year && date.getMonth() === month && dateStr < today) {
-        // Only count recovery days if there's no workout logged for that day
-        const dayLog = data.dailyLogs[dateStr] || {};
-        const hasWorkouts = workoutArray.some(w => getCountFromLogEntry(dayLog[w.id]) > 0);
-        if (!hasWorkouts) {
-          monthlyCompletedDays++;
-        }
-      }
-    });
-
-    // Cap consistency at 100% maximum
     const monthlyConsistency = daysInRange > 0 
       ? Math.min((monthlyCompletedDays / daysInRange) * 100, 100) 
       : 0;
