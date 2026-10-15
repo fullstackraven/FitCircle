@@ -1,0 +1,562 @@
+{
+  "capturedAt": "2026-10-15T20:50:33.004Z",
+  "innerHeight": 844,
+  "outerHeight": 844,
+  "innerWidth": 390,
+  "clientHeight": 844,
+  "bodyClientHeight": 844,
+  "devicePixelRatio": 1,
+  "visualViewport": {
+    "height": 844,
+    "width": 390,
+    "offsetTop": 0,
+    "offsetLeft": 0,
+    "scale": 1
+  },
+  "standaloneMedia": false,
+  "standaloneNavigator": false,
+  "standalone": false,
+  "screen": {
+    "width": 390,
+    "height": 844,
+    "availHeight": 844,
+    "orientation": "portrait-primary"
+  },
+  "entryScript": "/FitCircle/assets/index-Cb7bKmW6.js",
+  "serviceWorkerController": "http://127.0.0.1:4175/FitCircle/sw.js",
+  "viewportUnits": {
+    "vh": {
+      "supported": true,
+      "height": 844
+    },
+    "dvh": {
+      "supported": true,
+      "height": 844
+    },
+    "svh": {
+      "supported": true,
+      "height": 844
+    },
+    "lvh": {
+      "supported": true,
+      "height": 844
+    }
+  },
+  "safeArea": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "0px",
+    "left": "0px"
+  },
+  "appSafeArea": {
+    "top": "59px",
+    "right": "0px",
+    "bottom": "34px",
+    "left": "0px"
+  },
+  "dockHeight": "111px",
+  "keyboard": false,
+  "elements": {
+    ".app-shell": {
+      "element": "app-shell",
+      "rect": {
+        "top": 0,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 844
+      },
+      "overflow": {
+        "x": "visible",
+        "y": "visible"
+      },
+      "position": "fixed",
+      "height": "844px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "margin": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "transform": "none",
+      "filter": "none",
+      "backdropFilter": "none",
+      "perspective": "none",
+      "willChange": "auto",
+      "isolation": "isolate",
+      "clipPath": "none",
+      "contain": "none",
+      "contentVisibility": "visible",
+      "fixedContainingBlockCandidate": false,
+      "scrollHeight": 844,
+      "clientHeight": 844,
+      "scrollTop": 0
+    },
+    ".app-header": {
+      "element": "app-header",
+      "rect": {
+        "top": 0,
+        "bottom": 131,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 131
+      },
+      "overflow": {
+        "x": "visible",
+        "y": "visible"
+      },
+      "position": "relative",
+      "height": "131px",
+      "minHeight": "auto",
+      "maxHeight": "none",
+      "padding": {
+        "top": "59px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "margin": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "transform": "none",
+      "filter": "none",
+      "backdropFilter": "none",
+      "perspective": "none",
+      "willChange": "auto",
+      "isolation": "auto",
+      "clipPath": "none",
+      "contain": "none",
+      "contentVisibility": "visible",
+      "fixedContainingBlockCandidate": false,
+      "scrollHeight": 131,
+      "clientHeight": 131,
+      "scrollTop": 0
+    },
+    ".app-content": {
+      "element": "app-content",
+      "rect": {
+        "top": 131,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 713
+      },
+      "overflow": {
+        "x": "hidden",
+        "y": "auto"
+      },
+      "position": "static",
+      "height": "713px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "margin": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "transform": "none",
+      "filter": "none",
+      "backdropFilter": "none",
+      "perspective": "none",
+      "willChange": "auto",
+      "isolation": "auto",
+      "clipPath": "none",
+      "contain": "none",
+      "contentVisibility": "visible",
+      "fixedContainingBlockCandidate": false,
+      "scrollHeight": 1050,
+      "clientHeight": 713,
+      "scrollTop": 0
+    },
+    ".app-page": {
+      "element": "app-page",
+      "rect": {
+        "top": 131,
+        "bottom": 1181,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 1050
+      },
+      "overflow": {
+        "x": "visible",
+        "y": "visible"
+      },
+      "position": "static",
+      "height": "1050px",
+      "minHeight": "100%",
+      "maxHeight": "none",
+      "padding": {
+        "top": "0px",
+        "right": "16px",
+        "bottom": "127px",
+        "left": "16px"
+      },
+      "margin": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "transform": "none",
+      "filter": "none",
+      "backdropFilter": "none",
+      "perspective": "none",
+      "willChange": "auto",
+      "isolation": "auto",
+      "clipPath": "none",
+      "contain": "none",
+      "contentVisibility": "visible",
+      "fixedContainingBlockCandidate": false,
+      "scrollHeight": 1050,
+      "clientHeight": 1050,
+      "scrollTop": 0
+    },
+    ".app-dock": {
+      "element": "app-dock",
+      "rect": {
+        "top": 733,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 111
+      },
+      "overflow": {
+        "x": "visible",
+        "y": "visible"
+      },
+      "position": "fixed",
+      "height": "111px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "margin": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "transform": "none",
+      "filter": "none",
+      "backdropFilter": "none",
+      "perspective": "none",
+      "willChange": "auto",
+      "isolation": "auto",
+      "clipPath": "none",
+      "contain": "none",
+      "contentVisibility": "visible",
+      "fixedContainingBlockCandidate": false,
+      "scrollHeight": 111,
+      "clientHeight": 111,
+      "scrollTop": 0
+    },
+    ".app-dock nav": {
+      "element": "dock-nav glass-nav",
+      "rect": {
+        "top": 733,
+        "bottom": 844,
+        "left": 16,
+        "right": 374,
+        "width": 358,
+        "height": 111
+      },
+      "overflow": {
+        "x": "visible",
+        "y": "visible"
+      },
+      "position": "static",
+      "height": "111px",
+      "minHeight": "auto",
+      "maxHeight": "none",
+      "padding": {
+        "top": "12px",
+        "right": "11.7px",
+        "bottom": "34px",
+        "left": "11.7px"
+      },
+      "margin": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "transform": "none",
+      "filter": "none",
+      "backdropFilter": "blur(12px) saturate(1.25)",
+      "perspective": "none",
+      "willChange": "auto",
+      "isolation": "auto",
+      "clipPath": "none",
+      "contain": "none",
+      "contentVisibility": "visible",
+      "fixedContainingBlockCandidate": true,
+      "scrollHeight": 109,
+      "clientHeight": 109,
+      "scrollTop": 0
+    }
+  },
+  "ancestors": [
+    {
+      "element": "app-content",
+      "rect": {
+        "top": 131,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 713
+      },
+      "overflow": {
+        "x": "hidden",
+        "y": "auto"
+      },
+      "position": "static",
+      "height": "713px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "margin": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "transform": "none",
+      "filter": "none",
+      "backdropFilter": "none",
+      "perspective": "none",
+      "willChange": "auto",
+      "isolation": "auto",
+      "clipPath": "none",
+      "contain": "none",
+      "contentVisibility": "visible",
+      "fixedContainingBlockCandidate": false,
+      "scrollHeight": 1050,
+      "clientHeight": 713,
+      "scrollTop": 0
+    },
+    {
+      "element": "app-shell",
+      "rect": {
+        "top": 0,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 844
+      },
+      "overflow": {
+        "x": "visible",
+        "y": "visible"
+      },
+      "position": "fixed",
+      "height": "844px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "margin": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "transform": "none",
+      "filter": "none",
+      "backdropFilter": "none",
+      "perspective": "none",
+      "willChange": "auto",
+      "isolation": "isolate",
+      "clipPath": "none",
+      "contain": "none",
+      "contentVisibility": "visible",
+      "fixedContainingBlockCandidate": false,
+      "scrollHeight": 844,
+      "clientHeight": 844,
+      "scrollTop": 0
+    },
+    {
+      "element": "root",
+      "rect": {
+        "top": 0,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 844
+      },
+      "overflow": {
+        "x": "visible",
+        "y": "visible"
+      },
+      "position": "static",
+      "height": "844px",
+      "minHeight": "100%",
+      "maxHeight": "none",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "margin": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "transform": "none",
+      "filter": "none",
+      "backdropFilter": "none",
+      "perspective": "none",
+      "willChange": "auto",
+      "isolation": "auto",
+      "clipPath": "none",
+      "contain": "none",
+      "contentVisibility": "visible",
+      "fixedContainingBlockCandidate": false,
+      "scrollHeight": 844,
+      "clientHeight": 844,
+      "scrollTop": 0
+    },
+    {
+      "element": "BODY",
+      "rect": {
+        "top": 0,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 844
+      },
+      "overflow": {
+        "x": "visible",
+        "y": "visible"
+      },
+      "position": "static",
+      "height": "844px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "margin": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "transform": "none",
+      "filter": "none",
+      "backdropFilter": "none",
+      "perspective": "none",
+      "willChange": "auto",
+      "isolation": "auto",
+      "clipPath": "none",
+      "contain": "none",
+      "contentVisibility": "visible",
+      "fixedContainingBlockCandidate": false,
+      "scrollHeight": 844,
+      "clientHeight": 844,
+      "scrollTop": 0
+    },
+    {
+      "element": "HTML",
+      "rect": {
+        "top": 0,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 844
+      },
+      "overflow": {
+        "x": "visible",
+        "y": "visible"
+      },
+      "position": "static",
+      "height": "844px",
+      "minHeight": "0px",
+      "maxHeight": "none",
+      "padding": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "margin": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      },
+      "transform": "none",
+      "filter": "none",
+      "backdropFilter": "none",
+      "perspective": "none",
+      "willChange": "auto",
+      "isolation": "auto",
+      "clipPath": "none",
+      "contain": "none",
+      "contentVisibility": "visible",
+      "fixedContainingBlockCandidate": false,
+      "scrollHeight": 844,
+      "clientHeight": 844,
+      "scrollTop": 0
+    }
+  ],
+  "cutoffComparison": {
+    "observedCssY": null,
+    "candidates": {
+      "contentBottom": 844,
+      "shellBottom": 844,
+      "cssDvh": 844,
+      "innerHeight": 844,
+      "visualViewportBottom": 844,
+      "dockBottom": 844,
+      "navigationBottom": 844
+    },
+    "differences": [],
+    "matchingWithinOneCssPixel": [],
+    "note": "The cutoff coordinate must be observed/marked by a person. DOM geometry and hit testing do not measure WebKit compositor pixels or prove a paint bug."
+  }
+}
