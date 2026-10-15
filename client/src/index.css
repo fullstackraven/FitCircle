@@ -99,13 +99,13 @@
 
   .app-dock {
     /* Anchor to the viewport, independently of shell sizing. The small outer
-       gap protects the rounded edge; home-indicator clearance lives inside nav. */
+       gap protects the rounded edge; the safe area belongs outside the capsule. */
     position: fixed;
     bottom: 0;
     left: var(--safe-left);
     right: var(--safe-right);
     z-index: 1000;
-    padding-bottom: 8px;
+    padding-bottom: max(8px, var(--safe-bottom));
   }
   .app-dock:empty, .keyboard-open .app-dock { display: none; }
 
