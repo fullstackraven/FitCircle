@@ -7,7 +7,7 @@
 
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="/FitCircle/icon-192.png">
-<link rel="stylesheet" href="../test.css"><title>FitCircle Test — Standard status bar</title>
+<link rel="stylesheet" href="../test.css"><link rel="stylesheet" href="../dock.css"><title>FitCircle Test — Standard status bar</title>
 </head><body data-variant="standard">
 <div class="shell">
 <header><h1>Standard status bar</h1></header>
@@ -18,10 +18,12 @@
 <p>The standard status bar may sit above the page. A smaller viewport alone is normal in that presentation; judge the visible bottom edge.</p>
 <pre id="report" aria-live="off"></pre>
 <button id="copy" type="button">Copy report</button><p id="copy-status" role="status"></p>
+<button id="toggle-boundary" type="button">Hide cyan boundary</button>
+<p id="tap-status" role="status">No dock taps yet</p>
 <label>Keyboard test <input type="text" placeholder="Tap, type, then dismiss"></label>
 <div id="tiles"></div><p id="last-card">Last test card — scroll this fully above the dock.</p>
 </main>
-<nav aria-label="Test dock"><button id="bottom-target" type="button">Tap bottom control</button><span id="tap-status" role="status">Not tapped</span></nav>
+<!-- FITCIRCLE_DOCK -->
 </div><div class="boundary" aria-hidden="true"></div>
 <script type="module" src="../test.js"></script>
 </body></html>
