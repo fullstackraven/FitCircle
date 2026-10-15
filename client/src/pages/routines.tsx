@@ -1,3 +1,4 @@
+import { AppHeader } from "@/components/AppHeader";
 import { useState, useEffect } from 'react';
 import { Edit, ChevronUp, ChevronDown, Plus, Menu, Settings, Calculator, CheckCircle } from 'lucide-react';
 import { useLocation } from 'wouter';
@@ -126,8 +127,8 @@ export default function RoutinesPage() {
 
   return (
     <div className="fitcircle-page">
-      {/* Shared sticky header */}
-      <header className="fitcircle-fixed-header">
+      {/* Header is rendered into the non-scrolling shell host */}
+      <AppHeader>
         <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           <button
             onClick={() => setIsSidebarOpen(true)}
@@ -138,7 +139,7 @@ export default function RoutinesPage() {
           </button>
           <h1 className="text-2xl font-bold text-white">FitCircle</h1>
         </div>
-      </header>
+      </AppHeader>
 
       {/* Main content; header spacing is handled by normal flow */}
       <div>

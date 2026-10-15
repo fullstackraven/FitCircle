@@ -1,3 +1,4 @@
+import { AppHeader } from "@/components/AppHeader";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import {
   ChevronLeft,
@@ -485,8 +486,8 @@ export default function CalendarPage() {
 
   return (
     <div className="max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)' } as React.CSSProperties}>
-      {/* Shared sticky header */}
-      <header className="fitcircle-fixed-header">
+      {/* Header is rendered into the non-scrolling shell host */}
+      <AppHeader>
         <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           {/* Hamburger Menu Icon */}
           <button
@@ -499,7 +500,7 @@ export default function CalendarPage() {
 
           <h1 className="text-2xl font-bold text-white">FitCircle</h1>
         </div>
-      </header>
+      </AppHeader>
 
       {/* Main content; header spacing is handled by normal flow */}
       <div>

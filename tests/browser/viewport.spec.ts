@@ -62,7 +62,7 @@ test('home and routines reach their last items above the measured dock', async (
 
 test('Logs grid has one header offset and preserves editable two-column layout', async ({ page }) => {
   await page.goto('wellness');
-  const pageHeading = page.locator('main').getByRole('heading', { name: 'FitCircle', exact: true });
+  const pageHeading = page.locator('.app-header').getByRole('heading', { name: 'FitCircle', exact: true });
   await expect(pageHeading).toBeVisible();
   const heading = await pageHeading.boundingBox();
   const first = await page.getByTestId('card-cardio').boundingBox();

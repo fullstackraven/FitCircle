@@ -1,3 +1,4 @@
+import { AppHeader } from "@/components/AppHeader";
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Target, TrendingUp, Calculator, UtensilsCrossed, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp, Timer, Activity, Brain, Droplet } from 'lucide-react';
 import { useLocation } from 'wouter';
@@ -205,8 +206,8 @@ export default function Home() {
       style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}
     >
       {/* Header Section - Fixed */}
-      <header className="fitcircle-fixed-header">
-        <div className="relative text-center h-14 flex items-center justify-center">
+      <AppHeader>
+        <div className="relative text-center h-14 flex items-center justify-center max-w-md mx-auto w-[calc(100%-2rem)]">
           {/* Hamburger Menu Icon */}
           <button
             onClick={() => setIsSidebarOpen(true)}
@@ -218,7 +219,7 @@ export default function Home() {
 
           <h1 className="text-2xl font-bold text-white">FitCircle</h1>
         </div>
-      </header>
+      </AppHeader>
 
       {/* Main content; header spacing is handled by normal flow */}
       <div>
