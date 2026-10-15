@@ -90,7 +90,9 @@ function App() {
     <ScrollLockProvider>
       <div className="app-shell">
         <main ref={scrollRef} className="app-content">
-          <Router />
+          <div className="app-page">
+            <Router />
+          </div>
         </main>
         <div ref={dockRef} className="app-dock">
           <BottomNavigation />
