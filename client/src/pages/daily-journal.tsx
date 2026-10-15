@@ -79,7 +79,7 @@ export function DailyJournal() {
   };
 
   return (
-    <div className="flex flex-col" style={{ backgroundColor: 'hsl(222, 47%, 11%)', height: '100dvh' }}>
+    <div className="flex flex-col" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 mb-2">
         <button
@@ -116,7 +116,7 @@ export function DailyJournal() {
       </div>
 
       {/* Main writing area - flexbox layout */}
-      <div className="flex-1 px-4 pb-32 flex flex-col">
+      <div className="flex-1 px-4 pb-6 flex flex-col">
         <textarea
           value={journalText}
           onChange={(e) => setJournalText(e.target.value)}
@@ -138,7 +138,7 @@ export function DailyJournal() {
       {/* Save confirmation toast */}
       {showSaveConfirmation && (
         <div 
-          className="fixed top-20 left-4 right-4 z-50 flex justify-center"
+          className="sticky top-0 z-50 flex justify-center"
           style={{
             animation: 'fadeInOut 2s ease-in-out'
           }}
@@ -151,7 +151,7 @@ export function DailyJournal() {
       )}
 
       {/* Floating save button - positioned above nav bar */}
-      <div className="fixed bottom-24 left-4 right-4 z-40">
+      <div className="sticky px-4 pb-4 z-40" style={{ bottom: 'max(var(--dock-height), var(--safe-bottom))' }}>
         <button
           onClick={handleJournalSubmit}
           className="w-full max-w-sm mx-auto block px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors font-medium shadow-lg"

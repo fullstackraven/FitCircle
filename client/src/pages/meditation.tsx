@@ -1,3 +1,4 @@
+import { ViewportOverlay } from '@/components/ui/viewport-overlay';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Play, Pause, Square, Target, X, Plus } from 'lucide-react';
 import { useLocation } from 'wouter';
@@ -296,13 +297,13 @@ export default function MeditationPage() {
 
         {/* Completion Notification */}
         {showCompletion && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <ViewportOverlay title="Session Complete" onDismiss={() => setShowCompletion(false)}>
             <div className="bg-slate-800 rounded-xl p-8 text-center max-w-sm mx-4 border border-blue-500">
               <div className="text-6xl mb-4">🧘‍♂️</div>
               <h2 className="text-2xl font-bold text-white mb-2">Session Complete!</h2>
               <p className="text-slate-300">Well done on completing your meditation</p>
             </div>
-          </div>
+          </ViewportOverlay>
         )}
 
         {/* Main Meditation Circle - transforms between progress tracker and timer */}
@@ -597,11 +598,12 @@ export default function MeditationPage() {
 
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <ViewportOverlay title="Meditation Goal" onDismiss={() => setIsGoalModalOpen(false)}>
           <div className="bg-slate-800 rounded-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-white">Meditation Goal</h3>
               <button
+                aria-label="Close"
                 onClick={() => setIsGoalModalOpen(false)}
                 className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg"
               >
@@ -657,12 +659,12 @@ export default function MeditationPage() {
               </div>
             </div>
           </div>
-        </div>
+        </ViewportOverlay>
       )}
 
       {/* Start Meditation Dialog */}
       <Dialog open={isMeditationDialogOpen} onOpenChange={setIsMeditationDialogOpen}>
-        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl !top-[20%] !translate-y-0 sm:!top-[50%] sm:!-translate-y-1/2">
+        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl">
           <DialogTitle className="text-lg font-semibold text-center">Start Meditation</DialogTitle>
           <DialogDescription className="sr-only">
             Set meditation duration and start your session

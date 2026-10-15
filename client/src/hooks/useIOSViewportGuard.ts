@@ -1,101 +1,54 @@
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect } from 'react';
 
-export function useIOSViewportGuard(opts: {
-  scrollEl?: HTMLElement | null;
-  dockEl?: HTMLElement | null;
-  keyboardThreshold?: number;
-  glitchDebounceMs?: number;
-}) {
-  const {
-    scrollEl,
-    dockEl,
-    keyboardThreshold = 80,
-    glitchDebounceMs = 120,
-  } = opts;
-
-  const raf = useRef<number | null>(null);
-  const lastH = useRef<number>(0);
-  const [shellKey, setShellKey] = useState(0);
-
-  function applyViewportVars() {
-    const vv = window.visualViewport;
-    const vh = (vv?.height ?? window.innerHeight) * 0.01;
-    document.documentElement.style.setProperty("--app-dvh", `${vh}px`);
-
-    const kbOffset = Math.max(0, window.innerHeight - (vv?.height ?? window.innerHeight));
-    document.documentElement.style.setProperty("--kb-offset", `${kbOffset}px`);
-    document.documentElement.classList.toggle("keyboard-open", kbOffset > keyboardThreshold);
-  }
-
-  function forceStableReflow() {
-    applyViewportVars();
-
-    if (scrollEl) {
-      const prev = scrollEl.style.overflow;
-      scrollEl.style.overflow = "hidden";
-      scrollEl.offsetHeight;
-      scrollEl.style.overflow = prev || "auto";
-    }
-
-    if (dockEl) {
-      const prev = dockEl.style.transform;
-      dockEl.style.willChange = "transform";
-      dockEl.style.transform = "translateZ(0)";
-      dockEl.offsetHeight;
-      dockEl.style.transform = prev || "";
-      dockEl.style.willChange = "";
-    }
-  }
-
-  function maybeNormalizeGlitch() {
-    const vv = window.visualViewport;
-    const h = vv?.height ?? window.innerHeight;
-
-    const heightJump = Math.abs(h - (lastH.current || h));
-    const noFocus = document.activeElement === document.body || !document.activeElement;
-
-    const kbOffset = Math.max(0, window.innerHeight - h);
-    const keyboardOpen = kbOffset > keyboardThreshold;
-
-    if (!keyboardOpen && noFocus && heightJump > 40) {
-      forceStableReflow();
-    }
-
-    lastH.current = h;
-  }
-
-  useEffect(() => {
-    applyViewportVars();
-    lastH.current = window.visualViewport?.height ?? window.innerHeight;
-
-    const onVVChange = () => {
-      if (raf.current) cancelAnimationFrame(raf.current);
-      raf.current = requestAnimationFrame(() => {
-        applyViewportVars();
-        setTimeout(maybeNormalizeGlitch, glitchDebounceMs);
-      });
+/** One viewport source for the shell and portalled overlays. visualViewport
+ * includes keyboard resizing/panning; CSS dvh is the no-JavaScript fallback. */
+export function useIOSViewportGuard() {
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    const viewport = window.visualViewport;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      // Pinch zoom should magnify the interface, not re-layout it.
+      if (viewport && viewport.scale !== 1) return;
+      const height = viewport?.height ?? window.innerHeight;
+      const top = viewport?.offsetTop ?? 0;
+      root.style.setProperty('--app-height', `${height}px`);
+      root.style.setProperty('--viewport-top', `${top}px`);
+      const active = document.activeElement as HTMLElement | null;
+      const focused = active?.matches('input, textarea, [contenteditable="true"]');
+      root.classList.toggle('keyboard-open', Boolean(focused && window.innerHeight - height - top > 80));
+      // Resize only the overlay's own scroller when the keyboard would cover
+      // its active field; never reset the page's scroll position or React tree.
+      const scroller = focused ? active?.closest<HTMLElement>('.dialog-body, .sheet-body, .viewport-overlay [role="dialog"]') : null;
+      if (scroller && active) {
+        const field = active.getBoundingClientRect();
+        const bounds = scroller.getBoundingClientRect();
+        if (field.bottom > bounds.bottom) scroller.scrollTop += field.bottom - bounds.bottom + 16;
+        else if (field.top < bounds.top) scroller.scrollTop -= bounds.top - field.top + 16;
+      }
     };
-
-    const onResize = onVVChange;
-
-    const vv = window.visualViewport;
-    vv?.addEventListener("resize", onVVChange);
-    vv?.addEventListener("scroll", onVVChange);
-    window.addEventListener("resize", onResize);
-    window.addEventListener("orientationchange", onResize);
-
-    const onFocusOut = () => setTimeout(onVVChange, 150);
-    document.addEventListener("focusout", onFocusOut, true);
-
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    viewport?.addEventListener('resize', schedule);
+    viewport?.addEventListener('scroll', schedule);
+    window.addEventListener('resize', schedule);
+    window.addEventListener('orientationchange', schedule);
+    window.addEventListener('pageshow', schedule);
+    document.addEventListener('focusin', schedule);
+    document.addEventListener('focusout', schedule);
     return () => {
-      vv?.removeEventListener("resize", onVVChange);
-      vv?.removeEventListener("scroll", onVVChange);
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("orientationchange", onResize);
-      document.removeEventListener("focusout", onFocusOut, true);
-      if (raf.current) cancelAnimationFrame(raf.current);
+      cancelAnimationFrame(frame);
+      viewport?.removeEventListener('resize', schedule);
+      viewport?.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      window.removeEventListener('orientationchange', schedule);
+      window.removeEventListener('pageshow', schedule);
+      document.removeEventListener('focusin', schedule);
+      document.removeEventListener('focusout', schedule);
+      root.style.removeProperty('--app-height');
+      root.style.removeProperty('--viewport-top');
+      root.classList.remove('keyboard-open');
     };
-  }, [scrollEl, dockEl, keyboardThreshold, glitchDebounceMs]);
-
-  return { shellKey, hardReset: () => setShellKey(k => k + 1), normalizeNow: forceStableReflow };
+  }, []);
 }

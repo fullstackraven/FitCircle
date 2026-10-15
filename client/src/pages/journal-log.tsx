@@ -4,12 +4,10 @@ import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { format, parseISO, isValid } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { useScrollLock } from "@/contexts/ScrollLockContext";
 
 export function JournalLog() {
   const [, navigate] = useLocation();
   const { getAllJournalEntries, getJournalEntry, getJournalEntryWithTimestamp, addJournalEntry, deleteJournalEntry } = useWorkouts();
-  const { lockScroll, unlockScroll } = useScrollLock();
   
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -55,7 +53,6 @@ export function JournalLog() {
     setLastSaved(entryWithTimestamp?.timestamp || null);
     
     setIsModalOpen(true);
-    lockScroll();
   };
 
   const truncateText = (text: string, maxLength: number = 100) => {
@@ -95,17 +92,11 @@ export function JournalLog() {
       
       // Close modal first
       setIsModalOpen(false);
-      
-      // Clean up scroll lock
-      unlockScroll();
     }
   };
 
   // Handle modal close (including ESC key, click outside, etc.)
   const handleModalClose = (open: boolean) => {
-    if (!open) {
-      unlockScroll();
-    }
     setIsModalOpen(open);
   };
 
@@ -124,7 +115,6 @@ export function JournalLog() {
     if (confirm('Are you sure you want to delete this journal entry? This action cannot be undone.')) {
       deleteJournalEntry(currentDate);
       setIsModalOpen(false);
-      unlockScroll();
     }
   };
 
@@ -155,7 +145,6 @@ export function JournalLog() {
             setLastSaved(entryWithTimestamp?.timestamp || null);
             
             setIsModalOpen(true);
-            lockScroll();
           }}
           className="text-slate-400 hover:text-white transition-colors"
           title="Write new journal entry"
@@ -219,7 +208,6 @@ export function JournalLog() {
                 setLastSaved(entryWithTimestamp?.timestamp || null);
                 
                 setIsModalOpen(true);
-                lockScroll();
               }}
               className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors"
             >
@@ -230,9 +218,9 @@ export function JournalLog() {
       </div>
 
       {/* Journal Entry Modal */}
-      <Dialog open={isModalOpen} onOpenChange={handleModalClose} modal={false}>
-        <DialogContent className="max-w-2xl max-h-[75vh] p-0 bg-slate-800 border-slate-600 overflow-hidden rounded-2xl">
-          <div className="flex flex-col h-[70vh]" style={{ backgroundColor: 'hsl(222, 47%, 15%)' }}>
+      <Dialog open={isModalOpen} onOpenChange={handleModalClose}>
+        <DialogContent className="max-w-2xl p-0 bg-slate-800 border-slate-600 overflow-hidden rounded-2xl">
+          <div className="flex flex-col min-h-0" style={{ backgroundColor: 'hsl(222, 47%, 15%)' }}>
             {/* Modal Header */}
             <DialogHeader className="px-4 py-3 border-b border-slate-600">
               <DialogTitle className="text-lg font-bold text-white text-center">Daily Journal</DialogTitle>

@@ -228,7 +228,7 @@ export default function FoodDatabasePage() {
         </div>
 
         {/* Food List */}
-        <div ref={scrollContainerRef} className="pb-24 overflow-y-auto max-h-[calc(100vh-300px)]">
+        <div ref={scrollContainerRef} className="">
           {loading ? (
             <div className="text-center text-slate-400 py-12">
               Loading food database...
@@ -356,7 +356,7 @@ export default function FoodDatabasePage() {
 
       {/* Edit Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-md overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Food</DialogTitle>
           </DialogHeader>

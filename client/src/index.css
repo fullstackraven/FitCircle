@@ -30,15 +30,15 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     
-    /* Dynamic viewport and dock variables for iOS stability */
-    --app-dvh: 1vh; /* Will be set from JS; fallback to 1vh */
-    --dock-h: 88px; /* Actual dock height including padding */
-    --kb-offset: 0px; /* Keyboard offset, set from JS */
-    
-    /* Navigation variables */
-    --bottom-nav-height: 110px;
-    --bottom-nav-padding: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
-    --pwa-extra-padding: 0px;
+    /* Shared layout contract. Tests may override safe-area variables to
+       simulate notched devices; production values come directly from iOS. */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --app-height: 100vh;
+    --viewport-top: 0px;
+    --dock-height: 0px;
   }
 }
 
@@ -56,103 +56,59 @@
     @apply bg-background text-foreground;
     background-color: hsl(222, 47%, 11%);
     color: hsl(210, 40%, 98%);
-    /* Disable browser swipe navigation and prevent rubber-band bounce */
-    overscroll-behavior-y: contain;
-    overscroll-behavior-x: none;
-    -webkit-overflow-scrolling: touch;
     margin: 0;
-    position: fixed;
     width: 100%;
+    overscroll-behavior: none;
   }
 
-  /* Disable swipe gestures on all containers */
-  .container, .min-h-screen, div[class*="mx-auto"] {
-    overscroll-behavior-x: none;
-    -webkit-overflow-scrolling: touch;
+  @supports (height: 100dvh) {
+    :root { --app-height: 100dvh; }
   }
 
-  /* App-shell layout: position fixed to overlay safe areas */
   .app-shell {
     position: fixed;
-    top: 0;
+    top: var(--viewport-top);
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: var(--app-height);
+    padding-top: var(--safe-top);
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
     display: flex;
     flex-direction: column;
-    width: 100%;
-    height: 100vh;
-    height: 100dvh;
     overflow: hidden;
-    z-index: 0;
+    isolation: isolate;
   }
 
-  /* Scrollable content area - extends under safe areas */
   .app-content {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
-    padding-top: calc(env(safe-area-inset-top) + 16px);
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-bottom: calc(100px + env(safe-area-inset-bottom));
-    z-index: 1;
+    overscroll-behavior: contain;
+    padding: 16px;
+    padding-bottom: calc(max(var(--dock-height), var(--safe-bottom)) + 16px);
+    scroll-padding-block: 16px calc(max(var(--dock-height), var(--safe-bottom)) + 16px);
   }
 
-  /* Dock at bottom - extends into safe area with high z-index */
   .app-dock {
-    position: fixed;
+    position: absolute;
     bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
+    left: var(--safe-left);
+    right: var(--safe-right);
     z-index: 1000;
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: var(--safe-bottom);
   }
+  .app-dock:empty, .keyboard-open .app-dock { display: none; }
 
-  /* Extra padding for pages (no longer needed but keep for compatibility) */
-  .min-h-screen, 
-  .min-h-dvh {
-    min-height: auto;
-    box-sizing: border-box;
-  }
-
-  /* PWA-specific adjustments */
-  @media (display-mode: standalone) {
-    :root {
-      --pwa-extra-padding: 40px;
-    }
-    
-    body {
-      /* Enhanced safe area handling for PWA - only sides, top handled by app-content */
-      padding-left: env(safe-area-inset-left);
-      padding-right: env(safe-area-inset-right);
-    }
-    
-  }
-  
-  /* Fixed header for nav bar pages */
   .fitcircle-fixed-header {
     position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
     z-index: 100;
+    margin-inline: -16px;
     background-color: hsl(222, 47%, 11%);
-    padding-top: env(safe-area-inset-top);
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-bottom: 16px;
   }
-  
-  /* Adjust content padding when using fixed header */
-  .fitcircle-content-with-fixed-header {
-    padding-top: 0 !important;
-  }
-
-
 
   /* Animation for save confirmation toast */
   @keyframes fadeInOut {
@@ -167,7 +123,7 @@
 @layer utilities {
   /* Page Layout */
   .fitcircle-page {
-    @apply min-h-dvh text-white;
+    @apply text-white;
     background-color: hsl(222, 47%, 11%);
   }
   
@@ -368,3 +324,87 @@
 .fitcircle-dialog {
   @apply bg-card border-border text-card-foreground;
 }
+
+:root[data-overlay-open] .app-content {
+  overflow: hidden;
+  touch-action: none;
+}
+
+.overlay-backdrop, .overlay-frame, .sheet-panel {
+  position: fixed;
+  top: var(--viewport-top);
+  height: var(--app-height);
+  left: 0;
+  right: 0;
+  z-index: 2000;
+}
+.overlay-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--safe-top) + 16px) calc(var(--safe-right) + 16px) calc(var(--safe-bottom) + 16px) calc(var(--safe-left) + 16px);
+  pointer-events: none;
+}
+.dialog-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 100%;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: auto;
+}
+.dialog-header { flex-shrink: 0; padding-inline: 36px; }
+.dialog-body {
+  display: grid;
+  gap: inherit;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-block: 16px;
+}
+.overlay-close {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.sheet-panel {
+  right: auto;
+  max-width: calc(100% - var(--safe-left) - var(--safe-right));
+  min-height: 0;
+  padding: calc(var(--safe-top) + 44px + 16px) 24px calc(var(--safe-bottom) + 24px) calc(var(--safe-left) + 24px);
+  overflow: hidden;
+}
+.sheet-panel[data-side="right"] {
+  left: auto;
+  right: 0;
+  padding-left: 24px;
+  padding-right: calc(var(--safe-right) + 24px);
+}
+.sheet-panel[data-side="top"], .sheet-panel[data-side="bottom"] {
+  width: 100%;
+  right: 0;
+  max-height: var(--app-height);
+}
+.sheet-panel .overlay-close { top: calc(var(--safe-top) + 8px); right: calc(var(--safe-right) + 8px); }
+.sheet-body { height: 100%; overflow-y: auto; overscroll-behavior: contain; }
+.sheet-body > .h-full { min-height: 100%; height: auto; }
+
+/* Existing non-Radix goal panels share the same viewport and scroll lock. */
+.viewport-overlay { pointer-events: auto; }
+.viewport-overlay > div { max-height: 100%; overflow-y: auto; overscroll-behavior: contain; }
+.viewport-overlay [role="dialog"] > div:first-child { position: sticky; top: 0; background: inherit; z-index: 1; }
+.viewport-overlay button[aria-label="Close"] { min-width: 44px; min-height: 44px; }
+
+/* Radix Select portals must sit above sheets and dialogs. */
+.fitcircle-select { z-index: 2100; }
+
+.app-content .min-h-screen, .app-content .min-h-dvh { min-height: 0; }
