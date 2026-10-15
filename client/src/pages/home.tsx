@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Target, Bot, TrendingUp, Calculator, UtensilsCrossed, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp, Timer, Activity, Brain, Droplet } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Target, TrendingUp, Calculator, UtensilsCrossed, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp, Timer, Activity, Brain, Droplet } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
@@ -587,17 +587,6 @@ export default function Home() {
 
             {/* Dashboard Menu Items */}
             <div className="flex-1 py-4">
-              {/* Trainer - Hidden for now, can be re-enabled by uncommenting */}
-              {/* <div 
-                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                  navigate('/trainer?from=dashboard');
-                }}
-              >
-                <Bot className="w-5 h-5 text-slate-400" />
-                <span className="text-white">Trainer</span>
-              </div> */}
 
               {/* Settings */}
               <div 

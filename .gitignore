@@ -7,3 +7,5 @@ vite.config.ts.*
 
 # Bug reports (optional - you may want to commit these to track user feedback)
 # bug-reports/*.json
+playwright-report/
+test-results/

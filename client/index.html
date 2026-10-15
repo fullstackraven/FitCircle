@@ -10,26 +10,13 @@
     <meta name="apple-mobile-web-app-title" content="FitCircle" />
     <title>FitCircle</title>
 
-    <link rel="apple-touch-icon" href="icon-192.png" />
-    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="%BASE_URL%icon-192.png" />
+    <link rel="manifest" href="%BASE_URL%manifest.json" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='none' stroke='%2300ff41' stroke-width='8'/><circle cx='50' cy='50' r='40' fill='none' stroke='%2300ff41' stroke-width='8' stroke-dasharray='251.2' stroke-dashoffset='0' opacity='0.3'/><path d='M35 50l10 10 20-20' stroke='%2300ff41' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
     <meta name="description" content="FitCircle - Mobile-friendly workout tracking app with progress circles" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      // Simple PWA registration - React hook handles all update logic
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js', { scope: '/' })
-            .then(reg => {
-              // Optional: kick off update check; UI will show when ready
-              reg.update?.();
-            })
-            .catch(console.error);
-        });
-      }
-    </script>
   </body>
 </html>

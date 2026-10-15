@@ -1,13 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Upload, Download, Trash2, Clock, Shield, RotateCcw } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { ArrowLeft, Upload, Download, Trash2, RotateCcw } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
 import { useServiceWorkerUpdate } from '@/hooks/use-service-worker-update';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { getTodayString } from '@/lib/date-utils';
-import { STORAGE_KEYS } from '@/lib/storage-utils';
 import { localFoodService } from '@/lib/local-food-service';
+import { createBackup, prepareRestore, applyRestore, isAppKey } from '@/lib/backup';
 
 
 export default function SettingsPage() {
@@ -20,7 +18,7 @@ export default function SettingsPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
-  const { updateNow, checkForUpdates, waitForWaiting } = useServiceWorkerUpdate();
+  const { updateNow, waitForWaiting } = useServiceWorkerUpdate();
 
 
   
@@ -40,28 +38,8 @@ export default function SettingsPage() {
   const exportSnapshot = async () => {
     setIsExporting(true);
     try {
-      // Get all localStorage data (includes food database)
-      const completeSnapshot: Record<string, any> = {};
-      
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key) {
-          const value = localStorage.getItem(key);
-          if (value !== null) {
-            try {
-              // Try to parse JSON values, keep strings as-is
-              completeSnapshot[key] = JSON.parse(value);
-            } catch {
-              completeSnapshot[key] = value;
-            }
-          }
-        }
-      }
-      
-      // Food database is already in localStorage as 'fitcircle_food_database'
-      const foodCount = completeSnapshot['fitcircle_food_database']?.length || 0;
-      console.log(`Backing up ${Object.keys(completeSnapshot).length} items (including ${foodCount} foods)`);
-      
+      await localFoodService.ready;
+      const completeSnapshot = await createBackup();
       const blob = new Blob([JSON.stringify(completeSnapshot, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -77,7 +55,7 @@ export default function SettingsPage() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      setStatus(`Exported ${Object.keys(completeSnapshot).length} items successfully!`);
+      setStatus(`Exported ${Object.keys(completeSnapshot.localStorage).length} items successfully!`);
       setTimeout(() => setStatus(''), 3000);
     } catch (error) {
       console.error('Export failed:', error);
@@ -96,69 +74,19 @@ export default function SettingsPage() {
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
-        const content = e.target?.result as string;
-        const snapshot = JSON.parse(content);
-        
-        if (typeof snapshot !== 'object' || !snapshot) {
-          throw new Error('Invalid file format');
-        }
-        
-        // Handle legacy backups with IndexedDB custom foods
-        const legacyCustomFoods = snapshot['__indexeddb_custom_foods'];
-        delete snapshot['__indexeddb_custom_foods']; // Remove from snapshot
-        
-        // Clear localStorage first
-        localStorage.clear();
-        
-        let count = 0;
-        let errors = 0;
-        
-        for (const [key, value] of Object.entries(snapshot)) {
-          // Skip invalid keys that contain functions or are clearly invalid
-          if (typeof value === 'function' || key === 'setItem' || key.includes('function')) {
-            console.log(`Skipping invalid key during restore: ${key}`);
-            continue;
-          }
-          
-          try {
-            // Store all data in localStorage (including food database)
-            const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
-            localStorage.setItem(key, stringValue);
-            count++;
-            console.log(`Restored localStorage key: ${key}`);
-          } catch (error) {
-            console.error(`Failed to restore key "${key}":`, error);
-            errors++;
-          }
-        }
-        
-        // Handle legacy custom foods from IndexedDB backups
-        if (legacyCustomFoods && Array.isArray(legacyCustomFoods) && legacyCustomFoods.length > 0) {
-          console.log(`Migrating ${legacyCustomFoods.length} legacy custom foods to localStorage...`);
-          const existingFoods = snapshot['fitcircle_food_database'] || [];
-          const allFoods = [...existingFoods, ...legacyCustomFoods];
-          localStorage.setItem('fitcircle_food_database', JSON.stringify(allFoods));
-          console.log(`Migrated ${legacyCustomFoods.length} legacy custom foods`);
-        }
-        
-        const foodCount = snapshot['fitcircle_food_database']?.length || 0;
-        console.log(`Restoration complete: ${count} items restored (including ${foodCount} foods), ${errors} errors`);
-        setStatus(`Successfully restored ${count} items!${errors > 0 ? ` (${errors} errors)` : ''}`);
-        
-        setTimeout(() => {
-          setStatus('');
-          window.location.href = '/';
-        }, 2000);
+        await localFoodService.ready;
+        const plan = prepareRestore(JSON.parse(e.target?.result as string));
+        if (!window.confirm(`Restore ${Object.keys(plan.entries).length} FitCircle items? Matching items will be replaced; other data will be kept. Download a backup first if needed.`)) { setStatus('Restore cancelled.'); return; }
+        applyRestore(plan);
+        window.location.href = import.meta.env.BASE_URL;
       } catch (error) {
-        console.error('Import failed:', error);
-        setStatus(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        setTimeout(() => setStatus(''), 5000);
+        setStatus(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}` );
       } finally {
         setIsImporting(false);
         if (fileInputRef.current) fileInputRef.current.value = '';
       }
     };
-    
+
     reader.onerror = () => {
       setStatus('Failed to read file.');
       setIsImporting(false);
@@ -174,15 +102,29 @@ export default function SettingsPage() {
 
   // Soft reload - simulate closing and reopening the app
   // Uses fresh navigation instead of reload() to avoid iOS PWA white screen bug
-  const forceRefresh = () => {
-    window.location.href = '/?refresh=' + Date.now();
+  const forceRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      const reg = await navigator.serviceWorker?.getRegistration(import.meta.env.BASE_URL);
+      if (reg) {
+        await reg.update();
+        if (reg.installing) await waitForWaiting(reg);
+        if (reg.waiting) { await updateNow(); return; }
+      }
+    } catch (error) {
+      setStatus('Update check failed. The installed offline version is still available.');
+      setIsRefreshing(false);
+      return;
+    }
+    window.location.href = import.meta.env.BASE_URL + '?refresh=' + Date.now();
   };
 
   // Erase all data function (clears localStorage including food database)
   const eraseAllData = async () => {
     try {
       // Clear all localStorage data (includes food database)
-      localStorage.clear();
+      const keys = Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i));
+      keys.forEach(key => { if (key && isAppKey(key)) localStorage.removeItem(key); });
       
       setStatus('All data has been erased successfully!');
       setShowEraseConfirm(false);
@@ -190,7 +132,7 @@ export default function SettingsPage() {
       // Redirect to home page after a short delay
       setTimeout(() => {
         setStatus('');
-        window.location.href = '/';
+        window.location.href = import.meta.env.BASE_URL;
       }, 2000);
     } catch (error) {
       console.error('Failed to erase data:', error);
@@ -256,48 +198,10 @@ export default function SettingsPage() {
             )}
             
             <p className="text-xs text-slate-400 text-center">
-              This creates a complete snapshot of all your FitCircle data. Restore replaces all current data.
+              This creates a complete snapshot of all your FitCircle data. Restore validates the entire file, replaces matching FitCircle items, and keeps other data. Close other FitCircle tabs before restoring.
             </p>
           </div>
         </div>
-
-        {/* COMMENTED OUT: Auto-Backup Section removed per user request - no server calls */}
-        {/* <div className="bg-slate-800 rounded-xl p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white">Auto-Backup</h2>
-            <button
-              onClick={() => handleAutoBackupToggle(!autoBackupEnabled)}
-              className={`relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
-                autoBackupEnabled ? 'bg-green-400' : 'bg-slate-600'
-              }`}
-            >
-              <span
-                className={`inline-block w-5 h-5 bg-white rounded-full transition-transform ${
-                  autoBackupEnabled ? 'translate-x-6' : 'translate-x-0.5'
-                }`}
-              />
-            </button>
-          </div>
-
-          {autoBackupEnabled && (
-            <div className="space-y-3">
-              {lastAutoBackup && (
-                <div className="text-xs text-slate-400">
-                  Last backup: {new Date(lastAutoBackup).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </div>
-              )}
-              
-              <div className="text-xs text-slate-400">
-                Backups are saved to the /backups folder in your codebase.
-              </div>
-            </div>
-          )}
-        </div> */}
 
         {/* Force Refresh Section */}
         <div className="bg-slate-800 rounded-xl p-6 mb-6">

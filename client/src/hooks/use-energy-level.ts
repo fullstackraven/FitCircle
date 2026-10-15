@@ -4,7 +4,7 @@ import { getDateString } from '@/lib/date-utils';
 export function useEnergyLevel() {
   const getEnergyLevel = (date: Date) => {
     const dateKey = getDateString(date);
-    const parsed = safeParseJSON(localStorage.getItem(STORAGE_KEYS.ENERGY_LEVELS), {});
+    const parsed = safeParseJSON<Record<string, number>>(localStorage.getItem(STORAGE_KEYS.ENERGY_LEVELS), {});
     return parsed[dateKey] || 0;
   };
 

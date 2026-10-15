@@ -312,7 +312,7 @@ export default function FoodTrackerPage() {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key && key.startsWith('fitcircle_food_')) {
-          const entries = safeParseJSON(localStorage.getItem(key), []);
+          const entries = safeParseJSON<FoodEntry[]>(localStorage.getItem(key), []);
           
           // Ensure entries is an array before iterating
           if (!Array.isArray(entries)) {

@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>FitCircle</title></head>
+<body><p>Opening FitCircle… <a href="/FitCircle/">Home</a></p>
+<script>
+  const base = '/FitCircle/';
+  if (location.pathname.startsWith(base)) {
+    const route = location.pathname.slice(base.length - 1) + location.search + location.hash;
+    location.replace(base + '?__fitcircle_route=' + encodeURIComponent(route));
+  }
+</script></body></html>

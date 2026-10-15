@@ -1,6 +1,7 @@
-import type { Supplement } from '@shared/schema';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 import { getTodayString } from '@/lib/date-utils';
+
+export interface InsertSupplement { name: string; measurementType: string; amount: number; }
 
 interface LocalSupplement {
   id: number;

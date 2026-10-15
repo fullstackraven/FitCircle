@@ -25,7 +25,6 @@ import { DynamicOverview } from "@/pages/dynamic-overview";
 import RoutinesPage from "@/pages/routines";
 import WellnessPage from "@/pages/wellness";
 
-// import TrainerPage from "@/pages/trainer";
 import NotFound from "@/pages/not-found";
 import BottomNavigation from "@/components/BottomNavigation";
 import { ScrollLockProvider } from "@/contexts/ScrollLockContext";
@@ -58,7 +57,6 @@ function Router() {
 
       <Route path="/reminders" component={RemindersPage} />
 
-      {/* <Route path="/trainer" component={TrainerPage} /> */}
       <Route path="/settings" component={SettingsPage} />
       <Route component={NotFound} />
     </Switch>

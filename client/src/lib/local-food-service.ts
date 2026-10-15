@@ -1,3 +1,4 @@
+import { readIndexedFoods } from './backup';
 import comprehensiveFoods from '../data/comprehensive-foods.json';
 
 // Types for our local food service
@@ -100,58 +101,17 @@ export interface AddCustomFoodResponse {
   error?: string;
 }
 
-// IndexedDB helper for migration only
-class CustomFoodStore {
-  private dbName = 'FitCircleCustomFoods';
-  private storeName = 'foods';
-  private version = 1;
-
-  async openDB(): Promise<IDBDatabase> {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName, this.version);
-      
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve(request.result);
-      
-      request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-        
-        if (!db.objectStoreNames.contains(this.storeName)) {
-          const store = db.createObjectStore(this.storeName, { keyPath: 'id' });
-          store.createIndex('name', 'name', { unique: false });
-          store.createIndex('barcode', 'barcode', { unique: false });
-        }
-      };
-    });
-  }
-
-  async getAllFoods(): Promise<LocalFoodItem[]> {
-    try {
-      const db = await this.openDB();
-      const transaction = db.transaction([this.storeName], 'readonly');
-      const store = transaction.objectStore(this.storeName);
-      
-      return new Promise((resolve, reject) => {
-        const request = store.getAll();
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve(request.result || []);
-      });
-    } catch (error) {
-      console.error('Error getting custom foods from IndexedDB:', error);
-      return [];
-    }
-  }
-}
-
 // Local Food Service class
 export class LocalFoodService {
   private searchIndex: Map<string, LocalFoodItem[]>;
   private readonly FOOD_DATABASE_KEY = 'fitcircle_food_database';
   private readonly MIGRATION_FLAG_KEY = 'fitcircle_food_database_migrated';
 
+  readonly ready: Promise<void>;
+
   constructor() {
     this.searchIndex = new Map();
-    this.migrateToLocalStorage();
+    this.ready = this.migrateToLocalStorage();
   }
 
   // Migrate from JSON and IndexedDB to localStorage (one-time operation)
@@ -163,8 +123,7 @@ export class LocalFoodService {
         console.log('First load: Migrating food database to localStorage...');
         
         // Get custom foods from IndexedDB
-        const customFoodStore = new CustomFoodStore();
-        const customFoods = await customFoodStore.getAllFoods();
+        const customFoods = await readIndexedFoods() as LocalFoodItem[];
         console.log(`Found ${customFoods.length} custom foods in IndexedDB`);
         
         // Get built-in foods from JSON
@@ -179,7 +138,11 @@ export class LocalFoodService {
         console.log(`Keeping ${activeBuiltInFoods.length} built-in foods (${deletedIds.size} were deleted)`);
         
         // Combine all foods
-        const allFoods = [...activeBuiltInFoods, ...customFoods];
+        const existingFoods = this.getFoodsFromStorage();
+        const hasExistingDatabase = localStorage.getItem(this.FOOD_DATABASE_KEY) !== null;
+        const allFoods = [...new Map([
+          ...(hasExistingDatabase ? [] : activeBuiltInFoods), ...customFoods, ...existingFoods
+        ].map(food => [food.id, food])).values()];
         
         // Save to localStorage
         localStorage.setItem(this.FOOD_DATABASE_KEY, JSON.stringify(allFoods));
@@ -187,8 +150,7 @@ export class LocalFoodService {
         
         console.log(`✅ Migration complete: ${allFoods.length} foods saved to localStorage`);
         
-        // Clean up legacy deleted food IDs
-        localStorage.removeItem('fitcircle_deleted_builtin_foods');
+        // Keep legacy records intact for rollback/export at the old origin.
       }
       
       // Build search index

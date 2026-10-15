@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus } from 'lucide-react';
 import { useSupplements } from '@/hooks/use-supplements';
-import type { InsertSupplement } from '@shared/schema';
+import type { InsertSupplement } from '@/hooks/use-supplements';
 
 interface AddSupplementDialogProps {
   onSupplementAdded?: () => void;

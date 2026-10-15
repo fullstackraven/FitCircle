@@ -36,8 +36,7 @@ export function useReminders() {
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEYS.REMINDERS, JSON.stringify(reminders));
-      // Clean up old notes data
-      localStorage.removeItem('fitcircle_notes');
+
       console.log('Reminders saved:', reminders.length, 'items');
     } catch (error) {
       console.error('Failed to save reminders:', error);
