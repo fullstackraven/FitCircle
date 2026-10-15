@@ -505,7 +505,7 @@ export default function CalendarPage() {
       {/* Main content; header spacing is handled by normal flow */}
       <div>
         {/* Calendar Controls - below universal header */}
-        <div className="glass-toolbar px-4 pb-4 flex items-center justify-between">
+        <div className="px-4 py-6 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(subMonths(currentMonth, 1)) : setCurrentWeek(subWeeks(currentWeek, 1))}
