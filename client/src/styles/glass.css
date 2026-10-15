@@ -1,0 +1,93 @@
+/* FitCircle materials. Geometry and brand colors remain in their owners. */
+:root {
+  --glass-surface: rgb(30 41 59);
+  --glass-surface-elevated: rgb(15 23 42);
+  --glass-surface-interactive: rgb(30 41 59);
+  --glass-surface-nav: rgb(30 41 59);
+  --glass-border: rgb(203 213 225 / .2);
+  --glass-border-highlight: rgb(255 255 255 / .1);
+  --glass-shadow: 0 4px 14px rgb(0 0 0 / .16), inset 0 1px 0 var(--glass-border-highlight);
+  --glass-shadow-elevated: 0 12px 32px rgb(0 0 0 / .28), inset 0 1px 0 var(--glass-border-highlight);
+  --glass-blur-sm: 8px;
+  --glass-blur-md: 12px;
+  --glass-blur-lg: 16px;
+  --glass-radius-sm: 8px;
+  --glass-radius-md: 12px;
+  --glass-radius-lg: 24px;
+  --glass-transition-fast: 120ms;
+  --glass-transition-normal: 180ms;
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --glass-surface: rgb(30 41 59 / .9);
+    --glass-surface-elevated: rgb(15 23 42 / .96);
+    --glass-surface-interactive: rgb(30 41 59 / .88);
+    --glass-surface-nav: rgb(30 41 59 / .82);
+  }
+  .glass-nav {
+    -webkit-backdrop-filter: blur(var(--glass-blur-md)) saturate(125%);
+    backdrop-filter: blur(var(--glass-blur-md)) saturate(125%);
+  }
+  .glass-dialog, .glass-sheet {
+    -webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(115%);
+    backdrop-filter: blur(var(--glass-blur-lg)) saturate(115%);
+  }
+}
+.glass-nav, .glass-card, .glass-panel, .glass-dialog, .glass-sheet, .glass-toolbar {
+  border-color: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+.glass-nav { background-color: var(--glass-surface-nav); box-shadow: var(--glass-shadow-elevated); }
+.glass-card, .glass-panel, .glass-toolbar { background-color: var(--glass-surface); }
+.glass-dialog, .glass-sheet { background-color: var(--glass-surface-elevated); box-shadow: var(--glass-shadow-elevated); }
+/* Cards, inputs and buttons do not add nested backdrop filters. */
+.glass-button, .glass-input {
+  background-color: var(--glass-surface-interactive);
+  border-color: var(--glass-border);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .04);
+}
+.glass-button { transition: background-color var(--glass-transition-fast), box-shadow var(--glass-transition-fast); }
+.glass-button:hover:not(:disabled) { background-color: rgb(51 65 85); }
+.glass-button:active:not(:disabled) { box-shadow: inset 0 2px 5px rgb(0 0 0 / .2); }
+.glass-nav button:focus-visible, .glass-button:focus-visible, .glass-input:focus-visible {
+  outline: 2px solid rgb(203 213 225);
+  outline-offset: 2px;
+}
+.glass-input::placeholder { color: rgb(148 163 184); opacity: 1; }
+.glass-input:disabled, .glass-button:disabled { opacity: .5; }
+
+/* Existing compact geometry, consolidated from inline declarations for reuse. */
+.dock-wrap { display: flex; justify-content: center; width: 100%; padding: 0 16px; box-sizing: border-box; }
+.dock-nav { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; border: 1px solid var(--glass-border); border-radius: var(--glass-radius-lg); padding: 12px clamp(8px, 3vw, 20px); }
+.dock-items { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 4px; }
+.dock-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 0; border-radius: 16px; border: none; background-color: transparent; color: rgb(148 163 184); cursor: pointer; min-width: 0; flex: 1 1 0; min-height: 48px; gap: 4px; transition: color var(--glass-transition-fast), background-color var(--glass-transition-fast), transform var(--glass-transition-fast); }
+.dock-tab[aria-current="page"] { color: white; background-color: rgb(255 255 255 / .055); }
+.dock-tab:hover { color: white; }
+.dock-tab:active { transform: translateY(1px); background-color: rgb(255 255 255 / .09); }
+.dock-tab svg { width: 28px; height: 28px; margin-bottom: 4px; }
+.dock-tab span { font-size: 11px; font-weight: 300; line-height: 1; }
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-surface: rgb(30 41 59);
+    --glass-surface-elevated: rgb(15 23 42);
+    --glass-surface-interactive: rgb(30 41 59);
+    --glass-surface-nav: rgb(30 41 59);
+  }
+  .glass-nav, .glass-dialog, .glass-sheet { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.glass-nav, .glass-card, .glass-panel, .glass-dialog, .glass-sheet, .glass-button, .glass-input, .glass-toolbar),
+  :is(.glass-nav, .glass-card, .glass-panel, .glass-dialog, .glass-sheet, .glass-toolbar) * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+@media (forced-colors: active) {
+  :is(.glass-nav, .glass-card, .glass-panel, .glass-dialog, .glass-sheet, .glass-button, .glass-input, .glass-toolbar) {
+    background-color: Canvas; color: CanvasText; border-color: ButtonText;
+    box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+  }
+  .dock-tab { color: ButtonText; }
+  .dock-tab[aria-current="page"] { color: HighlightText; background: Highlight; }
+}

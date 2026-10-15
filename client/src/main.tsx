@@ -6,6 +6,7 @@ import "@fontsource/jetbrains-mono/500.css";
 import "@fontsource/jetbrains-mono/600.css";
 import "@fontsource/jetbrains-mono/700.css";
 import "./index.css";
+import "./styles/glass.css";
 import { Router } from "wouter";
 import { restorePagesRoute, registerPWA } from "@/lib/pwa";
 
