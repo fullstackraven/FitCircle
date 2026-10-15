@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="FC Standard">
+
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="/FitCircle/icon-192.png">
+<link rel="stylesheet" href="../test.css"><title>FitCircle Test — Standard status bar</title>
+</head><body data-variant="standard">
+<div class="shell">
+<header><h1>Standard status bar</h1></header>
+<main>
+<p>This is a layout test, not your fitness app. It does not read or change your records.</p>
+<p>In Safari, use Share → Add to Home Screen. Open the new <strong>FC Standard</strong> icon to test. Keep your existing FitCircle installed.</p>
+<p>Check the physical bottom: does the cyan line meet the bottom of the screen, or is there still an empty strip below it?</p>
+<p>The standard status bar may sit above the page. A smaller viewport alone is normal in that presentation; judge the visible bottom edge.</p>
+<pre id="report" aria-live="off"></pre>
+<button id="copy" type="button">Copy report</button><p id="copy-status" role="status"></p>
+<label>Keyboard test <input type="text" placeholder="Tap, type, then dismiss"></label>
+<div id="tiles"></div><p id="last-card">Last test card — scroll this fully above the dock.</p>
+</main>
+<nav aria-label="Test dock"><button id="bottom-target" type="button">Tap bottom control</button><span id="tap-status" role="status">Not tapped</span></nav>
+</div><div class="boundary" aria-hidden="true"></div>
+<script type="module" src="../test.js"></script>
+</body></html>
