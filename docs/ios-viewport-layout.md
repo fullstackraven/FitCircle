@@ -4,7 +4,7 @@ There are two independent bottom requirements: the scroll **surface** reaches th
 viewport edge, while end-of-page **clearance** lets the last card rise above the
 floating dock. A footer or spacer must not shorten the surface.
 
-## Measured cause and correction
+## Measured cause and correction in #5
 
 On main after #4 (`b135297`), `.app-dock` was a relative flex item. It reserved
 123 CSS pixels in the shell at a simulated 390×844 viewport with safe areas of
@@ -15,7 +15,7 @@ it rather than allowing content to paint there.
 
 `getBoundingClientRect()` and computed-style measurements (Chromium simulation):
 
-| Element / metric | Main after #4 | This change |
+| Element / metric | Main after #4 | #5 correction |
 | --- | --- | --- |
 | `window.innerHeight` / document client height | 844 / 844 | 844 / 844 |
 | visual viewport height / offset top | 844 / 0 | 844 / 0 |
@@ -27,8 +27,8 @@ it rather than allowing content to paint there.
 | dock position / background | relative / opaque | absolute / transparent |
 | outer ancestor overflow | hidden | visible |
 
-The dock is now an absolute overlay within the shell; it consumes no flex height.
-Its position and all navigation styling remain exactly as on latest main. The
+In #5 the dock became an absolute overlay within the shell; it consumes no flex height.
+That correction preserved its position and navigation styling at the time. The
 home-indicator area beneath it is transparent to scrolling content. The main
 scrollport remains unpadded. Its inner `.app-page` reserves the measured full dock
 height plus the existing 16px gutter **only at the end of the content**. The
@@ -49,6 +49,18 @@ redundant ancestor clips removes an additional possible clipping dependency, but
 is not a proven diagnosis of that earlier WebKit behavior. The user reports an
 iPhone 16 affected in both Safari and the Home Screen app; iOS version is unknown.
 Physical acceptance remains pending until the updated surface is checked there.
+
+## Lower dock placement follow-up
+
+The dock is now fixed directly to the viewport, with an 8px gap beneath its
+rounded lower edge. This is a requested visual spacing change, not a global
+viewport offset. Home-indicator clearance moves inside the navigation panel via
+`padding-bottom: max(12px, var(--safe-bottom))`, instead of leaving that whole
+safe area empty below the panel. Colors, width, radius, icons and interactions
+stay the same. The panel grows internally on notched devices to keep buttons
+above the gesture area. Its ResizeObserver measurement includes the internal
+safe area and outer gap, so final-card clearance follows automatically. No shell,
+header, viewport-guard, overlay or storage changes are needed.
 
 ## Viewport and overlay rules
 

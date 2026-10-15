@@ -82,7 +82,9 @@ test('floating dock leaves the full scroll surface visible and final cards reach
   expect(intersectionBottom).toBe(844);
   const nav = await page.getByRole('navigation', { name: 'Bottom navigation' }).boundingBox();
   expect(nav!.y).toBe(dock!.y);
-  expect(nav!.y + nav!.height).toBe(844 - 34);
+  expect(nav!.y + nav!.height).toBe(844 - 8);
+  const lastButton = await page.getByRole('button', { name: 'Reminders', exact: true }).boundingBox();
+  expect(lastButton!.y + lastButton!.height).toBeLessThanOrEqual(844 - 34);
   expect(await page.locator('.app-dock').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
   await page.locator('main').evaluate(el => { el.scrollTop = el.scrollHeight; });
   const last = await tile.boundingBox();
@@ -192,7 +194,7 @@ for (const viewport of [
     expect(geometry.dock.bottom).toBe(viewport.height);
     expect(geometry.dock.top).toBeGreaterThan(geometry.main.top);
     expect(geometry.dock.top).toBeLessThan(geometry.main.bottom);
-    expect(geometry.dock.position).toBe('absolute');
+    expect(geometry.dock.position).toBe('fixed');
     expect(geometry.ancestors.filter(a => /hidden|clip|auto|scroll/.test(a.overflowY))).toEqual([]);
     await tile.evaluate(el => {
       const main = document.querySelector('main')!;
@@ -207,6 +209,9 @@ for (const viewport of [
     }));
     expect(visible.bottom).toBe(viewport.height);
     const nav = await page.getByRole('navigation', { name: 'Bottom navigation' }).boundingBox();
+    expect(nav!.y + nav!.height).toBe(viewport.height - 8);
+    const button = await page.getByRole('button', { name: 'Reminders', exact: true }).boundingBox();
+    expect(button!.y + button!.height).toBeLessThanOrEqual(viewport.height - viewport.bottom);
     expect(visible.top).toBeLessThan(nav!.y + nav!.height);
     expect(visible.bottom).toBeGreaterThanOrEqual(nav!.y + nav!.height);
     await testInfo.attach('content-below-floating-dock.png', { body: await page.screenshot(), contentType: 'image/png' });

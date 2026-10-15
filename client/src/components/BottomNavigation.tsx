@@ -68,6 +68,7 @@ export default function BottomNavigation() {
           border: '1px solid rgba(148, 163, 184, 0.4)',
           borderRadius: '24px',
           padding: '12px clamp(8px, 3vw, 20px)',
+          paddingBottom: 'max(12px, var(--safe-bottom))',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
