@@ -82,7 +82,7 @@ test('floating dock leaves the full scroll surface visible and final cards reach
   expect(intersectionBottom).toBe(844);
   const nav = await page.getByRole('navigation', { name: 'Bottom navigation' }).boundingBox();
   expect(nav!.y).toBe(dock!.y);
-  expect(nav!.y + nav!.height).toBe(844 - 8);
+  expect(nav!.y + nav!.height).toBe(844 - 34);
   const lastButton = await page.getByRole('button', { name: 'Reminders', exact: true }).boundingBox();
   expect(lastButton!.y + lastButton!.height).toBeLessThanOrEqual(844 - 34);
   expect(await page.locator('.app-dock').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
@@ -158,6 +158,8 @@ test('all shared headers are outside the unpadded scroll surface', async ({ page
 });
 
 for (const viewport of [
+  { name: 'small iPhone', width: 320, height: 568, top: 20, bottom: 20 },
+  { name: 'large iPhone', width: 430, height: 932, top: 59, bottom: 34 },
   { name: 'portrait', width: 390, height: 844, top: 59, bottom: 34 },
   { name: 'landscape', width: 844, height: 390, top: 0, bottom: 21 },
   { name: 'desktop', width: 1280, height: 900, top: 0, bottom: 0 },
@@ -209,8 +211,11 @@ for (const viewport of [
     }));
     expect(visible.bottom).toBe(viewport.height);
     const nav = await page.getByRole('navigation', { name: 'Bottom navigation' }).boundingBox();
-    expect(nav!.y + nav!.height).toBe(viewport.height - 8);
+    expect(nav!.y + nav!.height).toBe(viewport.height - Math.max(8, viewport.bottom));
+    expect(nav!.height).toBe(89);
     const button = await page.getByRole('button', { name: 'Reminders', exact: true }).boundingBox();
+    expect(button!.height).toBeGreaterThanOrEqual(44);
+    expect(button!.width).toBeGreaterThanOrEqual(44);
     expect(button!.y + button!.height).toBeLessThanOrEqual(viewport.height - viewport.bottom);
     expect(visible.top).toBeLessThan(nav!.y + nav!.height);
     expect(visible.bottom).toBeGreaterThanOrEqual(nav!.y + nav!.height);
