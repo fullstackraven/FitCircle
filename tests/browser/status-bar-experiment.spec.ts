@@ -45,8 +45,8 @@ test('installed root worker serves diagnostic HTML without the SPA fallback or f
     await page.goto(`viewport-test/${variant}/index.html`);
     await expect(page.locator('body')).toHaveAttribute('data-variant', variant);
     await expect(page.locator('#report')).toContainText(`"variant": "${variant}"`);
-    await page.getByRole('button', { name: 'Tap bottom control' }).click();
-    await expect(page.getByRole('status').filter({ hasText: 'Tapped 1' })).toBeVisible();
+    await page.getByRole('button', { name: 'Home', exact: true }).click();
+    await expect(page.getByRole('status').filter({ hasText: 'Home tapped (1 total)' })).toBeVisible();
     expect(await page.locator('script').evaluateAll(nodes => nodes.map(n => n.getAttribute('src')))).toEqual(['../test.js']);
   }
   expect(errors).toEqual([]);
@@ -70,7 +70,7 @@ test('test dock, last card, viewport recovery and copy fallback work at phone si
     const last = await page.locator('#last-card').boundingBox();
     const dock = await page.locator('nav').boundingBox();
     expect(last!.y + last!.height).toBeLessThanOrEqual(dock!.y);
-    await page.getByRole('button', { name: 'Tap bottom control' }).click();
+    await page.getByRole('button', { name: 'Home', exact: true }).click();
   }
   await page.locator('main').evaluate(el => { el.scrollTop = 0; });
   await page.getByLabel('Keyboard test').fill('Synthetic input');
@@ -78,9 +78,59 @@ test('test dock, last card, viewport recovery and copy fallback work at phone si
   await page.getByRole('button', { name: 'Copy report' }).click();
   const report = JSON.parse(await page.evaluate(() => navigator.clipboard.readText()));
   expect(report.variant).toBe('standard');
+  expect(report.testRevision).toBe('real-dock-v2');
+  expect(report.dockControls).toHaveLength(5);
+  expect(report.dockControls.every((control: { height: number }) => control.height >= 48)).toBe(true);
   expect(report.bottomControlTaps).toBe(3);
   expect(report.shellBottom).toBe(812);
   await page.evaluate(() => { navigator.clipboard.writeText = async () => { throw new Error('Unavailable'); }; });
   await page.getByRole('button', { name: 'Copy report' }).click();
   await expect(page.locator('#copy-status')).toContainText('Select the report text');
+  await page.getByRole('button', { name: 'Hide cyan boundary' }).click();
+  await expect(page.locator('.boundary')).toBeHidden();
+  await page.getByRole('button', { name: 'Show cyan boundary' }).click();
+  await expect(page.locator('.boundary')).toBeVisible();
+});
+
+
+test('synthetic dock matches production icons, fonts and compact safe-area geometry', async ({ page }) => {
+  await page.setViewportSize({ width: 402, height: 812 });
+  const measure = async () => {
+    await page.addStyleTag({ content: ':root { --safe-top: 0px; --safe-bottom: 34px; }' });
+    await page.evaluate(() => document.fonts.ready);
+    return page.getByRole('navigation', { name: 'Bottom navigation' }).evaluate(nav => {
+      const bounds = nav.getBoundingClientRect();
+      return {
+        height: bounds.height, bottom: bounds.bottom, width: bounds.width,
+        paddingBottom: getComputedStyle(nav).paddingBottom,
+        buttons: Array.from(nav.querySelectorAll('button')).map(button => {
+          const icon = button.querySelector('svg')!;
+          const label = button.querySelector('span')!;
+          return {
+            label: label.textContent, height: button.getBoundingClientRect().height,
+            bottom: button.getBoundingClientRect().bottom,
+            icon: icon.outerHTML,
+            iconHeight: icon.getBoundingClientRect().height,
+            labelBottom: label.getBoundingClientRect().bottom,
+            font: getComputedStyle(label).fontFamily,
+            fontSize: getComputedStyle(label).fontSize,
+          };
+        }),
+      };
+    });
+  };
+  await page.goto('./');
+  const production = await measure();
+  await page.goto('viewport-test/standard/index.html');
+  const synthetic = await measure();
+  expect(synthetic).toEqual(production);
+  expect(synthetic.height).toBe(96);
+  expect(synthetic.bottom).toBe(812);
+  for (const button of synthetic.buttons) {
+    expect(button.bottom).toBeLessThanOrEqual(812 - 34);
+    expect(button.labelBottom).toBeLessThanOrEqual(button.bottom);
+    await page.getByRole('button', { name: button.label!, exact: true }).click();
+    await expect(page.getByRole('button', { name: button.label!, exact: true })).toHaveAttribute('aria-current', 'page');
+  }
+  expect(new URL(page.url()).pathname).toBe('/FitCircle/viewport-test/standard/index.html');
 });

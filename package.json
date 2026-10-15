@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "vite build && node scripts/build-pwa.mjs",
+    "build": "vite build && tsx scripts/build-viewport-test.tsx && node scripts/build-pwa.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "check": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",

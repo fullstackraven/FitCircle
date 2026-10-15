@@ -80,3 +80,46 @@ under the production root worker, storage-API traps, unchanged origin storage an
 IndexedDB database lists, scroll clearance, rotation-sized changes, bottom target
 interaction, reporting and clipboard fallback. These use Chromium. They do not
 simulate the iOS host or claim physical iPhone verification.
+
+## First standard-presentation result and real-dock follow-up
+
+The user launched **FC Standard** on the affected iPhone and confirmed its cyan
+line reaches the physical bottom. Its report shows standalone=true, omitted
+status style, screen=874, inner/visual/shell/main/dock=812, header padding=12px,
+dock bottom padding=34px and four successful bottom-control taps. This supports
+standard presentation as a candidate: the 62px difference can be occupied by the
+status bar above the page. It does not prove how an existing FitCircle installation
+would adopt the new metadata. A fresh FC Control comparison and keyboard/rotation/
+cold-launch acceptance are still pending.
+
+The user also thought the placeholder dock's bottom looked slightly clipped.
+The cyan marker paints over the bottom 3px, including the border. The follow-up
+adds **Hide cyan boundary** and replaces the placeholder with the real five-tab
+FitCircle dock. The application and test share the pure `DockNavigation`
+presentation component; the build renders it to static HTML for the test, copies
+production `glass.css`, and supplies the same JetBrains Mono regular font. No
+fitness React runtime, router or data module is imported by the test page.
+Production route handling and subpage hiding remain in `BottomNavigation`.
+
+After the follow-up is merged/deployed, allow the existing FitCircle worker to
+update online, close and reopen **FC Standard**, then check:
+
+1. The report says `"testRevision": "real-dock-v2"`. A different report means an
+   older test document is still open; close/reopen after the normal update.
+2. Hide the cyan boundary. Check that the rounded border, all five icons, and
+   all labels remain visible, with clearance from the home indicator.
+3. Tap each tab. These only change the synthetic selection/status, never open
+   fitness pages. Scroll the final test card above the dock.
+4. Repeat keyboard dismissal, portrait/landscape return and cold launch.
+5. Copy the report and note whether the dock or controls still look clipped.
+
+No reinstall of FC Standard is required for this HTML/style update because its
+manifest identity and presentation metadata are unchanged. Do not remove the real
+FitCircle installation. Tests must be served from `npm run build` output (for
+example, `npm run preview`): dock HTML, CSS and font are generated into `dist/`
+before the worker precache is generated.
+
+The browser regression compares production and synthetic nav geometry, font,
+SVG markup and label positions at 402×812 with a simulated 34px bottom inset.
+Expected nav height is 96px, each target is 48px high, and controls finish above
+the safe area. Chromium equivalence is not a physical clipping verification.

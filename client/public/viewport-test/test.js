@@ -18,6 +18,7 @@ function capture() {
   const landscape = screen.orientation?.type?.startsWith('landscape') || Math.abs(window.orientation) === 90;
   return {
     variant,
+    testRevision: 'real-dock-v2',
     standalone: matchMedia('(display-mode: standalone)').matches || navigator.standalone === true,
     statusStyle: document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.content ?? 'omitted (standard)',
     screenHeightOriented: landscape ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height),
@@ -28,6 +29,14 @@ function capture() {
     shellBottom: shell.getBoundingClientRect().bottom,
     scrollBottom: main.getBoundingClientRect().bottom,
     dockBottom: dock.getBoundingClientRect().bottom,
+    dockHeight: dock.getBoundingClientRect().height,
+    dockControls: Array.from(dock.querySelectorAll('button')).map(button => ({
+      label: button.textContent,
+      bottom: button.getBoundingClientRect().bottom,
+      height: button.getBoundingClientRect().height,
+      iconBottom: button.querySelector('svg').getBoundingClientRect().bottom,
+      labelBottom: button.querySelector('span').getBoundingClientRect().bottom,
+    })),
     headerPaddingTop: getComputedStyle(document.querySelector('header')).paddingTop,
     dockPaddingBottom: getComputedStyle(dock).paddingBottom,
     focused: document.activeElement?.tagName,
@@ -52,9 +61,16 @@ window.visualViewport?.addEventListener('resize', schedule);
 window.visualViewport?.addEventListener('scroll', schedule);
 document.addEventListener('focusin', schedule);
 document.addEventListener('focusout', schedule);
-document.querySelector('#bottom-target').addEventListener('click', () => {
-  document.querySelector('#tap-status').textContent = `Tapped ${++taps}`;
+dock.querySelectorAll('button').forEach(button => button.addEventListener('click', () => {
+  dock.querySelectorAll('button').forEach(tab => tab.removeAttribute('aria-current'));
+  button.setAttribute('aria-current', 'page');
+  document.querySelector('#tap-status').textContent = `${button.textContent} tapped (${++taps} total)`;
   schedule();
+}));
+document.querySelector('#toggle-boundary').addEventListener('click', event => {
+  const boundary = document.querySelector('.boundary');
+  boundary.hidden = !boundary.hidden;
+  event.currentTarget.textContent = boundary.hidden ? 'Show cyan boundary' : 'Hide cyan boundary';
 });
 document.querySelector('#copy').addEventListener('click', async () => {
   const text = JSON.stringify(capture(), null, 2);
