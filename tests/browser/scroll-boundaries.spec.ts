@@ -35,7 +35,7 @@ async function assertFullScrollViewport(page: Page, height: number) {
   expect(main!.y + main!.height).toBe(height);
 }
 
-test('sticky header and safe-area background continuously cover scrolled Logs content', async ({ page }) => {
+test('non-scrolling header and safe-area background continuously cover Logs content', async ({ page }) => {
   await page.goto('wellness');
   await page.getByTestId('card-cardio').waitFor();
   for (const scrollTop of [80, 160, 260, 400]) {
@@ -49,12 +49,14 @@ test('sticky header and safe-area background continuously cover scrolled Logs co
       const uncovered = [];
       for (let y = 1; y < Math.floor(bounds.bottom); y++) {
         const hit = document.elementFromPoint(195, y);
-        const cover = hit?.closest('.fitcircle-fixed-header, .app-shell');
-        if (!cover || (cover.classList.contains('app-shell') && hit !== cover) || getComputedStyle(cover).backgroundColor === 'rgba(0, 0, 0, 0)') uncovered.push(y);
+        const cover = hit?.closest('.fitcircle-fixed-header, .app-header');
+        if (!cover || (cover.classList.contains('app-header') && hit !== cover) || getComputedStyle(cover).backgroundColor === 'rgba(0, 0, 0, 0)') uncovered.push(y);
       }
       return { mainTop: main.top, headerTop: bounds.top, uncovered };
     });
-    expect(regions.headerTop).toBe(regions.mainTop);
+    expect(regions.headerTop).toBe(59);
+    expect(regions.mainTop).toBe(131);
+    expect(await page.locator('.app-content .fitcircle-fixed-header').count()).toBe(0);
     expect(regions.uncovered).toEqual([]);
   }
 });
@@ -124,4 +126,27 @@ test('normal viewport changes keep full shell geometry while overlays use keyboa
   await page.setViewportSize({ width: 844, height: 390 });
   await setVisualViewport(page, 300, 10);
   await assertFullScrollViewport(page, 390);
+});
+
+
+test('all shared headers are outside the unpadded scroll surface', async ({ page }) => {
+  for (const route of ['./', 'wellness', 'routines', 'calendar', 'reminders']) {
+    await page.goto(route);
+    const header = page.locator('.app-header .fitcircle-fixed-header');
+    await expect(header).toBeVisible();
+    const before = await header.boundingBox();
+    const geometry = await page.locator('main').evaluate(el => {
+      const style = getComputedStyle(el);
+      el.scrollTop = el.scrollHeight;
+      return {
+        padding: [style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft],
+        headerInside: !!el.querySelector('.fitcircle-fixed-header'),
+        bottom: el.getBoundingClientRect().bottom,
+      };
+    });
+    expect(geometry.padding).toEqual(['0px', '0px', '0px', '0px']);
+    expect(geometry.headerInside).toBe(false);
+    expect(geometry.bottom).toBe(844);
+    expect(await header.boundingBox()).toEqual(before);
+  }
 });

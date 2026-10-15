@@ -1,5 +1,6 @@
+import { HeaderHostContext } from "@/components/AppHeader";
 import { Switch, Route, useLocation } from "wouter";
-import { useRef, useEffect, useLayoutEffect } from "react";
+import { useRef, useState, useEffect, useLayoutEffect } from "react";
 
 import Home from "@/pages/home";
 import CalendarPage from "@/pages/calendar-new";
@@ -64,6 +65,7 @@ function Router() {
 }
 
 function App() {
+  const [headerHost, setHeaderHost] = useState<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const dockRef = useRef<HTMLDivElement>(null);
   const [location] = useLocation();
@@ -88,16 +90,19 @@ function App() {
 
   return (
     <ScrollLockProvider>
-      <div className="app-shell">
-        <main ref={scrollRef} className="app-content">
-          <div className="app-page">
-            <Router />
+      <HeaderHostContext.Provider value={headerHost}>
+        <div className="app-shell">
+          <div ref={setHeaderHost} className="app-header" />
+          <main ref={scrollRef} className="app-content">
+            <div className="app-page">
+              <Router />
+            </div>
+          </main>
+          <div ref={dockRef} className="app-dock">
+            <BottomNavigation />
           </div>
-        </main>
-        <div ref={dockRef} className="app-dock">
-          <BottomNavigation />
         </div>
-      </div>
+      </HeaderHostContext.Provider>
     </ScrollLockProvider>
   );
 }

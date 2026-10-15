@@ -4,7 +4,8 @@ The shell, dock, headers, and portalled overlays share safe-area insets, but
 layout and visual viewports have different jobs. Keep these rules together when
 changing layout.
 
-- The resting shell fills its CSS fixed containing block using `inset: 0`.
+- The resting shell has an explicit `100dvh` block size (`100%` fallback),
+  anchored at the top, rather than inferring its size from fixed top/bottom edges.
   Its main scroller extends to that same bottom edge. Do not size or offset the
   entire resting shell from `visualViewport.height`/`offsetTop`: iOS standalone
   can report different visual bounds even with no keyboard. CSS layout bounds,
@@ -16,11 +17,13 @@ changing layout.
   field alone must not treat an existing discrepancy as an open keyboard.
   Resize, orientation, focus, and pageshow events share one cleaned-up animation
   frame. Normal viewport changes never remount React or reset scroll/state.
-- The shell owns the top and side safe areas and explicitly paints their opaque
-  dark background. The main scrollport has no top padding. The existing 16px
-  content gutter lives in the normal-flow `.app-page` wrapper, preserving initial
-  spacing while allowing sticky headers to meet the very top of the scrollport.
-  No extra z-index, pseudo-element mask, or global offset is needed.
+- The shell owns side safe areas. Its non-scrolling `.app-header` owns the top
+  safe area and opaque background. Page-owned headers render into that sibling
+  through `AppHeader`, preserving their controls and React state without relying
+  on sticky positioning inside an iOS composited scrolling layer. The main
+  scrollport has no padding at any edge; all content gutters and measured dock
+  clearance belong to `.app-page` inside it. No pseudo-element mask or global
+  offset is needed. Subpages without a shared header retain safe-area clearance.
 - The dock owns its bottom safe area. A ResizeObserver measures its full rendered
   height. Main content reserves that measurement, or the bottom safe area when
   the dock is absent, plus the normal content gutter. Do not add the bottom inset
