@@ -32,7 +32,8 @@ async function assertFullScrollViewport(page: Page, height: number) {
   const main = await page.locator('main').boundingBox();
   expect(shell!.y).toBe(0);
   expect(shell!.height).toBe(height);
-  expect(main!.y + main!.height).toBe(height);
+  const dock = await page.locator('.app-dock').boundingBox();
+  expect(main!.y + main!.height).toBe(dock?.height ? dock.y : height);
 }
 
 test('non-scrolling header and safe-area background continuously cover Logs content', async ({ page }) => {
@@ -61,7 +62,7 @@ test('non-scrolling header and safe-area background continuously cover Logs cont
   }
 });
 
-test('short visual viewport does not cut off the main scroller beneath the floating dock', async ({ page }) => {
+test('opaque dock footer meets the scroller and final cards remain reachable', async ({ page }) => {
   await page.goto('wellness');
   await page.getByTestId('card-supplements').waitFor();
   await setVisualViewport(page, 710, 20);
@@ -69,17 +70,30 @@ test('short visual viewport does not cut off the main scroller beneath the float
   const dock = await page.locator('.app-dock').boundingBox();
   expect(dock!.y + dock!.height).toBe(844);
   const tile = page.getByTestId('card-supplements');
-  // Put a real tile behind the floating dock and across the viewport bottom.
-  // Its intersection must stop at the screen edge, not an earlier scroll clip.
+  // A tile crossing the scroll boundary is clipped precisely at the footer,
+  // never visible in a strip beneath the dock.
   await tile.evaluate(el => {
     const main = document.querySelector('main')!;
-    main.scrollTop += el.getBoundingClientRect().top - (window.innerHeight - 80);
+    main.scrollTop += el.getBoundingClientRect().top - (main.getBoundingClientRect().bottom - 40);
   });
   const intersectionBottom = await tile.evaluate(el => new Promise<number>(resolve => {
     const observer = new IntersectionObserver(([entry]) => { observer.disconnect(); resolve(entry.intersectionRect.bottom); });
     observer.observe(el);
   }));
-  expect(intersectionBottom).toBe(844);
+  expect(intersectionBottom).toBe(dock!.y);
+  const nav = await page.getByRole('navigation', { name: 'Bottom navigation' }).boundingBox();
+  expect(nav!.y).toBe(dock!.y);
+  expect(nav!.y + nav!.height).toBe(844 - 34);
+  const footerPaint = await page.evaluate(() => {
+    const dock = document.querySelector('.app-dock')!;
+    const box = dock.getBoundingClientRect();
+    return {
+      background: getComputedStyle(dock).backgroundColor,
+      coversHomeArea: document.elementFromPoint(195, box.bottom - 1) === dock,
+    };
+  });
+  expect(footerPaint.background).toBe('rgb(15, 23, 41)');
+  expect(footerPaint.coversHomeArea).toBe(true);
   await page.locator('main').evaluate(el => { el.scrollTop = el.scrollHeight; });
   const last = await tile.boundingBox();
   expect(last!.y + last!.height).toBeLessThanOrEqual(dock!.y);
@@ -146,7 +160,7 @@ test('all shared headers are outside the unpadded scroll surface', async ({ page
     });
     expect(geometry.padding).toEqual(['0px', '0px', '0px', '0px']);
     expect(geometry.headerInside).toBe(false);
-    expect(geometry.bottom).toBe(844);
+    expect(geometry.bottom).toBe((await page.locator('.app-dock').boundingBox())!.y);
     expect(await header.boundingBox()).toEqual(before);
   }
 });

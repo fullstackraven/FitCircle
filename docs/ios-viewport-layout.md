@@ -6,7 +6,7 @@ changing layout.
 
 - The resting shell has an explicit `100dvh` block size (`100%` fallback),
   anchored at the top, rather than inferring its size from fixed top/bottom edges.
-  Its main scroller extends to that same bottom edge. Do not size or offset the
+  Its main scroller ends at the dock footer (or the shell bottom on subpages). Do not size or offset the
   entire resting shell from `visualViewport.height`/`offsetTop`: iOS standalone
   can report different visual bounds even with no keyboard. CSS layout bounds,
   dynamic viewport units, and physical screen dimensions are not interchangeable.
@@ -21,15 +21,19 @@ changing layout.
   safe area and opaque background. Page-owned headers render into that sibling
   through `AppHeader`, preserving their controls and React state without relying
   on sticky positioning inside an iOS composited scrolling layer. The main
-  scrollport has no padding at any edge; all content gutters and measured dock
-  clearance belong to `.app-page` inside it. No pseudo-element mask or global
+  scrollport has no padding at any edge; content gutters belong to `.app-page` inside it. The footer reserves its
+  own height outside the scroll surface. No pseudo-element mask or global
   offset is needed. Subpages without a shared header retain safe-area clearance.
-- The dock owns its bottom safe area. A ResizeObserver measures its full rendered
-  height. Main content reserves that measurement, or the bottom safe area when
-  the dock is absent, plus the normal content gutter. Do not add the bottom inset
-  to the measurement again. The dock remains floating: end padding makes the
-  final item reachable without shortening the scrollport or preventing content
-  from passing behind the dock.
+- The dock is now a non-scrolling, opaque footer sibling, following physical
+  iPhone feedback that a strip of tiles still appeared below the floating dock.
+  Its rounded navigation sits at the footer's top, with only the home-indicator
+  safe area below it (the old additional 16px bottom gap is removed). Flex layout
+  reserves the footer's actual height; the main scroller ends at its top. The
+  ResizeObserver still exposes the measured `--dock-height`, but page content no
+  longer adds that height again. Final cards need only the normal 16px gutter.
+  When navigation is hidden, the page itself reserves home-indicator clearance.
+  This deliberately replaces content flowing behind the dock with an opaque
+  footer boundary; it does not claim to diagnose the remaining iOS viewport gap.
 - Radix sheets and dialogs are portalled outside the shell. They independently
   consume the same visual viewport and safe-area bounds. Dialog headers and close
   controls stay outside the scrolling body. Sheet close controls stay outside the
@@ -56,12 +60,12 @@ simulate visualViewport resizing/panning. Neither constitutes real iOS testing.
 `tests/browser/scroll-boundaries.spec.ts` additionally samples the painted and
 hit-tested top region at multiple Logs scroll positions, models a 710px visual
 viewport within an 844px layout viewport, checks a real tile's visible intersection
-at the screen edge behind the floating dock, verifies final Logs/Routines items,
+at the opaque footer boundary, verifies final Logs/Routines items,
 and exercises keyboard/panning and orientation recovery. These fixtures model
 reported failure conditions; they do not measure physical iPhone screen geometry.
 
 Before merging, check on an actual notched iPhone in both Safari and installed
-standalone mode: launch and resume; scroll every final card above the dock; open
+standalone mode: launch and resume; scroll every final card above the footer; open
 and close sheets; rotate; focus and blur calculator inputs with the software
 keyboard; scroll long dialogs; and open/close nested overlays. Check status-bar
 and home-indicator clearance, active-input visibility, focus return, and restored
