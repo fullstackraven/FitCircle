@@ -29,6 +29,11 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET' || url.origin !== self.location.origin || !url.pathname.startsWith(BASE)) return;
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
+    if (event.request.mode === 'navigate' && url.pathname.startsWith(BASE + 'viewport-test/')) {
+      // Diagnostic installations have their own HTML/manifest identity. Never
+      // replace their entry document with the fitness app's SPA shell.
+      return (await cache.match(event.request, { ignoreSearch: true, ignoreVary: true })) || fetch(event.request);
+    }
     if (event.request.mode === 'navigate') {
       return (await cache.match(BASE + 'index.html', { ignoreVary: true })) || fetch(event.request);
     }
