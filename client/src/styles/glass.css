@@ -61,7 +61,8 @@
 .dock-nav { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; border: 1px solid var(--glass-border); border-radius: var(--glass-radius-lg); padding: 12px clamp(8px, 3vw, 20px); }
 .dock-nav { padding-bottom: max(12px, var(--safe-bottom)); }
 .dock-items { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 4px; }
-.dock-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 0; border-radius: 16px; border: none; background-color: transparent; color: rgb(148 163 184); cursor: pointer; min-width: 0; flex: 1 1 0; min-height: 48px; gap: 4px; transition: color var(--glass-transition-fast), background-color var(--glass-transition-fast), transform var(--glass-transition-fast); }
+/* Compact the tabs without moving the bottom anchor or reducing safe-area clearance. */
+.dock-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; border-radius: 16px; border: none; background-color: transparent; color: rgb(148 163 184); cursor: pointer; min-width: 0; flex: 1 1 0; min-height: 48px; gap: 4px; transition: color var(--glass-transition-fast), background-color var(--glass-transition-fast), transform var(--glass-transition-fast); }
 .dock-tab[aria-current="page"] { color: white; background-color: rgb(255 255 255 / .055); }
 .dock-tab:hover { color: white; }
 .dock-tab:active { transform: translateY(1px); background-color: rgb(255 255 255 / .09); }

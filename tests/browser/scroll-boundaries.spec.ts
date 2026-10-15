@@ -212,9 +212,9 @@ for (const viewport of [
     expect(visible.bottom).toBe(viewport.height);
     const nav = await page.getByRole('navigation', { name: 'Bottom navigation' }).boundingBox();
     expect(nav!.y + nav!.height).toBe(viewport.height);
-    expect(nav!.height).toBe(77 + Math.max(12, viewport.bottom));
+    expect(nav!.height).toBe(62 + Math.max(12, viewport.bottom));
     const button = await page.getByRole('button', { name: 'Reminders', exact: true }).boundingBox();
-    expect(button!.height).toBeGreaterThanOrEqual(44);
+    expect(button!.height).toBe(48);
     expect(button!.width).toBeGreaterThanOrEqual(44);
     expect(button!.y + button!.height).toBeLessThanOrEqual(viewport.height - viewport.bottom);
     expect(visible.top).toBeLessThan(nav!.y + nav!.height);
