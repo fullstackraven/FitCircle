@@ -5,7 +5,7 @@ test('glass dock retains compact geometry, semantic selection and visible keyboa
   await page.goto('wellness');
   const nav = page.getByRole('navigation', { name: 'Bottom navigation' });
   await expect(nav).toHaveClass(/glass-nav/);
-  expect((await nav.boundingBox())!.height).toBe(89);
+  expect((await nav.boundingBox())!.height).toBe(74);
   const logs = nav.getByRole('button', { name: 'Logs', exact: true });
   await expect(logs).toHaveAttribute('aria-current', 'page');
   const routines = nav.getByRole('button', { name: 'Routines', exact: true });
