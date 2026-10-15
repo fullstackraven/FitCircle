@@ -1,0 +1,599 @@
+{
+  "note": "Isolated Chromium experiments. Standalone signal is simulated, not an iOS host or installation. No production CSS is changed by this runner.",
+  "results": [
+    {
+      "name": "A: existing dvh",
+      "supported": true,
+      "viewport": {
+        "innerHeight": 844,
+        "clientHeight": 844,
+        "visual": {
+          "height": 844,
+          "width": 390,
+          "offsetTop": 0,
+          "offsetLeft": 0,
+          "scale": 1
+        },
+        "units": {
+          "vh": {
+            "supported": true,
+            "height": 844
+          },
+          "dvh": {
+            "supported": true,
+            "height": 844
+          },
+          "svh": {
+            "supported": true,
+            "height": 844
+          },
+          "lvh": {
+            "supported": true,
+            "height": 844
+          }
+        }
+      },
+      "shell": {
+        "top": 0,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 844
+      },
+      "main": {
+        "top": 131,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 713
+      },
+      "dock": {
+        "top": 733,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 111
+      },
+      "intersectionBottom": 844,
+      "lastLogsClearsDock": true,
+      "lastRoutineClearsDock": true,
+      "dockStable": true,
+      "headerControlTop": 81,
+      "closeControlTop": 67,
+      "backgroundWheelLocked": true,
+      "routeStartsAtTop": true,
+      "routeScroll": 0
+    },
+    {
+      "name": "B: fixed inset",
+      "supported": true,
+      "viewport": {
+        "innerHeight": 844,
+        "clientHeight": 844,
+        "visual": {
+          "height": 844,
+          "width": 390,
+          "offsetTop": 0,
+          "offsetLeft": 0,
+          "scale": 1
+        },
+        "units": {
+          "vh": {
+            "supported": true,
+            "height": 844
+          },
+          "dvh": {
+            "supported": true,
+            "height": 844
+          },
+          "svh": {
+            "supported": true,
+            "height": 844
+          },
+          "lvh": {
+            "supported": true,
+            "height": 844
+          }
+        }
+      },
+      "shell": {
+        "top": 0,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 844
+      },
+      "main": {
+        "top": 131,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 713
+      },
+      "dock": {
+        "top": 733,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 111
+      },
+      "intersectionBottom": 844,
+      "lastLogsClearsDock": true,
+      "lastRoutineClearsDock": true,
+      "dockStable": true,
+      "headerControlTop": 81,
+      "closeControlTop": 67,
+      "backgroundWheelLocked": true,
+      "routeStartsAtTop": true,
+      "routeScroll": 0
+    },
+    {
+      "name": "C: document scroll (experiment only)",
+      "supported": true,
+      "viewport": {
+        "innerHeight": 844,
+        "clientHeight": 844,
+        "visual": {
+          "height": 844,
+          "width": 390,
+          "offsetTop": 0,
+          "offsetLeft": 0,
+          "scale": 1
+        },
+        "units": {
+          "vh": {
+            "supported": true,
+            "height": 844
+          },
+          "dvh": {
+            "supported": true,
+            "height": 844
+          },
+          "svh": {
+            "supported": true,
+            "height": 844
+          },
+          "lvh": {
+            "supported": true,
+            "height": 844
+          }
+        }
+      },
+      "shell": {
+        "top": 0,
+        "bottom": 1181,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 1181
+      },
+      "main": {
+        "top": 131,
+        "bottom": 1181,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 1050
+      },
+      "dock": {
+        "top": 733,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 111
+      },
+      "intersectionBottom": 844,
+      "lastLogsClearsDock": true,
+      "lastRoutineClearsDock": true,
+      "dockStable": true,
+      "headerControlTop": 81,
+      "closeControlTop": 67,
+      "backgroundWheelLocked": true,
+      "routeStartsAtTop": false,
+      "routeScroll": 169
+    },
+    {
+      "name": "D: 100vh",
+      "supported": true,
+      "viewport": {
+        "innerHeight": 844,
+        "clientHeight": 844,
+        "visual": {
+          "height": 844,
+          "width": 390,
+          "offsetTop": 0,
+          "offsetLeft": 0,
+          "scale": 1
+        },
+        "units": {
+          "vh": {
+            "supported": true,
+            "height": 844
+          },
+          "dvh": {
+            "supported": true,
+            "height": 844
+          },
+          "svh": {
+            "supported": true,
+            "height": 844
+          },
+          "lvh": {
+            "supported": true,
+            "height": 844
+          }
+        }
+      },
+      "shell": {
+        "top": 0,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 844
+      },
+      "main": {
+        "top": 131,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 713
+      },
+      "dock": {
+        "top": 733,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 111
+      },
+      "intersectionBottom": 844,
+      "lastLogsClearsDock": true,
+      "lastRoutineClearsDock": true,
+      "dockStable": true,
+      "headerControlTop": 81,
+      "closeControlTop": 67,
+      "backgroundWheelLocked": true,
+      "routeStartsAtTop": true,
+      "routeScroll": 0
+    },
+    {
+      "name": "D: 100svh",
+      "supported": true,
+      "viewport": {
+        "innerHeight": 844,
+        "clientHeight": 844,
+        "visual": {
+          "height": 844,
+          "width": 390,
+          "offsetTop": 0,
+          "offsetLeft": 0,
+          "scale": 1
+        },
+        "units": {
+          "vh": {
+            "supported": true,
+            "height": 844
+          },
+          "dvh": {
+            "supported": true,
+            "height": 844
+          },
+          "svh": {
+            "supported": true,
+            "height": 844
+          },
+          "lvh": {
+            "supported": true,
+            "height": 844
+          }
+        }
+      },
+      "shell": {
+        "top": 0,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 844
+      },
+      "main": {
+        "top": 131,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 713
+      },
+      "dock": {
+        "top": 733,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 111
+      },
+      "intersectionBottom": 844,
+      "lastLogsClearsDock": true,
+      "lastRoutineClearsDock": true,
+      "dockStable": true,
+      "headerControlTop": 81,
+      "closeControlTop": 67,
+      "backgroundWheelLocked": true,
+      "routeStartsAtTop": true,
+      "routeScroll": 0
+    },
+    {
+      "name": "D: 100lvh",
+      "supported": true,
+      "viewport": {
+        "innerHeight": 844,
+        "clientHeight": 844,
+        "visual": {
+          "height": 844,
+          "width": 390,
+          "offsetTop": 0,
+          "offsetLeft": 0,
+          "scale": 1
+        },
+        "units": {
+          "vh": {
+            "supported": true,
+            "height": 844
+          },
+          "dvh": {
+            "supported": true,
+            "height": 844
+          },
+          "svh": {
+            "supported": true,
+            "height": 844
+          },
+          "lvh": {
+            "supported": true,
+            "height": 844
+          }
+        }
+      },
+      "shell": {
+        "top": 0,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 844
+      },
+      "main": {
+        "top": 131,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 713
+      },
+      "dock": {
+        "top": 733,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 111
+      },
+      "intersectionBottom": 844,
+      "lastLogsClearsDock": true,
+      "lastRoutineClearsDock": true,
+      "dockStable": true,
+      "headerControlTop": 81,
+      "closeControlTop": 67,
+      "backgroundWheelLocked": true,
+      "routeStartsAtTop": true,
+      "routeScroll": 0
+    },
+    {
+      "name": "D: WebKit fill available",
+      "supported": true,
+      "viewport": {
+        "innerHeight": 844,
+        "clientHeight": 844,
+        "visual": {
+          "height": 844,
+          "width": 390,
+          "offsetTop": 0,
+          "offsetLeft": 0,
+          "scale": 1
+        },
+        "units": {
+          "vh": {
+            "supported": true,
+            "height": 844
+          },
+          "dvh": {
+            "supported": true,
+            "height": 844
+          },
+          "svh": {
+            "supported": true,
+            "height": 844
+          },
+          "lvh": {
+            "supported": true,
+            "height": 844
+          }
+        }
+      },
+      "shell": {
+        "top": 0,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 844
+      },
+      "main": {
+        "top": 131,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 713
+      },
+      "dock": {
+        "top": 733,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 111
+      },
+      "intersectionBottom": 844,
+      "lastLogsClearsDock": true,
+      "lastRoutineClearsDock": true,
+      "dockStable": true,
+      "headerControlTop": 81,
+      "closeControlTop": 67,
+      "backgroundWheelLocked": true,
+      "routeStartsAtTop": true,
+      "routeScroll": 0
+    },
+    {
+      "name": "E: standalone signal / existing metadata",
+      "supported": true,
+      "viewport": {
+        "innerHeight": 844,
+        "clientHeight": 844,
+        "visual": {
+          "height": 844,
+          "width": 390,
+          "offsetTop": 0,
+          "offsetLeft": 0,
+          "scale": 1
+        },
+        "units": {
+          "vh": {
+            "supported": true,
+            "height": 844
+          },
+          "dvh": {
+            "supported": true,
+            "height": 844
+          },
+          "svh": {
+            "supported": true,
+            "height": 844
+          },
+          "lvh": {
+            "supported": true,
+            "height": 844
+          }
+        }
+      },
+      "shell": {
+        "top": 0,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 844
+      },
+      "main": {
+        "top": 131,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 713
+      },
+      "dock": {
+        "top": 733,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 111
+      },
+      "intersectionBottom": 844,
+      "lastLogsClearsDock": true,
+      "lastRoutineClearsDock": true,
+      "dockStable": true,
+      "headerControlTop": 81,
+      "closeControlTop": 67,
+      "backgroundWheelLocked": true,
+      "routeStartsAtTop": true,
+      "routeScroll": 0
+    },
+    {
+      "name": "E: standalone signal / no status tag (not installation emulation)",
+      "supported": true,
+      "viewport": {
+        "innerHeight": 844,
+        "clientHeight": 844,
+        "visual": {
+          "height": 844,
+          "width": 390,
+          "offsetTop": 0,
+          "offsetLeft": 0,
+          "scale": 1
+        },
+        "units": {
+          "vh": {
+            "supported": true,
+            "height": 844
+          },
+          "dvh": {
+            "supported": true,
+            "height": 844
+          },
+          "svh": {
+            "supported": true,
+            "height": 844
+          },
+          "lvh": {
+            "supported": true,
+            "height": 844
+          }
+        }
+      },
+      "shell": {
+        "top": 0,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 844
+      },
+      "main": {
+        "top": 131,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 713
+      },
+      "dock": {
+        "top": 733,
+        "bottom": 844,
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "height": 111
+      },
+      "intersectionBottom": 844,
+      "lastLogsClearsDock": true,
+      "lastRoutineClearsDock": true,
+      "dockStable": true,
+      "headerControlTop": 81,
+      "closeControlTop": 67,
+      "backgroundWheelLocked": true,
+      "routeStartsAtTop": true,
+      "routeScroll": 0
+    }
+  ]
+}

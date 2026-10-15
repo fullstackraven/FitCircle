@@ -1,3 +1,4 @@
+import { VersionLabel } from "@/components/VersionLabel";
 import { AppHeader } from "@/components/AppHeader";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import {
@@ -736,7 +737,7 @@ export default function CalendarPage() {
 
             {/* Version */}
             <div className="p-4 border-t border-slate-700">
-              <div className="text-slate-500 text-xs text-center">Version 2.1.0</div>
+              <VersionLabel onActivate={() => setIsSidebarOpen(false)} />
             </div>
           </div>
         </SheetContent>

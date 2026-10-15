@@ -1,5 +1,9 @@
 # iOS bottom cutoff: evidence required before a layout correction
 
+Current follow-up: [system viewport experiments and phone-only access](system-viewport/README.md).
+Open Menu and tap Version five times to use the opt-in tool without a Mac. The
+report below records PR #13; its measurements and historical limits are retained.
+
 ## Pre-implementation report
 
 Baseline: main at 8751a 6c (#12), iPhone 16/iOS 26 reported by the user. The screenshot
@@ -60,7 +64,8 @@ existing build script, without any change to service-worker caching behavior.
 
 The utility is **not** an app feature or an automatically enabled overlay. It is
 available at `/FitCircle/layout-diagnostics.js` after this diagnostic PR has been
-reviewed and deployed. No production UI or URL flag activates it. It can also run
+reviewed and deployed. PR #13 had no UI activation; the follow-up adds the controlled Version gesture.
+No URL flag activates it. It can also run
 against a local developer build. Do not clear website data or remove the PWA.
 
 1. Launch the installed FitCircle from its Home Screen icon. Open Logs and scroll
