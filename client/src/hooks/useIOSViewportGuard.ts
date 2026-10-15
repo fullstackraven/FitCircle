@@ -1,23 +1,30 @@
 import { useLayoutEffect } from 'react';
 
-/** One viewport source for the shell and portalled overlays. visualViewport
- * includes keyboard resizing/panning; CSS dvh is the no-JavaScript fallback. */
+/** Visual bounds belong to overlays and keyboard occlusion, not the resting
+ * shell. iOS standalone can report a shorter visualViewport without a keyboard;
+ * the full shell therefore stays anchored to CSS fixed edges at rest. */
 export function useIOSViewportGuard() {
   useLayoutEffect(() => {
     const root = document.documentElement;
     const viewport = window.visualViewport;
     let frame = 0;
+    let unfocusedHeight = viewport?.height ?? window.innerHeight;
     const update = () => {
       frame = 0;
       // Pinch zoom should magnify the interface, not re-layout it.
       if (viewport && viewport.scale !== 1) return;
       const height = viewport?.height ?? window.innerHeight;
       const top = viewport?.offsetTop ?? 0;
-      root.style.setProperty('--app-height', `${height}px`);
-      root.style.setProperty('--viewport-top', `${top}px`);
+      root.style.setProperty('--overlay-height', `${height}px`);
+      root.style.setProperty('--overlay-top', `${top}px`);
       const active = document.activeElement as HTMLElement | null;
       const focused = active?.matches('input, textarea, [contenteditable="true"]');
-      root.classList.toggle('keyboard-open', Boolean(focused && window.innerHeight - height - top > 80));
+      if (!focused) unfocusedHeight = height;
+      const layoutHeight = document.documentElement.clientHeight;
+      // A pre-existing visual/layout discrepancy is not a keyboard. Require
+      // both a new shrink from the idle visual bounds and layout occlusion.
+      const keyboardOpen = Boolean(focused && unfocusedHeight - height > 80 && layoutHeight - height - top > 80);
+      root.classList.toggle('keyboard-open', keyboardOpen);
       // Resize only the overlay's own scroller when the keyboard would cover
       // its active field; never reset the page's scroll position or React tree.
       const scroller = focused ? active?.closest<HTMLElement>('.dialog-body, .sheet-body, .viewport-overlay [role="dialog"]') : null;
@@ -46,8 +53,8 @@ export function useIOSViewportGuard() {
       window.removeEventListener('pageshow', schedule);
       document.removeEventListener('focusin', schedule);
       document.removeEventListener('focusout', schedule);
-      root.style.removeProperty('--app-height');
-      root.style.removeProperty('--viewport-top');
+      root.style.removeProperty('--overlay-height');
+      root.style.removeProperty('--overlay-top');
       root.classList.remove('keyboard-open');
     };
   }, []);
