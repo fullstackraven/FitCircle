@@ -1083,7 +1083,7 @@ export default function FoodTrackerPage() {
                   
               
               {/* Food List */}
-              <div className="overflow-y-scroll max-h-[50vh] pr-2 -mr-2" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <div className="overflow-y-scroll pr-2 -mr-2" style={{ WebkitOverflowScrolling: 'touch' }}>
                 {searchQuery ? (
                   // Search Results
                   searchResults.length > 0 ? (
@@ -1709,7 +1709,7 @@ export default function FoodTrackerPage() {
 
         {/* Custom Food Dialog */}
         <Dialog open={customFoodOpen} onOpenChange={setCustomFoodOpen}>
-          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-2xl overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create Custom Food</DialogTitle>
               <DialogDescription className="text-gray-400">
@@ -2245,8 +2245,11 @@ export default function FoodTrackerPage() {
 
         {/* Fitness Calculator Modal */}
         <Dialog open={calculatorOpen} onOpenChange={setCalculatorOpen}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border-slate-700">
-            <FitnessCalculator />
+          <DialogContent className="max-w-4xl overflow-y-auto bg-slate-900 border-slate-700">
+            <DialogHeader className="sm:text-center">
+              <DialogTitle className="fitcircle-page-title">Fitness Calculator</DialogTitle>
+            </DialogHeader>
+            <FitnessCalculator embedded />
           </DialogContent>
         </Dialog>
         

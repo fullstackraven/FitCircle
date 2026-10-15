@@ -61,13 +61,13 @@ export default function BottomNavigation() {
         boxSizing: 'border-box'
       }}
     >
-      <nav 
+      <nav aria-label="Bottom navigation"
         style={{
           backgroundColor: 'rgba(30, 41, 59, 0.95)',
           backdropFilter: 'blur(10px)',
           border: '1px solid rgba(148, 163, 184, 0.4)',
           borderRadius: '24px',
-          padding: '12px 20px',
+          padding: '12px clamp(8px, 3vw, 20px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -82,7 +82,7 @@ export default function BottomNavigation() {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            gap: '8px'
+            gap: '4px'
           }}
         >
           {navItems.map((item) => {
@@ -98,7 +98,7 @@ export default function BottomNavigation() {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '8px 12px',
+                  padding: '8px 0',
                   borderRadius: '16px',
                   border: 'none',
                   backgroundColor: 'transparent',
@@ -106,7 +106,8 @@ export default function BottomNavigation() {
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   outline: 'none',
-                  minWidth: '52px',
+                  minWidth: 0,
+                  flex: '1 1 0',
                   minHeight: '48px',
                   gap: '4px'
                 }}

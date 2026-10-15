@@ -1,3 +1,4 @@
+import { ViewportOverlay } from '@/components/ui/viewport-overlay';
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Target, X, Edit2, Trash2 } from 'lucide-react';
 import { useLocation } from 'wouter';
@@ -383,11 +384,12 @@ export default function HydrationPage() {
 
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <ViewportOverlay title="Hydration Goal" onDismiss={() => setIsGoalModalOpen(false)}>
           <div className="bg-slate-800 rounded-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-white">Hydration Goal</h3>
               <button
+                aria-label="Close"
                 onClick={() => setIsGoalModalOpen(false)}
                 className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg"
               >
@@ -443,7 +445,7 @@ export default function HydrationPage() {
               </div>
             </div>
           </div>
-        </div>
+        </ViewportOverlay>
       )}
 
       {/* Add Liquid Dialog */}

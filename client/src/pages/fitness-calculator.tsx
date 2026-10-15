@@ -14,7 +14,7 @@ interface UserData {
   gender: string;
 }
 
-export default function FitnessCalculator() {
+export default function FitnessCalculator({ embedded = false }: { embedded?: boolean }) {
   const [, navigate] = useLocation();
 
   // User data from measurements
@@ -228,9 +228,9 @@ export default function FitnessCalculator() {
     <div className="fitcircle-page">
       <div className="fitcircle-container">
         {/* Header */}
-        <div className="text-center mb-8">
+        {!embedded && <div className="text-center mb-8">
           <h1 className="fitcircle-page-title">Fitness Calculator</h1>
-        </div>
+        </div>}
 
         <div className="space-y-8">
         

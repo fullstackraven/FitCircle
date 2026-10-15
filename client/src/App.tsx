@@ -1,5 +1,5 @@
 import { Switch, Route, useLocation } from "wouter";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useLayoutEffect } from "react";
 
 import Home from "@/pages/home";
 import CalendarPage from "@/pages/calendar-new";
@@ -68,10 +68,16 @@ function App() {
   const dockRef = useRef<HTMLDivElement>(null);
   const [location] = useLocation();
 
-  const { shellKey } = useIOSViewportGuard({
-    scrollEl: scrollRef.current,
-    dockEl: dockRef.current,
-  });
+  useIOSViewportGuard();
+
+  useLayoutEffect(() => {
+    const dock = dockRef.current!;
+    const measure = () => document.documentElement.style.setProperty('--dock-height', `${dock.getBoundingClientRect().height}px`);
+    const observer = new ResizeObserver(measure);
+    observer.observe(dock);
+    measure();
+    return () => { observer.disconnect(); document.documentElement.style.removeProperty('--dock-height'); };
+  }, []);
 
   // Auto-scroll to top on route change
   useEffect(() => {
@@ -82,7 +88,7 @@ function App() {
 
   return (
     <ScrollLockProvider>
-      <div key={shellKey} className="app-shell">
+      <div className="app-shell">
         <main ref={scrollRef} className="app-content">
           <Router />
         </main>

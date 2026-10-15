@@ -113,7 +113,7 @@ export default function CalendarPage() {
     if (shouldOpenDashboard || dashboardState === 'true') {
       setIsSidebarOpen(true);
       // Clear the URL parameter and session storage
-      window.history.replaceState({}, '', '/calendar');
+      window.history.replaceState({}, '', window.location.pathname);
       sessionStorage.removeItem('fitcircle_dashboard_open');
     }
   }, []);
@@ -484,14 +484,14 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', '--bottom-nav-padding': '200px' } as React.CSSProperties}>
-      {/* Universal Fixed Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[hsl(222,47%,11%)]" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+    <div className="max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)' } as React.CSSProperties}>
+      {/* Shared sticky header */}
+      <header className="fitcircle-fixed-header">
         <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           {/* Hamburger Menu Icon */}
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-0 left-4 text-slate-400 hover:text-white transition-colors"
+            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />
@@ -501,8 +501,8 @@ export default function CalendarPage() {
         </div>
       </header>
 
-      {/* Main content with top padding to offset fixed header */}
-      <div style={{ paddingTop: 'calc(env(safe-area-inset-top) + 56px)' }}>
+      {/* Main content; header spacing is handled by normal flow */}
+      <div>
         {/* Calendar Controls - below universal header */}
         <div className="px-4 pb-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
@@ -546,7 +546,7 @@ export default function CalendarPage() {
         </div>
 
         {/* Content Wrapper */}
-        <div className="px-4" style={{ paddingBottom: '200px' }}>
+        <div className="px-4">
         {/* Monthly View */}
         {viewMode === 'monthly' && (
         <>

@@ -15,7 +15,7 @@ export default function FloatingRemindersButton() {
       className="fixed bottom-6 right-6 z-50 w-12 h-12 bg-gray-500/80 hover:bg-gray-500/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-105"
       style={{ 
         position: 'fixed',
-        bottom: '1.5rem',
+        bottom: 'calc(max(var(--dock-height), var(--safe-bottom)) + 24px)',
         right: '1.5rem',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)'

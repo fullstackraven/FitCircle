@@ -1,44 +1,33 @@
-import React, { createContext, useContext, useRef, useCallback } from 'react';
+import { createContext, useContext, useRef, useCallback, useLayoutEffect, type ReactNode } from 'react';
 
-interface ScrollLockContextType {
-  lockScroll: () => void;
-  unlockScroll: () => void;
+const ScrollLockContext = createContext<(() => () => void) | null>(null);
+
+export function ScrollLockProvider({ children }: { children: ReactNode }) {
+  const locks = useRef(0);
+  const acquire = useCallback(() => {
+    locks.current += 1;
+    document.documentElement.dataset.overlayOpen = 'true';
+    let released = false;
+    return () => {
+      if (released) return;
+      released = true;
+      locks.current -= 1;
+      if (!locks.current) delete document.documentElement.dataset.overlayOpen;
+    };
+  }, []);
+  useLayoutEffect(() => () => { delete document.documentElement.dataset.overlayOpen; }, []);
+  return <ScrollLockContext.Provider value={acquire}>{children}</ScrollLockContext.Provider>;
 }
 
-const ScrollLockContext = createContext<ScrollLockContextType | null>(null);
-
-export function ScrollLockProvider({ children }: { children: React.ReactNode }) {
-  const lockCountRef = useRef(0);
-
-  const lockScroll = useCallback(() => {
-    lockCountRef.current += 1;
-    
-    // Only apply the lock on the first request
-    if (lockCountRef.current === 1) {
-      document.documentElement.style.overflow = 'hidden';
-    }
-  }, []);
-
-  const unlockScroll = useCallback(() => {
-    lockCountRef.current = Math.max(0, lockCountRef.current - 1);
-    
-    // Only remove the lock when all requests are cleared
-    if (lockCountRef.current === 0) {
-      document.documentElement.style.overflow = '';
-    }
-  }, []);
-
-  return (
-    <ScrollLockContext.Provider value={{ lockScroll, unlockScroll }}>
-      {children}
-    </ScrollLockContext.Provider>
-  );
+/** Lock the actual main scroller for the lifetime of each mounted overlay.
+ * Nested overlays release independently, including route-change unmounts. */
+export function useOverlayScrollLock() {
+  const acquire = useContext(ScrollLockContext);
+  if (!acquire) throw new Error('Overlay must be inside ScrollLockProvider');
+  useLayoutEffect(() => acquire(), [acquire]);
 }
 
-export function useScrollLock() {
-  const context = useContext(ScrollLockContext);
-  if (!context) {
-    throw new Error('useScrollLock must be used within a ScrollLockProvider');
-  }
-  return context;
+export function OverlayScrollLock() {
+  useOverlayScrollLock();
+  return null;
 }
