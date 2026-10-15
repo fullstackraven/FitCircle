@@ -1,132 +1,141 @@
 # FitCircle
 
-FitCircle is a mobile-first, local-first fitness and wellness React PWA. Workouts,
-routines, workout duration, cardio, hydration, fasting, meditation, supplements,
-measurements, nutrition and custom foods, journals, reminders, profile, and
-statistics run entirely in the browser. There is no server, database service,
-account, AI Trainer, analytics service, or cloud synchronization.
+*Your fitness. Your progress. Your data.*
 
-## Develop and validate
+FitCircle is a free, mobile-first fitness and wellness tracking app designed to make building healthy habits simple, visual, and personal.
 
-Use Node.js 22+ and npm (the GitHub Actions build uses Node 22):
+From strength training and cardio to nutrition, hydration, fasting, and mindfulness, FitCircle brings your daily health and fitness tracking together in one place.
 
-```sh
+Built as a Progressive Web App (PWA), FitCircle works directly in your browser, can be installed on your phone, and supports offline use. No account, subscription, or cloud service is required.
+
+[Open FitCircle](https://fullstackraven.github.io/FitCircle/)
+
+---
+
+## What Can FitCircle Do?
+
+### Workout & Activity Tracking
+
+- **Custom Workouts:** Create personalized exercises with daily targets, schedules, and optional weight tracking.
+- **Progress Circles:** Track repetitions and daily goals through interactive, color-coded progress rings.
+- **Workout Routines:** Organize workouts into routines and plan your training schedule.
+- **Cardio Tracking:** Log walking, running, cycling, swimming, and other activities, including duration and distance.
+- **Recovery & Statistics:** Track rest days, workout consistency, and progress over time.
+
+### Health & Wellness
+
+- **Hydration:** Track water and other beverages against daily goals.
+- **Intermittent Fasting:** Time fasting sessions and review your history.
+- **Meditation:** Use a built-in meditation timer and monitor consistency.
+- **Body Measurements:** Record weight, body measurements, and changes over time.
+- **Supplements:** Create custom supplement lists and track daily intake.
+
+### Nutrition & Lifestyle
+
+- **Food Tracking:** Record meals, calories, and macronutrients.
+- **Food Database:** Browse foods and manage custom food entries.
+- **Daily Journal:** Record personal reflections, moods, and wellness notes.
+- **Energy Tracking:** Log daily energy levels and observe patterns.
+- **Goals & Reminders:** Keep your fitness and wellness priorities organized.
+
+### Progress & Insights
+
+FitCircle turns everyday tracking into a clearer picture of your progress through interactive calendars, progress indicators, historical logs, and visual statistics.
+
+Whether you’re working toward a new personal best or simply trying to stay consistent, the focus is on making progress easy to see.
+
+---
+
+## Designed for Everyday Use
+
+FitCircle combines a clean, dark interface with large touch-friendly controls and simple navigation.
+
+- **Mobile-first:** Designed for smartphones, with responsive support for larger screens.
+- **Installable:** Add FitCircle to your home screen for an app-like experience.
+- **Offline capable:** Continue tracking without an internet connection after the app has been loaded and cached.
+- **Personalizable:** Customize workouts, schedules, targets, and your profile.
+- **Private by design:** Your fitness records stay in your browser instead of being uploaded to an online account.
+
+---
+
+## Getting Started
+
+1. [Open FitCircle](https://fullstackraven.github.io/FitCircle/) in your browser.
+2. Create your first workout or explore the other tracking features.
+3. Set your daily goals and start recording your progress.
+4. Optionally install FitCircle on your device for convenient access.
+
+**On iPhone:** [Open FitCircle](https://fullstackraven.github.io/FitCircle/) in Safari, use the Share menu, and select **Add to Home Screen**.
+
+FitCircle does not require registration or a login.
+
+---
+
+## Your Data, Your Control
+
+FitCircle is built around local-first storage. Your workouts, health logs, goals, and other records are stored on your device in your browser’s local storage.
+
+There is no FitCircle account, hosted database, or automatic cloud synchronization.
+
+You can export your information as a JSON backup and restore it through the app’s Settings page.
+
+**Important things to know:**
+
+- Your data does not automatically transfer between devices or browsers.
+- Clearing browser or website data may erase your records.
+- Export regular backups, especially before changing devices or browsers.
+- Backup files may contain sensitive personal information, so store them securely.
+
+### Moving from Replit?
+
+If you previously used FitCircle through Replit, export your data from that version before switching to GitHub Pages.
+
+Browser storage does not transfer automatically between the two websites. Use the backup and restore options in Settings, and keep your original backup until you’ve verified your records in the new app.
+
+Older versions that stored custom foods in IndexedDB may require the [additional migration instructions included in the repository](scripts/export-legacy-backup.js).
+
+---
+
+## For Developers
+
+FitCircle is an open-source React and TypeScript application built with Vite, Tailwind CSS, Wouter, and Recharts.
+
+It runs entirely in the browser and is deployed as a static website using GitHub Pages.
+
+### Run Locally
+
+Requires Node.js 22 or newer.
+
+```bash
+git clone https://github.com/fullstackraven/FitCircle.git
+cd FitCircle
 npm ci
 npm run dev
 ```
 
-Open the `/FitCircle/` path on the development server. All routes and assets use
-that repository base. Development does not register a service worker.
+### Build & Test
 
-```sh
-npm run check       # TypeScript
-npm test            # validation, restore rollback/recovery, IndexedDB backup tests
-npm run build      # static production files only, in dist/
-npm run preview    # preview the production build at /FitCircle/
-npx playwright install chromium
-npm run test:e2e    # starts its own production preview
+```bash
+npm run check
+npm test
+npm run build
+npm run test:e2e
 ```
 
-For a preinstalled Chromium, set `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` to its
-executable when running `npm run test:e2e`. There are no environment secrets or
-runtime service requirements. Commit `package-lock.json` alongside dependency
-changes. `dist/` is generated, ignored, and must not be committed.
+The production build is generated in `dist/`. GitHub Actions handles automated testing and deployment from the `main` branch.
 
-## Deploy on GitHub Pages
+For deployment configuration, see the [GitHub Pages workflow](.github/workflows/pages.yml).
 
-1. In `fullstackraven/FitCircle`, open **Settings → Pages** and set **Source** to
-   **GitHub Actions**. Enable Actions if the repository currently disables them.
-2. Push the migration to `main`. `.github/workflows/pages.yml` installs using
-   `npm ci`, checks types, runs unit tests, builds, runs Chromium tests, uploads
-   `dist/`, and deploys using the GitHub Pages deployment action. It can also be
-   run manually from the Actions tab.
-3. Check the workflow's deployment result. The site is
-   `https://fullstackraven.github.io/FitCircle/`.
+---
 
-The workflow has read-only repository access during build. Only deployment gets
-`pages: write` and `id-token: write`, using the `github-pages` environment. No
-personal token or deployment branch is needed. Review repository environment
-protection rules if a deployment waits for approval.
+## Contributing
 
-Vite emits to `dist/` without Express or PostgreSQL. Wouter uses `/FitCircle` as
-its router base. A small `404.html` redirects clean deep links through the entry
-point, which restores the route and query before React mounts; this works on
-GitHub Pages before a service worker has been installed. Renaming the repository
-requires changing the Vite base, `client/public/404.html`, manifest, and the base
-in `scripts/build-pwa.mjs` together.
+Suggestions, bug reports, and contributions are welcome. Open a [GitHub issue](https://github.com/fullstackraven/FitCircle/issues) to share feedback or submit a [pull request](https://github.com/fullstackraven/FitCircle/pulls) with proposed improvements.
 
-## PWA and offline behavior
+## License
 
-The manifest, icons, registration, scope, cached shell, self-hosted fonts, and
-bundled assets all live under `/FitCircle/`. The production build generates a
-service worker with a content-derived cache version and a complete precache list.
-The install only succeeds when every build asset has been cached. Once installed,
-the shell and fitness features work offline, including reloads of internal
-routes. The first visit needs a connection; allow installation to finish before
-going offline. Data is never stored in the service worker cache.
+FitCircle is licensed under the MIT License. See the LICENSE file for details.
 
-Install using your browser's installation control, or Safari's **Add to Home
-Screen**. New builds activate only after their complete assets are cached. Existing tabs
-can keep using their previous build's assets until reloaded. **Settings → Force
-Refresh App** checks for updates while online, waits for activation, and opens
-the Pages entry point without clearing fitness data. If a check fails or times
-out, it shows an error instead of navigating. If the app cannot load its scripts,
-a recovery screen offers **Reload app safely**. Recovery only unregisters this
-app's service worker and reloads online; it never clears fitness storage. Cache cleanup only touches FitCircle's versioned
-Pages caches, preserving other apps on the same origin. Browser-specific install
-prompts, iOS standalone behavior, and actual GitHub Pages delivery should be
-verified on your devices after deployment.
+---
 
-## Local data and moving from Replit
-
-**A Replit code backup is not a backup of browser fitness data.** Browser data is
-scoped to its origin, browser profile, and device. It does not transfer from a
-Replit URL to `fullstackraven.github.io`, or between devices. GitHub Pages project
-sites for the same owner share an origin; FitCircle only exports/restores its
-recognized storage keys and never clears the origin's localStorage.
-
-Before retiring Replit:
-
-1. Open the existing Replit app in each browser/profile containing your data.
-   In Settings, download its complete JSON backup and keep an untouched copy.
-2. If you used older IndexedDB custom foods, also run the read-only exporter in
-   `scripts/export-legacy-backup.js` in the **Replit app's browser console**. It
-   downloads a legacy-compatible JSON file including
-   `FitCircleCustomFoods/foods`. Review the script before pasting it. The new
-   GitHub Pages app cannot read that old origin's IndexedDB.
-3. Deploy Pages, open the new app, then use **Settings → Restore from Backup**.
-   Close other FitCircle tabs first. Review the confirmation; matching imported
-   items replace existing items, while absent items and unrelated storage remain.
-4. Verify workouts, dated logs, journals, goals, and custom foods on Pages. Export
-   a fresh backup there. Keep Replit and the original backups until satisfied.
-
-No migration process deletes data from Replit. Keep using the same device/browser
-for each export, and avoid recording new entries at both origins during cutover.
-
-## Backup and restore
-
-**Download Complete Backup** creates a version 2 JSON file containing exact raw
-localStorage strings for recognized FitCircle and calculator keys, plus legacy
-IndexedDB custom foods. The current food database (including custom foods and
-edits) is included. `FitCircleCustomFoods/foods` is the only IndexedDB store used
-by this codebase; unrelated databases are never read or changed.
-
-Restore accepts version 2 and older plain-object exports, including
-`__indexeddb_custom_foods`. It parses and validates the entire import before
-confirming or changing data. Malformed supported data rejects the whole import;
-unrelated keys are ignored. Legacy IndexedDB foods migrate into the current
-localStorage food database, deduplicated by ID, with current imported database
-edits taking precedence. The source IndexedDB is preserved.
-
-Restore stages an original-value recovery journal before synchronous writes. A
-quota/write failure rolls back all touched keys. Interrupted restores roll back
-from that durable journal on the next launch, before React reads data. If there
-is insufficient space even to stage a journal, restore refuses without changing
-existing data. Close other FitCircle tabs during restoration to avoid concurrent
-edits. Browser storage cannot protect against users clearing site data or device
-storage loss; keep downloaded backups in a safe place. Backups contain private
-health information and are not encrypted by this app.
-
-The explicit **Erase All Data** action requires confirmation and only removes
-recognized FitCircle localStorage entries. It leaves unrelated storage and legacy
-IndexedDB archives intact. Neither updates nor restore use `localStorage.clear()`.
+**FitCircle — Build consistency. Track progress. Own your data.**
