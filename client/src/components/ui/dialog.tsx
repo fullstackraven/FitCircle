@@ -44,7 +44,7 @@ const DialogContent = React.forwardRef<
       <div className="overlay-frame">
         <DialogPrimitive.Content
           ref={ref}
-          className={cn("dialog-panel max-w-lg gap-4 border bg-background p-6 shadow-lg rounded-2xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0", className)}
+          className={cn("dialog-panel glass-dialog max-w-lg gap-4 border bg-background p-6 shadow-lg rounded-2xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0", className)}
           {...props}
         >
           <OverlayScrollLock />

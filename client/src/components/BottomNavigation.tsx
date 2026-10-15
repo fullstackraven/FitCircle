@@ -52,95 +52,20 @@ export default function BottomNavigation() {
   ];
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        width: '100%',
-        padding: '0 16px',
-        boxSizing: 'border-box'
-      }}
-    >
-      <nav aria-label="Bottom navigation"
-        style={{
-          backgroundColor: 'rgba(30, 41, 59, 0.95)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(148, 163, 184, 0.4)',
-          borderRadius: '24px',
-          padding: '12px clamp(8px, 3vw, 20px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-          maxWidth: '400px',
-          width: '100%'
-        }}
-      >
-        <div 
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-            gap: '4px'
-          }}
-        >
-          {navItems.map((item) => {
-            const isActive = location === item.path;
-            const Icon = item.icon;
-            
-            return (
-              <button
-                key={item.path}
-                onClick={() => navigate(item.path)}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '8px 0',
-                  borderRadius: '16px',
-                  border: 'none',
-                  backgroundColor: 'transparent',
-                  color: isActive ? 'white' : 'rgb(148, 163, 184)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  outline: 'none',
-                  minWidth: 0,
-                  flex: '1 1 0',
-                  minHeight: '48px',
-                  gap: '4px'
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.color = 'white';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.color = 'rgb(148, 163, 184)';
-                  }
-                }}
-              >
-                <Icon 
-                  style={{
-                    width: '28px',
-                    height: '28px',
-                    marginBottom: '4px'
-                  }}
-                />
-                <span 
-                  style={{
-                    fontSize: '11px',
-                    fontWeight: '300',
-                    lineHeight: '1'
-                  }}
-                >
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
+    <div className="dock-wrap">
+      <nav aria-label="Bottom navigation" className="dock-nav glass-nav">
+        <div className="dock-items">
+          {navItems.map(({ path, icon: Icon, label }) => (
+            <button
+              key={path}
+              className="dock-tab"
+              aria-current={location === path ? 'page' : undefined}
+              onClick={() => navigate(path)}
+            >
+              <Icon aria-hidden="true" />
+              <span>{label}</span>
+            </button>
+          ))}
         </div>
       </nav>
     </div>
