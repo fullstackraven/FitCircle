@@ -1,73 +1,123 @@
 # Viewport and overlay layout contract
 
-The shell, dock, headers, and portalled overlays share safe-area insets, but
-layout and visual viewports have different jobs. Keep these rules together when
-changing layout.
+There are two independent bottom requirements: the scroll **surface** reaches the
+viewport edge, while end-of-page **clearance** lets the last card rise above the
+floating dock. A footer or spacer must not shorten the surface.
 
-- The resting shell has an explicit `100dvh` block size (`100%` fallback),
-  anchored at the top, rather than inferring its size from fixed top/bottom edges.
-  Its main scroller ends at the dock footer (or the shell bottom on subpages). Do not size or offset the
-  entire resting shell from `visualViewport.height`/`offsetTop`: iOS standalone
-  can report different visual bounds even with no keyboard. CSS layout bounds,
-  dynamic viewport units, and physical screen dimensions are not interchangeable.
-- `useIOSViewportGuard` publishes `--overlay-height` and `--overlay-top` from the
-  visual viewport for portalled overlays. The shell temporarily follows those
-  bounds only when a focused editable control has both a new visual-height
-  reduction from the idle baseline and layout-viewport occlusion. Focusing a
-  field alone must not treat an existing discrepancy as an open keyboard.
-  Resize, orientation, focus, and pageshow events share one cleaned-up animation
-  frame. Normal viewport changes never remount React or reset scroll/state.
-- The shell owns side safe areas. Its non-scrolling `.app-header` owns the top
-  safe area and opaque background. Page-owned headers render into that sibling
-  through `AppHeader`, preserving their controls and React state without relying
-  on sticky positioning inside an iOS composited scrolling layer. The main
-  scrollport has no padding at any edge; content gutters belong to `.app-page` inside it. The footer reserves its
-  own height outside the scroll surface. No pseudo-element mask or global
-  offset is needed. Subpages without a shared header retain safe-area clearance.
-- The dock is now a non-scrolling, opaque footer sibling, following physical
-  iPhone feedback that a strip of tiles still appeared below the floating dock.
-  Its rounded navigation sits at the footer's top, with only the home-indicator
-  safe area below it (the old additional 16px bottom gap is removed). Flex layout
-  reserves the footer's actual height; the main scroller ends at its top. The
-  ResizeObserver still exposes the measured `--dock-height`, but page content no
-  longer adds that height again. Final cards need only the normal 16px gutter.
-  When navigation is hidden, the page itself reserves home-indicator clearance.
-  This deliberately replaces content flowing behind the dock with an opaque
-  footer boundary; it does not claim to diagnose the remaining iOS viewport gap.
-- Radix sheets and dialogs are portalled outside the shell. They independently
-  consume the same visual viewport and safe-area bounds. Dialog headers and close
-  controls stay outside the scrolling body. Sheet close controls stay outside the
-  sheet's scrolling body. Close targets are at least 44 by 44 CSS pixels.
-- Existing custom goal cards use ViewportOverlay for the same bounds, focus
-  containment, and background locking. Nested overlays acquire independent locks
-  and release on unmount; no page manually toggles document overflow.
-- CSS owns overscroll containment. Avoid document-wide touchmove cancellation:
-  it blocks legitimate scrolling inside dialogs and native controls.
+## Measured cause and correction
 
-Previously, safe-area and fixed-header spacers accumulated; dock clearance was a
-fixed estimate; tall centered dialogs used layout-viewport heights; and global
-touch handlers and manual scroll locks competed with Radix. The shared contract
-removes those conflicting sources without changing fitness storage or calculations.
+On main after #4 (`b135297`), `.app-dock` was a relative flex item. It reserved
+123 CSS pixels in the shell at a simulated 390×844 viewport with safe areas of
+59px/34px. `.app-content` has `overflow-y: auto`, so its border box was the exact
+clipping boundary at y=721. The shell ended at y=844. This was a real DOM clipping
+boundary, not inadequate end padding. The opaque footer masked the region below
+it rather than allowing content to paint there.
 
-## Verification
+`getBoundingClientRect()` and computed-style measurements (Chromium simulation):
 
-`tests/browser/viewport.spec.ts` covers Home, Logs, Routines, all navigation sheets,
-Food Tracker's calculator, nested cardio dialogs and selects, custom goal cards,
-rotation, retained editing state, and desktop layout. The mobile tests use
-Chromium emulation and explicitly injected safe-area variables. Keyboard tests
-simulate visualViewport resizing/panning. Neither constitutes real iOS testing.
+| Element / metric | Main after #4 | This change |
+| --- | --- | --- |
+| `window.innerHeight` / document client height | 844 / 844 | 844 / 844 |
+| visual viewport height / offset top | 844 / 0 | 844 / 0 |
+| `.app-shell` top → bottom | 0 → 844 | 0 → 844 |
+| `.app-header` top → bottom | 0 → 131 | 0 → 131 |
+| `.app-content` top → bottom | 131 → 721 | 131 → 844 |
+| `.app-dock` top → bottom | 721 → 844 | 721 → 844 |
+| rounded navigation top → bottom | 721 → 810 | 721 → 810 |
+| dock position / background | relative / opaque | absolute / transparent |
+| outer ancestor overflow | hidden | visible |
 
-`tests/browser/scroll-boundaries.spec.ts` additionally samples the painted and
-hit-tested top region at multiple Logs scroll positions, models a 710px visual
-viewport within an 844px layout viewport, checks a real tile's visible intersection
-at the opaque footer boundary, verifies final Logs/Routines items,
-and exercises keyboard/panning and orientation recovery. These fixtures model
-reported failure conditions; they do not measure physical iPhone screen geometry.
+The dock is now an absolute overlay within the shell; it consumes no flex height.
+Its position and all navigation styling remain exactly as on latest main. The
+home-indicator area beneath it is transparent to scrolling content. The main
+scrollport remains unpadded. Its inner `.app-page` reserves the measured full dock
+height plus the existing 16px gutter **only at the end of the content**. The
+measurement already includes the safe area; do not add it again. Without a dock,
+use the bottom safe area plus the gutter. `scroll-padding` uses the same clearance
+for scroll-into-view behavior without changing the main border box.
 
-Before merging, check on an actual notched iPhone in both Safari and installed
-standalone mode: launch and resume; scroll every final card above the footer; open
-and close sheets; rotate; focus and blur calculator inputs with the software
-keyboard; scroll long dialogs; and open/close nested overlays. Check status-bar
-and home-indicator clearance, active-input visibility, focus return, and restored
-background scrolling. iOS keyboard animation, auto-zoom, browser bars, and
-rubber-band behavior still require real-device verification.
+`html`, `body`, `#root`, and `.app-shell` no longer add redundant overflow clips.
+They are not the app scroller. The fixed shell and its main child provide scroll
+containment; `.app-content` is the only clipping/scrolling surface in the page
+hierarchy, ending at the viewport bottom. Remove the obsolete
+`-webkit-overflow-scrolling: touch` compositing hint on that surface; modern iOS
+provides momentum scrolling without it. Dialog/sheet scrolling is unchanged.
+
+These measurements establish the cause on **current main**. They do not establish
+why the physical iPhone showed a shorter painted surface before #4. Removing
+redundant ancestor clips removes an additional possible clipping dependency, but
+is not a proven diagnosis of that earlier WebKit behavior. The user reports an
+iPhone 16 affected in both Safari and the Home Screen app; iOS version is unknown.
+Physical acceptance remains pending until the updated surface is checked there.
+
+## Viewport and overlay rules
+
+- The resting shell uses CSS `100dvh` (`100%` fallback). Do not subtract dock or
+  safe-area heights from it. No JavaScript resting-shell size is introduced.
+- `useIOSViewportGuard` is inspected and retained: visual viewport height/top are
+  for overlays and genuine keyboard occlusion, not idle shell sizing. A focused
+  field needs both a new visual-height reduction and layout occlusion before
+  keyboard sizing applies. Existing cleanup and frame coalescing remain.
+- CSS layout bounds, `100dvh`, visual viewport bounds, and physical screen bounds
+  are not assumed interchangeable. A simulated visual/layout mismatch must not
+  shrink or pan the resting shell.
+- The header remains a non-scrolling sibling above main, with its opaque safe-area
+  background. Page-owned controls render through `AppHeader` without losing state.
+- Portalled dialogs/sheets use visual bounds and safe areas independently. Their
+  headers and 44px close controls stay outside their own scroll bodies. Existing
+  reference-counted locks prevent main scrolling behind open overlays.
+- Normal viewport changes never remount React, clear storage, or reset user data.
+  Avoid global touchmove cancellation; it blocks native controls/overlay scrolling.
+
+## Automated verification
+
+`tests/browser/scroll-boundaries.spec.ts` checks top safe-area coverage, all shared
+headers, complete main/dock geometry, real-tile IntersectionObserver visibility
+through the viewport bottom, final Logs/Routines cards, dock invariance during
+scroll, no outer clipping ancestors, dynamic resizing, and visual/keyboard bounds.
+Portrait, landscape, and desktop cases attach geometry JSON and a screenshot of
+content below the dock. The three new boundary cases fail against the main build
+and pass with this correction.
+
+`tests/browser/viewport.spec.ts` retains Home, Logs, Routines, all sidebar sheets,
+Food Tracker's calculator, nested dialogs/selects, custom goal cards, rotation,
+editing-state preservation, scroll recovery, and desktop coverage. Other suites
+retain offline, update, backup and fitness behavior checks.
+
+All these runs use Chromium, including injected safe areas and visualViewport
+properties. They do not run iOS Safari, model browser chrome/compositor behavior,
+or prove physical standalone screen coverage. No Apple Fitness comparison image
+was available in the current upload, which contained the textual request.
+
+## Physical iPhone review and measurement
+
+Before merging, check the affected iPhone 16 in both Safari and Home Screen mode:
+scroll with a tile crossing the bottom edge (not just at page end); verify content
+is visible behind and below the unchanged dock, with no early cutoff. Bring the
+final Logs tile and Routine card fully above it. Test rotation, resume, keyboard
+open/close, sidebar and calculator, including restored background scrolling. Do
+not clear website data to test an update.
+
+If the cutoff persists, use Safari's remote Web Inspector on the affected instance
+and run this read-only snippet while the cutoff is visible. Repeat with the
+keyboard closed/open and in each orientation. It reads layout only, not fitness
+records or storage. Compare `.app-content.bottom`, `.app-shell.bottom`, ancestor
+bounds and actual viewport measurements rather than guessing a new offset.
+
+```js
+(() => {
+  const rows = [];
+  for (let el = document.querySelector('.app-content'); el; el = el.parentElement) {
+    const r = el.getBoundingClientRect(), s = getComputedStyle(el);
+    rows.push({ element: el.id || el.className || el.tagName,
+      top: r.top, bottom: r.bottom, height: r.height,
+      overflow: s.overflow, position: s.position, transform: s.transform,
+      clipPath: s.clipPath, contain: s.contain });
+  }
+  console.table(rows);
+  return { innerHeight, clientHeight: document.documentElement.clientHeight,
+    visualHeight: visualViewport?.height, visualTop: visualViewport?.offsetTop,
+    standalone: matchMedia('(display-mode: standalone)').matches,
+    keyboard: document.documentElement.classList.contains('keyboard-open') };
+})();
+```
