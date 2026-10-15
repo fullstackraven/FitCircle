@@ -4,7 +4,7 @@
   "start_url": "/FitCircle/",
   "display": "standalone",
   "background_color": "#0f172a",
-  "theme_color": "#00ff41",
+  "theme_color": "#0f172a",
   "icons": [
     {
       "src": "/FitCircle/icon-192.png",

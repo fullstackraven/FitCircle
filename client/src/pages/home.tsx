@@ -1,3 +1,4 @@
+import { VersionLabel } from "@/components/VersionLabel";
 import { AppHeader } from "@/components/AppHeader";
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Target, TrendingUp, Calculator, UtensilsCrossed, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp, Timer, Activity, Brain, Droplet } from 'lucide-react';
@@ -604,7 +605,7 @@ export default function Home() {
 
             {/* Version */}
             <div className="p-4 border-t border-slate-700">
-              <div className="text-slate-500 text-xs text-center">Version 2.1.0</div>
+              <VersionLabel onActivate={() => setIsSidebarOpen(false)} />
             </div>
           </div>
         </SheetContent>

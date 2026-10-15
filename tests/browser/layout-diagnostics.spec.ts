@@ -8,7 +8,7 @@ async function start(page: import('@playwright/test').Page) {
     module.startViewportDiagnostics();
   });
   const panel = page.locator('[data-viewport-diagnostics]');
-  await panel.locator('summary').click();
+  await panel.locator(':scope > summary').click();
   return panel;
 }
 
