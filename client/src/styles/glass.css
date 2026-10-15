@@ -126,3 +126,11 @@
   outline: 2px solid rgb(203 213 225);
   outline-offset: 2px;
 }
+
+/* Calendar retains its pre-modernization card appearance. */
+.calendar-classic .fitcircle-card,
+.calendar-classic .fitcircle-card-lg {
+  background-color: rgb(30 41 59);
+  border-color: rgb(51 65 85);
+  box-shadow: none;
+}

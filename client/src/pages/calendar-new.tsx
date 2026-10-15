@@ -485,7 +485,7 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)' } as React.CSSProperties}>
+    <div className="calendar-classic max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)' } as React.CSSProperties}>
       {/* Header is rendered into the non-scrolling shell host */}
       <AppHeader>
         <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
@@ -505,7 +505,7 @@ export default function CalendarPage() {
       {/* Main content; header spacing is handled by normal flow */}
       <div>
         {/* Calendar Controls - below universal header */}
-        <div className="px-4 py-6 flex items-center justify-between">
+        <div className="px-4 pb-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(subMonths(currentMonth, 1)) : setCurrentWeek(subWeeks(currentWeek, 1))}
@@ -575,7 +575,7 @@ export default function CalendarPage() {
                 <div
                   key={date.toISOString()}
                   onClick={() => handleDateClick(date)}
-                  className={`glass-tile aspect-square rounded-xl flex items-center justify-center relative text-sm font-medium cursor-pointer transition-all hover:opacity-80
+                  className={`aspect-square rounded-xl flex items-center justify-center relative text-sm font-medium cursor-pointer transition-all hover:opacity-80
                     ${isCurrent ? "bg-slate-800 text-white" : "bg-slate-700 text-slate-500"} 
                     ${complete && !isRecovery ? "bg-green-500 text-white shadow-lg shadow-green-500/50" : ""}
                     ${isRecovery ? "bg-orange-500 text-white shadow-lg shadow-orange-500/50" : ""}`}
