@@ -298,7 +298,7 @@ export default function MeditationPage() {
         {/* Completion Notification */}
         {showCompletion && (
           <ViewportOverlay title="Session Complete" onDismiss={() => setShowCompletion(false)}>
-            <div className="bg-slate-800 rounded-xl p-8 text-center max-w-sm mx-4 border border-blue-500">
+            <div className="glass-panel bg-slate-800 rounded-xl p-8 text-center max-w-sm mx-4 border border-blue-500">
               <div className="text-6xl mb-4">🧘‍♂️</div>
               <h2 className="text-2xl font-bold text-white mb-2">Session Complete!</h2>
               <p className="text-slate-300">Well done on completing your meditation</p>
@@ -599,7 +599,7 @@ export default function MeditationPage() {
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
         <ViewportOverlay title="Meditation Goal" onDismiss={() => setIsGoalModalOpen(false)}>
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-lg">
+          <div className="glass-panel bg-slate-800 rounded-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-white">Meditation Goal</h3>
               <button

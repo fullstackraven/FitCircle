@@ -55,7 +55,7 @@ export function WorkoutStatistics() {
 
       <div className="space-y-6">
         {/* All-Time Statistics */}
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6">
           <div className="flex items-center space-x-2 mb-4">
             <TrendingUp className="w-5 h-5 text-blue-400" />
             <h2 className="text-lg font-semibold text-white">All-Time Statistics</h2>
@@ -77,7 +77,7 @@ export function WorkoutStatistics() {
         </div>
 
         {/* Monthly Statistics */}
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-white">Monthly Statistics</h2>
             <div className="flex items-center space-x-2">
@@ -115,7 +115,7 @@ export function WorkoutStatistics() {
         </div>
 
         {/* Individual Workout Totals */}
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6">
           <h2 className="text-lg font-semibold text-white mb-4">Individual Workout Totals</h2>
           <div className="space-y-3">
             {individualWorkoutTotals.length > 0 ? (

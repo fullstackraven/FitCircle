@@ -245,7 +245,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
       <div className="space-y-6">
         {/* Workout Statistics */}
         {workouts.length > 0 && (
-          <div className="bg-slate-800 rounded-xl p-6">
+          <div className="glass-panel bg-slate-800 rounded-xl p-6">
             <div className="flex items-center space-x-3 mb-4">
               <BarChart3 className="w-5 h-5 text-blue-400" />
               <h3 className="text-lg font-semibold text-white">Workout Statistics</h3>
@@ -322,7 +322,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
         )}
 
         {/* Recovery Day */}
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Heart className="w-5 h-5 text-orange-400" />
@@ -347,7 +347,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
         </div>
 
         {/* Journal Entry */}
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               <BookOpen className="w-5 h-5 text-purple-400" />
@@ -379,7 +379,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
         </div>
 
         {/* Energy Level */}
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6">
           <div className="flex items-center space-x-3 mb-4">
             <Zap className="w-5 h-5 text-yellow-400" />
             <h3 className="text-lg font-semibold text-white">Energy Level</h3>
@@ -411,7 +411,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
         </div>
 
         {/* Supplements */}
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               <Pill className="w-5 h-5 text-green-400" />

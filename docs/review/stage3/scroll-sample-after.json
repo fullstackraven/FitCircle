@@ -1,0 +1,28 @@
+{
+  "note": "Single headless Chromium sample, not physical iOS performance or compositor verification.",
+  "frames": 120,
+  "maxFrameGapMs": 16.799999999999955,
+  "meanFrameGapMs": 16.665546218487396,
+  "longTaskDurationsMs": [],
+  "navBefore": {
+    "x": 16,
+    "y": 747,
+    "width": 358,
+    "height": 89,
+    "top": 747,
+    "right": 374,
+    "bottom": 836,
+    "left": 16
+  },
+  "navAfter": {
+    "x": 16,
+    "y": 747,
+    "width": 358,
+    "height": 89,
+    "top": 747,
+    "right": 374,
+    "bottom": 836,
+    "left": 16
+  },
+  "filteredElements": 1
+}

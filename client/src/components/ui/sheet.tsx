@@ -64,7 +64,7 @@ const SheetContent = React.forwardRef<
     <SheetPrimitive.Content
       ref={ref}
       data-side={side}
-      className={cn(sheetVariants({ side }), "sheet-panel", className)}
+      className={cn(sheetVariants({ side }), "sheet-panel glass-sheet", className)}
       {...props}
     >
       <OverlayScrollLock />

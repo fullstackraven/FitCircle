@@ -172,7 +172,7 @@ export function SupplementsPage() {
 
           {/* Manage Supplements - Collapsible */}
           <Collapsible open={isManageOpen} onOpenChange={setIsManageOpen}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors">
+          <CollapsibleTrigger className="glass-panel flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors">
             <h2 className="text-lg font-semibold text-white">Manage Supplements</h2>
             {isManageOpen ? (
               <ChevronUp className="w-5 h-5 text-slate-400" />
@@ -181,7 +181,7 @@ export function SupplementsPage() {
             )}
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="mt-4 bg-slate-800 rounded-xl p-6">
+            <div className="glass-panel mt-4 bg-slate-800 rounded-xl p-6">
               {allSupplements.length > 0 ? (
                 <div className="space-y-3">
                   {allSupplements.map(supplement => (

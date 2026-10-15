@@ -14,7 +14,7 @@ export function ViewportOverlay({ children, title, onDismiss, className = '' }: 
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay className={`overlay-frame viewport-overlay bg-black/50 ${className}`}>
         <OverlayScrollLock />
-        <DialogPrimitive.Content asChild aria-label={title} aria-describedby={undefined}>
+        <DialogPrimitive.Content asChild className="glass-dialog" aria-label={title} aria-describedby={undefined}>
           {children}
         </DialogPrimitive.Content>
       </DialogPrimitive.Overlay>

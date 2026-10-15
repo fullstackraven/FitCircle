@@ -169,7 +169,7 @@ export default function RemindersPage() {
         {/* Active Reminders List */}
         <div className="space-y-1 mb-6">
           {activeReminders.map((reminder) => (
-            <div key={reminder.id} className="flex items-center py-3 px-1 group">
+            <div key={reminder.id} className="glass-row flex items-center py-3 px-1 group">
               {editingId === reminder.id ? (
                 // Edit Mode
                 <div className="flex items-center w-full gap-3">
@@ -189,7 +189,7 @@ export default function RemindersPage() {
                       saveEdit();
                     }}
                     onFocus={() => setEditFocused(true)}
-                    className="flex-1 bg-transparent text-white text-base border-none outline-none"
+                    className="glass-input flex-1 bg-transparent text-white text-base border-none outline-none"
                     placeholder={editFocused ? "" : "Delete text to remove reminder"}
                     autoFocus
                   />
@@ -226,7 +226,7 @@ export default function RemindersPage() {
                     
                     {/* Dropdown Menu */}
                     {showMenuId === reminder.id && (
-                      <div className="absolute right-0 top-8 bg-slate-700 rounded-xl shadow-lg border border-slate-600 py-1 z-10 min-w-[120px]">
+                      <div className="glass-panel absolute right-0 top-8 bg-slate-700 rounded-xl shadow-lg border border-slate-600 py-1 z-10 min-w-[120px]">
                         <button
                           onClick={() => startEditing(reminder)}
                           className="w-full px-3 py-2 text-left text-white hover:bg-slate-600 flex items-center gap-2 text-sm"
@@ -269,7 +269,7 @@ export default function RemindersPage() {
               }}
               placeholder={newReminderFocused ? "" : "New Reminder"}
               onFocus={() => setNewReminderFocused(true)}
-              className="flex-1 bg-transparent text-white text-base border-none outline-none placeholder-slate-500"
+              className="glass-input flex-1 bg-transparent text-white text-base border-none outline-none placeholder-slate-500"
               autoFocus
             />
           </div>
@@ -332,7 +332,7 @@ export default function RemindersPage() {
 
                 <div className="space-y-1">
                   {completedReminders.map((reminder) => (
-                    <div key={reminder.id} className="flex items-center py-3 px-1 group">
+                    <div key={reminder.id} className="glass-row flex items-center py-3 px-1 group">
                       {editingId === reminder.id ? (
                         // Edit Mode
                         <div className="flex items-center w-full gap-3">
@@ -405,7 +405,7 @@ export default function RemindersPage() {
                               
                               {/* Dropdown Menu */}
                               {showMenuId === reminder.id && (
-                                <div className="absolute right-0 top-8 bg-slate-700 rounded-xl shadow-lg border border-slate-600 py-1 z-10 min-w-[120px]">
+                                <div className="glass-panel absolute right-0 top-8 bg-slate-700 rounded-xl shadow-lg border border-slate-600 py-1 z-10 min-w-[120px]">
                                   <button
                                     onClick={() => startEditing(reminder)}
                                     className="w-full px-3 py-2 text-left text-white hover:bg-slate-600 flex items-center gap-2 text-sm"
