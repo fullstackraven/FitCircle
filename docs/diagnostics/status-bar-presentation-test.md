@@ -123,3 +123,27 @@ The browser regression compares production and synthetic nav geometry, font,
 SVG markup and label positions at 402×812 with a simulated 34px bottom inset.
 Expected nav height is 96px, each target is 48px high, and controls finish above
 the safe area. Chromium equivalence is not a physical clipping verification.
+
+## Rounded, slimmer test capsule (v3)
+
+The user confirms the real-icon test reaches the bottom, but its lower outline
+still looks clipped in their screenshot with the cyan marker visible. The next
+candidate changes only the synthetic test's shape, not production FitCircle:
+
+- Full pill rounding instead of 24px corners.
+- A 4px visual gap below the border; the fixed wrapper remains at bottom:0.
+- Less top padding and bottom padding reduced by that same 4px gap. The gap counts
+  toward, rather than adds to, the home-indicator clearance.
+- Cyan boundary hidden by default, with the existing toggle available.
+
+With a 34px inset, the visible capsule is 84px tall instead of 96px. Its bottom is
+4px above the viewport edge. All production icons, fonts, 48px targets, and their
+vertical positions remain unchanged in that configuration. The measured wrapper
+includes the gap for last-card scroll clearance. No screen-height compensation,
+production metadata change, storage access, or fitness feature change is made.
+
+After deployment, close/reopen FC Standard after the normal online worker update;
+confirm `"testRevision": "rounded-dock-v3"`. Inspect the outline with the cyan line
+hidden, tap all five tabs, and check final-card reachability. Physical acceptance
+of this new shape remains pending; Chromium tests verify the intended geometry
+and unchanged safe controls, not native clipping behavior.

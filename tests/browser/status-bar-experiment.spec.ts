@@ -65,7 +65,7 @@ test('test dock, last card, viewport recovery and copy fallback work at phone si
   await page.goto('viewport-test/standard/index.html');
   for (const size of [{ width: 402, height: 812 }, { width: 874, height: 402 }, { width: 402, height: 812 }]) {
     await page.setViewportSize(size);
-    await expect.poll(() => page.locator('nav').evaluate(el => el.getBoundingClientRect().bottom)).toBe(size.height);
+    await expect.poll(() => page.locator('nav').evaluate(el => el.getBoundingClientRect().bottom)).toBe(size.height - 4);
     await page.locator('main').evaluate(el => { el.scrollTop = el.scrollHeight; });
     const last = await page.locator('#last-card').boundingBox();
     const dock = await page.locator('nav').boundingBox();
@@ -78,7 +78,7 @@ test('test dock, last card, viewport recovery and copy fallback work at phone si
   await page.getByRole('button', { name: 'Copy report' }).click();
   const report = JSON.parse(await page.evaluate(() => navigator.clipboard.readText()));
   expect(report.variant).toBe('standard');
-  expect(report.testRevision).toBe('real-dock-v2');
+  expect(report.testRevision).toBe('rounded-dock-v3');
   expect(report.dockControls).toHaveLength(5);
   expect(report.dockControls.every((control: { height: number }) => control.height >= 48)).toBe(true);
   expect(report.bottomControlTaps).toBe(3);
@@ -86,14 +86,15 @@ test('test dock, last card, viewport recovery and copy fallback work at phone si
   await page.evaluate(() => { navigator.clipboard.writeText = async () => { throw new Error('Unavailable'); }; });
   await page.getByRole('button', { name: 'Copy report' }).click();
   await expect(page.locator('#copy-status')).toContainText('Select the report text');
-  await page.getByRole('button', { name: 'Hide cyan boundary' }).click();
   await expect(page.locator('.boundary')).toBeHidden();
   await page.getByRole('button', { name: 'Show cyan boundary' }).click();
   await expect(page.locator('.boundary')).toBeVisible();
+  await page.getByRole('button', { name: 'Hide cyan boundary' }).click();
+  await expect(page.locator('.boundary')).toBeHidden();
 });
 
 
-test('synthetic dock matches production icons, fonts and compact safe-area geometry', async ({ page }) => {
+test('rounded synthetic dock preserves production controls while exposing its slimmer pill border', async ({ page }) => {
   await page.setViewportSize({ width: 402, height: 812 });
   const measure = async () => {
     await page.addStyleTag({ content: ':root { --safe-top: 0px; --safe-bottom: 34px; }' });
@@ -123,9 +124,13 @@ test('synthetic dock matches production icons, fonts and compact safe-area geome
   const production = await measure();
   await page.goto('viewport-test/standard/index.html');
   const synthetic = await measure();
-  expect(synthetic).toEqual(production);
-  expect(synthetic.height).toBe(96);
-  expect(synthetic.bottom).toBe(812);
+  expect(synthetic.buttons).toEqual(production.buttons);
+  expect(synthetic.width).toBe(production.width);
+  expect(synthetic.height).toBe(84);
+  expect(synthetic.height).toBeLessThan(production.height);
+  expect(synthetic.bottom).toBe(808);
+  expect(await page.locator('.test-dock').evaluate(el => el.getBoundingClientRect().bottom)).toBe(812);
+  expect(await page.locator('.dock-nav').evaluate(el => getComputedStyle(el).borderRadius)).toBe('9999px');
   for (const button of synthetic.buttons) {
     expect(button.bottom).toBeLessThanOrEqual(812 - 34);
     expect(button.labelBottom).toBeLessThanOrEqual(button.bottom);
