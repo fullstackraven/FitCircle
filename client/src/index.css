@@ -100,8 +100,10 @@
   }
 
   .app-dock {
-    /* Flush viewport edge; keep home-indicator clearance inside the panel. */
-    position: fixed;
+    /* Use the shell's bottom edge, not a second viewport-fixed coordinate
+       system. In iOS standalone, fixed controls can otherwise disagree with
+       the CSS-sized shell during browser-chrome/viewport recovery. */
+    position: absolute;
     bottom: 0;
     left: var(--safe-left);
     right: var(--safe-right);

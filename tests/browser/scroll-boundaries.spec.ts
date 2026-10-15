@@ -196,7 +196,7 @@ for (const viewport of [
     expect(geometry.dock.bottom).toBe(viewport.height);
     expect(geometry.dock.top).toBeGreaterThan(geometry.main.top);
     expect(geometry.dock.top).toBeLessThan(geometry.main.bottom);
-    expect(geometry.dock.position).toBe('fixed');
+    expect(geometry.dock.position).toBe('absolute');
     expect(geometry.ancestors.filter(a => /hidden|clip|auto|scroll/.test(a.overflowY))).toEqual([]);
     await tile.evaluate(el => {
       const main = document.querySelector('main')!;
@@ -254,4 +254,24 @@ test('resizing an already-scrolled Logs page keeps the dock independent of the s
     const padding = await page.locator('.app-page').evaluate(el => Number.parseFloat(getComputedStyle(el).paddingBottom));
     expect(padding).toBeCloseTo(dock!.height + 16);
   }
+});
+
+
+test('dock follows the shell bottom when shell and viewport bounds differ', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('wellness');
+  // Deliberately decouple containing-block and viewport geometry. This tests
+  // the anchor contract; it does not emulate an iOS host-controlled gap.
+  const style = await page.addStyleTag({ content: '.app-shell { height: calc(100dvh - 56px); }' });
+  const shell = page.locator('.app-shell');
+  const dock = page.locator('.app-dock');
+  const bottom = (el: Element) => el.getBoundingClientRect().bottom;
+  expect(await shell.evaluate(bottom)).toBe(788);
+  expect(await dock.evaluate(bottom)).toBe(await shell.evaluate(bottom));
+  await page.locator('main').evaluate(el => { el.scrollTop = el.scrollHeight; });
+  expect(await dock.evaluate(bottom)).toBe(788);
+  await style.evaluate(el => el.remove());
+  await expect.poll(() => dock.evaluate(bottom)).toBe(844);
+  await page.setViewportSize({ width: 844, height: 390 });
+  await expect.poll(() => dock.evaluate(bottom)).toBe(390);
 });
