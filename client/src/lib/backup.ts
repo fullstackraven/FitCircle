@@ -16,6 +16,7 @@ const schemas: Record<string, z.ZodTypeAny> = {
   'workout-tracker-data': shaped({ workouts: z.union([record(workout), z.array(workout)]), dailyLogs: record(dailyLog).optional(), journalEntries: record(z.union([text, shaped({ text, timestamp: text })])).optional(), routines: record(shaped({ id: text, name: text, selectedDays: z.array(number), createdAt: text })).optional() }),
   'workout-tracker-logs': record(dailyLog),
   fitcircle_food_database: foods,
+  fitcircle_goal_cardio: shaped({ type: z.enum(['distance', 'duration']), target: number, period: z.enum(['day', 'week']).optional() }),
   fitcircle_daily_quote: shaped({ text, author: text }),
   fitcircle_deleted_builtin_foods: z.array(text),
   fitcircle_hydration_data: shaped({ dailyGoalOz: number, currentDayOz: number, logs: record(shaped({ date: text, totalOz: number, entries: z.array(shaped({ time: text, amount: number })) })), lastDate: text }),
@@ -32,14 +33,14 @@ const schemas: Record<string, z.ZodTypeAny> = {
   fitcircle_workout_duration_data: shaped({ completedSessions: z.array(shaped({ date: text, startTime: number })), currentSession: shaped({ date: text, startTime: number }).optional() }),
   fitcircle_dashboard_widgets: z.array(shaped({ id: text, type: text, title: text, enabled: z.boolean(), position: number, size: text })),
   fitcircle_control_settings: record(z.boolean()),
-  fitcircle_goals: record(number),
+  fitcircle_goals: z.object({ weightGoalType: text.optional() }).catchall(number),
   fitcircle_profile: object,
   fitcircle_wellness_weights: record(number),
   fitcircle_wellness_layout: z.array(text),
 };
 const scalarKeys = new Set(['fitcircle_username', 'fitcircle_age', 'fitcircle_weight', 'fitcircle_fitness_goal', 'fitcircle_weight_goal_type', 'fitcircle_device_id', 'fitcircle_food_database_migrated', 'fitcircle_auto_backup_enabled', 'fitcircle_last_auto_backup', 'fitcircle_quote_date', 'fitcircle_last_quote_index', 'fitcircle_height', 'fitcircle_body_fat', 'fitcircle_neck', 'fitcircle_chest', 'fitcircle_waist', 'fitcircle_hips', 'fitcircle_bicep_left', 'fitcircle_bicep_right', 'fitcircle_forearm_left', 'fitcircle_forearm_right', 'fitcircle_thigh_left', 'fitcircle_thigh_right', 'fitcircle_calf_left', 'fitcircle_calf_right']);
 const calculatorKeys = new Set(['activity_level', 'goal_type', 'goal_rate', 'macro_style', 'custom_carbs', 'custom_protein', 'custom_fat', 'target_calories', 'target_carbs', 'target_protein', 'target_fat'].map(k => `fitness_calc_${k}`));
-const goalKey = /^fitcircle_goal_(hydration|meditation|fasting|weight|bodyfat|cardio)$/;
+const goalKey = /^fitcircle_goal_(hydration|meditation|fasting|weight|bodyfat)$/;
 const datedFoodKey = /^fitcircle_food_(?:tracker)?\d{4}-\d{2}-\d{2}$/;
 // Preserve retired FitCircle data in backups, without reviving any removed feature.
 const legacyKeys = new Set(['fitcircle_trainer_messages', 'fitcircle_notes', 'fitcircle_food_tracker', 'fitcircle_food_tracker_data', 'fitcircle_cardio', 'cardioLogs', 'cardio_entries', 'cardio']);

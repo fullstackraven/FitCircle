@@ -104,3 +104,45 @@ test('prototype-like keys cannot target unrelated storage', () => {
   assert.equal(Object.keys(plan.entries).length, 1);
   assert.equal(({} as { polluted?: boolean }).polluted, undefined);
 });
+
+test('legacy structured cardio goals and categorical weight goals restore and round trip', async () => {
+  const cardioGoal = { type: 'duration', target: 30 };
+  const goals = { hydrationOz: 64, fastingHours: 16, targetWeight: 150, weightLbs: 160, weightGoalType: 'lose' };
+  const storage = new MemoryStorage();
+  storage.setItem('other-app', 'keep');
+  const plan = prepareRestore({ fitcircle_goal_cardio: cardioGoal, fitcircle_goals: goals });
+  applyRestore(plan, storage, storage);
+  assert.deepEqual(JSON.parse(storage.getItem('fitcircle_goal_cardio')!), cardioGoal);
+  assert.deepEqual(JSON.parse(storage.getItem('fitcircle_goals')!), goals);
+  assert.equal(storage.getItem('other-app'), 'keep');
+  const backup = await createBackup(storage, new IDBFactory());
+  const roundTrip = prepareRestore(JSON.parse(JSON.stringify(backup)));
+  assert.deepEqual(roundTrip.entries, plan.entries);
+});
+
+test('cardio goal period is optional for legacy backups and retained when supplied', () => {
+  for (const goal of [
+    { type: 'duration', target: 30 },
+    { type: 'distance', target: 5, period: 'day' },
+    { type: 'distance', target: 35, period: 'week' },
+  ]) {
+    const plan = prepareRestore({ fitcircle_goal_cardio: goal });
+    assert.deepEqual(JSON.parse(plan.entries.fitcircle_goal_cardio), goal);
+  }
+});
+
+for (const [name, invalid] of Object.entries({
+  'scalar cardio goal': { fitcircle_goal_cardio: 30 },
+  'invalid cardio type': { fitcircle_goal_cardio: { type: 'unknown', target: 30 } },
+  'missing cardio target': { fitcircle_goal_cardio: { type: 'duration' } },
+  'nonnumeric cardio target': { fitcircle_goal_cardio: { type: 'duration', target: '30' } },
+  'invalid cardio period': { fitcircle_goal_cardio: { type: 'distance', target: 5, period: 'month' } },
+  'invalid legacy weight type': { fitcircle_goals: { weightGoalType: {} } },
+  'nonnumeric unified goal': { fitcircle_goals: { weightGoalType: 'lose', hydrationOz: 'bad' } },
+})) test(`legacy compatibility still rejects ${name} before writing`, () => {
+  const storage = new MemoryStorage();
+  storage.setItem('fitcircle_username', 'original');
+  assert.throws(() => applyRestore(prepareRestore({ fitcircle_username: 'replacement', ...invalid }), storage, storage));
+  assert.equal(storage.getItem('fitcircle_username'), 'original');
+  assert.equal(storage.length, 1);
+});
