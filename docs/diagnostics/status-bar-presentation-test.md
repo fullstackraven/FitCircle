@@ -147,3 +147,20 @@ confirm `"testRevision": "rounded-dock-v3"`. Inspect the outline with the cyan l
 hidden, tap all five tabs, and check final-card reachability. Physical acceptance
 of this new shape remains pending; Chromium tests verify the intended geometry
 and unchanged safe controls, not native clipping behavior.
+
+## Center the approved test shape's controls (v4)
+
+The user reports the v3 dock itself is fine and asks to center its icons. The test
+now divides its existing combined top/bottom padding equally, centering each
+icon-and-label group vertically. Shape, width, 4px bottom gap, 84px height at the
+reported 34px inset, font, icons and 48px targets are unchanged. With that inset,
+padding is 17px above and below the row; controls move down 13px (bottom 790), while
+the capsule bottom remains 808 in an 812px viewport. The report revision is
+`centered-dock-v4`.
+
+This is still test-only. Centering in the unchanged capsule reduces the controls'
+clearance from the screen edge from 35px to 22px, placing part of each target in
+the reported bottom safe inset. It does not preserve v3's full safe-area exclusion.
+The affected iPhone must confirm labels remain clear of the home indicator and
+all five buttons respond reliably before any production adoption. If they do not,
+full safe exclusion will require revisiting the capsule height or position.

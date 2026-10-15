@@ -18,7 +18,7 @@ function capture() {
   const landscape = screen.orientation?.type?.startsWith('landscape') || Math.abs(window.orientation) === 90;
   return {
     variant,
-    testRevision: 'rounded-dock-v3',
+    testRevision: 'centered-dock-v4',
     standalone: matchMedia('(display-mode: standalone)').matches || navigator.standalone === true,
     statusStyle: document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.content ?? 'omitted (standard)',
     screenHeightOriented: landscape ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height),
