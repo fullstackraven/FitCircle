@@ -228,7 +228,7 @@ export default function Home() {
 
       {/* Start Workout Session Section */}
       <section className="mb-8">
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6">
           <div className="flex flex-col items-center space-y-4">
             {!isWorkoutActive ? (
               <>
@@ -296,7 +296,7 @@ export default function Home() {
         <div className="space-y-6 p-8 overflow-visible">
           {/* No Workouts Message */}
           {todaysRoutine && todaysWorkouts.length === 0 && (
-            <div className="bg-slate-800 rounded-xl p-6 text-center">
+            <div className="glass-panel bg-slate-800 rounded-xl p-6 text-center">
               <h3 className="text-lg font-semibold text-white mb-2">No workouts scheduled for today!</h3>
               <p className="text-slate-300">Enjoy an active recovery day!</p>
             </div>
@@ -530,7 +530,7 @@ export default function Home() {
       {!isTodaysTotalsHidden && todaysTotals.some(w => w.count > 0) && (
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-4 text-center text-white">Today's Totals</h2>
-          <div className="bg-slate-800 rounded-xl p-4 space-y-3">
+          <div className="glass-panel bg-slate-800 rounded-xl p-4 space-y-3">
             {todaysTotals.filter(w => w.count > 0).map((workout) => (
               <div key={workout.id} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">

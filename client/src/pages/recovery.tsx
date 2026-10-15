@@ -43,7 +43,7 @@ export default function RecoveryPage() {
 
       <div className="space-y-6">
         {/* Recovery Stats */}
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6">
           <div className="flex items-center space-x-3 mb-4">
             <Heart className="w-6 h-6 text-orange-400" />
             <h2 className="text-xl font-semibold text-white">Recovery Statistics</h2>
@@ -72,7 +72,7 @@ export default function RecoveryPage() {
         </div>
 
         {/* Recent Recovery Days */}
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6">
           <div className="flex items-center space-x-3 mb-4">
             <Calendar className="w-5 h-5 text-orange-400" />
             <h3 className="text-lg font-semibold text-white">Recent Recovery Days</h3>
@@ -108,7 +108,7 @@ export default function RecoveryPage() {
         </div>
 
         {/* Instructions */}
-        <div className="bg-slate-800 rounded-xl p-4">
+        <div className="glass-panel bg-slate-800 rounded-xl p-4">
           <h3 className="text-lg font-semibold text-white mb-3">How to Mark Recovery Days</h3>
           <div className="space-y-2 text-sm text-slate-300">
             <p>• Go back to the Calendar page</p>

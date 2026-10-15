@@ -1089,7 +1089,7 @@ export default function FoodTrackerPage() {
                   searchResults.length > 0 ? (
                     <div className="space-y-2">
                       {searchResults.map((food) => (
-                        <div key={food.id} className="bg-slate-800 border border-slate-700 rounded-xl p-4 transition-colors" data-testid={`row-food-${food.id}`}>
+                        <div key={food.id} className="glass-panel bg-slate-800 border border-slate-700 rounded-xl p-4 transition-colors" data-testid={`row-food-${food.id}`}>
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
                               <h3 className="font-medium text-white mb-1">
@@ -1170,7 +1170,7 @@ export default function FoodTrackerPage() {
                   filteredFoodHistory.length > 0 ? (
                     <div className="space-y-2">
                       {filteredFoodHistory.slice(0, 10).map((food) => (
-                        <div key={food.id} className="bg-slate-800 border border-slate-700 rounded-xl p-4 transition-colors" data-testid={`row-food-${food.id}`}>
+                        <div key={food.id} className="glass-panel bg-slate-800 border border-slate-700 rounded-xl p-4 transition-colors" data-testid={`row-food-${food.id}`}>
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
                               <h3 className="font-medium text-white mb-1">
@@ -1236,7 +1236,7 @@ export default function FoodTrackerPage() {
         <div className="space-y-4">
           {/* Breakfast */}
           <Collapsible open={breakfastOpen} onOpenChange={setBreakfastOpen}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
+            <CollapsibleTrigger className="glass-panel flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
               <div className="flex items-center space-x-3">
                 <span className="text-lg font-semibold text-white">Breakfast</span>
               </div>
@@ -1256,7 +1256,7 @@ export default function FoodTrackerPage() {
                 {getMealEntries('breakfast').map((entry) => (
                   <div 
                     key={entry.id} 
-                    className="bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
+                    className="glass-panel bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
                     onClick={() => handleEditFoodEntry(entry)}
                     data-testid={`food-item-${entry.id}`}
                   >
@@ -1330,7 +1330,7 @@ export default function FoodTrackerPage() {
 
           {/* Lunch */}
           <Collapsible open={lunchOpen} onOpenChange={setLunchOpen}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
+            <CollapsibleTrigger className="glass-panel flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
               <div className="flex items-center space-x-3">
                 <span className="text-lg font-semibold text-white">Lunch</span>
               </div>
@@ -1350,7 +1350,7 @@ export default function FoodTrackerPage() {
                 {getMealEntries('lunch').map((entry) => (
                   <div 
                     key={entry.id} 
-                    className="bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
+                    className="glass-panel bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
                     onClick={() => handleEditFoodEntry(entry)}
                     data-testid={`food-item-${entry.id}`}
                   >
@@ -1424,7 +1424,7 @@ export default function FoodTrackerPage() {
 
           {/* Dinner */}
           <Collapsible open={dinnerOpen} onOpenChange={setDinnerOpen}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
+            <CollapsibleTrigger className="glass-panel flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
               <div className="flex items-center space-x-3">
                 <span className="text-lg font-semibold text-white">Dinner</span>
               </div>
@@ -1444,7 +1444,7 @@ export default function FoodTrackerPage() {
                 {getMealEntries('dinner').map((entry) => (
                   <div 
                     key={entry.id} 
-                    className="bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
+                    className="glass-panel bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
                     onClick={() => handleEditFoodEntry(entry)}
                     data-testid={`food-item-${entry.id}`}
                   >
@@ -1518,7 +1518,7 @@ export default function FoodTrackerPage() {
 
           {/* Snack */}
           <Collapsible open={snackOpen} onOpenChange={setSnackOpen}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
+            <CollapsibleTrigger className="glass-panel flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
               <div className="flex items-center space-x-3">
                 <span className="text-lg font-semibold text-white">Snack</span>
               </div>
@@ -1538,7 +1538,7 @@ export default function FoodTrackerPage() {
                 {getMealEntries('snack').map((entry) => (
                   <div 
                     key={entry.id} 
-                    className="bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
+                    className="glass-panel bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
                     onClick={() => handleEditFoodEntry(entry)}
                     data-testid={`food-item-${entry.id}`}
                   >

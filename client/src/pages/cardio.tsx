@@ -668,7 +668,7 @@ export default function CardioPage() {
       {/* Simple Goal Setting Modal - Fasting Style */}
       {isGoalDialogOpen && (
         <ViewportOverlay title="Cardio Goal" onDismiss={() => setIsGoalDialogOpen(false)}>
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-lg">
+          <div className="glass-panel bg-slate-800 rounded-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-white">Cardio Goal</h3>
               <button

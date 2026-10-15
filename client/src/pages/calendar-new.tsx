@@ -505,7 +505,7 @@ export default function CalendarPage() {
       {/* Main content; header spacing is handled by normal flow */}
       <div>
         {/* Calendar Controls - below universal header */}
-        <div className="px-4 pb-4 flex items-center justify-between">
+        <div className="glass-toolbar px-4 pb-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(subMonths(currentMonth, 1)) : setCurrentWeek(subWeeks(currentWeek, 1))}
@@ -575,7 +575,7 @@ export default function CalendarPage() {
                 <div
                   key={date.toISOString()}
                   onClick={() => handleDateClick(date)}
-                  className={`aspect-square rounded-xl flex items-center justify-center relative text-sm font-medium cursor-pointer transition-all hover:opacity-80
+                  className={`glass-tile aspect-square rounded-xl flex items-center justify-center relative text-sm font-medium cursor-pointer transition-all hover:opacity-80
                     ${isCurrent ? "bg-slate-800 text-white" : "bg-slate-700 text-slate-500"} 
                     ${complete && !isRecovery ? "bg-green-500 text-white shadow-lg shadow-green-500/50" : ""}
                     ${isRecovery ? "bg-orange-500 text-white shadow-lg shadow-orange-500/50" : ""}`}

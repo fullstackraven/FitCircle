@@ -171,7 +171,7 @@ export default function RoutinesPage() {
               const isExpanded = expandedRoutines.has(routine.id);
               
               return (
-                <div key={routine.id} className="bg-slate-800 rounded-xl overflow-hidden">
+                <div key={routine.id} className="glass-panel bg-slate-800 rounded-xl overflow-hidden">
                   {/* Routine Header - Clickable */}
                   <div 
                     className="p-4 cursor-pointer hover:bg-slate-750 transition-colors"
@@ -284,7 +284,7 @@ export default function RoutinesPage() {
                 </Button>
               </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="space-y-3 bg-slate-800 rounded-xl p-4">
+              <div className="glass-panel space-y-3 bg-slate-800 rounded-xl p-4">
                 {workouts.length === 0 ? (
                   <div className="text-center py-8">
                     <div className="text-6xl mb-4">🏋️</div>

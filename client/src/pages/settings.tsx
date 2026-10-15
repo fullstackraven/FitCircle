@@ -195,7 +195,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Force Refresh Section */}
-        <div className="bg-slate-800 rounded-xl p-6 mb-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6 mb-6">
           <h2 className="text-lg font-semibold text-white mb-4">App Updates</h2>
           
           <div className="space-y-4">
@@ -216,7 +216,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Controls Section */}
-        <div className="bg-slate-800 rounded-xl p-6 mb-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6 mb-6">
           <h2 className="text-lg font-semibold text-white mb-6">Controls</h2>
           
           <div className="space-y-4">

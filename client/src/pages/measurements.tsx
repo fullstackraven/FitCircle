@@ -250,7 +250,7 @@ export default function MeasurementsPage() {
           </Button>
           
           {/* Trend Graphs Section */}
-          <section className="bg-slate-800 rounded-xl p-6">
+          <section className="glass-panel bg-slate-800 rounded-xl p-6">
             <h2 className="text-lg font-semibold mb-4 text-white">Trend Graphs</h2>
             
             <div className="flex overflow-x-auto space-x-4 pb-4 horizontal-scroll">
@@ -322,7 +322,7 @@ export default function MeasurementsPage() {
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
         <ViewportOverlay title="Measurements Goal" onDismiss={() => setIsGoalModalOpen(false)}>
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-lg">
+          <div className="glass-panel bg-slate-800 rounded-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-white">Measurement Goals</h3>
               <button

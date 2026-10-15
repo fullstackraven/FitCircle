@@ -266,7 +266,7 @@ export function EnergyLevelPage() {
 
       <div className="space-y-6">
         {/* Energy Level Trend */}
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               <Zap className="w-6 h-6 text-yellow-400" />
@@ -284,7 +284,7 @@ export function EnergyLevelPage() {
         </div>
 
         {/* Today's Energy Level */}
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-slate-800 rounded-xl p-6">
           <div className="text-center space-y-6">
             <div>
               <h2 className="text-lg font-semibold text-white mb-2">Today's Energy Level</h2>

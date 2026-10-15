@@ -6,7 +6,7 @@ export default function QuoteOfTheDay() {
 
   if (loading) {
     return (
-      <div className="bg-slate-800/50 rounded-xl p-4 mb-6 border border-slate-700/50">
+      <div className="glass-panel bg-slate-800/50 rounded-xl p-4 mb-6 border border-slate-700/50">
         <div className="flex items-center space-x-2 mb-2">
           <Quote className="w-4 h-4 text-slate-400" />
           <span className="text-sm font-medium text-slate-400">Quote of the Day</span>
@@ -24,7 +24,7 @@ export default function QuoteOfTheDay() {
   }
 
   return (
-    <div className="bg-slate-800/50 rounded-xl p-4 mb-6 border border-slate-700/50">
+    <div className="glass-panel bg-slate-800/50 rounded-xl p-4 mb-6 border border-slate-700/50">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
           <Quote className="w-4 h-4 text-slate-400" />

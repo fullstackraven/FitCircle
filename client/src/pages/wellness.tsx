@@ -267,7 +267,7 @@ export default function WellnessPage() {
                 )}
                 <button
                   onClick={() => !isEditMode && navigate(`${feature.path}?from=wellness`)}
-                  className={`aspect-square p-6 ${feature.bgColor} ${!isEditMode && feature.hoverBg} rounded-2xl transition-all duration-200 ${!isEditMode && 'hover:scale-105 active:scale-95'} flex flex-col items-center justify-center space-y-4 w-full ${isEditMode ? 'opacity-75' : ''}`}
+                  className={`glass-tile aspect-square p-6 ${feature.bgColor} ${!isEditMode && feature.hoverBg} rounded-2xl transition-all duration-200 ${!isEditMode && 'hover:scale-105 active:scale-95'} flex flex-col items-center justify-center space-y-4 w-full ${isEditMode ? 'opacity-75' : ''}`}
                   disabled={isEditMode}
                   data-testid={`card-${feature.id}`}
                 >

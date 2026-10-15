@@ -159,7 +159,7 @@ export function JournalLog() {
             <button
               key={entry.date}
               onClick={() => handleEntryClick(entry.date)}
-              className="w-full text-left p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
+              className="glass-panel w-full text-left p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
             >
               <div className="flex items-start justify-between mb-2">
                 <h3 className="text-white font-medium">

@@ -406,7 +406,7 @@ export default function FastingPage() {
                         });
                         
                         return (
-                          <div key={log.id} className="bg-slate-800 rounded-xl p-4 ml-4">
+                          <div key={log.id} className="glass-panel bg-slate-800 rounded-xl p-4 ml-4">
                             <div className="flex justify-between items-start mb-2">
                               <div className="text-sm text-slate-300">
                                 {loggedDate} at {loggedTime}
@@ -463,7 +463,7 @@ export default function FastingPage() {
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
         <ViewportOverlay title="Fasting Goal" onDismiss={() => setIsGoalModalOpen(false)}>
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-lg">
+          <div className="glass-panel bg-slate-800 rounded-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-white">Fasting Goal</h3>
               <button
