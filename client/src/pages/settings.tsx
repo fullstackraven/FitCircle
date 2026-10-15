@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { ArrowLeft, Upload, Download, Trash2, RotateCcw } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useControls } from '@/hooks/use-controls';
-import { useServiceWorkerUpdate } from '@/hooks/use-service-worker-update';
+import { refreshApp } from '@/lib/pwa-update';
 import { getTodayString } from '@/lib/date-utils';
 import { localFoodService } from '@/lib/local-food-service';
 import { createBackup, prepareRestore, applyRestore, isAppKey } from '@/lib/backup';
@@ -18,7 +18,6 @@ export default function SettingsPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings, updateSetting } = useControls();
-  const { updateNow, waitForWaiting } = useServiceWorkerUpdate();
 
 
   
@@ -100,23 +99,15 @@ export default function SettingsPage() {
     if (file) importSnapshot(file);
   };
 
-  // Soft reload - simulate closing and reopening the app
-  // Uses fresh navigation instead of reload() to avoid iOS PWA white screen bug
   const forceRefresh = async () => {
     setIsRefreshing(true);
+    setStatus('Checking for updates...');
     try {
-      const reg = await navigator.serviceWorker?.getRegistration(import.meta.env.BASE_URL);
-      if (reg) {
-        await reg.update();
-        if (reg.installing) await waitForWaiting(reg);
-        if (reg.waiting) { await updateNow(); return; }
-      }
+      await refreshApp();
     } catch (error) {
-      setStatus('Update check failed. The installed offline version is still available.');
+      setStatus(error instanceof Error ? error.message : 'Update failed. Please try again.');
       setIsRefreshing(false);
-      return;
     }
-    window.location.href = import.meta.env.BASE_URL + '?refresh=' + Date.now();
   };
 
   // Erase all data function (clears localStorage including food database)

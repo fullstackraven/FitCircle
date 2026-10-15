@@ -12,9 +12,10 @@ export function restorePagesRoute() {
 
 export function registerPWA() {
   if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return;
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register(`${base}sw.js`, { scope: base })
-      .then(reg => reg.update())
+  const register = () => {
+    navigator.serviceWorker.register(`${base}sw.js`, { scope: base, updateViaCache: 'none' })
       .catch(error => console.error('Offline installation failed:', error));
-  });
+  };
+  if (document.readyState === 'complete') register();
+  else window.addEventListener('load', register, { once: true });
 }

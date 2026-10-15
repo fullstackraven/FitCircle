@@ -16,7 +16,52 @@
     <meta name="description" content="FitCircle - Mobile-friendly workout tracking app with progress circles" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <section id="fitcircle-startup" style="max-width:32rem;margin:10vh auto;padding:2rem;background:#0f172a;color:#fff;border-radius:1rem;font-family:system-ui">
+        <h1>FitCircle</h1>
+        <p id="fitcircle-startup-message" role="status">Opening FitCircle…</p>
+        <button id="fitcircle-recover" type="button" hidden>Reload app safely</button>
+        <p id="fitcircle-recover-note" hidden>Your fitness data stays on this device. Reconnect to the internet before reloading.</p>
+        <noscript>Enable JavaScript to open FitCircle.</noscript>
+      </section>
+    </div>
+    <script>
+      // Keep recovery independent of the app bundle so a missing build asset
+      // produces a useful screen instead of an empty page.
+      (() => {
+        const root = document.getElementById('root');
+        const template = document.getElementById('fitcircle-startup').cloneNode(true);
+        const showRecovery = () => {
+          if (!document.getElementById('fitcircle-startup') && root.childElementCount) return;
+          if (!document.getElementById('fitcircle-startup')) root.appendChild(template.cloneNode(true));
+          document.getElementById('fitcircle-startup-message').textContent = 'FitCircle could not finish loading. You can safely reload the app without erasing your data.';
+          const button = document.getElementById('fitcircle-recover');
+          button.hidden = false;
+          document.getElementById('fitcircle-recover-note').hidden = false;
+          button.onclick = async () => {
+            button.disabled = true;
+            const message = document.getElementById('fitcircle-startup-message');
+            try {
+              const base = '%BASE_URL%';
+              const destination = base + '?recovery=' + Date.now();
+              const response = await fetch(destination, { cache: 'no-store' });
+              if (!response.ok) throw new Error('The site is not available yet. Please wait for the GitHub Pages deployment and try again.');
+              if ('serviceWorker' in navigator) {
+                const reg = await navigator.serviceWorker.getRegistration(base);
+                if (reg && reg.scope === new URL(base, location.origin).href) await reg.unregister();
+              }
+              location.replace(destination);
+            } catch (error) {
+              message.textContent = error.message || 'Could not reconnect. Your data has not been changed.';
+              button.disabled = false;
+            }
+          };
+        };
+        window.addEventListener('error', () => setTimeout(showRecovery, 0), true);
+        window.addEventListener('unhandledrejection', () => setTimeout(showRecovery, 0));
+        setTimeout(showRecovery, 15000);
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

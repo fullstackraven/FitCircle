@@ -66,9 +66,13 @@ routes. The first visit needs a connection; allow installation to finish before
 going offline. Data is never stored in the service worker cache.
 
 Install using your browser's installation control, or Safari's **Add to Home
-Screen**. Updates wait until existing app tabs close, or can be applied with
-**Settings → Force Refresh App** while online. Applying an update reloads the UI
-without clearing fitness data. Cache cleanup only touches FitCircle's versioned
+Screen**. New builds activate only after their complete assets are cached. Existing tabs
+can keep using their previous build's assets until reloaded. **Settings → Force
+Refresh App** checks for updates while online, waits for activation, and opens
+the Pages entry point without clearing fitness data. If a check fails or times
+out, it shows an error instead of navigating. If the app cannot load its scripts,
+a recovery screen offers **Reload app safely**. Recovery only unregisters this
+app's service worker and reloads online; it never clears fitness storage. Cache cleanup only touches FitCircle's versioned
 Pages caches, preserving other apps on the same origin. Browser-specific install
 prompts, iOS standalone behavior, and actual GitHub Pages delivery should be
 verified on your devices after deployment.
