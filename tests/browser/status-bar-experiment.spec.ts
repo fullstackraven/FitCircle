@@ -78,7 +78,7 @@ test('test dock, last card, viewport recovery and copy fallback work at phone si
   await page.getByRole('button', { name: 'Copy report' }).click();
   const report = JSON.parse(await page.evaluate(() => navigator.clipboard.readText()));
   expect(report.variant).toBe('standard');
-  expect(report.testRevision).toBe('rounded-dock-v3');
+  expect(report.testRevision).toBe('centered-dock-v4');
   expect(report.dockControls).toHaveLength(5);
   expect(report.dockControls.every((control: { height: number }) => control.height >= 48)).toBe(true);
   expect(report.bottomControlTaps).toBe(3);
@@ -94,7 +94,7 @@ test('test dock, last card, viewport recovery and copy fallback work at phone si
 });
 
 
-test('rounded synthetic dock preserves production controls while exposing its slimmer pill border', async ({ page }) => {
+test('test dock centers unchanged production icons and labels without changing capsule geometry', async ({ page }) => {
   await page.setViewportSize({ width: 402, height: 812 });
   const measure = async () => {
     await page.addStyleTag({ content: ':root { --safe-top: 0px; --safe-bottom: 34px; }' });
@@ -124,7 +124,12 @@ test('rounded synthetic dock preserves production controls while exposing its sl
   const production = await measure();
   await page.goto('viewport-test/standard/index.html');
   const synthetic = await measure();
-  expect(synthetic.buttons).toEqual(production.buttons);
+  for (const [index, button] of synthetic.buttons.entries()) {
+    const original = production.buttons[index];
+    expect(button).toEqual({ ...original, bottom: original.bottom + 13, labelBottom: original.labelBottom + 13 });
+    expect(button.bottom - button.height / 2).toBe(synthetic.bottom - synthetic.height / 2);
+  }
+  expect(synthetic.paddingBottom).toBe('17px');
   expect(synthetic.width).toBe(production.width);
   expect(synthetic.height).toBe(84);
   expect(synthetic.height).toBeLessThan(production.height);
@@ -132,7 +137,7 @@ test('rounded synthetic dock preserves production controls while exposing its sl
   expect(await page.locator('.test-dock').evaluate(el => el.getBoundingClientRect().bottom)).toBe(812);
   expect(await page.locator('.dock-nav').evaluate(el => getComputedStyle(el).borderRadius)).toBe('9999px');
   for (const button of synthetic.buttons) {
-    expect(button.bottom).toBeLessThanOrEqual(812 - 34);
+    expect(button.bottom).toBeLessThanOrEqual(synthetic.bottom - 18);
     expect(button.labelBottom).toBeLessThanOrEqual(button.bottom);
     await page.getByRole('button', { name: button.label!, exact: true }).click();
     await expect(page.getByRole('button', { name: button.label!, exact: true })).toHaveAttribute('aria-current', 'page');

@@ -21,6 +21,7 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
 .test-dock { padding-bottom: var(--test-dock-gap); }
 .test-dock .dock-nav {
   border-radius: 9999px;
-  padding-top: 4px;
-  padding-bottom: max(4px, calc(var(--safe-bottom) - var(--test-dock-gap)));
+  /* Redistribute the same total padding equally; keep the capsule dimensions. */
+  --test-dock-lower-space: max(4px, calc(var(--safe-bottom) - var(--test-dock-gap)));
+  padding-block: calc((4px + var(--test-dock-lower-space)) / 2);
 }
