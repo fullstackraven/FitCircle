@@ -18,7 +18,7 @@ function capture() {
   const landscape = screen.orientation?.type?.startsWith('landscape') || Math.abs(window.orientation) === 90;
   return {
     variant,
-    testRevision: 'real-dock-v2',
+    testRevision: 'rounded-dock-v3',
     standalone: matchMedia('(display-mode: standalone)').matches || navigator.standalone === true,
     statusStyle: document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.content ?? 'omitted (standard)',
     screenHeightOriented: landscape ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height),
@@ -46,7 +46,7 @@ function capture() {
 }
 function update() {
   frame = 0;
-  document.documentElement.style.setProperty('--dock-height', `${dock.getBoundingClientRect().height}px`);
+  document.documentElement.style.setProperty('--dock-height', `${document.querySelector('.test-dock').getBoundingClientRect().height}px`);
   // Keep controls stationary when reports wrap differently during rotation/focus.
   const scrollTop = main.scrollTop;
   report.textContent = JSON.stringify(capture(), null, 2);
