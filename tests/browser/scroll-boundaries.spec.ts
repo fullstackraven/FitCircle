@@ -32,8 +32,7 @@ async function assertFullScrollViewport(page: Page, height: number) {
   const main = await page.locator('main').boundingBox();
   expect(shell!.y).toBe(0);
   expect(shell!.height).toBe(height);
-  const dock = await page.locator('.app-dock').boundingBox();
-  expect(main!.y + main!.height).toBe(dock?.height ? dock.y : height);
+  expect(main!.y + main!.height).toBe(height);
 }
 
 test('non-scrolling header and safe-area background continuously cover Logs content', async ({ page }) => {
@@ -62,7 +61,7 @@ test('non-scrolling header and safe-area background continuously cover Logs cont
   }
 });
 
-test('opaque dock footer meets the scroller and final cards remain reachable', async ({ page }) => {
+test('floating dock leaves the full scroll surface visible and final cards reachable', async ({ page }) => {
   await page.goto('wellness');
   await page.getByTestId('card-supplements').waitFor();
   await setVisualViewport(page, 710, 20);
@@ -70,8 +69,8 @@ test('opaque dock footer meets the scroller and final cards remain reachable', a
   const dock = await page.locator('.app-dock').boundingBox();
   expect(dock!.y + dock!.height).toBe(844);
   const tile = page.getByTestId('card-supplements');
-  // A tile crossing the scroll boundary is clipped precisely at the footer,
-  // never visible in a strip beneath the dock.
+  // Put a real tile through the dock and across the viewport bottom. Its
+  // visible intersection must reach the viewport edge, not the dock edge.
   await tile.evaluate(el => {
     const main = document.querySelector('main')!;
     main.scrollTop += el.getBoundingClientRect().top - (main.getBoundingClientRect().bottom - 40);
@@ -80,20 +79,11 @@ test('opaque dock footer meets the scroller and final cards remain reachable', a
     const observer = new IntersectionObserver(([entry]) => { observer.disconnect(); resolve(entry.intersectionRect.bottom); });
     observer.observe(el);
   }));
-  expect(intersectionBottom).toBe(dock!.y);
+  expect(intersectionBottom).toBe(844);
   const nav = await page.getByRole('navigation', { name: 'Bottom navigation' }).boundingBox();
   expect(nav!.y).toBe(dock!.y);
   expect(nav!.y + nav!.height).toBe(844 - 34);
-  const footerPaint = await page.evaluate(() => {
-    const dock = document.querySelector('.app-dock')!;
-    const box = dock.getBoundingClientRect();
-    return {
-      background: getComputedStyle(dock).backgroundColor,
-      coversHomeArea: document.elementFromPoint(195, box.bottom - 1) === dock,
-    };
-  });
-  expect(footerPaint.background).toBe('rgb(15, 23, 41)');
-  expect(footerPaint.coversHomeArea).toBe(true);
+  expect(await page.locator('.app-dock').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
   await page.locator('main').evaluate(el => { el.scrollTop = el.scrollHeight; });
   const last = await tile.boundingBox();
   expect(last!.y + last!.height).toBeLessThanOrEqual(dock!.y);
@@ -160,7 +150,98 @@ test('all shared headers are outside the unpadded scroll surface', async ({ page
     });
     expect(geometry.padding).toEqual(['0px', '0px', '0px', '0px']);
     expect(geometry.headerInside).toBe(false);
-    expect(geometry.bottom).toBe((await page.locator('.app-dock').boundingBox())!.y);
+    expect(geometry.bottom).toBe(844);
     expect(await header.boundingBox()).toEqual(before);
+  }
+});
+
+for (const viewport of [
+  { name: 'portrait', width: 390, height: 844, top: 59, bottom: 34 },
+  { name: 'landscape', width: 844, height: 390, top: 0, bottom: 21 },
+  { name: 'desktop', width: 1280, height: 900, top: 0, bottom: 0 },
+]) {
+  test(`${viewport.name}: no ancestor clips content above the viewport edge`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto('wellness');
+    const tile = page.getByTestId('card-supplements');
+    await tile.waitFor();
+    await page.evaluate(({ top, bottom }) => {
+      document.documentElement.style.setProperty('--safe-top', `${top}px`);
+      document.documentElement.style.setProperty('--safe-bottom', `${bottom}px`);
+    }, viewport);
+    const geometry = await page.evaluate(() => {
+      const main = document.querySelector('main')!;
+      const rect = (el: Element) => {
+        const { top, bottom, height } = el.getBoundingClientRect();
+        const s = getComputedStyle(el);
+        return { top, bottom, height, overflowY: s.overflowY, position: s.position };
+      };
+      const ancestors = [];
+      for (let el = main.parentElement; el; el = el.parentElement) {
+        ancestors.push({ element: el.id || el.className || el.tagName, ...rect(el) });
+      }
+      return {
+        innerHeight, clientHeight: document.documentElement.clientHeight,
+        visualHeight: window.visualViewport?.height, visualTop: window.visualViewport?.offsetTop,
+        shell: rect(document.querySelector('.app-shell')!), main: rect(main),
+        dock: rect(document.querySelector('.app-dock')!), ancestors,
+      };
+    });
+    await testInfo.attach('viewport-geometry.json', { body: JSON.stringify(geometry, null, 2), contentType: 'application/json' });
+    expect(geometry.main.bottom).toBe(viewport.height);
+    expect(geometry.dock.bottom).toBe(viewport.height);
+    expect(geometry.dock.top).toBeGreaterThan(geometry.main.top);
+    expect(geometry.dock.top).toBeLessThan(geometry.main.bottom);
+    expect(geometry.dock.position).toBe('absolute');
+    expect(geometry.ancestors.filter(a => /hidden|clip|auto|scroll/.test(a.overflowY))).toEqual([]);
+    await tile.evaluate(el => {
+      const main = document.querySelector('main')!;
+      main.scrollTop += el.getBoundingClientRect().top - (window.innerHeight - 40);
+    });
+    const visible = await tile.evaluate(el => new Promise<{ top: number; bottom: number }>(resolve => {
+      const observer = new IntersectionObserver(([entry]) => {
+        observer.disconnect();
+        resolve({ top: entry.intersectionRect.top, bottom: entry.intersectionRect.bottom });
+      });
+      observer.observe(el);
+    }));
+    expect(visible.bottom).toBe(viewport.height);
+    const nav = await page.getByRole('navigation', { name: 'Bottom navigation' }).boundingBox();
+    expect(visible.top).toBeLessThan(nav!.y + nav!.height);
+    expect(visible.bottom).toBeGreaterThanOrEqual(nav!.y + nav!.height);
+    await testInfo.attach('content-below-floating-dock.png', { body: await page.screenshot(), contentType: 'image/png' });
+    const before = await page.locator('.app-dock').boundingBox();
+    await page.locator('main').evaluate(el => { el.scrollTop = el.scrollHeight; });
+    const last = await tile.boundingBox();
+    expect(last!.y + last!.height).toBeLessThanOrEqual(before!.y);
+    expect(await page.locator('.app-dock').boundingBox()).toEqual(before);
+    // Changing visual bounds without a keyboard must not resize the CSS shell.
+    await setVisualViewport(page, viewport.height - 100, 10);
+    await assertFullScrollViewport(page, viewport.height);
+    await page.getByRole('button', { name: 'Routines', exact: true }).click();
+    await page.getByTestId('routine-header-r7').waitFor();
+    await page.locator('main').evaluate(el => { el.scrollTop = el.scrollHeight; });
+    const lastCard = await page.getByTestId('routine-header-r7').locator('..').boundingBox();
+    expect(lastCard!.y + lastCard!.height).toBeLessThanOrEqual((await page.locator('.app-dock').boundingBox())!.y);
+    expect(await page.evaluate(() => document.scrollingElement!.scrollTop)).toBe(0);
+  });
+}
+
+test('resizing an already-scrolled Logs page keeps the dock independent of the scrollport', async ({ page }) => {
+  await page.goto('wellness');
+  const tile = page.getByTestId('card-supplements');
+  await tile.waitFor();
+  for (const size of [{ width: 844, height: 390 }, { width: 390, height: 844 }, { width: 1280, height: 900 }]) {
+    await page.setViewportSize(size);
+    await setVisualViewport(page, size.height, 0);
+    await assertFullScrollViewport(page, size.height);
+    await page.locator('main').evaluate(el => { el.scrollTop = el.scrollHeight; });
+    const last = await tile.boundingBox();
+    const dock = await page.locator('.app-dock').boundingBox();
+    expect(last!.y + last!.height).toBeLessThanOrEqual(dock!.y);
+    const measured = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dock-height')));
+    expect(measured).toBeCloseTo(dock!.height);
+    const padding = await page.locator('.app-page').evaluate(el => Number.parseFloat(getComputedStyle(el).paddingBottom));
+    expect(padding).toBeCloseTo(dock!.height + 16);
   }
 });

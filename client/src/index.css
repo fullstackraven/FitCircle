@@ -47,10 +47,10 @@
     @apply border-border;
   }
   
-  html, body, #root {
-    height: 100%;
-    overflow: hidden;
-  }
+  html, body { height: 100%; }
+  #root { min-height: 100%; }
+  /* The fixed shell owns app geometry. Outer percentage-height boxes must
+     not add another clipping edge to an iOS viewport-sized scroll surface. */
 
   body {
     @apply bg-background text-foreground;
@@ -77,7 +77,6 @@
     padding-right: var(--safe-right);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
     isolation: isolate;
   }
 
@@ -93,33 +92,29 @@
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     padding: 0;
-    scroll-padding-block: 16px;
+    scroll-padding-block: 16px calc(max(var(--dock-height), var(--safe-bottom)) + 16px);
   }
 
   .app-dock {
-    /* Let the footer reserve its own height. The rounded dock sits at its
-       top, and the opaque surface hides the old strip of clipped tiles. */
-    position: relative;
-    flex: none;
+    /* Independent overlay: reserve no flex space in the main scrollport. */
+    position: absolute;
+    bottom: 0;
+    left: var(--safe-left);
+    right: var(--safe-right);
     z-index: 1000;
-    background-color: hsl(222, 47%, 11%);
     padding-bottom: var(--safe-bottom);
   }
   .app-dock:empty, .keyboard-open .app-dock { display: none; }
 
-  /* Page gutters stay inside the unpadded scroller; the footer reserves its
-     actual height separately, so no dock-height spacer is needed here. */
+  /* End clearance changes scroll extent, never the visible scrollport. The
+     measured overlay already includes the home-indicator inset. */
   .app-page {
     padding: 16px;
+    padding-bottom: calc(max(var(--dock-height), var(--safe-bottom)) + 16px);
     min-height: 100%;
   }
-
-  /* Subpages without navigation still need their own home-indicator gutter. */
-  .app-shell:has(.app-dock:empty) .app-page,
-  .keyboard-open .app-page { padding-bottom: max(16px, var(--safe-bottom)); }
 
   /* A sibling of the scroll surface: no scrolled/composited tile can paint
      into the header or the status-bar background, even during rubber banding. */
