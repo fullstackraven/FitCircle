@@ -1,0 +1,1123 @@
+{
+  "graph": {
+    "client/public/layout-diagnostics.js": [],
+    "client/public/viewport-test/test.js": [],
+    "client/src/App.tsx": [
+      "client/src/components/AppHeader.tsx",
+      "client/src/pages/home.tsx",
+      "client/src/pages/calendar-new.tsx",
+      "client/src/pages/food-tracker.tsx",
+      "client/src/pages/food-database.tsx",
+      "client/src/pages/restore-custom-foods.tsx",
+      "client/src/pages/profile.tsx",
+      "client/src/pages/measurements.tsx",
+      "client/src/pages/settings.tsx",
+      "client/src/pages/fasting.tsx",
+      "client/src/pages/meditation.tsx",
+      "client/src/pages/hydration.tsx",
+      "client/src/pages/reminders.tsx",
+      "client/src/pages/cardio.tsx",
+      "client/src/pages/workout-statistics.tsx",
+      "client/src/pages/daily-journal.tsx",
+      "client/src/pages/journal-log.tsx",
+      "client/src/pages/energy-level.tsx",
+      "client/src/pages/supplements.tsx",
+      "client/src/pages/recovery.tsx",
+      "client/src/pages/dynamic-overview.tsx",
+      "client/src/pages/routines.tsx",
+      "client/src/pages/wellness.tsx",
+      "client/src/pages/not-found.tsx",
+      "client/src/components/BottomNavigation.tsx",
+      "client/src/contexts/ScrollLockContext.tsx",
+      "client/src/hooks/useIOSViewportGuard.ts"
+    ],
+    "client/src/components/AddSupplementDialog.tsx": [
+      "client/src/components/ui/dialog.tsx",
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/input.tsx",
+      "client/src/components/ui/label.tsx",
+      "client/src/components/ui/select.tsx",
+      "client/src/hooks/use-supplements.ts",
+      "client/src/hooks/use-supplements.ts"
+    ],
+    "client/src/components/AppHeader.tsx": [],
+    "client/src/components/BottomNavigation.tsx": [
+      "client/src/components/DockNavigation.tsx"
+    ],
+    "client/src/components/DaySelector.tsx": [
+      "client/src/components/ui/button.tsx"
+    ],
+    "client/src/components/DockNavigation.tsx": [],
+    "client/src/components/FloatingRemindersButton.tsx": [],
+    "client/src/components/GoalCircle.tsx": [],
+    "client/src/components/QuoteOfTheDay.tsx": [
+      "client/src/hooks/use-quote.ts"
+    ],
+    "client/src/components/VersionLabel.tsx": [],
+    "client/src/components/dashboard-widgets/CardioWidget.tsx": [
+      "client/src/hooks/use-cardio.ts",
+      "client/src/components/GoalCircle.tsx",
+      "client/src/hooks/use-dashboard-widgets.ts"
+    ],
+    "client/src/components/dashboard-widgets/GoalsWidget.tsx": [
+      "client/src/hooks/use-goals.ts",
+      "client/src/hooks/use-dashboard-widgets.ts"
+    ],
+    "client/src/components/dashboard-widgets/HydrationWidget.tsx": [
+      "client/src/hooks/use-hydration.ts",
+      "client/src/components/GoalCircle.tsx",
+      "client/src/hooks/use-dashboard-widgets.ts"
+    ],
+    "client/src/components/dashboard-widgets/MeditationWidget.tsx": [
+      "client/src/hooks/use-meditation.ts",
+      "client/src/components/GoalCircle.tsx",
+      "client/src/hooks/use-dashboard-widgets.ts"
+    ],
+    "client/src/components/dashboard-widgets/QuoteWidget.tsx": [
+      "client/src/components/QuoteOfTheDay.tsx",
+      "client/src/hooks/use-dashboard-widgets.ts"
+    ],
+    "client/src/components/dashboard-widgets/RecentActivityWidget.tsx": [
+      "client/src/hooks/use-workouts.ts",
+      "client/src/hooks/use-dashboard-widgets.ts"
+    ],
+    "client/src/components/dashboard-widgets/TimerWidget.tsx": [
+      "client/src/hooks/use-timer.ts",
+      "client/src/hooks/use-workout-duration.ts",
+      "client/src/hooks/use-dashboard-widgets.ts"
+    ],
+    "client/src/components/dashboard-widgets/WidgetRenderer.tsx": [
+      "client/src/hooks/use-dashboard-widgets.ts",
+      "client/src/components/dashboard-widgets/WorkoutWidget.tsx",
+      "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
+      "client/src/components/dashboard-widgets/MeditationWidget.tsx",
+      "client/src/components/dashboard-widgets/HydrationWidget.tsx",
+      "client/src/components/dashboard-widgets/CardioWidget.tsx",
+      "client/src/components/dashboard-widgets/TimerWidget.tsx",
+      "client/src/components/dashboard-widgets/QuoteWidget.tsx"
+    ],
+    "client/src/components/dashboard-widgets/WidgetSettings.tsx": [
+      "client/src/hooks/use-dashboard-widgets.ts",
+      "client/src/components/ui/dialog.tsx",
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/switch.tsx"
+    ],
+    "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx": [
+      "client/src/hooks/use-dashboard-widgets.ts",
+      "client/src/hooks/use-workout-duration.ts"
+    ],
+    "client/src/components/dashboard-widgets/WorkoutWidget.tsx": [
+      "client/src/hooks/use-workouts.ts",
+      "client/src/components/progress-circle.tsx",
+      "client/src/lib/color-utils.ts",
+      "client/src/hooks/use-dashboard-widgets.ts"
+    ],
+    "client/src/components/loading-skeleton.tsx": [
+      "client/src/lib/utils.ts"
+    ],
+    "client/src/components/progress-circle.tsx": [
+      "client/src/lib/color-utils.ts"
+    ],
+    "client/src/components/routine-modal.tsx": [
+      "client/src/components/ui/dialog.tsx",
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/input.tsx",
+      "client/src/components/ui/label.tsx",
+      "client/src/components/DaySelector.tsx"
+    ],
+    "client/src/components/ui/button.tsx": [
+      "client/src/lib/utils.ts"
+    ],
+    "client/src/components/ui/card.tsx": [
+      "client/src/lib/utils.ts"
+    ],
+    "client/src/components/ui/collapsible.tsx": [],
+    "client/src/components/ui/dialog.tsx": [
+      "client/src/contexts/ScrollLockContext.tsx",
+      "client/src/lib/utils.ts"
+    ],
+    "client/src/components/ui/input.tsx": [
+      "client/src/lib/utils.ts"
+    ],
+    "client/src/components/ui/label.tsx": [
+      "client/src/lib/utils.ts"
+    ],
+    "client/src/components/ui/select.tsx": [
+      "client/src/lib/utils.ts"
+    ],
+    "client/src/components/ui/separator.tsx": [
+      "client/src/lib/utils.ts"
+    ],
+    "client/src/components/ui/sheet.tsx": [
+      "client/src/contexts/ScrollLockContext.tsx",
+      "client/src/lib/utils.ts"
+    ],
+    "client/src/components/ui/switch.tsx": [
+      "client/src/lib/utils.ts"
+    ],
+    "client/src/components/ui/textarea.tsx": [
+      "client/src/lib/utils.ts"
+    ],
+    "client/src/components/ui/toast.tsx": [
+      "client/src/lib/utils.ts"
+    ],
+    "client/src/components/ui/viewport-overlay.tsx": [
+      "client/src/contexts/ScrollLockContext.tsx"
+    ],
+    "client/src/components/workout-modal.tsx": [
+      "client/src/components/ui/dialog.tsx",
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/input.tsx",
+      "client/src/components/ui/label.tsx",
+      "client/src/components/DaySelector.tsx",
+      "client/src/lib/color-utils.ts"
+    ],
+    "client/src/contexts/ScrollLockContext.tsx": [],
+    "client/src/hooks/use-cardio.ts": [
+      "client/src/lib/storage-utils.ts",
+      "client/src/lib/date-utils.ts"
+    ],
+    "client/src/hooks/use-controls.ts": [
+      "client/src/lib/storage-utils.ts"
+    ],
+    "client/src/hooks/use-dashboard-widgets.ts": [
+      "client/src/lib/storage-utils.ts"
+    ],
+    "client/src/hooks/use-energy-level.ts": [
+      "client/src/lib/storage-utils.ts",
+      "client/src/lib/date-utils.ts"
+    ],
+    "client/src/hooks/use-fasting.ts": [
+      "client/src/lib/storage-utils.ts",
+      "client/src/lib/date-utils.ts"
+    ],
+    "client/src/hooks/use-focus.ts": [],
+    "client/src/hooks/use-goals.ts": [
+      "client/src/lib/storage-utils.ts"
+    ],
+    "client/src/hooks/use-hydration.ts": [
+      "client/src/lib/date-utils.ts",
+      "client/src/lib/storage-utils.ts"
+    ],
+    "client/src/hooks/use-measurements.ts": [
+      "client/src/lib/date-utils.ts",
+      "client/src/lib/storage-utils.ts"
+    ],
+    "client/src/hooks/use-meditation.ts": [
+      "client/src/lib/storage-utils.ts",
+      "client/src/lib/date-utils.ts"
+    ],
+    "client/src/hooks/use-mobile.tsx": [],
+    "client/src/hooks/use-quote.ts": [
+      "client/src/lib/date-utils.ts"
+    ],
+    "client/src/hooks/use-recovery.ts": [
+      "client/src/lib/storage-utils.ts",
+      "client/src/lib/date-utils.ts"
+    ],
+    "client/src/hooks/use-reminders.ts": [
+      "client/src/lib/storage-utils.ts"
+    ],
+    "client/src/hooks/use-supplements.ts": [
+      "client/src/lib/storage-utils.ts",
+      "client/src/lib/date-utils.ts"
+    ],
+    "client/src/hooks/use-timer.ts": [],
+    "client/src/hooks/use-toast.ts": [
+      "client/src/components/ui/toast.tsx"
+    ],
+    "client/src/hooks/use-workout-duration.ts": [
+      "client/src/lib/date-utils.ts",
+      "client/src/lib/storage-utils.ts"
+    ],
+    "client/src/hooks/use-workouts.ts": [
+      "client/src/lib/date-utils.ts",
+      "client/src/lib/storage-utils.ts"
+    ],
+    "client/src/hooks/useIOSViewportGuard.ts": [],
+    "client/src/lib/backup.ts": [
+      "client/src/lib/storage-registry.ts",
+      "client/src/data/comprehensive-foods.json",
+      "client/src/lib/storage-registry.ts"
+    ],
+    "client/src/lib/color-utils.ts": [],
+    "client/src/lib/date-utils.ts": [],
+    "client/src/lib/goals-utils.ts": [
+      "client/src/lib/storage-utils.ts",
+      "client/src/lib/date-utils.ts"
+    ],
+    "client/src/lib/local-food-service.ts": [
+      "client/src/lib/backup.ts",
+      "client/src/data/comprehensive-foods.json"
+    ],
+    "client/src/lib/pwa-update.ts": [],
+    "client/src/lib/pwa.ts": [],
+    "client/src/lib/storage-registry.ts": [],
+    "client/src/lib/storage-utils.ts": [],
+    "client/src/lib/utils.ts": [],
+    "client/src/main.tsx": [
+      "client/src/lib/pwa.ts",
+      "client/src/lib/backup.ts",
+      "client/src/App.tsx"
+    ],
+    "client/src/pages/calendar-new.tsx": [
+      "client/src/components/VersionLabel.tsx",
+      "client/src/components/AppHeader.tsx",
+      "client/src/components/ui/sheet.tsx",
+      "client/src/hooks/use-workouts.ts",
+      "client/src/hooks/use-supplements.ts",
+      "client/src/hooks/use-recovery.ts",
+      "client/src/hooks/use-energy-level.ts",
+      "client/src/hooks/use-workout-duration.ts",
+      "client/src/components/dashboard-widgets/RecentActivityWidget.tsx"
+    ],
+    "client/src/pages/cardio.tsx": [
+      "client/src/components/ui/viewport-overlay.tsx",
+      "client/src/hooks/use-cardio.ts",
+      "client/src/components/GoalCircle.tsx",
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/input.tsx",
+      "client/src/components/ui/label.tsx",
+      "client/src/components/ui/textarea.tsx",
+      "client/src/components/ui/select.tsx",
+      "client/src/components/ui/dialog.tsx",
+      "client/src/components/ui/collapsible.tsx",
+      "client/src/components/ui/card.tsx",
+      "client/src/lib/date-utils.ts"
+    ],
+    "client/src/pages/daily-journal.tsx": [
+      "client/src/hooks/use-workouts.ts"
+    ],
+    "client/src/pages/dynamic-overview.tsx": [
+      "client/src/hooks/use-workouts.ts",
+      "client/src/hooks/use-supplements.ts",
+      "client/src/hooks/use-energy-level.ts",
+      "client/src/hooks/use-recovery.ts",
+      "client/src/hooks/use-workout-duration.ts",
+      "client/src/components/ui/dialog.tsx"
+    ],
+    "client/src/pages/energy-level.tsx": [
+      "client/src/hooks/use-energy-level.ts",
+      "client/src/lib/date-utils.ts"
+    ],
+    "client/src/pages/fasting.tsx": [
+      "client/src/components/ui/viewport-overlay.tsx",
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/card.tsx",
+      "client/src/components/ui/collapsible.tsx",
+      "client/src/components/ui/input.tsx",
+      "client/src/components/ui/label.tsx",
+      "client/src/components/ui/dialog.tsx",
+      "client/src/components/GoalCircle.tsx",
+      "client/src/hooks/use-fasting.ts",
+      "client/src/hooks/use-goals.ts",
+      "client/src/lib/date-utils.ts"
+    ],
+    "client/src/pages/fitness-calculator.tsx": [
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/input.tsx",
+      "client/src/components/ui/label.tsx",
+      "client/src/components/ui/select.tsx",
+      "client/src/lib/storage-utils.ts"
+    ],
+    "client/src/pages/food-database.tsx": [
+      "client/src/components/ui/input.tsx",
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/card.tsx",
+      "client/src/components/ui/dialog.tsx",
+      "client/src/components/ui/label.tsx",
+      "client/src/components/ui/select.tsx",
+      "client/src/lib/local-food-service.ts",
+      "client/src/hooks/use-toast.ts"
+    ],
+    "client/src/pages/food-tracker.tsx": [
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/input.tsx",
+      "client/src/components/ui/label.tsx",
+      "client/src/components/ui/select.tsx",
+      "client/src/components/ui/collapsible.tsx",
+      "client/src/components/ui/dialog.tsx",
+      "client/src/lib/date-utils.ts",
+      "client/src/lib/storage-utils.ts",
+      "client/src/lib/local-food-service.ts",
+      "client/src/hooks/use-toast.ts",
+      "client/src/pages/fitness-calculator.tsx"
+    ],
+    "client/src/pages/home.tsx": [
+      "client/src/components/VersionLabel.tsx",
+      "client/src/components/AppHeader.tsx",
+      "client/src/hooks/use-workouts.ts",
+      "client/src/hooks/use-controls.ts",
+      "client/src/hooks/use-timer.ts",
+      "client/src/hooks/use-workout-duration.ts",
+      "client/src/hooks/use-toast.ts",
+      "client/src/components/workout-modal.tsx",
+      "client/src/components/progress-circle.tsx",
+      "client/src/components/QuoteOfTheDay.tsx",
+      "client/src/components/ui/sheet.tsx",
+      "client/src/components/ui/dialog.tsx",
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/input.tsx",
+      "client/src/components/ui/collapsible.tsx",
+      "client/src/components/GoalCircle.tsx",
+      "client/src/lib/color-utils.ts"
+    ],
+    "client/src/pages/hydration.tsx": [
+      "client/src/components/ui/viewport-overlay.tsx",
+      "client/src/hooks/use-hydration.ts",
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/card.tsx",
+      "client/src/components/ui/input.tsx",
+      "client/src/components/ui/label.tsx",
+      "client/src/components/ui/dialog.tsx",
+      "client/src/components/ui/collapsible.tsx",
+      "client/src/components/GoalCircle.tsx",
+      "client/src/lib/date-utils.ts"
+    ],
+    "client/src/pages/journal-log.tsx": [
+      "client/src/hooks/use-workouts.ts",
+      "client/src/components/ui/dialog.tsx"
+    ],
+    "client/src/pages/measurements.tsx": [
+      "client/src/components/ui/viewport-overlay.tsx",
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/input.tsx",
+      "client/src/components/ui/label.tsx",
+      "client/src/hooks/use-measurements.ts",
+      "client/src/components/GoalCircle.tsx"
+    ],
+    "client/src/pages/meditation.tsx": [
+      "client/src/components/ui/viewport-overlay.tsx",
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/card.tsx",
+      "client/src/components/ui/input.tsx",
+      "client/src/components/ui/label.tsx",
+      "client/src/components/ui/dialog.tsx",
+      "client/src/components/ui/collapsible.tsx",
+      "client/src/components/GoalCircle.tsx",
+      "client/src/hooks/use-meditation.ts",
+      "client/src/hooks/use-goals.ts",
+      "client/src/utils/meditation-calc.ts",
+      "client/src/lib/date-utils.ts"
+    ],
+    "client/src/pages/not-found.tsx": [
+      "client/src/components/ui/card.tsx"
+    ],
+    "client/src/pages/profile.tsx": [
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/input.tsx",
+      "client/src/components/ui/textarea.tsx"
+    ],
+    "client/src/pages/recovery.tsx": [
+      "client/src/hooks/use-recovery.ts",
+      "client/src/hooks/use-workouts.ts"
+    ],
+    "client/src/pages/reminders.tsx": [
+      "client/src/components/VersionLabel.tsx",
+      "client/src/components/AppHeader.tsx",
+      "client/src/hooks/use-reminders.ts",
+      "client/src/components/ui/sheet.tsx"
+    ],
+    "client/src/pages/restore-custom-foods.tsx": [
+      "client/src/components/ui/button.tsx",
+      "client/src/lib/local-food-service.ts"
+    ],
+    "client/src/pages/routines.tsx": [
+      "client/src/components/VersionLabel.tsx",
+      "client/src/components/AppHeader.tsx",
+      "client/src/components/ui/sheet.tsx",
+      "client/src/hooks/use-workouts.ts",
+      "client/src/lib/color-utils.ts",
+      "client/src/components/ui/button.tsx",
+      "client/src/components/ui/collapsible.tsx",
+      "client/src/components/workout-modal.tsx",
+      "client/src/components/routine-modal.tsx",
+      "client/src/components/ui/dialog.tsx"
+    ],
+    "client/src/pages/settings.tsx": [
+      "client/src/hooks/use-controls.ts",
+      "client/src/lib/pwa-update.ts",
+      "client/src/lib/date-utils.ts",
+      "client/src/lib/local-food-service.ts",
+      "client/src/lib/backup.ts"
+    ],
+    "client/src/pages/supplements.tsx": [
+      "client/src/hooks/use-supplements.ts",
+      "client/src/components/AddSupplementDialog.tsx",
+      "client/src/components/ui/collapsible.tsx"
+    ],
+    "client/src/pages/wellness.tsx": [
+      "client/src/components/VersionLabel.tsx",
+      "client/src/components/AppHeader.tsx",
+      "client/src/components/ui/sheet.tsx"
+    ],
+    "client/src/pages/workout-statistics.tsx": [
+      "client/src/hooks/use-workouts.ts"
+    ],
+    "client/src/utils/meditation-calc.ts": [],
+    "playwright.config.ts": [],
+    "postcss.config.js": [],
+    "scripts/aggressive-cleanup.cjs": [],
+    "scripts/audit-storage.ts": [
+      "scripts/lib/storage-inventory.ts",
+      "scripts/lib/storage-audit.ts",
+      "scripts/lib/storage-boundaries.ts"
+    ],
+    "scripts/build-pwa.mjs": [],
+    "scripts/build-viewport-test.tsx": [
+      "client/src/components/DockNavigation.tsx"
+    ],
+    "scripts/capture-ui-review.mjs": [
+      "scripts/viewport-probe.mjs"
+    ],
+    "scripts/clean-food-database.cjs": [],
+    "scripts/compare-viewport-strategies.mjs": [
+      "scripts/viewport-probe.mjs"
+    ],
+    "scripts/comprehensive-cleanup.cjs": [],
+    "scripts/export-legacy-backup.js": [],
+    "scripts/final-cleanup.cjs": [],
+    "scripts/final-scrub.cjs": [],
+    "scripts/generate-massive-foods.cjs": [],
+    "scripts/lib/storage-audit.ts": [
+      "client/src/lib/storage-registry.ts"
+    ],
+    "scripts/lib/storage-boundaries.ts": [
+      "scripts/lib/storage-audit.ts"
+    ],
+    "scripts/lib/storage-inventory.ts": [
+      "client/src/lib/storage-registry.ts",
+      "scripts/lib/storage-audit.ts"
+    ],
+    "scripts/measure-scroll-review.mjs": [],
+    "scripts/remove-grassfed.cjs": [],
+    "scripts/remove-multiple-prefixes.cjs": [],
+    "scripts/remove-prefix-items.cjs": [],
+    "scripts/remove-raw-homestyle.cjs": [],
+    "scripts/remove-skinless.cjs": [],
+    "scripts/sw-template.js": [],
+    "scripts/viewport-probe.mjs": [
+      "client/public/layout-diagnostics.js"
+    ],
+    "tailwind.config.ts": [],
+    "tests/backup.test.ts": [
+      "client/src/lib/backup.ts",
+      "tests/fixtures/complete-storage.ts",
+      "client/src/lib/storage-registry.ts",
+      "client/src/lib/backup.ts"
+    ],
+    "tests/browser/app.spec.ts": [],
+    "tests/browser/editor-dialogs.spec.ts": [],
+    "tests/browser/glass.spec.ts": [],
+    "tests/browser/layout-diagnostics.spec.ts": [],
+    "tests/browser/material-adoption.spec.ts": [],
+    "tests/browser/phone-diagnostics.spec.ts": [],
+    "tests/browser/scroll-boundaries.spec.ts": [],
+    "tests/browser/status-bar-experiment.spec.ts": [],
+    "tests/browser/update.spec.ts": [],
+    "tests/browser/viewport.spec.ts": [],
+    "tests/fixtures/complete-storage.ts": [],
+    "tests/storage-coverage.test.ts": [
+      "scripts/lib/storage-audit.ts",
+      "scripts/lib/storage-boundaries.ts",
+      "client/src/lib/storage-registry.ts",
+      "tests/fixtures/complete-storage.ts"
+    ],
+    "tests/viewport-gap.test.ts": [
+      "client/public/layout-diagnostics.js"
+    ],
+    "vite.config.ts": []
+  },
+  "external": {
+    "client/public/layout-diagnostics.js": [],
+    "client/public/viewport-test/test.js": [],
+    "client/src/App.tsx": [
+      "wouter",
+      "react"
+    ],
+    "client/src/components/AddSupplementDialog.tsx": [
+      "react",
+      "lucide-react"
+    ],
+    "client/src/components/AppHeader.tsx": [
+      "react",
+      "react-dom"
+    ],
+    "client/src/components/BottomNavigation.tsx": [
+      "wouter"
+    ],
+    "client/src/components/DaySelector.tsx": [
+      "react"
+    ],
+    "client/src/components/DockNavigation.tsx": [
+      "react",
+      "lucide-react"
+    ],
+    "client/src/components/FloatingRemindersButton.tsx": [
+      "react",
+      "lucide-react",
+      "wouter"
+    ],
+    "client/src/components/GoalCircle.tsx": [
+      "react"
+    ],
+    "client/src/components/QuoteOfTheDay.tsx": [
+      "lucide-react"
+    ],
+    "client/src/components/VersionLabel.tsx": [
+      "react"
+    ],
+    "client/src/components/dashboard-widgets/CardioWidget.tsx": [
+      "lucide-react"
+    ],
+    "client/src/components/dashboard-widgets/GoalsWidget.tsx": [
+      "lucide-react",
+      "react"
+    ],
+    "client/src/components/dashboard-widgets/HydrationWidget.tsx": [
+      "lucide-react"
+    ],
+    "client/src/components/dashboard-widgets/MeditationWidget.tsx": [
+      "lucide-react"
+    ],
+    "client/src/components/dashboard-widgets/QuoteWidget.tsx": [],
+    "client/src/components/dashboard-widgets/RecentActivityWidget.tsx": [
+      "lucide-react",
+      "date-fns"
+    ],
+    "client/src/components/dashboard-widgets/TimerWidget.tsx": [
+      "lucide-react"
+    ],
+    "client/src/components/dashboard-widgets/WidgetRenderer.tsx": [],
+    "client/src/components/dashboard-widgets/WidgetSettings.tsx": [
+      "react",
+      "lucide-react"
+    ],
+    "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx": [
+      "lucide-react"
+    ],
+    "client/src/components/dashboard-widgets/WorkoutWidget.tsx": [],
+    "client/src/components/loading-skeleton.tsx": [],
+    "client/src/components/progress-circle.tsx": [
+      "lucide-react",
+      "react"
+    ],
+    "client/src/components/routine-modal.tsx": [
+      "react"
+    ],
+    "client/src/components/ui/button.tsx": [
+      "react",
+      "@radix-ui/react-slot",
+      "class-variance-authority"
+    ],
+    "client/src/components/ui/card.tsx": [
+      "react"
+    ],
+    "client/src/components/ui/collapsible.tsx": [
+      "@radix-ui/react-collapsible"
+    ],
+    "client/src/components/ui/dialog.tsx": [
+      "react",
+      "@radix-ui/react-dialog",
+      "lucide-react"
+    ],
+    "client/src/components/ui/input.tsx": [
+      "react"
+    ],
+    "client/src/components/ui/label.tsx": [
+      "react",
+      "class-variance-authority"
+    ],
+    "client/src/components/ui/select.tsx": [
+      "react",
+      "@radix-ui/react-select",
+      "lucide-react"
+    ],
+    "client/src/components/ui/separator.tsx": [
+      "react",
+      "@radix-ui/react-separator"
+    ],
+    "client/src/components/ui/sheet.tsx": [
+      "react",
+      "@radix-ui/react-dialog",
+      "class-variance-authority",
+      "lucide-react"
+    ],
+    "client/src/components/ui/switch.tsx": [
+      "react",
+      "@radix-ui/react-switch"
+    ],
+    "client/src/components/ui/textarea.tsx": [
+      "react"
+    ],
+    "client/src/components/ui/toast.tsx": [
+      "react",
+      "@radix-ui/react-toast",
+      "class-variance-authority",
+      "lucide-react"
+    ],
+    "client/src/components/ui/viewport-overlay.tsx": [
+      "@radix-ui/react-dialog",
+      "react"
+    ],
+    "client/src/components/workout-modal.tsx": [
+      "react"
+    ],
+    "client/src/contexts/ScrollLockContext.tsx": [
+      "react"
+    ],
+    "client/src/hooks/use-cardio.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-controls.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-dashboard-widgets.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-energy-level.ts": [],
+    "client/src/hooks/use-fasting.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-focus.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-goals.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-hydration.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-measurements.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-meditation.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-mobile.tsx": [
+      "react"
+    ],
+    "client/src/hooks/use-quote.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-recovery.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-reminders.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-supplements.ts": [],
+    "client/src/hooks/use-timer.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-toast.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-workout-duration.ts": [
+      "react"
+    ],
+    "client/src/hooks/use-workouts.ts": [
+      "react"
+    ],
+    "client/src/hooks/useIOSViewportGuard.ts": [
+      "react"
+    ],
+    "client/src/lib/backup.ts": [
+      "zod"
+    ],
+    "client/src/lib/color-utils.ts": [],
+    "client/src/lib/date-utils.ts": [],
+    "client/src/lib/goals-utils.ts": [],
+    "client/src/lib/local-food-service.ts": [],
+    "client/src/lib/pwa-update.ts": [],
+    "client/src/lib/pwa.ts": [],
+    "client/src/lib/storage-registry.ts": [],
+    "client/src/lib/storage-utils.ts": [],
+    "client/src/lib/utils.ts": [
+      "clsx",
+      "tailwind-merge"
+    ],
+    "client/src/main.tsx": [
+      "react-dom/client",
+      "@fontsource/jetbrains-mono/400.css",
+      "@fontsource/jetbrains-mono/500.css",
+      "@fontsource/jetbrains-mono/600.css",
+      "@fontsource/jetbrains-mono/700.css",
+      "./index.css",
+      "./styles/glass.css",
+      "wouter"
+    ],
+    "client/src/pages/calendar-new.tsx": [
+      "react",
+      "lucide-react",
+      "wouter",
+      "date-fns"
+    ],
+    "client/src/pages/cardio.tsx": [
+      "react",
+      "lucide-react",
+      "wouter"
+    ],
+    "client/src/pages/daily-journal.tsx": [
+      "react",
+      "lucide-react",
+      "wouter",
+      "date-fns"
+    ],
+    "client/src/pages/dynamic-overview.tsx": [
+      "react",
+      "lucide-react",
+      "wouter",
+      "date-fns"
+    ],
+    "client/src/pages/energy-level.tsx": [
+      "react",
+      "lucide-react",
+      "wouter",
+      "date-fns"
+    ],
+    "client/src/pages/fasting.tsx": [
+      "react",
+      "lucide-react",
+      "wouter"
+    ],
+    "client/src/pages/fitness-calculator.tsx": [
+      "react",
+      "wouter",
+      "lucide-react"
+    ],
+    "client/src/pages/food-database.tsx": [
+      "react",
+      "lucide-react",
+      "wouter"
+    ],
+    "client/src/pages/food-tracker.tsx": [
+      "react",
+      "lucide-react",
+      "wouter"
+    ],
+    "client/src/pages/home.tsx": [
+      "react",
+      "lucide-react",
+      "wouter"
+    ],
+    "client/src/pages/hydration.tsx": [
+      "react",
+      "lucide-react",
+      "wouter"
+    ],
+    "client/src/pages/journal-log.tsx": [
+      "react",
+      "lucide-react",
+      "wouter",
+      "date-fns"
+    ],
+    "client/src/pages/measurements.tsx": [
+      "react",
+      "lucide-react",
+      "wouter",
+      "recharts"
+    ],
+    "client/src/pages/meditation.tsx": [
+      "react",
+      "lucide-react",
+      "wouter"
+    ],
+    "client/src/pages/not-found.tsx": [
+      "lucide-react"
+    ],
+    "client/src/pages/profile.tsx": [
+      "react",
+      "lucide-react",
+      "wouter"
+    ],
+    "client/src/pages/recovery.tsx": [
+      "react",
+      "wouter",
+      "lucide-react",
+      "date-fns"
+    ],
+    "client/src/pages/reminders.tsx": [
+      "react",
+      "lucide-react",
+      "wouter"
+    ],
+    "client/src/pages/restore-custom-foods.tsx": [
+      "react",
+      "wouter",
+      "lucide-react"
+    ],
+    "client/src/pages/routines.tsx": [
+      "react",
+      "lucide-react",
+      "wouter"
+    ],
+    "client/src/pages/settings.tsx": [
+      "react",
+      "lucide-react",
+      "wouter"
+    ],
+    "client/src/pages/supplements.tsx": [
+      "react",
+      "lucide-react",
+      "wouter",
+      "date-fns"
+    ],
+    "client/src/pages/wellness.tsx": [
+      "react",
+      "lucide-react",
+      "wouter"
+    ],
+    "client/src/pages/workout-statistics.tsx": [
+      "react",
+      "lucide-react",
+      "wouter",
+      "date-fns"
+    ],
+    "client/src/utils/meditation-calc.ts": [],
+    "playwright.config.ts": [
+      "@playwright/test"
+    ],
+    "postcss.config.js": [],
+    "scripts/aggressive-cleanup.cjs": [
+      "fs",
+      "path"
+    ],
+    "scripts/audit-storage.ts": [
+      "node:fs"
+    ],
+    "scripts/build-pwa.mjs": [
+      "node:fs/promises",
+      "node:crypto"
+    ],
+    "scripts/build-viewport-test.tsx": [
+      "react",
+      "react-dom/server",
+      "node:fs/promises"
+    ],
+    "scripts/capture-ui-review.mjs": [
+      "@playwright/test",
+      "node:fs/promises"
+    ],
+    "scripts/clean-food-database.cjs": [
+      "fs",
+      "path"
+    ],
+    "scripts/compare-viewport-strategies.mjs": [
+      "@playwright/test",
+      "node:fs/promises"
+    ],
+    "scripts/comprehensive-cleanup.cjs": [
+      "fs",
+      "path"
+    ],
+    "scripts/export-legacy-backup.js": [],
+    "scripts/final-cleanup.cjs": [
+      "fs",
+      "path"
+    ],
+    "scripts/final-scrub.cjs": [
+      "fs",
+      "path"
+    ],
+    "scripts/generate-massive-foods.cjs": [
+      "fs"
+    ],
+    "scripts/lib/storage-audit.ts": [
+      "typescript",
+      "node:fs",
+      "node:path"
+    ],
+    "scripts/lib/storage-boundaries.ts": [],
+    "scripts/lib/storage-inventory.ts": [],
+    "scripts/measure-scroll-review.mjs": [
+      "@playwright/test"
+    ],
+    "scripts/remove-grassfed.cjs": [
+      "fs",
+      "path"
+    ],
+    "scripts/remove-multiple-prefixes.cjs": [
+      "fs",
+      "path"
+    ],
+    "scripts/remove-prefix-items.cjs": [
+      "fs",
+      "path"
+    ],
+    "scripts/remove-raw-homestyle.cjs": [
+      "fs",
+      "path"
+    ],
+    "scripts/remove-skinless.cjs": [
+      "fs",
+      "path"
+    ],
+    "scripts/sw-template.js": [],
+    "scripts/viewport-probe.mjs": [],
+    "tailwind.config.ts": [
+      "tailwindcss",
+      "tailwindcss-animate",
+      "@tailwindcss/typography"
+    ],
+    "tests/backup.test.ts": [
+      "node:test",
+      "node:assert/strict",
+      "fake-indexeddb"
+    ],
+    "tests/browser/app.spec.ts": [
+      "@playwright/test"
+    ],
+    "tests/browser/editor-dialogs.spec.ts": [
+      "@playwright/test"
+    ],
+    "tests/browser/glass.spec.ts": [
+      "@playwright/test"
+    ],
+    "tests/browser/layout-diagnostics.spec.ts": [
+      "@playwright/test"
+    ],
+    "tests/browser/material-adoption.spec.ts": [
+      "@playwright/test"
+    ],
+    "tests/browser/phone-diagnostics.spec.ts": [
+      "@playwright/test"
+    ],
+    "tests/browser/scroll-boundaries.spec.ts": [
+      "@playwright/test"
+    ],
+    "tests/browser/status-bar-experiment.spec.ts": [
+      "@playwright/test"
+    ],
+    "tests/browser/update.spec.ts": [
+      "@playwright/test",
+      "node:http",
+      "node:fs/promises",
+      "node:path"
+    ],
+    "tests/browser/viewport.spec.ts": [
+      "@playwright/test"
+    ],
+    "tests/fixtures/complete-storage.ts": [],
+    "tests/storage-coverage.test.ts": [
+      "node:test",
+      "node:assert/strict",
+      "typescript",
+      "node:fs",
+      "node:os",
+      "node:path"
+    ],
+    "tests/viewport-gap.test.ts": [
+      "node:test",
+      "node:assert/strict"
+    ],
+    "vite.config.ts": [
+      "vite",
+      "@vitejs/plugin-react",
+      "node:path"
+    ]
+  },
+  "production": [
+    "client/src/main.tsx",
+    "client/src/lib/pwa.ts",
+    "client/src/lib/backup.ts",
+    "client/src/lib/storage-registry.ts",
+    "client/src/data/comprehensive-foods.json",
+    "client/src/App.tsx",
+    "client/src/components/AppHeader.tsx",
+    "client/src/pages/home.tsx",
+    "client/src/components/VersionLabel.tsx",
+    "client/src/hooks/use-workouts.ts",
+    "client/src/lib/date-utils.ts",
+    "client/src/lib/storage-utils.ts",
+    "client/src/hooks/use-controls.ts",
+    "client/src/hooks/use-timer.ts",
+    "client/src/hooks/use-workout-duration.ts",
+    "client/src/hooks/use-toast.ts",
+    "client/src/components/ui/toast.tsx",
+    "client/src/lib/utils.ts",
+    "client/src/components/workout-modal.tsx",
+    "client/src/components/ui/dialog.tsx",
+    "client/src/contexts/ScrollLockContext.tsx",
+    "client/src/components/ui/button.tsx",
+    "client/src/components/ui/input.tsx",
+    "client/src/components/ui/label.tsx",
+    "client/src/components/DaySelector.tsx",
+    "client/src/lib/color-utils.ts",
+    "client/src/components/progress-circle.tsx",
+    "client/src/components/QuoteOfTheDay.tsx",
+    "client/src/hooks/use-quote.ts",
+    "client/src/components/ui/sheet.tsx",
+    "client/src/components/ui/collapsible.tsx",
+    "client/src/components/GoalCircle.tsx",
+    "client/src/pages/calendar-new.tsx",
+    "client/src/hooks/use-supplements.ts",
+    "client/src/hooks/use-recovery.ts",
+    "client/src/hooks/use-energy-level.ts",
+    "client/src/components/dashboard-widgets/RecentActivityWidget.tsx",
+    "client/src/hooks/use-dashboard-widgets.ts",
+    "client/src/pages/food-tracker.tsx",
+    "client/src/components/ui/select.tsx",
+    "client/src/lib/local-food-service.ts",
+    "client/src/pages/fitness-calculator.tsx",
+    "client/src/pages/food-database.tsx",
+    "client/src/components/ui/card.tsx",
+    "client/src/pages/restore-custom-foods.tsx",
+    "client/src/pages/profile.tsx",
+    "client/src/components/ui/textarea.tsx",
+    "client/src/pages/measurements.tsx",
+    "client/src/components/ui/viewport-overlay.tsx",
+    "client/src/hooks/use-measurements.ts",
+    "client/src/pages/settings.tsx",
+    "client/src/lib/pwa-update.ts",
+    "client/src/pages/fasting.tsx",
+    "client/src/hooks/use-fasting.ts",
+    "client/src/hooks/use-goals.ts",
+    "client/src/pages/meditation.tsx",
+    "client/src/hooks/use-meditation.ts",
+    "client/src/utils/meditation-calc.ts",
+    "client/src/pages/hydration.tsx",
+    "client/src/hooks/use-hydration.ts",
+    "client/src/pages/reminders.tsx",
+    "client/src/hooks/use-reminders.ts",
+    "client/src/pages/cardio.tsx",
+    "client/src/hooks/use-cardio.ts",
+    "client/src/pages/workout-statistics.tsx",
+    "client/src/pages/daily-journal.tsx",
+    "client/src/pages/journal-log.tsx",
+    "client/src/pages/energy-level.tsx",
+    "client/src/pages/supplements.tsx",
+    "client/src/components/AddSupplementDialog.tsx",
+    "client/src/pages/recovery.tsx",
+    "client/src/pages/dynamic-overview.tsx",
+    "client/src/pages/routines.tsx",
+    "client/src/components/routine-modal.tsx",
+    "client/src/pages/wellness.tsx",
+    "client/src/pages/not-found.tsx",
+    "client/src/components/BottomNavigation.tsx",
+    "client/src/components/DockNavigation.tsx",
+    "client/src/hooks/useIOSViewportGuard.ts"
+  ],
+  "tests": [
+    "tests/backup.test.ts",
+    "client/src/lib/backup.ts",
+    "client/src/lib/storage-registry.ts",
+    "client/src/data/comprehensive-foods.json",
+    "tests/fixtures/complete-storage.ts",
+    "tests/browser/app.spec.ts",
+    "tests/browser/editor-dialogs.spec.ts",
+    "tests/browser/glass.spec.ts",
+    "tests/browser/layout-diagnostics.spec.ts",
+    "tests/browser/material-adoption.spec.ts",
+    "tests/browser/phone-diagnostics.spec.ts",
+    "tests/browser/scroll-boundaries.spec.ts",
+    "tests/browser/status-bar-experiment.spec.ts",
+    "tests/browser/update.spec.ts",
+    "tests/browser/viewport.spec.ts",
+    "tests/storage-coverage.test.ts",
+    "scripts/lib/storage-audit.ts",
+    "scripts/lib/storage-boundaries.ts",
+    "tests/viewport-gap.test.ts",
+    "client/public/layout-diagnostics.js"
+  ]
+}

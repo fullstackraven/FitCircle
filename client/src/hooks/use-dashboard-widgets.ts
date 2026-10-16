@@ -145,7 +145,7 @@ export function useDashboardWidgets() {
   };
 
   const getAvailableWidgets = () => {
-    return widgets.sort((a, b) => a.position - b.position);
+    return [...widgets].sort((a, b) => a.position - b.position);
   };
 
   const resetToDefaults = () => {

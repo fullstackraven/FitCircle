@@ -1,0 +1,81 @@
+{
+  "migrationBefore": {
+    "workouts": {
+      "a": {
+        "id": "a",
+        "name": "A",
+        "color": "green",
+        "count": 0,
+        "dailyGoal": 20
+      }
+    },
+    "dailyLogs": {
+      "2026-10-01": {
+        "a": 5
+      },
+      "2026-10-02": {
+        "a": {
+          "count": 8,
+          "goalAtTime": 20
+        }
+      }
+    },
+    "routines": {},
+    "journalEntries": {
+      "2026-10-01": {
+        "text": "Synthetic",
+        "timestamp": "2026-10-01T18:00:00.123Z"
+      }
+    }
+  },
+  "migrationAfter": {
+    "workouts": {
+      "a": {
+        "id": "a",
+        "name": "A",
+        "color": "green",
+        "count": 0,
+        "dailyGoal": 20
+      }
+    },
+    "dailyLogs": {
+      "2026-10-01": {
+        "a": {
+          "count": 5,
+          "goalAtTime": 5
+        }
+      },
+      "2026-10-02": {
+        "a": {
+          "count": 8,
+          "goalAtTime": 5
+        }
+      }
+    },
+    "routines": {},
+    "journalEntries": {
+      "2026-10-01": "Synthetic"
+    }
+  },
+  "secondMountWrites": 1,
+  "widgetBefore": [
+    "later",
+    "first"
+  ],
+  "widgetSorted": [
+    "first",
+    "later"
+  ],
+  "widgetAfter": [
+    "first",
+    "later"
+  ],
+  "fallDST": {
+    "expected": 2,
+    "actual": 3
+  },
+  "springDST": {
+    "expected": 2,
+    "actual": 2
+  }
+}

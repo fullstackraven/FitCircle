@@ -1,0 +1,23 @@
+{
+  "meditationGoalInput": "20",
+  "fastingGoals": {
+    "unified": {
+      "hydrationOz": 64,
+      "meditationMinutes": 10,
+      "fastingHours": 16,
+      "maxFastingHours": 26,
+      "weightLbs": 150,
+      "targetWeight": 150,
+      "targetBodyFat": 15,
+      "workoutConsistency": 80
+    },
+    "legacy": "18"
+  },
+  "invalidRoute": {
+    "errors": [
+      "Invalid time value"
+    ],
+    "mainCount": 0,
+    "bodyText": "FitCircle\n\nFitCircle could not finish loading. You can safely reload the app without erasing your data.\n\nReload app safely\n\nYour fitness data stays on this device. Reconnect to the internet before reloading."
+  }
+}
