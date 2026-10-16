@@ -4,7 +4,9 @@
     "dashboard-and-dates.test.ts",
     "browser/persistence-regressions.spec.ts",
     "historical-integrity.test.ts",
-    "browser/historical-integrity.spec.ts"
+    "browser/historical-integrity.spec.ts",
+    "workout-initialization.test.ts",
+    "browser/workout-initialization.spec.ts"
   ],
   "exclude": [
     "../node_modules",

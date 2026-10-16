@@ -1,0 +1,20 @@
+// Only synthetic data. Include valid JSON that is unsafe for runtime readers,
+// not just JSON syntax errors. Whitespace/text must survive failed reads exactly.
+export const malformedWorkouts = [
+  { name: 'truncated JSON', raw: '  {"workouts": {\n' },
+  { name: 'empty existing string', raw: '' },
+  { name: 'whitespace existing string', raw: ' \n\t ' },
+  ...[null, false, 12, 'synthetic', [], {},
+    { workouts: {}, dailyLogs: {}, routines: {} },
+    { workouts: {}, journalEntries: {}, routines: {} },
+    { workouts: {}, dailyLogs: {}, journalEntries: {} },
+    { workouts: null, dailyLogs: {}, journalEntries: {}, routines: {} },
+    { workouts: {}, dailyLogs: [], journalEntries: {}, routines: {} },
+    { workouts: {}, dailyLogs: {}, journalEntries: [], routines: {} },
+    { workouts: {}, dailyLogs: {}, journalEntries: {}, routines: [] },
+    { workouts: { a: { id: 'a', name: 'Incomplete synthetic movement' } }, dailyLogs: {}, journalEntries: {}, routines: {} },
+    { workouts: {}, dailyLogs: { '2026-01-01': { a: { count: 5 } } }, journalEntries: {}, routines: {} },
+    { workouts: {}, dailyLogs: {}, journalEntries: { '2026-01-01': { text: 'Incomplete synthetic journal' } }, routines: {} },
+    { workouts: {}, dailyLogs: {}, journalEntries: {}, routines: {}, lastDate: 12 },
+  ].map((value, index) => ({ name: `unexpected or incomplete shape ${index + 1}`, raw: JSON.stringify(value, null, 2) })),
+];
