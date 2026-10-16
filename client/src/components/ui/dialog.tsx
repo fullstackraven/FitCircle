@@ -33,11 +33,12 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { fixedFooter?: boolean; staticBody?: boolean }
+>(({ className, children, fixedFooter = false, staticBody = false, ...props }, ref) => {
   const items = React.Children.toArray(children);
   const header = items.filter(child => React.isValidElement(child) && child.type === DialogHeader);
-  const body = items.filter(child => !React.isValidElement(child) || child.type !== DialogHeader);
+  const footer = fixedFooter ? items.filter(child => React.isValidElement(child) && child.type === DialogFooter) : [];
+  const body = items.filter(child => !header.includes(child) && !footer.includes(child));
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -45,11 +46,16 @@ const DialogContent = React.forwardRef<
         <DialogPrimitive.Content
           ref={ref}
           className={cn("dialog-panel glass-dialog max-w-lg gap-4 border bg-background p-6 shadow-lg rounded-2xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0", className)}
+          onOpenAutoFocus={staticBody ? (event) => {
+            event.preventDefault();
+            if (event.target instanceof HTMLElement) event.target.focus({ preventScroll: true });
+          } : undefined}
           {...props}
         >
           <OverlayScrollLock />
           {header}
-          <div className="dialog-body">{body}</div>
+          {body.length > 0 && <div className={cn("dialog-body", staticBody && "dialog-body-static")}>{body}</div>}
+          {footer}
           <DialogPrimitive.Close className="overlay-close rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
@@ -81,7 +87,7 @@ const DialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+      "dialog-footer shrink-0 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
       className
     )}
     {...props}

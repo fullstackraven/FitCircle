@@ -391,6 +391,9 @@
   -webkit-overflow-scrolling: touch;
   scroll-padding-block: 16px;
 }
+/* Compact editors keep every field in a static form; other dialogs retain
+   their existing internal scrolling behavior. */
+.dialog-body-static { overflow: visible; flex-shrink: 0; }
 .overlay-close {
   position: absolute;
   right: 8px;

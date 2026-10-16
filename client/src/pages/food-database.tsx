@@ -207,7 +207,7 @@ export default function FoodDatabasePage() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
             <Input
               type="text"
-              placeholder="Search foods..."
+              aria-label="Search foods"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 bg-slate-800 border-slate-700 text-white placeholder-slate-400 rounded-xl"

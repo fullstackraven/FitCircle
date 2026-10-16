@@ -425,7 +425,6 @@ export default function HydrationPage() {
                   onFocus={() => setGoalFocused(true)}
                   onBlur={() => setGoalFocused(false)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder={goalFocused ? "" : "Enter daily hydration goal"}
                 />
               </div>
               <div className="flex space-x-3 pt-4">
@@ -483,7 +482,7 @@ export default function HydrationPage() {
                   onChange={(e) => setCustomLiquidType(e.target.value)}
                   onFocus={() => setCustomLiquidFocused(true)}
                   onBlur={() => setCustomLiquidFocused(false)}
-                  placeholder={customLiquidFocused ? "" : "Enter liquid type"}
+                  aria-label="Liquid type"
                   className="bg-slate-700 border-slate-600 text-white"
                 />
               )}
@@ -516,7 +515,7 @@ export default function HydrationPage() {
                   onChange={(e) => setAddAmount(e.target.value)}
                   onFocus={() => setAddAmountFocused(true)}
                   onBlur={() => setAddAmountFocused(false)}
-                  placeholder={addAmountFocused ? "" : "Enter amount"}
+                  aria-label="Amount (oz)"
                   className="bg-slate-700 border-slate-600 text-white"
                 />
               </div>
@@ -568,7 +567,7 @@ export default function HydrationPage() {
                   type="text"
                   value={editLiquidType === 'Custom' ? editLiquidType : ''}
                   onChange={(e) => setEditLiquidType(e.target.value)}
-                  placeholder="Enter liquid type"
+                  aria-label="Liquid type"
                   className="bg-slate-700 border-slate-600 text-white"
                 />
               )}
@@ -581,7 +580,7 @@ export default function HydrationPage() {
                 type="number"
                 value={editAmount}
                 onChange={(e) => setEditAmount(e.target.value)}
-                placeholder="Enter amount"
+                aria-label="Amount (oz)"
                 className="bg-slate-700 border-slate-600 text-white"
                 data-testid="input-edit-amount"
               />

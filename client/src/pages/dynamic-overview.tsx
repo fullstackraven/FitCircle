@@ -361,7 +361,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
             <textarea
               value={journalText}
               onChange={(e) => setJournalText(e.target.value)}
-              placeholder="Write your journal entry for this day..."
+              aria-label="Journal entry"
               className="w-full h-32 p-3 bg-slate-700 text-white rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
               autoComplete="off"
               autoCorrect="on"
@@ -433,7 +433,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                   type="text"
                   value={newSupplementName}
                   onChange={(e) => setNewSupplementName(e.target.value)}
-                  placeholder="Enter supplement name..."
+                  aria-label="Supplement name"
                   className="flex-1 px-3 py-2 bg-slate-800 text-white rounded border border-slate-500 focus:outline-none focus:border-green-400"
                   autoFocus
                 />

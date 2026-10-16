@@ -68,7 +68,7 @@ export default function ProfilePage() {
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name"
+              aria-label="Name"
               className="fitcircle-input"
             />
           </div>
@@ -79,7 +79,7 @@ export default function ProfilePage() {
               type="number"
               value={age}
               onChange={(e) => setAge(e.target.value)}
-              placeholder="Enter your age"
+              aria-label="Age"
               className="fitcircle-input"
             />
           </div>
@@ -89,7 +89,7 @@ export default function ProfilePage() {
             <Textarea
               value={fitnessGoal}
               onChange={(e) => setFitnessGoal(e.target.value)}
-              placeholder="e.g., Build muscle, lose weight, stay healthy, train for a marathon..."
+              aria-label="Fitness Goal"
               className="fitcircle-input h-24 resize-none"
               rows={3}
             />

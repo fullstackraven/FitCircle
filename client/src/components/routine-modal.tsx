@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,7 +16,6 @@ interface RoutineModalProps {
 export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: RoutineModalProps) {
   const [routineName, setRoutineName] = useState('');
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
-  const [routineNameFocused, setRoutineNameFocused] = useState(false);
 
   // Initialize form when editing
   useEffect(() => {
@@ -31,7 +30,7 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
   const resetForm = () => {
     setRoutineName('');
     setSelectedDays([]);
-    setRoutineNameFocused(false);
+
   };
 
   const handleSave = () => {
@@ -50,54 +49,50 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-md rounded-2xl">
+      <DialogContent fixedFooter staticBody className="max-w-md text-white p-4 gap-2">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-white">
+          <DialogTitle className="text-xl font-semibold text-white">
             {editingRoutine ? 'Edit Routine' : 'Add New Routine'}
           </DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogDescription className="sr-only">
             Create a routine by giving it a name and selecting the days it applies to.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-3">
           {/* Routine Name */}
-          <div className="space-y-2">
-            <Label htmlFor="routine-name" className="text-sm font-medium text-slate-300">
+          <div className="space-y-1">
+            <Label htmlFor="routine-name" className="block text-xs leading-4 font-medium text-slate-300">
               Routine Name
             </Label>
             <Input
               id="routine-name"
               type="text"
-              placeholder={routineNameFocused ? '' : 'e.g., Pull Day, Push Day, Leg Day'}
               value={routineName}
               onChange={(e) => setRoutineName(e.target.value)}
-              onFocus={() => setRoutineNameFocused(true)}
-              onBlur={() => setRoutineNameFocused(false)}
-              className="bg-slate-800 border-slate-600 text-white placeholder-slate-400 focus:border-slate-400"
+
+              className="h-9 text-base text-white placeholder-slate-400 focus:border-green-500"
               data-testid="input-routine-name"
             />
           </div>
 
           {/* Day Selection */}
-          <DaySelector
+          <DaySelector compact
             selectedDays={selectedDays}
             onSelectionChange={setSelectedDays}
-            className="space-y-2"
+            className="space-y-1"
           />
-          {selectedDays.length === 0 && (
-            <p className="text-xs text-slate-400 mt-2">
+          <p className={`text-xs text-slate-400 mt-2 ${selectedDays.length ? "invisible" : ""}`} aria-hidden={selectedDays.length > 0}>
               Please select at least one day for this routine.
-            </p>
-          )}
+          </p>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex space-x-3 pt-4">
+        <DialogFooter className="grid grid-cols-2 gap-3 border-t border-slate-700 pt-2 sm:space-x-0">
           <Button
             variant="outline"
             onClick={handleClose}
-            className="flex-1 bg-slate-800 border-slate-600 text-white hover:bg-slate-700"
+            className="text-white"
             data-testid="button-cancel-routine"
           >
             Cancel
@@ -110,7 +105,7 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
           >
             {editingRoutine ? 'Update' : 'Save'}
           </Button>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

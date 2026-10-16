@@ -321,7 +321,7 @@ export default function CardioPage() {
                 <div className="flex space-x-2">
                   <Select value={newEntry.type} onValueChange={(value) => setNewEntry({...newEntry, type: value})}>
                     <SelectTrigger className="flex-1 bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500">
-                      <SelectValue placeholder="Select type" />
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-slate-700 border-slate-600">
                       {cardioTypes.map(type => (
@@ -346,7 +346,7 @@ export default function CardioPage() {
                           <Input
                             value={newCustomType}
                             onChange={(e) => setNewCustomType(e.target.value)}
-                            placeholder="e.g., Swimming"
+                            aria-label="Type Name"
                             className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
                           />
                         </div>
@@ -369,7 +369,7 @@ export default function CardioPage() {
                   <Label className="text-sm font-medium text-white">Duration (minutes)</Label>
                   <Input
                     type="number"
-                    placeholder="30"
+                    aria-label="Duration (minutes)"
                     value={newEntry.duration}
                     onChange={(e) => setNewEntry({...newEntry, duration: e.target.value})}
                     className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
@@ -379,7 +379,7 @@ export default function CardioPage() {
                   <Label className="text-sm font-medium text-white">Distance (miles)</Label>
                   <Input
                     type="number"
-                    placeholder="3.0"
+                    aria-label="Distance (miles)"
                     step="0.1"
                     value={newEntry.distance}
                     onChange={(e) => setNewEntry({...newEntry, distance: e.target.value})}
@@ -718,7 +718,6 @@ export default function CardioPage() {
                   onFocus={() => setGoalInputFocused(true)}
                   onBlur={() => setGoalInputFocused(false)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder={goalInputFocused ? "" : `Enter daily ${data.goal.type === 'duration' ? 'minutes' : 'miles'}`}
                   step="0.1"
                 />
               </div>

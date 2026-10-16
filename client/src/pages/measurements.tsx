@@ -224,7 +224,6 @@ export default function MeasurementsPage() {
                       id={field.key}
                       type="number"
                       value={inputValues[field.key] || ''}
-                      placeholder={focusedInputs[field.key] ? "" : "0"}
                       step="0.1"
                       onFocus={() => setFocusedInputs(prev => ({ ...prev, [field.key]: true }))}
                       onBlur={() => setFocusedInputs(prev => ({ ...prev, [field.key]: false }))}
@@ -420,7 +419,6 @@ export default function MeasurementsPage() {
                   value={goalWeightInput}
                   onChange={(e) => setGoalWeightInput(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder={goalWeightFocused ? "" : "Enter target weight"}
                   onFocus={() => setGoalWeightFocused(true)}
                   onBlur={() => setGoalWeightFocused(false)}
                   step="0.1"
@@ -436,7 +434,6 @@ export default function MeasurementsPage() {
                   value={goalBodyFatInput}
                   onChange={(e) => setGoalBodyFatInput(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder={goalBodyFatFocused ? "" : "Enter target body fat %"}
                   onFocus={() => setGoalBodyFatFocused(true)}
                   onBlur={() => setGoalBodyFatFocused(false)}
                 />

@@ -509,7 +509,6 @@ export default function FastingPage() {
                   onFocus={() => setGoalHoursFocused(true)}
                   onBlur={() => setGoalHoursFocused(false)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder={goalHoursFocused ? "" : "Enter hours (e.g., 16)"}
                 />
               </div>
               <div>
@@ -529,7 +528,6 @@ export default function FastingPage() {
                   }}
                   onBlur={() => setMaxHoursFocused(false)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder={maxHoursFocused ? "" : "Enter max hours (e.g., 24, 48, 72)"}
                 />
                 <p className="text-xs text-slate-400 mt-1">
                   Set your maximum fasting duration for progress tracking

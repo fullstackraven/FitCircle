@@ -639,7 +639,6 @@ export default function MeditationPage() {
                   onFocus={() => setGoalMinutesFocused(true)}
                   onBlur={() => setGoalMinutesFocused(false)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
-                  placeholder={goalMinutesFocused ? "" : "Enter daily goal in minutes"}
                 />
               </div>
               <div className="flex space-x-3 pt-4">
@@ -680,7 +679,7 @@ export default function MeditationPage() {
                 onChange={(e) => setInputMinutes(e.target.value)}
                 onFocus={() => setInputMinutesFocused(true)}
                 onBlur={() => setInputMinutesFocused(false)}
-                placeholder={inputMinutesFocused ? "" : "Enter Duration"}
+                aria-label="Duration (minutes)"
                 className="bg-slate-700 border-slate-600 text-white text-center"
                 min="1"
               />

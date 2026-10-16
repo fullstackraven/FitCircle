@@ -645,7 +645,7 @@ export default function Home() {
                     className="bg-slate-700 border-slate-600 text-white text-center text-lg"
                     min="0"
                     max="23"
-                    placeholder="0"
+                    aria-label="Hours"
                     tabIndex={-1}
                   />
                 </div>
@@ -658,7 +658,7 @@ export default function Home() {
                     className="bg-slate-700 border-slate-600 text-white text-center text-lg"
                     min="0"
                     max="59"
-                    placeholder="0"
+                    aria-label="Minutes"
                     tabIndex={-1}
                   />
                 </div>
@@ -671,7 +671,7 @@ export default function Home() {
                     className="bg-slate-700 border-slate-600 text-white text-center text-lg"
                     min="0"
                     max="59"
-                    placeholder="0"
+                    aria-label="Seconds"
                     tabIndex={-1}
                   />
                 </div>

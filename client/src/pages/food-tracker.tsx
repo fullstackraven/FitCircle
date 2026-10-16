@@ -1049,7 +1049,7 @@ export default function FoodTrackerPage() {
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search foods"
+                  aria-label="Search foods"
                   className="bg-gray-700 border-gray-600 text-white rounded-xl pl-10 pr-10"
                   data-testid="input-search"
                 />
@@ -1629,7 +1629,6 @@ export default function FoodTrackerPage() {
                     id="editName"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    placeholder="e.g., Grilled Chicken Breast"
                     className="bg-gray-700 border-gray-600 text-white rounded-xl"
                   />
                 </div>
@@ -1642,7 +1641,6 @@ export default function FoodTrackerPage() {
                       type="number"
                       value={editCalories}
                       onChange={(e) => setEditCalories(e.target.value)}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white rounded-xl"
                     />
                   </div>
@@ -1653,7 +1651,6 @@ export default function FoodTrackerPage() {
                       type="number"
                       value={editCarbs}
                       onChange={(e) => setEditCarbs(e.target.value)}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white rounded-xl"
                     />
                   </div>
@@ -1667,7 +1664,6 @@ export default function FoodTrackerPage() {
                       type="number"
                       value={editProtein}
                       onChange={(e) => setEditProtein(e.target.value)}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white rounded-xl"
                     />
                   </div>
@@ -1678,7 +1674,6 @@ export default function FoodTrackerPage() {
                       type="number"
                       value={editFat}
                       onChange={(e) => setEditFat(e.target.value)}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white rounded-xl"
                     />
                   </div>
@@ -1729,7 +1724,6 @@ export default function FoodTrackerPage() {
                       id="custom-name"
                       value={customFoodData.name}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, name: e.target.value }))}
-                      placeholder="e.g., Homemade Apple Pie"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-name"
                     />
@@ -1741,7 +1735,6 @@ export default function FoodTrackerPage() {
                       id="custom-brand"
                       value={customFoodData.brand}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, brand: e.target.value }))}
-                      placeholder="e.g., Mom's Recipe"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-brand"
                     />
@@ -1757,7 +1750,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.quantity}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, quantity: e.target.value }))}
-                      placeholder="100"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-quantity"
                     />
@@ -1797,7 +1789,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.calories}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, calories: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-calories"
                     />
@@ -1811,7 +1802,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.carbs}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, carbs: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-carbs"
                     />
@@ -1825,7 +1815,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.protein}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, protein: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-protein"
                     />
@@ -1839,7 +1828,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.fat}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, fat: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-fat"
                     />
@@ -1860,7 +1848,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.fiber}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, fiber: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-fiber"
                     />
@@ -1874,7 +1861,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.sugar}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, sugar: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-sugar"
                     />
@@ -1888,7 +1874,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.sodium}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, sodium: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-sodium"
                     />
@@ -1902,7 +1887,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.saturatedFat}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, saturatedFat: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-saturated-fat"
                     />
@@ -1916,7 +1900,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.cholesterol}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, cholesterol: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-cholesterol"
                     />
@@ -1930,7 +1913,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.potassium}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, potassium: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-potassium"
                     />
@@ -1951,7 +1933,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.vitaminA}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, vitaminA: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-vitamin-a"
                     />
@@ -1965,7 +1946,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.vitaminC}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, vitaminC: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-vitamin-c"
                     />
@@ -1979,7 +1959,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.calcium}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, calcium: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-calcium"
                     />
@@ -1993,7 +1972,6 @@ export default function FoodTrackerPage() {
                       inputMode="decimal"
                       value={customFoodData.iron}
                       onChange={(e) => setCustomFoodData(prev => ({ ...prev, iron: e.target.value }))}
-                      placeholder="0"
                       className="bg-gray-700 border-gray-600 text-white"
                       data-testid="input-custom-iron"
                     />
