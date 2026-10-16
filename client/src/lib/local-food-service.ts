@@ -1,4 +1,4 @@
-import { readIndexedFoods } from './backup';
+import { readIndexedFoods, foodDataSchema } from './backup';
 import comprehensiveFoods from '../data/comprehensive-foods.json';
 
 // Types for our local food service
@@ -188,11 +188,12 @@ export class LocalFoodService {
 
   // Save all foods to localStorage
   private saveFoodsToStorage(foods: LocalFoodItem[]): void {
-    try {
-      localStorage.setItem(this.FOOD_DATABASE_KEY, JSON.stringify(foods));
-    } catch (error) {
-      console.error('Error saving foods to localStorage:', error);
+    // Let existing operation catch blocks report failure; never claim success
+    // after quota/denial or persist values that the backup contract rejects.
+    if (!foodDataSchema.array().safeParse(foods).success) {
+      throw new Error('Food data is invalid. Check serving quantity and nutrition values.');
     }
+    localStorage.setItem(this.FOOD_DATABASE_KEY, JSON.stringify(foods));
   }
 
   // Build a search index for faster lookups

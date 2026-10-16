@@ -9,6 +9,7 @@ const record = z.record;
 const shaped = <T extends z.ZodRawShape>(shape: T) => z.object(shape).passthrough();
 const nutrients = { fiber: number.optional(), sugar: number.optional(), sodium: number.optional(), saturatedFat: number.optional(), potassium: number.optional(), cholesterol: number.optional(), vitaminA: number.optional(), vitaminC: number.optional(), calcium: number.optional(), iron: number.optional() };
 const food = shaped({ ...nutrients, brand: text.optional(), barcode: text.optional(), nutritionPer100g: shaped({ calories: number, carbs: number, protein: number, fat: number, ...nutrients }).optional(), id: text.min(1), name: text.min(1), quantity: number.positive(), unit: z.enum(['g', 'oz', 'cup', 'piece', 'serving', 'ml', 'slice']), calories: number, carbs: number, protein: number, fat: number });
+export { food as foodDataSchema };
 const foods = z.array(food);
 const session = shaped({ id: text, time: text, duration: number });
 const workout = shaped({ id: text, name: text, color: text, count: number, dailyGoal: number, scheduledDays: z.array(number.int().min(0).max(6)).optional(), goalHistory: z.array(shaped({ goal: number, timestamp: text })).optional() });
