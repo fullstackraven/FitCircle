@@ -1,7 +1,7 @@
 import { VersionLabel } from "@/components/VersionLabel";
 import { AppHeader } from "@/components/AppHeader";
-import { useState, useEffect } from 'react';
-import { Edit, ChevronUp, ChevronDown, Plus, Menu, Settings, Calculator, CheckCircle } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Edit, ChevronUp, ChevronDown, Plus, Menu, Settings, Calculator, CheckCircle, Trash2 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useWorkouts } from '@/hooks/use-workouts';
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { WorkoutModal } from '@/components/workout-modal';
 import { RoutineModal } from '@/components/routine-modal';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 export default function RoutinesPage() {
   const [, navigate] = useLocation();
@@ -18,6 +19,9 @@ export default function RoutinesPage() {
   const [editingWorkout, setEditingWorkout] = useState<any>(null);
   const [isRoutineModalOpen, setIsRoutineModalOpen] = useState(false);
   const [editingRoutine, setEditingRoutine] = useState<any>(null);
+  const [pendingRoutineDeletion, setPendingRoutineDeletion] = useState<{ id: string; name: string } | null>(null);
+  const cancelDeletionRef = useRef<HTMLButtonElement>(null);
+  const deletionTriggerRef = useRef<HTMLButtonElement | null>(null);
   const [expandedRoutines, setExpandedRoutines] = useState<Set<string>>(new Set());
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
@@ -82,8 +86,10 @@ export default function RoutinesPage() {
     setEditingRoutine(null);
   };
 
-  const handleDeleteRoutine = (routineId: string) => {
-    deleteRoutine(routineId);
+  const handleConfirmRoutineDeletion = () => {
+    if (!pendingRoutineDeletion) return;
+    deleteRoutine(pendingRoutineDeletion.id);
+    setPendingRoutineDeletion(null);
   };
 
   const toggleRoutineExpansion = (routineId: string) => {
@@ -194,17 +200,19 @@ export default function RoutinesPage() {
                         />
                         <button
                           onClick={() => handleEditRoutine(routine)}
+                          aria-label={`Edit routine ${routine.name}`}
                           className="p-2 text-slate-400 hover:text-slate-200 transition-colors"
                           data-testid={`button-edit-routine-${routine.id}`}
                         >
                           <Edit size={16} />
                         </button>
                         <button
-                          onClick={() => handleDeleteRoutine(routine.id)}
-                          className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+                          onClick={(event) => { deletionTriggerRef.current = event.currentTarget; setPendingRoutineDeletion({ id: routine.id, name: routine.name }); }}
+                          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-slate-400 hover:text-red-400 transition-colors"
+                          aria-label={`Delete routine ${routine.name}`}
                           data-testid={`button-delete-routine-${routine.id}`}
                         >
-                          ×
+                          <Trash2 size={18} aria-hidden="true" />
                         </button>
                       </div>
                     </div>
@@ -324,6 +332,7 @@ export default function RoutinesPage() {
                           </div>
                           <button
                             onClick={() => handleEditWorkout(workout)}
+                            aria-label={`Edit workout ${workout.name}`}
                             className="text-slate-400 hover:text-slate-200 transition-colors"
                           >
                             <Edit size={16} />
@@ -375,6 +384,27 @@ export default function RoutinesPage() {
         onSave={handleSaveRoutine}
         editingRoutine={editingRoutine}
       />
+
+      <Dialog open={pendingRoutineDeletion !== null} onOpenChange={(open) => { if (!open) setPendingRoutineDeletion(null); }}>
+        <DialogContent fixedFooter role="alertdialog" className="max-w-md text-white p-4 sm:p-6"
+          onOpenAutoFocus={(event) => { event.preventDefault(); cancelDeletionRef.current?.focus(); }}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            if (deletionTriggerRef.current?.isConnected) deletionTriggerRef.current.focus();
+            else document.querySelector<HTMLButtonElement>('[data-testid="button-create-routine"], [data-testid="button-add-routine"]')?.focus();
+          }}>
+          <DialogHeader>
+            <DialogTitle>Delete routine?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete “{pendingRoutineDeletion?.name}”? This cannot be undone. Your workouts and workout history will be kept.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="grid grid-cols-2 gap-3 border-t border-slate-700 pt-4 sm:space-x-0">
+            <Button ref={cancelDeletionRef} variant="outline" className="min-h-11" onClick={() => setPendingRoutineDeletion(null)}>Cancel</Button>
+            <Button variant="destructive" className="min-h-11 bg-red-600 text-white hover:bg-red-700" aria-label="Delete routine" onClick={handleConfirmRoutineDeletion}>Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Sidebar Dashboard */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>

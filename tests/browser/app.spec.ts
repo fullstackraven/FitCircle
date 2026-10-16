@@ -93,6 +93,7 @@ test('all active fitness screens render under the repository base without backen
   for (const route of ['profile', 'measurements', 'fasting', 'meditation', 'hydration', 'food-tracker', 'food-database', 'cardio', 'workout-statistics', 'daily-journal', 'journal-log', 'energy-level', 'supplements-page', 'recovery', 'routines', 'wellness', 'reminders', 'settings']) {
     await page.goto(route);
     await expect(page.locator('main')).not.toBeEmpty();
+    await expect(page.locator('input[placeholder], textarea[placeholder]')).toHaveCount(0);
     await expect(page.locator('body')).not.toContainText('404 Page Not Found');
   }
   expect(errors).toEqual([]);

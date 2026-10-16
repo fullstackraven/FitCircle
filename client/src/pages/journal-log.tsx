@@ -249,7 +249,7 @@ export function JournalLog() {
               <textarea
                 value={journalText}
                 onChange={(e) => setJournalText(e.target.value)}
-                placeholder="Start writing..."
+                aria-label="Journal entry"
                 className="flex-1 w-full p-0 bg-transparent text-white border-none resize-none focus:outline-none text-base leading-relaxed placeholder-slate-500"
                 style={{
                   lineHeight: '1.6',

@@ -5,6 +5,7 @@ interface DaySelectorProps {
   selectedDays: number[];
   onSelectionChange: (selectedDays: number[]) => void;
   className?: string;
+  compact?: boolean;
 }
 
 const DAYS = [
@@ -17,7 +18,7 @@ const DAYS = [
   { index: 6, short: 'Sat', full: 'Saturday' },
 ];
 
-export function DaySelector({ selectedDays, onSelectionChange, className }: DaySelectorProps) {
+export function DaySelector({ selectedDays, onSelectionChange, className, compact = false }: DaySelectorProps) {
   const toggleDay = (dayIndex: number) => {
     if (selectedDays.includes(dayIndex)) {
       onSelectionChange(selectedDays.filter(d => d !== dayIndex));
@@ -40,11 +41,15 @@ export function DaySelector({ selectedDays, onSelectionChange, className }: DayS
 
   return (
     <div className={className}>
-      <div className="mb-3">
-        <label className="block text-sm font-medium text-white mb-2">
+      <div className={compact ? "mb-1" : "mb-3"}>
+        <div className={compact ? "flex items-center justify-between" : ""}>
+        <label className={compact ? "block text-xs leading-4 font-medium text-white" : "block text-sm font-medium text-white mb-2"}>
           Scheduled Days
         </label>
-        <p className="text-xs text-slate-400 mb-3">
+        {compact && <Button type="button" variant="ghost" disabled={!selectedDays.length} onClick={clearAllDays}
+          aria-label="Clear Selection" className="h-5 px-1 py-0 text-xs text-slate-400">Clear</Button>}
+        </div>
+        {!compact && <p className="text-xs text-slate-400 mb-3">
           {selectedDays.length === 0 
             ? "Select days to perform this workout" 
             : isEveryDay 
@@ -55,10 +60,10 @@ export function DaySelector({ selectedDays, onSelectionChange, className }: DayS
             ? "Weekends only"
             : `${selectedDays.length} day${selectedDays.length === 1 ? '' : 's'} selected`
           }
-        </p>
+        </p>}
       </div>
 
-      <div className="grid grid-cols-7 gap-2 mb-3">
+      <div className={compact ? "grid grid-cols-7 gap-1 mb-1" : "grid grid-cols-7 gap-2 mb-3"}>
         {DAYS.map((day) => (
           <Button
             key={day.index}
@@ -66,7 +71,8 @@ export function DaySelector({ selectedDays, onSelectionChange, className }: DayS
             variant={selectedDays.includes(day.index) ? "default" : "outline"}
             size="sm"
             onClick={() => toggleDay(day.index)}
-            className={`h-10 text-xs font-medium transition-all ${
+            aria-pressed={selectedDays.includes(day.index)}
+            className={`${compact ? "h-8 min-w-0 px-0" : "h-10"} text-xs font-medium transition-all ${
               selectedDays.includes(day.index)
                 ? 'bg-green-500 hover:bg-green-600 text-white border-green-500'
                 : 'bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600'
@@ -85,7 +91,7 @@ export function DaySelector({ selectedDays, onSelectionChange, className }: DayS
           size="sm"
           onClick={selectAllDays}
           disabled={isEveryDay}
-          className="flex-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600"
+          className={`${compact ? "h-7 px-2" : ""} flex-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600`}
         >
           Every Day
         </Button>
@@ -95,7 +101,7 @@ export function DaySelector({ selectedDays, onSelectionChange, className }: DayS
           size="sm" 
           onClick={() => onSelectionChange([1, 2, 3, 4, 5])}
           disabled={isWeekdays}
-          className="flex-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600"
+          className={`${compact ? "h-7 px-2" : ""} flex-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600`}
         >
           Weekdays
         </Button>
@@ -105,13 +111,13 @@ export function DaySelector({ selectedDays, onSelectionChange, className }: DayS
           size="sm"
           onClick={() => onSelectionChange([0, 6])}
           disabled={isWeekends}
-          className="flex-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600"
+          className={`${compact ? "h-7 px-2" : ""} flex-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600`}
         >
           Weekends
         </Button>
       </div>
 
-      {selectedDays.length > 0 && (
+      {!compact && selectedDays.length > 0 && (
         <Button
           type="button"
           variant="ghost"

@@ -191,7 +191,7 @@ export default function RemindersPage() {
                     }}
                     onFocus={() => setEditFocused(true)}
                     className="glass-input flex-1 bg-transparent text-white text-base border-none outline-none"
-                    placeholder={editFocused ? "" : "Delete text to remove reminder"}
+                    aria-label="Reminder text"
                     autoFocus
                   />
                 </div>
@@ -268,7 +268,7 @@ export default function RemindersPage() {
                   setShowAddForm(false); // Hide form if no text
                 }
               }}
-              placeholder={newReminderFocused ? "" : "New Reminder"}
+              aria-label="New reminder"
               onFocus={() => setNewReminderFocused(true)}
               className="glass-input flex-1 bg-transparent text-white text-base border-none outline-none placeholder-slate-500"
               autoFocus
@@ -355,7 +355,7 @@ export default function RemindersPage() {
                             }}
                             onFocus={() => setEditFocused(true)}
                             className="flex-1 bg-transparent text-slate-500 text-base border-none outline-none"
-                            placeholder={editFocused ? "" : "Delete text to remove reminder"}
+                            aria-label="Reminder text"
                             autoFocus
                           />
                         </div>

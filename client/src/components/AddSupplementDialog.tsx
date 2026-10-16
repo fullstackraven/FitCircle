@@ -83,7 +83,6 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
               onChange={(e) => setName(e.target.value)}
               onFocus={() => setNameFocused(true)}
               onBlur={() => setNameFocused(false)}
-              placeholder={nameFocused ? "" : "e.g., Vitamin D3, Fish Oil"}
               className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
               required
             />
@@ -95,7 +94,7 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
             </Label>
             <Select value={measurementType} onValueChange={setMeasurementType} required>
               <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                <SelectValue placeholder={measurementType ? "" : "Select measurement type"} />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-slate-700 border-slate-600">
                 {measurementTypes.map((type) => (
@@ -118,7 +117,6 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
               onChange={(e) => setAmount(e.target.value)}
               onFocus={() => setAmountFocused(true)}
               onBlur={() => setAmountFocused(false)}
-              placeholder={amountFocused ? "" : "e.g., 2 (for 2 pills), 1000 (for 1000mg)"}
               className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
               min="1"
               required
