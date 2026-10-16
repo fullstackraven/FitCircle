@@ -5,15 +5,19 @@ test('glass dock retains compact geometry, semantic selection and visible keyboa
   await page.goto('wellness');
   const nav = page.getByRole('navigation', { name: 'Bottom navigation' });
   await expect(nav).toHaveClass(/glass-nav/);
-  expect((await nav.boundingBox())!.height).toBe(74);
+  expect((await nav.boundingBox())!.height).toBe(58);
   const logs = nav.getByRole('button', { name: 'Logs', exact: true });
   await expect(logs).toHaveAttribute('aria-current', 'page');
+  expect(await logs.locator('svg').evaluate(el => getComputedStyle(el).color)).toBe('rgb(0, 255, 65)');
+  expect(await nav.evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgba(30, 41, 59, 0.65)');
   const routines = nav.getByRole('button', { name: 'Routines', exact: true });
   await routines.focus();
   expect(await routines.evaluate(el => getComputedStyle(el).outlineWidth)).toBe('2px');
   await page.keyboard.press('Enter');
   await expect(routines).toHaveAttribute('aria-current', 'page');
   await expect(logs).not.toHaveAttribute('aria-current');
+  expect(await routines.locator('svg').evaluate(el => getComputedStyle(el).color)).toBe('rgb(0, 255, 65)');
+  await expect.poll(() => logs.locator('svg').evaluate(el => getComputedStyle(el).color)).toBe('rgb(148, 163, 184)');
 });
 
 test('glass dialog remains nearly opaque, internally scrollable and safely closable', async ({ page }) => {

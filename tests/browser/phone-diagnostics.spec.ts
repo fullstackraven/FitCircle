@@ -50,7 +50,7 @@ test('light and dark presentations use one navy theme and retain supported PWA m
     const theme=page.locator('meta[name="theme-color"]');
     await expect(theme).toHaveAttribute('content','#0f172a');
     await expect(theme).not.toHaveAttribute('media');
-    await expect(page.locator('meta[name="apple-mobile-web-app-status-bar-style"]')).toHaveAttribute('content','black-translucent');
+    await expect(page.locator('meta[name="apple-mobile-web-app-status-bar-style"]')).toHaveCount(0);
     await expect(page.locator('meta[name="viewport"]')).toHaveAttribute('content',/viewport-fit=cover/);
     for(const selector of ['html','body','#root','.app-shell','.app-header']) expect(await page.locator(selector).evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgb(15, 23, 42)');
     expect(await page.locator('main').evaluate(el=>el.getBoundingClientRect().bottom)).toBe(844);

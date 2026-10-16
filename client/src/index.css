@@ -100,7 +100,8 @@
   }
 
   .app-dock {
-    /* Flush viewport edge; keep home-indicator clearance inside the panel. */
+    /* The wrapper ends at the viewport edge; shared dock styles own the
+       approved capsule gap and centered internal spacing. */
     position: fixed;
     bottom: 0;
     left: var(--safe-left);
