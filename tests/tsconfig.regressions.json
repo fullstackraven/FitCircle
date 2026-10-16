@@ -2,7 +2,12 @@
   "extends": "../tsconfig.json",
   "include": [
     "dashboard-and-dates.test.ts",
-    "browser/persistence-regressions.spec.ts"
+    "browser/persistence-regressions.spec.ts",
+    "historical-integrity.test.ts",
+    "browser/historical-integrity.spec.ts"
   ],
-  "exclude": ["../node_modules", "../dist"]
+  "exclude": [
+    "../node_modules",
+    "../dist"
+  ]
 }
