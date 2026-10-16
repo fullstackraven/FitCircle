@@ -43,3 +43,29 @@ Negative control: `npx tsx --test tests/dashboard-and-dates.test.ts` on the orig
 Audit probes: synthetic initializer migration/journal/widget/DST, food quota, and isolated Chromium goal/invalid-route probes were actually executed; captured JSON is in evidence/. `npx tsx docs/revamp/evidence/reproduce-initialization.ts` reproduces the initializer/date probe in memory. The capture is from audited main; its widget mutation differs after the fix. The SSR modern-history test deliberately excludes the known mixed-migration/18:00 failure cases; it does not certify the unsafe migration.
 
 Ledger validation compared all277 path names and SHA256 hashes against git at the recorded baseline and checked every declared full-source range. The new PR's docs/tests/config and one-line source correction were reviewed separately; they are not miscounted as files present at baseline. No physical iOS/WebKit, real keyboard/background suspension, real quota/eviction or Files/iCloud verification is claimed.
+
+## PR #24 CI amendment review and revalidation — 2026-10-16
+
+Reviewed the application diff, both new regression test files, their TypeScript configuration and the existing PR validation workflow against PR head `bad6259a2e2cbb291971a791f18d774eeae4866f`. The workflow ran the application type check and unit tests but did not enforce the separate regression-test type check. Added `npx tsc --noEmit -p tests/tsconfig.regressions.json` immediately after `npm run check` in `.github/workflows/storage-audit.yml`. It is a normal failing-on-error step in the existing Node 22 PR job, with no path filters or continue-on-error exemption.
+
+This amendment changes only that workflow and this report. Production source, test implementations, storage, migrations, dependencies, service worker and iOS layout remain untouched. The baseline audit ledger continues to describe its original commit; it is not regenerated for this CI amendment.
+
+Revalidation used Node v24.19.0, npm 11.9.0 and system Chromium `/usr/bin/chromium`, with a freshly rebuilt production preview:
+
+| Command | Exit | Actual amendment result |
+| --- | --- | --- |
+| `npm run check` | 0 | Application TypeScript passed |
+| `npx tsc --noEmit -p tests/tsconfig.regressions.json` | 0 | Regression test TypeScript passed; now enforced in PR CI |
+| `npm run audit:storage` | 0 | 217 call sites, zero audit errors |
+| `npm test` | 0 | 56 passed; zero failed, skipped or todo |
+| `npm run build` | 0 | Passed in 11.29s; existing chunk warning remains; App bundle unchanged at `App-uegoNRCg.js`, 885.97kB /235.17kB gzip |
+| `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e` (first amendment run) | 1 | 54 passed, one diagnostic snapshot failure in 55.8s; details below |
+| `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npx playwright test tests/browser/layout-diagnostics.spec.ts --grep 'read-only probe reports' --repeat-each=3` | 0 | All three repetitions passed in 2.8s |
+| `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e` (complete rerun, no retries configured) | 0 | All 55 passed in 53.8s |
+| `git diff --check` | 0 | No whitespace errors |
+
+The first browser run exposed a timing-sensitive existing test: `layout-diagnostics.spec.ts:36` compared a pre-capture storage snapshot of `{}` with a post-capture snapshot containing the food database and migration flag. The test awaits a dynamic diagnostic import between snapshots; asynchronous application food initialization can finish during that interval. Shell bottom (844) and scroll position (240) stayed unchanged. This is evidence of test setup racing initialization, not proof that the diagnostic wrote storage. No diagnostic/test/application changes were made to hide the failure. The isolated repetitions and full rerun passed; the timing risk remains documented for a separate test-harness follow-up. The original evidence/final-*.log files above remain the earlier batch A captures, not replacement evidence for this rerun.
+
+No physical iPhone Safari/PWA, actual keyboard/backgrounding, device storage or Files/iCloud verification was performed. No merge or deployment is authorized by this amendment.
+
+After this PR is approved, the next independent PR must address **FC-001 and FC-002 together**, with extensive synthetic legacy-data regression fixtures before changing migration behavior. Cover numeric-only, mixed and modern logs; populated/missing goal histories; sparse/tied/zero counts; explicit historical goalAtTime values; repeated mounts/reloads; genuine 18:00 timestamps including fractional seconds; legacy string journals and known estimated timestamps. Assert that authoritative historical goals and genuine journal timestamps remain unchanged, preserve ambiguous original data, and test persistence/backup round trips so silent alteration cannot pass unnoticed. Do not begin that implementation within PR #24.
