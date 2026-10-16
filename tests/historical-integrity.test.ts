@@ -27,9 +27,17 @@ function readThroughHook(storage: Storage) {
     snapshot = { workouts: api.workouts, routines: api.routines,
       dailyLogs: api.getDailyLogs(), journalEntries: api.getAllJournalEntries() };
     // Exercise both supported log representations and journal accessors.
-    for (const date of Object.keys(api.getDailyLogs())) api.getWorkoutLogsForDate(date);
+    for (const [date, day] of Object.entries(api.getDailyLogs())) {
+      for (const item of api.getWorkoutLogsForDate(date)) {
+        const original = day[item.id];
+        assert.equal(item.count, typeof original === 'number' ? original : original?.count ?? 0);
+      }
+    }
     for (const date of Object.keys(api.getAllJournalEntries())) {
-      api.getJournalEntry(date); api.getJournalEntryWithTimestamp(date);
+      const original = api.getAllJournalEntries()[date];
+      assert.equal(api.getJournalEntry(date), typeof original === 'string' ? original : original.text);
+      assert.deepEqual(api.getJournalEntryWithTimestamp(date), !original ? null
+        : typeof original === 'string' ? { text: original, timestamp: null } : original);
     }
     return null;
   }
