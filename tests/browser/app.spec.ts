@@ -56,6 +56,8 @@ test('settings backup exports local and IndexedDB foods, validates before import
   const chunks: Buffer[] = []; for await (const chunk of stream!) chunks.push(chunk);
   const backup = JSON.parse(Buffer.concat(chunks).toString());
   expect(backup.indexedDB.customFoods).toHaveLength(1);
+  expect(backup.manifest.localStorageKeys.sort()).toEqual(Object.keys(backup.localStorage).sort());
+  expect(backup.manifest.indexedDB).toEqual([{ database: 'FitCircleCustomFoods', store: 'foods', records: 1 }]);
   expect(backup.localStorage['other-app-key']).toBeUndefined();
   expect(JSON.parse(backup.localStorage.fitcircle_food_database).length).toBeGreaterThan(100);
   await page.locator('input[type=file]').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ fitcircle_username: 'Should not apply', fitcircle_food_database: ['bad'] })) });
@@ -101,4 +103,21 @@ test('all active fitness screens render under the repository base without backen
   const downloadEvent = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Download Complete Backup' }).click();
   expect((await downloadEvent).suggestedFilename()).toMatch(/^fitcircle-backup-/);
+});
+
+
+test('backup read failures show actionable status and never start a download or change records', async ({ page }) => {
+  await page.goto('settings');
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('fitcircle_food_database_migrated'))).toBe('true');
+  await page.evaluate(() => localStorage.setItem('fitcircle_username', 'Synthetic original'));
+  const downloads: string[] = [];
+  page.on('download', download => downloads.push(download.suggestedFilename()));
+  await page.evaluate(() => {
+    IDBFactory.prototype.open = () => { throw new DOMException('Synthetic denied read', 'SecurityError'); };
+  });
+  await page.getByRole('button', { name: 'Download Complete Backup' }).click();
+  await expect(page.getByText(/Export failed: Cannot read FitCircleCustomFoods\/foods/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Download Complete Backup' })).toBeEnabled();
+  expect(downloads).toEqual([]);
+  expect(await page.evaluate(() => localStorage.getItem('fitcircle_username'))).toBe('Synthetic original');
 });

@@ -146,3 +146,77 @@ for (const [name, invalid] of Object.entries({
   assert.equal(storage.getItem('fitcircle_username'), 'original');
   assert.equal(storage.length, 1);
 });
+
+// Full registry coverage uses independently authored, multi-feature fixtures.
+import { completeStorage, legacyFood } from './fixtures/complete-storage';
+import { storageSources } from '../client/src/lib/storage-registry';
+import { readIndexedFoods } from '../client/src/lib/backup';
+test('complete feature fixture exports and restores every registered user source', async () => {
+  const source = new MemoryStorage();
+  for (const [key, value] of Object.entries(completeStorage)) source.setItem(key, value);
+  source.setItem('insertAfterIndex', '2'); source.setItem('another-app', 'private');
+  const factory = new IDBFactory();
+  await readIndexedFoods(factory);
+  await new Promise<void>((resolve, reject) => {
+    const request = factory.open('FitCircleCustomFoods', 1);
+    request.onsuccess = () => {
+      const db = request.result, tx = db.transaction('foods', 'readwrite');
+      tx.objectStore('foods').put(legacyFood);
+      tx.oncomplete = () => { db.close(); resolve(); }; tx.onabort = () => reject(tx.error);
+    };
+  });
+  const backup = await createBackup(source, factory);
+  assert.deepEqual({ ...backup.localStorage }, completeStorage);
+  assert.deepEqual(backup.indexedDB.customFoods, [legacyFood]);
+  assert.equal(backup.manifest?.localStorageKeys.length, Object.keys(completeStorage).length);
+  const restored = new MemoryStorage(); restored.setItem('unrelated', 'keep');
+  applyRestore(prepareRestore(JSON.parse(JSON.stringify(backup))), restored, new MemoryStorage());
+  for (const [key, value] of Object.entries(completeStorage)) assert.equal(restored.getItem(key), value, key);
+  assert.equal(restored.getItem('unrelated'), 'keep');
+  assert.equal(restored.getItem('insertAfterIndex'), null);
+  for (const registered of storageSources.filter(s => s.backup && s.mechanism === 'localStorage')) {
+    for (const key of registered.examples ?? [registered.key]) assert.ok(key in backup.localStorage, `Not exported: ${key}`);
+  }
+  const oldV2 = { ...backup }; delete oldV2.manifest;
+  assert.deepEqual(prepareRestore(oldV2), prepareRestore(backup));
+  const missingKey = structuredClone(backup); delete missingKey.localStorage.fitcircle_reminders;
+  assert.throws(() => prepareRestore(missingKey), /manifest/);
+  const missingFoods = structuredClone(backup); missingFoods.indexedDB.customFoods = [];
+  assert.throws(() => prepareRestore(missingFoods), /manifest/);
+});
+
+test('export fails on malformed recognized data, read failures and interrupted restores', async () => {
+  const source = new MemoryStorage(); source.setItem('fitcircle_username', 'original');
+  source.setItem('fitcircle_reminders', '{broken');
+  await assert.rejects(createBackup(source, new IDBFactory()), /Invalid JSON/);
+  assert.equal(source.getItem('fitcircle_username'), 'original');
+  source.removeItem('fitcircle_reminders');
+  const failing = Object.create(source) as Storage;
+  failing.getItem = key => { if (key === 'fitcircle_username') throw new Error('Denied'); return source.getItem(key); };
+  await assert.rejects(createBackup(failing, new IDBFactory()), /Cannot read backup source/);
+  failing.getItem = key => key === 'fitcircle_username' ? null : source.getItem(key);
+  await assert.rejects(createBackup(failing, new IDBFactory()), /disappeared/);
+  source.setItem('fitcircle_restore_journal_v2', JSON.stringify({ fitcircle_username: 'original' }));
+  await assert.rejects(createBackup(source, new IDBFactory()), /interrupted restore/);
+  assert.ok(source.getItem('fitcircle_restore_journal_v2'));
+});
+
+for (const failure of ['open', 'transaction', 'getAll', 'blocked', 'error', 'abort', 'read-error', 'missing-store']) test(`IndexedDB ${failure} failure rejects rather than producing an incomplete backup`, async () => {
+  let closed = false;
+  const request: any = {};
+  const tx: any = { objectStore: () => ({ getAll: () => { if (failure === 'getAll') throw new Error('Read denied'); return read; } }) };
+  const read: any = {};
+  const db: any = { close: () => { closed = true; }, objectStoreNames: { contains: () => failure !== 'missing-store' }, transaction: () => { if (failure === 'transaction') throw new Error('Denied'); return tx; } };
+  request.result = db;
+  const factory = { open: () => {
+    if (failure === 'open') throw new Error('Denied');
+    queueMicrotask(() => {
+      if (failure === 'blocked') { request.onblocked(); request.onsuccess(); }
+      else if (failure === 'error') request.onerror();
+      else { request.onsuccess(); if (failure === 'abort') tx.onabort(); if (failure === 'read-error') read.onerror(); }
+    });
+    return request;
+  }} as unknown as IDBFactory;
+  await assert.rejects(readIndexedFoods(factory), /no complete backup/);
+  if (!['open', 'error'].includes(failure)) assert.equal(closed, true);
+});

@@ -58,7 +58,7 @@ export default function SettingsPage() {
       setTimeout(() => setStatus(''), 3000);
     } catch (error) {
       console.error('Export failed:', error);
-      setStatus('Export failed. Please try again.');
+      setStatus(`Export failed: ${error instanceof Error ? error.message : 'Storage could not be read. Please try again.'}`);
       setTimeout(() => setStatus(''), 3000);
     } finally {
       setIsExporting(false);
