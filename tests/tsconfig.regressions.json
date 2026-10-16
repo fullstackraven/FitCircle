@@ -6,7 +6,8 @@
     "historical-integrity.test.ts",
     "browser/historical-integrity.spec.ts",
     "workout-initialization.test.ts",
-    "browser/workout-initialization.spec.ts"
+    "browser/workout-initialization.spec.ts",
+    "food-search-cleanup.test.ts"
   ],
   "exclude": [
     "../node_modules",
