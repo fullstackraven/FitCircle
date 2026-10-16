@@ -69,6 +69,8 @@ FitCircle combines a clean, dark interface with large touch-friendly controls an
 
 FitCircle does not require registration or a login.
 
+**Existing iPhone installations:** Open FitCircle online and relaunch it to receive updates. iOS may retain older status-bar presentation settings for an installed app. Keep your existing installation and records; do not clear website data or remove the app to troubleshoot the bottom dock. See the [iPhone presentation notes](docs/diagnostics/status-bar-presentation-test.md#approved-production-integration) if a bottom strip persists.
+
 ---
 
 ## Your Data, Your Control

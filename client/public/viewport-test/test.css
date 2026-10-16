@@ -14,14 +14,3 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
 
 @font-face { font-family: 'JetBrains Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url('./dock-font.woff2') format('woff2'); }
 .test-dock { position: fixed; bottom: 0; left: env(safe-area-inset-left, 0px); right: env(safe-area-inset-right, 0px); font-family: 'JetBrains Mono', 'Courier New', monospace; z-index: 1; }
-
-/* Candidate shape only: the wrapper still ends at the viewport bottom. Its
-   small visual gap counts toward home-indicator clearance, not in addition. */
-:root { --test-dock-gap: 4px; }
-.test-dock { padding-bottom: var(--test-dock-gap); }
-.test-dock .dock-nav {
-  border-radius: 9999px;
-  /* Redistribute the same total padding equally; keep the capsule dimensions. */
-  --test-dock-lower-space: max(4px, calc(var(--safe-bottom) - var(--test-dock-gap)));
-  padding-block: calc((4px + var(--test-dock-lower-space)) / 2);
-}

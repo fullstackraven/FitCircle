@@ -4,6 +4,7 @@
   --glass-surface-elevated: rgb(15 23 42);
   --glass-surface-interactive: rgb(30 41 59);
   --glass-surface-nav: rgb(30 41 59);
+  --dock-gap: 4px;
   --glass-border: rgb(203 213 225 / .2);
   --glass-border-highlight: rgb(255 255 255 / .1);
   --glass-shadow: 0 4px 14px rgb(0 0 0 / .16), inset 0 1px 0 var(--glass-border-highlight);
@@ -22,11 +23,11 @@
     --glass-surface: rgb(30 41 59 / .9);
     --glass-surface-elevated: rgb(15 23 42 / .96);
     --glass-surface-interactive: rgb(30 41 59 / .88);
-    --glass-surface-nav: rgb(30 41 59 / .82);
+    --glass-surface-nav: rgb(30 41 59 / .65);
   }
   .glass-nav {
-    -webkit-backdrop-filter: blur(var(--glass-blur-md)) saturate(125%);
-    backdrop-filter: blur(var(--glass-blur-md)) saturate(125%);
+    -webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(125%);
+    backdrop-filter: blur(var(--glass-blur-lg)) saturate(125%);
   }
   .glass-dialog, .glass-sheet {
     -webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(115%);
@@ -56,14 +57,20 @@
 .glass-input::placeholder { color: rgb(148 163 184); opacity: 1; }
 .glass-input:disabled, .glass-button:disabled { opacity: .5; }
 
-/* Existing compact geometry, consolidated from inline declarations for reuse. */
-.dock-wrap { display: flex; justify-content: center; width: 100%; padding: 0 16px; box-sizing: border-box; }
-.dock-nav { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; border: 1px solid var(--glass-border); border-radius: var(--glass-radius-lg); padding: 12px clamp(8px, 3vw, 20px); }
-.dock-nav { padding-bottom: max(12px, var(--safe-bottom)); }
+/* Shared dock geometry for the application and static presentation test. */
+.dock-wrap { display: flex; justify-content: center; width: 100%; padding: 0 16px var(--dock-gap); box-sizing: border-box; }
+.dock-nav { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; border: 1px solid var(--glass-border); border-radius: 9999px; padding: 4px clamp(8px, 3vw, 20px); }
+/* Approved Home Screen capsule: centered controls and a small border gap.
+   Keep the measured wrapper inclusive of that gap for page-end clearance. */
+.dock-nav {
+  --dock-lower-space: max(4px, calc(var(--safe-bottom) - var(--dock-gap)));
+  padding-block: calc((4px + var(--dock-lower-space)) / 2);
+}
 .dock-items { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 4px; }
-/* Compact the tabs without moving the bottom anchor or reducing safe-area clearance. */
+/* Preserve compact 48px targets within the approved capsule spacing. */
 .dock-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; border-radius: 16px; border: none; background-color: transparent; color: rgb(148 163 184); cursor: pointer; min-width: 0; flex: 1 1 0; min-height: 48px; gap: 4px; transition: color var(--glass-transition-fast), background-color var(--glass-transition-fast), transform var(--glass-transition-fast); }
 .dock-tab[aria-current="page"] { color: white; background-color: rgb(255 255 255 / .055); }
+.dock-tab[aria-current="page"] svg { color: #00ff41; }
 .dock-tab:hover { color: white; }
 .dock-tab:active { transform: translateY(1px); background-color: rgb(255 255 255 / .09); }
 .dock-tab svg { width: 28px; height: 28px; margin-bottom: 4px; }
@@ -92,6 +99,7 @@
   }
   .dock-tab { color: ButtonText; }
   .dock-tab[aria-current="page"] { color: HighlightText; background: Highlight; }
+  .dock-tab[aria-current="page"] svg { color: inherit; }
 }
 
 /* Application adoption: keep colored content surfaces; add only material depth. */

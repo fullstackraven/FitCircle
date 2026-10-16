@@ -126,13 +126,13 @@ test('test dock centers unchanged production icons and labels without changing c
   const synthetic = await measure();
   for (const [index, button] of synthetic.buttons.entries()) {
     const original = production.buttons[index];
-    expect(button).toEqual({ ...original, bottom: original.bottom + 13, labelBottom: original.labelBottom + 13 });
+    expect(button).toEqual(original);
     expect(button.bottom - button.height / 2).toBe(synthetic.bottom - synthetic.height / 2);
   }
   expect(synthetic.paddingBottom).toBe('17px');
   expect(synthetic.width).toBe(production.width);
   expect(synthetic.height).toBe(84);
-  expect(synthetic.height).toBeLessThan(production.height);
+  expect(synthetic.height).toBe(production.height);
   expect(synthetic.bottom).toBe(808);
   expect(await page.locator('.test-dock').evaluate(el => el.getBoundingClientRect().bottom)).toBe(812);
   expect(await page.locator('.dock-nav').evaluate(el => getComputedStyle(el).borderRadius)).toBe('9999px');

@@ -164,3 +164,37 @@ the reported bottom safe inset. It does not preserve v3's full safe-area exclusi
 The affected iPhone must confirm labels remain clear of the home indicator and
 all five buttons respond reliably before any production adoption. If they do not,
 full safe exclusion will require revisiting the capsule height or position.
+
+## Approved production integration
+
+The user confirms the centered v4 dock is workable and authorizes integration.
+Production now shares its pill rounding, equal top/bottom spacing, 4px gap and
+measured wrapper clearance. The test's duplicate geometry overrides are removed,
+so browser regressions require identical production/test geometry. At a 34px inset
+the capsule is 84px high, with 48px targets centered inside it. This is the user's
+accepted spacing, including the reduced target clearance described above.
+
+The nav surface changes from 82% to 65% opacity where backdrop filtering is
+supported, with 16px blur. Opaque fallback and reduced-transparency/forced-color
+modes remain available. Selected SVG icons use #00ff41, matching the bright end of
+the Start Workout button's gradient; labels retain their existing colors.
+
+The production entry omits `apple-mobile-web-app-status-bar-style`, adopting the
+standard presentation that reached the physical bottom in the user's test. Keep
+viewport-fit=cover, standalone manifest identity/scope and existing safe-area
+rules. A standard status bar may sit above the viewport instead of overlapping it.
+No viewport offsets, remounts or screen-height compensation are added.
+
+Existing Home Screen installations may retain presentation settings captured when
+installed. Deploying updated HTML does not prove that iOS has updated that host
+configuration. Use the normal online update and relaunch first. Keep the existing
+installation and records; do not remove it or clear site data as part of this
+release. If its system strip persists, compare the existing read-only diagnostic
+and decide any installation experiment separately with verified backups. No
+storage migration or reinstall is automatic.
+
+User physical testing covers the standard synthetic presentation and approved
+centered geometry, not the newly integrated fitness application or new material.
+Production keyboard, rotation, cold launch, overlays and home-indicator interaction
+still need physical iPhone verification after deployment. Chromium regression
+results must not be presented as that verification.
