@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getTodayString, getDateString } from '@/lib/date-utils';
-import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
+import { STORAGE_KEYS } from '@/lib/storage-utils';
+import { parseStoredWorkouts, StoredWorkoutDataError } from '@/lib/workout-initialization';
 
 export interface GoalHistoryEntry {
   goal: number;
@@ -49,18 +50,14 @@ const WORKOUT_COLORS = [
 
 export function useWorkouts() {
   const [data, setData] = useState<WorkoutData>(() => {
-    const savedData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.WORKOUTS), {
-      workouts: {},
-      dailyLogs: {},
-      lastDate: getTodayString(),
-      journalEntries: {},
-      routines: {}
-    });
-    
-    // Numeric logs and string journals are supported legacy formats. Counts do
-    // not establish historical goals, and an 18:00 timestamp does not establish
-    // an estimate. Preserve the saved records rather than guessing on startup.
-    return savedData;
+    let raw: string | null;
+    try {
+      raw = localStorage.getItem(STORAGE_KEYS.WORKOUTS);
+    } catch {
+      throw new StoredWorkoutDataError(null, 'unavailable');
+    }
+    // Failed reads/validation throw before any state or effects can commit.
+    return parseStoredWorkouts(raw, getTodayString());
   });
 
   // Helper function to extract count from log entry

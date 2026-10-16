@@ -45,3 +45,9 @@ for (const fixture of historicalIntegrityFixtures) {
     assert.deepEqual(result.data, fixture.data); assert.deepEqual(result.writes, []);
   });
 }
+
+test('legacy array workout containers remain unchanged when backup validation accepts them', () => {
+  const data = { workouts: [{ id: 'legacy-a', name: 'Synthetic legacy array', color: 'green', count: 0, dailyGoal: 20 }],
+    dailyLogs: { '2026-01-01': { 'legacy-a': 8 } }, journalEntries: {}, routines: {} };
+  assert.deepEqual(mount(JSON.stringify(data)).data, data);
+});
