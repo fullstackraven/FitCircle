@@ -1,3 +1,4 @@
+import { FoodNotifications } from "@/components/FoodNotifications";
 import { HeaderHostContext } from "@/components/AppHeader";
 import { Switch, Route, useLocation } from "wouter";
 import { useRef, useState, useEffect, useLayoutEffect } from "react";
@@ -90,6 +91,7 @@ function App() {
 
   return (
     <ScrollLockProvider>
+      <FoodNotifications />
       <HeaderHostContext.Provider value={headerHost}>
         <div className="app-shell">
           <div ref={setHeaderHost} className="app-header" />
