@@ -55,7 +55,7 @@ test('mixed modern and legacy history does not merge, duplicate or discard sourc
 });
 test('absent cardio state initializes without creating a persistent record', () => {
   const { api, writes } = mount({});
-  assert.deepEqual(api.data.dailyLogs, {}); assert.equal(api.data.goal.target, 21); assert.deepEqual(writes, []);
+  assert.deepEqual(Object.keys(api.data.dailyLogs), []); assert.equal(api.data.goal.target, 21); assert.deepEqual(writes, []);
 });
 test('empty legacy arrays do not mask a later valid alias', () => {
   const { api } = mount({ [cardioLegacyKeys[0]]: '[]', [cardioLegacyKeys[1]]: JSON.stringify(legacyCardio) });

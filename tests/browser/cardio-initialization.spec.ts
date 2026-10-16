@@ -92,6 +92,7 @@ test('accepted incomplete cardio backup remains blocked and another verified bac
   page.on('dialog', dialog => dialog.accept());
   const partial = { goal: { type: 'duration', target: 21 } };
   await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-incomplete.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ [cardioKey]: partial })) });
+  await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
   await page.goto('cardio');
   await expect(page.getByRole('heading', { name: 'Your saved cardio data needs attention' })).toBeVisible();
   await expect(page.locator('body')).toContainText('cardio tracking has not resumed');
@@ -99,10 +100,12 @@ test('accepted incomplete cardio backup remains blocked and another verified bac
   expect(await page.evaluate(key => localStorage.getItem(key), cardioKey)).toBe(JSON.stringify(partial));
   await page.getByRole('link', { name: 'Open Settings to restore a backup' }).click();
   await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-complete.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ [cardioKey]: modernCardio })) });
+  await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
   await page.goto('cardio');
   await expect(page.getByRole('button', { name: 'Log Cardio', exact: true })).toBeVisible();
 });
 test('quota failures do not replace a valid source during initialization or an explicit edit', async ({ page }) => {
+  await page.clock.install({ time: new Date('2025-03-02T12:00:00Z') });
   const raw = JSON.stringify(modernCardio);
   await seed(page, { [cardioKey]: raw });
   await page.addInitScript(() => {
@@ -120,6 +123,7 @@ test('quota failures do not replace a valid source during initialization or an e
   expect(await page.evaluate(key => localStorage.getItem(key), cardioKey)).toBe(raw);
 });
 test('editing a valid cardio session preserves weekly goals, legacy entries and unrelated metadata', async ({ page }) => {
+  await page.clock.install({ time: new Date('2025-03-02T12:00:00Z') });
   const value = { ...modernCardio, entries: legacyCardio };
   await seed(page, { [cardioKey]: JSON.stringify(value) });
   await page.goto('cardio');
@@ -131,10 +135,35 @@ test('editing a valid cardio session preserves weekly goals, legacy entries and 
   expect(saved.dailyLogs['2025-03-02'].sessions[0].duration).toBe(26);
   expect(saved.dailyLogs['2025-03-04']).toEqual(value.dailyLogs['2025-03-04']);
 });
-test('an enabled dashboard cardio widget uses the same guarded initialization', async ({ page }) => {
+test('dormant dashboard widget settings do not cause hidden cardio writes', async ({ page }) => {
   await seed(page, { [cardioKey]: '{', fitcircle_dashboard_widgets: JSON.stringify([{ id: 'cardio-synthetic', type: 'cardio', title: 'Cardio', enabled: true, position: 0, size: 'small' }]) });
   await page.goto('./');
-  await expect(page.getByRole('heading', { name: 'Your saved cardio data needs attention' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
   expect(await page.evaluate(key => localStorage.getItem(key), cardioKey)).toBe('{');
   expect(await writes(page)).toEqual([]);
+});
+
+test('editing a legacy alias keeps the source and produces an exportable canonical primary document', async ({ page }) => {
+  await page.clock.install({ time: new Date('2025-03-02T12:00:00Z') });
+  const raw = JSON.stringify(legacyCardio);
+  await seed(page, { cardio: raw });
+  await page.goto('cardio');
+  await page.getByTestId('button-edit-session-synthetic-old').first().click();
+  await page.getByRole('dialog').getByRole('spinbutton').first().fill('13');
+  await page.getByRole('button', { name: 'Update Entry', exact: true }).click();
+  expect(await page.evaluate(() => localStorage.getItem('cardio'))).toBe(raw);
+  await page.goto('settings');
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download Complete Backup' }).click();
+  const stream = await (await download).createReadStream(); const chunks: Buffer[] = [];
+  for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
+  const backup = JSON.parse(Buffer.concat(chunks).toString());
+  expect(backup.localStorage.cardio).toBe(raw);
+  expect(JSON.parse(backup.localStorage[cardioKey]).dailyLogs['2025-03-02'].sessions[0].duration).toBe(13);
+  page.on('dialog', dialog => dialog.accept());
+  await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-roundtrip.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
+  await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
+  await page.goto('cardio');
+  await expect(page.getByRole('button', { name: 'Log Cardio', exact: true })).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('cardio'))).toBe(raw);
 });
