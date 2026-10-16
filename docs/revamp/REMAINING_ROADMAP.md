@@ -8,7 +8,7 @@ Verified baseline: main `fc09b8a` on 2026-10-16. PRs #24, #26 and #27 are merged
 | --- | --- |
 | FC-006 | Completed: PR #24 fixes selector mutation and adds regression/CI safeguards. |
 | FC-001, FC-002 | Completed: PR #26 preserves historical goals and genuine journal timestamps. |
-| FC-003 | Partially completed: PR #27 protects the workout document. Remaining cardio/wellness/food and action-driven persistence paths are **essential unfinished Phase 1 work**. Local cardio work is unmerged and not credited as a fix. |
+| FC-003 | Partially completed: PR #27 protects the workout document. Remaining cardio/wellness/food and action-driven persistence paths are **essential unfinished Phase 1 work**. The proposed cardio correction in the final review PR is unmerged and not credited as a main-branch fix. |
 | FC-004 | Essential unfinished: confirmed swallowed food-save failures. Include visible failure reporting (FC-017) and backup-compatible validation (FC-029) where necessary. |
 | FC-005 | Essential investigation: high-risk stale writers are probable; reproduce actual mounted consumers before choosing the smallest correction. |
 | FC-007, FC-009–011, FC-013, FC-016 | Phase 1 correctness candidates: confirmed DST, goal/draft/profile, nutrition and invalid-route problems; address active daily-use paths first. |
@@ -46,4 +46,8 @@ Phase 1 is **not complete**: confirmed high-severity initialization and food-sav
 
 At Phase 1 completion publish a concise report listing merged fixes, verified internal removals, remaining finding IDs with essential/optional disposition, actual validation and manual-device limits, and an explicit statement about unresolved high-severity defects. Name the best next Phase 2 improvement based on then-current evidence (currently session/background reliability is a candidate, not a fixed promise).
 
-Update this file after actual merges, never merely when a PR is proposed or approved. Preserve synthetic fixtures and original audit evidence. The immediate best next implementation is Batch A, beginning with the already-reproduced cardio initialization overwrite and finishing its backup-safe recovery; its local work has not completed validation and must not be deployed.
+Update this file after actual merges, never merely when a PR is proposed or approved. Preserve synthetic fixtures and original audit evidence. The immediate best next implementation is Batch A, beginning with the already-reproduced cardio initialization overwrite and finishing its backup-safe recovery; its correction has completed validation but still requires review and merge before it counts as fixed on main.
+
+## Final delivery scope adjustment
+
+At the user’s subsequent request, finish the existing cardio/food fixes, perform a final verified cleanup PR and stop implementation. The batches above remain future reference, not a commitment to continue now. See [CLEANUP_REPORT.md](CLEANUP_REPORT.md) for actual included work, validation and remaining high-severity risks. Do not label deferred essential fixes completed.

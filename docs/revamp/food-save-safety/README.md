@@ -1,6 +1,6 @@
 # Batch A: honest food saves and backup-compatible writes
 
-Independent base: merged main `fc09b8a` (PRs #24, #26, #27). Cardio PR #28 is separate and unmerged; its tests/code are not included in this branch. The unchanged companion REMAINING_ROADMAP.md tracks actual merged fixes, not proposed ones. No original finding or audit file was deleted or relabelled completed.
+This work was first prepared independently from merged main `fc09b8a` (PRs #24, #26, #27). Its standalone validation below reflects that original branch. The final handoff PR consolidates the finished cardio and food corrections with cleanup; see ../CLEANUP_REPORT.md for combined validation. The unchanged companion REMAINING_ROADMAP.md tracks actual merged fixes, not proposed ones. No original finding or audit file was deleted or relabelled completed.
 
 ## Before → after
 
