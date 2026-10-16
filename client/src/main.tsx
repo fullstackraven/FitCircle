@@ -10,6 +10,8 @@ import "./styles/glass.css";
 import { Router } from "wouter";
 import { restorePagesRoute, registerPWA } from "@/lib/pwa";
 
+import { WorkoutDataBoundary } from "@/components/WorkoutDataRecovery";
+
 import { recoverInterruptedRestore } from "@/lib/backup";
 
 recoverInterruptedRestore();
@@ -19,8 +21,10 @@ registerPWA();
 // Recover storage before loading modules that initialize fitness state.
 import("./App").then(({ default: App }) => {
   createRoot(document.getElementById("root")!).render(
-    <Router base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-      <App />
-    </Router>
+    <WorkoutDataBoundary>
+      <Router base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+        <App />
+      </Router>
+    </WorkoutDataBoundary>
   );
 });

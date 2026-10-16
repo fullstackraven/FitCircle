@@ -13,8 +13,10 @@ const foods = z.array(food);
 const session = shaped({ id: text, time: text, duration: number });
 const workout = shaped({ id: text, name: text, color: text, count: number, dailyGoal: number, scheduledDays: z.array(number.int().min(0).max(6)).optional(), goalHistory: z.array(shaped({ goal: number, timestamp: text })).optional() });
 const dailyLog = record(z.union([number, shaped({ count: number, goalAtTime: number })]));
+// Shared validation only; backup acceptance and stored representations are unchanged.
+export const workoutDataSchema = shaped({ workouts: z.union([record(workout), z.array(workout)]), dailyLogs: record(dailyLog).optional(), journalEntries: record(z.union([text, shaped({ text, timestamp: text })])).optional(), routines: record(shaped({ id: text, name: text, selectedDays: z.array(number), createdAt: text })).optional() });
 const schemas: Record<string, z.ZodTypeAny> = {
-  'workout-tracker-data': shaped({ workouts: z.union([record(workout), z.array(workout)]), dailyLogs: record(dailyLog).optional(), journalEntries: record(z.union([text, shaped({ text, timestamp: text })])).optional(), routines: record(shaped({ id: text, name: text, selectedDays: z.array(number), createdAt: text })).optional() }),
+  'workout-tracker-data': workoutDataSchema,
   'workout-tracker-logs': record(dailyLog),
   fitcircle_food_database: foods,
   fitcircle_goal_cardio: shaped({ type: z.enum(['distance', 'duration']), target: number, period: z.enum(['day', 'week']).optional() }),
