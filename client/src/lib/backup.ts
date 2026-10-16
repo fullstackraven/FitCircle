@@ -1,3 +1,4 @@
+import { findStorageSource, isBackupKey as isAppKey, scalarKeys, calculatorKeys, goalKey, datedFoodKey } from './storage-registry';
 import { z } from 'zod';
 import builtInFoods from '../data/comprehensive-foods.json';
 
@@ -38,15 +39,7 @@ const schemas: Record<string, z.ZodTypeAny> = {
   fitcircle_wellness_weights: record(number),
   fitcircle_wellness_layout: z.array(text),
 };
-const scalarKeys = new Set(['fitcircle_username', 'fitcircle_age', 'fitcircle_weight', 'fitcircle_fitness_goal', 'fitcircle_weight_goal_type', 'fitcircle_device_id', 'fitcircle_food_database_migrated', 'fitcircle_auto_backup_enabled', 'fitcircle_last_auto_backup', 'fitcircle_quote_date', 'fitcircle_last_quote_index', 'fitcircle_height', 'fitcircle_body_fat', 'fitcircle_neck', 'fitcircle_chest', 'fitcircle_waist', 'fitcircle_hips', 'fitcircle_bicep_left', 'fitcircle_bicep_right', 'fitcircle_forearm_left', 'fitcircle_forearm_right', 'fitcircle_thigh_left', 'fitcircle_thigh_right', 'fitcircle_calf_left', 'fitcircle_calf_right']);
-const calculatorKeys = new Set(['activity_level', 'goal_type', 'goal_rate', 'macro_style', 'custom_carbs', 'custom_protein', 'custom_fat', 'target_calories', 'target_carbs', 'target_protein', 'target_fat'].map(k => `fitness_calc_${k}`));
-const goalKey = /^fitcircle_goal_(hydration|meditation|fasting|weight|bodyfat)$/;
-const datedFoodKey = /^fitcircle_food_(?:tracker)?\d{4}-\d{2}-\d{2}$/;
-// Preserve retired FitCircle data in backups, without reviving any removed feature.
-const legacyKeys = new Set(['fitcircle_trainer_messages', 'fitcircle_notes', 'fitcircle_food_tracker', 'fitcircle_food_tracker_data', 'fitcircle_cardio', 'cardioLogs', 'cardio_entries', 'cardio']);
-export function isAppKey(key: string): boolean {
-  return Object.hasOwn(schemas, key) || scalarKeys.has(key) || calculatorKeys.has(key) || goalKey.test(key) || datedFoodKey.test(key) || legacyKeys.has(key);
-}
+export { isBackupKey as isAppKey } from './storage-registry';
 
 export interface Backup {
   format: 'fitcircle-backup';
@@ -54,6 +47,8 @@ export interface Backup {
   createdAt: string;
   localStorage: Record<string, string>;
   indexedDB: { customFoods: unknown[] };
+  // Optional v2 metadata: old v2 files remain accepted, old readers ignore it.
+  manifest?: { version: 1; localStorageKeys: string[]; indexedDB: { database: string; store: string; records: number }[] };
 }
 export interface RestorePlan { entries: Record<string, string>; ignoredKeys: string[] }
 const plain = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -66,6 +61,7 @@ function validateEntry(key: string, raw: string) {
   let value: unknown;
   try { value = JSON.parse(raw); } catch { throw new Error(`Invalid JSON in ${key}`); }
   const schema = datedFoodKey.test(key) ? z.array(food.extend({ meal: z.enum(['breakfast', 'lunch', 'dinner', 'snack']), timestamp: text })) : schemas[key];
+  if (!schema && findStorageSource('localStorage', key)?.classification !== 'legacy data') throw new Error(`Missing backup validator for ${key}`);
   if (schema && !schema.safeParse(value).success) throw new Error(`Invalid data in ${key}`);
 }
 
@@ -79,6 +75,12 @@ export function prepareRestore(input: unknown): RestorePlan {
     if (input.version !== 2 || !plain(input.localStorage) || !plain(input.indexedDB) || typeof input.createdAt !== 'string') throw new Error('Unsupported or malformed backup');
     source = input.localStorage;
     customFoods = input.indexedDB.customFoods;
+    if (input.manifest !== undefined) {
+      const manifest = z.object({ version: z.literal(1), localStorageKeys: z.array(text), indexedDB: z.array(z.object({ database: z.literal('FitCircleCustomFoods'), store: z.literal('foods'), records: number.int().nonnegative() })).length(1) }).safeParse(input.manifest);
+      if (!manifest.success || !Array.isArray(customFoods) ||
+          JSON.stringify([...manifest.data.localStorageKeys].sort()) !== JSON.stringify(Object.keys(source).sort()) ||
+          manifest.data.indexedDB[0].records !== customFoods.length) throw new Error('Backup manifest does not match its data; the file may be incomplete');
+    }
   }
   const parsedFoods = foods.safeParse(customFoods);
   if (!parsedFoods.success) throw new Error('Invalid IndexedDB custom foods');
@@ -149,30 +151,67 @@ export function applyRestore(plan: RestorePlan, storage: Storage = localStorage,
  * Export it explicitly; never enumerate or alter unrelated origin databases. */
 export async function readIndexedFoods(factory: IDBFactory = indexedDB): Promise<unknown[]> {
   return new Promise((resolve, reject) => {
-    const request = factory.open('FitCircleCustomFoods', 1);
-    request.onupgradeneeded = () => {
-      if (!request.result.objectStoreNames.contains('foods')) request.result.createObjectStore('foods', { keyPath: 'id' });
+    let db: IDBDatabase | undefined;
+    let settled = false;
+    const fail = () => {
+      if (settled) return;
+      settled = true;
+      db?.close();
+      reject(new Error('Cannot read FitCircleCustomFoods/foods. Close other FitCircle tabs and retry; no complete backup was produced.'));
     };
-    request.onblocked = () => reject(new Error('Close other FitCircle tabs to read the food database'));
-    request.onerror = () => reject(request.error);
+    let request: IDBOpenDBRequest;
+    try { request = factory.open('FitCircleCustomFoods', 1); } catch { fail(); return; }
+    request.onupgradeneeded = () => {
+      // Retain the existing empty legacy-schema initialization used by the food
+      // service. Never delete records, rename stores or migrate databases.
+      try {
+        if (!request.result.objectStoreNames.contains('foods')) request.result.createObjectStore('foods', { keyPath: 'id' });
+      } catch { request.transaction?.abort(); fail(); }
+    };
+    request.onblocked = fail;
+    request.onerror = fail;
     request.onsuccess = () => {
-      const db = request.result;
-      if (!db.objectStoreNames.contains('foods')) { db.close(); reject(new Error('Legacy food database is missing its foods store')); return; }
-      const tx = db.transaction('foods', 'readonly');
-      const read = tx.objectStore('foods').getAll();
-      tx.oncomplete = () => { db.close(); resolve(read.result); };
-      tx.onabort = () => { db.close(); reject(tx.error); };
+      db = request.result;
+      if (settled) { db.close(); return; }
+      try {
+        if (!db.objectStoreNames.contains('foods')) { fail(); return; }
+        const tx = db.transaction('foods', 'readonly');
+        const read = tx.objectStore('foods').getAll();
+        tx.onabort = fail;
+        tx.onerror = fail;
+        read.onerror = fail;
+        tx.oncomplete = () => {
+          db?.close();
+          if (settled) return;
+          settled = true;
+          resolve(read.result);
+        };
+      } catch { fail(); }
     };
   });
 }
 export async function createBackup(storage: Storage = localStorage, factory: IDBFactory = indexedDB): Promise<Backup> {
+  // Never call a partially applied restore a complete backup. Recovery remains
+  // the existing explicit startup path; exporting does not write any data.
+  if (storage.getItem(JOURNAL) !== null) throw new Error('Reload to recover the interrupted restore before exporting a backup');
   const customFoods = await readIndexedFoods(factory);
   const entries: Record<string, string> = Object.create(null);
-  for (let i = 0; i < storage.length; i++) {
+  const length = storage.length;
+  for (let i = 0; i < length; i++) {
     const key = storage.key(i);
-    if (key && isAppKey(key)) entries[key] = storage.getItem(key)!;
+    if (key === null) throw new Error('Could not enumerate storage; retry the backup');
+    if (!isAppKey(key)) continue;
+    let raw: string | null;
+    try { raw = storage.getItem(key); } catch { throw new Error(`Cannot read backup source: ${key}`); }
+    if (raw === null) throw new Error(`Backup source disappeared while reading: ${key}`);
+    entries[key] = raw;
   }
-  const backup: Backup = { format: 'fitcircle-backup', version: 2, createdAt: new Date().toISOString(), localStorage: entries, indexedDB: { customFoods } };
+  if (storage.length !== length) throw new Error('Storage changed while reading; retry the backup');
+  const backup: Backup = {
+    format: 'fitcircle-backup', version: 2, createdAt: new Date().toISOString(),
+    localStorage: entries, indexedDB: { customFoods },
+    manifest: { version: 1, localStorageKeys: Object.keys(entries).sort(), indexedDB: [{ database: 'FitCircleCustomFoods', store: 'foods', records: customFoods.length }] },
+  };
   prepareRestore(backup);
   return backup;
 }

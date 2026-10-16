@@ -1,0 +1,19 @@
+name: Validate storage and backup coverage
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  backup-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      # Includes AST discovery, registration regressions and full backup fixtures.
+      - run: npm test
