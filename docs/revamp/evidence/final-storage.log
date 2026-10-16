@@ -1,0 +1,4 @@
+> fitcircle@1.0.0 audit:storage
+> tsx scripts/audit-storage.ts
+
+217 storage call sites; 0 audit errors

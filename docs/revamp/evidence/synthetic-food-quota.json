@@ -1,0 +1,17 @@
+{
+  "response": {
+    "success": true,
+    "food": {
+      "id": "custom-1792156782059-n86tral6e",
+      "name": "Synthetic quota food",
+      "quantity": 100,
+      "unit": "g",
+      "calories": 80,
+      "carbs": 10,
+      "protein": 5,
+      "fat": 2
+    },
+    "message": "\"Synthetic quota food\" has been added to your custom foods."
+  },
+  "storedFoods": []
+}

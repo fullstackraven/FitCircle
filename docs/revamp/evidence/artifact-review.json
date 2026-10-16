@@ -1,0 +1,50 @@
+{
+  "client/src/data/comprehensive-foods.backup.json": {
+    "records": 29766,
+    "duplicateIds": 0,
+    "missingCoreFields": 0,
+    "units": {
+      "g": 27871,
+      "piece": 80,
+      "slice": 540,
+      "cup": 615,
+      "ml": 660
+    },
+    "negativeNutrition": 0
+  },
+  "client/src/data/comprehensive-foods.json": {
+    "records": 465,
+    "duplicateIds": 0,
+    "missingCoreFields": 0,
+    "units": {
+      "ml": 15,
+      "g": 449,
+      "slice": 1
+    },
+    "negativeNutrition": 0
+  },
+  "lock": {
+    "lockfileVersion": 3,
+    "packages": 350,
+    "missingIntegrity": [],
+    "nonRegistryResolved": []
+  },
+  "exactDuplicates": [
+    [
+      "docs/review/stage1/logs-after.png",
+      "docs/review/stage2/logs-before.png"
+    ],
+    [
+      "docs/review/stage2/calculator-after.png",
+      "docs/review/stage3/before/calculator.png"
+    ],
+    [
+      "docs/review/stage2/logs-after.png",
+      "docs/review/stage3/before/logs.png"
+    ],
+    [
+      "docs/review/stage3/after/reminders.png",
+      "docs/review/stage3/before/reminders.png"
+    ]
+  ]
+}

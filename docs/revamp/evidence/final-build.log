@@ -1,0 +1,57 @@
+> fitcircle@1.0.0 build
+> vite build && tsx scripts/build-viewport-test.tsx && node scripts/build-pwa.mjs
+
+vite v5.4.20 building for production...
+transforming...
+Browserslist: browsers data (caniuse-lite) is 16 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 2842 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/index.html                                                   4.15 kB │ gzip:   1.66 kB
+../dist/assets/jetbrains-mono-greek-400-normal-C190GLew.woff2        4.23 kB
+../dist/assets/jetbrains-mono-greek-500-normal-JpySY46c.woff2        4.28 kB
+../dist/assets/jetbrains-mono-greek-700-normal-C6CZE3T8.woff2        4.30 kB
+../dist/assets/jetbrains-mono-greek-600-normal-H7WoG9Et.woff2        4.31 kB
+../dist/assets/jetbrains-mono-cyrillic-400-normal-BEIGL1Tu.woff2     5.33 kB
+../dist/assets/jetbrains-mono-cyrillic-700-normal-BWTpRfYl.woff2     5.34 kB
+../dist/assets/jetbrains-mono-cyrillic-500-normal-DmUKJPL_.woff2     5.36 kB
+../dist/assets/jetbrains-mono-vietnamese-400-normal-CqNFfHCs.woff    5.37 kB
+../dist/assets/jetbrains-mono-cyrillic-600-normal-EVf6-Yzo.woff2     5.38 kB
+../dist/assets/jetbrains-mono-vietnamese-700-normal-BDLVIk2r.woff    5.45 kB
+../dist/assets/jetbrains-mono-vietnamese-500-normal-DNRqzVM1.woff    5.48 kB
+../dist/assets/jetbrains-mono-vietnamese-600-normal-OWROknRo.woff    5.48 kB
+../dist/assets/jetbrains-mono-greek-400-normal-B9oWc5Lo.woff         5.66 kB
+../dist/assets/jetbrains-mono-greek-700-normal-DEigVDxa.woff         5.70 kB
+../dist/assets/jetbrains-mono-greek-600-normal-mc2nkWzM.woff         5.70 kB
+../dist/assets/jetbrains-mono-greek-500-normal-D7SFKleX.woff         5.72 kB
+../dist/assets/jetbrains-mono-cyrillic-400-normal-ugxPyKxw.woff      6.98 kB
+../dist/assets/jetbrains-mono-cyrillic-700-normal-CEoEElIJ.woff      7.02 kB
+../dist/assets/jetbrains-mono-cyrillic-600-normal-8K4wrrwR.woff      7.02 kB
+../dist/assets/jetbrains-mono-cyrillic-500-normal-DJqRU3vO.woff      7.02 kB
+../dist/assets/jetbrains-mono-latin-ext-400-normal-Bc8Ftmh3.woff2    7.34 kB
+../dist/assets/jetbrains-mono-latin-ext-700-normal-CZipNAKV.woff2    7.47 kB
+../dist/assets/jetbrains-mono-latin-ext-600-normal-BfB_LPfz.woff2    7.51 kB
+../dist/assets/jetbrains-mono-latin-ext-500-normal-Cut-4mMH.woff2    7.53 kB
+../dist/assets/jetbrains-mono-latin-ext-400-normal-fXTG6kC5.woff    10.13 kB
+../dist/assets/jetbrains-mono-latin-ext-700-normal-CxPITLHs.woff    10.30 kB
+../dist/assets/jetbrains-mono-latin-ext-600-normal-DObL3zCW.woff    10.32 kB
+../dist/assets/jetbrains-mono-latin-ext-500-normal-ckzbgY84.woff    10.34 kB
+../dist/assets/jetbrains-mono-latin-400-normal-V6pRDFza.woff2       21.17 kB
+../dist/assets/jetbrains-mono-latin-500-normal-BWZEU5yA.woff2       21.83 kB
+../dist/assets/jetbrains-mono-latin-600-normal-C8RAYTDA.woff2       21.86 kB
+../dist/assets/jetbrains-mono-latin-700-normal-BYuf6tUa.woff2       21.91 kB
+../dist/assets/jetbrains-mono-latin-400-normal-6-qcROiO.woff        27.50 kB
+../dist/assets/jetbrains-mono-latin-600-normal-BfsvjouI.woff        28.18 kB
+../dist/assets/jetbrains-mono-latin-700-normal-D3wTyLJW.woff        28.21 kB
+../dist/assets/jetbrains-mono-latin-500-normal-CJOVTJB7.woff        28.21 kB
+../dist/assets/index-xX1B_yY2.css                                  108.44 kB │ gzip:  38.44 kB
+../dist/assets/index-DhMQtON7.js                                   344.49 kB │ gzip:  81.51 kB
+../dist/assets/App-uegoNRCg.js                                     885.97 kB │ gzip: 235.17 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 10.02s

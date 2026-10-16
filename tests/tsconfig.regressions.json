@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.json",
+  "include": [
+    "dashboard-and-dates.test.ts",
+    "browser/persistence-regressions.spec.ts"
+  ],
+  "exclude": ["../node_modules", "../dist"]
+}
