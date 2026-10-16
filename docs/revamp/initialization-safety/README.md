@@ -56,3 +56,44 @@ The initial targeted recovery suite also passed all 24 browser cases before the 
 ## Rollback
 
 No reverse data migration is necessary: no new stored format or key is written. Reverting the guard reintroduces the old fallback-overwrite risk and must not be treated as data recovery. Preserve raw copies/verified backups and prefer a forward correction. Open a separate PR for review only; do not merge or deploy automatically.
+
+
+## Final recovery-safety review amendment — 2026-10-16
+
+Reviewed PR head `d80e4d8` and amended only the recovery component, its browser regressions and this report. No importer, storage schema/key/format, other domain, styling, worker or viewport code changes. No merge or deployment.
+
+### Download handoff and truthful status
+
+The prior component removed the anchor and revoked its blob URL synchronously after click, then claimed the file was downloaded. Browsers can consume the blob after that call returns, and a web page cannot confirm completion of an iOS Files save. The recovery path now initiates the anchor click synchronously within the user gesture, retains the non-tab-focusable anchor and URL for 60 seconds, then removes/revokes them together. Cleanup is time-bounded even if click throws. No unmount cleanup revokes the URL prematurely. Navigating away may end the document and its resources; the delay is a best-effort handoff accommodation, not proof of OS save completion.
+
+Status now says **Download requested**, explains Share → Save to Files if a preview opens, and asks the user to verify the saved file before restoring. Synchronous initiation failure reports failure and retains stored data. No message claims the browser or OS completed a save. The existing recovery JSON representation is unchanged.
+
+Repository review found no shared proven download utility. Settings has similar immediate-revocation local code, so copying that pattern would not resolve this concern. The separate Complete Backup exporter is not modified by this focused amendment.
+
+New Chromium regression tests intercept revocation and use a simulated clock to verify that the recovery URL/anchor survive the click and are cleaned after the delay. They check request-only messaging and blocked initiation without storage changes. Existing tests still read actual downloaded files and compare the exact decoded stored string. This is not a Safari/WebKit or physical installed-iOS test. Actual iOS preview/Files/Share behavior remains manual acceptance work in a disposable synthetic-data test environment; do not corrupt a real installed app to test it.
+
+### Accepted incomplete backups through the full restore workflow
+
+Added end-to-end cases for legacy object values, legacy raw stored strings and version 2 without a manifest. Each imports an otherwise accepted document with real synthetic workouts, authoritative historical goalAtTime and fractional journal timestamps, but no routines collection. The existing confirmation is shown; after acceptance the exact partial document is stored and remains byte-identical through blocked initialization/reload and recovery download. Missing routines are never silently filled; workout, log and journal records are not inferred or discarded. Unrelated origin data and a separate legacy workout-log key remain unchanged.
+
+The recovery explanation now explicitly says **workout tracking has not resumed** if the screen returns after an older import. Settings does not display an import-success message before this blocked state. The user can download the original imported document, return to Settings, and explicitly restore a complete verified backup; the tests confirm normal workout rendering resumes only after that complete restore. A cancellation case verifies the original complete document is untouched when the user declines a partial import.
+
+Compatibility does not mean merging partial workout collections into the previous document: existing confirmed restore semantics still replace matching keys. The confirmation states that matching items will be replaced. This amendment does not change that behavior or promise recovery of records omitted from a user-confirmed replacement; it prevents subsequent initialization from erasing or inventing data in the imported document.
+
+### Actual revalidation
+
+Before the component amendment, the two focused negative controls failed on immediate revocation and missing explicit blocked-operation wording. After amendment all six focused cases passed in 6.1s. Full checks were then rerun against the rebuilt production app (Node v24.19.0, npm 11.9.0, system Chromium):
+
+| Command | Exit | Actual result |
+| --- | --- | --- |
+| `npm run check` | 0 | Application TypeScript passed |
+| `npx tsc --noEmit -p tests/tsconfig.regressions.json` | 0 | Regression TypeScript passed |
+| `npm run audit:storage` | 0 | 215 call sites, zero errors |
+| `npm test` | 0 | All 151 passed; no failures/skips/todo |
+| `npm run build` | 0 | Passed in 10.75s; existing chunk-size warning remains |
+| `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e` | 0 | All 109 passed in 1.5m, no retries (previous 103 + 6 focused cases) |
+| `git diff --check` | 0 | No whitespace errors |
+
+No post-amendment validation failures remain. Physical iOS Safari/PWA, real Files saving and WebKit engine verification are not claimed. FC-004/005 and diagnostic issue #25 remain separate.
+
+After PR #27 is merged, the next independent FC-003 candidate is cardio initialization: its load/migration and autosave effects can write defaults before loaded state commits, and malformed reads can also fall back to defaults. Start from then-current main with regression tests covering primary/legacy formats and load/save ordering before editing that domain. No cardio changes are included here.

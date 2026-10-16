@@ -98,3 +98,93 @@ test('valid legacy array workout containers are not normalized on initialization
   await expect(page.getByText('Synthetic legacy array', { exact: true })).toBeVisible();
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)!), key)).toEqual(data);
 });
+
+test('recovery download keeps its URL alive for browser handoff and reports only a request', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-16T12:00:00Z') });
+  await seed(page, malformedWorkouts[0].raw);
+  await page.goto('./');
+  await expect(page.getByRole('heading', { name: 'Your saved workouts need attention' })).toBeVisible();
+  await page.evaluate(() => {
+    const original = URL.revokeObjectURL;
+    const revoked: string[] = [];
+    URL.revokeObjectURL = function(url) { revoked.push(url); original.call(URL, url); };
+    Object.assign(window, { recoveryRevocations: revoked });
+  });
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download original stored data' }).click();
+  await download;
+  expect(await page.evaluate(() => (window as unknown as { recoveryRevocations: string[] }).recoveryRevocations)).toEqual([]);
+  await expect(page.getByRole('status')).toContainText('Download requested');
+  await expect(page.getByRole('status')).not.toContainText('downloaded');
+  await expect(page.getByRole('status')).toContainText('Save to Files');
+  await expect(page.locator('a[download="fitcircle-original-workout-data.json"]')).toHaveCount(1);
+  await page.clock.fastForward(60_001);
+  expect(await page.evaluate(() => (window as unknown as { recoveryRevocations: string[] }).recoveryRevocations.length)).toBe(1);
+  await expect(page.locator('a[download="fitcircle-original-workout-data.json"]')).toHaveCount(0);
+});
+
+test('failed recovery download never reports success or changes stored records', async ({ page }) => {
+  const raw = malformedWorkouts[0].raw;
+  await seed(page, raw);
+  await page.goto('./');
+  await page.evaluate(() => { URL.createObjectURL = () => { throw new Error('Synthetic blocked download'); }; });
+  await page.getByRole('button', { name: 'Download original stored data' }).click();
+  await expect(page.getByRole('status')).toContainText('download could not start');
+  await expect(page.getByRole('status')).not.toContainText('downloaded');
+  expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe(raw);
+});
+
+for (const format of ['legacy objects', 'legacy raw strings', 'old version 2'] as const) {
+  test(`incomplete ${format} backup remains recoverable and can be followed by a complete restore`, async ({ page }) => {
+    const partial = {
+      workouts: { a: { id: 'a', name: 'Synthetic imported movement', color: 'green', count: 0, dailyGoal: 30 } },
+      dailyLogs: { '2026-01-01': { a: { count: 8, goalAtTime: 20 } } },
+      journalEntries: { '2026-01-01': { text: 'Synthetic imported journal', timestamp: '2026-01-01T18:00:00.123Z' } },
+      // routines is absent: accepted by the existing backup validator, unsafe for runtime initialization.
+    };
+    const raw = JSON.stringify(partial);
+    await seed(page, JSON.stringify({ workouts: {}, dailyLogs: {}, journalEntries: {}, routines: {} }));
+    await page.evaluate(() => localStorage.setItem('workout-tracker-logs', '{"2025-01-01":{"old":5}}'));
+    await page.goto('settings');
+    const backup = format === 'legacy objects' ? { [key]: partial } : format === 'legacy raw strings' ? { [key]: raw }
+      : { format: 'fitcircle-backup', version: 2, createdAt: '2026-01-01T12:00:00Z', localStorage: { [key]: raw }, indexedDB: { customFoods: [] } };
+    const prompts: string[] = [];
+    page.on('dialog', async dialog => { prompts.push(dialog.message()); await dialog.accept(); });
+    await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-older-partial.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
+    await expect(page.getByRole('heading', { name: 'Your saved workouts need attention' })).toBeVisible();
+    expect(prompts[0]).toContain('Matching items will be replaced; other data will be kept');
+    await expect(page.locator('body')).toContainText('workout tracking has not resumed');
+    await expect(page.locator('body')).not.toContainText('successfully');
+    expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe(raw);
+    expect(await page.evaluate(() => localStorage.getItem('workout-tracker-logs'))).toBe('{"2025-01-01":{"old":5}}');
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download original stored data' }).click();
+    const file = await download;
+    const stream = await file.createReadStream();
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
+    expect(JSON.parse(Buffer.concat(chunks).toString())).toEqual({ [key]: raw });
+    await page.reload();
+    await expect(page.getByRole('heading', { name: 'Your saved workouts need attention' })).toBeVisible();
+    expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe(raw);
+    await page.getByRole('link', { name: 'Open Settings to restore a backup' }).click();
+    const complete = { ...partial, routines: {} };
+    await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-verified-complete.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ [key]: complete })) });
+    await expect(page.getByText('Synthetic imported movement', { exact: true })).toBeVisible();
+    expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)!), key)).toEqual(complete);
+    expect(await page.evaluate(() => localStorage.getItem('unrelated-synthetic'))).toBe('retain');
+    expect(await page.evaluate(() => localStorage.getItem('workout-tracker-logs'))).toBe('{"2025-01-01":{"old":5}}');
+  });
+}
+
+test('cancelling an accepted incomplete backup import retains the existing complete document', async ({ page }) => {
+  const raw = JSON.stringify({ workouts: {}, dailyLogs: {}, journalEntries: {}, routines: {} });
+  await seed(page, raw);
+  await page.goto('settings');
+  page.once('dialog', dialog => dialog.dismiss());
+  await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-partial-cancelled.json', mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify({ [key]: { workouts: {} } })) });
+  await expect(page.getByText('Restore cancelled.', { exact: true })).toBeVisible();
+  expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe(raw);
+  expect(await page.evaluate(() => localStorage.getItem('unrelated-synthetic'))).toBe('retain');
+});

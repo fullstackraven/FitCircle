@@ -7,18 +7,30 @@ function WorkoutDataRecovery({ error }: { error: StoredWorkoutDataError }) {
   const downloadOriginal = () => {
     if (error.raw === null) return;
     let url: string | undefined;
+    let link: HTMLAnchorElement | undefined;
     try {
       // Existing legacy raw-string JSON representation preserves even incomplete
       // JSON and escaped Unicode. This is a recovery copy, not a valid full backup.
       const blob = new Blob([JSON.stringify({ [STORAGE_KEYS.WORKOUTS]: error.raw }, null, 2)], { type: 'application/json' });
       url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      link = document.createElement('a');
+      link.tabIndex = -1;
       link.href = url; link.download = 'fitcircle-original-workout-data.json';
-      document.body.appendChild(link); link.click(); link.remove();
-      setStatus('Recovery copy downloaded. Keep it before restoring a verified backup.');
+      document.body.appendChild(link); link.click();
+      setStatus('Download requested. If a preview opens, use Share → Save to Files. Confirm the file was saved before restoring.');
     } catch {
       setStatus('The download could not start. Your stored data has not been changed. Try again or retry loading.');
-    } finally { if (url) URL.revokeObjectURL(url); }
+    } finally {
+      // Safari/PWA handoff can read the blob asynchronously after click returns.
+      // Keep both resources briefly; the web page cannot observe Files saving.
+      const pendingUrl = url;
+      const pendingLink = link;
+      if (pendingUrl) window.setTimeout(() => {
+        pendingLink?.remove();
+        URL.revokeObjectURL(pendingUrl);
+      }, 60_000);
+      else pendingLink?.remove();
+    }
   };
   return (
     <section className="min-h-dvh bg-slate-900 text-slate-100 px-6 py-8" style={{ paddingTop: 'max(2rem, env(safe-area-inset-top))', paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}>
@@ -32,7 +44,7 @@ function WorkoutDataRecovery({ error }: { error: StoredWorkoutDataError }) {
         {error.raw === null && <p>The original data could not be read, so a recovery download is unavailable. Check browser storage access and retry.</p>}
         <button type="button" className="block rounded-xl bg-slate-700 px-4 py-3" onClick={() => window.location.reload()}>Retry loading</button>
         <a className="inline-block rounded-xl bg-blue-600 px-4 py-3" href={`${import.meta.env.BASE_URL}settings`}>Open Settings to restore a backup</a>
-        <p>Settings can restore an existing verified JSON backup using the usual confirmation. Matching records will be replaced only if you choose to restore. An incomplete older workout document may still need repair; missing collections are not filled automatically.</p>
+        <p>Settings can restore an existing verified JSON backup using the usual confirmation. Matching records will be replaced only if you choose to restore. If this screen returns after an older backup is imported, workout tracking has not resumed: required workout collections may still be missing. FitCircle does not fill them automatically. Keep the imported data’s recovery copy before trying another verified backup.</p>
         <p role="status">{status}</p>
       </div>
     </section>
