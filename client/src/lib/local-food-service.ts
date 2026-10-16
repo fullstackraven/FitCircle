@@ -1,4 +1,4 @@
-import { readIndexedFoods } from './backup';
+import { readIndexedFoods, foodDataSchema } from './backup';
 import comprehensiveFoods from '../data/comprehensive-foods.json';
 
 // Types for our local food service
@@ -103,14 +103,12 @@ export interface AddCustomFoodResponse {
 
 // Local Food Service class
 export class LocalFoodService {
-  private searchIndex: Map<string, LocalFoodItem[]>;
   private readonly FOOD_DATABASE_KEY = 'fitcircle_food_database';
   private readonly MIGRATION_FLAG_KEY = 'fitcircle_food_database_migrated';
 
   readonly ready: Promise<void>;
 
   constructor() {
-    this.searchIndex = new Map();
     this.ready = this.migrateToLocalStorage();
   }
 
@@ -120,22 +118,18 @@ export class LocalFoodService {
       const migrated = localStorage.getItem(this.MIGRATION_FLAG_KEY);
       
       if (!migrated) {
-        console.log('First load: Migrating food database to localStorage...');
         
         // Get custom foods from IndexedDB
         const customFoods = await readIndexedFoods() as LocalFoodItem[];
-        console.log(`Found ${customFoods.length} custom foods in IndexedDB`);
         
         // Get built-in foods from JSON
         const builtInFoods = comprehensiveFoods as LocalFoodItem[];
-        console.log(`Found ${builtInFoods.length} built-in foods from JSON`);
         
         // Load previously deleted built-in food IDs
         const deletedIds = this.loadLegacyDeletedFoodIds();
         
         // Filter out deleted built-in foods
         const activeBuiltInFoods = builtInFoods.filter(food => !deletedIds.has(food.id));
-        console.log(`Keeping ${activeBuiltInFoods.length} built-in foods (${deletedIds.size} were deleted)`);
         
         // Combine all foods
         const existingFoods = this.getFoodsFromStorage();
@@ -147,14 +141,10 @@ export class LocalFoodService {
         // Save to localStorage
         localStorage.setItem(this.FOOD_DATABASE_KEY, JSON.stringify(allFoods));
         localStorage.setItem(this.MIGRATION_FLAG_KEY, 'true');
-        
-        console.log(`✅ Migration complete: ${allFoods.length} foods saved to localStorage`);
-        
+
         // Keep legacy records intact for rollback/export at the old origin.
       }
       
-      // Build search index
-      this.buildSearchIndex();
     } catch (error) {
       console.error('Error during migration:', error);
     }
@@ -188,35 +178,12 @@ export class LocalFoodService {
 
   // Save all foods to localStorage
   private saveFoodsToStorage(foods: LocalFoodItem[]): void {
-    try {
-      localStorage.setItem(this.FOOD_DATABASE_KEY, JSON.stringify(foods));
-    } catch (error) {
-      console.error('Error saving foods to localStorage:', error);
+    // Let existing operation catch blocks report failure; never claim success
+    // after quota/denial or persist values that the backup contract rejects.
+    if (!foodDataSchema.array().safeParse(foods).success) {
+      throw new Error('Food data is invalid. Check serving quantity and nutrition values.');
     }
-  }
-
-  // Build a search index for faster lookups
-  private buildSearchIndex(): void {
-    const foods = this.getFoodsFromStorage();
-    console.log(`Building search index for ${foods.length} foods...`);
-    
-    this.searchIndex.clear();
-    
-    foods.forEach(food => {
-      const searchKey = this.getSearchKey(food);
-      const words = searchKey.split(' ');
-      
-      words.forEach(word => {
-        if (word.length >= 1) {
-          if (!this.searchIndex.has(word)) {
-            this.searchIndex.set(word, []);
-          }
-          this.searchIndex.get(word)!.push(food);
-        }
-      });
-    });
-    
-    console.log(`Search index built with ${this.searchIndex.size} entries`);
+    localStorage.setItem(this.FOOD_DATABASE_KEY, JSON.stringify(foods));
   }
 
   private getSearchKey(food: LocalFoodItem): string {
@@ -282,7 +249,6 @@ export class LocalFoodService {
         .slice(0, limit)
         .map(result => result.food);
 
-      console.log(`Local search for "${query}": Found ${sortedResults.length} results`);
       return sortedResults;
 
     } catch (error) {
@@ -360,9 +326,7 @@ export class LocalFoodService {
       const foods = this.getFoodsFromStorage();
       foods.push(customFood);
       this.saveFoodsToStorage(foods);
-      this.buildSearchIndex();
 
-      console.log('Custom food added successfully:', customFood.name);
       return {
         success: true,
         food: customFood,
@@ -415,7 +379,6 @@ export class LocalFoodService {
 
       foods[foodIndex] = updatedFood;
       this.saveFoodsToStorage(foods);
-      this.buildSearchIndex();
 
       return {
         success: true,
@@ -446,7 +409,6 @@ export class LocalFoodService {
       }
 
       this.saveFoodsToStorage(filteredFoods);
-      this.buildSearchIndex();
       
       return { success: true };
     } catch (error) {
@@ -471,7 +433,6 @@ export class LocalFoodService {
     }
 
     this.saveFoodsToStorage(filteredFoods);
-    this.buildSearchIndex();
     
     return { success: true };
   }
@@ -527,7 +488,6 @@ export class LocalFoodService {
       const foods = this.getFoodsFromStorage();
       const nonCustomFoods = foods.filter(food => !food.id.startsWith('custom-'));
       this.saveFoodsToStorage(nonCustomFoods);
-      this.buildSearchIndex();
       return { success: true };
     } catch (error) {
       console.error('Error clearing custom foods:', error);
@@ -552,7 +512,6 @@ export class LocalFoodService {
   restoreFoodDatabase(foods: LocalFoodItem[]): { success: boolean; error?: string } {
     try {
       this.saveFoodsToStorage(foods);
-      this.buildSearchIndex();
       return { success: true };
     } catch (error) {
       console.error('Error restoring food database:', error);

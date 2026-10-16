@@ -45,13 +45,13 @@ Before is stage 2, after is this adoption. All nine scenes are Chromium simulati
 | View | Before | After |
 | --- | --- | --- |
 | Home | ![Before](before/home.png) | ![After](after/home.png) |
-| Logs | ![Before](before/logs.png) | ![After](after/logs.png) |
+| Logs | ![Before](../stage2/logs-after.png) | ![After](after/logs.png) |
 | Routines | ![Before](before/routines.png) | ![After](after/routines.png) |
 | Calendar | ![Before](before/calendar.png) | ![After](after/calendar.png) |
-| Reminders | ![Before](before/reminders.png) | ![After](after/reminders.png) |
+| Reminders | ![Before](after/reminders.png) | ![After](after/reminders.png) |
 | Sidebar | ![Before](before/sidebar.png) | ![After](after/sidebar.png) |
 | Food Tracker | ![Before](before/food-tracker.png) | ![After](after/food-tracker.png) |
-| Calculator | ![Before](before/calculator.png) | ![After](after/calculator.png) |
+| Calculator | ![Before](../stage2/calculator-after.png) | ![After](after/calculator.png) |
 | Edit Routine dialog | ![Before](before/dialog.png) | ![After](after/dialog.png) |
 
 These are review artifacts, not automated pixel-diff assertions. Dynamic quote and

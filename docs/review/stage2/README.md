@@ -49,7 +49,7 @@ Chromium mobile captures, injected 59/ 34 safe areas; no physical iOS verificati
 
 | Component | Before | After |
 | --- | --- | --- |
-| Dock / Logs | ![Before](logs-before.png) | ![After](logs-after.png) |
+| Dock / Logs | ![Before](../stage1/logs-after.png) | ![After](logs-after.png) |
 | Elevated calculator | ![Before](calculator-before.png) | ![After](calculator-after.png) |
 
 All 9 review scenes were captured with the script from stage 1. Shared Card's

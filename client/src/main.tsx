@@ -10,6 +10,7 @@ import "./styles/glass.css";
 import { Router } from "wouter";
 import { restorePagesRoute, registerPWA } from "@/lib/pwa";
 
+import { CardioDataBoundary } from "@/components/CardioDataRecovery";
 import { WorkoutDataBoundary } from "@/components/WorkoutDataRecovery";
 
 import { recoverInterruptedRestore } from "@/lib/backup";
@@ -22,9 +23,11 @@ registerPWA();
 import("./App").then(({ default: App }) => {
   createRoot(document.getElementById("root")!).render(
     <WorkoutDataBoundary>
+      <CardioDataBoundary>
       <Router base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
         <App />
       </Router>
+      </CardioDataBoundary>
     </WorkoutDataBoundary>
   );
 });

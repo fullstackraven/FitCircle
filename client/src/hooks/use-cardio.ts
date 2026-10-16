@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
+import { STORAGE_KEYS } from '@/lib/storage-utils';
+import { loadStoredCardio, StoredCardioDataError } from '@/lib/cardio-initialization';
 import { getTodayString, getAllTimeCardioAverage, getCurrentTime } from '@/lib/date-utils';
 
 export interface CardioSession {
@@ -35,7 +36,7 @@ export interface CardioGoal {
   period: 'day' | 'week'; // Support both for backward compatibility
 }
 
-interface CardioData {
+export interface CardioData {
   dailyLogs: { [date: string]: CardioDailyLog };
   goal: CardioGoal;
   goalUserSet: boolean; // Track if user has explicitly set a goal
@@ -58,176 +59,34 @@ const defaultCardioTypes = [
   'treadmill'
 ];
 
-const defaultData: CardioData = {
-  dailyLogs: {},
-  goal: {
-    type: 'duration',
-    target: 21, // ~21 minutes per day (150 minutes per week / 7)
-    period: 'day'
-  },
-  goalUserSet: false, // Default to false - user hasn't set a goal yet
-  customTypes: [],
-  lastDate: getTodayString(),
-  currentDayDuration: 0,
-  currentDayDistance: 0
-};
-
-// Type guard for safe legacy data handling
-function hasEntriesArray(x: any): x is { entries: unknown[] } {
-  return x && !Array.isArray(x) && Array.isArray(x.entries);
-}
-
 export function useCardio() {
-  const [data, setData] = useState<CardioData>(defaultData);
+  const [initial] = useState(() => {
+    let storage: Storage;
+    try { storage = localStorage; }
+    catch { throw new StoredCardioDataError({}, 'unavailable'); }
+    return loadStoredCardio(storage, getTodayString());
+  });
+  const [data, setData] = useState<CardioData>(initial.data);
 
-  // Load data from localStorage on mount with migration to daily aggregation
+  // Only explicit changes (or a later date rollover) can persist. Neither
+  // initialization, migration nor StrictMode effect replay saves fallback data.
   useEffect(() => {
+    if (data === initial.data) return;
     try {
-      let dataToLoad = defaultData;
-      let legacyEntries: CardioEntry[] = [];
-      
-      // Try to load from primary storage key
-      const storedData = localStorage.getItem(STORAGE_KEYS.CARDIO);
-      if (storedData) {
-        dataToLoad = safeParseJSON(storedData, defaultData);
-        // Check if this is legacy format with entries array
-        if ((dataToLoad as any).entries && !dataToLoad.dailyLogs) {
-          legacyEntries = (dataToLoad as any).entries;
-          dataToLoad = { ...defaultData, goal: dataToLoad.goal, goalUserSet: dataToLoad.goalUserSet, customTypes: dataToLoad.customTypes };
-        }
-      } else {
-        // Check for legacy keys from backup files
-        const legacyKeys = ['fitcircle_cardio', 'cardioLogs', 'cardio_entries', 'cardio'];
-        for (const key of legacyKeys) {
-          const legacyData = localStorage.getItem(key);
-          if (legacyData) {
-            const parsed = safeParseJSON(legacyData, []);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              legacyEntries = parsed as CardioEntry[];
-              console.log('Loaded cardio data from legacy key:', key, 'entries:', parsed.length);
-              break;
-            } else if (hasEntriesArray(parsed)) {
-              legacyEntries = parsed.entries as CardioEntry[];
-              console.log('Loaded cardio data from legacy key:', key, 'entries:', parsed.entries.length);
-              break;
-            }
-          }
-        }
+      let saved = data.goal === initial.data.goal && initial.originalGoal
+        ? { ...data, goal: initial.originalGoal } : data;
+      if (initial.legacySource) {
+        // The alias remains byte-exact. Persist its edited daily-log projection
+        // using the existing canonical format; raw legacy entries may contain
+        // numeric strings which the canonical backup validator cannot accept.
+        const { entries: _legacyEntries, ...canonical } = saved;
+        saved = canonical;
       }
-      
-      // Migration: Convert legacy entries to daily logs if needed
-      if (legacyEntries.length > 0) {
-        console.log('Migrating', legacyEntries.length, 'cardio entries to daily aggregation format');
-        
-        // Normalize entries first
-        const normalizedEntries = legacyEntries
-          .filter(entry => entry)
-          .map((entry, index) => {
-            const id = entry.id || String(entry.timestamp || `${entry.date || getTodayString()}-${entry.type || 'cardio'}-${index}`);
-            
-            let date = entry.date;
-            if (!date && entry.timestamp) {
-              date = getTodayString(); // Use consistent date format
-            }
-            if (!date) {
-              date = getTodayString();
-            }
-            
-            const duration = typeof entry.duration === 'string' ? parseFloat(entry.duration) || 0 : entry.duration || 0;
-            const distance = entry.distance ? (typeof entry.distance === 'string' ? parseFloat(entry.distance) || 0 : entry.distance) : undefined;
-            const type = entry.type || (entry as any).name || (entry as any).activity || 'cardio';
-            const timestamp = entry.timestamp || new Date(date).getTime();
-            
-            return { id, date, type, duration, distance, notes: entry.notes, timestamp };
-          });
-        
-        // Group by date and create daily logs
-        const dailyLogs: { [date: string]: CardioDailyLog } = {};
-        
-        normalizedEntries.forEach(entry => {
-          if (!dailyLogs[entry.date]) {
-            dailyLogs[entry.date] = {
-              date: entry.date,
-              totalDuration: 0,
-              totalDistance: 0,
-              sessions: []
-            };
-          }
-          
-          const session: CardioSession = {
-            id: entry.id,
-            time: getCurrentTime(), // Use consistent time format
-            type: entry.type,
-            duration: entry.duration,
-            distance: entry.distance,
-            notes: entry.notes
-          };
-          
-          dailyLogs[entry.date].sessions.push(session);
-          dailyLogs[entry.date].totalDuration += entry.duration;
-          if (entry.distance) {
-            dailyLogs[entry.date].totalDistance += entry.distance;
-          }
-        });
-        
-        dataToLoad.dailyLogs = dailyLogs;
-        console.log('Migration completed:', Object.keys(dailyLogs).length, 'daily logs created');
-      }
-
-      // Update goal format if it's still weekly
-      let normalizedGoal = dataToLoad.goal || defaultData.goal;
-      if (normalizedGoal.period === 'week') {
-        normalizedGoal = {
-          ...normalizedGoal,
-          target: Math.round(normalizedGoal.target / 7),
-          period: 'day'
-        };
-      }
-      
-      // Detect if user has set a goal (backward compatibility)
-      const hasExplicitGoalKey = Boolean(localStorage.getItem('fitcircle_goal_cardio'));
-      const hasNonDefaultGoal = dataToLoad.goal && (dataToLoad.goal.target !== 21 || dataToLoad.goal.type !== 'duration');
-      const goalUserSet = dataToLoad.goalUserSet !== undefined ? dataToLoad.goalUserSet : (hasExplicitGoalKey || hasNonDefaultGoal);
-      
-      // Calculate current day totals
-      const today = getTodayString();
-      const todayLog = dataToLoad.dailyLogs[today];
-      const currentDayDuration = todayLog?.totalDuration || 0;
-      const currentDayDistance = todayLog?.totalDistance || 0;
-      
-      const validatedData = {
-        ...dataToLoad,
-        goal: normalizedGoal,
-        goalUserSet,
-        customTypes: dataToLoad.customTypes || [],
-        lastDate: today,
-        currentDayDuration,
-        currentDayDistance
-      };
-      
-      setData(validatedData);
-      
-      // Save migrated data back to primary storage
-      try {
-        localStorage.setItem(STORAGE_KEYS.CARDIO, JSON.stringify(validatedData));
-      } catch (error) {
-        console.error('Failed to save migrated cardio data:', error);
-      }
-      
-    } catch (error) {
-      console.error('Error loading cardio data:', error);
-      setData(defaultData);
-    }
-  }, []);
-
-  // Save data to localStorage whenever it changes
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.CARDIO, JSON.stringify(data));
+      localStorage.setItem(STORAGE_KEYS.CARDIO, JSON.stringify(saved));
     } catch (error) {
       console.error('Failed to save cardio data:', error);
     }
-  }, [data]);
+  }, [data, initial]);
 
   // Reset daily data if date has changed
   useEffect(() => {

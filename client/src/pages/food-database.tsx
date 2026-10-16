@@ -30,11 +30,6 @@ export default function FoodDatabasePage() {
     const loadFoods = async () => {
       try {
         const foods = await localFoodService.getAllFoods();
-        const customFoods = foods.filter(f => f.id.startsWith('custom-'));
-        console.log('Food Database: Loaded', foods.length, 'total foods,', customFoods.length, 'custom foods');
-        if (customFoods.length > 0) {
-          console.log('Custom foods:', customFoods);
-        }
         if (isMounted) {
           setAllFoods(foods);
           setLoading(false);
