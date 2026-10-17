@@ -29,8 +29,8 @@ test('mobile Home prioritizes routine/session and preserves colored circular rep
   expect((await circle.boundingBox())!.width).toBe(114); // Previously 136px, ~16% smaller.
   const primary = await card.locator('svg circle').last().getAttribute('stroke');
   expect(await second.locator('svg circle').last().getAttribute('stroke')).not.toBe(primary);
-  const rect = (await card.boundingBox())!;
-  expect((await quote.boundingBox())!.y).toBeGreaterThanOrEqual(rect.y+rect.height);
+  const quoteBounds = (await quote.boundingBox())!;
+  expect(quoteBounds.y + quoteBounds.height).toBeLessThanOrEqual((await heading.boundingBox())!.y);
   await expect(card).toContainText('Goal: 20 reps');
   await circle.click();
   await expect(circle).toHaveAttribute('aria-label',/1 of 20/);
