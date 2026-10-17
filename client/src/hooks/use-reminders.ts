@@ -59,9 +59,9 @@ export function useReminders() {
         console.log('Inserting reminder at index:', insertAfterIndex + 1, 'Array length:', prev.length, 'text:', text);
         return newArray;
       } else {
-        // Default behavior: add to end
-        console.log('Adding reminder to end, insertAfterIndex was:', insertAfterIndex, 'Array length:', prev?.length);
-        return [...prev, newReminder];
+        // New reminders lead the active list; saved records keep the same format.
+        console.log('Adding reminder to start, insertAfterIndex was:', insertAfterIndex, 'Array length:', prev?.length);
+        return [newReminder, ...prev];
       }
     });
   };

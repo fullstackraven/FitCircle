@@ -1,6 +1,6 @@
 import { VersionLabel } from "@/components/VersionLabel";
 import { AppHeader } from "@/components/AppHeader";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -14,6 +14,20 @@ export default function RemindersPage() {
   const { reminders, addReminder, updateReminder, deleteReminder, toggleReminder } = useReminders();
   
   const [showAddForm, setShowAddForm] = useState(false);
+  const draftRef = useRef<HTMLFormElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const scrollToNewest = useRef(false);
+
+  useEffect(() => {
+    if (showAddForm) draftRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [showAddForm]);
+
+  useEffect(() => {
+    if (scrollToNewest.current) {
+      headingRef.current?.scrollIntoView({ block: 'start' });
+      scrollToNewest.current = false;
+    }
+  }, [reminders]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
 
@@ -40,7 +54,7 @@ export default function RemindersPage() {
   const completedReminders = reminders.filter(r => r.completed).reverse();
 
 
-  const handleAddReminder = (keepFormOpen = false) => {
+  const handleAddReminder = () => {
     if (newReminderText.trim()) {
       // Check if we need to insert at a specific position
       const insertAfterIndexStr = localStorage.getItem('insertAfterIndex');
@@ -53,16 +67,8 @@ export default function RemindersPage() {
       
       addReminder(newReminderText.trim(), insertAfterIndex);
       setNewReminderText('');
-      if (!keepFormOpen) {
-        setShowAddForm(false);
-      }
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleAddReminder(true); // Keep form open when using keyboard
+      setShowAddForm(false);
+      scrollToNewest.current = true;
     }
   };
 
@@ -170,7 +176,7 @@ export default function RemindersPage() {
       <div>
         <div className="container mx-auto px-4 max-w-md reminders-list">
 
-        <h2 className="text-3xl font-bold text-green-400 tracking-tight mb-4">Reminders</h2>
+        <h2 ref={headingRef} className="text-3xl font-bold text-green-400 tracking-tight mb-4">Reminders</h2>
         <div className="flex items-center gap-2 text-sm text-slate-400 border-b border-slate-700/60 pb-3 mb-1">
           <span aria-live="polite">{completedReminders.length} Completed</span>
           <span aria-hidden="true">•</span>
@@ -189,7 +195,7 @@ export default function RemindersPage() {
           </div>
         )}
 
-        {reminders.length === 0 ? (
+        {reminders.length === 0 && !showAddForm ? (
           <div className="min-h-[40dvh] flex items-center justify-center text-slate-500 text-lg">No Reminders</div>
         ) : (
           <ul aria-label="Reminders" className="divide-y divide-slate-700/30">
@@ -241,6 +247,20 @@ export default function RemindersPage() {
             ))}
           </ul>
         )}
+        {showAddForm && (
+          <form ref={draftRef} aria-label="New reminder" onSubmit={event => { event.preventDefault(); handleAddReminder(); }} className="glass-row rounded-xl border border-slate-700/50 p-3 mt-2">
+            <div className="flex items-center gap-3">
+              <span className="w-6 h-6 shrink-0 rounded-full border-2 border-slate-500" aria-hidden="true" />
+              <input aria-label="New reminder" value={newReminderText} onChange={event => setNewReminderText(event.target.value)} onKeyDown={event => {
+                if (event.key === 'Escape') { setNewReminderText(''); setShowAddForm(false); }
+              }} className="min-w-0 flex-1 min-h-11 bg-transparent text-base text-white outline-none focus-visible:ring-1 focus-visible:ring-green-400 rounded" />
+            </div>
+            <div className="flex justify-end gap-2 mt-2">
+              <Button type="button" variant="outline" onClick={() => { setNewReminderText(''); setShowAddForm(false); }}>Cancel</Button>
+              <Button type="submit" disabled={!newReminderText.trim()} className="bg-green-400 text-slate-950 hover:bg-green-300">Add Reminder</Button>
+            </div>
+          </form>
+        )}
         {completedReminders.length > 0 && !selectMode && (
           <button onClick={() => setSelectMode(true)} className="min-h-11 text-sm text-slate-400 hover:text-green-400 mt-2">Select completed</button>
         )}
@@ -251,23 +271,6 @@ export default function RemindersPage() {
           <Plus size={28} aria-hidden="true" />
         </button>, document.body
       )}
-
-      <Dialog open={showAddForm} onOpenChange={setShowAddForm}>
-        <DialogContent staticBody fixedFooter className="bg-slate-900 border-slate-700">
-          <DialogHeader>
-            <DialogTitle>New Reminder</DialogTitle>
-            <DialogDescription>Add something you want to remember.</DialogDescription>
-          </DialogHeader>
-          <label className="block text-sm text-slate-300">
-            Reminder
-            <input aria-label="New reminder" value={newReminderText} onChange={e => setNewReminderText(e.target.value)} onKeyDown={handleKeyPress} className="glass-input block w-full min-h-11 rounded-lg px-3 mt-2 text-base text-white" />
-          </label>
-          <DialogFooter className="grid grid-cols-2 gap-3">
-            <Button variant="outline" onClick={() => setShowAddForm(false)}>Cancel</Button>
-            <Button disabled={!newReminderText.trim()} onClick={() => handleAddReminder()} className="bg-green-400 text-slate-950 hover:bg-green-300">Add Reminder</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <Dialog open={confirmClear} onOpenChange={setConfirmClear}>
         <DialogContent staticBody fixedFooter className="bg-slate-900 border-slate-700">
