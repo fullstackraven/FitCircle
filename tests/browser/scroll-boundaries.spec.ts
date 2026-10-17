@@ -169,6 +169,12 @@ for (const viewport of [
     await page.goto('wellness');
     const tile = page.getByTestId('card-supplements');
     await tile.waitFor();
+    // Keep this clipping probe scrollable even when compact Logs tiles fit on screen.
+    await tile.evaluate(el => {
+      const spacer = document.createElement('div');
+      spacer.style.cssText = `height: ${window.innerHeight}px; grid-column: 1 / -1`;
+      el.parentElement!.parentElement!.prepend(spacer);
+    });
     await page.evaluate(({ top, bottom }) => {
       document.documentElement.style.setProperty('--safe-top', `${top}px`);
       document.documentElement.style.setProperty('--safe-bottom', `${bottom}px`);
