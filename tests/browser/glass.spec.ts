@@ -5,7 +5,7 @@ test('glass dock retains compact geometry, semantic selection and visible keyboa
   await page.goto('wellness');
   const nav = page.getByRole('navigation', { name: 'Bottom navigation' });
   await expect(nav).toHaveClass(/glass-nav/);
-  expect((await nav.boundingBox())!.height).toBe(56);
+  expect((await nav.boundingBox())!.height).toBe(66);
   const logs = nav.getByRole('button', { name: 'Logs', exact: true });
   await expect(logs).toHaveAttribute('aria-current', 'page');
   expect(await logs.locator('svg').evaluate(el => getComputedStyle(el).color)).toBe('rgb(0, 255, 65)');
@@ -75,7 +75,7 @@ test('slim reference dock keeps five reachable targets, safe-area clearance and 
     const nav = page.getByRole('navigation',{name:'Bottom navigation'});
     await expect(nav.getByRole('button')).toHaveCount(5);
     const bounds = (await nav.boundingBox())!;
-    expect(bounds.height).toBe(56);
+    expect(bounds.height).toBe(66);
     expect(bounds.y + bounds.height).toBe(844 - 34 - 4);
     for (const label of ['Home','Calendar','Routines','Logs','Reminders']) {
       const button = nav.getByRole('button',{name:label,exact:true});
