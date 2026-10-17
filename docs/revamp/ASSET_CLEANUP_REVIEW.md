@@ -1,6 +1,6 @@
 # Asset cleanup and remaining candidates
 
-This change is proposed for review from main `97b5bd8`. It removes only the explicitly requested `attached_assets/` folder and its unused Vite alias. Other candidates below remain in place. Original audit inventories, findings, hashes and roadmap documents are historical evidence and are preserved, including their references to removed paths.
+PR #42 merged at `f6f6a8f`, removing the explicitly requested `attached_assets/` folder and its unused Vite alias. The next proposed cleanup is limited to the inactive catalog backup; see [CATALOG_ASSET_CLEANUP.md](CATALOG_ASSET_CLEANUP.md). Other candidates remain in place. Original audit inventories, findings, hashes and roadmap documents are historical evidence and are preserved, including their references to removed paths.
 
 ## Verified removal
 
@@ -34,7 +34,7 @@ The eleven historical catalog tools are:
 - `scripts/remove-raw-homestyle.cjs`
 - `scripts/remove-skinless.cjs`
 
-“No inbound reference found” is static evidence, not proof that a manual tool or historical recovery artifact has no value. These candidates are not deleted in this change.
+“No inbound reference found” is static evidence, not proof that a manual tool or historical recovery artifact has no value. Only the inactive catalog backup is proposed for deletion in the follow-up PR; all other candidates remain intact.
 
 ## Keep
 
