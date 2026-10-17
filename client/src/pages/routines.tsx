@@ -150,7 +150,8 @@ export default function RoutinesPage() {
 
       {/* Main content; header spacing is handled by normal flow */}
       <div>
-        <div className="fitcircle-container">
+        <div className="container mx-auto px-4 pb-6 max-w-md">
+        <h2 className="text-3xl font-bold text-green-400 tracking-tight mb-4">Routines</h2>
         {/* Add Routines Section - Only show when no routines exist */}
         {routines.length === 0 && (
           <section className="mb-8">
