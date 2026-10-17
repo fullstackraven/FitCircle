@@ -5,7 +5,7 @@ test('glass dock retains compact geometry, semantic selection and visible keyboa
   await page.goto('wellness');
   const nav = page.getByRole('navigation', { name: 'Bottom navigation' });
   await expect(nav).toHaveClass(/glass-nav/);
-  expect((await nav.boundingBox())!.height).toBe(58);
+  expect((await nav.boundingBox())!.height).toBe(56);
   const logs = nav.getByRole('button', { name: 'Logs', exact: true });
   await expect(logs).toHaveAttribute('aria-current', 'page');
   expect(await logs.locator('svg').evaluate(el => getComputedStyle(el).color)).toBe('rgb(0, 255, 65)');
@@ -17,7 +17,7 @@ test('glass dock retains compact geometry, semantic selection and visible keyboa
   await expect(routines).toHaveAttribute('aria-current', 'page');
   await expect(logs).not.toHaveAttribute('aria-current');
   expect(await routines.locator('svg').evaluate(el => getComputedStyle(el).color)).toBe('rgb(0, 255, 65)');
-  await expect.poll(() => logs.locator('svg').evaluate(el => getComputedStyle(el).color)).toBe('rgb(148, 163, 184)');
+  await expect.poll(() => logs.locator('svg').evaluate(el => getComputedStyle(el).color)).toBe('rgb(141, 157, 177)');
 });
 
 test('glass dialog remains nearly opaque, internally scrollable and safely closable', async ({ page }) => {
@@ -65,4 +65,34 @@ test('unsupported backdrop-filter gate retains the opaque navy fallback', async 
   await expect(nav).toBeVisible();
   expect(await nav.evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(30, 41, 59)');
   expect(await nav.evaluate(el => getComputedStyle(el).backdropFilter)).toBe('none');
+});
+
+test('slim reference dock keeps five reachable targets, safe-area clearance and unobscured final content', async ({ page }) => {
+  for (const width of [320, 390, 1280]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('wellness');
+    await page.addStyleTag({content:':root { --safe-bottom: 34px; }'});
+    const nav = page.getByRole('navigation',{name:'Bottom navigation'});
+    await expect(nav.getByRole('button')).toHaveCount(5);
+    const bounds = (await nav.boundingBox())!;
+    expect(bounds.height).toBe(56);
+    expect(bounds.y + bounds.height).toBe(844 - 34 - 4);
+    for (const label of ['Home','Calendar','Routines','Logs','Reminders']) {
+      const button = nav.getByRole('button',{name:label,exact:true});
+      const target = (await button.boundingBox())!;
+      expect(target.height).toBeGreaterThanOrEqual(48);
+      expect(target.width).toBeGreaterThanOrEqual(44);
+      const icon = (await button.locator('svg').boundingBox())!;
+      await expect(button.locator('svg')).toHaveCSS('width','24px');
+      await expect(button.locator('svg')).toHaveCSS('height','24px');
+      expect(icon.width).toBeLessThanOrEqual(34); expect(icon.height).toBeLessThanOrEqual(34); // rotated dumbbell bounds
+      const caption = (await button.locator('span').boundingBox())!;
+      expect(caption.x).toBeGreaterThanOrEqual(bounds.x);
+      expect(caption.x + caption.width).toBeLessThanOrEqual(bounds.x + bounds.width);
+    }
+    await page.locator('.app-content').evaluate(el => { el.scrollTop = el.scrollHeight; });
+    const last = (await page.getByTestId('card-supplements').boundingBox())!;
+    expect(last.y + last.height).toBeLessThanOrEqual(bounds.y);
+    await page.screenshot({path:`/tmp/refined-dock-${width}.png`});
+  }
 });

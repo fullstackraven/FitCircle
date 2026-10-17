@@ -129,15 +129,15 @@ test('test dock centers unchanged production icons and labels without changing c
     expect(button).toEqual(original);
     expect(button.bottom - button.height / 2).toBe(synthetic.bottom - synthetic.height / 2);
   }
-  expect(synthetic.paddingBottom).toBe('17px');
+  expect(synthetic.paddingBottom).toBe('3px');
   expect(synthetic.width).toBe(production.width);
-  expect(synthetic.height).toBe(84);
+  expect(synthetic.height).toBe(56);
   expect(synthetic.height).toBe(production.height);
-  expect(synthetic.bottom).toBe(808);
+  expect(synthetic.bottom).toBe(774);
   expect(await page.locator('.test-dock').evaluate(el => el.getBoundingClientRect().bottom)).toBe(812);
-  expect(await page.locator('.dock-nav').evaluate(el => getComputedStyle(el).borderRadius)).toBe('9999px');
+  expect(await page.locator('.dock-nav').evaluate(el => getComputedStyle(el).borderRadius)).toBe('24px');
   for (const button of synthetic.buttons) {
-    expect(button.bottom).toBeLessThanOrEqual(synthetic.bottom - 18);
+    expect(button.bottom).toBeLessThanOrEqual(synthetic.bottom - 4);
     expect(button.labelBottom).toBeLessThanOrEqual(button.bottom);
     await page.getByRole('button', { name: button.label!, exact: true }).click();
     await expect(page.getByRole('button', { name: button.label!, exact: true })).toHaveAttribute('aria-current', 'page');

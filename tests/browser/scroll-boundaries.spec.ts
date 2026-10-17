@@ -82,7 +82,7 @@ test('floating dock leaves the full scroll surface visible and final cards reach
   expect(intersectionBottom).toBe(844);
   const nav = await page.getByRole('navigation', { name: 'Bottom navigation' }).boundingBox();
   expect(nav!.y).toBe(dock!.y);
-  expect(nav!.y + nav!.height).toBe(840);
+  expect(nav!.y + nav!.height).toBe(844 - 34 - 4);
   const lastButton = await page.getByRole('button', { name: 'Reminders', exact: true }).boundingBox();
   expect(lastButton!.y + lastButton!.height / 2).toBe(nav!.y + nav!.height / 2);
   expect(await page.locator('.app-dock').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
@@ -211,8 +211,8 @@ for (const viewport of [
     }));
     expect(visible.bottom).toBe(viewport.height);
     const nav = await page.getByRole('navigation', { name: 'Bottom navigation' }).boundingBox();
-    expect(nav!.y + nav!.height).toBe(viewport.height - 4);
-    expect(nav!.height).toBe(54 + Math.max(4, viewport.bottom - 4));
+    expect(nav!.y + nav!.height).toBe(viewport.height - viewport.bottom - 4);
+    expect(nav!.height).toBe(56);
     const button = await page.getByRole('button', { name: 'Reminders', exact: true }).boundingBox();
     expect(button!.height).toBe(48);
     expect(button!.width).toBeGreaterThanOrEqual(44);
