@@ -45,7 +45,10 @@ test('read-only probe reports all viewport units, actual env insets and clipping
   expect(result.report.appSafeArea.bottom).toBe('34px');
   expect(result.report.elements['.app-header']).not.toBeNull();
   expect(result.report.elements['.app-content'].margin).toHaveProperty('bottom');
-  expect(result.report.elements['.app-content'].scrollTop).toBe(240);
+  // Compact Logs tiles may have less than 240px of overflow. Verify the actual
+  // browser-clamped position instead of assuming a minimum content height.
+  expect(result.before.top).toBeGreaterThan(0);
+  expect(result.report.elements['.app-content'].scrollTop).toBe(result.before.top);
   expect(result.report.ancestors.at(-1).element).toBe('HTML');
   expect(result.report.cutoffComparison.matchingWithinOneCssPixel).toContain('contentBottom');
   expect(result.report.cutoffComparison.matchingWithinOneCssPixel).toContain('cssDvh');
