@@ -39,7 +39,7 @@ test('completion moves below active reminders, survives reload and supports edit
   expect(await page.evaluate(() => localStorage.getItem('unrelated-synthetic'))).toBe('retain');
 });
 
-test('floating add remains above dock through long-list scrolling and resizing; new dialog does not focus input', async ({page}) => {
+test('floating add remains above dock through long-list scrolling and resizing; inline draft stays in the page and new reminders lead the list', async ({page}) => {
   await page.setViewportSize({width:390,height:844});
   await seed(page, true);
   await page.addStyleTag({content: ':root { --safe-bottom: 34px; }'});
@@ -58,14 +58,22 @@ test('floating add remains above dock through long-list scrolling and resizing; 
     expect(last.y+last.height).toBeLessThanOrEqual(a.y);
   }
   await add.click();
-  const dialog=page.getByRole('dialog',{name:'New Reminder',exact:true});
-  await expect(dialog).toBeVisible();
-  const input=dialog.getByRole('textbox',{name:'New reminder',exact:true});
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  const draft=page.getByRole('form',{name:'New reminder',exact:true});
+  await expect(draft).toBeVisible();
+  const input=draft.getByRole('textbox',{name:'New reminder',exact:true});
   await expect(input).not.toBeFocused();
   await input.fill('Added synthetic reminder');
-  await dialog.getByRole('button',{name:'Add Reminder',exact:true}).click();
+  await input.press('Enter');
+  await expect(page.getByRole('list',{name:'Reminders',exact:true}).locator('li').first()).toContainText('Added synthetic reminder');
+  expect(await page.locator('main').evaluate(el=>el.scrollTop)).toBe(0);
   await page.reload();
   await expect(page.getByRole('button',{name:'Edit Added synthetic reminder',exact:true})).toBeVisible();
+  await expect(page.getByRole('list',{name:'Reminders',exact:true}).locator('li').first()).toContainText('Added synthetic reminder');
+  await add.click();
+  await page.getByRole('textbox',{name:'New reminder',exact:true}).fill('Discarded draft');
+  await page.getByRole('button',{name:'Cancel',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Edit Discarded draft',exact:true})).toHaveCount(0);
 });
 
 test('empty list and completed selection retain add and delete functionality', async ({page}) => {
