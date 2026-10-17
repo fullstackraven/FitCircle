@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-const names = ['Synthetic push-ups', 'Synthetic squats', 'Synthetic long workout name with UnbrokenExerciseNameForWrapping'];
+const names = ['Push-ups', 'Squats', 'Synthetic long workout name with UnbrokenExerciseNameForWrapping'];
 async function seed(page: import('@playwright/test').Page, many = false) {
   await page.goto('profile');
   await page.evaluate(({names,many}) => {
@@ -23,6 +23,9 @@ test('mobile Home prioritizes routine/session and preserves colored circular rep
   await expect(quote).toContainText('Synthetic quiet quote');
   expect((await heading.boundingBox())!.y).toBeLessThan((await start.boundingBox())!.y);
   expect((await start.boundingBox())!.y).toBeLessThan((await circle.boundingBox())!.y);
+  const ringBounds = (await circle.boundingBox())!;
+  const nameBounds = (await card.getByText(names[0],{exact:true}).boundingBox())!;
+  expect(nameBounds.x+nameBounds.width/2).toBeCloseTo(ringBounds.x+ringBounds.width/2,0);
   expect((await circle.boundingBox())!.width).toBe(114); // Previously 136px, ~16% smaller.
   const primary = await card.locator('svg circle').last().getAttribute('stroke');
   expect(await second.locator('svg circle').last().getAttribute('stroke')).not.toBe(primary);

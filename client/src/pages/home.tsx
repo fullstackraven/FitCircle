@@ -327,16 +327,14 @@ export default function Home() {
                       isAnimating={clickingWorkout === workout.id}
                     />
                     <div className="min-w-0 w-full text-center">
-                      <div className="flex min-w-0 items-center justify-center space-x-1">
-                        <span className="entity-name text-sm text-white font-semibold">{workout.name}</span>
-                        <button
-                          onClick={() => handleEditWorkout(workout)}
-                          className="min-h-11 min-w-11 shrink-0 flex items-center justify-center text-slate-400 hover:text-slate-200 transition-colors"
-                          aria-label={`Edit ${workout.name}`}
-                        >
-                          <Edit size={14} />
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => handleEditWorkout(workout)}
+                        className="relative w-full min-h-11 text-center text-white hover:text-slate-200 transition-colors"
+                        aria-label={`Edit ${workout.name}`}
+                      >
+                        <span className="entity-name block px-6 text-sm font-semibold">{workout.name}</span>
+                        <Edit size={14} className="absolute right-1 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+                      </button>
                       <p className="text-xs text-slate-400 mt-1">Goal: <span className="type-metric">{workout.dailyGoal}</span> reps</p>
                       {workout.weightLbs && (
                         <div className="text-xs text-slate-400">
