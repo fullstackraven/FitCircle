@@ -14,7 +14,8 @@
     "browser/food-save-safety.spec.ts",
     "browser/typography.spec.ts",
     "browser/glass.spec.ts",
-    "browser/home-hierarchy.spec.ts"
+    "browser/home-hierarchy.spec.ts",
+    "browser/reminders-list.spec.ts"
   ],
   "exclude": [
     "../node_modules",

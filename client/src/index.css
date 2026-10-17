@@ -477,3 +477,18 @@
     }
   }
 }
+
+/* Page-local action follows measured dock clearance, including its safe area. */
+.reminders-add-button {
+  position: fixed;
+  right: max(calc(var(--safe-right) + 16px), calc((100% - 448px) / 2 + 16px));
+  bottom: calc(var(--dock-height) + 12px);
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+}
+.reminders-list { padding-bottom: 80px; }
+.keyboard-open .reminders-add-button { display: none; }
