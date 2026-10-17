@@ -21,14 +21,13 @@ test('wellness materials preserve category colors, two columns and editing navig
 test('reminder glass rows preserve create, complete and reload behavior', async ({ page }) => {
   await page.goto('reminders');
   await page.getByRole('button', { name: 'New Reminder', exact: true }).click();
-  const input = page.locator('main input').last();
+  const input = page.getByRole('textbox', { name: 'New reminder', exact: true });
   await input.fill('Material review reminder');
-  await input.press('Enter');
+  await page.getByRole('button', { name: 'Add Reminder', exact: true }).click();
   const row = page.locator('.glass-row').filter({ hasText: 'Material review reminder' });
   await expect(row).toBeVisible();
   await row.getByRole('button').first().click();
   await page.reload();
-  await page.getByRole('button', { name: 'Completed (1)', exact: true }).click();
   await expect(page.getByText('Material review reminder', { exact: true })).toBeVisible();
   const data = await page.evaluate(() => JSON.parse(localStorage.getItem('fitcircle_reminders')!));
   expect(data.some((r: { text: string; completed: boolean }) => r.text === 'Material review reminder' && r.completed)).toBe(true);
