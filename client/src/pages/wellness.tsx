@@ -192,7 +192,7 @@ export default function WellnessPage() {
         <div className="flex justify-end mb-4">
           <button
             onClick={() => isEditMode ? handleDone() : setIsEditMode(true)}
-            className="text-slate-400 hover:text-white transition-colors flex items-center space-x-1"
+            className="text-slate-400 hover:text-white transition-colors min-h-11 min-w-11 justify-center flex items-center space-x-1"
             title={isEditMode ? "Done editing" : "Edit layout"}
             data-testid={isEditMode ? "button-done-edit" : "button-edit-layout"}
           >
@@ -222,7 +222,7 @@ export default function WellnessPage() {
                           e.stopPropagation();
                           moveItem(index, 'up');
                         }}
-                        className="absolute top-2 left-1/2 -translate-x-1/2 pointer-events-auto transition-opacity hover:opacity-70"
+                        className="absolute top-2 left-1/2 -translate-x-1/2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-up-${feature.id}`}
                       >
                         <ChevronUp className="w-5 h-5 text-white" />
@@ -234,7 +234,7 @@ export default function WellnessPage() {
                           e.stopPropagation();
                           moveItem(index, 'down');
                         }}
-                        className="absolute bottom-2 left-1/2 -translate-x-1/2 pointer-events-auto transition-opacity hover:opacity-70"
+                        className="absolute bottom-2 left-1/2 -translate-x-1/2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-down-${feature.id}`}
                       >
                         <ChevronDown className="w-5 h-5 text-white" />
@@ -246,7 +246,7 @@ export default function WellnessPage() {
                           e.stopPropagation();
                           moveItem(index, 'left');
                         }}
-                        className="absolute top-1/2 -translate-y-1/2 left-2 pointer-events-auto transition-opacity hover:opacity-70"
+                        className="absolute top-1/2 -translate-y-1/2 left-2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-left-${feature.id}`}
                       >
                         <ChevronLeft className="w-5 h-5 text-white" />
@@ -258,7 +258,7 @@ export default function WellnessPage() {
                           e.stopPropagation();
                           moveItem(index, 'right');
                         }}
-                        className="absolute top-1/2 -translate-y-1/2 right-2 pointer-events-auto transition-opacity hover:opacity-70"
+                        className="absolute top-1/2 -translate-y-1/2 right-2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-right-${feature.id}`}
                       >
                         <ChevronRight className="w-5 h-5 text-white" />
@@ -268,12 +268,12 @@ export default function WellnessPage() {
                 )}
                 <button
                   onClick={() => !isEditMode && navigate(`${feature.path}?from=wellness`)}
-                  className={`glass-tile aspect-square p-6 ${feature.bgColor} ${!isEditMode && feature.hoverBg} rounded-2xl transition-all duration-200 ${!isEditMode && 'hover:scale-105 active:scale-95'} flex flex-col items-center justify-center space-y-4 w-full ${isEditMode ? 'opacity-75' : ''}`}
+                  className={`glass-tile min-h-32 h-full px-3 py-4 ${feature.bgColor} ${!isEditMode && feature.hoverBg} rounded-2xl transition-all duration-200 ${!isEditMode && 'hover:scale-105 active:scale-95'} flex flex-col items-center justify-center gap-2 w-full ${isEditMode ? 'opacity-75' : ''}`}
                   disabled={isEditMode}
                   data-testid={`card-${feature.id}`}
                 >
-                  <Icon className={`w-8 h-8 ${feature.color}`} />
-                  <span className="text-white font-medium text-center text-sm leading-tight">
+                  <Icon className={`w-7 h-7 shrink-0 ${feature.color}`} aria-hidden="true" />
+                  <span className="text-white font-medium text-center text-sm leading-tight min-h-10 flex items-center justify-center">
                     {feature.title}
                   </span>
                 </button>
