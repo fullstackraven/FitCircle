@@ -224,6 +224,7 @@ export default function Home() {
 
       {/* Main content; header spacing is handled by normal flow */}
       <div>
+      {!isQuoteHidden && <QuoteOfTheDay compact />}
 
       <section className="mb-4" aria-labelledby="today-workout-heading">
         <p className="text-xs font-medium text-slate-400 mb-1">
@@ -366,8 +367,6 @@ export default function Home() {
               })}
             </div>
           )}
-
-          {!isQuoteHidden && <QuoteOfTheDay compact />}
 
           {/* Timer and Add Workout - Secondary tools */}
           <div className="grid grid-cols-2 gap-x-6 gap-y-6 justify-items-center">
