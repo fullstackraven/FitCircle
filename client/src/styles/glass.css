@@ -67,11 +67,11 @@
 .dock-tab[aria-current="page"] svg { color: #00ff41; }
 .dock-tab:hover { color: white; }
 .dock-tab:active { transform: translateY(1px); background-color: rgb(148 163 184 / .14); }
-.dock-tab svg { width: 24px; height: 24px; flex-shrink: 0; }
+.dock-tab svg { width: 19px; height: 19px; flex-shrink: 0; }
 .dock-tab .dock-routines-icon { transform: rotate(-45deg); }
-.dock-tab span { font-size: 13px; font-weight: 500; line-height: 16px; }
+.dock-tab span { font-size: 10px; font-weight: 500; line-height: 13px; }
 .dock-tab[aria-current="page"] span { font-weight: 600; }
-@media (max-width: 360px) { .dock-tab span { font-size: 12px; } }
+@media (max-width: 360px) { .dock-tab span { font-size: 9.5px; } }
 
 @media (prefers-reduced-transparency: reduce) {
   :root {

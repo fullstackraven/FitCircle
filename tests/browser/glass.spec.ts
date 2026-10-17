@@ -83,8 +83,8 @@ test('slim reference dock keeps five reachable targets, safe-area clearance and 
       expect(target.height).toBeGreaterThanOrEqual(48);
       expect(target.width).toBeGreaterThanOrEqual(44);
       const icon = (await button.locator('svg').boundingBox())!;
-      await expect(button.locator('svg')).toHaveCSS('width','24px');
-      await expect(button.locator('svg')).toHaveCSS('height','24px');
+      await expect(button.locator('svg')).toHaveCSS('width','19px');
+      await expect(button.locator('svg')).toHaveCSS('height','19px');
       expect(icon.width).toBeLessThanOrEqual(34); expect(icon.height).toBeLessThanOrEqual(34); // rotated dumbbell bounds
       const caption = (await button.locator('span').boundingBox())!;
       expect(caption.x).toBeGreaterThanOrEqual(bounds.x);
