@@ -224,18 +224,28 @@ export default function Home() {
 
       {/* Main content; header spacing is handled by normal flow */}
       <div>
-        {/* Quote of the Day */}
-        {!isQuoteHidden && <QuoteOfTheDay />}
+
+      <section className="mb-4" aria-labelledby="today-workout-heading">
+        <p className="text-xs font-medium text-slate-400 mb-1">
+          {new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
+        </p>
+        <h2 id="today-workout-heading" className="text-2xl font-bold text-white">Today's Workout</h2>
+        <p className="text-sm text-slate-400 mt-1">
+          {todaysRoutine && <><span className="entity-name">{todaysRoutine.name}</span><span aria-hidden="true"> · </span></>}
+          {todaysWorkouts.length} {todaysWorkouts.length === 1 ? 'exercise' : 'exercises'}
+        </p>
+      </section>
 
       {/* Start Workout Session Section */}
-      <section className="mb-8">
-        <div className="glass-panel bg-slate-800 rounded-xl p-6">
+      <section className="mb-5" aria-label="Workout session">
+        <div>
           <div className="flex flex-col items-center space-y-4">
             {!isWorkoutActive ? (
               <>
                 <button
                   onClick={startWorkout}
-                  className="text-black font-bold py-4 px-6 rounded-xl flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 transform hover:scale-105 w-full max-w-xs"
+                  aria-describedby="workout-session-help"
+                  className="text-black font-semibold py-3 px-4 rounded-xl flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 w-full"
                   style={{
                     background: 'linear-gradient(135deg, #00ff41 0%, #00cc33 100%)',
                     boxShadow: '0 0 10px rgba(0, 255, 65, 0.2)'
@@ -244,7 +254,7 @@ export default function Home() {
                   <Play className="w-5 h-5 text-black" />
                   <span className="text-base text-black whitespace-nowrap">Start Workout Session</span>
                 </button>
-                <p className="text-sm text-slate-400 text-center">Start a Workout Session to track the duration of your workouts</p>
+                <p id="workout-session-help" className="sr-only">Start a Workout Session to track the duration of your workouts</p>
               </>
             ) : (
               <div className="w-full flex flex-col items-center space-y-4">
@@ -287,14 +297,7 @@ export default function Home() {
 
       {/* Workout Circles Grid */}
       <section className="mb-8">
-        {/* Always show Today's Workout section */}
-        <div className="text-center mb-4">
-          <h2 className="text-xl font-semibold text-white">Today's Workout</h2>
-          {todaysRoutine && (
-            <p className="entity-name text-lg text-slate-300 mt-1">{todaysRoutine.name}</p>
-          )}
-        </div>
-        <div className="space-y-6 p-8 overflow-visible">
+        <div className="space-y-5 overflow-visible">
           {/* No Workouts Message */}
           {todaysRoutine && todaysWorkouts.length === 0 && (
             <div className="glass-panel bg-slate-800 rounded-xl p-6 text-center">
@@ -305,33 +308,36 @@ export default function Home() {
 
           {/* Workout Circles Grid */}
           {todaysWorkouts.length > 0 && (
-            <div className="grid grid-cols-2 gap-x-20 gap-y-4 justify-items-center">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-6 justify-items-center">
               {todaysWorkouts.map((workout) => {
                 const todayTotal = todaysTotals.find(t => t.id === workout.id);
                 const currentCount = todayTotal?.count || 0;
 
                 return (
-                  <div key={workout.id} className="flex min-w-0 w-full flex-col items-center space-y-3 py-2">
+                  <div key={workout.id} className="flex min-w-0 w-full flex-col items-center space-y-2 py-2" data-testid={`home-workout-${workout.id}`}>
                     <ProgressCircle
+                      ariaLabel={`Record a rep for ${workout.name}: ${currentCount} of ${workout.dailyGoal}`}
                       count={currentCount}
                       goal={workout.dailyGoal}
                       color={workout.color}
-                      size={100}
-                      strokeWidth={10}
+                      size={82}
+                      strokeWidth={8}
                       onClick={() => handleWorkoutClick(workout.id)}
                       onHoldIncrement={() => handleWorkoutHoldIncrement(workout.id)}
                       isAnimating={clickingWorkout === workout.id}
                     />
                     <div className="min-w-0 w-full text-center">
                       <div className="flex min-w-0 items-center justify-center space-x-1">
-                        <span className="entity-name text-sm text-slate-300 font-medium">{workout.name}</span>
+                        <span className="entity-name text-sm text-white font-semibold">{workout.name}</span>
                         <button
                           onClick={() => handleEditWorkout(workout)}
-                          className="text-slate-400 hover:text-slate-200 transition-colors"
+                          className="min-h-11 min-w-11 shrink-0 flex items-center justify-center text-slate-400 hover:text-slate-200 transition-colors"
+                          aria-label={`Edit ${workout.name}`}
                         >
-                          <Edit size={12} />
+                          <Edit size={14} />
                         </button>
                       </div>
+                      <p className="text-xs text-slate-400 mt-1">Goal: <span className="type-metric">{workout.dailyGoal}</span> reps</p>
                       {workout.weightLbs && (
                         <div className="text-xs text-slate-400">
                           Weight: {workout.weightLbs}lbs
@@ -341,17 +347,17 @@ export default function Home() {
                         {currentCount >= workout.dailyGoal ? 'COMPLETED!' : `${Math.round((currentCount / workout.dailyGoal) * 100)}% complete`}
                       </div>
                     </div>
-                    <div className="flex items-center space-x-6">
+                    <div className="flex items-center gap-3">
                       <button
                         onClick={() => handleUndo(workout.id)}
-                        className="text-slate-400 hover:text-slate-200 transition-colors p-2"
+                        className="text-slate-400 hover:text-slate-200 transition-colors min-h-11 min-w-11 flex items-center justify-center"
                         title="Undo last rep"
                       >
                         <Undo2 size={14} />
                       </button>
                       <button
                         onClick={() => handleDeleteWorkout(workout.id)}
-                        className="text-slate-400 hover:text-red-400 transition-colors p-2"
+                        className="text-slate-400 hover:text-red-400 transition-colors min-h-11 min-w-11 flex items-center justify-center"
                         title="Delete workout"
                       >
                         <Trash2 size={14} />
@@ -363,8 +369,10 @@ export default function Home() {
             </div>
           )}
 
-          {/* Timer and Add Workout - Always bottom row */}
-          <div className="grid grid-cols-2 gap-x-20 gap-y-4 justify-items-center">
+          {!isQuoteHidden && <QuoteOfTheDay compact />}
+
+          {/* Timer and Add Workout - Secondary tools */}
+          <div className="grid grid-cols-2 gap-x-6 gap-y-6 justify-items-center">
             {/* Timer Circle */}
             <div className="flex flex-col items-center space-y-3">
               <button
@@ -388,31 +396,31 @@ export default function Home() {
                 title={timerState.isCompleted ? "Reset Timer" : 
                        timerState.remainingTime > 0 ? (timerState.isRunning ? "Pause Timer" : "Resume Timer") : "Open Timer"}
               >
-                <div className="relative" style={{ width: '120px', height: '120px' }}>
+                <div className="relative" style={{ width: '96px', height: '96px' }}>
                   {/* Progress rings - positioned behind the circle */}
                   {timerState.remainingTime > 0 && !timerState.isCompleted && (
                     <div className="absolute inset-0">
-                      <svg width="120" height="120" className="transform -rotate-90">
+                      <svg width="96" height="96" className="transform -rotate-90">
                         {/* Background ring */}
                         <circle
-                          cx="60"
-                          cy="60"
-                          r="55"
+                          cx="48"
+                          cy="48"
+                          r="44"
                           stroke="rgb(71, 85, 105)"
-                          strokeWidth="10"
+                          strokeWidth="8"
                           fill="none"
                         />
                         {/* Progress ring */}
                         <circle
-                          cx="60"
-                          cy="60"
-                          r="55"
+                          cx="48"
+                          cy="48"
+                          r="44"
                           stroke={timerState.isRunning ? "rgb(34, 197, 94)" : "rgb(156, 163, 175)"}
-                          strokeWidth="10"
+                          strokeWidth="8"
                           fill="none"
                           strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 55}`}
-                          strokeDashoffset={`${2 * Math.PI * 55 * (1 - getProgress() / 100)}`}
+                          strokeDasharray={`${2 * Math.PI * 44}`}
+                          strokeDashoffset={`${2 * Math.PI * 44 * (1 - getProgress() / 100)}`}
                           className="transition-all duration-1000"
                         />
                       </svg>
@@ -421,26 +429,26 @@ export default function Home() {
                   
                   {timerState.remainingTime > 0 && timerState.isCompleted && (
                     <div className="absolute inset-0">
-                      <svg width="120" height="120" className="transform -rotate-90">
+                      <svg width="96" height="96" className="transform -rotate-90">
                         {/* Background ring */}
                         <circle
-                          cx="60"
-                          cy="60"
-                          r="55"
+                          cx="48"
+                          cy="48"
+                          r="44"
                           stroke="rgb(71, 85, 105)"
-                          strokeWidth="10"
+                          strokeWidth="8"
                           fill="none"
                         />
                         {/* Completed ring */}
                         <circle
-                          cx="60"
-                          cy="60"
-                          r="55"
+                          cx="48"
+                          cy="48"
+                          r="44"
                           stroke="rgb(34, 197, 94)"
-                          strokeWidth="10"
+                          strokeWidth="8"
                           fill="none"
                           strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 55}`}
+                          strokeDasharray={`${2 * Math.PI * 44}`}
                           strokeDashoffset="0"
                           className="transition-all duration-1000"
                         />
@@ -449,13 +457,13 @@ export default function Home() {
                   )}
                   
                   {/* Timer circle - positioned on top */}
-                  <div className="absolute top-2.5 left-2.5 w-25 h-25 rounded-full bg-slate-800 flex items-center justify-center border-4 border-slate-700 hover:border-slate-600 transition-colors z-10" style={{ width: '100px', height: '100px' }}>
+                  <div className="absolute top-2 left-2 w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center border-4 border-slate-700 hover:border-slate-600 transition-colors z-10" style={{ width: '80px', height: '80px' }}>
                     {timerState.remainingTime > 0 && timerState.isCompleted ? (
-                      <CheckCircle className="w-10 h-10 text-green-400" />
+                      <CheckCircle className="w-8 h-8 text-green-400" />
                     ) : timerState.remainingTime > 0 && !timerState.isRunning ? (
                       <Play className="w-8 h-8 text-blue-400" />
                     ) : (
-                      <Timer className="w-10 h-10 text-slate-400" />
+                      <Timer className="w-8 h-8 text-slate-400" />
                     )}
                   </div>
                 </div>
@@ -510,11 +518,11 @@ export default function Home() {
               <div className="flex flex-col items-center space-y-3">
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="w-25 h-25 rounded-full bg-slate-800 flex items-center justify-center border-4 border-dashed border-slate-700 hover:border-slate-600 transition-colors"
-                  style={{ width: '100px', height: '100px' }}
+                  className="w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center border-4 border-dashed border-slate-700 hover:border-slate-600 transition-colors"
+                  style={{ width: '80px', height: '80px' }}
                   title="Add new workout"
                 >
-                  <Plus className="w-10 h-10 text-slate-400" />
+                  <Plus className="w-8 h-8 text-slate-400" />
                 </button>
                 <div className="text-center">
                   <div className="text-sm text-slate-300 font-medium">Add</div>
