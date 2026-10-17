@@ -342,9 +342,6 @@ export default function Home() {
                           Weight: {workout.weightLbs}lbs
                         </div>
                       )}
-                      <div className="text-xs text-slate-400 type-metric">
-                        {currentCount >= workout.dailyGoal ? 'COMPLETED!' : `${Math.round((currentCount / workout.dailyGoal) * 100)}% complete`}
-                      </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <button
