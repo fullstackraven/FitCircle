@@ -392,7 +392,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                 borderColor: energyLevel > 0 ? (energyLevel <= 3 ? '#ef4444' : energyLevel <= 6 ? '#fbbf24' : '#22c55e') : '#475569'
               }}
             >
-              <div className={`text-2xl font-bold ${getEnergyColor(energyLevel)}`}>
+              <div className={`type-metric text-2xl font-bold ${getEnergyColor(energyLevel)}`}>
                 {energyLevel}
               </div>
             </button>

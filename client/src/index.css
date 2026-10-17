@@ -5,6 +5,8 @@
 
 @layer base {
   :root {
+    --font-interface: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-metric: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --background: 222 47% 11%;
     --app-background: #0f172a;
     --foreground: 210 40% 98%;
@@ -55,7 +57,9 @@
      not add another clipping edge to an iOS viewport-sized scroll surface. */
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-size: 1rem;
+    line-height: 1.5;
     background-color: var(--app-background);
     color: hsl(210, 40%, 98%);
     margin: 0;
@@ -437,3 +441,39 @@
 .fitcircle-select { z-index: 2100; }
 
 .app-content .min-h-screen, .app-content .min-h-dvh { min-height: 0; }
+
+/* Typography is independent of the viewport/dock layout contract. Existing
+   size/color utilities can refine these semantic defaults on individual views. */
+@layer base {
+  h1, h2, h3, h4 {
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+  }
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1.125rem; }
+  p { line-height: 1.5; }
+  input[type="number"], input[inputmode="numeric"], input[inputmode="decimal"], time {
+    font-variant-numeric: tabular-nums;
+  }
+}
+@layer components {
+  .type-caption { font-size: 0.75rem; line-height: 1.4; font-weight: 500; }
+  .type-metric {
+    font-family: var(--font-metric);
+    font-variant-numeric: lining-nums tabular-nums;
+    letter-spacing: -0.025em;
+  }
+  .fitcircle-wordmark { font-family: var(--font-metric); letter-spacing: -0.025em; }
+  .entity-name { min-width: 0; overflow-wrap: anywhere; white-space: normal; line-height: 1.4; }
+}
+@layer utilities {
+  /* Keep touch form text readable and avoid iOS input-focus auto-zoom. */
+  @media (max-width: 767px) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), textarea, select {
+      font-size: 1rem;
+    }
+  }
+}

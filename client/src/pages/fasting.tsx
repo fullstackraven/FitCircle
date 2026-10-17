@@ -267,13 +267,13 @@ export default function FastingPage() {
             <h3 className="text-lg font-semibold mb-3 text-center">Last 10 Logs</h3>
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-amber-400">
+                <div className="type-metric text-2xl font-bold text-amber-400">
                   {getLast10LogsProgress().totalHours}h
                 </div>
                 <div className="text-sm text-slate-400">Completed</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-amber-400">
+                <div className="type-metric text-2xl font-bold text-amber-400">
                   {getLast10LogsProgress().averageHours}h
                 </div>
                 <div className="text-sm text-slate-400">Daily Average</div>
@@ -439,7 +439,7 @@ export default function FastingPage() {
                               </div>
                               
                               {/* Duration */}
-                              <div className="text-xl font-bold text-amber-400 font-mono mb-2">
+                              <div className="text-xl font-bold text-amber-400 type-metric mb-2">
                                 {formatDuration(log.duration)}
                               </div>
                               
@@ -620,7 +620,7 @@ export default function FastingPage() {
                     </div>
                   </div>
                   {/* Duration Text */}
-                  <div className="text-2xl font-bold text-white font-mono">
+                  <div className="type-metric text-2xl font-bold text-white">
                     {formatDuration(currentDuration)}
                   </div>
                 </div>

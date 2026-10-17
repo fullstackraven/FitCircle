@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['JetBrains Mono', 'Courier New', 'monospace'],
+        'sans': ['var(--font-interface)'],
         'mono': ['JetBrains Mono', 'Courier New', 'monospace'],
       },
       borderRadius: {

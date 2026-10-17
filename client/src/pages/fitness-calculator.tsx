@@ -243,7 +243,7 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
           
           <div className="space-y-4">
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-400 mb-2">
+              <div className="type-metric text-3xl font-bold text-green-400 mb-2">
                 {calorieTarget.toLocaleString()}
               </div>
               <div className="text-slate-300">calories per day</div>
@@ -343,7 +343,7 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-2xl font-bold text-white">{bmi}</div>
+                  <div className="type-metric text-2xl font-bold text-white">{bmi}</div>
                   <div className="text-sm text-slate-400">{bmiInfo.category}</div>
                 </div>
               </div>
@@ -446,17 +446,17 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
             <div className="grid grid-cols-3 gap-4">
               <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-orange-400 font-semibold mb-2">Carbs</div>
-                <div className="text-2xl font-bold text-white">{macros.carbs.grams}g</div>
+                <div className="type-metric text-2xl font-bold text-white">{macros.carbs.grams}g</div>
                 <div className="text-sm text-slate-400">{macros.carbs.percent}%</div>
               </div>
               <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-red-400 font-semibold mb-2">Protein</div>
-                <div className="text-2xl font-bold text-white">{macros.protein.grams}g</div>
+                <div className="type-metric text-2xl font-bold text-white">{macros.protein.grams}g</div>
                 <div className="text-sm text-slate-400">{macros.protein.percent}%</div>
               </div>
               <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-yellow-400 font-semibold mb-2">Fat</div>
-                <div className="text-2xl font-bold text-white">{macros.fat.grams}g</div>
+                <div className="type-metric text-2xl font-bold text-white">{macros.fat.grams}g</div>
                 <div className="text-sm text-slate-400">{macros.fat.percent}%</div>
               </div>
             </div>

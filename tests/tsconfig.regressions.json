@@ -11,7 +11,8 @@
     "cardio-initialization.test.ts",
     "browser/cardio-initialization.spec.ts",
     "food-save-safety.test.ts",
-    "browser/food-save-safety.spec.ts"
+    "browser/food-save-safety.spec.ts",
+    "browser/typography.spec.ts"
   ],
   "exclude": [
     "../node_modules",

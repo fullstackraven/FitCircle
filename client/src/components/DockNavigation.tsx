@@ -18,7 +18,7 @@ export function DockNavigation({ location, navigate }: { location: string; navig
           {dockItems.map(({ path, icon: Icon, label }) => (
             <button key={path} className="dock-tab" aria-current={location === path ? 'page' : undefined} onClick={() => navigate?.(path)}>
               <Icon aria-hidden="true" />
-              <span>{label}</span>
+              <span className="type-caption">{label}</span>
             </button>
           ))}
         </div>

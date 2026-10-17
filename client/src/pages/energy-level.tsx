@@ -87,15 +87,15 @@ const EnergyTrendVisualization = ({ showAllTime }: { showAllTime: boolean }) => 
       {/* Statistics Cards */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="text-center">
-          <div className="text-2xl font-bold text-purple-400">{avgEnergy}</div>
+          <div className="type-metric text-2xl font-bold text-purple-400">{avgEnergy}</div>
           <div className="text-xs text-slate-400">Avg Energy</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-blue-400">{daysLogged}</div>
+          <div className="type-metric text-2xl font-bold text-blue-400">{daysLogged}</div>
           <div className="text-xs text-slate-400">Days Logged</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-green-400">{todayEnergy}</div>
+          <div className="type-metric text-2xl font-bold text-green-400">{todayEnergy}</div>
           <div className="text-xs text-slate-400">Today</div>
         </div>
       </div>
@@ -354,7 +354,7 @@ export function EnergyLevelPage() {
                         }}
                       >
                         <div className="text-center">
-                          <div className={`text-3xl font-bold ${getEnergyColor(energyLevel)}`}>
+                          <div className={`type-metric text-3xl font-bold ${getEnergyColor(energyLevel)}`}>
                             {energyLevel}
                           </div>
                           <div className="text-xs text-slate-400 mt-1">
