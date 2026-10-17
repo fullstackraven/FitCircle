@@ -36,6 +36,7 @@ import {
   addWeeks,
   subWeeks,
   isSameMonth,
+  isToday,
   isSameWeek,
   endOfDay,
   startOfDay
@@ -592,7 +593,12 @@ export default function CalendarPage() {
                     fontWeight: 'bold'
                   } : {}}
                 >
-                  {format(date, "d")}
+                  <span
+                    aria-current={isToday(date) ? "date" : undefined}
+                    className={isToday(date) ? `text-[#00ff41] font-semibold${complete || isRecovery ? " rounded bg-slate-900 px-1" : ""}` : undefined}
+                  >
+                    {format(date, "d")}
+                  </span>
                   {(hasJournal || hasEnergy || hasSupplements) && (
                     <div className="absolute bottom-1 left-0 w-full flex justify-center space-x-1">
                       {hasJournal && (
