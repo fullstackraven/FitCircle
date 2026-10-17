@@ -1,4 +1,6 @@
-# Cleanup candidates — nothing deleted
+# Historical cleanup candidates
+
+This document records the original audit snapshot; some listed files were subsequently removed. See `CLEANUP_REPORT.md` for the earlier cleanup and [ASSET_CLEANUP_REVIEW.md](ASSET_CLEANUP_REVIEW.md) for the proposed, user-authorized removal of `attached_assets/` and a refreshed list of remaining candidates. Original evidence below is retained.
 
 Static graph includes literal imports and type edges; it does not prove runtime mounting or absence of reflection/manual invocation. Optional `npx tsc --noEmit --noUnusedLocals --noUnusedParameters` exits2 with160 diagnostics. These are advisory baseline candidates, not required-check failures. Full raw results and graph are in evidence/. Do not enable these flags globally in this batch.
 
