@@ -189,7 +189,7 @@ export default function WellnessPage() {
         <div className="fitcircle-container">
 
         {/* Edit/Done Button */}
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end mb-3">
           <button
             onClick={() => isEditMode ? handleDone() : setIsEditMode(true)}
             className="text-slate-400 hover:text-white transition-colors min-h-11 min-w-11 justify-center flex items-center space-x-1"
