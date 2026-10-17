@@ -66,7 +66,7 @@ export function GoalsWidget({ widget, onClick }: GoalsWidgetProps) {
         ) : (
           <>
             <div className="text-center mb-4">
-              <div className="text-2xl font-bold text-white mb-1">{Math.round(totalProgress)}%</div>
+              <div className="type-metric text-2xl font-bold text-white mb-1">{Math.round(totalProgress)}%</div>
               <div className="text-slate-400">Overall Progress</div>
             </div>
             

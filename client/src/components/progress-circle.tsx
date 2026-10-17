@@ -136,7 +136,7 @@ export function ProgressCircle({
           />
         ) : (
           <span 
-            className="font-black text-xl" 
+            className="type-metric font-black text-xl"
             style={{ 
               color: '#ffffff', 
               textShadow: '0 2px 8px rgba(0,0,0,1), 0 4px 16px rgba(0,0,0,0.8), 0 0 8px rgba(255,255,255,0.5)',

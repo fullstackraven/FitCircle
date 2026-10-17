@@ -60,7 +60,7 @@ export function TimerWidget({ widget, onOpenTimer }: TimerWidgetProps) {
         {hasActiveTimer ? (
           <div className="space-y-2">
             <div className="text-center">
-              <div className="text-white font-mono text-lg">{displayTime}</div>
+              <div className="text-white type-metric text-lg">{displayTime}</div>
               <div className="text-slate-400 text-xs">
                 {isWorkoutActive ? 'Workout Session' : 'Timer Running'}
               </div>
@@ -109,7 +109,7 @@ export function TimerWidget({ widget, onOpenTimer }: TimerWidgetProps) {
       {hasActiveTimer ? (
         <div className="space-y-4">
           <div className="text-center">
-            <div className="text-white font-mono text-3xl mb-1">{displayTime}</div>
+            <div className="text-white type-metric text-3xl mb-1">{displayTime}</div>
             <div className="text-slate-400">
               {isWorkoutActive ? 'Workout Session Active' : 'Timer Running'}
             </div>

@@ -355,7 +355,7 @@ export default function MeditationPage() {
               {/* Time display */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-white font-mono mb-2">
+                  <div className="type-metric text-4xl font-bold text-white mb-2">
                     {formatTime(timeLeft)}
                   </div>
                   <div className="text-sm text-slate-400">
@@ -379,13 +379,13 @@ export default function MeditationPage() {
             <h3 className="text-lg font-semibold mb-3 text-center">Last 10 Logs</h3>
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-purple-400">
+                <div className="type-metric text-2xl font-bold text-purple-400">
                   {getLast10LogsProgress().totalMinutes}min
                 </div>
                 <div className="text-sm text-slate-400">Completed</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-purple-400">
+                <div className="type-metric text-2xl font-bold text-purple-400">
                   {getLast10LogsProgress().averageMinutes}min
                 </div>
                 <div className="text-sm text-slate-400">Average per Log</div>

@@ -34,7 +34,7 @@ export function WorkoutSessionWidget({ widget }: WorkoutSessionWidgetProps) {
         {isWorkoutActive ? (
           <div className="space-y-2">
             <div className="text-center">
-              <div className="text-white font-mono text-lg">{getCurrentSessionDuration()}</div>
+              <div className="text-white type-metric text-lg">{getCurrentSessionDuration()}</div>
               <div className="text-slate-400 text-xs">
                 {isWorkoutPaused ? 'Paused' : 'Active'}
               </div>
@@ -102,7 +102,7 @@ export function WorkoutSessionWidget({ widget }: WorkoutSessionWidgetProps) {
           <div className="bg-slate-700 rounded-xl py-4 px-6 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className={`w-3 h-3 rounded-full ${isWorkoutPaused ? 'bg-yellow-400' : 'bg-green-400 animate-pulse'}`}></div>
-              <span className="text-white font-mono text-xl">{getCurrentSessionDuration()}</span>
+              <span className="text-white type-metric text-xl">{getCurrentSessionDuration()}</span>
             </div>
             <div className="flex items-center space-x-3">
               <button

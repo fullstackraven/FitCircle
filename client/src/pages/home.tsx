@@ -218,7 +218,7 @@ export default function Home() {
             <Menu size={22} />
           </button>
 
-          <h1 className="text-2xl font-bold text-white">FitCircle</h1>
+          <h1 className="fitcircle-wordmark text-2xl font-bold text-white">FitCircle</h1>
         </div>
       </AppHeader>
 
@@ -251,7 +251,7 @@ export default function Home() {
                 <div className="bg-slate-700 rounded-xl py-4 px-6 flex items-center justify-between w-full max-w-xs" style={{ minHeight: '56px' }}>
                   <div className="flex items-center space-x-3">
                     <div className={`w-3 h-3 rounded-full ${isWorkoutPaused ? 'bg-yellow-400' : 'bg-green-400 animate-pulse'}`}></div>
-                    <span className="text-white font-mono text-xl">{getCurrentSessionDuration()}</span>
+                    <span className="text-white type-metric text-xl">{getCurrentSessionDuration()}</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <button
@@ -291,7 +291,7 @@ export default function Home() {
         <div className="text-center mb-4">
           <h2 className="text-xl font-semibold text-white">Today's Workout</h2>
           {todaysRoutine && (
-            <p className="text-lg text-slate-300 mt-1">{todaysRoutine.name}</p>
+            <p className="entity-name text-lg text-slate-300 mt-1">{todaysRoutine.name}</p>
           )}
         </div>
         <div className="space-y-6 p-8 overflow-visible">
@@ -311,7 +311,7 @@ export default function Home() {
                 const currentCount = todayTotal?.count || 0;
 
                 return (
-                  <div key={workout.id} className="flex flex-col items-center space-y-3 py-2">
+                  <div key={workout.id} className="flex min-w-0 w-full flex-col items-center space-y-3 py-2">
                     <ProgressCircle
                       count={currentCount}
                       goal={workout.dailyGoal}
@@ -322,9 +322,9 @@ export default function Home() {
                       onHoldIncrement={() => handleWorkoutHoldIncrement(workout.id)}
                       isAnimating={clickingWorkout === workout.id}
                     />
-                    <div className="text-center">
-                      <div className="flex items-center justify-center space-x-1">
-                        <span className="text-sm text-slate-300 font-medium">{workout.name}</span>
+                    <div className="min-w-0 w-full text-center">
+                      <div className="flex min-w-0 items-center justify-center space-x-1">
+                        <span className="entity-name text-sm text-slate-300 font-medium">{workout.name}</span>
                         <button
                           onClick={() => handleEditWorkout(workout)}
                           className="text-slate-400 hover:text-slate-200 transition-colors"
@@ -337,7 +337,7 @@ export default function Home() {
                           Weight: {workout.weightLbs}lbs
                         </div>
                       )}
-                      <div className="text-xs text-slate-400 font-mono">
+                      <div className="text-xs text-slate-400 type-metric">
                         {currentCount >= workout.dailyGoal ? 'COMPLETED!' : `${Math.round((currentCount / workout.dailyGoal) * 100)}% complete`}
                       </div>
                     </div>
@@ -536,9 +536,9 @@ export default function Home() {
               <div key={workout.id} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className={`w-4 h-4 rounded-full ${getColorClass(workout.color)}`}></div>
-                  <span className="font-medium text-white">{workout.name}</span>
+                  <span className="entity-name font-medium text-white">{workout.name}</span>
                 </div>
-                <span className="text-lg font-bold text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
+                <span className="type-metric shrink-0 text-lg font-bold text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
               </div>
             ))}
           </div>
@@ -626,7 +626,7 @@ export default function Home() {
             <div className="space-y-6">
               {/* Simple Time Display */}
               <div className="text-center space-y-2">
-                <div className="text-4xl font-bold text-white">
+                <div className="type-metric text-4xl font-bold text-white">
                   {String((parseInt(timerHours) || 0)).padStart(2, '0')}:
                   {String((parseInt(timerMinutes) || 0)).padStart(2, '0')}:
                   {String(parseInt(timerSeconds) || 0).padStart(2, '0')}

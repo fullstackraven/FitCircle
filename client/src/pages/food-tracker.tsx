@@ -969,7 +969,7 @@ export default function FoodTrackerPage() {
             color="rgb(34, 197, 94)"
           >
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-400">
+              <div className="type-metric text-3xl font-bold text-green-400">
                 {Math.round(totals.calories)}
               </div>
               <div className="text-sm text-gray-400">
@@ -2065,7 +2065,7 @@ export default function FoodTrackerPage() {
                 <div className="bg-gray-700/50 rounded-xl p-4">
                   <div className="grid grid-cols-4 gap-3 text-center">
                     <div>
-                      <div className="text-2xl font-bold text-white">
+                      <div className="type-metric text-2xl font-bold text-white">
                         {Math.round(addingFood.calories * parseFloat(addEntryServings || '1'))}
                       </div>
                       <div className="text-xs text-gray-400">cal</div>
@@ -2173,7 +2173,7 @@ export default function FoodTrackerPage() {
                 <div className="bg-gray-700/50 rounded-xl p-4">
                   <div className="grid grid-cols-4 gap-3 text-center">
                     <div>
-                      <div className="text-2xl font-bold text-white">
+                      <div className="type-metric text-2xl font-bold text-white">
                         {Math.round(editingEntry.calories * parseFloat(editEntryServings || '1'))}
                       </div>
                       <div className="text-xs text-gray-400">cal</div>

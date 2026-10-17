@@ -144,7 +144,7 @@ export default function RoutinesPage() {
           >
             <Menu size={22} />
           </button>
-          <h1 className="text-2xl font-bold text-white">FitCircle</h1>
+          <h1 className="fitcircle-wordmark text-2xl font-bold text-white">FitCircle</h1>
         </div>
       </AppHeader>
 
@@ -186,13 +186,13 @@ export default function RoutinesPage() {
                     data-testid={`routine-header-${routine.id}`}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex-1">
+                      <div className="min-w-0 flex-1">
                         <div>
-                          <h3 className="text-lg font-semibold text-white">{routine.name}</h3>
+                          <h3 className="entity-name pr-3 text-lg font-semibold text-white">{routine.name}</h3>
                           <p className="text-sm text-slate-400">{daysText}</p>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-3" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex shrink-0 items-center space-x-3" onClick={(e) => e.stopPropagation()}>
                         <ChevronDown 
                           className={`w-5 h-5 text-slate-400 transition-transform ${
                             isExpanded ? 'rotate-180' : ''
@@ -229,8 +229,8 @@ export default function RoutinesPage() {
                           {routineWorkouts.map((workout) => (
                             <div key={workout.id} className="flex items-center space-x-3 p-2 bg-slate-700 rounded-xl">
                               <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)}`} />
-                              <div className="flex-1">
-                                <span className="text-white text-sm font-medium">{workout.name}</span>
+                              <div className="min-w-0 flex-1">
+                                <span className="entity-name text-white text-sm font-medium">{workout.name}</span>
                                 <span className="text-xs text-slate-400 ml-2">Goal: {workout.dailyGoal}</span>
                                 {workout.weightLbs && (
                                   <span className="text-xs text-slate-400 ml-1">• {workout.weightLbs}lbs</span>
@@ -282,7 +282,7 @@ export default function RoutinesPage() {
         {/* Edit Workouts Section */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <Collapsible open={isEditWorkoutsOpen} onOpenChange={setIsEditWorkoutsOpen} className="flex-1">
+            <Collapsible open={isEditWorkoutsOpen} onOpenChange={setIsEditWorkoutsOpen} className="min-w-0 flex-1">
               <CollapsibleTrigger asChild>
                 <Button
                   variant="outline"
@@ -320,10 +320,10 @@ export default function RoutinesPage() {
                           key={workout.id} 
                           className="flex items-center justify-between p-4 bg-slate-700 rounded-xl"
                         >
-                          <div className="flex items-center space-x-3">
+                          <div className="flex min-w-0 flex-1 items-center space-x-3">
                             <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)}`} />
-                            <div>
-                              <div className="text-white font-medium">{workout.name}</div>
+                            <div className="min-w-0">
+                              <div className="entity-name text-white font-medium">{workout.name}</div>
                               <div className="text-xs text-slate-400">
                                 {scheduledDaysText} • Goal: {workout.dailyGoal}
                                 {workout.weightLbs && ` • ${workout.weightLbs}lbs`}

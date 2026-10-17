@@ -74,7 +74,7 @@
 .dock-tab:hover { color: white; }
 .dock-tab:active { transform: translateY(1px); background-color: rgb(255 255 255 / .09); }
 .dock-tab svg { width: 28px; height: 28px; margin-bottom: 4px; }
-.dock-tab span { font-size: 11px; font-weight: 300; line-height: 1; }
+.dock-tab span { font-size: 12px; font-weight: 500; line-height: 1; }
 
 @media (prefers-reduced-transparency: reduce) {
   :root {

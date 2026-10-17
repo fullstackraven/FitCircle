@@ -180,7 +180,7 @@ export default function WellnessPage() {
           >
             <Menu size={22} />
           </button>
-          <h1 className="text-2xl font-bold text-white">FitCircle</h1>
+          <h1 className="fitcircle-wordmark text-2xl font-bold text-white">FitCircle</h1>
         </div>
       </AppHeader>
       
