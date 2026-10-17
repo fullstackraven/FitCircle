@@ -1,8 +1,12 @@
 import { useQuote } from '@/hooks/use-quote';
 import { RefreshCw, Quote } from 'lucide-react';
 
-export default function QuoteOfTheDay() {
+export default function QuoteOfTheDay({ compact = false }: { compact?: boolean }) {
   const { quote, loading, error, refresh } = useQuote();
+
+  if (compact && loading) {
+    return <aside aria-label="Quote of the Day" className="rounded-xl bg-slate-800/40 p-3 mb-6" aria-busy="true"><p className="text-xs text-slate-400">Loading today’s quote…</p></aside>;
+  }
 
   if (loading) {
     return (
@@ -21,6 +25,22 @@ export default function QuoteOfTheDay() {
 
   if (!quote) {
     return null;
+  }
+
+  if (compact) {
+    return (
+      <aside aria-label="Quote of the Day" className="flex items-start gap-3 rounded-xl bg-slate-800/40 p-3 mb-6 border border-slate-700/40">
+        <Quote className="w-5 h-5 shrink-0 text-slate-500 mt-0.5" aria-hidden="true" />
+        <div className="min-w-0 flex-1">
+          <blockquote className="text-[13px] leading-relaxed italic text-slate-400">“{quote.text}”</blockquote>
+          <cite className="block text-xs text-slate-400 not-italic mt-1">— {quote.author}</cite>
+          {error && <span className="text-xs text-amber-400" title="Using offline quote">Offline</span>}
+        </div>
+        <button onClick={refresh} className="min-h-11 min-w-11 -my-1.5 -mr-1.5 flex items-center justify-center text-slate-400 hover:text-white transition-colors" title="Refresh quote" aria-label="Refresh quote">
+          <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
+        </button>
+      </aside>
+    );
   }
 
   return (

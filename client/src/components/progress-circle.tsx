@@ -3,6 +3,7 @@ import { useRef, useCallback, useEffect } from 'react';
 import { getColorClass, getStrokeColor } from '@/lib/color-utils';
 
 interface ProgressCircleProps {
+  ariaLabel?: string;
   count: number;
   goal: number;
   color: string;
@@ -15,6 +16,7 @@ interface ProgressCircleProps {
 
 
 export function ProgressCircle({ 
+  ariaLabel,
   count, 
   goal, 
   color, 
@@ -90,6 +92,7 @@ export function ProgressCircle({
 
   return (
     <button
+      aria-label={ariaLabel}
       onClick={handleClick}
       onMouseDown={startHold}
       onMouseUp={endHold}
