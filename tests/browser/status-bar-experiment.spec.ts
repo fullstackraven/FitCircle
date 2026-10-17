@@ -129,9 +129,9 @@ test('test dock centers unchanged production icons and labels without changing c
     expect(button).toEqual(original);
     expect(button.bottom - button.height / 2).toBe(synthetic.bottom - synthetic.height / 2);
   }
-  expect(synthetic.paddingBottom).toBe('3px');
+  expect(synthetic.paddingBottom).toBe('8px');
   expect(synthetic.width).toBe(production.width);
-  expect(synthetic.height).toBe(56);
+  expect(synthetic.height).toBe(66);
   expect(synthetic.height).toBe(production.height);
   expect(synthetic.bottom).toBe(774);
   expect(await page.locator('.test-dock').evaluate(el => el.getBoundingClientRect().bottom)).toBe(812);

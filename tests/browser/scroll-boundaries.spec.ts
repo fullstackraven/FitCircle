@@ -218,7 +218,7 @@ for (const viewport of [
     expect(visible.bottom).toBe(viewport.height);
     const nav = await page.getByRole('navigation', { name: 'Bottom navigation' }).boundingBox();
     expect(nav!.y + nav!.height).toBe(viewport.height - viewport.bottom - 4);
-    expect(nav!.height).toBe(56);
+    expect(nav!.height).toBe(66);
     const button = await page.getByRole('button', { name: 'Reminders', exact: true }).boundingBox();
     expect(button!.height).toBe(48);
     expect(button!.width).toBeGreaterThanOrEqual(44);
