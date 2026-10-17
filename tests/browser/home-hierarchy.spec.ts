@@ -51,12 +51,17 @@ test('mobile Home prioritizes routine/session and preserves colored circular rep
   await page.screenshot({path:'/tmp/home-workout-focused-mobile.png'});
 });
 test('multiple exercises and long names remain reachable on narrow and desktop Home', async ({page})=>{
-  for (const width of [320,1440]) {
+  for (const width of [320,390,1440]) {
     await page.setViewportSize({width,height:900}); await seed(page,true);
     await expect(page.locator('[data-testid^="home-workout-"]')).toHaveCount(3);
     const last = page.getByTestId('home-workout-2');
     await expect(last.getByText(names[2],{exact:true})).toBeVisible();
     expect(await last.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
+    const timerCircle = (await page.getByTitle('Open Timer').locator('.rounded-full').boundingBox())!;
+    const addCircle = (await page.getByRole('button',{name:'Add new workout',exact:true}).boundingBox())!;
+    expect(addCircle.y).toBe(timerCircle.y);
+    expect(addCircle.height).toBe(timerCircle.height);
+    expect((await page.getByText('Add',{exact:true}).boundingBox())!.y).toBe((await page.getByText('Timer',{exact:true}).boundingBox())!.y);
     await page.getByRole('button',{name:'Add new workout',exact:true}).click();
     await expect(page.getByRole('dialog')).toBeVisible();
     await page.getByRole('dialog').getByRole('button',{name:'Cancel',exact:true}).click();

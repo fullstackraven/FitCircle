@@ -510,6 +510,7 @@ export default function Home() {
             {/* Add Workout Button */}
             {canAddMoreWorkouts() && (
               <div className="flex flex-col items-center space-y-3">
+                <div className="w-24 h-24 flex items-center justify-center">
                 <button
                   onClick={() => setIsModalOpen(true)}
                   className="w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center border-4 border-dashed border-slate-700 hover:border-slate-600 transition-colors"
@@ -518,6 +519,7 @@ export default function Home() {
                 >
                   <Plus className="w-8 h-8 text-slate-400" />
                 </button>
+                </div>
                 <div className="text-center">
                   <div className="text-sm text-slate-300 font-medium">Add</div>
                   <div className="text-xs text-slate-400">New workout</div>
