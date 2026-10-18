@@ -1,3 +1,4 @@
+import { SidebarProfileCard } from '@/components/SidebarProfileCard';
 import { VersionLabel } from "@/components/VersionLabel";
 import { AppHeader } from "@/components/AppHeader";
 import { useState, useEffect, useRef } from 'react';
@@ -292,21 +293,7 @@ export default function RemindersPage() {
             <SheetTitle>Navigation Menu</SheetTitle>
           </SheetHeader>
           <div className="flex flex-col h-full">
-            <div 
-              className="flex items-center space-x-3 p-4 border-b border-slate-700 cursor-pointer hover:bg-slate-800 transition-colors"
-              onClick={() => {
-                setIsSidebarOpen(false);
-                navigate('/profile?from=dashboard');
-              }}
-            >
-              <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center border-2 border-green-400">
-                <CheckCircle className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <div className="text-white font-medium">{userName}</div>
-                <div className="text-slate-400 text-xs">view profile</div>
-              </div>
-            </div>
+            <SidebarProfileCard open={isSidebarOpen} returnTo="/reminders" onNavigate={() => setIsSidebarOpen(false)} />
 
             <div className="flex-1 py-4">
               <div 

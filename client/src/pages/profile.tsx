@@ -9,7 +9,10 @@ import { readFitnessProfile, readTrainingOverview, readMeasurementPreview, saveF
 
 export default function ProfilePage() {
   const [, navigate] = useLocation();
-  const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
+  const params = new URLSearchParams(window.location.search);
+  const fromDashboard = params.get('from') === 'dashboard';
+  const requestedReturn = params.get('returnTo');
+  const returnTo = requestedReturn && ['/', '/calendar', '/routines', '/wellness', '/reminders'].includes(requestedReturn) ? requestedReturn : '/';
   const [profile, setProfile] = useState(() => readFitnessProfile());
   const [training, setTraining] = useState(() => readTrainingOverview());
   const [measurements, setMeasurements] = useState(() => readMeasurementPreview());
@@ -43,7 +46,7 @@ export default function ProfilePage() {
       window.dispatchEvent(new Event('fitcircleProfileChanged'));
     } catch (failure) { setError(failure instanceof Error ? failure.message : 'Could not save your profile. Please retry.'); }
   };
-  const back = () => { if (fromDashboard) sessionStorage.setItem('fitcircle_dashboard_open', 'true'); navigate('/'); };
+  const back = () => { if (fromDashboard) sessionStorage.setItem('fitcircle_dashboard_open', 'true'); navigate(fromDashboard ? returnTo : '/'); };
   const fullReps = training?.totalReps.toLocaleString() ?? 'Unavailable';
   const compactReps = training ? new Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 }).format(training.totalReps) : '—';
   return (

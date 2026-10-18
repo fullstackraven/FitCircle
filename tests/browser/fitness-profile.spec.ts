@@ -89,3 +89,24 @@ test('profile long names and goals wrap and the final detail stays above the doc
     expect(last.y+last.height).toBeLessThanOrEqual((await page.locator('.app-dock').boundingBox())!.y);
   }
 });
+
+for (const route of ['', 'calendar', 'routines', 'wellness', 'reminders']) {
+  test(`shared profile card and return navigation work from ${route || 'home'}`, async ({ page }) => {
+    await seed(page);
+    await page.goto(route || './');
+    const before = await snapshot(page);
+    await page.getByRole('button', { name: 'Open Menu', exact: true }).click();
+    const sheet = page.getByRole('dialog', { name: 'Navigation Menu', exact: true });
+    const card = sheet.getByRole('button', { name: /My Fitness Profile/ });
+    await expect(card).toContainText('Training overview & goals');
+    await expect(card).toContainText('1 active day');
+    await expect(sheet.getByText('view profile', { exact: true })).toHaveCount(0);
+    await card.click();
+    await expect(page.getByRole('heading', { name: 'My Fitness Profile', exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/FitCircle/${route}$`));
+    await expect(sheet).toBeVisible();
+    await expect(card).toContainText('1 active day');
+    expect(await snapshot(page)).toEqual(before);
+  });
+}
