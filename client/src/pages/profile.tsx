@@ -82,7 +82,6 @@ export default function ProfilePage() {
           <button onClick={() => navigate('/measurements')} className="w-full min-h-16 flex items-center gap-3 text-left"><Ruler size={20} className="shrink-0 text-slate-400" /><div className="min-w-0 flex-1"><span className="block text-sm font-medium text-white">Body Measurements</span>{measurements && <span className="block text-xs text-slate-400 mt-1">{measurements}</span>}</div><ChevronRight size={18} className="text-slate-400" /></button>
           <button onClick={() => openEditor('goals')} disabled={!!profile.error} className="w-full min-h-16 flex items-center gap-3 text-left disabled:opacity-40"><Target size={20} className="shrink-0 text-slate-400" /><span className="flex-1 text-sm font-medium text-white">Fitness Goals</span><ChevronRight size={18} className="text-slate-400" /></button>
         </div>
-        {profile.oldAge && <p className="text-xs text-slate-500 mt-2">Legacy age {profile.oldAge} is retained unchanged. No birth date has been inferred.</p>}
       </section>
       <Dialog open={editor !== null} onOpenChange={open => { if (!open) setEditor(null); }}>
         <DialogContent staticBody fixedFooter className="bg-slate-900 border-slate-700 max-w-md p-4 gap-3">
