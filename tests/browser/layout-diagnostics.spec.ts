@@ -19,20 +19,31 @@ test('diagnostics do not activate with ordinary navigation', async ({ page }) =>
   expect(await page.evaluate(() => 'fitcircleViewportDiagnostics' in window)).toBe(false);
 });
 
-test('read-only probe reports all viewport units, actual env insets and clipping geometry', async ({ page }) => {
-  await page.goto('wellness');
+async function captureReadyProbe(page: import('@playwright/test').Page) {
   await page.getByTestId('card-supplements').waitFor();
-  const result = await page.evaluate(async () => {
+  await expect.poll(() => page.evaluate(() =>
+    localStorage.getItem('fitcircle_food_database_migrated') === 'true' &&
+    localStorage.getItem('fitcircle_food_database') !== null
+  )).toBe(true);
+  return page.evaluate(async () => {
+    // Loading the probe can yield to pending application initialization. Do it
+    // before the snapshots, then measure synchronously without an await.
+    const module = await import(new URL('/FitCircle/layout-diagnostics.js', location.origin).href);
+    const storageBytes = () => JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map(key => [key, localStorage.getItem(key)])));
     document.documentElement.style.setProperty('--safe-top', '59px');
     document.documentElement.style.setProperty('--safe-bottom', '34px');
     const main = document.querySelector('main')!;
     main.scrollTop = 240;
-    const before = { top: main.scrollTop, bottom: main.getBoundingClientRect().bottom, data: JSON.stringify(localStorage) };
-    const module = await import(new URL('/FitCircle/layout-diagnostics.js', location.origin).href);
+    const before = { top: main.scrollTop, bottom: main.getBoundingClientRect().bottom, data: storageBytes() };
     const report = module.captureViewportGeometry({ cutoffY: 844 });
-    const after = { top: main.scrollTop, bottom: main.getBoundingClientRect().bottom, data: JSON.stringify(localStorage) };
+    const after = { top: main.scrollTop, bottom: main.getBoundingClientRect().bottom, data: storageBytes() };
     return { report, before, after, remainingProbes: document.querySelectorAll('[data-viewport-probe]').length };
   });
+}
+
+test('read-only probe reports all viewport units, actual env insets and clipping geometry', async ({ page }) => {
+  await page.goto('wellness');
+  const result = await captureReadyProbe(page);
   expect(result.after).toEqual(result.before);
   expect(result.remainingProbes).toBe(0);
   for (const unit of ['vh', 'dvh', 'svh', 'lvh']) expect(result.report.viewportUnits[unit]).toEqual({ supported: true, height: 844 });
@@ -52,6 +63,44 @@ test('read-only probe reports all viewport units, actual env insets and clipping
   expect(result.report.ancestors.at(-1).element).toBe('HTML');
   expect(result.report.cutoffComparison.matchingWithinOneCssPixel).toContain('contentBottom');
   expect(result.report.cutoffComparison.matchingWithinOneCssPixel).toContain('cssDvh');
+});
+
+test('read-only probe waits for deliberately delayed food initialization', async ({ page }) => {
+  await page.addInitScript(() => {
+    let release!: () => void;
+    const gate = new Promise<void>(resolve => { release = resolve; });
+    (window as any).releaseFoodInitialization = release;
+    const open = indexedDB.open.bind(indexedDB);
+    const success = Object.getOwnPropertyDescriptor(IDBRequest.prototype, 'onsuccess')!;
+    indexedDB.open = (...args: Parameters<IDBFactory['open']>) => {
+      const request = open(...args);
+      if (args[0] === 'FitCircleCustomFoods') {
+        Object.defineProperty(request, 'onsuccess', {
+          set(handler) {
+            success.set!.call(request, function (event: Event) {
+              void gate.then(() => handler.call(request, event));
+            });
+          },
+        });
+      }
+      return request;
+    };
+  });
+  await page.goto('wellness');
+  await page.getByTestId('card-supplements').waitFor();
+  expect(await page.evaluate(() => localStorage.getItem('fitcircle_food_database_migrated'))).toBeNull();
+  let finished = false;
+  const pending = captureReadyProbe(page).then(result => { finished = true; return result; });
+  // A browser round-trip while the explicit gate is closed; no timed sleeps.
+  expect(await page.evaluate(() => localStorage.getItem('fitcircle_food_database'))).toBeNull();
+  expect(finished).toBe(false);
+  await page.evaluate(() => (window as any).releaseFoodInitialization());
+  const result = await pending;
+  expect(JSON.parse(result.before.data).fitcircle_food_database_migrated).toBe('true');
+  expect(result.after).toEqual(result.before);
+  expect(result.report.elements['.app-content'].scrollTop).toBe(result.before.top);
+  expect(result.after.bottom).toBe(result.before.bottom);
+  expect(result.remainingProbes).toBe(0);
 });
 
 test('marking the observed cutoff records coordinates without opening a fitness feature', async ({ page }) => {
