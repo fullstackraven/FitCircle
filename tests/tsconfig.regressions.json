@@ -16,7 +16,8 @@
     "browser/glass.spec.ts",
     "browser/home-hierarchy.spec.ts",
     "browser/reminders-list.spec.ts",
-    "browser/layout-diagnostics.spec.ts"
+    "browser/layout-diagnostics.spec.ts",
+    "browser/timer-picker.spec.ts"
   ],
   "exclude": [
     "../node_modules",
