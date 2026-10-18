@@ -85,7 +85,7 @@ test('all navigation sheets keep close, profile, Settings, and version accessibl
     await assertSafeClose(sheet);
     const version = await sheet.getByText('Version 2.1.0').boundingBox();
     expect(version!.y + version!.height).toBeLessThanOrEqual(810);
-    await expect(route === '' ? sheet.getByRole('button', { name: /My Fitness Profile/ }) : sheet.getByText('view profile')).toBeVisible();
+    await expect(sheet.getByRole('button', { name: /My Fitness Profile/ })).toBeVisible();
     await expect(sheet.getByText('Settings', { exact: true })).toBeVisible();
     expect(await page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('hidden');
     const before = await page.locator('main').evaluate(el => el.scrollTop);
