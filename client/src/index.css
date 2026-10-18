@@ -534,3 +534,14 @@
   cursor: pointer;
   user-select: none;
 }
+
+.statistics-progress { appearance: none; border: 0; border-radius: 999px; background: rgb(51 65 85); overflow: hidden; }
+.statistics-progress::-webkit-progress-bar { background: rgb(51 65 85); border-radius: 999px; }
+.statistics-progress::-webkit-progress-value { background: currentColor; border-radius: 999px; }
+.statistics-progress::-moz-progress-bar { background: currentColor; border-radius: 999px; }
+.statistics-workout-totals { overflow: hidden; }
+.statistics-workout-totals[data-state="open"] { animation: statistics-expand 180ms ease-out; }
+.statistics-workout-totals[data-state="closed"] { animation: statistics-collapse 150ms ease-in; }
+@keyframes statistics-expand { from { height: 0; opacity: 0; } to { height: var(--radix-collapsible-content-height); opacity: 1; } }
+@keyframes statistics-collapse { from { height: var(--radix-collapsible-content-height); opacity: 1; } to { height: 0; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .statistics-workout-totals { animation: none !important; } }
