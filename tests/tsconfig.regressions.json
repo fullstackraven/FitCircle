@@ -18,7 +18,9 @@
     "browser/reminders-list.spec.ts",
     "browser/layout-diagnostics.spec.ts",
     "browser/timer-picker.spec.ts",
-    "browser/workout-statistics.spec.ts"
+    "browser/workout-statistics.spec.ts",
+    "fitness-profile.test.ts",
+    "browser/fitness-profile.spec.ts"
   ],
   "exclude": [
     "../node_modules",

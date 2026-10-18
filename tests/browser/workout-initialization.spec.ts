@@ -3,7 +3,7 @@ import { malformedWorkouts } from '../fixtures/malformed-workouts';
 const key = 'workout-tracker-data';
 async function seed(page: Page, raw: string) {
   await page.goto('profile');
-  await expect(page.getByRole('button', { name: 'Save Profile' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'My Fitness Profile', exact: true })).toBeVisible();
   await page.evaluate(({ key, raw }) => {
     localStorage.setItem(key, raw); localStorage.setItem('unrelated-synthetic', 'retain');
   }, { key, raw });

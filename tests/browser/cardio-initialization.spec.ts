@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { cardioKey, cardioGoalKey, cardioLegacyKeys, modernCardio, legacyCardio, malformedCardio } from '../fixtures/cardio-initialization';
 async function seed(page: Page, values: Record<string, string>) {
   await page.goto('profile');
-  await expect(page.getByRole('button', { name: 'Save Profile' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'My Fitness Profile', exact: true })).toBeVisible();
   await page.evaluate(values => { for (const [key, raw] of Object.entries(values)) localStorage.setItem(key, raw); localStorage.setItem('unrelated-synthetic', 'retain'); }, values);
   await page.addInitScript(() => {
     const original = Storage.prototype.setItem;

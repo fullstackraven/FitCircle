@@ -8,7 +8,7 @@ for (const fixture of historicalIntegrityFixtures) {
     // Profile does not mount useWorkouts. Seed once, before any workout reader;
     // addInitScript reseeding on reload would conceal destructive migration.
     await page.goto('profile');
-    await expect(page.getByRole('button', { name: 'Save Profile' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'My Fitness Profile', exact: true })).toBeVisible();
     const data = { ...fixture.data, lastDate: '2026-10-16' };
     await page.evaluate(data => {
       localStorage.setItem('workout-tracker-data', JSON.stringify(data));

@@ -1,7 +1,7 @@
 import { VersionLabel } from "@/components/VersionLabel";
 import { AppHeader } from "@/components/AppHeader";
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Target, TrendingUp, Calculator, UtensilsCrossed, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp, Timer, Activity, Brain, Droplet } from 'lucide-react';
+import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Target, TrendingUp, Calculator, UtensilsCrossed, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp, ChevronRight, Timer, Activity, Brain, Droplet } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
@@ -33,6 +33,7 @@ export default function Home() {
     updateWorkout,
     updateWorkoutGoal,
     getTodaysTotals,
+    getTotalStats,
     getRecentActivity,
     getAvailableColors,
     getWorkoutArray,
@@ -200,6 +201,8 @@ export default function Home() {
   const emptySlots = Math.max(0, minSlots - usedSlots);
 
 
+
+  const dashboardTraining = isSidebarOpen ? getTotalStats() : null;
 
   return (
     <div 
@@ -574,22 +577,15 @@ export default function Home() {
             <SheetTitle>Navigation Menu</SheetTitle>
           </SheetHeader>
           <div className="flex flex-col h-full">
-            {/* User Profile Section */}
-            <div 
-              className="flex items-center space-x-3 p-4 border-b border-slate-700 cursor-pointer hover:bg-slate-800 transition-colors"
-              onClick={() => {
-                setIsSidebarOpen(false);
-                navigate('/profile?from=dashboard');
-              }}
-            >
-              <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center border-2 border-green-400">
-                <CheckCircle className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <div className="text-white font-medium">{userName}</div>
-                <div className="text-slate-400 text-xs">view profile</div>
-              </div>
-            </div>
+            {/* Local training overview; use the existing completed-day statistic. */}
+            <button className="w-full rounded-xl bg-slate-800/60 border border-slate-700/40 p-3 text-left hover:bg-slate-800 transition-colors" onClick={() => { setIsSidebarOpen(false); navigate('/profile?from=dashboard'); }}>
+              <span className="flex items-center gap-3">
+                <span className="w-11 h-11 shrink-0 rounded-full bg-green-400/10 flex items-center justify-center"><User size={24} className="text-green-400" aria-hidden="true" /></span>
+                <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-white">My Fitness Profile</span><span className="block text-xs text-slate-400 mt-1">Training overview &amp; goals</span></span>
+                <ChevronRight size={18} className="shrink-0 text-slate-400" aria-hidden="true" />
+              </span>
+              <span className="flex flex-wrap justify-between gap-2 border-t border-slate-700/60 mt-3 pt-3 text-xs text-slate-400"><span>Your progress at a glance</span><span className="text-green-400">{dashboardTraining && (dashboardTraining.totalReps > 0 || dashboardTraining.totalCompletedDays > 0) ? `${dashboardTraining.totalCompletedDays} active ${dashboardTraining.totalCompletedDays === 1 ? 'day' : 'days'}` : 'No workouts recorded yet'}</span></span>
+            </button>
 
             {/* Dashboard Menu Items */}
             <div className="flex-1 py-4">

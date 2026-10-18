@@ -4,16 +4,18 @@ test.use({ timezoneId: 'America/New_York' });
 
 test('profile fields persist across navigation and reload without changing unrelated keys', async ({ page }) => {
   await page.goto('profile');
-  await page.evaluate(() => localStorage.setItem('unrelated-regression-key', 'retain'));
+  await page.evaluate(() => { localStorage.setItem('unrelated-regression-key', 'retain'); localStorage.setItem('fitcircle_age','37'); });
+  await page.reload();
+  await page.getByRole('button',{name:'Edit Profile',exact:true}).click();
   await page.getByLabel('Name', { exact: true }).fill('Synthetic athlete');
-  await page.getByLabel('Age', { exact: true }).fill('37');
+  await page.getByRole('button', { name: 'Save Profile' }).click();
+  await page.getByRole('button',{name:'Edit Fitness Goals',exact:true}).click();
   await page.getByLabel('Fitness Goal', { exact: true }).fill('Consistent movement');
   await page.getByRole('button', { name: 'Save Profile' }).click();
-  await page.goto('profile');
   await page.reload();
-  await expect(page.getByLabel('Name', { exact: true })).toHaveValue('Synthetic athlete');
-  await expect(page.getByLabel('Age', { exact: true })).toHaveValue('37');
-  await expect(page.getByLabel('Fitness Goal', { exact: true })).toHaveValue('Consistent movement');
+  await expect(page.getByRole('heading',{name:'Synthetic athlete',exact:true})).toBeVisible();
+  await expect(page.getByText('Consistent movement',{exact:true})).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('fitcircle_age'))).toBe('37');
   expect(await page.evaluate(() => localStorage.getItem('unrelated-regression-key'))).toBe('retain');
 });
 

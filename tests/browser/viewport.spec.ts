@@ -85,7 +85,7 @@ test('all navigation sheets keep close, profile, Settings, and version accessibl
     await assertSafeClose(sheet);
     const version = await sheet.getByText('Version 2.1.0').boundingBox();
     expect(version!.y + version!.height).toBeLessThanOrEqual(810);
-    await expect(sheet.getByText('view profile')).toBeVisible();
+    await expect(route === '' ? sheet.getByRole('button', { name: /My Fitness Profile/ }) : sheet.getByText('view profile')).toBeVisible();
     await expect(sheet.getByText('Settings', { exact: true })).toBeVisible();
     expect(await page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('hidden');
     const before = await page.locator('main').evaluate(el => el.scrollTop);
@@ -211,7 +211,7 @@ test('desktop layout remains bounded without mobile safe-area overrides', async 
 test('sidebar profile and Settings links retain the Pages path and release their locks', async ({ page }) => {
   await page.goto('./');
   await page.getByRole('button', { name: 'Open Menu' }).click();
-  await page.getByRole('dialog').getByText('view profile').click();
+  await page.getByRole('dialog').getByRole('button', { name: /My Fitness Profile/ }).click();
   await page.waitForURL(/\/FitCircle\/profile\?from=dashboard/);
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
   await page.goto('./?dashboard=open');
