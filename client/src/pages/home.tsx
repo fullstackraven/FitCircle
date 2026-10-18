@@ -12,9 +12,9 @@ import { WorkoutModal } from '@/components/workout-modal';
 import { ProgressCircle } from '@/components/progress-circle';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { TimerWheel } from '@/components/TimerWheel';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { GoalCircle } from '@/components/GoalCircle';
 import { getColorClass } from '@/lib/color-utils';
@@ -617,181 +617,28 @@ export default function Home() {
 
       {/* Timer Dialog */}
       <Dialog open={isTimerOpen} onOpenChange={setIsTimerOpen}>
-        <DialogContent className="bg-slate-800 text-white border-slate-700 max-w-md rounded-2xl">
-          <DialogHeader>
-            <DialogTitle>Workout Timer</DialogTitle>
-            <DialogDescription className="text-slate-400 text-center">
-              Set up and run your workout timer
-            </DialogDescription>
+        <DialogContent staticBody fixedFooter className="timer-dialog bg-slate-900 text-white border-slate-700 max-w-sm rounded-2xl p-4 gap-4">
+          <DialogHeader className="text-left sm:text-left pl-0 pr-10">
+            <DialogTitle className="text-2xl font-bold">Timer</DialogTitle>
+            <DialogDescription className="sr-only">Choose hours, minutes and seconds, then start your timer.</DialogDescription>
           </DialogHeader>
-          
-          {!timerState.isRunning && timerState.remainingTime === 0 ? (
-            // Timer Setup
-            <div className="space-y-6">
-              {/* Simple Time Display */}
-              <div className="text-center space-y-2">
-                <div className="type-metric text-4xl font-bold text-white">
-                  {String((parseInt(timerHours) || 0)).padStart(2, '0')}:
-                  {String((parseInt(timerMinutes) || 0)).padStart(2, '0')}:
-                  {String(parseInt(timerSeconds) || 0).padStart(2, '0')}
-                </div>
-                <div className="text-sm text-slate-400">Set Time</div>
-              </div>
-
-              {/* Time Input Fields */}
-              <div className="grid grid-cols-3 gap-3 mb-6">
-                <div className="text-center">
-                  <label className="block text-xs text-slate-400 mb-1">Hours</label>
-                  <Input
-                    type="number"
-                    value={timerHours}
-                    onChange={(e) => setTimerHours(e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white text-center text-lg"
-                    min="0"
-                    max="23"
-                    aria-label="Hours"
-                    tabIndex={-1}
-                  />
-                </div>
-                <div className="text-center">
-                  <label className="block text-xs text-slate-400 mb-1">Minutes</label>
-                  <Input
-                    type="number"
-                    value={timerMinutes}
-                    onChange={(e) => setTimerMinutes(e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white text-center text-lg"
-                    min="0"
-                    max="59"
-                    aria-label="Minutes"
-                    tabIndex={-1}
-                  />
-                </div>
-                <div className="text-center">
-                  <label className="block text-xs text-slate-400 mb-1">Seconds</label>
-                  <Input
-                    type="number"
-                    value={timerSeconds}
-                    onChange={(e) => setTimerSeconds(e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white text-center text-lg"
-                    min="0"
-                    max="59"
-                    aria-label="Seconds"
-                    tabIndex={-1}
-                  />
-                </div>
-              </div>
-
-              {/* Quick Preset Buttons */}
-              <div className="space-y-3">
-                <div className="text-sm text-slate-300 text-center">Quick Presets</div>
-                <div className="grid grid-cols-4 gap-2">
-                  <Button
-                    onClick={() => {
-                      startTimerFromSeconds(30);
-                      setIsTimerOpen(false);
-                    }}
-                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
-                  >
-                    30s
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      startTimerFromSeconds(60);
-                      setIsTimerOpen(false);
-                    }}
-                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
-                  >
-                    60s
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      startTimerFromSeconds(90);
-                      setIsTimerOpen(false);
-                    }}
-                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
-                  >
-                    90s
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      startTimerFromSeconds(120);
-                      setIsTimerOpen(false);
-                    }}
-                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
-                  >
-                    2m
-                  </Button>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <Button
-                    onClick={() => {
-                      startTimerFromSeconds(300);
-                      setIsTimerOpen(false);
-                    }}
-                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
-                  >
-                    5m
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      startTimerFromSeconds(600);
-                      setIsTimerOpen(false);
-                    }}
-                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
-                  >
-                    10m
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      startTimerFromSeconds(900);
-                      setIsTimerOpen(false);
-                    }}
-                    className="bg-slate-600 hover:bg-slate-500 text-xs py-2"
-                  >
-                    15m
-                  </Button>
-                </div>
-              </div>
-              
-              {/* Control Buttons */}
-              <div className="flex space-x-3 pt-4">
-                <Button
-                  onClick={() => {
-                    const totalSeconds = (parseInt(timerHours) || 0) * 3600 + 
-                                       (parseInt(timerMinutes) || 0) * 60 + 
-                                       (parseInt(timerSeconds) || 0);
-                    if (totalSeconds > 0) {
-                      startTimerFromSeconds(totalSeconds);
-                      setIsTimerOpen(false);
-                    }
-                  }}
-                  className="flex-1 bg-green-600 hover:bg-green-700"
-                >
-                  <Play size={16} className="mr-2" />
-                  Start Timer
-                </Button>
-                <Button
-                  onClick={() => setIsTimerOpen(false)}
-                  variant="outline"
-                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          ) : (
-            // Timer is running - show simple message and close automatically
-            <div className="text-center space-y-4">
-              <div className="text-lg text-white">Timer is running!</div>
-              <div className="text-sm text-slate-400">Check the timer icon on the home page for countdown progress</div>
-              <Button
-                onClick={() => setIsTimerOpen(false)}
-                className="bg-slate-600 hover:bg-slate-700"
-              >
-                Close
-              </Button>
-            </div>
-          )}
+          <div className="timer-picker">
+            <div className="timer-picker-selection" aria-hidden="true" />
+            <TimerWheel label="Hours" unit="hours" max={23} value={Number(timerHours)} onChange={value => setTimerHours(String(value))} />
+            <TimerWheel label="Minutes" unit="min" max={59} value={Number(timerMinutes)} onChange={value => setTimerMinutes(String(value))} />
+            <TimerWheel label="Seconds" unit="sec" max={59} value={Number(timerSeconds)} onChange={value => setTimerSeconds(String(value))} />
+          </div>
+          <DialogFooter className="flex-row justify-between sm:justify-between sm:space-x-0">
+            <Button onClick={() => setIsTimerOpen(false)} className="w-16 h-16 rounded-full bg-slate-800 text-slate-300 hover:bg-slate-700 p-0">Cancel</Button>
+            <Button
+              disabled={Number(timerHours) * 3600 + Number(timerMinutes) * 60 + Number(timerSeconds) === 0}
+              onClick={() => {
+                const totalSeconds = Number(timerHours) * 3600 + Number(timerMinutes) * 60 + Number(timerSeconds);
+                if (totalSeconds > 0) { startTimerFromSeconds(totalSeconds); setIsTimerOpen(false); }
+              }}
+              className="w-16 h-16 rounded-full bg-green-400/15 text-green-400 hover:bg-green-400/25 disabled:opacity-40 p-0"
+            >Start</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       </div>

@@ -492,3 +492,45 @@
 }
 .reminders-list { padding-bottom: 80px; }
 .keyboard-open .reminders-add-button { display: none; }
+
+/* Three timer wheels share one selected row; the dialog itself stays compact. */
+.timer-dialog .dialog-header { padding-left: 0; padding-right: 44px; }
+.timer-picker {
+  --timer-wheel-height: clamp(88px, calc(var(--overlay-height) - var(--safe-top) - var(--safe-bottom) - 204px), 220px);
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.timer-picker-selection {
+  position: absolute;
+  top: calc(50% - 22px);
+  height: 44px;
+  width: 100%;
+  border-radius: 999px;
+  background: rgb(51 65 85 / .65);
+  pointer-events: none;
+}
+.timer-wheel {
+  position: relative;
+  height: var(--timer-wheel-height);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  overflow-anchor: none;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  padding-block: calc((var(--timer-wheel-height) - 44px) / 2);
+  -webkit-mask-image: linear-gradient(transparent, black 28%, black 72%, transparent);
+  mask-image: linear-gradient(transparent, black 28%, black 72%, transparent);
+}
+.timer-wheel::-webkit-scrollbar { display: none; }
+.timer-wheel:focus-visible { outline: 2px solid #4ade80; outline-offset: -2px; border-radius: 12px; }
+.timer-wheel-option {
+  height: 44px;
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+}
