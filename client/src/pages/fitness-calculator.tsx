@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { readFitnessProfile } from '@/lib/fitness-profile';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
 interface UserData {
   height: number; // inches
   weight: number; // lbs
-  age: number;
+  age: number | null;
   gender: string;
 }
 
@@ -21,7 +22,7 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
   const [userData, setUserData] = useState<UserData>({
     height: 0,
     weight: 0,
-    age: 25,
+    age: null,
     gender: 'male'
   });
 
@@ -70,8 +71,8 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
       setUserData({
         height: height || 70, // default 5'10" only if no data exists
         weight: weight || 170, // default 170 lbs only if no data exists
-        age: profileData.age || 25,
-        gender: profileData.gender || 'male'
+        age: readFitnessProfile().age,
+        gender: profileData?.gender || 'male'
       });
     };
 
@@ -83,16 +84,18 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
 
     // Listen for localStorage changes (when user updates measurements in another tab/page)
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'fitcircle_measurements_history' || e.key === 'fitcircle_profile') {
+      if (e.key === 'fitcircle_measurements_history' || e.key === 'fitcircle_profile' || e.key === 'fitcircle_age') {
         loadUserData();
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('fitcircleProfileChanged', loadUserData);
 
     return () => {
       clearInterval(interval);
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('fitcircleProfileChanged', loadUserData);
     };
   }, []);
 
@@ -127,6 +130,7 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
 
   // BMR calculation using Mifflin-St Jeor Equation
   const calculateBMR = () => {
+    if (userData.age === null) return 0;
     const heightCm = userData.height * 2.54;
     const weightKg = userData.weight * 0.453592;
     
@@ -218,11 +222,12 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
 
   // Store calculated values for Food Tracker to use
   useEffect(() => {
+    if (userData.age === null || !Number.isFinite(calorieTarget)) return;
     localStorage.setItem('fitness_calc_target_calories', calorieTarget.toString());
     localStorage.setItem('fitness_calc_target_carbs', macros.carbs.grams.toString());
     localStorage.setItem('fitness_calc_target_protein', macros.protein.grams.toString());
     localStorage.setItem('fitness_calc_target_fat', macros.fat.grams.toString());
-  }, [calorieTarget, macros]);
+  }, [calorieTarget, macros, userData.age]);
 
   return (
     <div className="fitcircle-page">
@@ -233,6 +238,7 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
         </div>}
 
         <div className="space-y-8">
+        {userData.age === null && <div role="status" className="rounded-xl border border-amber-500/40 p-3 text-sm text-amber-200">A saved age or date of birth is needed for calorie and macro targets. Existing targets are kept.<Button variant="link" onClick={() => navigate('/profile')}>Open My Fitness Profile</Button></div>}
         
           {/* Calorie Tracker Section */}
           <div className="fitcircle-card-lg">
@@ -244,7 +250,7 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
           <div className="space-y-4">
             <div className="text-center">
               <div className="type-metric text-3xl font-bold text-green-400 mb-2">
-                {calorieTarget.toLocaleString()}
+                {userData.age === null ? '—' : calorieTarget.toLocaleString()}
               </div>
               <div className="text-slate-300">calories per day</div>
               <div className="text-sm text-slate-400 mt-2">
@@ -438,7 +444,7 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
           <div className="space-y-4">
             <div className="text-center mb-4">
               <div className="text-lg font-semibold text-white">
-                {calorieTarget.toLocaleString()} calories/day
+                {userData.age === null ? '—' : calorieTarget.toLocaleString()} calories/day
               </div>
             </div>
 
@@ -446,17 +452,17 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
             <div className="grid grid-cols-3 gap-4">
               <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-orange-400 font-semibold mb-2">Carbs</div>
-                <div className="type-metric text-2xl font-bold text-white">{macros.carbs.grams}g</div>
+                <div className="type-metric text-2xl font-bold text-white">{userData.age === null ? '—' : macros.carbs.grams + 'g'}</div>
                 <div className="text-sm text-slate-400">{macros.carbs.percent}%</div>
               </div>
               <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-red-400 font-semibold mb-2">Protein</div>
-                <div className="type-metric text-2xl font-bold text-white">{macros.protein.grams}g</div>
+                <div className="type-metric text-2xl font-bold text-white">{userData.age === null ? '—' : macros.protein.grams + 'g'}</div>
                 <div className="text-sm text-slate-400">{macros.protein.percent}%</div>
               </div>
               <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-yellow-400 font-semibold mb-2">Fat</div>
-                <div className="type-metric text-2xl font-bold text-white">{macros.fat.grams}g</div>
+                <div className="type-metric text-2xl font-bold text-white">{userData.age === null ? '—' : macros.fat.grams + 'g'}</div>
                 <div className="text-sm text-slate-400">{macros.fat.percent}%</div>
               </div>
             </div>
@@ -477,7 +483,7 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
                   <div key={preset.name} className="flex justify-between items-center text-sm">
                     <div className="text-slate-300 font-medium">{preset.name}</div>
                     <div className="text-slate-400">
-                      {presetCarbs}g | {presetProtein}g | {presetFat}g
+                      {userData.age === null ? 'Age needed' : `${presetCarbs}g | ${presetProtein}g | ${presetFat}g`}
                     </div>
                   </div>
                 );

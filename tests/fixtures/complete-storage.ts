@@ -28,7 +28,7 @@ export const structured = {
   fitcircle_dashboard_widgets: [{ id: 'water', type: 'hydration', title: 'Water', enabled: true, position: 0, size: 'small' }],
   fitcircle_control_settings: { showQuote: false, showTimer: true },
   fitcircle_goals: { hydrationOz: 80, fastingHours: 16, targetWeight: 160, weightGoalType: 'lose' },
-  fitcircle_profile: { name: 'Synthetic person', height: 70 },
+  fitcircle_profile: { name: 'Synthetic person', height: 70, age: 40, gender: 'female', dateOfBirth: '1986-03-04', primaryObjective: 'Build strength', retained: { synthetic: true } },
   fitcircle_wellness_weights: { hydration: 2, cardio: 3 },
   fitcircle_wellness_layout: ['cardio', 'hydration', 'fasting'],
   fitcircle_trainer_messages: [{ role: 'user', content: 'Legacy message' }],
