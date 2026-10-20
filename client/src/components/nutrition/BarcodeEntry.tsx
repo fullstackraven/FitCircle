@@ -56,10 +56,6 @@ export function BarcodeEntry({
   };
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-400">
-        Saved products work offline. Unknown barcode lookups send only the
-        barcode to Open Food Facts when online.
-      </p>
       {scanning ? (
         <BarcodeScanner
           onFound={(code) => {
@@ -109,8 +105,6 @@ export function BarcodeEntry({
         </p>
       )}
       <p className="text-xs text-slate-400">
-        Supports UPC-A, UPC-E, EAN-13 and EAN-8. Camera permission and HTTPS are
-        required; manual entry is always available.{" "}
         <a
           href="https://world.openfoodfacts.org"
           target="_blank"
@@ -119,7 +113,15 @@ export function BarcodeEntry({
         >
           Open Food Facts
         </a>{" "}
-        data is licensed under ODbL.
+        ·{" "}
+        <a
+          href="https://opendatacommons.org/licenses/odbl/1-0/"
+          target="_blank"
+          rel="noreferrer"
+          className="underline"
+        >
+          ODbL
+        </a>
       </p>
     </div>
   );

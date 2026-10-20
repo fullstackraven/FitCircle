@@ -15,10 +15,6 @@ export function NutritionDetails({
   const totals = dailyNutrition(entries);
   return (
     <div className="space-y-3">
-      <p className="text-sm text-slate-400">
-        Available label data only. Missing values are unknown, not zero. Partial
-        totals are lower bounds; no micronutrient recommendations are inferred.
-      </p>
       <dl className="divide-y divide-slate-700">
         {nutrientFields.map((key) => {
           const item = totals[key];
