@@ -81,7 +81,7 @@ export function DailyNutritionSummary({
         )}
         {!confirmed && (
           <p className="text-xs text-slate-400">
-            Reference targets — confirm your own in Nutrition Goals.
+            Reference targets — set your targets in Fitness Calculator.
           </p>
         )}
       </div>

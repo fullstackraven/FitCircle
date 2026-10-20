@@ -105,7 +105,6 @@ test('calculator stays bounded with an always-visible header and close during sc
   await dialog.locator('.dialog-body').evaluate(el => { el.scrollTop = el.scrollHeight; });
   expect((await dialog.getByRole('heading', { name: 'Fitness Calculator', exact: true }).boundingBox())!.y).toBeCloseTo(title!.y, 0);
   await assertSafeClose(dialog);
-  await dialog.getByRole('button', { name: 'Tailored', exact: true }).click();
   const field = dialog.locator('input').first();
   await field.fill('35');
   // Shrink and pan the visual viewport to model an on-screen keyboard.

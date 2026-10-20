@@ -1,6 +1,5 @@
 import { readFoodDay, assertLoggableFood } from '@/lib/food-diary';
 import { DailyNutritionSummary } from '@/components/nutrition/DailyNutritionSummary';
-import { NutritionGoals } from '@/components/nutrition/NutritionGoals';
 import { NutritionDetails } from '@/components/nutrition/NutritionDetails';
 import { WeeklyNutrition } from '@/components/nutrition/WeeklyNutrition';
 import { MealDiary } from '@/components/nutrition/MealDiary';
@@ -8,7 +7,7 @@ import { FoodEntryForm } from '@/components/nutrition/FoodEntryForm';
 import { draftFromFood, type ProductDraft } from '@/lib/barcode-lookup';
 import { BarcodeEntry } from '@/components/nutrition/BarcodeEntry';
 import { useFoodDiary } from '@/hooks/use-food-diary';
-import { displayTargets,readNutritionGoals,readCalculatorEstimate,consumedServingText,type NutritionGoals as SavedGoals } from '@/lib/nutrition';
+import { displayTargets,readCalculatorEstimate,consumedServingText,CALCULATOR_TARGETS_CHANGED,type Targets } from '@/lib/nutrition';
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Trash2, ChevronLeft, ChevronRight, Search, Edit2, Save, X as Cancel, Calculator, Database, ScanBarcode, CirclePlus } from 'lucide-react';
 import { useLocation } from 'wouter';
@@ -49,15 +48,25 @@ export default function FoodTrackerPage() {
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
   const diary = useFoodDiary(selectedDate);
   const foodEntries = diary.entries;
-  const [goals, setGoals] = useState<SavedGoals | null>(null);
-  const [goalsError, setGoalsError] = useState('');
-  const [nutritionView,setNutritionView] = useState<'goals'|'details'|'week'|null>(null);
+  const [calculatorTargets, setCalculatorTargets] = useState<Targets | null>(null);
+  const [targetsError, setTargetsError] = useState('');
+  const [nutritionView,setNutritionView] = useState<'details'|'week'|null>(null);
   const [barcodeOpen,setBarcodeOpen] = useState(false);
   const [showAllRecent, setShowAllRecent] = useState(false);
-  const [referenceTargets] = useState(() => {try {return readCalculatorEstimate() ?? displayTargets;} catch {return displayTargets;}});
-  const macroTargets = goals ?? referenceTargets;
-  const reloadGoals = () => {try {setGoals(readNutritionGoals());setGoalsError('');}catch {setGoalsError('Saved nutrition goals could not be read. Original values are unchanged. Retry or restore a verified backup in Settings.');}};
-  useEffect(() => {reloadGoals();window.addEventListener('storage',reloadGoals);return ()=>window.removeEventListener('storage',reloadGoals);},[]);
+  const macroTargets = calculatorTargets ?? displayTargets;
+  const reloadTargets = () => {
+    try {setCalculatorTargets(readCalculatorEstimate());setTargetsError('');}
+    catch {setTargetsError('Calculator targets could not be read. Saved data is unchanged.');}
+  };
+  useEffect(() => {
+    reloadTargets();
+    window.addEventListener('storage', reloadTargets);
+    window.addEventListener(CALCULATOR_TARGETS_CHANGED, reloadTargets);
+    return () => {
+      window.removeEventListener('storage', reloadTargets);
+      window.removeEventListener(CALCULATOR_TARGETS_CHANGED, reloadTargets);
+    };
+  }, []);
   // Search states
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -577,19 +586,18 @@ export default function FoodTrackerPage() {
 
         <p className="text-sm text-slate-400 mb-4">Daily nutrition overview</p>
         {(diary.error || diary.saveError) && <div role="alert" className="rounded-xl border border-amber-500/40 p-3 text-sm text-amber-200 mb-3">{diary.error || diary.saveError}<Button variant="ghost" onClick={diary.retry}>Retry Loading Day</Button></div>}
-        {goalsError && <div role="alert" className="text-sm text-amber-200 mb-3">{goalsError}<Button variant="ghost" onClick={reloadGoals}>Retry Goals</Button></div>}
-        {diary.ready && <DailyNutritionSummary entries={foodEntries} targets={macroTargets} confirmed={!!goals}/>}
+        {targetsError && <div role="alert" className="text-sm text-amber-200 mb-3">{targetsError}<Button variant="ghost" onClick={reloadTargets}>Retry Targets</Button></div>}
+        {diary.ready && <DailyNutritionSummary entries={foodEntries} targets={macroTargets} confirmed={!!calculatorTargets}/>}
         <div className="flex flex-wrap gap-2 my-4">
-          <Button variant="outline" disabled={!!goalsError} onClick={()=>setNutritionView('goals')}>Nutrition Goals</Button>
           <Button variant="ghost" disabled={!diary.ready} onClick={()=>setNutritionView('details')}>Nutrition Details</Button>
           <Button variant="ghost" onClick={()=>setNutritionView('week')}>Weekly Overview</Button>
         </div>
         <Dialog open={nutritionView!==null} onOpenChange={open=>{if(!open)setNutritionView(null);}}>
           <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="max-w-md bg-slate-900 border-slate-700">
-            <DialogHeader><DialogTitle>{nutritionView==='goals'?'Nutrition Goals':nutritionView==='details'?'Nutrition Details':'Weekly Nutrition'}</DialogTitle><DialogDescription>{getDateDisplayText()} · Local nutrition tracking</DialogDescription></DialogHeader>
-            {nutritionView==='goals'&&<NutritionGoals current={goals} reference={macroTargets} onSaved={next=>{setGoals(next);setNutritionView(null);}} onCalculator={()=>{setNutritionView(null);setCalculatorOpen(true);}}/>}
-            {nutritionView==='details'&&<NutritionDetails entries={foodEntries} targets={goals ?? undefined}/>}
-            {nutritionView==='week'&&<WeeklyNutrition date={selectedDate} targets={goals ?? undefined}/>}
+            <DialogHeader><DialogTitle>{nutritionView==='details'?'Nutrition Details':'Weekly Nutrition'}</DialogTitle><DialogDescription>{getDateDisplayText()} · Local nutrition tracking</DialogDescription></DialogHeader>
+
+            {nutritionView==='details'&&<NutritionDetails entries={foodEntries} targets={calculatorTargets ?? undefined}/>}
+            {nutritionView==='week'&&<WeeklyNutrition date={selectedDate} targets={calculatorTargets ?? undefined}/>}
           </DialogContent>
         </Dialog>
         <Dialog open={barcodeOpen} onOpenChange={setBarcodeOpen}>
