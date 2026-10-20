@@ -594,7 +594,7 @@ export default function FoodTrackerPage() {
         </div>
         <Dialog open={nutritionView!==null} onOpenChange={open=>{if(!open)setNutritionView(null);}}>
           <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="max-w-md bg-slate-900 border-slate-700">
-            <DialogHeader><DialogTitle>{nutritionView==='details'?'Nutrition Details':'Weekly Nutrition'}</DialogTitle><DialogDescription>{getDateDisplayText()} · Local nutrition tracking</DialogDescription></DialogHeader>
+            <DialogHeader><DialogTitle>{nutritionView==='details'?'Nutrition Details':'Weekly Nutrition'}</DialogTitle><DialogDescription className="sr-only">{getDateDisplayText()}</DialogDescription></DialogHeader>
 
             {nutritionView==='details'&&<NutritionDetails entries={foodEntries} targets={calculatorTargets ?? undefined}/>}
             {nutritionView==='week'&&<WeeklyNutrition date={selectedDate} targets={calculatorTargets ?? undefined}/>}
@@ -602,7 +602,7 @@ export default function FoodTrackerPage() {
         </Dialog>
         <Dialog open={barcodeOpen} onOpenChange={setBarcodeOpen}>
           <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="max-w-lg bg-slate-900 border-slate-700">
-            <DialogHeader><DialogTitle>Scan Barcode</DialogTitle><DialogDescription>Scan a product to open Add Entry and choose your servings.</DialogDescription></DialogHeader>
+            <DialogHeader><DialogTitle>Scan Barcode</DialogTitle><DialogDescription className="sr-only">Scan a barcode or enter it manually.</DialogDescription></DialogHeader>
             {barcodeOpen&&<BarcodeEntry onFound={result=>{diary.clearError();setAddingFood(result.local);setScannedDraft(result.draft);setAddEntryMeal(searchMeal);setBarcodeOpen(false);setAddEntryOpen(true);}}/>}
           </DialogContent>
         </Dialog>
@@ -815,9 +815,7 @@ export default function FoodTrackerPage() {
           <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-2xl overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create Custom Food</DialogTitle>
-              <DialogDescription className="text-gray-400">
-                Add a new food item to your database with nutritional information
-              </DialogDescription>
+              <DialogDescription className="sr-only">Enter food and serving details.</DialogDescription>
             </DialogHeader>
             
             <div className="space-y-6">

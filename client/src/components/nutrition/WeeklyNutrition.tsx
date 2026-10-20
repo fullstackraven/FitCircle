@@ -10,10 +10,6 @@ export function WeeklyNutrition({
   const summary = nutritionWeek(date, (key) => readFoodDay(key).entries);
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-400">
-        Seven days ending {date}. Averages include only days with recorded food;
-        unlogged days are not counted as zero intake.
-      </p>
       <p className="text-green-400 font-semibold">
         {summary.days} days with recorded intake
       </p>
