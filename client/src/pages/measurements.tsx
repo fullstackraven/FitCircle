@@ -1,3 +1,5 @@
+import { readWeightGoals, saveMeasurementGoals, weightGoalProgress } from '@/lib/measurement-integration';
+import { useFitnessIntegration } from '@/hooks/use-fitness-integration';
 import { ViewportOverlay } from '@/components/ui/viewport-overlay';
 import { useState, useEffect } from 'react';
 import { ArrowLeft, TrendingUp, TrendingDown, Minus, Target, X } from 'lucide-react';
@@ -43,13 +45,16 @@ export default function MeasurementsPage() {
   const handleBack = () => {
     navigate('/wellness');
   };
-  const { addMeasurement, getLatestValue, getValueTrend, getChartData } = useMeasurements();
+  const { addMeasurements, getLatestValue, getValueTrend, getChartData, error: measurementError } = useMeasurements();
+  const integration = useFitnessIntegration();
+  const [saveError, setSaveError] = useState('');
   
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
+  const [dirtyFields,setDirtyFields] = useState<Record<string,boolean>>({});
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [goalWeightInput, setGoalWeightInput] = useState('');
   const [goalBodyFatInput, setGoalBodyFatInput] = useState('');
-  const [weightGoalType, setWeightGoalType] = useState<'gain' | 'lose'>('lose');
+  const [weightGoalType, setWeightGoalType] = useState<'gain' | 'lose' | 'maintain'>('maintain');
   const [focusedInputs, setFocusedInputs] = useState<{ [key: string]: boolean }>({});
   const [goalWeightFocused, setGoalWeightFocused] = useState(false);
   const [goalBodyFatFocused, setGoalBodyFatFocused] = useState(false);
@@ -63,31 +68,17 @@ export default function MeasurementsPage() {
     });
     setInputValues(initialValues);
     
-    // Load saved goals from multiple sources for cross-compatibility
-    const savedGoals = localStorage.getItem('fitcircle_goals');
-    const weightGoal = localStorage.getItem('fitcircle_goal_weight');
-    const bodyFatGoal = localStorage.getItem('fitcircle_goal_bodyfat');
-    const weightGoalTypeStored = localStorage.getItem('fitcircle_weight_goal_type');
-    
-    if (savedGoals) {
-      try {
-        const goals = JSON.parse(savedGoals);
-        setGoalWeightInput(weightGoal || goals.targetWeight?.toString() || '');
-        setGoalBodyFatInput(bodyFatGoal || goals.targetBodyFat?.toString() || '');
-        setWeightGoalType(weightGoalTypeStored as 'gain' | 'lose' || goals.weightGoalType || 'lose');
-      } catch (error) {
-        console.error('Failed to parse goals:', error);
-      }
-    } else {
-      // Load from individual goal keys if fitcircle_goals doesn't exist
-      setGoalWeightInput(weightGoal || '');
-      setGoalBodyFatInput(bodyFatGoal || '');
-      setWeightGoalType(weightGoalTypeStored as 'gain' | 'lose' || 'lose');
-    }
+    try {
+      const goals = readWeightGoals(localStorage, getLatestValue('weight'));
+      setGoalWeightInput(goals.targetWeight?.toString() ?? '');
+      setGoalBodyFatInput(goals.targetBodyFat?.toString() ?? '');
+      setWeightGoalType(goals.intent ?? goals.inferred ?? 'maintain');
+    } catch (failure) {setSaveError((failure as Error).message);}
   }, []);
 
   const handleInputChange = (key: string, value: string) => {
     setInputValues(prev => ({ ...prev, [key]: value }));
+    setDirtyFields(prev=>({...prev,[key]:true}));
   };
 
   const handleSetGoals = () => {
@@ -99,77 +90,18 @@ export default function MeasurementsPage() {
       return;
     }
     
-    // Save to individual goal keys for cross-compatibility with Goals page
-    if (!isNaN(weightGoal)) {
-      localStorage.setItem('fitcircle_goal_weight', weightGoal.toString());
-    }
-    if (!isNaN(bodyFatGoal)) {
-      localStorage.setItem('fitcircle_goal_bodyfat', bodyFatGoal.toString());
-    }
-    
-    // Save weight goal type
-    localStorage.setItem('fitcircle_weight_goal_type', weightGoalType);
-    
-    // Load existing goals and update fitcircle_goals object
-    let goals = {};
-    const savedGoals = localStorage.getItem('fitcircle_goals');
-    if (savedGoals) {
-      try {
-        goals = JSON.parse(savedGoals);
-      } catch (error) {
-        console.error('Failed to parse existing goals:', error);
-      }
-    }
-    
-    // Update goals object
-    const updatedGoals = {
-      ...goals,
-      ...(weightGoal && !isNaN(weightGoal) && { targetWeight: weightGoal }),
-      ...(bodyFatGoal && !isNaN(bodyFatGoal) && { targetBodyFat: bodyFatGoal }),
-      weightGoalType: weightGoalType
-    };
-    
-    localStorage.setItem('fitcircle_goals', JSON.stringify(updatedGoals));
-    setIsGoalModalOpen(false);
-    alert('Goals saved successfully!');
+    try {
+      saveMeasurementGoals({...(Number.isFinite(weightGoal)?{targetWeight:weightGoal}:{}),...(Number.isFinite(bodyFatGoal)?{targetBodyFat:bodyFatGoal}:{}),intent:weightGoalType});
+      setSaveError('');setIsGoalModalOpen(false);
+    } catch (failure) {setSaveError((failure as Error).message);}
   };
 
   const handleSave = () => {
-    let savedCount = 0;
-    let hasValidData = false;
-    
-    // Check if we have any valid input data first
-    measurementFields.forEach(field => {
-      const value = parseFloat(inputValues[field.key]);
-      if (!isNaN(value) && value > 0) {
-        hasValidData = true;
-      }
-    });
-    
-    if (!hasValidData) {
-      alert('Please enter at least one valid measurement before saving.');
-      return;
-    }
-    
-    // Save measurements with history
-    measurementFields.forEach(field => {
-      const value = parseFloat(inputValues[field.key]);
-      if (!isNaN(value) && value > 0) {
-        try {
-          addMeasurement(field.key, value);
-          savedCount++;
-        } catch (error) {
-          console.error(`Error saving ${field.key}:`, error);
-        }
-      }
-    });
-    
-    if (savedCount > 0) {
-      // Show success feedback but stay on measurements page
-      alert(`Successfully saved ${savedCount} measurement${savedCount > 1 ? 's' : ''}!`);
-    } else {
-      alert('Failed to save measurements. Please try again.');
-    }
+    try {
+      const patch = Object.fromEntries(measurementFields.filter(field=>dirtyFields[field.key]&&inputValues[field.key]?.trim()).map(field=>[field.key,Number(inputValues[field.key])]));
+      if(!Object.keys(patch).length) throw new Error('Enter at least one measurement.');
+      addMeasurements(patch);setDirtyFields({});setSaveError('');alert('Measurements saved.');
+    } catch (failure) {setSaveError((failure as Error).message);}
   };
 
   const getTrendIcon = (trend: 'up' | 'down' | 'neutral') => {
@@ -207,6 +139,13 @@ export default function MeasurementsPage() {
           </button>
         </div>
 
+        {(measurementError || saveError) && <p role="alert" className="text-sm text-amber-300 mb-4">{measurementError || saveError}</p>}
+        {measurementError && <Button variant="outline" onClick={()=>navigate('/settings')}>Open Settings</Button>}
+        <div className="flex flex-wrap gap-3 mb-4">
+          <Button variant="outline" onClick={()=>navigate('/fitness-calculator')}>Fitness Calculator</Button>
+          {integration.goals?.targetWeight && <span className="text-sm text-slate-300">Target {integration.goals.targetWeight} lb · {integration.goals.intent ?? integration.goals.inferred ?? 'unspecified'}{weightGoalProgress(integration.measurements?.startWeight?.value??null,integration.measurements?.weight?.value??null,integration.goals.targetWeight)!==null ? ` · ${Math.round(weightGoalProgress(integration.measurements?.startWeight?.value??null,integration.measurements?.weight?.value??null,integration.goals.targetWeight)!)}% since first record` : ''}</span>}
+        </div>
+        {integration.goals?.conflicts.map(message=><p key={message} className="text-sm text-amber-300 mb-2">{message}</p>)}
         {/* Input Section */}
         <div className="space-y-6">
           {Object.entries(categorizedFields).map(([category, fields]) => (
@@ -242,6 +181,7 @@ export default function MeasurementsPage() {
           ))}
           
           <Button
+            disabled={!!measurementError}
             onClick={handleSave}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-medium"
           >
@@ -333,29 +273,20 @@ export default function MeasurementsPage() {
               </button>
             </div>
 
+            {saveError && <p role="alert" className="text-sm text-amber-300">{saveError}</p>}
             {/* Goal Progress Circles */}
             <div className="flex justify-center space-x-8 mb-8">
               {/* Weight Goal Circle */}
               <GoalCircle
-                percentage={(() => {
-                  const currentWeight = getLatestValue('weight') || 0;
-                  const targetWeight = parseFloat(goalWeightInput) || 0;
-                  if (targetWeight === 0 || currentWeight === 0) return 0;
-                  
-                  // Match Goals page logic: depends on whether goal is to gain or lose weight
-                  if (weightGoalType === 'gain') {
-                    return currentWeight >= targetWeight ? 100 : Math.min((currentWeight / targetWeight) * 100, 100);
-                  } else {
-                    return currentWeight <= targetWeight ? 100 : Math.max(0, (targetWeight / currentWeight) * 100);
-                  }
-                })()}
+                showPercentage={weightGoalProgress(integration.measurements?.startWeight?.value ?? null,getLatestValue('weight'),Number(goalWeightInput)||null)!==null}
+                percentage={weightGoalProgress(integration.measurements?.startWeight?.value ?? null,getLatestValue('weight'),Number(goalWeightInput)||null) ?? 0}
                 color="rgb(34, 197, 94)"
                 size={140}
                 currentValue={getLatestValue('weight') || 0}
                 goalValue={parseFloat(goalWeightInput) || 0}
                 unit="lbs"
                 title="Weight"
-                description="Current vs target"
+                description={integration.measurements?.startWeight ? 'Since first record' : 'Starting weight unavailable'}
               />
               
               {/* Body Fat Goal Circle */}
@@ -387,6 +318,7 @@ export default function MeasurementsPage() {
               <div>
                 <Label className="text-slate-300">Weight Goal Type</Label>
                 <div className="flex space-x-3 mt-2">
+                  <Button variant={weightGoalType==='maintain'?'default':'outline'} onClick={()=>setWeightGoalType('maintain')}>Maintain</Button>
                   <button
                     onClick={() => setWeightGoalType('lose')}
                     className={`flex-1 py-2 px-4 rounded-xl border-2 transition-colors ${

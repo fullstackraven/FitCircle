@@ -1,3 +1,6 @@
+import { TargetReview } from '@/components/nutrition/TargetReview';
+import { useFitnessIntegration } from '@/hooks/use-fitness-integration';
+import { INTEGRATION_CHANGED } from '@/lib/measurement-integration';
 import { readFoodDay, assertLoggableFood } from '@/lib/food-diary';
 import { DailyNutritionSummary } from '@/components/nutrition/DailyNutritionSummary';
 import { NutritionDetails } from '@/components/nutrition/NutritionDetails';
@@ -7,7 +10,7 @@ import { FoodEntryForm } from '@/components/nutrition/FoodEntryForm';
 import { draftFromFood, type ProductDraft } from '@/lib/barcode-lookup';
 import { BarcodeEntry } from '@/components/nutrition/BarcodeEntry';
 import { useFoodDiary } from '@/hooks/use-food-diary';
-import { displayTargets,readCalculatorEstimate,consumedServingText,CALCULATOR_TARGETS_CHANGED,type Targets } from '@/lib/nutrition';
+import { displayTargets,readCalculatorEstimate,consumedServingText,CALCULATOR_TARGETS_CHANGED,readNutritionGoals,type NutritionGoals,type Targets } from '@/lib/nutrition';
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Trash2, ChevronLeft, ChevronRight, Search, Edit2, Save, X as Cancel, Calculator, Database, ScanBarcode, CirclePlus } from 'lucide-react';
 import { useLocation } from 'wouter';
@@ -50,21 +53,25 @@ export default function FoodTrackerPage() {
   const foodEntries = diary.entries;
   const [calculatorTargets, setCalculatorTargets] = useState<Targets | null>(null);
   const [targetsError, setTargetsError] = useState('');
+  const [confirmedGoals,setConfirmedGoals] = useState<NutritionGoals|null>(null);
+  const integration = useFitnessIntegration();
   const [nutritionView,setNutritionView] = useState<'details'|'week'|null>(null);
   const [barcodeOpen,setBarcodeOpen] = useState(false);
   const [showAllRecent, setShowAllRecent] = useState(false);
-  const macroTargets = calculatorTargets ?? displayTargets;
+  const macroTargets = confirmedGoals ?? calculatorTargets ?? displayTargets;
   const reloadTargets = () => {
-    try {setCalculatorTargets(readCalculatorEstimate());setTargetsError('');}
-    catch {setTargetsError('Calculator targets could not be read. Saved data is unchanged.');}
+    try {setCalculatorTargets(readCalculatorEstimate());setConfirmedGoals(readNutritionGoals());setTargetsError('');}
+    catch {setTargetsError('Saved nutrition targets could not be read. Restore a verified backup in Settings.');}
   };
   useEffect(() => {
     reloadTargets();
     window.addEventListener('storage', reloadTargets);
     window.addEventListener(CALCULATOR_TARGETS_CHANGED, reloadTargets);
+    window.addEventListener(INTEGRATION_CHANGED,reloadTargets);
     return () => {
       window.removeEventListener('storage', reloadTargets);
       window.removeEventListener(CALCULATOR_TARGETS_CHANGED, reloadTargets);
+      window.removeEventListener(INTEGRATION_CHANGED,reloadTargets);
     };
   }, []);
   // Search states
@@ -587,7 +594,9 @@ export default function FoodTrackerPage() {
         <p className="text-sm text-slate-400 mb-4">Daily nutrition overview</p>
         {(diary.error || diary.saveError) && <div role="alert" className="rounded-xl border border-amber-500/40 p-3 text-sm text-amber-200 mb-3">{diary.error || diary.saveError}<Button variant="ghost" onClick={diary.retry}>Retry Loading Day</Button></div>}
         {targetsError && <div role="alert" className="text-sm text-amber-200 mb-3">{targetsError}<Button variant="ghost" onClick={reloadTargets}>Retry Targets</Button></div>}
-        {diary.ready && <DailyNutritionSummary entries={foodEntries} targets={macroTargets} confirmed={!!calculatorTargets}/>}
+        {diary.ready && <DailyNutritionSummary entries={foodEntries} targets={macroTargets} confirmed={!!confirmedGoals}/>}
+        <p className="text-xs text-slate-400 mt-2">{confirmedGoals ? confirmedGoals.source==='calculator'?'Calculator-derived targets':'Manually confirmed targets' : calculatorTargets ? 'Legacy targets · not yet confirmed' : 'Reference targets · not yet confirmed'}</p>
+        <TargetReview current={macroTargets} confirmed={confirmedGoals} recommendation={integration.recommendation} recommendationError={integration.error} blocked={!!targetsError} onSaved={reloadTargets} onCalculator={()=>setCalculatorOpen(true)} onSettings={()=>navigate('/settings')}/>
         <div className="flex flex-wrap gap-2 my-4">
           <Button variant="ghost" disabled={!diary.ready} onClick={()=>setNutritionView('details')}>Nutrition Details</Button>
           <Button variant="ghost" onClick={()=>setNutritionView('week')}>Weekly Overview</Button>
@@ -596,8 +605,8 @@ export default function FoodTrackerPage() {
           <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="max-w-md bg-slate-900 border-slate-700">
             <DialogHeader><DialogTitle>{nutritionView==='details'?'Nutrition Details':'Weekly Nutrition'}</DialogTitle><DialogDescription className="sr-only">{getDateDisplayText()}</DialogDescription></DialogHeader>
 
-            {nutritionView==='details'&&<NutritionDetails entries={foodEntries} targets={calculatorTargets ?? undefined}/>}
-            {nutritionView==='week'&&<WeeklyNutrition date={selectedDate} targets={calculatorTargets ?? undefined}/>}
+            {nutritionView==='details'&&<NutritionDetails entries={foodEntries} targets={confirmedGoals ?? calculatorTargets ?? undefined}/>}
+            {nutritionView==='week'&&<WeeklyNutrition date={selectedDate} targets={confirmedGoals ?? calculatorTargets ?? undefined}/>}
           </DialogContent>
         </Dialog>
         <Dialog open={barcodeOpen} onOpenChange={setBarcodeOpen}>
@@ -1245,7 +1254,7 @@ export default function FoodTrackerPage() {
             <DialogHeader className="sm:text-center">
               <DialogTitle className="fitcircle-page-title">Fitness Calculator</DialogTitle>
             </DialogHeader>
-            <FitnessCalculator embedded />
+            <FitnessCalculator embedded onNavigate={path=>{setCalculatorOpen(false);navigate(path);}} />
           </DialogContent>
         </Dialog>
         

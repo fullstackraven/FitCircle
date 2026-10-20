@@ -1,3 +1,5 @@
+import { prepareRestore } from '@/lib/backup';
+import { readObject,readMeasurementSnapshot,readWeightGoals,weightGoalProgress } from '@/lib/measurement-integration';
 import { useState, useEffect, useCallback } from 'react';
 import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
@@ -37,10 +39,12 @@ export function useGoals() {
   };
 
   const [goals, setGoals] = useState<Goals>(() => {
+    const measurementTargets = () => {try {const value=readWeightGoals();return {...(value.targetWeight!==null?{targetWeight:value.targetWeight}:{}),...(value.targetBodyFat!==null?{targetBodyFat:value.targetBodyFat}:{})};}catch{return {};}};
+    try {
     const saved = safeParseJSON(localStorage.getItem(STORAGE_KEYS.GOALS), null);
     
     if (saved && typeof saved === 'object' && saved !== null) {
-      return { ...defaultGoals, ...(saved as Partial<Goals>) };
+      return { ...defaultGoals, ...(saved as Partial<Goals>),...measurementTargets() };
     }
     
     // Fallback to old format migration
@@ -69,16 +73,19 @@ export function useGoals() {
       if (!isNaN(parsed)) loadedGoals.weightLbs = parsed;
     }
     
-    return { ...defaultGoals, ...loadedGoals };
+    return { ...defaultGoals, ...loadedGoals,...measurementTargets() };
+    } catch {return defaultGoals;}
   });
 
   const updateGoal = (goalType: keyof Goals, value: number) => {
-    const updatedGoals = { ...goals, [goalType]: value };
-    setGoals(updatedGoals);
+    let existing:Record<string,unknown>;
+    try {const raw=localStorage.getItem(STORAGE_KEYS.GOALS);existing=readObject(raw,'Goals');if(raw!==null)prepareRestore({fitcircle_goals:raw});}catch(error){console.error('Goals could not be read safely',error);return false;}
+    const updatedGoals = { ...existing, [goalType]: value };
     try {
       localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(updatedGoals));
+      setGoals({...goals,[goalType]:value});
     } catch (error) {
-      console.error('Failed to save goals data:', error);
+      console.error('Failed to save goals data:', error);return false;
     }
     
     // Keep backward compatibility with old storage format
@@ -175,27 +182,10 @@ export function useGoals() {
       }
     }
 
-    // Weight progress (based on current vs target)
-    let weightProgress = 0;
-    const currentWeightString = localStorage.getItem('fitcircle_weight');
-    if (currentWeightString) {
-      const current = parseFloat(currentWeightString);
-      const tolerance = goals.weightLbs * 0.05;
-      const difference = Math.abs(current - goals.weightLbs);
-      weightProgress = Math.max(0, 100 - (difference / tolerance) * 100);
-    }
+    let targetWeightProgress=0;
+    try {const measurement=readMeasurementSnapshot();const goal=readWeightGoals(localStorage,measurement.weight?.value??null);targetWeightProgress=weightGoalProgress(measurement.startWeight?.value??null,measurement.weight?.value??null,goal.targetWeight)??0;}catch { /* Preserve unreadable records; no progress can be inferred. */ }
 
-    // Target weight progress (based on current vs target weight from measurements)
-    let targetWeightProgress = 0;
-    if (goals.targetWeight) {
-      const measurementsData = safeParseJSON(localStorage.getItem('fitcircle_measurements'), {}) as any;
-      const currentWeight = measurementsData.currentWeight || 0;
-      if (currentWeight > 0) {
-        const tolerance = goals.targetWeight * 0.05;
-        const difference = Math.abs(currentWeight - goals.targetWeight);
-        targetWeightProgress = Math.max(0, 100 - (difference / tolerance) * 100);
-      }
-    }
+    const weightProgress=targetWeightProgress;
 
     // Target body fat and workout consistency calculated in Goals page
     let targetBodyFatProgress = 0;

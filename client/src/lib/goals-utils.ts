@@ -1,3 +1,4 @@
+import { readObject,readMeasurementSnapshot,readWeightGoals,weightGoalProgress,saveMeasurementGoals } from './measurement-integration';
 // Unified Goals Management System
 // This eliminates redundant goal-handling code across all pages
 import { STORAGE_KEYS, safeParseJSON } from './storage-utils';
@@ -36,13 +37,16 @@ const DEFAULT_GOALS: UnifiedGoals = {
 
 /**
  * Master function to get all goals from unified storage
- * Migrates from old individual goal storage keys automatically
+ * Reads legacy values without migrating or saving inferred defaults.
  */
+function measurementTargets() {
+  try {const goals=readWeightGoals();return {...(goals.targetWeight!==null?{targetWeight:goals.targetWeight}:{}),...(goals.targetBodyFat!==null?{targetBodyFat:goals.targetBodyFat}:{})};} catch {return {};}
+}
 export function getAllGoals(): UnifiedGoals {
   // Try new unified storage first
   const unifiedGoals = safeParseJSON(localStorage.getItem(STORAGE_KEYS.GOALS), null);
   if (unifiedGoals && typeof unifiedGoals === 'object' && unifiedGoals !== null) {
-    return { ...DEFAULT_GOALS, ...(unifiedGoals as UnifiedGoals) };
+    return { ...DEFAULT_GOALS, ...(unifiedGoals as UnifiedGoals), ...measurementTargets() };
   }
 
   // Migrate from old individual storage keys
@@ -70,10 +74,9 @@ export function getAllGoals(): UnifiedGoals {
     if ((measurements as any).targetBodyFat) migratedGoals.targetBodyFat = (measurements as any).targetBodyFat;
   }
 
-  const finalGoals = { ...DEFAULT_GOALS, ...migratedGoals };
+  const finalGoals = { ...DEFAULT_GOALS, ...migratedGoals, ...measurementTargets() };
   
-  // Save to unified storage for future use
-  localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(finalGoals));
+  // Read-only compatibility: never migrate inferred defaults while reading.
   
   return finalGoals;
 }
@@ -82,6 +85,8 @@ export function getAllGoals(): UnifiedGoals {
  * Master function to update any goal and sync across all storage locations
  */
 export function updateGoal(goalType: keyof UnifiedGoals, value: number): void {
+  readObject(localStorage.getItem(STORAGE_KEYS.GOALS),'Goals');
+  if(goalType==='targetWeight'||goalType==='targetBodyFat'){saveMeasurementGoals({[goalType]:value});return;}
   const currentGoals = getAllGoals();
   const updatedGoals = { ...currentGoals, [goalType]: value };
   
@@ -108,16 +113,6 @@ export function updateGoal(goalType: keyof UnifiedGoals, value: number): void {
     if (hydrationData && typeof hydrationData === 'object' && hydrationData !== null) {
       (hydrationData as any).dailyGoalOz = value;
       localStorage.setItem(STORAGE_KEYS.HYDRATION, JSON.stringify(hydrationData));
-    }
-  }
-  
-  // Sync weight/body fat goals with measurements
-  if (goalType === 'targetWeight' || goalType === 'targetBodyFat') {
-    const measurements = safeParseJSON(localStorage.getItem('fitcircle_measurements'), {});
-    if (measurements && typeof measurements === 'object' && measurements !== null) {
-      if (goalType === 'targetWeight') (measurements as any).targetWeight = value;
-      if (goalType === 'targetBodyFat') (measurements as any).targetBodyFat = value;
-      localStorage.setItem('fitcircle_measurements', JSON.stringify(measurements));
     }
   }
   
@@ -201,20 +196,7 @@ export function getFastingProgress(): GoalProgress {
  * Get weight progress using master date utilities
  */
 export function getWeightProgress(): GoalProgress {
-  const goals = getAllGoals();
-  const measurements = safeParseJSON(localStorage.getItem('fitcircle_measurements'), {}) as any;
-  
-  const current = measurements?.currentWeight || 0;
-  const target = goals.targetWeight;
-  
-  let percentage = 0;
-  if (current > 0 && target > 0) {
-    const tolerance = target * 0.05; // 5% tolerance
-    const difference = Math.abs(current - target);
-    percentage = Math.max(0, 100 - (difference / tolerance) * 100);
-  }
-  
-  return { current, target, percentage, unit: 'lbs' };
+  try {const measurements=readMeasurementSnapshot();const goals=readWeightGoals(localStorage,measurements.weight?.value??null);return {current:measurements.weight?.value??0,target:goals.targetWeight??0,percentage:weightGoalProgress(measurements.startWeight?.value??null,measurements.weight?.value??null,goals.targetWeight)??0,unit:'lbs'};}catch{return {current:0,target:0,percentage:0,unit:'lbs'};}
 }
 
 /**
@@ -387,15 +369,8 @@ export function getAllTimeGoalPercentages(): { [key: string]: number } {
   const weightEntries = measurements?.weight || [];
   const bodyFatEntries = measurements?.bodyFat || [];
   
-  // Weight percentage (latest vs target)
-  const weightGoal = parseFloat(localStorage.getItem('fitcircle_goal_weight') || '150');
-  const latestWeight = weightEntries.length > 0 ? weightEntries[weightEntries.length - 1].value : 0;
-  let weightPercentage = 0;
-  if (latestWeight > 0 && weightGoal > 0) {
-    const tolerance = weightGoal * 0.05; // 5% tolerance
-    const difference = Math.abs(latestWeight - weightGoal);
-    weightPercentage = Math.max(0, 100 - (difference / tolerance) * 100);
-  }
+  // The same recorded-baseline weight progress is used throughout the app.
+  const weightPercentage = getWeightProgress().percentage;
 
   // Body fat percentage (latest vs target)
   const bodyFatGoal = parseFloat(localStorage.getItem('fitcircle_goal_bodyfat') || '15');

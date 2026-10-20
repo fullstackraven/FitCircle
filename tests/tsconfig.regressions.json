@@ -22,7 +22,9 @@
     "fitness-profile.test.ts",
     "browser/fitness-profile.spec.ts",
     "nutrition.test.ts",
-    "browser/nutrition.spec.ts"
+    "browser/nutrition.spec.ts",
+    "measurement-nutrition-integration.test.ts",
+    "browser/measurement-nutrition-integration.spec.ts"
   ],
   "exclude": [
     "../node_modules",
