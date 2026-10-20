@@ -117,8 +117,11 @@ export function prepareRestore(input: unknown): RestorePlan {
 const JOURNAL = 'fitcircle_restore_journal_v2';
 function rollback(previous: Record<string, string | null>, storage: Storage) {
   // Free newly occupied space first, then restore the original values.
-  for (const key of Object.keys(previous)) storage.removeItem(key);
-  for (const [key, value] of Object.entries(previous)) if (value !== null) storage.setItem(key, value);
+  // A failed first write may have left every original value intact. Do not
+  // remove those bytes just to write them back through the same failing store.
+  const changed = Object.entries(previous).filter(([key,value]) => storage.getItem(key) !== value);
+  for (const [key] of changed) storage.removeItem(key);
+  for (const [key, value] of changed) if (value !== null) storage.setItem(key, value);
 }
 /** Complete a rollback after an interrupted restore before React reads any data. */
 export function recoverInterruptedRestore(storage: Storage = localStorage, journal: Storage = localStorage) {

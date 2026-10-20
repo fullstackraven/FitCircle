@@ -220,3 +220,18 @@ for (const failure of ['open', 'transaction', 'getAll', 'blocked', 'error', 'abo
   await assert.rejects(readIndexedFoods(factory), /no complete backup/);
   if (!['open', 'error'].includes(failure)) assert.equal(closed, true);
 });
+
+test('persistent failure on the first goal write never removes unchanged original bytes', () => {
+  const storage = new MemoryStorage();
+  const original = '{ "targetWeight": 180, "hydrationOz": 72 }';
+  storage.setItem('fitcircle_goals', original);
+  const write = storage.setItem.bind(storage);
+  storage.setItem = (key,value) => {
+    if (key === 'fitcircle_goals') throw new DOMException('Synthetic unavailable write','QuotaExceededError');
+    write(key,value);
+  };
+  assert.throws(() => applyRestore(prepareRestore({fitcircle_goals:{targetWeight:175},fitcircle_goal_weight:175}),storage,storage), /original data restored/);
+  assert.equal(storage.getItem('fitcircle_goals'),original);
+  assert.equal(storage.getItem('fitcircle_goal_weight'),null);
+  assert.equal(storage.getItem('fitcircle_restore_journal_v2'),null);
+});

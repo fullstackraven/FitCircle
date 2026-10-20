@@ -37,7 +37,7 @@ test('glass controls do not add nested blur and calculator edits survive closing
   await page.goto('food-tracker');
   await page.getByTestId('button-calculator').click();
   const dialog = page.getByRole('dialog', { name: 'Fitness Calculator' });
-  const input = dialog.locator('input').first();
+  const input = dialog.getByLabel('Carbs %', { exact: true });
   await input.fill('35');
   await input.blur();
   for (const control of await dialog.locator('.glass-input').all()) {
@@ -45,5 +45,5 @@ test('glass controls do not add nested blur and calculator edits survive closing
   }
   await dialog.getByRole('button', { name: 'Close', exact: true }).click();
   await page.getByTestId('button-calculator').click();
-  await expect(page.getByRole('dialog').locator('input').first()).toHaveValue('35');
+  await expect(page.getByRole('dialog').getByLabel('Carbs %', { exact: true })).toHaveValue('35');
 });

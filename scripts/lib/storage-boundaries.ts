@@ -6,11 +6,12 @@ export const storageBoundaries: Boundary[] = [
     "owner": "rollback",
     "expression": "key",
     "operations": [
+      "getItem",
       "removeItem",
       "setItem"
     ],
     "reason": "Only validated restore-plan or validated recovery-journal keys; preserves originals on failure.",
-    "count": 2
+    "count": 3
   },
   {
     "file": "client/src/lib/backup.ts",
