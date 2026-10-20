@@ -55,16 +55,6 @@ export const storageBoundaries: Boundary[] = [
     "count": 3
   },
   {
-    "file": "client/src/pages/food-tracker.tsx",
-    "owner": "loadAllFoodHistory",
-    "expression": "key",
-    "operations": [
-      "getItem"
-    ],
-    "reason": "Read-only enumeration of fitcircle_food_ keys; non-array values are skipped, and it introduces no new writes.",
-    "count": 1
-  },
-  {
     "file": "client/src/pages/settings.tsx",
     "owner": "eraseAllData",
     "expression": "key",

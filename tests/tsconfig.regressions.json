@@ -20,7 +20,9 @@
     "browser/timer-picker.spec.ts",
     "browser/workout-statistics.spec.ts",
     "fitness-profile.test.ts",
-    "browser/fitness-profile.spec.ts"
+    "browser/fitness-profile.spec.ts",
+    "nutrition.test.ts",
+    "browser/nutrition.spec.ts"
   ],
   "exclude": [
     "../node_modules",

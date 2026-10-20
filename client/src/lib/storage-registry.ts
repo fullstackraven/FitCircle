@@ -13,6 +13,7 @@ export interface StorageSource {
 }
 
 export const storageSources: StorageSource[] = [
+  {key:"fitcircle_nutrition_goals",mechanism:"localStorage",classification:"user data",backup:true,feature:"Explicit nutrition targets",kind:"json",reason:"User-confirmed calorie and macro goals; independent of calculator estimates."},
   {"key": "workout-tracker-data", "mechanism": "localStorage", "classification": "user data", "backup": true, "feature": "Workouts, routines, daily logs and journal", "kind": "json", "reason": "Preserve current and recoverable records with existing version 2 validation."},
   {"key": "workout-tracker-logs", "mechanism": "localStorage", "classification": "legacy data", "backup": true, "feature": "Legacy workout logs", "kind": "json", "reason": "Preserve current and recoverable records with existing version 2 validation."},
   {"key": "fitcircle_food_database", "mechanism": "localStorage", "classification": "user data", "backup": true, "feature": "Foods: built-ins, user edits and custom entries; absence encodes deletions", "kind": "json", "reason": "Preserve current and recoverable records with existing version 2 validation."},

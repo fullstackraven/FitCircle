@@ -1,8 +1,10 @@
+import { per100gForFood,nutrientFields } from './nutrition';
+import { barcodeIdentity } from './barcode';
 import { readIndexedFoods, foodDataSchema } from './backup';
 import comprehensiveFoods from '../data/comprehensive-foods.json';
 
 // Types for our local food service
-export type FoodUnit = 'g' | 'oz' | 'cup' | 'piece' | 'serving';
+export type FoodUnit = 'g' | 'oz' | 'cup' | 'piece' | 'serving' | 'ml' | 'slice';
 
 export interface FoodEntry {
   id: string;
@@ -165,15 +167,11 @@ export class LocalFoodService {
 
   // Get all foods from localStorage
   private getFoodsFromStorage(): LocalFoodItem[] {
-    try {
-      const stored = localStorage.getItem(this.FOOD_DATABASE_KEY);
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch (error) {
-      console.error('Error loading foods from localStorage:', error);
-    }
-    return [];
+    const stored = localStorage.getItem(this.FOOD_DATABASE_KEY);
+    if (stored === null) return [];
+    const parsed: unknown = JSON.parse(stored);
+    if (!foodDataSchema.array().safeParse(parsed).success) throw new Error('Saved food database is unreadable. Original data has not been changed.');
+    return parsed as LocalFoodItem[];
   }
 
   // Save all foods to localStorage
@@ -259,14 +257,25 @@ export class LocalFoodService {
 
   // Get product by barcode from local data
   async getProductByBarcode(barcode: string): Promise<LocalFoodItem | null> {
-    try {
-      const foods = this.getFoodsFromStorage();
-      const food = foods.find(f => f.barcode === barcode);
-      return food || null;
-    } catch (error) {
-      console.error('Error getting product by barcode:', error);
-      return null;
-    }
+    await this.ready;
+    const identity = barcodeIdentity(barcode);
+    return this.getFoodsFromStorage().find(food => {
+      if (!food.barcode) return false;
+      try { return barcodeIdentity(food.barcode) === identity; } catch { return false; }
+    }) ?? null;
+  }
+
+  // A reviewed scanner product is an explicit addition, never an upsert.
+  async saveReviewedProduct(input: LocalFoodItem): Promise<LocalFoodItem> {
+    await this.ready;
+    if (!foodDataSchema.safeParse(input).success) throw new Error('Check the serving and nutrition values before saving.');
+    const foods = this.getFoodsFromStorage();
+    if (foods.some(food => food.id === input.id || (input.barcode && food.barcode && (() => {
+      try { return barcodeIdentity(food.barcode!) === barcodeIdentity(input.barcode!); } catch { return false; }
+    })()))) throw new Error('This product is already saved. Log it without saving, or edit it in Food Database. No saved food was overwritten.');
+    const saved = { ...input, id: `custom-${crypto.randomUUID()}` };
+    this.saveFoodsToStorage([...foods, saved]);
+    return saved;
   }
 
   // Add custom food (now stored in localStorage)
@@ -289,7 +298,7 @@ export class LocalFoodService {
         id: `custom-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         name: input.name.trim(),
         brand: input.brand?.trim() || undefined,
-        quantity: input.quantity || 100,
+        quantity: input.quantity,
         unit: input.unit || 'g',
         calories: input.calories,
         carbs: input.carbs,
@@ -307,20 +316,9 @@ export class LocalFoodService {
         iron: input.iron
       };
 
-      // Calculate nutrition per 100g for consistency
-      if (input.quantity !== 100) {
-        const multiplier = 100 / input.quantity;
-        customFood.nutritionPer100g = {
-          calories: customFood.calories * multiplier,
-          carbs: customFood.carbs * multiplier,
-          protein: customFood.protein * multiplier,
-          fat: customFood.fat * multiplier,
-          fiber: customFood.fiber !== undefined ? customFood.fiber * multiplier : undefined,
-          sugar: customFood.sugar !== undefined ? customFood.sugar * multiplier : undefined,
-          sodium: customFood.sodium !== undefined ? customFood.sodium * multiplier : undefined,
-          saturatedFat: customFood.saturatedFat !== undefined ? customFood.saturatedFat * multiplier : undefined
-        };
-      }
+      // Only a known mass unit supports a per-100g reference; cups/pieces
+      // and arbitrary servings have no inferred density or weight.
+      customFood.nutritionPer100g = per100gForFood(customFood);
 
       // Add to localStorage
       const foods = this.getFoodsFromStorage();
@@ -362,19 +360,8 @@ export class LocalFoodService {
         id: existingFood.id // Ensure ID doesn't change
       };
 
-      // Recalculate nutrition per 100g if quantity changed
-      if (input.quantity && input.quantity !== 100) {
-        const multiplier = 100 / input.quantity;
-        updatedFood.nutritionPer100g = {
-          calories: updatedFood.calories * multiplier,
-          carbs: updatedFood.carbs * multiplier,
-          protein: updatedFood.protein * multiplier,
-          fat: updatedFood.fat * multiplier,
-          fiber: updatedFood.fiber !== undefined ? updatedFood.fiber * multiplier : undefined,
-          sugar: updatedFood.sugar !== undefined ? updatedFood.sugar * multiplier : undefined,
-          sodium: updatedFood.sodium !== undefined ? updatedFood.sodium * multiplier : undefined,
-          saturatedFat: updatedFood.saturatedFat !== undefined ? updatedFood.saturatedFat * multiplier : undefined
-        };
+      if (Object.keys(input).some(key => key === 'quantity' || key === 'unit' || nutrientFields.includes(key as typeof nutrientFields[number]))) {
+        updatedFood.nutritionPer100g = per100gForFood(updatedFood);
       }
 
       foods[foodIndex] = updatedFood;

@@ -48,3 +48,19 @@ test('successful create and update remain compatible with unchanged backup valid
     assert.deepEqual(await service.getAllFoods(),[food]);
   });
 });
+
+test('reviewed barcode products never overwrite a saved barcode and report quota failure',async()=>{
+  await fixture(async(service,values,fail)=>{
+    const scanned={...food,id:'scan-synthetic',name:'Synthetic scanned product',barcode:'3017620422003',sodium:0,vitaminC:12};
+    const original=values.get(key);fail(true);await assert.rejects(()=>service.saveReviewedProduct(scanned));assert.equal(values.get(key),original);
+    fail(false);const saved=await service.saveReviewedProduct(scanned);assert.equal(saved.vitaminC,12);assert.equal(saved.sodium,0);
+    const raw=values.get(key);await assert.rejects(()=>service.saveReviewedProduct({...scanned,name:'Changed product'}),/already saved/);assert.equal(values.get(key),raw);
+  });
+});
+test('malformed food collection bytes cannot be replaced by creating or editing a food',async()=>{
+  await fixture(async(service,values)=>{
+    for(const raw of ['{','null','{}','[{}]']){
+      values.set(key,raw);assert.equal((await service.addCustomFood(input)).success,false);assert.equal((await service.updateFood(food.id,{name:'Replacement'})).success,false);await assert.rejects(()=>service.saveReviewedProduct({...food,barcode:'3017620422003'}));assert.equal(values.get(key),raw);
+    }
+  });
+});
