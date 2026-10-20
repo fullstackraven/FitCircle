@@ -6,7 +6,7 @@ import { WeeklyNutrition } from '@/components/nutrition/WeeklyNutrition';
 import { MealDiary } from '@/components/nutrition/MealDiary';
 import { BarcodeEntry } from '@/components/nutrition/BarcodeEntry';
 import { useFoodDiary } from '@/hooks/use-food-diary';
-import { displayTargets,readNutritionGoals,readCalculatorEstimate,type NutritionGoals as SavedGoals } from '@/lib/nutrition';
+import { displayTargets,readNutritionGoals,readCalculatorEstimate,consumedServingText,type NutritionGoals as SavedGoals } from '@/lib/nutrition';
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Trash2, ChevronLeft, ChevronRight, Search, Edit2, Save, X as Cancel, Calculator, Database } from 'lucide-react';
 import { useLocation } from 'wouter';
@@ -1127,15 +1127,16 @@ export default function FoodTrackerPage() {
 
                 {/* Serving Size Display */}
                 <div className="space-y-2">
-                  <Label className="text-gray-300">Serving Size</Label>
+                  <Label className="text-gray-300">Base serving (product label)</Label>
                   <div className="bg-gray-700 border border-gray-600 rounded-xl p-3 text-right">
                     <span className="text-blue-400">{addingFood.quantity}{addingFood.unit}</span>
                   </div>
                 </div>
 
+                <p className="text-sm text-slate-300">2. Choose how much you ate. This multiplies the totals below and does not edit the saved product’s nutrition basis.</p>
                 {/* Number of Servings */}
                 <div className="space-y-2">
-                  <Label htmlFor="add-servings" className="text-gray-300">Number of Servings</Label>
+                  <Label htmlFor="add-servings" className="text-gray-300">Servings eaten (multiplier)</Label>
                   <Input
                     id="add-servings"
                     type="number"
@@ -1148,6 +1149,7 @@ export default function FoodTrackerPage() {
                   />
                 </div>
 
+                <p className="text-sm tabular-nums text-green-400">{consumedServingText(addingFood.quantity, addingFood.unit, addEntryServings)}</p>
                 {/* Meal Selection */}
                 <div className="space-y-2">
                   <Label htmlFor="add-meal" className="text-gray-300">Meal</Label>
@@ -1236,15 +1238,16 @@ export default function FoodTrackerPage() {
 
                 {/* Serving Size Display */}
                 <div className="space-y-2">
-                  <Label className="text-gray-300">Serving Size</Label>
+                  <Label className="text-gray-300">Base serving (product label)</Label>
                   <div className="bg-gray-700 border border-gray-600 rounded-xl p-3 text-right">
                     <span className="text-blue-400">{editingEntry.quantity}{editingEntry.unit}</span>
                   </div>
                 </div>
 
+                <p className="text-sm text-slate-300">2. Choose how much you ate. This multiplies the totals below and does not edit the saved product’s nutrition basis.</p>
                 {/* Number of Servings */}
                 <div className="space-y-2">
-                  <Label htmlFor="edit-servings" className="text-gray-300">Number of Servings</Label>
+                  <Label htmlFor="edit-servings" className="text-gray-300">Servings eaten (multiplier)</Label>
                   <Input
                     id="edit-servings"
                     type="number"
@@ -1257,6 +1260,7 @@ export default function FoodTrackerPage() {
                   />
                 </div>
 
+                <p className="text-sm tabular-nums text-green-400">{consumedServingText(editingEntry.quantity, editingEntry.unit, editEntryServings)}</p>
                 {/* Meal Selection */}
                 <div className="space-y-2">
                   <Label htmlFor="edit-meal" className="text-gray-300">Meal</Label>

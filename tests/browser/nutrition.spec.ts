@@ -525,3 +525,222 @@ test("closing an active decoder stops the synthetic video stream", async ({
     )
     .toBe(true);
 });
+
+for (const event of ["pagehide", "visibilitychange"])
+  test(`camera stops on ${event} without automatically restarting`, async ({
+    page,
+  }) => {
+    await seed(page);
+    await page.evaluate(() => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 320;
+      canvas.height = 240;
+      const stream = canvas.captureStream(5);
+      (window as typeof window & { reviewStream: MediaStream }).reviewStream =
+        stream;
+      Object.defineProperty(navigator, "mediaDevices", {
+        configurable: true,
+        value: { getUserMedia: async () => stream },
+      });
+    });
+    await openBarcode(page);
+    await page.getByRole("button", { name: "Start Camera" }).click();
+    await expect
+      .poll(() =>
+        page
+          .getByLabel("Barcode camera preview")
+          .evaluate((el) => (el as HTMLVideoElement).srcObject !== null),
+      )
+      .toBe(true);
+    await page.evaluate((event) => {
+      if (event === "visibilitychange") {
+        Object.defineProperty(document, "hidden", {
+          configurable: true,
+          value: true,
+        });
+        document.dispatchEvent(new Event(event));
+      } else window.dispatchEvent(new Event(event));
+    }, event);
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          (window as typeof window & { reviewStream: MediaStream }).reviewStream
+            .getTracks()
+            .every((track) => track.readyState === "ended"),
+        ),
+      )
+      .toBe(true);
+    await expect(
+      page.getByRole("button", { name: "Start Camera" }),
+    ).toBeVisible();
+  });
+
+test("base product nutrition and consumed multiplier remain distinct in review and diary", async ({
+  page,
+}) => {
+  await seed(page);
+  await openBarcode(page);
+  await page.getByLabel("Manual barcode").fill(food.barcode);
+  await page.getByRole("button", { name: "Find Product" }).click();
+  await expect(
+    page.getByText("1. Check the product’s base serving", { exact: true }),
+  ).toBeVisible();
+  await page.getByLabel("Product Calories", { exact: true }).fill("120");
+  await page.getByRole("button", { name: "Use Reviewed Food" }).click();
+  await expect(
+    page.getByText("Base serving (product label)", { exact: true }),
+  ).toBeVisible();
+  await page.getByLabel("Servings eaten (multiplier)").fill("2.5");
+  await expect(
+    page.getByText("2.5 × 40 g = 100 g consumed", { exact: true }),
+  ).toBeVisible();
+  await page.getByTestId("button-save-add-entry").click();
+  const stored = await page.evaluate(() => ({
+    catalog: JSON.parse(localStorage.getItem("fitcircle_food_database")!),
+    entries: JSON.parse(localStorage.getItem("fitcircle_food_2026-10-20")!),
+  }));
+  expect(stored.catalog[0]).toEqual(food);
+  expect(stored.entries[1]).toMatchObject({
+    calories: 120,
+    quantity: 40,
+    unit: "g",
+    servings: 2.5,
+  });
+});
+
+test("complete Settings backup restores historical diary bytes, missing nutrients and scanned products without loss", async ({
+  page,
+}) => {
+  await seed(page);
+  const before = await page.evaluate((food) => {
+    const scanned = {
+      ...food,
+      id: "custom-scan-review",
+      name: "Synthetic scanned product",
+      source: "Open Food Facts",
+      sourceUrl: "https://world.openfoodfacts.org/product/3017620422003",
+      vitaminA: 0.01,
+      cholesterol: 0,
+      reviewMetadata: { keep: true },
+    };
+    const legacy = {
+      ...food,
+      id: "legacy-review",
+      meal: "lunch",
+      timestamp: "2025-11-17T18:00:00.123456Z",
+    };
+    const values: Record<string, string> = {
+      fitcircle_food_database: JSON.stringify([food, scanned], null, 2),
+      "fitcircle_food_2025-11-17": JSON.stringify([legacy], null, 2),
+      "fitcircle_food_2026-10-19": JSON.stringify(
+        [
+          {
+            ...scanned,
+            meal: "dinner",
+            servings: 0.4,
+            timestamp: "2026-10-19T18:00:00.123Z",
+          },
+        ],
+        null,
+        2,
+      ),
+      "fitcircle_food_2026-10-20": localStorage.getItem(
+        "fitcircle_food_2026-10-20",
+      )!,
+      fitcircle_nutrition_goals: JSON.stringify({
+        calories: 2100,
+        protein: 120,
+        carbs: 240,
+        fat: 70,
+      }),
+    };
+    for (const [key, value] of Object.entries(values))
+      localStorage.setItem(key, value);
+    return values;
+  }, food);
+  await page.goto("settings");
+  const downloadEvent = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download Complete Backup" }).click();
+  const stream = await (await downloadEvent).createReadStream();
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream!) chunks.push(chunk);
+  const backup = JSON.parse(Buffer.concat(chunks).toString());
+  for (const [key, value] of Object.entries(before))
+    expect(backup.localStorage[key]).toBe(value);
+  await page.evaluate(() => {
+    localStorage.setItem("fitcircle_food_2025-11-17", "[]");
+    localStorage.setItem("fitcircle_food_database", "[]");
+  });
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.locator("input[type=file]").setInputFiles({
+    name: "synthetic-complete.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(backup)),
+  });
+  await page.waitForURL(/\/FitCircle\/$/);
+  const after = await page.evaluate(
+    (keys) =>
+      Object.fromEntries(keys.map((key) => [key, localStorage.getItem(key)])),
+    Object.keys(before),
+  );
+  expect(after).toEqual(before);
+  expect(
+    await page.evaluate(() => localStorage.getItem("unrelated-nutrition-test")),
+  ).toBe("retain");
+  await page.goto("food-tracker");
+  await page
+    .getByRole("button", { name: "Nutrition Details", exact: true })
+    .click();
+  await expect(
+    page
+      .getByRole("dialog")
+      .getByText("Not available", { exact: true })
+      .first(),
+  ).toBeVisible();
+});
+
+test("nutrition details distinguish a known zero, an incomplete zero total, missing data and trace intake", async ({
+  page,
+}) => {
+  await seed(page);
+  await page.evaluate((food) => {
+    localStorage.setItem(
+      "fitcircle_food_2026-10-20",
+      JSON.stringify([
+        {
+          ...food,
+          id: "known-zero",
+          servings: 1,
+          meal: "breakfast",
+          timestamp: "2026-10-20T12:00:00Z",
+        },
+        {
+          ...food,
+          id: "partial",
+          fiber: undefined,
+          vitaminA: 0.01,
+          servings: 1,
+          meal: "lunch",
+          timestamp: "2026-10-20T12:00:00Z",
+        },
+      ]),
+    );
+  }, food);
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Nutrition Details", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog");
+  await expect(
+    dialog.getByText("Fiber", { exact: true }).locator(".."),
+  ).toContainText("0 g known");
+  await expect(
+    dialog.getByText("Sodium", { exact: true }).locator(".."),
+  ).toContainText("0 mg");
+  await expect(
+    dialog.getByText("Sugar", { exact: true }).locator(".."),
+  ).toContainText("Not available");
+  await expect(
+    dialog.getByText("Vitamin A", { exact: true }).locator(".."),
+  ).toContainText("< 0.1 µg known");
+});

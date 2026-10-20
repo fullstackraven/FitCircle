@@ -117,9 +117,16 @@ export function ProductReview({
           }
         />
       </label>
+      <div className="rounded-xl bg-slate-800 p-3 text-sm text-slate-300">
+        <strong className="block text-white mb-1">
+          1. Check the product’s base serving
+        </strong>
+        These fields describe one label serving, not how much you ate. Next,
+        choose the number of base servings consumed.
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <label className="text-sm text-slate-300">
-          Serving quantity
+          Base serving quantity
           <Input
             aria-label="Product serving quantity"
             type="number"
@@ -131,7 +138,7 @@ export function ProductReview({
           />
         </label>
         <label className="text-sm text-slate-300">
-          Unit
+          Base serving unit
           <select
             aria-label="Product serving unit"
             className="w-full min-h-10 bg-slate-800 rounded-lg"
@@ -149,9 +156,11 @@ export function ProductReview({
         </label>
       </div>
       <p className="text-xs text-slate-400">
-        All values below describe the serving quantity above. Changing the
-        serving label does not guess or recalculate label values. Adjust values
-        to match the package.
+        Nutrition below is per {draft.quantity || "—"} {draft.unit} (one base
+        serving). Editing the base quantity or unit does not rescale these
+        values; update every known value to match that new label basis. To
+        record a different amount eaten, leave this basis unchanged and use the
+        next screen’s multiplier.
       </p>
       <div className="grid grid-cols-2 gap-3">
         {nutrientFields.slice(0, 4).map((key) => (

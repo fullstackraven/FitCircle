@@ -171,3 +171,14 @@ export function nutritionWeek(
   ) as Record<keyof Targets, number | null>;
   return { days: days.length, averages, unavailable };
 }
+
+export function consumedServingText(
+  quantity: number,
+  unit: string,
+  multiplier: string,
+) {
+  const count = Number(multiplier);
+  if (!multiplier.trim() || !Number.isFinite(count) || count <= 0)
+    return "Enter a positive number of base servings eaten.";
+  return `${count} × ${quantity} ${unit} = ${Number((count * quantity).toFixed(4))} ${unit} consumed`;
+}

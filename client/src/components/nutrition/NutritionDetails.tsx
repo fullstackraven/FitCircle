@@ -32,7 +32,7 @@ export function NutritionDetails({
                 <dt className="text-slate-300">{nutrientLabels[key][0]}</dt>
                 <dd className="tabular-nums text-white text-right">
                   {item.known
-                    ? `${Number(item.value.toFixed(1))} ${nutrientLabels[key][1]}`
+                    ? `${item.value > 0 && item.value < 0.05 ? "< 0.1" : Number(item.value.toFixed(1))} ${nutrientLabels[key][1]}${item.known < item.total ? " known" : ""}`
                     : "Not available"}
                 </dd>
               </div>

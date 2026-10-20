@@ -1,5 +1,7 @@
 # Food Tracker 2.0 review
 
+See the [pre-merge review and actionable real-device checklist](PRE_MERGE_REVIEW.md) for the final API/camera, serving and backup checks.
+
 ## What changed
 
 Food Tracker now has a compact daily calorie summary (consumed, remaining or above target), three macro indicators, explicitly saved Nutrition Goals, grouped meal cards and per-food details, a Nutrition Details dialog, a seven-day summary, and barcode entry with product review. Search, recent foods, custom-food editing/deletion, historical date navigation, the existing Calculator and Food Database remain available.
@@ -75,14 +77,14 @@ All use isolated synthetic records and Chromium at 390px width. The API product-
 - `npm run check`: passed.
 - `npx tsc --noEmit -p tests/tsconfig.regressions.json`: passed.
 - `npm run audit:storage`: 211 call sites, zero errors; generated inventory refreshed.
-- `npm test`: 226 passed, zero failures.
+- `npm test`: 230 passed, zero failures.
 - `npm run build`: passed; existing Vite large-chunk advisory remains. ZXing is imported on demand and its built assets use the existing offline precache process.
-- `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`: 182 passed, zero failures, against the final completed build.
+- `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e`: 187 passed, zero failures, against the final completed build.
 - `git diff --check`: passed.
 
 Coverage includes servings/known mass units, calorie balance and excess, nutrient coverage/zeros, goals and quota failures, snapshot conflicts, malformed records, backup round trips, selected-date add/edit/meal-change/delete, local offline barcode lookup, v3 and legacy normalization, missing core nutrition, explicit product persistence, camera denial, active decoder track cleanup, late permission cleanup, and 320/390/430px plus desktop layouts. Synthetic data only.
 
-An intermediate full browser run was interrupted by preview assets being rebuilt and failed a navigation request; it was not counted as validation. The final stable-build run passed all 182 tests. No unrelated tests were changed to accommodate the feature.
+An intermediate full browser run was interrupted by preview assets being rebuilt and failed a navigation request; it was not counted as validation. The final stable-build run passed all 187 tests. No unrelated tests were changed to accommodate the feature.
 
 ## Remaining verification and limitations
 

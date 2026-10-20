@@ -132,6 +132,18 @@ function canonicalProduct(product: Record<string, unknown>) {
   };
 }
 
+// Accept an explicit total mass/volume, not a component of a multipack expression.
+function declaredServing(value: unknown): RegExpMatchArray | null {
+  if (typeof value !== "string" || /\d\s*[x×*]/i.test(value)) return null;
+  const text = value.trim();
+  return (
+    text.match(/^(\d+(?:\.\d+)?)\s*(g|ml)$/i) ??
+    text.match(
+      /^(?:\d+(?:\.\d+)?\s+[a-z][a-z -]*\s*)?\((\d+(?:\.\d+)?)\s*(g|ml)\)$/i,
+    )
+  );
+}
+
 /** OFF returns grams for macronutrients and mineral/vitamin base units. No missing value becomes zero. */
 export function normalizeOpenFoodFacts(
   input: unknown,
@@ -150,15 +162,13 @@ export function normalizeOpenFoodFacts(
   const canonical = canonicalProduct(input.product);
   const product = canonical.product;
   if (
-    typeof product.code === "string" &&
-    barcodeIdentity(product.code) !== barcodeIdentity(barcode)
+    product.code !== undefined &&
+    (typeof product.code !== "string" ||
+      barcodeIdentity(product.code) !== barcodeIdentity(barcode))
   )
     throw new Error("The returned product barcode does not match.");
   const nutriments = plain(product.nutriments) ? product.nutriments : {};
-  const servingGrams =
-    typeof product.serving_size === "string"
-      ? product.serving_size.match(/(?:^|[\s(])(\d+(?:\.\d+)?)\s*(g|ml)\b/i)
-      : null;
+  const servingGrams = declaredServing(product.serving_size);
   const grams = servingGrams ? Number(servingGrams[1]) : undefined;
   const has100 = Object.keys(nutriments).some(
     (key) => key.endsWith("_100g") && amount(nutriments[key]) !== undefined,
@@ -192,7 +202,13 @@ export function normalizeOpenFoodFacts(
     if (key === "sodium" && value === undefined) {
       const salt = amount(nutriments[`salt_${basis}`]);
       const unit = nutriments.salt_unit ?? "g";
-      if (salt !== undefined && (unit === "g" || unit === "mg"))
+      if (
+        salt !== undefined &&
+        (unit === "g" || unit === "mg") &&
+        !["<", ">", "≤", "≥", "<=", ">="].includes(
+          String(nutriments.salt_modifier),
+        )
+      )
         value = salt * 400;
     } else if (
       value !== undefined &&
@@ -221,7 +237,14 @@ export function normalizeOpenFoodFacts(
       )
     )
       value = undefined;
-    values[key] = value === undefined ? "" : String(Number(value.toFixed(4)));
+    if (nutriments[`${name}_modifier`] === "~")
+      warnings.push(
+        "Some returned values are estimates. Verify them against the package before logging.",
+      );
+    values[key] =
+      value === undefined || !Number.isFinite(value)
+        ? ""
+        : String(Number(value.toPrecision(12)));
   }
   if (!has100 && Object.values(values).every((v) => v === ""))
     warnings.push(
@@ -249,7 +272,7 @@ export function normalizeOpenFoodFacts(
     values,
     source: "Open Food Facts",
     sourceUrl: `https://world.openfoodfacts.org/product/${normalizeBarcode(barcode)}`,
-    warnings,
+    warnings: [...new Set(warnings)],
   };
 }
 let lastExternalLookup = 0;
@@ -264,6 +287,8 @@ export async function lookupBarcode(
 ) {
   const barcode = normalizeBarcode(value);
   const saved = await local(barcode);
+  if (options.signal?.aborted)
+    throw new DOMException("Lookup cancelled.", "AbortError");
   if (saved) return { local: saved, draft: draftFromFood(saved) };
   if (options.online === false)
     throw new Error(
@@ -278,6 +303,7 @@ export async function lookupBarcode(
     {
       signal: options.signal,
       credentials: "omit",
+      mode: "cors",
       referrerPolicy: "no-referrer",
     },
   );

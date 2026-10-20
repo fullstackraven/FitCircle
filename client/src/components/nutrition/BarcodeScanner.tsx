@@ -89,10 +89,16 @@ export function BarcodeScanner({
         onStop();
       }
     };
+    const pageHidden = () => {
+      cleanup();
+      onStop();
+    };
     document.addEventListener("visibilitychange", hidden);
+    window.addEventListener("pagehide", pageHidden);
     void start();
     return () => {
       document.removeEventListener("visibilitychange", hidden);
+      window.removeEventListener("pagehide", pageHidden);
       cleanup();
     };
   }, []);

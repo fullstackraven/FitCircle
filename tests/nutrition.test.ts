@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { IDBFactory } from "fake-indexeddb";
 import {
+  consumedServingText,
   dailyNutrition,
   calorieBalance,
   scaleNutrients,
@@ -294,7 +295,10 @@ test("OFF per-serving, unknown serving weights, kJ and invalid/incomplete record
 });
 test("lookup is local-first and offline-safe, requests only product fields, and throttles external repeats", async () => {
   let fetched = 0;
-  const fetcher: typeof fetch = async (input) => {
+  const fetcher: typeof fetch = async (input, init) => {
+    assert.equal(init?.mode, "cors");
+    assert.equal(init?.credentials, "omit");
+    assert.equal(init?.headers, undefined);
     fetched++;
     assert.match(String(input), /app_name=FitCircle/);
     return new Response(JSON.stringify(product({ proteins_100g: 3 })), {
@@ -360,6 +364,14 @@ test("complete and legacy backup round trips retain confirmed goals, scanned met
     source.getItem("fitcircle_food_database"),
   );
   assert.equal(destination.getItem("other-app"), "retain");
+  assert.equal(
+    destination.getItem("fitcircle_food_2026-10-19"),
+    source.getItem("fitcircle_food_2026-10-19"),
+  );
+  assert.equal(
+    JSON.parse(destination.getItem("fitcircle_food_2026-10-19")!)[0].fiber,
+    undefined,
+  );
   const legacy = new MemoryStorage();
   applyRestore(
     prepareRestore({
@@ -465,4 +477,77 @@ test("the shared entry workflow rejects invalid new foods without interpreting u
     { quantity: 0 },
   ])
     assert.throws(() => assertLoggableFood({ ...food, ...patch }));
+});
+
+test("ambiguous multipack serving weights and bounded legacy salt never become exact nutrition data", () => {
+  for (const serving_size of ["2 × 30 g", "2 x 30g", "2*30g", "2 x (30 g)"]) {
+    const draft = normalizeOpenFoodFacts(
+      product(
+        { proteins_serving: 2, salt_serving: 0.5, salt_modifier: "<" },
+        { serving_size },
+      ),
+      "3017620422003",
+    );
+    assert.equal(draft.quantity, "1");
+    assert.equal(draft.unit, "serving");
+    assert.equal(draft.values.sodium, "");
+    assert.equal(draft.values.protein, "2");
+  }
+  const explicit = normalizeOpenFoodFacts(
+    product({ proteins_serving: 2 }, { serving_size: "1 bar (40 g)" }),
+    "3017620422003",
+  );
+  assert.equal(explicit.quantity, "40");
+  assert.equal(explicit.unit, "g");
+  assert.throws(
+    () =>
+      normalizeOpenFoodFacts(
+        product({}, { code: 3017620422003 }),
+        "3017620422003",
+      ),
+    /does not match/,
+  );
+});
+
+test("cancelled local lookup never starts an external request", async () => {
+  const controller = new AbortController();
+  let fetched = false;
+  await assert.rejects(
+    () =>
+      lookupBarcode(
+        "3017620422003",
+        async () => {
+          controller.abort();
+          return null;
+        },
+        {
+          signal: controller.signal,
+          fetcher: async () => {
+            fetched = true;
+            return new Response();
+          },
+        },
+      ),
+    /cancelled/,
+  );
+  assert.equal(fetched, false);
+});
+
+test("consumed serving explanation separates the base quantity from its multiplier", () => {
+  assert.equal(
+    consumedServingText(40, "g", "2.5"),
+    "2.5 × 40 g = 100 g consumed",
+  );
+  for (const invalid of ["", "0", "-1", "Infinity", "abc"])
+    assert.match(consumedServingText(40, "g", invalid), /positive/);
+});
+
+test("positive trace nutrients remain positive rather than being rounded into confirmed zeros", () => {
+  const draft = normalizeOpenFoodFacts(
+    product({ iron_100g: 0.00000001, iron_unit: "g", fiber_100g: 0 }),
+    "3017620422003",
+  );
+  assert.equal(Number(draft.values.iron), 0.00001);
+  assert.equal(draft.values.fiber, "0");
+  assert.equal(draft.values.sugar, "");
 });
