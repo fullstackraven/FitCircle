@@ -182,3 +182,6 @@ export function consumedServingText(
     return "Enter a positive number of base servings eaten.";
   return `${count} × ${quantity} ${unit} = ${Number((count * quantity).toFixed(4))} ${unit} consumed`;
 }
+
+/** Same-tab calculator writes do not generate the browser storage event. */
+export const CALCULATOR_TARGETS_CHANGED = "fitcircleCalculatorTargetsChanged";

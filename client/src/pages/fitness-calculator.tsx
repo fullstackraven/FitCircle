@@ -1,3 +1,4 @@
+import { CALCULATOR_TARGETS_CHANGED } from "@/lib/nutrition";
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Calculator, Target, Activity } from 'lucide-react';
@@ -35,9 +36,6 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
   );
   const [goalRate, setGoalRate] = useState<string>(() => 
     localStorage.getItem('fitness_calc_goal_rate') || '1'
-  );
-  const [macroStyle, setMacroStyle] = useState<string>(() => 
-    localStorage.getItem('fitness_calc_macro_style') || 'standard'
   );
   const [customCarbs, setCustomCarbs] = useState<string>(() => 
     localStorage.getItem('fitness_calc_custom_carbs') || '40'
@@ -113,10 +111,6 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
   }, [goalRate]);
 
   useEffect(() => {
-    localStorage.setItem('fitness_calc_macro_style', macroStyle);
-  }, [macroStyle]);
-
-  useEffect(() => {
     localStorage.setItem('fitness_calc_custom_carbs', customCarbs);
   }, [customCarbs]);
 
@@ -186,23 +180,9 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
   // Macro calculations
   const calculateMacros = () => {
     const calories = getCalorieTarget();
-    let carbPercent, proteinPercent, fatPercent;
-
-    switch (macroStyle) {
-      case 'high-protein':
-        carbPercent = 45; proteinPercent = 30; fatPercent = 25;
-        break;
-      case 'low-carb':
-        carbPercent = 40; proteinPercent = 30; fatPercent = 30;
-        break;
-      case 'tailored':
-        carbPercent = parseInt(customCarbs);
-        proteinPercent = parseInt(customProtein);
-        fatPercent = parseInt(customFat);
-        break;
-      default: // standard
-        carbPercent = 50; proteinPercent = 30; fatPercent = 20;
-    }
+    const carbPercent = Number(customCarbs);
+    const proteinPercent = Number(customProtein);
+    const fatPercent = Number(customFat);
 
     const carbCalories = calories * (carbPercent / 100);
     const proteinCalories = calories * (proteinPercent / 100);
@@ -220,14 +200,21 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
   const calorieTarget = getCalorieTarget();
   const macros = calculateMacros();
 
-  // Store calculated values for Food Tracker to use
+  const macroPercentagesValid = [customCarbs, customProtein, customFat].every(value => value.trim() !== '' && Number.isFinite(Number(value)) && Number(value) >= 0 && Number(value) <= 100)
+    && Math.abs(Number(customCarbs) + Number(customProtein) + Number(customFat) - 100) < 0.000001;
+  const [targetSaveError, setTargetSaveError] = useState('');
+  // Publish complete calculator targets to the mounted Food Tracker as well as other tabs.
   useEffect(() => {
-    if (userData.age === null || !Number.isFinite(calorieTarget)) return;
-    localStorage.setItem('fitness_calc_target_calories', calorieTarget.toString());
-    localStorage.setItem('fitness_calc_target_carbs', macros.carbs.grams.toString());
-    localStorage.setItem('fitness_calc_target_protein', macros.protein.grams.toString());
-    localStorage.setItem('fitness_calc_target_fat', macros.fat.grams.toString());
-  }, [calorieTarget, macros, userData.age]);
+    if (userData.age === null || !Number.isFinite(calorieTarget) || calorieTarget <= 0 || !macroPercentagesValid) return;
+    try {
+      localStorage.setItem('fitness_calc_target_calories', calorieTarget.toString());
+      localStorage.setItem('fitness_calc_target_carbs', macros.carbs.grams.toString());
+      localStorage.setItem('fitness_calc_target_protein', macros.protein.grams.toString());
+      localStorage.setItem('fitness_calc_target_fat', macros.fat.grams.toString());
+      setTargetSaveError('');
+      window.dispatchEvent(new Event(CALCULATOR_TARGETS_CHANGED));
+    } catch {setTargetSaveError('Could not save calculator targets. Check available storage and try again.');}
+  }, [calorieTarget, macros.carbs.grams, macros.protein.grams, macros.fat.grams, userData.age, macroPercentagesValid]);
 
   return (
     <div className="fitcircle-page">
@@ -379,35 +366,14 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
             <h2 className="text-xl font-semibold text-white">Macro Calculator</h2>
           </div>
 
-          {/* Macro Style Selection */}
-          <div className="grid grid-cols-2 gap-2 mb-6">
-            {[
-              { value: 'standard', label: 'Standard' },
-              { value: 'high-protein', label: 'High Protein' },
-              { value: 'low-carb', label: 'Low Carb' },
-              { value: 'tailored', label: 'Tailored' }
-            ].map(style => (
-              <button
-                key={style.value}
-                onClick={() => setMacroStyle(style.value)}
-                className={`glass-control p-3 rounded-xl border-2 transition-colors text-sm ${
-                  macroStyle === style.value 
-                    ? 'border-purple-500 bg-purple-500/20 text-purple-400' 
-                    : 'border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500'
-                }`}
-              >
-                {style.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Tailored Macro Inputs */}
-          {macroStyle === 'tailored' && (
+          {/* Personal macro percentages */}
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div>
-                <Label className="text-slate-300 text-sm">Carbs %</Label>
+                <Label htmlFor="macro-carbs" className="text-slate-300 text-sm">Carbs %</Label>
                 <Input
                   type="number"
+                  step="any"
+                  id="macro-carbs"
                   value={customCarbs}
                   onChange={(e) => setCustomCarbs(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
@@ -416,9 +382,11 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
                 />
               </div>
               <div>
-                <Label className="text-slate-300 text-sm">Protein %</Label>
+                <Label htmlFor="macro-protein" className="text-slate-300 text-sm">Protein %</Label>
                 <Input
                   type="number"
+                  step="any"
+                  id="macro-protein"
                   value={customProtein}
                   onChange={(e) => setCustomProtein(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
@@ -427,9 +395,11 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
                 />
               </div>
               <div>
-                <Label className="text-slate-300 text-sm">Fat %</Label>
+                <Label htmlFor="macro-fat" className="text-slate-300 text-sm">Fat %</Label>
                 <Input
                   type="number"
+                  step="any"
+                  id="macro-fat"
                   value={customFat}
                   onChange={(e) => setCustomFat(e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white mt-1"
@@ -438,7 +408,8 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
                 />
               </div>
             </div>
-          )}
+          {!macroPercentagesValid && <p role="alert" className="text-sm text-amber-200 mb-4">Enter percentages from 0 to 100 that total 100%. Saved targets stay unchanged until the split is valid.</p>}
+          {targetSaveError && <p role="alert" className="text-sm text-red-400 mb-4">{targetSaveError}</p>}
 
           {/* Macro Breakdown */}
           <div className="space-y-4">
@@ -452,43 +423,22 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
             <div className="grid grid-cols-3 gap-4">
               <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-orange-400 font-semibold mb-2">Carbs</div>
-                <div className="type-metric text-2xl font-bold text-white">{userData.age === null ? '—' : macros.carbs.grams + 'g'}</div>
+                <div className="type-metric text-2xl font-bold text-white">{userData.age === null || !macroPercentagesValid ? '—' : macros.carbs.grams + 'g'}</div>
                 <div className="text-sm text-slate-400">{macros.carbs.percent}%</div>
               </div>
               <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-red-400 font-semibold mb-2">Protein</div>
-                <div className="type-metric text-2xl font-bold text-white">{userData.age === null ? '—' : macros.protein.grams + 'g'}</div>
+                <div className="type-metric text-2xl font-bold text-white">{userData.age === null || !macroPercentagesValid ? '—' : macros.protein.grams + 'g'}</div>
                 <div className="text-sm text-slate-400">{macros.protein.percent}%</div>
               </div>
               <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-yellow-400 font-semibold mb-2">Fat</div>
-                <div className="type-metric text-2xl font-bold text-white">{userData.age === null ? '—' : macros.fat.grams + 'g'}</div>
+                <div className="type-metric text-2xl font-bold text-white">{userData.age === null || !macroPercentagesValid ? '—' : macros.fat.grams + 'g'}</div>
                 <div className="text-sm text-slate-400">{macros.fat.percent}%</div>
               </div>
             </div>
 
-            {/* Preset Comparisons */}
-            <div className="mt-6 space-y-2">
-              <div className="text-sm font-semibold text-slate-300 mb-3">Compare Styles:</div>
-              {[
-                { name: 'Standard', carbs: 50, protein: 30, fat: 20 },
-                { name: 'High Protein', carbs: 45, protein: 30, fat: 25 },
-                { name: 'Low Carb', carbs: 40, protein: 30, fat: 30 }
-              ].map(preset => {
-                const presetCarbs = Math.round((calorieTarget * (preset.carbs / 100)) / 4);
-                const presetProtein = Math.round((calorieTarget * (preset.protein / 100)) / 4);
-                const presetFat = Math.round((calorieTarget * (preset.fat / 100)) / 9);
-                
-                return (
-                  <div key={preset.name} className="flex justify-between items-center text-sm">
-                    <div className="text-slate-300 font-medium">{preset.name}</div>
-                    <div className="text-slate-400">
-                      {userData.age === null ? 'Age needed' : `${presetCarbs}g | ${presetProtein}g | ${presetFat}g`}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+
           </div>
         </div>
         </div>

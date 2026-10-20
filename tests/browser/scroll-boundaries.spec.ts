@@ -111,7 +111,6 @@ test('normal viewport changes keep full shell geometry while overlays use keyboa
   await page.goto('food-tracker');
   await page.getByTestId('button-calculator').click();
   const dialog = page.getByRole('dialog', { name: 'Fitness Calculator' });
-  await dialog.getByRole('button', { name: 'Tailored', exact: true }).click();
   await setVisualViewport(page, 710, 20);
   const input = dialog.locator('input').first();
   await input.fill('35');

@@ -37,7 +37,6 @@ test('glass controls do not add nested blur and calculator edits survive closing
   await page.goto('food-tracker');
   await page.getByTestId('button-calculator').click();
   const dialog = page.getByRole('dialog', { name: 'Fitness Calculator' });
-  await dialog.getByRole('button', { name: 'Tailored', exact: true }).click();
   const input = dialog.locator('input').first();
   await input.fill('35');
   await input.blur();
