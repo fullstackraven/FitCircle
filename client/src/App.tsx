@@ -11,6 +11,7 @@ import RestoreCustomFoodsPage from "@/pages/restore-custom-foods";
 // REMOVED: Bug reporting feature removed per user request
 import ProfilePage from "@/pages/profile";
 import MeasurementsPage from "@/pages/measurements";
+import FitnessCalculator from "@/pages/fitness-calculator";
 import SettingsPage from "@/pages/settings";
 import FastingPage from "@/pages/fasting";
 import MeditationPage from "@/pages/meditation";
@@ -39,6 +40,7 @@ function Router() {
       <Route path="/calendar" component={CalendarPage} />
       <Route path="/profile" component={ProfilePage} />
       <Route path="/measurements" component={MeasurementsPage} />
+      <Route path="/fitness-calculator"><FitnessCalculator /></Route>
       <Route path="/fasting" component={FastingPage} />
       <Route path="/meditation" component={MeditationPage} />
       <Route path="/hydration" component={HydrationPage} />

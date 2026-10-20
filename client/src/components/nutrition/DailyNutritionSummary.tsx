@@ -79,11 +79,7 @@ export function DailyNutritionSummary({
             still recorded in full.
           </p>
         )}
-        {!confirmed && (
-          <p className="text-xs text-slate-400">
-            Reference targets — set your targets in Fitness Calculator.
-          </p>
-        )}
+
       </div>
       <div className="grid grid-cols-3 gap-2">
         {(

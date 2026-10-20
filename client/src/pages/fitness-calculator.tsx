@@ -1,153 +1,26 @@
-import { CALCULATOR_TARGETS_CHANGED } from "@/lib/nutrition";
-import React, { useState, useEffect } from "react";
+import { useFitnessIntegration } from '@/hooks/use-fitness-integration';
+import { saveCalculatorSettings,saveCalculationSex,type Settings } from '@/lib/fitness-recommendation';
+import React, { useState } from "react";
 import { useLocation } from "wouter";
 import { Calculator, Target, Activity } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { readFitnessProfile } from '@/lib/fitness-profile';
-import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
 
-interface UserData {
-  height: number; // inches
-  weight: number; // lbs
-  age: number | null;
-  gender: string;
-}
-
-export default function FitnessCalculator({ embedded = false }: { embedded?: boolean }) {
+export default function FitnessCalculator({ embedded = false, onNavigate }: { embedded?: boolean; onNavigate?: (path:string)=>void }) {
   const [, navigate] = useLocation();
-
-  // User data from measurements
-  const [userData, setUserData] = useState<UserData>({
-    height: 0,
-    weight: 0,
-    age: null,
-    gender: 'male'
-  });
-
-  // Calculator states with localStorage persistence
-  const [activityLevel, setActivityLevel] = useState<string>(() => 
-    localStorage.getItem('fitness_calc_activity_level') || 'moderate'
-  );
-  const [goalType, setGoalType] = useState<string>(() => 
-    localStorage.getItem('fitness_calc_goal_type') || 'maintain'
-  );
-  const [goalRate, setGoalRate] = useState<string>(() => 
-    localStorage.getItem('fitness_calc_goal_rate') || '1'
-  );
-  const [customCarbs, setCustomCarbs] = useState<string>(() => 
-    localStorage.getItem('fitness_calc_custom_carbs') || '40'
-  );
-  const [customProtein, setCustomProtein] = useState<string>(() => 
-    localStorage.getItem('fitness_calc_custom_protein') || '30'
-  );
-  const [customFat, setCustomFat] = useState<string>(() => 
-    localStorage.getItem('fitness_calc_custom_fat') || '30'
-  );
-
-  useEffect(() => {
-    const loadUserData = () => {
-      // Load user data from measurements localStorage
-      const profileData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.PROFILE), {}) as any;
-      const measurementData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.MEASUREMENTS), {}) as any;
-      
-      let height = 0;
-      let weight = 0;
-      
-      // Get latest height and weight from measurements using the correct data structure
-      if (measurementData.height && measurementData.height.length > 0) {
-        const latestHeight = measurementData.height[measurementData.height.length - 1];
-        height = latestHeight.value;
-      }
-      if (measurementData.weight && measurementData.weight.length > 0) {
-        const latestWeight = measurementData.weight[measurementData.weight.length - 1];
-        weight = latestWeight.value;
-      }
-
-      setUserData({
-        height: height || 70, // default 5'10" only if no data exists
-        weight: weight || 170, // default 170 lbs only if no data exists
-        age: readFitnessProfile().age,
-        gender: profileData?.gender || 'male'
-      });
-    };
-
-    // Load data initially
-    loadUserData();
-
-    // Set up an interval to check for data updates every 2 seconds for real-time sync
-    const interval = setInterval(loadUserData, 2000);
-
-    // Listen for localStorage changes (when user updates measurements in another tab/page)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'fitcircle_measurements_history' || e.key === 'fitcircle_profile' || e.key === 'fitcircle_age') {
-        loadUserData();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('fitcircleProfileChanged', loadUserData);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('fitcircleProfileChanged', loadUserData);
-    };
-  }, []);
-
-  // Save calculator settings to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('fitness_calc_activity_level', activityLevel);
-  }, [activityLevel]);
-
-  useEffect(() => {
-    localStorage.setItem('fitness_calc_goal_type', goalType);
-  }, [goalType]);
-
-  useEffect(() => {
-    localStorage.setItem('fitness_calc_goal_rate', goalRate);
-  }, [goalRate]);
-
-  useEffect(() => {
-    localStorage.setItem('fitness_calc_custom_carbs', customCarbs);
-  }, [customCarbs]);
-
-  useEffect(() => {
-    localStorage.setItem('fitness_calc_custom_protein', customProtein);
-  }, [customProtein]);
-
-  useEffect(() => {
-    localStorage.setItem('fitness_calc_custom_fat', customFat);
-  }, [customFat]);
-
-  // BMR calculation using Mifflin-St Jeor Equation
-  const calculateBMR = () => {
-    if (userData.age === null) return 0;
-    const heightCm = userData.height * 2.54;
-    const weightKg = userData.weight * 0.453592;
-    
-    if (userData.gender === 'male') {
-      return 10 * weightKg + 6.25 * heightCm - 5 * userData.age + 5;
-    } else {
-      return 10 * weightKg + 6.25 * heightCm - 5 * userData.age - 161;
-    }
-  };
-
-  // TDEE calculation
-  const calculateTDEE = () => {
-    const bmr = calculateBMR();
-    const activityMultipliers = {
-      sedentary: 1.2,
-      light: 1.375,
-      moderate: 1.55,
-      very: 1.725,
-      extremely: 1.9
-    };
-    return Math.round(bmr * activityMultipliers[activityLevel as keyof typeof activityMultipliers]);
-  };
-
+  const go = (path:string) => onNavigate ? onNavigate(path) : navigate(path);
+  const integration = useFitnessIntegration();
+  const settings = integration.settings ?? {activity:'moderate',objective:'maintain',rate:'1',carbs:'40',protein:'30',fat:'30'};
+  const [targetSaveError,setTargetSaveError] = useState('');
+  const change = (key:keyof Settings,value:string) => {try {if(integration.error)throw Error(integration.error);saveCalculatorSettings({[key]:value});setTargetSaveError('');}catch(failure){setTargetSaveError((failure as Error).message);}};
+  const activityLevel=settings.activity,goalType=settings.objective,goalRate=settings.rate,customCarbs=settings.carbs,customProtein=settings.protein,customFat=settings.fat;
+  const setActivityLevel=(v:string)=>change('activity',v),setGoalType=(v:string)=>change('objective',v),setGoalRate=(v:string)=>change('rate',v),setCustomCarbs=(v:string)=>change('carbs',v),setCustomProtein=(v:string)=>change('protein',v),setCustomFat=(v:string)=>change('fat',v);
+  const userData={weight:integration.measurements?.weight?.value??0,height:integration.measurements?.height?.value??0,age:integration.profile?.age??null,gender:integration.profile?.record.gender};
+  const recommendation=integration.recommendation;
+  const calculateBMR = () => recommendation?.bmr ?? 0;
+  const calculateTDEE = () => recommendation?.tdee ?? 0;
   // BMI calculation
   const calculateBMI = () => {
     const heightM = userData.height * 0.0254;
@@ -163,58 +36,14 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
     return { category: 'High', color: 'rgb(239, 68, 68)' }; // red
   };
 
-  // Calorie target based on goal
-  const getCalorieTarget = () => {
-    const tdee = calculateTDEE();
-    const rateNum = parseFloat(goalRate);
-    const calorieAdjustment = rateNum * 500; // 500 calories per lb
-    
-    if (goalType === 'lose') {
-      return Math.round(tdee - calorieAdjustment);
-    } else if (goalType === 'gain') {
-      return Math.round(tdee + calorieAdjustment);
-    }
-    return tdee;
-  };
-
-  // Macro calculations
-  const calculateMacros = () => {
-    const calories = getCalorieTarget();
-    const carbPercent = Number(customCarbs);
-    const proteinPercent = Number(customProtein);
-    const fatPercent = Number(customFat);
-
-    const carbCalories = calories * (carbPercent / 100);
-    const proteinCalories = calories * (proteinPercent / 100);
-    const fatCalories = calories * (fatPercent / 100);
-
-    return {
-      carbs: { grams: Math.round(carbCalories / 4), percent: carbPercent },
-      protein: { grams: Math.round(proteinCalories / 4), percent: proteinPercent },
-      fat: { grams: Math.round(fatCalories / 9), percent: fatPercent }
-    };
-  };
-
+  const getCalorieTarget = () => recommendation?.targets.calories ?? 0;
+  const calculateMacros = () => ({carbs:{grams:recommendation?.targets.carbs??0,percent:Number(customCarbs)},protein:{grams:recommendation?.targets.protein??0,percent:Number(customProtein)},fat:{grams:recommendation?.targets.fat??0,percent:Number(customFat)}});
   const bmi = calculateBMI();
   const bmiInfo = getBMICategory(bmi);
   const calorieTarget = getCalorieTarget();
   const macros = calculateMacros();
 
-  const macroPercentagesValid = [customCarbs, customProtein, customFat].every(value => value.trim() !== '' && Number.isFinite(Number(value)) && Number(value) >= 0 && Number(value) <= 100)
-    && Math.abs(Number(customCarbs) + Number(customProtein) + Number(customFat) - 100) < 0.000001;
-  const [targetSaveError, setTargetSaveError] = useState('');
-  // Publish complete calculator targets to the mounted Food Tracker as well as other tabs.
-  useEffect(() => {
-    if (userData.age === null || !Number.isFinite(calorieTarget) || calorieTarget <= 0 || !macroPercentagesValid) return;
-    try {
-      localStorage.setItem('fitness_calc_target_calories', calorieTarget.toString());
-      localStorage.setItem('fitness_calc_target_carbs', macros.carbs.grams.toString());
-      localStorage.setItem('fitness_calc_target_protein', macros.protein.grams.toString());
-      localStorage.setItem('fitness_calc_target_fat', macros.fat.grams.toString());
-      setTargetSaveError('');
-      window.dispatchEvent(new Event(CALCULATOR_TARGETS_CHANGED));
-    } catch {setTargetSaveError('Could not save calculator targets. Check available storage and try again.');}
-  }, [calorieTarget, macros.carbs.grams, macros.protein.grams, macros.fat.grams, userData.age, macroPercentagesValid]);
+  const macroPercentagesValid = !!recommendation;
 
   return (
     <div className="fitcircle-page">
@@ -225,7 +54,12 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
         </div>}
 
         <div className="space-y-8">
-        {userData.age === null && <div role="status" className="rounded-xl border border-amber-500/40 p-3 text-sm text-amber-200">A saved age or date of birth is needed for calorie and macro targets. Existing targets are kept.<Button variant="link" onClick={() => navigate('/profile')}>Open My Fitness Profile</Button></div>}
+        {(integration.error || integration.issues.length>0) && <div role="status" className="rounded-xl border border-amber-500/40 p-3 text-sm text-amber-200">{integration.error || integration.issues.join(' ')}</div>}
+        <div className="flex flex-wrap gap-2 mb-4"><Button variant="outline" onClick={()=>go('/measurements')}>Measurements</Button><Button variant="outline" onClick={()=>go('/food-tracker')}>Food Tracker</Button><Button variant="ghost" onClick={()=>go('/profile')}>My Fitness Profile</Button></div>
+        {integration.measurements && <p className="text-xs text-slate-400 mb-3">{userData.weight ? `${userData.weight} lb · ${integration.measurements.weight?.date ?? 'undated legacy'}` : 'Weight missing'} · {userData.height ? `${userData.height} in · ${integration.measurements.height?.date ?? 'undated legacy'}` : 'Height missing'}</p>}
+        <label className="block text-sm text-slate-300 mb-4">Calculation sex<Select value={userData.gender==='male'||userData.gender==='female'?userData.gender:''} onValueChange={value=>{try{saveCalculationSex(value as 'male'|'female');}catch(failure){setTargetSaveError((failure as Error).message);}}}><SelectTrigger aria-label="Calculation sex"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="male">Male</SelectItem><SelectItem value="female">Female</SelectItem></SelectContent></Select></label>
+        {integration.goals?.targetWeight && <div className="text-sm text-slate-300 mb-4">Weight goal: {integration.goals.targetWeight} lb · {integration.goals.intent ?? integration.goals.inferred ?? 'unspecified'}{(integration.goals.intent ?? integration.goals.inferred) && (integration.goals.intent ?? integration.goals.inferred)!==goalType && <><span className="text-amber-300"> · Calculator objective differs. </span><Button variant="outline" onClick={()=>setGoalType((integration.goals!.intent ?? integration.goals!.inferred)!)}>Align with measurement goal</Button></>}</div>}
+        {integration.goals?.conflicts.map(message=><p key={message} className="text-sm text-amber-300 mb-2">{message}</p>)}
         
           {/* Calorie Tracker Section */}
           <div className="fitcircle-card-lg">
@@ -237,7 +71,7 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
           <div className="space-y-4">
             <div className="text-center">
               <div className="type-metric text-3xl font-bold text-green-400 mb-2">
-                {userData.age === null ? '—' : calorieTarget.toLocaleString()}
+                {!recommendation ? '—' : calorieTarget.toLocaleString()}
               </div>
               <div className="text-slate-300">calories per day</div>
               <div className="text-sm text-slate-400 mt-2">
@@ -408,14 +242,14 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
                 />
               </div>
             </div>
-          {!macroPercentagesValid && <p role="alert" className="text-sm text-amber-200 mb-4">Enter percentages from 0 to 100 that total 100%. Saved targets stay unchanged until the split is valid.</p>}
+
           {targetSaveError && <p role="alert" className="text-sm text-red-400 mb-4">{targetSaveError}</p>}
 
           {/* Macro Breakdown */}
           <div className="space-y-4">
             <div className="text-center mb-4">
               <div className="text-lg font-semibold text-white">
-                {userData.age === null ? '—' : calorieTarget.toLocaleString()} calories/day
+                {!recommendation ? '—' : calorieTarget.toLocaleString()} calories/day
               </div>
             </div>
 
@@ -423,17 +257,17 @@ export default function FitnessCalculator({ embedded = false }: { embedded?: boo
             <div className="grid grid-cols-3 gap-4">
               <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-orange-400 font-semibold mb-2">Carbs</div>
-                <div className="type-metric text-2xl font-bold text-white">{userData.age === null || !macroPercentagesValid ? '—' : macros.carbs.grams + 'g'}</div>
+                <div className="type-metric text-2xl font-bold text-white">{!recommendation ? '—' : macros.carbs.grams + 'g'}</div>
                 <div className="text-sm text-slate-400">{macros.carbs.percent}%</div>
               </div>
               <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-red-400 font-semibold mb-2">Protein</div>
-                <div className="type-metric text-2xl font-bold text-white">{userData.age === null || !macroPercentagesValid ? '—' : macros.protein.grams + 'g'}</div>
+                <div className="type-metric text-2xl font-bold text-white">{!recommendation ? '—' : macros.protein.grams + 'g'}</div>
                 <div className="text-sm text-slate-400">{macros.protein.percent}%</div>
               </div>
               <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
                 <div className="text-yellow-400 font-semibold mb-2">Fat</div>
-                <div className="type-metric text-2xl font-bold text-white">{userData.age === null || !macroPercentagesValid ? '—' : macros.fat.grams + 'g'}</div>
+                <div className="type-metric text-2xl font-bold text-white">{!recommendation ? '—' : macros.fat.grams + 'g'}</div>
                 <div className="text-sm text-slate-400">{macros.fat.percent}%</div>
               </div>
             </div>

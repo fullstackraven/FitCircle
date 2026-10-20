@@ -2,6 +2,7 @@ import React from 'react';
 
 interface GoalCircleProps {
   percentage: number;
+  showPercentage?: boolean;
   color: string;
   size?: number;
   strokeWidth?: number;
@@ -13,7 +14,8 @@ interface GoalCircleProps {
 }
 
 export function GoalCircle({ 
-  percentage, 
+  percentage,
+  showPercentage = true,
   color, 
   size = 140, 
   strokeWidth = 12, 
@@ -72,7 +74,7 @@ export function GoalCircle({
                 {isNaN(goalValue) ? 0 : goalValue} {goalValue === 1 ? unit.replace('days', 'Day').replace('Days', 'Day') : unit.replace('days', 'Days').replace('Days', 'Days')}
               </div>
               <div className="type-metric type-caption text-slate-400 text-center">
-                {isNaN(percentage) ? 0 : Math.round(percentage)}%
+                {showPercentage ? `${isNaN(percentage) ? 0 : Math.round(percentage)}%` : '—'}
               </div>
             </>
           )}

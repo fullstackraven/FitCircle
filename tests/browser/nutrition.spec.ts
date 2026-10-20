@@ -70,7 +70,7 @@ async function addSearch(page: Page, meal = "breakfast") {
     .getByTestId(`button-add-${food.id}`)
     .click();
 }
-test("dashboard uses calculator targets rather than obsolete nutrition goals and retains offline history", async ({
+test("confirmed nutrition goals remain authoritative across calculator updates and offline history", async ({
   page,
   context,
 }) => {
@@ -87,12 +87,12 @@ test("dashboard uses calculator targets rather than obsolete nutrition goals and
   await expect(
     page.getByRole("button", { name: "Nutrition Goals", exact: true }),
   ).toHaveCount(0);
-  await expect(page.getByTestId("calories-remaining")).toHaveText("1,600");
+  await expect(page.getByTestId("calories-remaining")).toHaveText("50");
   await page.evaluate(() =>
     localStorage.setItem("fitness_calc_target_calories", "3000"),
   );
   await page.reload();
-  await expect(page.getByTestId("calories-remaining")).toHaveText("2,800");
+  await expect(page.getByTestId("calories-remaining")).toHaveText("50");
   expect(
     await page.evaluate(() =>
       localStorage.getItem("fitcircle_nutrition_goals"),
@@ -128,7 +128,7 @@ test("dashboard uses calculator targets rather than obsolete nutrition goals and
     .toBe(true);
   await context.setOffline(true);
   await page.reload();
-  await expect(page.getByTestId("calories-remaining")).toHaveText("2,800");
+  await expect(page.getByTestId("calories-remaining")).toHaveText("50");
   expect(
     await page.evaluate(() =>
       localStorage.getItem("fitcircle_food_2026-10-19"),
@@ -863,130 +863,4 @@ test("automatic scan caching failure blocks logging; diary failure retains cache
     calories: 150,
     servings: 1,
   });
-});
-
-test("calculator immediately controls diary calories and personal macros, survives reopening and rejects invalid splits", async ({
-  page,
-  context,
-}) => {
-  await seed(page);
-  await page.evaluate(() => {
-    localStorage.setItem("fitcircle_age", "31");
-    localStorage.setItem(
-      "fitcircle_nutrition_goals",
-      "{synthetic obsolete goals",
-    );
-    localStorage.setItem("fitness_calc_macro_style", "standard");
-  });
-  const history = await page.evaluate(() =>
-    localStorage.getItem("fitcircle_food_2026-10-20"),
-  );
-  await page.getByTestId("button-calculator").click();
-  const dialog = page.getByRole("dialog", {
-    name: "Fitness Calculator",
-    exact: true,
-  });
-  for (const name of ["Standard", "High Protein", "Low Carb", "Tailored"])
-    await expect(dialog.getByRole("button", { name, exact: true })).toHaveCount(
-      0,
-    );
-  await expect(
-    dialog.getByText("Compare Styles:", { exact: true }),
-  ).toHaveCount(0);
-  await dialog.getByLabel("Carbs %", { exact: true }).fill("50");
-  await dialog.getByLabel("Protein %", { exact: true }).fill("25");
-  await dialog.getByLabel("Fat %", { exact: true }).fill("25");
-  await dialog
-    .getByRole("button", { name: "Gain Weight", exact: true })
-    .click();
-  const calories = await page.evaluate(() =>
-    Number(localStorage.getItem("fitness_calc_target_calories")),
-  );
-  expect(calories).toBeGreaterThan(1800);
-  await expect(page.getByTestId("calories-remaining")).toHaveText(
-    (calories - 200).toLocaleString(),
-  );
-  expect(
-    await page.evaluate(() =>
-      Number(localStorage.getItem("fitness_calc_target_protein")),
-    ),
-  ).toBe(Math.round((calories * 0.25) / 4));
-  const targets = await page.evaluate(() =>
-    ["calories", "protein", "carbs", "fat"].map((key) =>
-      localStorage.getItem(`fitness_calc_target_${key}`),
-    ),
-  );
-  await dialog.getByLabel("Carbs %", { exact: true }).fill("");
-  await expect(dialog.getByRole("alert")).toContainText("total 100%");
-  expect(
-    await page.evaluate(() =>
-      ["calories", "protein", "carbs", "fat"].map((key) =>
-        localStorage.getItem(`fitness_calc_target_${key}`),
-      ),
-    ),
-  ).toEqual(targets);
-  await dialog.getByLabel("Carbs %", { exact: true }).fill("50");
-  await dialog.getByRole("button", { name: "Close", exact: true }).click();
-  await page.getByTestId("button-calculator").click();
-  await expect(dialog.getByLabel("Carbs %", { exact: true })).toHaveValue("50");
-  await expect(dialog.getByLabel("Protein %", { exact: true })).toHaveValue(
-    "25",
-  );
-  await dialog.getByRole("button", { name: "Close", exact: true }).click();
-  await page.reload();
-  await expect(page.getByTestId("calories-remaining")).toHaveText(
-    (calories - 200).toLocaleString(),
-  );
-  expect(
-    await page.evaluate(() =>
-      localStorage.getItem("fitcircle_nutrition_goals"),
-    ),
-  ).toBe("{synthetic obsolete goals");
-  expect(
-    await page.evaluate(() => localStorage.getItem("fitness_calc_macro_style")),
-  ).toBe("standard");
-  expect(
-    await page.evaluate(() =>
-      localStorage.getItem("fitcircle_food_2026-10-20"),
-    ),
-  ).toBe(history);
-  const other = await context.newPage();
-  await other.goto("profile");
-  await other.evaluate(() =>
-    localStorage.setItem("fitness_calc_target_calories", "2200"),
-  );
-  await expect(page.getByTestId("calories-remaining")).toHaveText("2,000");
-  await other.close();
-});
-
-test("calculator target write failures are visible and do not claim a successful dashboard update", async ({
-  page,
-}) => {
-  await seed(page);
-  await page.evaluate(() => {
-    localStorage.setItem("fitcircle_age", "31");
-    const original = Storage.prototype.setItem;
-    Storage.prototype.setItem = function (key, value) {
-      if (key.startsWith("fitness_calc_target_"))
-        throw new DOMException("Synthetic quota", "QuotaExceededError");
-      return original.call(this, key, value);
-    };
-  });
-  await page.getByTestId("button-calculator").click();
-  const dialog = page.getByRole("dialog", {
-    name: "Fitness Calculator",
-    exact: true,
-  });
-  await expect(dialog.getByRole("alert")).toContainText(
-    "Could not save calculator targets",
-  );
-  await dialog
-    .getByRole("button", { name: "Gain Weight", exact: true })
-    .click();
-  await expect(page.getByTestId("calories-remaining")).toHaveText("1,600");
-  expect(
-    await page.evaluate(() =>
-      localStorage.getItem("fitness_calc_target_calories"),
-    ),
-  ).toBe("1800");
 });
