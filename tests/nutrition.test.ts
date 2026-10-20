@@ -551,3 +551,123 @@ test("positive trace nutrients remain positive rather than being rounded into co
   assert.equal(draft.values.fiber, "0");
   assert.equal(draft.values.sugar, "");
 });
+
+import {
+  rescaleServing,
+  servingUnitRatio,
+} from "../client/src/lib/food-serving";
+
+test("barcode label serving metadata rescales every known per-100g nutrient, retaining unknowns and zeros", () => {
+  const draft = normalizeOpenFoodFacts(
+    {
+      status: "success",
+      product: {
+        code: "036000291452",
+        product_name: "Synthetic bar",
+        serving_size: "1 bar (30 g)",
+        serving_quantity: 30,
+        serving_quantity_unit: "g",
+        nutrition: {
+          aggregated_set: {
+            per: "100g",
+            nutrients: {
+              "energy-kcal": { value: 500, unit: "kcal" },
+              proteins: { value: 10, unit: "g" },
+              carbohydrates: { value: 60, unit: "g" },
+              fat: { value: 20, unit: "g" },
+              salt: { value: 0, unit: "g" },
+              iron: { value: 2, unit: "mg" },
+            },
+          },
+        },
+      },
+    },
+    "036000291452",
+  );
+  assert.equal(draft.quantity, "30");
+  assert.equal(draft.unit, "g");
+  assert.equal(draft.values.calories, "150");
+  assert.equal(draft.values.protein, "3");
+  assert.equal(draft.values.sodium, "0");
+  assert.equal(draft.values.iron, "0.6");
+  assert.equal(draft.values.fiber, "");
+});
+test("actual volume servings are selected independently of the v3 per-100ml density", () => {
+  const draft = normalizeOpenFoodFacts(
+    {
+      status: "success",
+      product: {
+        serving_size: "1 cup (240 ml)",
+        nutrition: {
+          aggregated_set: {
+            per: "100ml",
+            nutrients: {
+              "energy-kcal": { value: 17, unit: "kcal" },
+              proteins: { value: 4, unit: "g" },
+            },
+          },
+        },
+      },
+    },
+    "036000291452",
+  );
+  assert.equal(draft.quantity, "240");
+  assert.equal(draft.unit, "ml");
+  assert.equal(draft.values.calories, "40.8");
+  assert.equal(draft.values.protein, "9.6");
+});
+test("ambiguous label mass/volume conversions retain the known density instead of inventing it", () => {
+  const draft = normalizeOpenFoodFacts(
+    {
+      status: "success",
+      product: {
+        serving_size: "250 ml",
+        nutrition: {
+          aggregated_set: {
+            per: "100g",
+            nutrients: { "energy-kcal": { value: 100, unit: "kcal" } },
+          },
+        },
+      },
+    },
+    "036000291452",
+  );
+  assert.equal(draft.quantity, "100");
+  assert.equal(draft.unit, "g");
+  assert.equal(draft.values.calories, "100");
+});
+test("base serving rescaling uses a stable anchor, handles mass conversions and preserves missing nutrients", () => {
+  const anchor = normalizeOpenFoodFacts(
+    {
+      status: 1,
+      product: {
+        serving_size: "40 g",
+        nutriments: {
+          "energy-kcal_serving": 100,
+          proteins_serving: 0,
+          fiber_serving: 2,
+        },
+      },
+    },
+    "036000291452",
+  );
+  const twice = rescaleServing(anchor, "80", "g");
+  assert.equal(twice.values.calories, "200");
+  assert.equal(twice.values.protein, "0");
+  assert.equal(twice.values.fiber, "4");
+  assert.equal(twice.values.fat, "");
+  assert.equal(rescaleServing(anchor, "40", "g").values.calories, "100");
+  assert.equal(
+    rescaleServing(anchor, "1", "oz").values.calories,
+    "70.8738078125",
+  );
+  assert.equal(anchor.values.calories, "100");
+  assert.equal(servingUnitRatio("g", "ml"), null);
+  assert.throws(() => rescaleServing(anchor, "1", "piece"));
+  assert.equal(
+    rescaleServing(anchor, "2", "piece", "30").values.calories,
+    "150",
+  );
+  for (const invalid of ["", "0", "-1", "Infinity"])
+    assert.throws(() => rescaleServing(anchor, invalid, "g"));
+});

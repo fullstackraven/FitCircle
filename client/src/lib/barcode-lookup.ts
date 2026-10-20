@@ -127,7 +127,12 @@ function canonicalProduct(product: Record<string, unknown>) {
           ? `${perQuantity} ${perUnit}`
           : "";
   return {
-    product: { ...product, nutriments, serving_size: serving },
+    product: {
+      ...product,
+      nutriments,
+      nutrition_basis: serving,
+      serving_size: product.serving_size || serving,
+    },
     warnings: [...new Set(warnings)],
   };
 }
@@ -137,9 +142,9 @@ function declaredServing(value: unknown): RegExpMatchArray | null {
   if (typeof value !== "string" || /\d\s*[x×*]/i.test(value)) return null;
   const text = value.trim();
   return (
-    text.match(/^(\d+(?:\.\d+)?)\s*(g|ml)$/i) ??
+    text.match(/^(\d+(?:\.\d+)?)\s*(g|ml|oz)$/i) ??
     text.match(
-      /^(?:\d+(?:\.\d+)?\s+[a-z][a-z -]*\s*)?\((\d+(?:\.\d+)?)\s*(g|ml)\)$/i,
+      /^(?:\d+(?:\.\d+)?\s+[a-z][a-z -]*\s*)?\((\d+(?:\.\d+)?)\s*(g|ml|oz)\)$/i,
     )
   );
 }
@@ -168,12 +173,36 @@ export function normalizeOpenFoodFacts(
   )
     throw new Error("The returned product barcode does not match.");
   const nutriments = plain(product.nutriments) ? product.nutriments : {};
-  const servingGrams = declaredServing(product.serving_size);
+  const metadataQuantity = amount(product.serving_quantity);
+  const metadataUnit = String(
+    product.serving_quantity_unit ?? "",
+  ).toLowerCase();
+  const servingGrams =
+    metadataQuantity && ["g", "ml", "oz"].includes(metadataUnit)
+      ? ["", String(metadataQuantity), metadataUnit]
+      : declaredServing(product.serving_size);
   const grams = servingGrams ? Number(servingGrams[1]) : undefined;
   const has100 = Object.keys(nutriments).some(
     (key) => key.endsWith("_100g") && amount(nutriments[key]) !== undefined,
   );
   const basis = has100 ? "100g" : "serving";
+  // Nutrition density and the package serving are separate facts. Never assume g = ml.
+  const densityUnit = String(product.nutrition_basis ?? "").includes("ml")
+    ? "ml"
+    : product.nutrition_basis
+      ? "g"
+      : servingGrams?.[2].toLowerCase() === "ml"
+        ? "ml"
+        : "g";
+  const labelUnit = servingGrams?.[2].toLowerCase();
+  const compatibleLabel =
+    grams &&
+    grams > 0 &&
+    (labelUnit === densityUnit || (densityUnit === "g" && labelUnit === "oz"));
+  const labelFactor =
+    has100 && compatibleLabel
+      ? (grams * (labelUnit === "oz" ? 28.349523125 : 1)) / 100
+      : 1;
   const fields: Record<Nutrient, string> = {
     calories: "energy-kcal",
     protein: "proteins",
@@ -244,8 +273,14 @@ export function normalizeOpenFoodFacts(
     values[key] =
       value === undefined || !Number.isFinite(value)
         ? ""
-        : String(Number(value.toPrecision(12)));
+        : String(Number((value * labelFactor).toPrecision(12)));
   }
+  if (has100 && !compatibleLabel)
+    warnings.push(
+      "The package serving is unavailable or cannot be converted safely. Nutrition uses the stated 100 " +
+        densityUnit +
+        " basis; adjust the base serving to match your label.",
+    );
   if (!has100 && Object.values(values).every((v) => v === ""))
     warnings.push(
       "No usable nutrition values were returned. Enter the package label values before continuing.",
@@ -256,19 +291,26 @@ export function normalizeOpenFoodFacts(
     );
   if (nutrientFields.some((key) => values[key] === ""))
     warnings.push(
-      "Some nutrients are missing. Blank fields remain unknown. Calories and macros must be supplied before logging.",
+      "Some nutrients are unavailable. Blank values remain unknown.",
     );
   return {
     name: typeof product.product_name === "string" ? product.product_name : "",
     brand: typeof product.brands === "string" ? product.brands : "",
     barcode: normalizeBarcode(barcode),
-    quantity: has100 ? "100" : grams && grams > 0 ? String(grams) : "1",
-    unit:
-      has100 || (grams && grams > 0)
-        ? servingGrams?.[2].toLowerCase() === "ml"
-          ? "ml"
-          : "g"
-        : "serving",
+    quantity: has100
+      ? compatibleLabel
+        ? String(grams)
+        : "100"
+      : grams && grams > 0
+        ? String(grams)
+        : "1",
+    unit: (has100
+      ? compatibleLabel
+        ? labelUnit
+        : densityUnit
+      : grams && grams > 0
+        ? labelUnit
+        : "serving") as FoodUnit,
     values,
     source: "Open Food Facts",
     sourceUrl: `https://world.openfoodfacts.org/product/${normalizeBarcode(barcode)}`,
@@ -299,7 +341,7 @@ export async function lookupBarcode(
     throw new Error("Please wait a few seconds before another product lookup.");
   lastExternalLookup = now;
   const response = await (options.fetcher ?? fetch)(
-    `https://world.openfoodfacts.org/api/v3/product/${barcode}?fields=code,product_name,brands,serving_size,nutrition,nutriments&app_name=FitCircle&app_version=2.0&user_agent=${encodeURIComponent("FitCircle/2.0 (https://github.com/fullstackraven/FitCircle)")}`,
+    `https://world.openfoodfacts.org/api/v3/product/${barcode}?fields=code,product_name,brands,serving_size,serving_quantity,serving_quantity_unit,nutrition,nutriments&app_name=FitCircle&app_version=2.0&user_agent=${encodeURIComponent("FitCircle/2.0 (https://github.com/fullstackraven/FitCircle)")}`,
     {
       signal: options.signal,
       credentials: "omit",

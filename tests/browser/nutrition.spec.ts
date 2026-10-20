@@ -265,11 +265,13 @@ test("manual barcode uses local products offline and retains all nutrients when 
   await openBarcode(page);
   await page.getByLabel("Manual barcode").fill(food.barcode);
   await page.getByRole("button", { name: "Find Product" }).click();
-  await expect(page.getByText("Review Product", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Add Entry", exact: true }),
+  ).toBeVisible();
+  await page.getByText("Edit label nutrition", { exact: true }).click();
   await expect(page.getByLabel("Product Sodium", { exact: true })).toHaveValue(
     "0",
   );
-  await page.getByRole("button", { name: "Use Reviewed Food" }).click();
   await page.getByTestId("button-save-add-entry").click();
   const entries = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("fitcircle_food_2026-10-20")!),
@@ -282,8 +284,9 @@ test("manual barcode uses local products offline and retains all nutrients when 
     meal: "breakfast",
   });
 });
-test("remote product review preserves unknown fields, saves offline product explicitly and does not overwrite another food", async ({
+test("scans open Add Entry, automatically cache label servings and remain usable offline", async ({
   page,
+  context,
 }) => {
   await seed(page);
   await page.route(
@@ -296,6 +299,7 @@ test("remote product review preserves unknown fields, saves offline product expl
             code: "036000291452",
             product_name: "Synthetic scanned bar",
             brands: "Synthetic maker",
+            serving_size: "1 bar (40 g)",
             nutrition: {
               aggregated_set: {
                 per: "100g",
@@ -316,15 +320,18 @@ test("remote product review preserves unknown fields, saves offline product expl
   await openBarcode(page);
   await page.getByLabel("Manual barcode").fill("036000291452");
   await page.getByRole("button", { name: "Find Product" }).click();
+  await page.getByText("Edit label nutrition", { exact: true }).click();
   await expect(page.getByLabel("Product Fiber", { exact: true })).toHaveValue(
     "",
   );
   await expect(page.getByLabel("Product Sodium", { exact: true })).toHaveValue(
-    "200",
+    "80",
   );
-  await page.getByRole("checkbox").check();
-  await page.getByRole("button", { name: "Use Reviewed Food" }).click();
-  await page.getByTestId("input-add-servings").fill("0.4");
+  await expect(
+    page.getByLabel("Product serving quantity", { exact: true }),
+  ).toHaveValue("40");
+  await expect(page.getByRole("checkbox")).toHaveCount(0);
+  await page.getByTestId("input-add-servings").fill("1");
   await page.getByTestId("button-save-add-entry").click();
   const saved = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("fitcircle_food_database")!),
@@ -334,17 +341,33 @@ test("remote product review preserves unknown fields, saves offline product expl
   expect(saved[1]).toMatchObject({
     barcode: "036000291452",
     source: "Open Food Facts",
-    sodium: 200,
+    sodium: 80,
   });
   expect(saved[1].fiber).toBeUndefined();
   const entries = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("fitcircle_food_2026-10-20")!),
   );
   expect(entries[1]).toMatchObject({
-    calories: 250,
-    servings: 0.4,
+    calories: 100,
+    quantity: 40,
+    servings: 1,
     meal: "breakfast",
   });
+  await page.unroute("https://world.openfoodfacts.org/api/v3/product/**");
+  await context.setOffline(true);
+  await page.reload();
+  await openBarcode(page);
+  await page.getByLabel("Manual barcode").fill("036000291452");
+  await page.getByRole("button", { name: "Find Product" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Add Entry", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("Product serving quantity", { exact: true }),
+  ).toHaveValue("40");
+  await expect(
+    page.getByRole("button", { name: "Use Reviewed Food" }),
+  ).toHaveCount(0);
 });
 test("missing core barcode nutrients require label review; camera denial leaves manual fallback usable", async ({
   page,
@@ -382,7 +405,7 @@ test("missing core barcode nutrients require label review; camera denial leaves 
   );
   await page.getByLabel("Manual barcode").fill("036000291452");
   await page.getByRole("button", { name: "Find Product" }).click();
-  await page.getByRole("button", { name: "Use Reviewed Food" }).click();
+  await page.getByTestId("button-save-add-entry").click();
   await expect(page.getByRole("alert")).toContainText("required");
   await expect(
     page.getByLabel("Product Calories", { exact: true }),
@@ -583,16 +606,14 @@ test("base product nutrition and consumed multiplier remain distinct in review a
   await page.getByLabel("Manual barcode").fill(food.barcode);
   await page.getByRole("button", { name: "Find Product" }).click();
   await expect(
-    page.getByText("1. Check the product’s base serving", { exact: true }),
+    page.getByRole("heading", { name: "Add Entry", exact: true }),
   ).toBeVisible();
+  await page.getByText("Edit label nutrition", { exact: true }).click();
   await page.getByLabel("Product Calories", { exact: true }).fill("120");
-  await page.getByRole("button", { name: "Use Reviewed Food" }).click();
-  await expect(
-    page.getByText("Base serving (product label)", { exact: true }),
-  ).toBeVisible();
+  await page.getByLabel("Product serving quantity", { exact: true }).fill("80");
   await page.getByLabel("Servings eaten (multiplier)").fill("2.5");
   await expect(
-    page.getByText("2.5 × 40 g = 100 g consumed", { exact: true }),
+    page.getByText("2.5 × 80 g = 200 g consumed", { exact: true }),
   ).toBeVisible();
   await page.getByTestId("button-save-add-entry").click();
   const stored = await page.evaluate(() => ({
@@ -601,8 +622,8 @@ test("base product nutrition and consumed multiplier remain distinct in review a
   }));
   expect(stored.catalog[0]).toEqual(food);
   expect(stored.entries[1]).toMatchObject({
-    calories: 120,
-    quantity: 40,
+    calories: 240,
+    quantity: 80,
     unit: "g",
     servings: 2.5,
   });
@@ -743,4 +764,125 @@ test("nutrition details distinguish a known zero, an incomplete zero total, miss
   await expect(
     dialog.getByText("Vitamin A", { exact: true }).locator(".."),
   ).toContainText("< 0.1 µg known");
+});
+
+test("unit conversion requests an explicit piece weight and rescales consumed nutrients without altering saved foods", async ({
+  page,
+}) => {
+  await seed(page);
+  await addSearch(page);
+  await page
+    .getByLabel("Product serving unit", { exact: true })
+    .selectOption("piece");
+  await page.getByLabel("Product serving quantity", { exact: true }).fill("2");
+  await page.getByTestId("button-save-add-entry").click();
+  await expect(page.getByRole("alert")).toContainText("equivalent");
+  await page.getByLabel("Equivalent original quantity").fill("30");
+  await page.getByTestId("input-add-servings").fill("2");
+  await expect(page.getByTestId("entry-nutrition-summary")).toContainText(
+    "300",
+  );
+  await page.getByTestId("button-save-add-entry").click();
+  const data = await page.evaluate(() => ({
+    catalog: JSON.parse(localStorage.getItem("fitcircle_food_database")!),
+    entries: JSON.parse(localStorage.getItem("fitcircle_food_2026-10-20")!),
+  }));
+  expect(data.catalog[0]).toEqual(food);
+  expect(data.entries[1]).toMatchObject({
+    quantity: 2,
+    unit: "piece",
+    calories: 150,
+    protein: 7.5,
+    servings: 2,
+    sodium: 0,
+  });
+});
+
+test("automatic scan caching failure blocks logging; diary failure retains cached product and retry avoids duplicates", async ({
+  page,
+}) => {
+  await seed(page);
+  await page.route(
+    "https://world.openfoodfacts.org/api/v3/product/**",
+    (route) =>
+      route.fulfill({
+        json: {
+          status: 1,
+          product: {
+            code: "036000291452",
+            product_name: "Synthetic retry product",
+            serving_size: "30 g",
+            nutriments: {
+              "energy-kcal_100g": 500,
+              proteins_100g: 10,
+              carbohydrates_100g: 60,
+              fat_100g: 20,
+            },
+          },
+        },
+      }),
+  );
+  await openBarcode(page);
+  await page.getByLabel("Manual barcode").fill("036000291452");
+  await page.getByRole("button", { name: "Find Product" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Add Entry", exact: true }),
+  ).toBeVisible();
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    (window as any).restoreSyntheticStorage = () =>
+      (Storage.prototype.setItem = original);
+    Storage.prototype.setItem = function (key, value) {
+      if (key === "fitcircle_food_database")
+        throw new DOMException("Synthetic quota", "QuotaExceededError");
+      return original.call(this, key, value);
+    };
+  });
+  await page.getByTestId("button-save-add-entry").click();
+  await expect(page.getByRole("alert")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () =>
+        JSON.parse(localStorage.getItem("fitcircle_food_2026-10-20")!).length,
+    ),
+  ).toBe(1);
+  await page.evaluate(() => {
+    (window as any).restoreSyntheticStorage();
+    const original = Storage.prototype.setItem;
+    (window as any).restoreSyntheticStorage = () =>
+      (Storage.prototype.setItem = original);
+    Storage.prototype.setItem = function (key, value) {
+      if (key === "fitcircle_food_2026-10-20")
+        throw new DOMException("Synthetic quota", "QuotaExceededError");
+      return original.call(this, key, value);
+    };
+  });
+  await page.getByTestId("button-save-add-entry").click();
+  await expect(page.getByRole("alert")).toContainText(
+    "Product is saved offline",
+  );
+  expect(
+    await page.evaluate(
+      () => JSON.parse(localStorage.getItem("fitcircle_food_database")!).length,
+    ),
+  ).toBe(2);
+  await page.evaluate(() => (window as any).restoreSyntheticStorage());
+  await page.getByTestId("button-save-add-entry").click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page.reload();
+  expect(
+    await page.evaluate(
+      () => JSON.parse(localStorage.getItem("fitcircle_food_database")!).length,
+    ),
+  ).toBe(2);
+  const entries = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("fitcircle_food_2026-10-20")!),
+  );
+  expect(entries).toHaveLength(2);
+  expect(entries[1]).toMatchObject({
+    quantity: 30,
+    unit: "g",
+    calories: 150,
+    servings: 1,
+  });
 });

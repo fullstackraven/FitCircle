@@ -2,22 +2,20 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BarcodeScanner } from "./BarcodeScanner";
-import { ProductReview } from "./ProductReview";
 import { lookupBarcode, type ProductDraft } from "@/lib/barcode-lookup";
 import { localFoodService, type LocalFoodItem } from "@/lib/local-food-service";
 export function BarcodeEntry({
-  onReviewed,
+  onFound,
 }: {
-  onReviewed: (food: LocalFoodItem) => void;
+  onFound: (result: {
+    local: LocalFoodItem | null;
+    draft: ProductDraft;
+  }) => void;
 }) {
   const [code, setCode] = useState("");
   const [scanning, setScanning] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [product, setProduct] = useState<{
-    local: LocalFoodItem | null;
-    draft: ProductDraft;
-  } | null>(null);
   const request = useRef<AbortController>();
   const alive = useRef(true);
   useEffect(() => {
@@ -41,7 +39,7 @@ export function BarcodeEntry({
         (code) => localFoodService.getProductByBarcode(code),
         { online: navigator.onLine, signal: controller.signal },
       );
-      if (alive.current && !controller.signal.aborted) setProduct(result);
+      if (alive.current && !controller.signal.aborted) onFound(result);
     } catch (failure) {
       if (alive.current)
         setError(
@@ -56,15 +54,6 @@ export function BarcodeEntry({
       if (alive.current) setBusy(false);
     }
   };
-  if (product)
-    return (
-      <ProductReview
-        initial={product.draft}
-        local={product.local}
-        onReviewed={onReviewed}
-        onBack={() => setProduct(null)}
-      />
-    );
   return (
     <div className="space-y-4">
       <p className="text-sm text-slate-400">

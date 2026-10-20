@@ -4,11 +4,13 @@ import { NutritionGoals } from '@/components/nutrition/NutritionGoals';
 import { NutritionDetails } from '@/components/nutrition/NutritionDetails';
 import { WeeklyNutrition } from '@/components/nutrition/WeeklyNutrition';
 import { MealDiary } from '@/components/nutrition/MealDiary';
+import { FoodEntryForm } from '@/components/nutrition/FoodEntryForm';
+import { draftFromFood, type ProductDraft } from '@/lib/barcode-lookup';
 import { BarcodeEntry } from '@/components/nutrition/BarcodeEntry';
 import { useFoodDiary } from '@/hooks/use-food-diary';
 import { displayTargets,readNutritionGoals,readCalculatorEstimate,consumedServingText,type NutritionGoals as SavedGoals } from '@/lib/nutrition';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, Trash2, ChevronLeft, ChevronRight, Search, Edit2, Save, X as Cancel, Calculator, Database } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, ChevronLeft, ChevronRight, Search, Edit2, Save, X as Cancel, Calculator, Database, ScanBarcode, CirclePlus } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -51,6 +53,7 @@ export default function FoodTrackerPage() {
   const [goalsError, setGoalsError] = useState('');
   const [nutritionView,setNutritionView] = useState<'goals'|'details'|'week'|null>(null);
   const [barcodeOpen,setBarcodeOpen] = useState(false);
+  const [showAllRecent, setShowAllRecent] = useState(false);
   const [referenceTargets] = useState(() => {try {return readCalculatorEstimate() ?? displayTargets;} catch {return displayTargets;}});
   const macroTargets = goals ?? referenceTargets;
   const reloadGoals = () => {try {setGoals(readNutritionGoals());setGoalsError('');}catch {setGoalsError('Saved nutrition goals could not be read. Original values are unchanged. Retry or restore a verified backup in Settings.');}};
@@ -91,7 +94,7 @@ export default function FoodTrackerPage() {
   // Add Entry Modal states (when adding from search/recent)
   const [addEntryOpen, setAddEntryOpen] = useState(false);
   const [addingFood, setAddingFood] = useState<LocalFoodItem | null>(null);
-  const [addEntryServings, setAddEntryServings] = useState('1');
+  const [scannedDraft, setScannedDraft] = useState<ProductDraft | null>(null);
   const [addEntryMeal, setAddEntryMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
   
   // Edit Entry Modal states (when editing logged food in meals)
@@ -364,38 +367,38 @@ export default function FoodTrackerPage() {
   };
 
   // Function to handle Add Entry submission (log food with servings)
-  const handleSubmitAddEntry = () => {
-    if (!addingFood) return;
-    try {assertLoggableFood(addingFood);} catch (error) {toast({title:'Check food nutrition',description:error instanceof Error ? error.message : 'Check this food before logging.',variant:'destructive'});return;}
+  const handleSubmitAddEntry = (addingFood: LocalFoodItem, servings: number, meal: FoodEntry['meal']) => {
+    try {assertLoggableFood(addingFood);} catch (error) {toast({title:'Check food nutrition',description:error instanceof Error ? error.message : 'Check this food before logging.',variant:'destructive'});return false;}
 
-    const servings = Number(addEntryServings);
-    if (!Number.isFinite(servings) || servings <= 0) {toast({title:'Enter a positive serving count',variant:'destructive'});return;}
+    if (!Number.isFinite(servings) || servings <= 0) return false;
 
     // Convert food to entry format with servings
     const newEntry: FoodEntry = {
       ...addingFood,
       id: crypto.randomUUID(),
       servings,
-      meal: addEntryMeal,
+      meal,
       timestamp: new Date().toISOString()
     };
 
-    if (!diary.commit([...foodEntries, newEntry])) return;
+    if (!diary.commit([...foodEntries, newEntry])) return false;
 
     toast({
       title: "Food Logged!",
-      description: `${addingFood.name} has been added to your ${addEntryMeal}.`
+      description: `${addingFood.name} has been added to your ${meal}.`
     });
 
     setAddEntryOpen(false);
     setAddingFood(null);
+    setScannedDraft(null);
+    return true;
   };
 
   // Function to open Add Entry modal when clicking + on a food from search/recent
   const handleAddFromSearch = (food: LocalFoodItem) => {
     diary.clearError();
     setAddingFood(food);
-    setAddEntryServings('1'); // Default to 1 serving
+    setScannedDraft(null);
     setAddEntryMeal(searchMeal);
     setSearchOpen(false);
     setAddEntryOpen(true);
@@ -591,33 +594,31 @@ export default function FoodTrackerPage() {
         </Dialog>
         <Dialog open={barcodeOpen} onOpenChange={setBarcodeOpen}>
           <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="max-w-lg bg-slate-900 border-slate-700">
-            <DialogHeader><DialogTitle>Scan Barcode</DialogTitle><DialogDescription>Find a product, review its label, then choose your servings.</DialogDescription></DialogHeader>
-            {barcodeOpen&&<BarcodeEntry onReviewed={food=>{setBarcodeOpen(false);handleAddFromSearch(food);}}/>}
+            <DialogHeader><DialogTitle>Scan Barcode</DialogTitle><DialogDescription>Scan a product to open Add Entry and choose your servings.</DialogDescription></DialogHeader>
+            {barcodeOpen&&<BarcodeEntry onFound={result=>{diary.clearError();setAddingFood(result.local);setScannedDraft(result.draft);setAddEntryMeal(searchMeal);setBarcodeOpen(false);setAddEntryOpen(true);}}/>}
           </DialogContent>
         </Dialog>
 
         {/* Search Dialog - triggered by meal 'Add food' buttons */}
         <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-lg">
-            <DialogHeader>
-              <DialogTitle className="flex items-center justify-between">
-                Add to {searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}
+          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="bg-slate-900 border-slate-700 text-white rounded-3xl max-w-lg">
+            <DialogHeader className="items-start">
+              <DialogTitle className="text-2xl font-bold text-left">
+                Add Food
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               
-              <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline" onClick={()=>{setSearchOpen(false);setBarcodeOpen(true);}}>Scan Barcode</Button>
-                <Button variant="outline" onClick={()=>document.querySelector<HTMLInputElement>('[data-testid="input-search"]')?.focus()}>Search Foods</Button>
-              </div>
               {/* Search Bar */}
+              <label htmlFor="food-search" className="block text-sm text-slate-400">Search your food database</label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  id="food-search"
                   aria-label="Search foods"
-                  className="bg-gray-700 border-gray-600 text-white rounded-xl pl-10 pr-10"
+                  className="h-14 bg-slate-800 border-slate-700 text-white rounded-2xl pl-10 pr-10"
                   data-testid="input-search"
                 />
                 {searchQuery && (
@@ -638,17 +639,15 @@ export default function FoodTrackerPage() {
                 )}
               </div>
 
-              {/* Create Custom Food Button */}
-              <Button
-                onClick={() => openCustomFoodForMeal(searchMeal)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center justify-center"
-                data-testid="button-create-custom-food"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Create Custom Food
-              </Button>
-                  
-              
+              <div className="grid grid-cols-2 gap-3">
+                <button type="button" aria-label="Scan Barcode" onClick={()=>{setSearchOpen(false);setBarcodeOpen(true);}} className="flex min-h-32 flex-col items-center justify-center gap-2 rounded-3xl border border-green-400/30 bg-green-400/15 p-4 text-center hover:bg-green-400/20">
+                  <ScanBarcode className="h-7 w-7 text-green-400"/><span className="font-semibold text-white">Scan Barcode</span><span className="text-xs text-slate-400">Identify packaged food</span>
+                </button>
+                <button type="button" onClick={() => openCustomFoodForMeal(searchMeal)} data-testid="button-create-custom-food" aria-label="Create Custom Food" className="flex min-h-32 flex-col items-center justify-center gap-2 rounded-3xl border border-slate-700 bg-slate-800 p-4 text-center hover:bg-slate-700">
+                  <CirclePlus className="h-7 w-7 text-blue-400"/><span className="font-semibold text-white">Custom Food</span><span className="text-xs text-slate-400">Enter nutrition manually</span>
+                </button>
+              </div>
+              <div className="flex items-center justify-between gap-3"><h3 className="text-lg font-semibold">{searchQuery ? 'Search Results' : 'Recent Foods'}</h3>{!searchQuery && filteredFoodHistory.length > 10 && <Button variant="ghost" className="text-green-400" onClick={() => setShowAllRecent(!showAllRecent)}>{showAllRecent ? 'Show less' : 'View all'}</Button>}</div>
               {/* Food List */}
               <div className="overflow-y-scroll pr-2 -mr-2" style={{ WebkitOverflowScrolling: 'touch' }}>
                 {searchQuery ? (
@@ -737,7 +736,7 @@ export default function FoodTrackerPage() {
                   // Recent Foods (when no search query)
                   filteredFoodHistory.length > 0 ? (
                     <div className="space-y-2">
-                      {filteredFoodHistory.slice(0, 10).map((food) => (
+                      {filteredFoodHistory.slice(0, showAllRecent ? undefined : 10).map((food) => (
                         <div key={food.id} className="glass-panel bg-slate-800 border border-slate-700 rounded-xl p-4 transition-colors" data-testid={`row-food-${food.id}`}>
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
@@ -1110,112 +1109,16 @@ export default function FoodTrackerPage() {
 
         {/* Add Entry Modal (When adding food from search/recent) */}
         <Dialog open={addEntryOpen} onOpenChange={setAddEntryOpen}>
-          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-md">
+          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="bg-slate-900 border-slate-700 text-white rounded-2xl max-w-md">
             <DialogHeader>
               <DialogTitle>Add Entry</DialogTitle>
             </DialogHeader>
             
-            {addingFood && (
-              <div className="space-y-6">
-                {/* Food Name and Brand */}
-                <div>
-                  <h3 className="text-xl font-semibold text-white">{addingFood.name}</h3>
-                  {addingFood.brand && (
-                    <p className="text-sm text-gray-400">{addingFood.brand}</p>
-                  )}
-                </div>
+            {addEntryOpen && (scannedDraft || addingFood) && <FoodEntryForm
+              initial={scannedDraft ?? draftFromFood(addingFood!)} local={addingFood} scanned={!!scannedDraft}
+              initialMeal={addEntryMeal} saveError={diary.saveError} onAdd={handleSubmitAddEntry} onCancel={() => setAddEntryOpen(false)}
+            />}
 
-                {/* Serving Size Display */}
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Base serving (product label)</Label>
-                  <div className="bg-gray-700 border border-gray-600 rounded-xl p-3 text-right">
-                    <span className="text-blue-400">{addingFood.quantity}{addingFood.unit}</span>
-                  </div>
-                </div>
-
-                <p className="text-sm text-slate-300">2. Choose how much you ate. This multiplies the totals below and does not edit the saved product’s nutrition basis.</p>
-                {/* Number of Servings */}
-                <div className="space-y-2">
-                  <Label htmlFor="add-servings" className="text-gray-300">Servings eaten (multiplier)</Label>
-                  <Input
-                    id="add-servings"
-                    type="number"
-                    step="0.1"
-                    min="0.1"
-                    value={addEntryServings}
-                    onChange={(e) => setAddEntryServings(e.target.value)}
-                    className="bg-gray-700 border-gray-600 text-white text-right rounded-xl"
-                    data-testid="input-add-servings"
-                  />
-                </div>
-
-                <p className="text-sm tabular-nums text-green-400">{consumedServingText(addingFood.quantity, addingFood.unit, addEntryServings)}</p>
-                {/* Meal Selection */}
-                <div className="space-y-2">
-                  <Label htmlFor="add-meal" className="text-gray-300">Meal</Label>
-                  <Select value={addEntryMeal} onValueChange={(value: any) => setAddEntryMeal(value)}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white rounded-xl" id="add-meal">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-700 border-gray-600">
-                      <SelectItem value="breakfast">Breakfast</SelectItem>
-                      <SelectItem value="lunch">Lunch</SelectItem>
-                      <SelectItem value="dinner">Dinner</SelectItem>
-                      <SelectItem value="snack">Snack</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Nutritional Summary */}
-                <div className="bg-gray-700/50 rounded-xl p-4">
-                  <div className="grid grid-cols-4 gap-3 text-center">
-                    <div>
-                      <div className="type-metric text-2xl font-bold text-white">
-                        {Math.round(addingFood.calories * parseFloat(addEntryServings || '1'))}
-                      </div>
-                      <div className="text-xs text-gray-400">cal</div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-semibold text-blue-400">
-                        {Math.round(addingFood.carbs * parseFloat(addEntryServings || '1'))}g
-                      </div>
-                      <div className="text-xs text-gray-400">Carbs</div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-semibold text-red-400">
-                        {Math.round(addingFood.fat * parseFloat(addEntryServings || '1'))}g
-                      </div>
-                      <div className="text-xs text-gray-400">Fat</div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-semibold text-green-400">
-                        {Math.round(addingFood.protein * parseFloat(addEntryServings || '1'))}g
-                      </div>
-                      <div className="text-xs text-gray-400">Protein</div>
-                    </div>
-                  </div>
-                </div>
-
-                {diary.saveError && <p role="alert" className="text-sm text-red-400">{diary.saveError}</p>}
-                {/* Action Buttons */}
-                <div className="flex space-x-3 pt-2">
-                  <Button
-                    onClick={() => setAddEntryOpen(false)}
-                    variant="outline"
-                    className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 rounded-xl"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleSubmitAddEntry}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
-                    data-testid="button-save-add-entry"
-                  >
-                    Add
-                  </Button>
-                </div>
-              </div>
-            )}
           </DialogContent>
         </Dialog>
 
