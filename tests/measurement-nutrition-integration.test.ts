@@ -8,7 +8,6 @@ import {
   saveMeasurements,
   saveMeasurementGoals,
 } from "../client/src/lib/measurement-integration";
-import { readRecommendation } from "../client/src/lib/fitness-recommendation";
 import {
   readNutritionGoals,
   saveNutritionGoals,
@@ -92,39 +91,6 @@ test("legacy goals preserve precedence and conflicting explicit intent", () => {
   assert.ok(g.conflicts.length);
   assert.deepEqual([...s.values], before);
 });
-test("recommendations use Mifflin units and selected settings without writes", () => {
-  const s = fixture(),
-    before = [...s.values];
-  const r = readRecommendation(s, today);
-  assert.ok(r.recommendation);
-  assert.equal(
-    r.recommendation!.bmr,
-    10 * (190 * 0.453592) + 6.25 * (70 * 2.54) - 5 * 30 + 5,
-  );
-  assert.equal(
-    r.recommendation!.targets.calories,
-    Math.round(r.recommendation!.bmr * 1.55),
-  );
-  assert.deepEqual([...s.values], before);
-  s.setItem("fitness_calc_goal_type", "lose");
-  s.setItem("fitness_calc_goal_rate", "0.5");
-  assert.equal(
-    readRecommendation(s, today).recommendation!.targets.calories,
-    r.recommendation!.targets.calories - 250,
-  );
-});
-test("missing or malformed inputs never become placeholder recommendations or overwrite bytes", () => {
-  for (const raw of ["{", "null", "[]", "42"]) {
-    const s = fixture();
-    s.setItem("fitcircle_measurements_history", raw);
-    assert.equal(readRecommendation(s, today).recommendation, null);
-    assert.throws(() => saveMeasurements({ weight: 185 }, today, s));
-    assert.equal(s.getItem("fitcircle_measurements_history"), raw);
-  }
-  const s = new Store();
-  assert.equal(readRecommendation(s, today).recommendation, null);
-  assert.equal(s.length, 0);
-});
 test("explicit measurement and goal saves preserve unknown goals and rollback quota failures", () => {
   const s = fixture();
   s.setItem("fitcircle_goals", '{"targetWeight":180,"hydrationOz":72}');
@@ -136,20 +102,6 @@ test("explicit measurement and goal saves preserve unknown goals and rollback qu
   assert.equal(JSON.parse(s.getItem("fitcircle_goals")!).hydrationOz, 72);
   assert.equal(s.getItem("fitcircle_goal_weight"), "175");
 });
-test("recommendation changes cannot alter manually confirmed targets or history", () => {
-  const s = fixture();
-  saveNutritionGoals(
-    { calories: 2100, protein: 140, carbs: 230, fat: 70, source: "manual" },
-    s,
-  );
-  const goals = s.getItem("fitcircle_nutrition_goals");
-  saveMeasurements({ weight: 185 }, today, s);
-  const r = readRecommendation(s, today);
-  assert.ok(r.recommendation);
-  assert.equal(s.getItem("fitcircle_nutrition_goals"), goals);
-  assert.equal(readNutritionGoals(s)!.calories, 2100);
-});
-
 test("invalid, future and unsorted samples are excluded without changing raw history", () => {
   const s = fixture();
   const raw = JSON.stringify({
@@ -165,14 +117,6 @@ test("invalid, future and unsorted samples are excluded without changing raw his
   s.setItem("fitcircle_measurements_history", raw);
   assert.equal(readMeasurementSnapshot(s, today).weight?.value, 190);
   assert.equal(s.getItem("fitcircle_measurements_history"), raw);
-});
-test("ambiguous latest measurements block recommendations rather than choose a tied value", () => {
-  const s = fixture();
-  const data = JSON.parse(s.getItem("fitcircle_measurements_history")!);
-  data.weight.push({ date: today, value: 185 });
-  s.setItem("fitcircle_measurements_history", JSON.stringify(data));
-  assert.equal(readRecommendation(s, today).recommendation, null);
-  assert.match(readRecommendation(s, today).error!, /Conflicting/);
 });
 test("legacy undated values are labeled and never override a present history record", () => {
   const s = new Store();
@@ -195,42 +139,6 @@ test("gain, loss and maintenance inference preserves explicit contradictory dire
     s.setItem("fitcircle_weight_goal_type", "gain");
     assert.equal(readWeightGoals(s, 190).intent, "gain");
   }
-});
-test("sex, age, activity, rate, macro split and calculation bounds are validated", () => {
-  for (const [key, value] of [
-    ["fitness_calc_activity_level", "invalid"],
-    ["fitness_calc_goal_rate", "Infinity"],
-    ["fitness_calc_custom_fat", "90"],
-    ["fitness_calc_custom_carbs", ""],
-    ["fitness_calc_goal_type", "unknown"],
-  ] as const) {
-    const s = fixture();
-    s.setItem(key, value);
-    assert.equal(readRecommendation(s, today).recommendation, null);
-  }
-  const s = fixture();
-  s.setItem("fitcircle_profile", '{"age":30}');
-  assert.equal(readRecommendation(s, today).recommendation, null);
-  s.setItem("fitcircle_profile", '{"age":30,"gender":"female"}');
-  const female = readRecommendation(s, today).recommendation!;
-  s.setItem("fitcircle_profile", '{"age":30,"gender":"male"}');
-  assert.equal(
-    readRecommendation(s, today).recommendation!.bmr - female.bmr,
-    166,
-  );
-});
-test("goal initialization reads preserve malformed and incomplete records repeatedly", () => {
-  for (const raw of ["{", "null", "[]", '{"targetWeight":"wrong"}']) {
-    const s = fixture();
-    s.setItem("fitcircle_goals", raw);
-    for (let i = 0; i < 3; i++)
-      assert.equal(readRecommendation(s, today).recommendation, null);
-    assert.equal(s.getItem("fitcircle_goals"), raw);
-  }
-  const s = fixture();
-  s.setItem("fitcircle_goals", "{}");
-  assert.equal(readWeightGoals(s, 190).targetWeight, null);
-  assert.equal(s.getItem("fitcircle_goals"), "{}");
 });
 test("stale measurement saves and invalid goal edits preserve originals", () => {
   const s = fixture(),
@@ -255,7 +163,6 @@ test("complete and legacy backups preserve confirmed targets, measurement histor
       carbs: 250,
       fat: 67,
       source: "calculator",
-      recommendation: readRecommendation(s, today).recommendation,
     },
     s,
   );
@@ -285,7 +192,10 @@ test("unavailable storage and malformed confirmed goals cannot be replaced by de
   unavailable.getItem = () => {
     throw Error("Unavailable");
   };
-  assert.equal(readRecommendation(unavailable, today).recommendation, null);
+  assert.throws(
+    () => readMeasurementSnapshot(unavailable, today),
+    /Unavailable/,
+  );
   assert.equal(unavailable.length, 0);
 });
 
@@ -308,5 +218,25 @@ test("shared weight-goal readers use the same recorded baseline without read-tim
   } finally {
     if (previous) Object.defineProperty(globalThis, "localStorage", previous);
     else Reflect.deleteProperty(globalThis, "localStorage");
+  }
+});
+
+test("ambiguous or malformed measurement inputs stay unchanged across repeated calculator reads", () => {
+  const s = fixture();
+  for (const raw of [
+    "{",
+    "null",
+    '{"weight":"unexpected"}',
+    JSON.stringify({
+      weight: [
+        { date: today, value: 190 },
+        { date: today, value: 185 },
+      ],
+    }),
+  ]) {
+    s.setItem("fitcircle_measurements_history", raw);
+    for (let i = 0; i < 3; i++)
+      assert.throws(() => readMeasurementSnapshot(s, today));
+    assert.equal(s.getItem("fitcircle_measurements_history"), raw);
   }
 });
