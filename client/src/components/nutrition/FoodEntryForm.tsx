@@ -133,11 +133,6 @@ export function FoodEntryForm({
         </h3>
         {draft.brand && <p className="text-sm text-slate-400">{draft.brand}</p>}
       </div>
-      {initial.warnings.map((warning) => (
-        <p key={warning} className="text-xs text-amber-200">
-          {warning}
-        </p>
-      ))}
       <div className="grid grid-cols-2 gap-3">
         <label className="text-sm text-slate-300">
           Base serving quantity
@@ -186,10 +181,6 @@ export function FoodEntryForm({
           </span>
         </label>
       )}
-      <p className="text-xs text-slate-400">
-        Base serving edits rescale nutrition. Servings eaten multiplies the
-        result. Earlier logs and saved foods stay unchanged.
-      </p>
       <label className="block text-sm text-slate-300">
         Servings eaten (multiplier)
         <Input
@@ -289,35 +280,35 @@ export function FoodEntryForm({
             </label>
           ))}
         </div>
+        {initial.warnings.map((warning) => (
+          <p key={warning} className="text-xs text-amber-200">
+            {warning}
+          </p>
+        ))}
+        {draft.source === "Open Food Facts" && (
+          <p className="text-xs text-slate-400">
+            Product data:{" "}
+            <a
+              className="text-green-400 underline"
+              target="_blank"
+              rel="noreferrer"
+              href={draft.sourceUrl ?? "https://world.openfoodfacts.org"}
+            >
+              Open Food Facts
+            </a>{" "}
+            ·{" "}
+            <a
+              className="underline"
+              href="https://opendatacommons.org/licenses/odbl/1-0/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              ODbL
+            </a>
+            . Verify community data against the package.
+          </p>
+        )}
       </details>
-      {scanned && (
-        <p className="text-xs text-slate-400">
-          Automatically saved offline when added. Existing foods stay unchanged.
-        </p>
-      )}
-      {draft.source === "Open Food Facts" && (
-        <p className="text-xs text-slate-400">
-          Product data:{" "}
-          <a
-            className="text-green-400 underline"
-            target="_blank"
-            rel="noreferrer"
-            href={draft.sourceUrl ?? "https://world.openfoodfacts.org"}
-          >
-            Open Food Facts
-          </a>{" "}
-          ·{" "}
-          <a
-            className="underline"
-            href="https://opendatacommons.org/licenses/odbl/1-0/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            ODbL
-          </a>
-          . Verify community data against the package.
-        </p>
-      )}
       {(error || saveError || scalingError) && (
         <p role="alert" className="text-sm text-red-400">
           {error || saveError || scalingError}

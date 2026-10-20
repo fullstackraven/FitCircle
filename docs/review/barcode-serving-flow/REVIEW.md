@@ -2,6 +2,8 @@
 
 This follows merged PR #53. The Food Tracker 2.0 implementation remains in place; this change replaces its two-stage scan/review flow with the existing Add Entry destination. Earlier review documents describe the previous flow and remain historical records.
 
+The screenshot follow-up retains the brand subtitle and removes highlighted explanatory copy from the main Add Entry view. Product warnings and Open Food Facts attribution are available inside Edit label nutrition. Automatic offline saving, validation errors and all nutrition calculations remain unchanged.
+
 ## Behavior changes
 
 - **Label servings:** The v3 normalizer previously replaced the package's serving size with the aggregated nutrition basis (100 g/ml). It now keeps those facts separate, requests numeric serving metadata, selects a usable declared serving, and scales all available nutrients from the density to that serving. For example, 500 kcal/100 g and a 30 g label serving become 150 kcal per 30 g. Explicit per-serving products retain their serving basis.
@@ -40,6 +42,8 @@ Final local run on 2026-10-20:
 | `git diff --check` | Passed |
 
 The updated nutrition suite has 18 browser cases. New coverage exercises declared mass/volume servings, numeric serving metadata, missing/zero nutrients, stable-anchor rescaling, unit equivalence, direct scan-to-entry flow, automatic caching, offline reuse after reload, and catalog/diary write failures with duplicate-free retry. Existing historical-date, custom-food, full-backup and camera lifecycle regressions also pass. Browser results use Chromium, not physical iPhone Safari.
+
+Copy-only follow-up validation: `npm run check` and `npm run build` passed; all 18 nutrition browser tests passed again (23.6 seconds). Updated screenshots retain the brand and show the quieter main form. The full-suite results above are from the preceding functional implementation.
 
 ## Remaining limitations and physical iPhone checklist
 
