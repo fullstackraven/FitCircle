@@ -410,6 +410,8 @@ export default function FoodDatabasePage() {
                       <SelectItem value="cup">cup</SelectItem>
                       <SelectItem value="piece">piece</SelectItem>
                       <SelectItem value="serving">serving</SelectItem>
+                      <SelectItem value="ml">ml</SelectItem>
+                      <SelectItem value="slice">slice</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

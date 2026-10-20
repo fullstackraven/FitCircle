@@ -7,6 +7,7 @@ const meal = { ...customFood, meal: 'lunch', timestamp: `${date}T12:15:00Z` };
 const workout = { id: 'pushup', name: 'Push-ups', color: 'green', routineId: 'morning', count: 12, dailyGoal: 20, scheduledDays: [1, 3, 5], goalHistory: [{ goal: 15, timestamp: '2026-10-01T08:00:00Z' }] };
 const log = { pushup: { count: 15, goalAtTime: 20 }, squat: 25 };
 export const structured = {
+  fitcircle_nutrition_goals: {calories:2100,protein:120,carbs:250,fat:70,purpose:"Maintain weight"},
   'workout-tracker-data': { workouts: { pushup: workout, squat: { ...workout, id: 'squat', name: 'Squats', weightLbs: 20 } }, dailyLogs: { [date]: log, '2026-10-14': { squat: 20 } }, routines: { morning: { id: 'morning', name: 'Morning strength', selectedDays: [1, 3], createdAt: '2026-10-01' } }, journalEntries: { [date]: { text: 'Feeling stronger', timestamp: `${date}T18:23:00Z` } } },
   'workout-tracker-logs': { [date]: log },
   fitcircle_food_database: [legacyFood, customFood],

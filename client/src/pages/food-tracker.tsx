@@ -1,111 +1,41 @@
+import { readFoodDay, assertLoggableFood } from '@/lib/food-diary';
+import { DailyNutritionSummary } from '@/components/nutrition/DailyNutritionSummary';
+import { NutritionGoals } from '@/components/nutrition/NutritionGoals';
+import { NutritionDetails } from '@/components/nutrition/NutritionDetails';
+import { WeeklyNutrition } from '@/components/nutrition/WeeklyNutrition';
+import { MealDiary } from '@/components/nutrition/MealDiary';
+import { BarcodeEntry } from '@/components/nutrition/BarcodeEntry';
+import { useFoodDiary } from '@/hooks/use-food-diary';
+import { displayTargets,readNutritionGoals,readCalculatorEstimate,type NutritionGoals as SavedGoals } from '@/lib/nutrition';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search, X, Edit2, Save, X as Cancel, Calculator, Database } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, ChevronLeft, ChevronRight, Search, Edit2, Save, X as Cancel, Calculator, Database } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { getTodayString, getDateString, parseLocalDate, isToday } from '@/lib/date-utils';
-import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
-import { localFoodService, LocalFoodItem, FoodEntry as LocalFoodEntry, FoodUnit as LocalFoodUnit } from '@/lib/local-food-service';
+import { localFoodService, LocalFoodItem, FoodEntry, FoodUnit } from '@/lib/local-food-service';
 import { useToast } from '@/hooks/use-toast';
 import FitnessCalculator from '@/pages/fitness-calculator';
 
-// Strong typing for nutrition data and units
-type FoodUnit = 'g' | 'oz' | 'cup' | 'piece' | 'serving';
-
-interface NutritionPer100g {
-  calories: number;
-  carbs: number;
-  protein: number;
-  fat: number;
-  fiber?: number;
-  sugar?: number;
-  sodium?: number; // in mg
-  saturatedFat?: number;
-}
-
-interface FoodEntry {
-  id: string;
-  name: string;
-  brand?: string;
-  barcode?: string;
-  
-  // Serving info
-  quantity: number;
-  unit: FoodUnit;
-  servings?: number; // Number of servings multiplier (defaults to 1)
-  
-  // Basic macros (calculated for actual serving)
-  calories: number;
-  carbs: number;
-  protein: number;
-  fat: number;
-  
-  // Extended nutrition (calculated for actual serving)
-  fiber?: number;
-  sugar?: number;
-  sodium?: number; // in mg
-  saturatedFat?: number;
-  
-  // Metadata
-  meal: 'breakfast' | 'lunch' | 'dinner' | 'snack';
-  timestamp: string;
-  
-  // API reference data (per 100g for future calculations)
-  nutritionPer100g?: NutritionPer100g;
-}
-
-interface MacroTargets {
-  calories: number;
-  carbs: number;
-  protein: number;
-  fat: number;
-}
-
-// Utility function for calculating nutrition values from serving sizes
-const calculateNutritionForServing = (
-  nutritionPer100g: NutritionPer100g,
-  quantity: number,
-  unit: FoodUnit,
-  foodSpecificServingGrams?: number // from API when available
-) => {
-  // Convert user quantity to grams for calculation
-  const gramsConversion: Record<FoodUnit, number> = {
-    'g': 1,
-    'oz': 28.35,
-    'cup': 240, // generic, should use food-specific when available
-    'piece': 100, // generic, should use food-specific when available
-    'serving': foodSpecificServingGrams || 100 // prefer API serving size
-  };
-  
-  const totalGrams = quantity * gramsConversion[unit];
-  const multiplier = totalGrams / 100;
-  
-  return {
-    calories: Math.round(nutritionPer100g.calories * multiplier),
-    carbs: Math.round(nutritionPer100g.carbs * multiplier * 10) / 10,
-    protein: Math.round(nutritionPer100g.protein * multiplier * 10) / 10,
-    fat: Math.round(nutritionPer100g.fat * multiplier * 10) / 10,
-    fiber: nutritionPer100g.fiber ? Math.round(nutritionPer100g.fiber * multiplier * 10) / 10 : undefined,
-    sugar: nutritionPer100g.sugar ? Math.round(nutritionPer100g.sugar * multiplier * 10) / 10 : undefined,
-    sodium: nutritionPer100g.sodium ? Math.round(nutritionPer100g.sodium * multiplier) : undefined,
-    saturatedFat: nutritionPer100g.saturatedFat ? Math.round(nutritionPer100g.saturatedFat * multiplier * 10) / 10 : undefined
-  };
+// Keep dialogs readable on opening; the user chooses when to show the keyboard.
+const focusPanelOnOpen = (event: Event) => {
+  event.preventDefault();
+  if (event.target instanceof HTMLElement) event.target.focus({preventScroll:true});
 };
 
 // Validation helper
 const validateNutritionInputs = (calories: string, carbs: string, protein: string, fat: string, quantity: string) => {
-  const caloriesNum = parseFloat(calories);
-  const carbsNum = parseFloat(carbs);
-  const proteinNum = parseFloat(protein);
-  const fatNum = parseFloat(fat);
-  const quantityNum = parseFloat(quantity);
+  const caloriesNum = Number(calories);
+  const carbsNum = Number(carbs);
+  const proteinNum = Number(protein);
+  const fatNum = Number(fat);
+  const quantityNum = Number(quantity);
   
   return {
-    isValid: !isNaN(caloriesNum) && !isNaN(carbsNum) && !isNaN(proteinNum) && !isNaN(fatNum) && !isNaN(quantityNum) &&
+    isValid: [calories,carbs,protein,fat,quantity].every(value=>value.trim()!=='') && [caloriesNum,carbsNum,proteinNum,fatNum,quantityNum].every(Number.isFinite) &&
              caloriesNum >= 0 && carbsNum >= 0 && proteinNum >= 0 && fatNum >= 0 && quantityNum > 0,
     values: { caloriesNum, carbsNum, proteinNum, fatNum, quantityNum }
   };
@@ -115,45 +45,16 @@ export default function FoodTrackerPage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
-  const [foodEntries, setFoodEntries] = useState<FoodEntry[]>([]);
-  const [macroTargets, setMacroTargets] = useState<MacroTargets>({
-    calories: 2000,
-    carbs: 250,
-    protein: 150,
-    fat: 67
-  });
-  
-  // Form states
-  const [foodName, setFoodName] = useState('');
-  const [brand, setBrand] = useState('');
-  const [barcode, setBarcode] = useState('');
-  
-  // Serving size states
-  const [quantity, setQuantity] = useState('1');
-  const [unit, setUnit] = useState<FoodUnit>('serving');
-  
-  // Basic nutrition states
-  const [calories, setCalories] = useState('');
-  const [carbs, setCarbs] = useState('');
-  const [protein, setProtein] = useState('');
-  const [fat, setFat] = useState('');
-  
-  // Extended nutrition states
-  const [fiber, setFiber] = useState('');
-  const [sugar, setSugar] = useState('');
-  const [sodium, setSodium] = useState('');
-  const [saturatedFat, setSaturatedFat] = useState('');
-  
-  // UI states
-  const [selectedMeal, setSelectedMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
-  const [showExtendedNutrition, setShowExtendedNutrition] = useState(false);
-  
-  // Collapsible states
-  const [breakfastOpen, setBreakfastOpen] = useState(false);
-  const [lunchOpen, setLunchOpen] = useState(false);
-  const [dinnerOpen, setDinnerOpen] = useState(false);
-  const [snackOpen, setSnackOpen] = useState(false);
-  
+  const diary = useFoodDiary(selectedDate);
+  const foodEntries = diary.entries;
+  const [goals, setGoals] = useState<SavedGoals | null>(null);
+  const [goalsError, setGoalsError] = useState('');
+  const [nutritionView,setNutritionView] = useState<'goals'|'details'|'week'|null>(null);
+  const [barcodeOpen,setBarcodeOpen] = useState(false);
+  const [referenceTargets] = useState(() => {try {return readCalculatorEstimate() ?? displayTargets;} catch {return displayTargets;}});
+  const macroTargets = goals ?? referenceTargets;
+  const reloadGoals = () => {try {setGoals(readNutritionGoals());setGoalsError('');}catch {setGoalsError('Saved nutrition goals could not be read. Original values are unchanged. Retry or restore a verified backup in Settings.');}};
+  useEffect(() => {reloadGoals();window.addEventListener('storage',reloadGoals);return ()=>window.removeEventListener('storage',reloadGoals);},[]);
   // Search states
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -168,20 +69,20 @@ export default function FoodTrackerPage() {
     brand: '',
     quantity: '100',
     unit: 'g' as FoodUnit,
-    calories: '0',
-    carbs: '0',
-    protein: '0',
-    fat: '0',
-    fiber: '0',
-    sugar: '0',
-    sodium: '0',
-    saturatedFat: '0',
-    potassium: '0',
-    cholesterol: '0',
-    vitaminA: '0',
-    vitaminC: '0',
-    calcium: '0',
-    iron: '0'
+    calories: '',
+    carbs: '',
+    protein: '',
+    fat: '',
+    fiber: '',
+    sugar: '',
+    sodium: '',
+    saturatedFat: '',
+    potassium: '',
+    cholesterol: '',
+    vitaminA: '',
+    vitaminC: '',
+    calcium: '',
+    iron: ''
   });
   const [searchResults, setSearchResults] = useState<LocalFoodItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -199,27 +100,9 @@ export default function FoodTrackerPage() {
   const [editEntryServings, setEditEntryServings] = useState('1');
   const [editEntryMeal, setEditEntryMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
   
-  // Edit states
-  const [editingFood, setEditingFood] = useState<FoodEntry | null>(null);
-  const [editName, setEditName] = useState('');
-  const [editBrand, setEditBrand] = useState('');
-  const [editQuantity, setEditQuantity] = useState('');
-  const [editUnit, setEditUnit] = useState('');
-  const [editCalories, setEditCalories] = useState('');
-  const [editCarbs, setEditCarbs] = useState('');
-  const [editProtein, setEditProtein] = useState('');
-  const [editFat, setEditFat] = useState('');
-  const [editFiber, setEditFiber] = useState('');
-  const [editSugar, setEditSugar] = useState('');
-  const [editSodium, setEditSodium] = useState('');
-  const [editSaturatedFat, setEditSaturatedFat] = useState('');
-
   // Calculator modal state
   const [calculatorOpen, setCalculatorOpen] = useState(false);
 
-  // Check if we came from dashboard
-  const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
-  
   const handleBack = () => {
     navigate('/wellness');
   };
@@ -260,48 +143,6 @@ export default function FoodTrackerPage() {
     });
   };
 
-  // Load data when selected date changes
-  useEffect(() => {
-    // Load food entries for selected date
-    const stored = safeParseJSON(localStorage.getItem(`fitcircle_food_${selectedDate}`), []);
-    // Ensure stored is an array
-    setFoodEntries(Array.isArray(stored) ? stored : []);
-
-    // Load macro targets directly from what fitness calculator displays/stores
-    const loadMacroTargets = () => {
-      // Try to get the calculated values directly from fitness calculator's localStorage
-      const storedCalories = localStorage.getItem('fitness_calc_target_calories');
-      const storedCarbs = localStorage.getItem('fitness_calc_target_carbs');
-      const storedProtein = localStorage.getItem('fitness_calc_target_protein');
-      const storedFat = localStorage.getItem('fitness_calc_target_fat');
-      
-      if (storedCalories && storedCarbs && storedProtein && storedFat) {
-        // Use the exact values the fitness calculator calculated and stored
-        setMacroTargets({
-          calories: parseInt(storedCalories),
-          carbs: parseInt(storedCarbs),
-          protein: parseInt(storedProtein),
-          fat: parseInt(storedFat)
-        });
-      } else {
-        // Fallback: keep current values if nothing stored yet
-        // This happens when user hasn't visited fitness calculator yet
-        console.log('No fitness calculator data found, keeping current values');
-      }
-    };
-
-    loadMacroTargets();
-    
-    // Set up polling for changes from fitness calculator
-    const interval = setInterval(loadMacroTargets, 2000);
-    return () => clearInterval(interval);
-  }, [selectedDate]);
-
-  // Save food entries whenever they change (to the selected date)
-  useEffect(() => {
-    localStorage.setItem(`fitcircle_food_${selectedDate}`, JSON.stringify(foodEntries));
-  }, [foodEntries, selectedDate]);
-
   // Load all food history for search functionality
   useEffect(() => {
     const loadAllFoodHistory = () => {
@@ -311,8 +152,9 @@ export default function FoodTrackerPage() {
       // Get all localStorage keys that start with 'fitcircle_food_'
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && key.startsWith('fitcircle_food_')) {
-          const entries = safeParseJSON<FoodEntry[]>(localStorage.getItem(key), []);
+        if (key && /^fitcircle_food_\d{4}-\d{2}-\d{2}$/.test(key)) {
+          let entries: FoodEntry[];
+          try {entries = readFoodDay(key.slice('fitcircle_food_'.length)).entries;} catch {continue;}
           
           // Ensure entries is an array before iterating
           if (!Array.isArray(entries)) {
@@ -357,61 +199,8 @@ export default function FoodTrackerPage() {
     loadAllFoodHistory();
   }, [foodEntries]); // Reload when food entries change
 
-  const handleAddFood = () => {
-    if (!foodName.trim() || !calories || !carbs || !protein || !fat || !quantity) return;
-
-    const validation = validateNutritionInputs(calories, carbs, protein, fat, quantity);
-    if (!validation.isValid) {
-      console.error('Invalid numeric values provided for food entry');
-      return;
-    }
-    
-    const { caloriesNum, carbsNum, proteinNum, fatNum, quantityNum } = validation.values;
-    const fiberNum = fiber ? parseFloat(fiber) : undefined;
-    const sugarNum = sugar ? parseFloat(sugar) : undefined;
-    const sodiumNum = sodium ? parseFloat(sodium) : undefined;
-    const saturatedFatNum = saturatedFat ? parseFloat(saturatedFat) : undefined;
-
-    const newEntry: FoodEntry = {
-      id: Date.now().toString(),
-      name: foodName.trim(),
-      brand: brand.trim() || undefined,
-      barcode: barcode.trim() || undefined,
-      quantity: quantityNum,
-      unit,
-      calories: caloriesNum,
-      carbs: carbsNum,
-      protein: proteinNum,
-      fat: fatNum,
-      fiber: fiberNum,
-      sugar: sugarNum,
-      sodium: sodiumNum,
-      saturatedFat: saturatedFatNum,
-      servings: 1,
-      meal: selectedMeal,
-      timestamp: new Date().toISOString()
-    };
-
-    setFoodEntries(prev => [...prev, newEntry]);
-    
-    // Clear form
-    setFoodName('');
-    setBrand('');
-    setBarcode('');
-    setQuantity('1');
-    setUnit('serving');
-    setCalories('');
-    setCarbs('');
-    setProtein('');
-    setFat('');
-    setFiber('');
-    setSugar('');
-    setSodium('');
-    setSaturatedFat('');
-  };
-
   const handleDeleteFood = (id: string) => {
-    setFoodEntries(prev => prev.filter(entry => entry.id !== id));
+    diary.commit(foodEntries.filter(entry => entry.id !== id));
   };
 
   // Search functions
@@ -461,26 +250,27 @@ export default function FoodTrackerPage() {
 
   // Function to open custom food form for specific meal
   const openCustomFoodForMeal = (meal: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
+    setEditingEntryId(null);
     setCustomFoodMeal(meal);
     setCustomFoodData({
       name: '',
       brand: '',
       quantity: '100',
       unit: 'g' as FoodUnit,
-      calories: '0',
-      carbs: '0',
-      protein: '0',
-      fat: '0',
-      fiber: '0',
-      sugar: '0',
-      sodium: '0',
-      saturatedFat: '0',
-      potassium: '0',
-      cholesterol: '0',
-      vitaminA: '0',
-      vitaminC: '0',
-      calcium: '0',
-      iron: '0'
+      calories: '',
+      carbs: '',
+      protein: '',
+      fat: '',
+      fiber: '',
+      sugar: '',
+      sodium: '',
+      saturatedFat: '',
+      potassium: '',
+      cholesterol: '',
+      vitaminA: '',
+      vitaminC: '',
+      calcium: '',
+      iron: ''
     });
     setSearchOpen(false); // Close search dialog
     setCustomFoodOpen(true);
@@ -498,10 +288,14 @@ export default function FoodTrackerPage() {
       return;
     }
 
-    // Parse values, defaulting to 0 if empty or invalid
+    if (!validateNutritionInputs(customFoodData.calories,customFoodData.carbs,customFoodData.protein,customFoodData.fat,customFoodData.quantity).isValid) {
+      toast({title:'Check serving size and all four nutrition values',description:'Enter known values, including explicit zeros.',variant:'destructive'});return;
+    }
+    // Parse explicitly entered values; the storage validator rejects invalid optional nutrients.
+
     const parseOrDefault = (value: string) => {
-      const parsed = parseFloat(value);
-      return isNaN(parsed) ? 0 : parsed;
+      const parsed = Number(value);
+      return parsed;
     };
 
     const foodInput = {
@@ -513,16 +307,16 @@ export default function FoodTrackerPage() {
       carbs: parseOrDefault(customFoodData.carbs),
       protein: parseOrDefault(customFoodData.protein),
       fat: parseOrDefault(customFoodData.fat),
-      fiber: customFoodData.fiber ? parseOrDefault(customFoodData.fiber) : undefined,
-      sugar: customFoodData.sugar ? parseOrDefault(customFoodData.sugar) : undefined,
-      sodium: customFoodData.sodium ? parseOrDefault(customFoodData.sodium) : undefined,
-      saturatedFat: customFoodData.saturatedFat ? parseOrDefault(customFoodData.saturatedFat) : undefined,
-      potassium: customFoodData.potassium ? parseOrDefault(customFoodData.potassium) : undefined,
-      cholesterol: customFoodData.cholesterol ? parseOrDefault(customFoodData.cholesterol) : undefined,
-      vitaminA: customFoodData.vitaminA ? parseOrDefault(customFoodData.vitaminA) : undefined,
-      vitaminC: customFoodData.vitaminC ? parseOrDefault(customFoodData.vitaminC) : undefined,
-      calcium: customFoodData.calcium ? parseOrDefault(customFoodData.calcium) : undefined,
-      iron: customFoodData.iron ? parseOrDefault(customFoodData.iron) : undefined
+      fiber: customFoodData.fiber.trim() !== '' ? parseOrDefault(customFoodData.fiber) : undefined,
+      sugar: customFoodData.sugar.trim() !== '' ? parseOrDefault(customFoodData.sugar) : undefined,
+      sodium: customFoodData.sodium.trim() !== '' ? parseOrDefault(customFoodData.sodium) : undefined,
+      saturatedFat: customFoodData.saturatedFat.trim() !== '' ? parseOrDefault(customFoodData.saturatedFat) : undefined,
+      potassium: customFoodData.potassium.trim() !== '' ? parseOrDefault(customFoodData.potassium) : undefined,
+      cholesterol: customFoodData.cholesterol.trim() !== '' ? parseOrDefault(customFoodData.cholesterol) : undefined,
+      vitaminA: customFoodData.vitaminA.trim() !== '' ? parseOrDefault(customFoodData.vitaminA) : undefined,
+      vitaminC: customFoodData.vitaminC.trim() !== '' ? parseOrDefault(customFoodData.vitaminC) : undefined,
+      calcium: customFoodData.calcium.trim() !== '' ? parseOrDefault(customFoodData.calcium) : undefined,
+      iron: customFoodData.iron.trim() !== '' ? parseOrDefault(customFoodData.iron) : undefined
     };
 
     try {
@@ -550,6 +344,7 @@ export default function FoodTrackerPage() {
         }
 
         setCustomFoodOpen(false);
+        if (!editingEntryId) {handleAddFromSearch(result.food);setAddEntryMeal(customFoodMeal);}
         setEditingEntryId(null); // Clear editing state
       } else {
         toast({
@@ -571,40 +366,21 @@ export default function FoodTrackerPage() {
   // Function to handle Add Entry submission (log food with servings)
   const handleSubmitAddEntry = () => {
     if (!addingFood) return;
+    try {assertLoggableFood(addingFood);} catch (error) {toast({title:'Check food nutrition',description:error instanceof Error ? error.message : 'Check this food before logging.',variant:'destructive'});return;}
 
-    const servings = parseFloat(addEntryServings) || 1;
+    const servings = Number(addEntryServings);
+    if (!Number.isFinite(servings) || servings <= 0) {toast({title:'Enter a positive serving count',variant:'destructive'});return;}
 
     // Convert food to entry format with servings
     const newEntry: FoodEntry = {
-      id: Date.now().toString(),
-      name: addingFood.name,
-      brand: addingFood.brand,
-      barcode: addingFood.barcode,
-      quantity: addingFood.quantity,
-      unit: addingFood.unit,
-      calories: addingFood.calories,
-      carbs: addingFood.carbs,
-      protein: addingFood.protein,
-      fat: addingFood.fat,
-      fiber: addingFood.fiber,
-      sugar: addingFood.sugar,
-      sodium: addingFood.sodium,
-      saturatedFat: addingFood.saturatedFat,
-      servings: servings,
+      ...addingFood,
+      id: crypto.randomUUID(),
+      servings,
       meal: addEntryMeal,
       timestamp: new Date().toISOString()
     };
 
-    const updatedEntries = [...foodEntries, newEntry];
-    setFoodEntries(updatedEntries);
-
-    // Save to localStorage
-    const today = getTodayString();
-    try {
-      localStorage.setItem(STORAGE_KEYS.FOOD_TRACKER + today, JSON.stringify(updatedEntries));
-    } catch (error) {
-      console.error('Error saving food entries to localStorage:', error);
-    }
+    if (!diary.commit([...foodEntries, newEntry])) return;
 
     toast({
       title: "Food Logged!",
@@ -617,6 +393,7 @@ export default function FoodTrackerPage() {
 
   // Function to open Add Entry modal when clicking + on a food from search/recent
   const handleAddFromSearch = (food: LocalFoodItem) => {
+    diary.clearError();
     setAddingFood(food);
     setAddEntryServings('1'); // Default to 1 serving
     setAddEntryMeal(searchMeal);
@@ -692,6 +469,7 @@ export default function FoodTrackerPage() {
 
   // Function to open the simple Edit Entry modal (adjust servings/meal only)
   const handleEditFoodEntry = (entry: FoodEntry) => {
+    diary.clearError();
     setEditingEntry(entry);
     setEditEntryServings((entry.servings || 1).toString()); // Show current servings value
     setEditEntryMeal(entry.meal);
@@ -702,28 +480,20 @@ export default function FoodTrackerPage() {
   const handleSaveEditEntry = () => {
     if (!editingEntry) return;
 
-    const newServings = parseFloat(editEntryServings) || 1;
+    const newServings = Number(editEntryServings);
+    if (!Number.isFinite(newServings) || newServings <= 0) {toast({title:'Enter a positive serving count',variant:'destructive'});return;}
     
     // ONLY update servings and meal - base nutritional values stay unchanged
     const updatedEntry: FoodEntry = {
       ...editingEntry,
       servings: newServings,
-      meal: editEntryMeal,
-      timestamp: new Date().toISOString()
+      meal: editEntryMeal
     };
 
     const updatedEntries = foodEntries.map(entry => 
       entry.id === editingEntry.id ? updatedEntry : entry
     );
-    setFoodEntries(updatedEntries);
-
-    // Save to localStorage
-    const today = getTodayString();
-    try {
-      localStorage.setItem(STORAGE_KEYS.FOOD_TRACKER + today, JSON.stringify(updatedEntries));
-    } catch (error) {
-      console.error('Error saving food entries to localStorage:', error);
-    }
+    if (!diary.commit(updatedEntries)) return;
 
     toast({
       title: "Entry Updated!",
@@ -734,167 +504,6 @@ export default function FoodTrackerPage() {
     setEditingEntry(null);
   };
 
-  // Edit functions
-  const handleEditFood = (food: FoodEntry) => {
-    setEditingFood(food);
-    setEditName(food.name);
-    setEditBrand(food.brand || '');
-    setEditQuantity(food.quantity.toString());
-    setEditUnit(food.unit);
-    setEditCalories(food.calories.toString());
-    setEditCarbs(food.carbs.toString());
-    setEditProtein(food.protein.toString());
-    setEditFat(food.fat.toString());
-    setEditFiber(food.fiber?.toString() || '');
-    setEditSugar(food.sugar?.toString() || '');
-    setEditSodium(food.sodium?.toString() || '');
-    setEditSaturatedFat(food.saturatedFat?.toString() || '');
-  };
-
-  const handleSaveEdit = () => {
-    if (!editingFood || !editName.trim() || !editCalories || !editCarbs || !editProtein || !editFat || !editQuantity) return;
-
-    const updatedEntry: FoodEntry = {
-      ...editingFood,
-      name: editName.trim(),
-      brand: editBrand.trim() || undefined,
-      quantity: parseFloat(editQuantity),
-      unit: editUnit as FoodUnit,
-      calories: parseFloat(editCalories),
-      carbs: parseFloat(editCarbs),
-      protein: parseFloat(editProtein),
-      fat: parseFloat(editFat),
-      fiber: editFiber ? parseFloat(editFiber) : undefined,
-      sugar: editSugar ? parseFloat(editSugar) : undefined,
-      sodium: editSodium ? parseFloat(editSodium) : undefined,
-      saturatedFat: editSaturatedFat ? parseFloat(editSaturatedFat) : undefined
-    };
-
-    setFoodEntries(prev => prev.map(entry => 
-      entry.id === editingFood.id ? updatedEntry : entry
-    ));
-
-    // Reset edit state
-    setEditingFood(null);
-    setEditName('');
-    setEditBrand('');
-    setEditQuantity('');
-    setEditUnit('');
-    setEditCalories('');
-    setEditCarbs('');
-    setEditProtein('');
-    setEditFat('');
-    setEditFiber('');
-    setEditSugar('');
-    setEditSodium('');
-    setEditSaturatedFat('');
-  };
-
-  const handleCancelEdit = () => {
-    setEditingFood(null);
-    setEditName('');
-    setEditBrand('');
-    setEditQuantity('');
-    setEditUnit('');
-    setEditCalories('');
-    setEditCarbs('');
-    setEditProtein('');
-    setEditFat('');
-    setEditFiber('');
-    setEditSugar('');
-    setEditSodium('');
-    setEditSaturatedFat('');
-  };
-
-  const handleEditFromSearch = (food: FoodEntry) => {
-    handleEditFood(food);
-    setSearchOpen(false);
-  };
-
-  // Calculate totals
-  const totals = foodEntries.reduce(
-    (acc, entry) => ({
-      calories: acc.calories + (entry.calories * (entry.servings || 1)),
-      carbs: acc.carbs + (entry.carbs * (entry.servings || 1)),
-      protein: acc.protein + (entry.protein * (entry.servings || 1)),
-      fat: acc.fat + (entry.fat * (entry.servings || 1))
-    }),
-    { calories: 0, carbs: 0, protein: 0, fat: 0 }
-  );
-
-  // Calculate progress percentages
-  const caloriesProgress = Math.min((totals.calories / macroTargets.calories) * 100, 100);
-  const carbsProgress = Math.min((totals.carbs / macroTargets.carbs) * 100, 100);
-  const proteinProgress = Math.min((totals.protein / macroTargets.protein) * 100, 100);
-  const fatProgress = Math.min((totals.fat / macroTargets.fat) * 100, 100);
-
-  // Calculate meal totals
-  const getMealEntries = (meal: 'breakfast' | 'lunch' | 'dinner' | 'snack') => 
-    foodEntries.filter(entry => entry.meal === meal);
-
-  const getMealTotals = (meal: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
-    const mealEntries = getMealEntries(meal);
-    return mealEntries.reduce(
-      (acc, entry) => ({
-        calories: acc.calories + (entry.calories * (entry.servings || 1)),
-        carbs: acc.carbs + (entry.carbs * (entry.servings || 1)),
-        protein: acc.protein + (entry.protein * (entry.servings || 1)),
-        fat: acc.fat + (entry.fat * (entry.servings || 1))
-      }),
-      { calories: 0, carbs: 0, protein: 0, fat: 0 }
-    );
-  };
-
-  // Circular progress component
-  const CircularProgress = ({ 
-    progress, 
-    size = 200, 
-    strokeWidth = 12, 
-    color = "rgb(34, 197, 94)",
-    children 
-  }: { 
-    progress: number; 
-    size?: number; 
-    strokeWidth?: number; 
-    color?: string;
-    children?: React.ReactNode;
-  }) => {
-    const radius = (size - strokeWidth) / 2;
-    const circumference = radius * 2 * Math.PI;
-    const strokeDasharray = circumference;
-    const strokeDashoffset = circumference - (progress / 100) * circumference;
-
-    return (
-      <div className="relative inline-flex items-center justify-center">
-        <svg width={size} height={size} className="transform -rotate-90">
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            stroke="rgb(55, 65, 81)"
-            strokeWidth={strokeWidth}
-            fill="transparent"
-          />
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            stroke={color}
-            strokeWidth={strokeWidth}
-            fill="transparent"
-            strokeDasharray={strokeDasharray}
-            strokeDashoffset={strokeDashoffset}
-            strokeLinecap="round"
-            className="transition-all duration-300 ease-in-out"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          {children}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="fitcircle-page">
       <div className="fitcircle-container">
@@ -902,7 +511,8 @@ export default function FoodTrackerPage() {
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-slate-400 hover:text-white transition-colors min-h-11 min-w-11 flex items-center justify-center"
+            aria-label="Back to Logs"
             data-testid="button-back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -911,14 +521,16 @@ export default function FoodTrackerPage() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate('/food-database')}
-              className="text-slate-400 hover:text-white transition-colors"
+              className="text-slate-400 hover:text-white transition-colors min-h-11 min-w-11 flex items-center justify-center"
+              aria-label="Food Database"
               data-testid="button-database"
             >
               <Database className="w-5 h-5" />
             </button>
             <button
               onClick={() => setCalculatorOpen(true)}
-              className="text-slate-400 hover:text-white transition-colors"
+              className="text-slate-400 hover:text-white transition-colors min-h-11 min-w-11 flex items-center justify-center"
+              aria-label="Fitness Calculator"
               data-testid="button-calculator"
             >
               <Calculator className="w-5 h-5" />
@@ -960,82 +572,33 @@ export default function FoodTrackerPage() {
           </button>
         </div>
 
-        {/* Large Circular Calorie Progress */}
-        <div className="flex flex-col items-center mb-8">
-          <CircularProgress 
-            progress={caloriesProgress} 
-            size={220} 
-            strokeWidth={16}
-            color="rgb(34, 197, 94)"
-          >
-            <div className="text-center">
-              <div className="type-metric text-3xl font-bold text-green-400">
-                {Math.round(totals.calories)}
-              </div>
-              <div className="text-sm text-gray-400">
-                / {macroTargets.calories} cal
-              </div>
-              <div className="text-xs text-gray-500 mt-1">
-                {Math.round(caloriesProgress)}% complete
-              </div>
-            </div>
-          </CircularProgress>
+        <p className="text-sm text-slate-400 mb-4">Daily nutrition overview</p>
+        {(diary.error || diary.saveError) && <div role="alert" className="rounded-xl border border-amber-500/40 p-3 text-sm text-amber-200 mb-3">{diary.error || diary.saveError}<Button variant="ghost" onClick={diary.retry}>Retry Loading Day</Button></div>}
+        {goalsError && <div role="alert" className="text-sm text-amber-200 mb-3">{goalsError}<Button variant="ghost" onClick={reloadGoals}>Retry Goals</Button></div>}
+        {diary.ready && <DailyNutritionSummary entries={foodEntries} targets={macroTargets} confirmed={!!goals}/>}
+        <div className="flex flex-wrap gap-2 my-4">
+          <Button variant="outline" disabled={!!goalsError} onClick={()=>setNutritionView('goals')}>Nutrition Goals</Button>
+          <Button variant="ghost" disabled={!diary.ready} onClick={()=>setNutritionView('details')}>Nutrition Details</Button>
+          <Button variant="ghost" onClick={()=>setNutritionView('week')}>Weekly Overview</Button>
         </div>
-
-        {/* Macro Row */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="fitcircle-card text-center">
-            <div className="text-lg font-bold text-blue-400">
-              {Math.round(totals.carbs)}g
-            </div>
-            <div className="text-xs fitcircle-text-muted">
-              / {macroTargets.carbs}g
-            </div>
-            <div className="text-xs fitcircle-text-secondary mt-1">Carbs</div>
-            <div className="w-full bg-slate-700 rounded-full h-2 mt-2">
-              <div 
-                className="bg-blue-400 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min(carbsProgress, 100)}%` }}
-              />
-            </div>
-          </div>
-          
-          <div className="fitcircle-card text-center">
-            <div className="text-lg font-bold text-red-400">
-              {Math.round(totals.protein)}g
-            </div>
-            <div className="text-xs fitcircle-text-muted">
-              / {macroTargets.protein}g
-            </div>
-            <div className="text-xs fitcircle-text-secondary mt-1">Protein</div>
-            <div className="w-full bg-slate-700 rounded-full h-2 mt-2">
-              <div 
-                className="bg-red-400 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min(proteinProgress, 100)}%` }}
-              />
-            </div>
-          </div>
-          
-          <div className="fitcircle-card text-center">
-            <div className="text-lg font-bold text-yellow-400">
-              {Math.round(totals.fat)}g
-            </div>
-            <div className="text-xs fitcircle-text-muted">
-              / {macroTargets.fat}g
-            </div>
-            <div className="text-xs fitcircle-text-secondary mt-1">Fat</div>
-            <div className="w-full bg-slate-700 rounded-full h-2 mt-2">
-              <div 
-                className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min(fatProgress, 100)}%` }}
-              />
-            </div>
-          </div>
-        </div>
+        <Dialog open={nutritionView!==null} onOpenChange={open=>{if(!open)setNutritionView(null);}}>
+          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="max-w-md bg-slate-900 border-slate-700">
+            <DialogHeader><DialogTitle>{nutritionView==='goals'?'Nutrition Goals':nutritionView==='details'?'Nutrition Details':'Weekly Nutrition'}</DialogTitle><DialogDescription>{getDateDisplayText()} · Local nutrition tracking</DialogDescription></DialogHeader>
+            {nutritionView==='goals'&&<NutritionGoals current={goals} reference={macroTargets} onSaved={next=>{setGoals(next);setNutritionView(null);}} onCalculator={()=>{setNutritionView(null);setCalculatorOpen(true);}}/>}
+            {nutritionView==='details'&&<NutritionDetails entries={foodEntries} targets={goals ?? undefined}/>}
+            {nutritionView==='week'&&<WeeklyNutrition date={selectedDate} targets={goals ?? undefined}/>}
+          </DialogContent>
+        </Dialog>
+        <Dialog open={barcodeOpen} onOpenChange={setBarcodeOpen}>
+          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="max-w-lg bg-slate-900 border-slate-700">
+            <DialogHeader><DialogTitle>Scan Barcode</DialogTitle><DialogDescription>Find a product, review its label, then choose your servings.</DialogDescription></DialogHeader>
+            {barcodeOpen&&<BarcodeEntry onReviewed={food=>{setBarcodeOpen(false);handleAddFromSearch(food);}}/>}
+          </DialogContent>
+        </Dialog>
 
         {/* Search Dialog - triggered by meal 'Add food' buttons */}
         <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-lg">
+          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-lg">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 Add to {searchMeal.charAt(0).toUpperCase() + searchMeal.slice(1)}
@@ -1043,6 +606,10 @@ export default function FoodTrackerPage() {
             </DialogHeader>
             <div className="space-y-4">
               
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="outline" onClick={()=>{setSearchOpen(false);setBarcodeOpen(true);}}>Scan Barcode</Button>
+                <Button variant="outline" onClick={()=>document.querySelector<HTMLInputElement>('[data-testid="input-search"]')?.focus()}>Search Foods</Button>
+              </div>
               {/* Search Bar */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -1123,7 +690,8 @@ export default function FoodTrackerPage() {
                               </div>
                             </div>
                             
-                            {/* Action Buttons */}
+                            {diary.saveError && <p role="alert" className="text-sm text-red-400">{diary.saveError}</p>}
+                {/* Action Buttons */}
                             <div className="flex gap-2 flex-shrink-0">
                               <Button
                                 variant="ghost"
@@ -1232,479 +800,12 @@ export default function FoodTrackerPage() {
               </DialogContent>
         </Dialog>
 
-        {/* Meal Sections */}
-        <div className="space-y-4">
-          {/* Breakfast */}
-          <Collapsible open={breakfastOpen} onOpenChange={setBreakfastOpen}>
-            <CollapsibleTrigger className="glass-panel flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
-              <div className="flex items-center space-x-3">
-                <span className="text-lg font-semibold text-white">Breakfast</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <span className="text-sm text-gray-400">
-                  {Math.round(getMealTotals('breakfast').calories)} cal
-                </span>
-                {breakfastOpen ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
-                )}
-              </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="mt-2 space-y-2">
-                {getMealEntries('breakfast').map((entry) => (
-                  <div 
-                    key={entry.id} 
-                    className="glass-panel bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
-                    onClick={() => handleEditFoodEntry(entry)}
-                    data-testid={`food-item-${entry.id}`}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-white mb-1">
-                          {entry.name}
-                        </h3>
-                        {entry.brand && (
-                          <p className="text-sm text-slate-400 mb-2">
-                            {entry.brand}
-                          </p>
-                        )}
-                        
-                        {/* Macros */}
-                        <div className="flex flex-wrap gap-2 text-xs mb-2">
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">Cal:</span> <span className="text-white font-medium">{Math.round(entry.calories * (entry.servings || 1))}</span>
-                          </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">C:</span> <span className="text-white font-medium">{Math.round(entry.carbs * (entry.servings || 1))}g</span>
-                          </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">P:</span> <span className="text-white font-medium">{Math.round(entry.protein * (entry.servings || 1))}g</span>
-                          </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">F:</span> <span className="text-white font-medium">{Math.round(entry.fat * (entry.servings || 1))}g</span>
-                          </div>
-                        </div>
-                        
-                        {/* Serving Size */}
-                        <div className="text-xs text-slate-500">
-                          Per {entry.quantity * (entry.servings || 1)}{entry.unit}
-                        </div>
-                      </div>
-                      
-                      {/* Delete Button */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteFood(entry.id);
-                        }}
-                        className="text-red-400 hover:text-red-300 hover:bg-red-950 flex-shrink-0"
-                        data-testid={`button-delete-${entry.id}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                {getMealEntries('breakfast').length === 0 && (
-                  <div className="text-center text-gray-500 py-4 text-sm">
-                    No breakfast items logged
-                  </div>
-                )}
-                
-                {/* Add Food Button */}
-                <Button
-                  onClick={() => openSearchForMeal('breakfast')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
-                  data-testid="button-add-breakfast"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Food
-                </Button>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-
-          {/* Lunch */}
-          <Collapsible open={lunchOpen} onOpenChange={setLunchOpen}>
-            <CollapsibleTrigger className="glass-panel flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
-              <div className="flex items-center space-x-3">
-                <span className="text-lg font-semibold text-white">Lunch</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <span className="text-sm text-gray-400">
-                  {Math.round(getMealTotals('lunch').calories)} cal
-                </span>
-                {lunchOpen ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
-                )}
-              </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="mt-2 space-y-2">
-                {getMealEntries('lunch').map((entry) => (
-                  <div 
-                    key={entry.id} 
-                    className="glass-panel bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
-                    onClick={() => handleEditFoodEntry(entry)}
-                    data-testid={`food-item-${entry.id}`}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-white mb-1">
-                          {entry.name}
-                        </h3>
-                        {entry.brand && (
-                          <p className="text-sm text-slate-400 mb-2">
-                            {entry.brand}
-                          </p>
-                        )}
-                        
-                        {/* Macros */}
-                        <div className="flex flex-wrap gap-2 text-xs mb-2">
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">Cal:</span> <span className="text-white font-medium">{Math.round(entry.calories * (entry.servings || 1))}</span>
-                          </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">C:</span> <span className="text-white font-medium">{Math.round(entry.carbs * (entry.servings || 1))}g</span>
-                          </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">P:</span> <span className="text-white font-medium">{Math.round(entry.protein * (entry.servings || 1))}g</span>
-                          </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">F:</span> <span className="text-white font-medium">{Math.round(entry.fat * (entry.servings || 1))}g</span>
-                          </div>
-                        </div>
-                        
-                        {/* Serving Size */}
-                        <div className="text-xs text-slate-500">
-                          Per {entry.quantity * (entry.servings || 1)}{entry.unit}
-                        </div>
-                      </div>
-                      
-                      {/* Delete Button */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteFood(entry.id);
-                        }}
-                        className="text-red-400 hover:text-red-300 hover:bg-red-950 flex-shrink-0"
-                        data-testid={`button-delete-${entry.id}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                {getMealEntries('lunch').length === 0 && (
-                  <div className="text-center text-gray-500 py-4 text-sm">
-                    No lunch items logged
-                  </div>
-                )}
-                
-                {/* Add Food Button */}
-                <Button
-                  onClick={() => openSearchForMeal('lunch')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
-                  data-testid="button-add-lunch"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Food
-                </Button>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-
-          {/* Dinner */}
-          <Collapsible open={dinnerOpen} onOpenChange={setDinnerOpen}>
-            <CollapsibleTrigger className="glass-panel flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
-              <div className="flex items-center space-x-3">
-                <span className="text-lg font-semibold text-white">Dinner</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <span className="text-sm text-gray-400">
-                  {Math.round(getMealTotals('dinner').calories)} cal
-                </span>
-                {dinnerOpen ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
-                )}
-              </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="mt-2 space-y-2">
-                {getMealEntries('dinner').map((entry) => (
-                  <div 
-                    key={entry.id} 
-                    className="glass-panel bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
-                    onClick={() => handleEditFoodEntry(entry)}
-                    data-testid={`food-item-${entry.id}`}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-white mb-1">
-                          {entry.name}
-                        </h3>
-                        {entry.brand && (
-                          <p className="text-sm text-slate-400 mb-2">
-                            {entry.brand}
-                          </p>
-                        )}
-                        
-                        {/* Macros */}
-                        <div className="flex flex-wrap gap-2 text-xs mb-2">
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">Cal:</span> <span className="text-white font-medium">{Math.round(entry.calories * (entry.servings || 1))}</span>
-                          </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">C:</span> <span className="text-white font-medium">{Math.round(entry.carbs * (entry.servings || 1))}g</span>
-                          </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">P:</span> <span className="text-white font-medium">{Math.round(entry.protein * (entry.servings || 1))}g</span>
-                          </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">F:</span> <span className="text-white font-medium">{Math.round(entry.fat * (entry.servings || 1))}g</span>
-                          </div>
-                        </div>
-                        
-                        {/* Serving Size */}
-                        <div className="text-xs text-slate-500">
-                          Per {entry.quantity * (entry.servings || 1)}{entry.unit}
-                        </div>
-                      </div>
-                      
-                      {/* Delete Button */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteFood(entry.id);
-                        }}
-                        className="text-red-400 hover:text-red-300 hover:bg-red-950 flex-shrink-0"
-                        data-testid={`button-delete-${entry.id}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                {getMealEntries('dinner').length === 0 && (
-                  <div className="text-center text-gray-500 py-4 text-sm">
-                    No dinner items logged
-                  </div>
-                )}
-                
-                {/* Add Food Button */}
-                <Button
-                  onClick={() => openSearchForMeal('dinner')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
-                  data-testid="button-add-dinner"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Food
-                </Button>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-
-          {/* Snack */}
-          <Collapsible open={snackOpen} onOpenChange={setSnackOpen}>
-            <CollapsibleTrigger className="glass-panel flex items-center justify-between w-full p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">
-              <div className="flex items-center space-x-3">
-                <span className="text-lg font-semibold text-white">Snack</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <span className="text-sm text-gray-400">
-                  {Math.round(getMealTotals('snack').calories)} cal
-                </span>
-                {snackOpen ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
-                )}
-              </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="mt-2 space-y-2">
-                {getMealEntries('snack').map((entry) => (
-                  <div 
-                    key={entry.id} 
-                    className="glass-panel bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-pointer hover:bg-slate-700/50 transition-colors"
-                    onClick={() => handleEditFoodEntry(entry)}
-                    data-testid={`food-item-${entry.id}`}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-white mb-1">
-                          {entry.name}
-                        </h3>
-                        {entry.brand && (
-                          <p className="text-sm text-slate-400 mb-2">
-                            {entry.brand}
-                          </p>
-                        )}
-                        
-                        {/* Macros */}
-                        <div className="flex flex-wrap gap-2 text-xs mb-2">
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">Cal:</span> <span className="text-white font-medium">{Math.round(entry.calories * (entry.servings || 1))}</span>
-                          </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">C:</span> <span className="text-white font-medium">{Math.round(entry.carbs * (entry.servings || 1))}g</span>
-                          </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">P:</span> <span className="text-white font-medium">{Math.round(entry.protein * (entry.servings || 1))}g</span>
-                          </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl">
-                            <span className="text-slate-400">F:</span> <span className="text-white font-medium">{Math.round(entry.fat * (entry.servings || 1))}g</span>
-                          </div>
-                        </div>
-                        
-                        {/* Serving Size */}
-                        <div className="text-xs text-slate-500">
-                          Per {entry.quantity * (entry.servings || 1)}{entry.unit}
-                        </div>
-                      </div>
-                      
-                      {/* Delete Button */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteFood(entry.id);
-                        }}
-                        className="text-red-400 hover:text-red-300 hover:bg-red-950 flex-shrink-0"
-                        data-testid={`button-delete-${entry.id}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                {getMealEntries('snack').length === 0 && (
-                  <div className="text-center text-gray-500 py-4 text-sm">
-                    No snacks logged
-                  </div>
-                )}
-                
-                {/* Add Food Button */}
-                <Button
-                  onClick={() => openSearchForMeal('snack')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl flex items-center justify-center"
-                  data-testid="button-add-snack"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Food
-                </Button>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        </div>
-
-        {/* Edit Food Modal */}
-        {editingFood && (
-          <Dialog open={!!editingFood} onOpenChange={() => setEditingFood(null)}>
-            <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-md">
-              <DialogHeader>
-                <DialogTitle>Edit Food</DialogTitle>
-                <DialogDescription className="text-gray-400">
-                  Modify the nutritional information for this food item
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                
-                <div>
-                  <Label htmlFor="editName" className="text-sm text-gray-300">Food Name</Label>
-                  <Input
-                    id="editName"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="editCalories" className="text-sm text-gray-300">Calories</Label>
-                    <Input
-                      id="editCalories"
-                      type="number"
-                      value={editCalories}
-                      onChange={(e) => setEditCalories(e.target.value)}
-                      className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="editCarbs" className="text-sm text-gray-300">Carbs (g)</Label>
-                    <Input
-                      id="editCarbs"
-                      type="number"
-                      value={editCarbs}
-                      onChange={(e) => setEditCarbs(e.target.value)}
-                      className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="editProtein" className="text-sm text-gray-300">Protein (g)</Label>
-                    <Input
-                      id="editProtein"
-                      type="number"
-                      value={editProtein}
-                      onChange={(e) => setEditProtein(e.target.value)}
-                      className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="editFat" className="text-sm text-gray-300">Fat (g)</Label>
-                    <Input
-                      id="editFat"
-                      type="number"
-                      value={editFat}
-                      onChange={(e) => setEditFat(e.target.value)}
-                      className="bg-gray-700 border-gray-600 text-white rounded-xl"
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex space-x-3 pt-2">
-                  <Button 
-                    onClick={handleSaveEdit}
-                    disabled={!editName.trim() || !editCalories || !editCarbs || !editProtein || !editFat}
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl"
-                  >
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Changes
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={handleCancelEdit}
-                    className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 rounded-xl"
-                  >
-                    <Cancel className="h-4 w-4 mr-2" />
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
+        <div className="flex items-center justify-between mb-3"><h2 className="text-lg font-semibold text-white">{isToday(selectedDate)?"Today's Meals":'Meals'}</h2></div>
+        <MealDiary entries={foodEntries} disabled={!diary.ready} onAdd={openSearchForMeal} onEdit={handleEditFoodEntry} onDelete={handleDeleteFood}/>
 
         {/* Custom Food Dialog */}
         <Dialog open={customFoodOpen} onOpenChange={setCustomFoodOpen}>
-          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-2xl overflow-y-auto">
+          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-2xl overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create Custom Food</DialogTitle>
               <DialogDescription className="text-gray-400">
@@ -1770,6 +871,8 @@ export default function FoodTrackerPage() {
                         <SelectItem value="cup">cups</SelectItem>
                         <SelectItem value="piece">pieces</SelectItem>
                         <SelectItem value="serving">servings</SelectItem>
+                        <SelectItem value="ml">milliliters (ml)</SelectItem>
+                        <SelectItem value="slice">slices</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -2007,7 +1110,7 @@ export default function FoodTrackerPage() {
 
         {/* Add Entry Modal (When adding food from search/recent) */}
         <Dialog open={addEntryOpen} onOpenChange={setAddEntryOpen}>
-          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-md">
+          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-md">
             <DialogHeader>
               <DialogTitle>Add Entry</DialogTitle>
             </DialogHeader>
@@ -2091,6 +1194,7 @@ export default function FoodTrackerPage() {
                   </div>
                 </div>
 
+                {diary.saveError && <p role="alert" className="text-sm text-red-400">{diary.saveError}</p>}
                 {/* Action Buttons */}
                 <div className="flex space-x-3 pt-2">
                   <Button
@@ -2115,7 +1219,7 @@ export default function FoodTrackerPage() {
 
         {/* Edit Entry Modal (Simple modal for adjusting servings and meal) */}
         <Dialog open={editEntryOpen} onOpenChange={setEditEntryOpen}>
-          <DialogContent className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-md">
+          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="bg-gray-800 border-gray-600 text-white rounded-2xl max-w-md">
             <DialogHeader>
               <DialogTitle>Edit Entry</DialogTitle>
             </DialogHeader>
@@ -2199,6 +1303,7 @@ export default function FoodTrackerPage() {
                   </div>
                 </div>
 
+                {diary.saveError && <p role="alert" className="text-sm text-red-400">{diary.saveError}</p>}
                 {/* Action Buttons */}
                 <div className="flex space-x-3 pt-2">
                   <Button
@@ -2223,7 +1328,7 @@ export default function FoodTrackerPage() {
 
         {/* Fitness Calculator Modal */}
         <Dialog open={calculatorOpen} onOpenChange={setCalculatorOpen}>
-          <DialogContent className="max-w-4xl overflow-y-auto bg-slate-900 border-slate-700">
+          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="max-w-4xl overflow-y-auto bg-slate-900 border-slate-700">
             <DialogHeader className="sm:text-center">
               <DialogTitle className="fitcircle-page-title">Fitness Calculator</DialogTitle>
             </DialogHeader>

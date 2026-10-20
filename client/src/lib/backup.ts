@@ -1,3 +1,4 @@
+import { nutritionGoalsSchema } from './nutrition';
 import { findStorageSource, isBackupKey as isAppKey, scalarKeys, calculatorKeys, goalKey, datedFoodKey } from './storage-registry';
 import { z } from 'zod';
 import builtInFoods from '../data/comprehensive-foods.json';
@@ -17,6 +18,7 @@ const dailyLog = record(z.union([number, shaped({ count: number, goalAtTime: num
 // Shared validation only; backup acceptance and stored representations are unchanged.
 export const workoutDataSchema = shaped({ workouts: z.union([record(workout), z.array(workout)]), dailyLogs: record(dailyLog).optional(), journalEntries: record(z.union([text, shaped({ text, timestamp: text })])).optional(), routines: record(shaped({ id: text, name: text, selectedDays: z.array(number), createdAt: text })).optional() });
 const schemas: Record<string, z.ZodTypeAny> = {
+  fitcircle_nutrition_goals: nutritionGoalsSchema,
   'workout-tracker-data': workoutDataSchema,
   'workout-tracker-logs': record(dailyLog),
   fitcircle_food_database: foods,
