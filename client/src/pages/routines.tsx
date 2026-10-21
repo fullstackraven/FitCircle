@@ -2,7 +2,7 @@ import { SidebarProfileCard } from '@/components/SidebarProfileCard';
 import { VersionLabel } from "@/components/VersionLabel";
 import { AppHeader } from "@/components/AppHeader";
 import { useState, useEffect, useRef } from 'react';
-import { Edit, ChevronUp, ChevronDown, Plus, Menu, Settings, Calculator, CheckCircle, Trash2 } from 'lucide-react';
+import { Edit, ChevronUp, ChevronDown, Plus, Menu, Settings, Calculator, CheckCircle, Trash2, Dumbbell } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useWorkouts } from '@/hooks/use-workouts';
@@ -158,12 +158,12 @@ export default function RoutinesPage() {
           <section className="mb-8">
             <button
               onClick={handleAddRoutine}
-              className="w-full p-8 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors border-2 border-dashed border-slate-600 hover:border-slate-500"
+              className="w-full rounded-2xl border border-dashed border-slate-600 bg-slate-800/80 p-4 transition-colors hover:border-slate-500 hover:bg-slate-800"
               data-testid="button-add-routine"
             >
               <div className="flex flex-col items-center space-y-3">
-                <Plus className="w-8 h-8 text-slate-400" />
-                <div className="text-lg font-semibold text-white">Tap to Add Routines</div>
+                <Plus className="h-5 w-5 text-slate-400" />
+                <div className="text-base font-semibold text-white">Tap to Add Routines</div>
                 <div className="text-sm text-slate-400">Create workout routines for specific days</div>
               </div>
             </button>
@@ -172,7 +172,7 @@ export default function RoutinesPage() {
 
         {/* Display Existing Routines */}
         {routines.length > 0 && (
-          <section className="mb-8 space-y-4">
+          <section className="mb-4 space-y-3">
             {routines.map((routine) => {
               const routineWorkouts = getWorkoutsByDays(routine.selectedDays);
               const daysText = getScheduledDaysText(routine.selectedDays);
@@ -180,63 +180,46 @@ export default function RoutinesPage() {
               const isExpanded = expandedRoutines.has(routine.id);
               
               return (
-                <div key={routine.id} className="glass-panel bg-slate-800 rounded-xl overflow-hidden">
-                  {/* Routine Header - Clickable */}
-                  <div 
-                    className="p-4 cursor-pointer hover:bg-slate-750 transition-colors"
-                    onClick={() => toggleRoutineExpansion(routine.id)}
-                    data-testid={`routine-header-${routine.id}`}
-                  >
-                    <div className="flex items-center justify-between">
+                <div key={routine.id} className="rounded-2xl border border-slate-700/70 bg-slate-800/80" data-testid={`routine-card-${routine.id}`}>
+                  <div className="flex items-center gap-1 px-3 py-2">
+                    <button type="button"
+                      className="flex min-h-14 min-w-0 flex-1 items-center gap-2 rounded-xl py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-400"
+                      onClick={() => toggleRoutineExpansion(routine.id)}
+                      aria-expanded={isExpanded}
+                      aria-controls={`routine-content-${routine.id}`}
+                      data-testid={`routine-header-${routine.id}`}
+                    >
                       <div className="min-w-0 flex-1">
-                        <div>
-                          <h3 className="entity-name pr-3 text-lg font-semibold text-white">{routine.name}</h3>
-                          <p className="text-sm text-slate-400">{daysText}</p>
-                        </div>
+                        <h3 className="entity-name text-base font-semibold text-white">{routine.name}</h3>
+                        <p className="mt-1 text-xs leading-5 text-slate-400">{daysText} · {routineWorkouts.length} {routineWorkouts.length === 1 ? 'exercise' : 'exercises'}</p>
                       </div>
-                      <div className="flex shrink-0 items-center space-x-3" onClick={(e) => e.stopPropagation()}>
-                        <ChevronDown 
-                          className={`w-5 h-5 text-slate-400 transition-transform ${
-                            isExpanded ? 'rotate-180' : ''
-                          }`}
-                        />
-                        <button
-                          onClick={() => handleEditRoutine(routine)}
-                          aria-label={`Edit routine ${routine.name}`}
-                          className="p-2 text-slate-400 hover:text-slate-200 transition-colors"
-                          data-testid={`button-edit-routine-${routine.id}`}
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          onClick={(event) => { deletionTriggerRef.current = event.currentTarget; setPendingRoutineDeletion({ id: routine.id, name: routine.name }); }}
-                          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-slate-400 hover:text-red-400 transition-colors"
-                          aria-label={`Delete routine ${routine.name}`}
-                          data-testid={`button-delete-routine-${routine.id}`}
-                        >
-                          <Trash2 size={18} aria-hidden="true" />
-                        </button>
-                      </div>
-                    </div>
+                      <ChevronDown aria-hidden="true" className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                    </button>
+                    <button
+                      onClick={() => handleEditRoutine(routine)}
+                      aria-label={`Edit routine ${routine.name}`}
+                      className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-slate-400 hover:text-white focus-visible:ring-2 focus-visible:ring-green-400"
+                      data-testid={`button-edit-routine-${routine.id}`}
+                    ><Edit size={18} aria-hidden="true" /></button>
+                    <button
+                      onClick={(event) => { deletionTriggerRef.current = event.currentTarget; setPendingRoutineDeletion({ id: routine.id, name: routine.name }); }}
+                      className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-slate-400 hover:text-red-400 focus-visible:ring-2 focus-visible:ring-green-400"
+                      aria-label={`Delete routine ${routine.name}`}
+                      data-testid={`button-delete-routine-${routine.id}`}
+                    ><Trash2 size={18} aria-hidden="true" /></button>
                   </div>
-                  
+
                   {/* Expandable Content */}
                   {isExpanded && (
-                    <div className="px-4 pb-4">
+                    <div id={`routine-content-${routine.id}`} className="mx-3 border-t border-slate-700/60 pb-3 pt-3">
                       {routineWorkouts.length > 0 ? (
                         <div className="space-y-2">
-                          <p className="text-xs text-slate-500 mb-2">
-                            {routineWorkouts.length} workout{routineWorkouts.length !== 1 ? 's' : ''} scheduled for these days:
-                          </p>
                           {routineWorkouts.map((workout) => (
-                            <div key={workout.id} className="flex items-center space-x-3 p-2 bg-slate-700 rounded-xl">
-                              <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)}`} />
-                              <div className="min-w-0 flex-1">
-                                <span className="entity-name text-white text-sm font-medium">{workout.name}</span>
-                                <span className="text-xs text-slate-400 ml-2">Goal: {workout.dailyGoal}</span>
-                                {workout.weightLbs && (
-                                  <span className="text-xs text-slate-400 ml-1">• {workout.weightLbs}lbs</span>
-                                )}
+                            <div key={workout.id} data-testid={`routine-exercise-${routine.id}-${workout.id}`} className="flex min-w-0 items-center gap-3 rounded-xl bg-slate-700/60 px-3 py-2.5">
+                              <span aria-hidden="true" className={`h-2.5 w-2.5 shrink-0 rounded-full ${getColorClass(workout.color)}`} />
+                              <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                                <span className="entity-name min-w-0 text-sm font-medium text-white">{workout.name}</span>
+                                <span className="entity-name text-xs text-slate-400 tabular-nums">{workout.dailyGoal} reps{workout.weightLbs ? ` · ${workout.weightLbs} lb` : ''}</span>
                               </div>
                             </div>
                           ))}
@@ -255,7 +238,7 @@ export default function RoutinesPage() {
                           setEditingWorkout(null);
                           setIsModalOpen(true);
                         }}
-                        className="w-full mt-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl transition-colors flex items-center justify-center space-x-2 text-slate-300 hover:text-white"
+                        className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-slate-700/60 px-3 py-2 text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
                         data-testid={`button-add-workout-${routine.id}`}
                       >
                         <Plus className="w-4 h-4" />
@@ -273,11 +256,11 @@ export default function RoutinesPage() {
         {routines.length > 0 && (
           <button
             onClick={handleAddRoutine}
-            className="w-full py-3 mb-8 bg-green-600 hover:bg-green-700 rounded-xl transition-colors flex items-center justify-center space-x-2"
+            className="mb-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-green-600 px-4 py-3 transition-colors hover:bg-green-700"
             data-testid="button-create-routine"
           >
-            <span className="text-white font-medium">Create Routine</span>
-            <Plus className="w-5 h-5 text-white" />
+            <Plus className="h-4 w-4 text-white" aria-hidden="true" />
+            <span className="text-white font-semibold">Create Routine</span>
           </button>
         )}
 
@@ -288,17 +271,16 @@ export default function RoutinesPage() {
               <CollapsibleTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-between bg-slate-800 border-slate-700 text-white hover:bg-slate-700 py-4 h-auto rounded-xl"
+                  className="h-auto min-h-14 w-full justify-between rounded-2xl border-slate-700/70 bg-slate-800/80 px-3 py-3 text-white hover:bg-slate-800"
                 >
-                  <span className="text-lg font-semibold">Edit Workouts</span>
-                  {isEditWorkoutsOpen ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
+                  <span className="flex items-center gap-3 text-base font-semibold"><Dumbbell className="h-4 w-4 text-green-400" aria-hidden="true" />Edit Workouts</span>
+                  {isEditWorkoutsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </Button>
               </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="glass-panel space-y-3 bg-slate-800 rounded-xl p-4">
+              <div className="mt-2 space-y-2 rounded-2xl border border-slate-700/70 bg-slate-800/80 p-3" data-testid="exercise-library">
                 {workouts.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="text-6xl mb-4">🏋️</div>
+                  <div className="text-center py-4">
                     <h3 className="text-xl font-bold text-white mb-2">No Workouts Yet</h3>
                     <p className="text-slate-400 text-sm mb-4">
                       Create your first workout routine to get started.
@@ -320,22 +302,22 @@ export default function RoutinesPage() {
                       return (
                         <div 
                           key={workout.id} 
-                          className="flex items-center justify-between p-4 bg-slate-700 rounded-xl"
+                          className="flex min-w-0 items-center justify-between gap-2 rounded-xl bg-slate-700/60 px-3 py-2" data-testid={`library-exercise-${workout.id}`}
                         >
                           <div className="flex min-w-0 flex-1 items-center space-x-3">
-                            <div className={`w-3 h-3 rounded-full ${getColorClass(workout.color)}`} />
+                            <div className={`h-2.5 w-2.5 shrink-0 rounded-full ${getColorClass(workout.color)}`} />
                             <div className="min-w-0">
-                              <div className="entity-name text-white font-medium">{workout.name}</div>
-                              <div className="text-xs text-slate-400">
-                                {scheduledDaysText} • Goal: {workout.dailyGoal}
-                                {workout.weightLbs && ` • ${workout.weightLbs}lbs`}
+                              <div className="entity-name text-sm font-medium text-white">{workout.name}</div>
+                              <div className="entity-name mt-1 text-xs text-slate-400 tabular-nums">
+                                {scheduledDaysText} · {workout.dailyGoal} reps
+                                {workout.weightLbs && ` · ${workout.weightLbs} lb`}
                               </div>
                             </div>
                           </div>
                           <button
                             onClick={() => handleEditWorkout(workout)}
                             aria-label={`Edit workout ${workout.name}`}
-                            className="text-slate-400 hover:text-slate-200 transition-colors"
+                            className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-slate-400 transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-green-400"
                           >
                             <Edit size={16} />
                           </button>
@@ -349,7 +331,7 @@ export default function RoutinesPage() {
                           setIsModalOpen(true);
                         }}
                         variant="outline"
-                        className="w-full bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                        className="min-h-11 w-full bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
                       >
                         Add New Workout
                       </Button>

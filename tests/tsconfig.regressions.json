@@ -31,7 +31,8 @@
     "browser/wellness-design.spec.ts",
     "nutrient-references.test.ts",
     "browser/nutrition-details.spec.ts",
-    "browser/weekly-nutrition.spec.ts"
+    "browser/weekly-nutrition.spec.ts",
+    "browser/routines-configuration.spec.ts"
   ],
   "exclude": [
     "../node_modules",
