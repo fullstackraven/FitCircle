@@ -2,7 +2,7 @@ import { SidebarProfileCard } from '@/components/SidebarProfileCard';
 import { VersionLabel } from "@/components/VersionLabel";
 import { AppHeader } from "@/components/AppHeader";
 import { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { createPortal, flushSync } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Plus, Check, MoreHorizontal, Edit3, Trash2, Menu, Settings, Calculator, CheckCircle } from 'lucide-react';
@@ -16,11 +16,15 @@ export default function RemindersPage() {
   
   const [showAddForm, setShowAddForm] = useState(false);
   const draftRef = useRef<HTMLFormElement>(null);
+  const draftInputRef = useRef<HTMLInputElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const scrollToNewest = useRef(false);
 
   useEffect(() => {
-    if (showAddForm) draftRef.current?.scrollIntoView({ block: 'nearest' });
+    if (showAddForm) {
+      draftInputRef.current?.focus({preventScroll: true});
+      draftRef.current?.scrollIntoView({ block: 'nearest' });
+    }
   }, [showAddForm]);
 
   useEffect(() => {
@@ -55,22 +59,26 @@ export default function RemindersPage() {
   const completedReminders = reminders.filter(r => r.completed).reverse();
 
 
+  const openDraft = () => {
+    // Mount and focus inside the tap gesture so iOS can open the keyboard.
+    flushSync(() => setShowAddForm(true));
+    draftInputRef.current?.focus({preventScroll: true});
+    draftRef.current?.scrollIntoView({block: 'nearest'});
+  };
+
+  const dismissDraft = () => {
+    setNewReminderText('');
+    setShowAddForm(false);
+  };
+
   const handleAddReminder = () => {
-    if (newReminderText.trim()) {
-      // Check if we need to insert at a specific position
-      const insertAfterIndexStr = localStorage.getItem('insertAfterIndex');
-      let insertAfterIndex: number | undefined;
-      
-      if (insertAfterIndexStr !== null) {
-        insertAfterIndex = parseInt(insertAfterIndexStr);
-        localStorage.removeItem('insertAfterIndex'); // Clean up after use
-      }
-      
-      addReminder(newReminderText.trim(), insertAfterIndex);
-      setNewReminderText('');
-      setShowAddForm(false);
-      scrollToNewest.current = true;
-    }
+    const text = newReminderText.trim();
+    if (!text) { dismissDraft(); return; }
+    addReminder(text);
+    setNewReminderText('');
+    setShowAddForm(true);
+    scrollToNewest.current = true;
+    draftInputRef.current?.focus({preventScroll: true});
   };
 
   const startEditing = (reminder: any) => {
@@ -125,17 +133,10 @@ export default function RemindersPage() {
       }
       
       if (openNewReminder) {
-        // Find the position of the edited reminder in the full reminders array
-        const editedReminderIndex = reminders.findIndex(r => r.id === editingId);
-        console.log('Edited reminder index:', editedReminderIndex, 'ID:', editingId);
         setEditingId(null);
         setEditText('');
-        
-        // Set up state to add new reminder after the edited one
         setShowAddForm(true);
         setNewReminderText('');
-        // Store the position where we want to insert the new reminder
-        localStorage.setItem('insertAfterIndex', editedReminderIndex.toString());
       } else {
         setEditingId(null);
         setEditText('');
@@ -196,6 +197,27 @@ export default function RemindersPage() {
           </div>
         )}
 
+        {showAddForm ? (
+          <form ref={draftRef} aria-label="New reminder" onSubmit={event => { event.preventDefault(); handleAddReminder(); }} className="glass-row rounded-xl border border-slate-700/50 p-3 my-2">
+            <div className="flex items-center gap-3">
+              <span className="w-6 h-6 shrink-0 rounded-full border-2 border-slate-500" aria-hidden="true" />
+              <input ref={draftInputRef} aria-label="New reminder" enterKeyHint="next" autoComplete="off" value={newReminderText} onChange={event => {
+                const value = event.target.value;
+                setNewReminderText(value);
+                if (!value && newReminderText && !(event.nativeEvent as InputEvent).isComposing) setShowAddForm(false);
+              }} onBlur={() => { if (!newReminderText.trim()) dismissDraft(); }} onKeyDown={event => {
+                if (event.nativeEvent.isComposing || event.keyCode === 229) return;
+                if (event.key === 'Enter') { event.preventDefault(); handleAddReminder(); }
+                if (event.key === 'Escape' || ((event.key === 'Backspace' || event.key === 'Delete') && !newReminderText)) { event.preventDefault(); dismissDraft(); }
+              }} className="min-w-0 flex-1 min-h-11 bg-transparent text-base text-white outline-none focus-visible:ring-1 focus-visible:ring-green-400 rounded" />
+            </div>
+          </form>
+        ) : (
+          <button type="button" aria-label="Write a reminder" onClick={openDraft} className="glass-row w-full rounded-xl border border-slate-700/50 p-3 my-2 flex items-center gap-3 min-h-16 text-left text-slate-400">
+            <span className="w-6 h-6 shrink-0 rounded-full border-2 border-slate-500" aria-hidden="true" /><span>New reminder</span>
+          </button>
+        )}
+
         {reminders.length === 0 && !showAddForm ? (
           <div className="min-h-[40dvh] flex items-center justify-center text-slate-500 text-lg">No Reminders</div>
         ) : (
@@ -248,27 +270,13 @@ export default function RemindersPage() {
             ))}
           </ul>
         )}
-        {showAddForm && (
-          <form ref={draftRef} aria-label="New reminder" onSubmit={event => { event.preventDefault(); handleAddReminder(); }} className="glass-row rounded-xl border border-slate-700/50 p-3 mt-2">
-            <div className="flex items-center gap-3">
-              <span className="w-6 h-6 shrink-0 rounded-full border-2 border-slate-500" aria-hidden="true" />
-              <input aria-label="New reminder" value={newReminderText} onChange={event => setNewReminderText(event.target.value)} onKeyDown={event => {
-                if (event.key === 'Escape') { setNewReminderText(''); setShowAddForm(false); }
-              }} className="min-w-0 flex-1 min-h-11 bg-transparent text-base text-white outline-none focus-visible:ring-1 focus-visible:ring-green-400 rounded" />
-            </div>
-            <div className="flex justify-end gap-2 mt-2">
-              <Button type="button" variant="outline" onClick={() => { setNewReminderText(''); setShowAddForm(false); }}>Cancel</Button>
-              <Button type="submit" disabled={!newReminderText.trim()} className="bg-green-400 text-slate-950 hover:bg-green-300">Add Reminder</Button>
-            </div>
-          </form>
-        )}
         {completedReminders.length > 0 && !selectMode && (
           <button onClick={() => setSelectMode(true)} className="min-h-11 text-sm text-slate-400 hover:text-green-400 mt-2">Select completed</button>
         )}
       </div>
 
       {createPortal(
-        <button onClick={() => setShowAddForm(true)} aria-label="New Reminder" className="reminders-add-button rounded-full bg-green-400 text-slate-950 shadow-lg shadow-black/30 hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-400">
+        <button onClick={openDraft} aria-label="New Reminder" className="reminders-add-button rounded-full bg-green-400 text-slate-950 shadow-lg shadow-black/30 hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-400">
           <Plus size={28} aria-hidden="true" />
         </button>, document.body
       )}

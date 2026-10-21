@@ -61,6 +61,9 @@ async function seed(page: Page) {
     { food, today, yesterday },
   );
   await page.goto("food-tracker");
+  // Navigation's load event can precede main.tsx's dynamic App import/mount.
+  // Offline scenarios must begin after the dashboard is actually usable.
+  await expect(page.getByTestId("button-add-breakfast")).toBeVisible();
 }
 async function addSearch(page: Page, meal = "breakfast") {
   await page.getByTestId(`button-add-${meal}`).click();
@@ -267,9 +270,9 @@ test("scans open Add Entry, automatically cache label servings and remain usable
   context,
 }) => {
   await seed(page);
-  await page.route(
-    "https://world.openfoodfacts.org/api/v3/product/**",
-    (route) =>
+  await page
+    .context()
+    .route("https://world.openfoodfacts.org/api/v3/product/**", (route) =>
       route.fulfill({
         json: {
           status: "success",
@@ -294,7 +297,7 @@ test("scans open Add Entry, automatically cache label servings and remain usable
           },
         },
       }),
-  );
+    );
   await openBarcode(page);
   await page.getByLabel("Manual barcode").fill("036000291452");
   await page.getByRole("button", { name: "Find Product" }).click();
@@ -331,7 +334,13 @@ test("scans open Add Entry, automatically cache label servings and remain usable
     servings: 1,
     meal: "breakfast",
   });
-  await page.unroute("https://world.openfoodfacts.org/api/v3/product/**");
+  await context.unroute("https://world.openfoodfacts.org/api/v3/product/**");
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  await expect
+    .poll(() =>
+      page.evaluate(() => Boolean(navigator.serviceWorker.controller)),
+    )
+    .toBe(true);
   await context.setOffline(true);
   await page.reload();
   await openBarcode(page);
@@ -367,9 +376,9 @@ test("missing core barcode nutrients require label review; camera denial leaves 
   await expect(page.getByRole("alert")).toContainText("printed barcode");
   await page.getByRole("button", { name: "Stop Camera" }).click();
   await expect(page.getByLabel("Manual barcode")).toBeVisible();
-  await page.route(
-    "https://world.openfoodfacts.org/api/v3/product/**",
-    (route) =>
+  await page
+    .context()
+    .route("https://world.openfoodfacts.org/api/v3/product/**", (route) =>
       route.fulfill({
         json: {
           status: 1,
@@ -380,7 +389,7 @@ test("missing core barcode nutrients require label review; camera denial leaves 
           },
         },
       }),
-  );
+    );
   await page.getByLabel("Manual barcode").fill("036000291452");
   await page.getByRole("button", { name: "Find Product" }).click();
   await page.getByTestId("button-save-add-entry").click();
@@ -780,9 +789,9 @@ test("automatic scan caching failure blocks logging; diary failure retains cache
   page,
 }) => {
   await seed(page);
-  await page.route(
-    "https://world.openfoodfacts.org/api/v3/product/**",
-    (route) =>
+  await page
+    .context()
+    .route("https://world.openfoodfacts.org/api/v3/product/**", (route) =>
       route.fulfill({
         json: {
           status: 1,
@@ -799,7 +808,7 @@ test("automatic scan caching failure blocks logging; diary failure retains cache
           },
         },
       }),
-  );
+    );
   await openBarcode(page);
   await page.getByLabel("Manual barcode").fill("036000291452");
   await page.getByRole("button", { name: "Find Product" }).click();
@@ -1003,4 +1012,57 @@ test("calculator target write failures are visible and do not claim a successful
       localStorage.getItem("fitness_calc_target_calories"),
     ),
   ).toBe("1800");
+});
+
+test.describe("deferred App startup", () => {
+  // This test owns the App response; a worker cache must not bypass the gate.
+  test.use({ serviceWorkers: "block" });
+
+  test("offline barcode setup waits for the dashboard when the App module is still loading", async ({
+    page,
+    context,
+  }) => {
+    let release!: () => void;
+    let observed!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const requested = new Promise<void>((resolve) => {
+      observed = resolve;
+    });
+    await page.route("**/assets/App-*.js", async (route) => {
+      if (
+        new URL(route.request().frame().url()).pathname.endsWith(
+          "/food-tracker",
+        )
+      ) {
+        observed();
+        await gate;
+      }
+      await route.continue();
+    });
+    let ready = false;
+    const initialized = seed(page).then(() => {
+      ready = true;
+    });
+    try {
+      await requested;
+      await page.waitForLoadState("load");
+      await page.evaluate(() => document.readyState);
+      expect(await page.getByTestId("button-add-breakfast").count()).toBe(0);
+      expect(ready).toBe(false);
+    } finally {
+      release();
+    }
+    await initialized;
+    await context.setOffline(true);
+    await openBarcode(page);
+    await page.getByLabel("Manual barcode").fill(food.barcode);
+    await page
+      .getByRole("button", { name: "Find Product", exact: true })
+      .click();
+    await expect(
+      page.getByRole("heading", { name: "Add Entry", exact: true }),
+    ).toBeVisible();
+  });
 });

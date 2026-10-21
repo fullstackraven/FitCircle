@@ -210,7 +210,7 @@ export default function Home() {
     >
       {/* Header Section - Fixed */}
       <AppHeader>
-        <div className="relative text-center h-14 flex items-center justify-center max-w-md mx-auto w-[calc(100%-2rem)]">
+        <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           {/* Hamburger Menu Icon */}
           <button
             onClick={() => setIsSidebarOpen(true)}

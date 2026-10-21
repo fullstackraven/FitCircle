@@ -23,7 +23,7 @@ test('reminder glass rows preserve create, complete and reload behavior', async 
   await page.getByRole('button', { name: 'New Reminder', exact: true }).click();
   const input = page.getByRole('textbox', { name: 'New reminder', exact: true });
   await input.fill('Material review reminder');
-  await page.getByRole('button', { name: 'Add Reminder', exact: true }).click();
+  await input.press('Enter');
   const row = page.locator('.glass-row').filter({ hasText: 'Material review reminder' });
   await expect(row).toBeVisible();
   await row.getByRole('button').first().click();
