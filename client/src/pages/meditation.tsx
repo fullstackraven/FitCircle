@@ -1,11 +1,20 @@
+import {
+  WellnessPageShell,
+  WellnessProgressHero,
+  WellnessRecentActivity,
+  WellnessTodaySection,
+  WellnessPrimaryAction,
+  WellnessHistoryRow,
+  WellnessGoalSheet,
+  WellnessEntryActions,
+} from "@/components/wellness/WellnessUI";
+import { dailyTotals } from "@/lib/wellness-progress";
 import { WellnessHistory } from "@/components/WellnessHistory";
 import { percentage } from "@/lib/wellness-progress";
 import { ViewportOverlay } from "@/components/ui/viewport-overlay";
 import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Play, Pause, Square, Target, X, Plus } from "lucide-react";
-import { useLocation } from "wouter";
+import { Play, Pause, Square, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,44 +29,30 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { GoalCircle } from "@/components/GoalCircle";
-import {
-  useMeditation,
-  type MeditationLog,
-  type MeditationSession,
-} from "@/hooks/use-meditation";
+import { useMeditation, type MeditationSession } from "@/hooks/use-meditation";
 import { useGoals } from "@/hooks/use-goals";
 
-import {
-  groupLogsByMonth,
-  getTodayString,
-  getDateString,
-} from "@/lib/date-utils";
+import { groupLogsByMonth, getTodayString } from "@/lib/date-utils";
 
 export default function MeditationPage() {
-  const [, navigate] = useLocation();
-
-  // Check if we came from dashboard
-  const fromDashboard =
-    new URLSearchParams(window.location.search).get("from") === "dashboard";
-
-  const handleBack = () => {
-    navigate("/wellness");
-  };
   const {
     error,
     logs,
     dailyLogs,
-    addLog,
     addSession,
+    updateSession,
+    deleteSession,
     getTodayMinutes,
     getDailyGoal,
-    getProgressPercentage,
     isGoalReached,
-    getLast10LogsProgress,
-    getAllTimeGoalPercentage,
     getHistoricalStats,
   } = useMeditation();
   const { goals, updateGoal } = useGoals();
+  const [editingSession, setEditingSession] = useState<{
+    date: string;
+    id: string;
+    duration: string;
+  } | null>(null);
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0); // in seconds
@@ -79,9 +74,6 @@ export default function MeditationPage() {
     // Initialize goal input with current goal value from hook
     setGoalMinutesInput(getDailyGoal().toString());
   }, [getDailyGoal()]);
-
-  // Group logs by month for display (using legacy compatibility)
-  const monthlyLogs = groupLogsByMonth(logs);
 
   // Get today's sessions for the "Today's Meditation" section
   const getTodaySessions = () => {
@@ -143,9 +135,8 @@ export default function MeditationPage() {
   const playGongSound = async () => {
     try {
       // Create audio context - iOS requires user interaction first
-      const audioContext = new (
-        window.AudioContext || (window as any).webkitAudioContext
-      )();
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
 
       // Resume context if suspended (iOS requirement)
       if (audioContext.state === "suspended") {
@@ -232,9 +223,8 @@ export default function MeditationPage() {
 
     // Initialize audio context on user interaction (iOS requirement)
     try {
-      const audioContext = new (
-        window.AudioContext || (window as any).webkitAudioContext
-      )();
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
       if (audioContext.state === "suspended") {
         await audioContext.resume();
       }
@@ -307,30 +297,17 @@ export default function MeditationPage() {
   };
 
   return (
-    <div className="fitcircle-page">
-      <div className="fitcircle-container">
+    <>
+      <WellnessPageShell
+        title="Meditation"
+        accent="#a855f7"
+        onGoal={() => setIsGoalModalOpen(true)}
+      >
         {error && (
           <p role="alert" className="text-sm text-amber-300">
             {error}
           </p>
         )}
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="fitcircle-page-title">Meditation</h1>
-          <button
-            onClick={() => setIsGoalModalOpen(true)}
-            className="flex items-center space-x-1 fitcircle-text-muted hover:text-white transition-colors"
-          >
-            <Target className="w-5 h-5" />
-            <span>Goal</span>
-          </button>
-        </div>
 
         {/* Completion Notification */}
         {showCompletion && (
@@ -338,7 +315,7 @@ export default function MeditationPage() {
             title="Session Complete"
             onDismiss={() => setShowCompletion(false)}
           >
-            <div className="glass-panel bg-slate-800 rounded-xl p-8 text-center max-w-sm mx-4 border border-blue-500">
+            <div className="glass-panel bg-slate-800 rounded-xl p-8 text-center max-w-sm mx-4 border border-purple-500">
               <div className="text-6xl mb-4">🧘‍♂️</div>
               <h2 className="text-2xl font-bold text-white mb-2">
                 Session Complete!
@@ -351,23 +328,19 @@ export default function MeditationPage() {
         )}
 
         {/* Main Meditation Circle - transforms between progress tracker and timer */}
-        <div className="flex justify-center mb-8">
+        <div className="w-full">
           {!isActive ? (
             /* Progress Circle when not meditating */
-            <GoalCircle
-              percentage={getProgressPercentage()}
-              color="rgb(168, 85, 247)"
-              size={240}
-              strokeWidth={16}
-              currentValue={getTodayMinutes()}
-              goalValue={getDailyGoal()}
+            <WellnessProgressHero
+              current={getTodayMinutes()}
+              target={getDailyGoal()}
               unit="min"
+              period="Today"
               title="Today's Meditation"
-              description={`Goal: ${getDailyGoal()}min/day`}
             />
           ) : (
             /* Timer Circle when meditating */
-            <div className="relative">
+            <div className="relative mx-auto w-fit">
               <svg width="240" height="240" className="transform -rotate-90">
                 {/* Background circle */}
                 <circle
@@ -383,7 +356,7 @@ export default function MeditationPage() {
                   cx="120"
                   cy="120"
                   r="104"
-                  stroke="rgb(59, 130, 246)"
+                  stroke="rgb(168, 85, 247)"
                   strokeWidth="16"
                   fill="none"
                   strokeLinecap="round"
@@ -394,7 +367,7 @@ export default function MeditationPage() {
                   }
                   className="transition-all duration-1000 ease-linear"
                   style={{
-                    filter: "drop-shadow(0 0 20px rgba(59, 130, 246, 0.5))",
+                    filter: "drop-shadow(0 0 20px rgba(168, 85, 247, 0.3))",
                   }}
                 />
               </svg>
@@ -420,52 +393,25 @@ export default function MeditationPage() {
           </div>
         )}
 
-        {/* Last 10 Logs Progress Stats */}
-        <Card className="fitcircle-card-lg mb-6">
-          <CardContent className="p-4">
-            <h3 className="text-lg font-semibold mb-3 text-center">
-              Last 10 Calendar Days
-            </h3>
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div>
-                <div className="type-metric text-2xl font-bold text-purple-400">
-                  {getLast10LogsProgress().totalMinutes}min
-                </div>
-                <div className="text-sm text-slate-400">Completed</div>
-              </div>
-              <div>
-                <div className="type-metric text-2xl font-bold text-purple-400">
-                  {getLast10LogsProgress().averageMinutes}min
-                </div>
-                <div className="text-sm text-slate-400">
-                  Calendar-day average
-                </div>
-              </div>
-            </div>
-            {getLast10LogsProgress().remaining > 0 && (
-              <div className="mt-3 text-center text-slate-300">
-                <span className="text-sm">
-                  {getLast10LogsProgress().remaining} minutes · 10-day shortfall
-                </span>
-              </div>
-            )}
-            <WellnessHistory stats={getHistoricalStats()} unit="min" />
-          </CardContent>
-        </Card>
+        <WellnessRecentActivity
+          totals={dailyTotals("meditation", { dailyLogs })}
+          unit="min"
+          summary={(days, dates, activeDays) =>
+            `Practice consistency · ${activeDays} of ${days} days practiced`
+          }
+        />
 
         {/* Meditation Controls */}
-        <div className="flex flex-col items-center mb-6">
+        <div className="flex flex-col items-center">
           {!isActive ? (
             /* Add Meditation Button */
-            <div className="w-full max-w-sm">
-              <Button
+            <div className="w-full">
+              <WellnessPrimaryAction
                 onClick={() => setIsMeditationDialogOpen(true)}
-                className="w-full bg-purple-600 hover:bg-purple-700 flex items-center justify-center space-x-2"
                 data-testid="button-add-meditation"
               >
-                <Plus className="w-4 h-4" />
                 <span>Add Meditation</span>
-              </Button>
+              </WellnessPrimaryAction>
             </div>
           ) : (
             /* Active Session Controls */
@@ -501,8 +447,7 @@ export default function MeditationPage() {
         </div>
 
         {/* Today's Meditation */}
-        <div className="fitcircle-card-lg mb-6">
-          <h3 className="text-lg font-semibold mb-3">Today's Meditation</h3>
+        <WellnessTodaySection title="Today's Meditation">
           <div className="space-y-2">
             {todaySessions.length > 0 ? (
               todaySessions
@@ -511,7 +456,7 @@ export default function MeditationPage() {
                 .map((session: MeditationSession, index: number) => (
                   <div
                     key={session.id}
-                    className="flex justify-between items-center text-sm relative"
+                    className="wellness-record-row flex justify-between items-center text-sm relative"
                   >
                     <div className="flex items-center space-x-3">
                       <span className="text-slate-400">{session.time}</span>
@@ -521,6 +466,20 @@ export default function MeditationPage() {
                       <span className="text-purple-400 font-medium text-sm">
                         {session.duration}min
                       </span>
+                      <WellnessEntryActions
+                        label="meditation session"
+                        onEdit={() =>
+                          setEditingSession({
+                            date: getTodayString(),
+                            id: session.id,
+                            duration: String(session.duration),
+                          })
+                        }
+                        onDelete={() => {
+                          if (confirm("Delete this meditation session?"))
+                            deleteSession(getTodayString(), session.id);
+                        }}
+                      />
                     </div>
                   </div>
                 ))
@@ -530,11 +489,11 @@ export default function MeditationPage() {
               </div>
             )}
           </div>
-        </div>
+        </WellnessTodaySection>
 
         {/* Meditation Log - Daily Aggregation */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Meditation Log</h3>
+          <h3 className="text-lg font-semibold">History</h3>
           <div className="space-y-3">
             {Object.keys(dailyLogs).length === 0 ? (
               <div className="text-center py-8 text-slate-400">
@@ -560,21 +519,11 @@ export default function MeditationPage() {
                     }}
                   >
                     <CollapsibleTrigger asChild>
-                      <button className="w-full fitcircle-card hover:bg-slate-700 transition-colors">
-                        <div className="flex justify-between items-center">
-                          <span className="text-white font-medium">
-                            {monthName}
-                          </span>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-purple-400 text-sm">
-                              {monthLogs.length} days
-                            </span>
-                            <span className="text-slate-400">
-                              {expandedMonths.has(monthName) ? "−" : "+"}
-                            </span>
-                          </div>
-                        </div>
-                      </button>
+                      <WellnessHistoryRow
+                        month={monthName}
+                        count={monthLogs.length}
+                        unit="days"
+                      />
                     </CollapsibleTrigger>
 
                     <CollapsibleContent className="space-y-2 mt-2">
@@ -633,7 +582,7 @@ export default function MeditationPage() {
                               ).map((session, index) => (
                                 <div
                                   key={session.id}
-                                  className="flex justify-between items-center text-xs"
+                                  className="wellness-record-row flex justify-between items-center text-xs"
                                 >
                                   <div className="flex items-center space-x-2">
                                     <span className="text-slate-500">
@@ -647,6 +596,24 @@ export default function MeditationPage() {
                                     <span className="text-slate-300">
                                       {session.duration}min
                                     </span>
+                                    <WellnessEntryActions
+                                      label="historical meditation session"
+                                      onEdit={() =>
+                                        setEditingSession({
+                                          date: log.date,
+                                          id: session.id,
+                                          duration: String(session.duration),
+                                        })
+                                      }
+                                      onDelete={() => {
+                                        if (
+                                          confirm(
+                                            "Delete this meditation session?",
+                                          )
+                                        )
+                                          deleteSession(log.date, session.id);
+                                      }}
+                                    />
                                   </div>
                                 </div>
                               ))}
@@ -678,11 +645,12 @@ export default function MeditationPage() {
             )}
           </div>
         </div>
-      </div>
+        <WellnessHistory stats={getHistoricalStats()} unit="min" />
+      </WellnessPageShell>
 
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
-        <ViewportOverlay
+        <WellnessGoalSheet
           title="Meditation Goal"
           onDismiss={() => setIsGoalModalOpen(false)}
         >
@@ -743,15 +711,62 @@ export default function MeditationPage() {
                 </Button>
                 <Button
                   onClick={handleSetGoal}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  className="flex-1 bg-purple-600 hover:bg-purple-700"
                 >
                   Set Goal
                 </Button>
               </div>
             </div>
           </div>
-        </ViewportOverlay>
+        </WellnessGoalSheet>
       )}
+
+      <Dialog
+        open={Boolean(editingSession)}
+        onOpenChange={(open) => {
+          if (!open) setEditingSession(null);
+        }}
+      >
+        <DialogContent className="bg-slate-800 border-slate-700 text-white rounded-2xl">
+          <DialogTitle>Edit Meditation</DialogTitle>
+          <DialogDescription className="sr-only">
+            Edit recorded session duration
+          </DialogDescription>
+          <Label htmlFor="edit-meditation-minutes">Duration (minutes)</Label>
+          <Input
+            id="edit-meditation-minutes"
+            type="number"
+            min="1"
+            value={editingSession?.duration ?? ""}
+            onChange={(event) =>
+              setEditingSession((previous) =>
+                previous ? { ...previous, duration: event.target.value } : null,
+              )
+            }
+          />
+          {error && (
+            <p role="alert" className="text-amber-300 text-sm">
+              {error}
+            </p>
+          )}
+          <Button
+            onClick={() => {
+              if (!editingSession) return;
+              const duration = Number(editingSession.duration);
+              if (
+                Number.isFinite(duration) &&
+                duration > 0 &&
+                updateSession(editingSession.date, editingSession.id, {
+                  duration,
+                })
+              )
+                setEditingSession(null);
+            }}
+          >
+            Save Changes
+          </Button>
+        </DialogContent>
+      </Dialog>
 
       {/* Start Meditation Dialog */}
       <Dialog
@@ -782,11 +797,28 @@ export default function MeditationPage() {
               />
             </div>
             <Button
+              variant="outline"
+              className="w-full min-h-11"
+              onClick={() => {
+                const minutes = Number(inputMinutes);
+                if (
+                  Number.isFinite(minutes) &&
+                  minutes > 0 &&
+                  addSession(minutes)
+                ) {
+                  setInputMinutes("");
+                  setIsMeditationDialogOpen(false);
+                }
+              }}
+            >
+              Log completed session
+            </Button>
+            <Button
               onClick={() => {
                 startMeditation();
                 setIsMeditationDialogOpen(false);
               }}
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-purple-600 hover:bg-purple-700"
               data-testid="button-start-meditation"
             >
               <Play className="w-4 h-4 mr-2" />
@@ -795,6 +827,6 @@ export default function MeditationPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }

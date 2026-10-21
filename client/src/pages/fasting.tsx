@@ -1,10 +1,18 @@
+import { fastingDailyHours } from "@/lib/wellness-activity";
+import {
+  WellnessPageShell,
+  WellnessProgressHero,
+  WellnessRecentActivity,
+  WellnessTodaySection,
+  WellnessPrimaryAction,
+  WellnessHistoryRow,
+  WellnessGoalSheet,
+} from "@/components/wellness/WellnessUI";
+
 import { percentage, completedFasts, amount } from "@/lib/wellness-progress";
-import { ViewportOverlay } from "@/components/ui/viewport-overlay";
 import { useState, useEffect } from "react";
-import { ArrowLeft, Clock, Plus, Edit, Trash2, Target, X } from "lucide-react";
-import { useLocation } from "wouter";
+import { Edit, Trash2, Target, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Collapsible,
   CollapsibleContent,
@@ -25,31 +33,11 @@ import {
   getTodayString,
   getCurrentTime24,
   getDisplayDate,
-  isToday,
-  isYesterday,
   groupLogsByMonth,
-  getAllTimeFastingAverage,
 } from "@/lib/date-utils";
 
 export default function FastingPage() {
-  const [, navigate] = useLocation();
-
-  // Check if we came from dashboard
-  const fromDashboard =
-    new URLSearchParams(window.location.search).get("from") === "dashboard";
-
-  const handleBack = () => {
-    navigate("/wellness");
-  };
-  const {
-    error,
-    stats,
-    logs,
-    addLog,
-    updateLog,
-    deleteLog,
-    getLast10LogsProgress,
-  } = useFasting();
+  const { error, stats, logs, addLog, updateLog, deleteLog } = useFasting();
   const { goals, updateGoal } = useGoals();
   const [isFastingDialogOpen, setIsFastingDialogOpen] = useState(false);
   const [editingLog, setEditingLog] = useState<FastingLog | null>(null);
@@ -108,21 +96,6 @@ export default function FastingPage() {
     const mins = minutes % 60;
     const secs = 0; // We don't track seconds for logged fasts
     return `${hours.toString().padStart(2, "0")}h ${mins.toString().padStart(2, "0")}m ${secs.toString().padStart(2, "0")}s`;
-  };
-
-  const getTodayFastingHours = () => stats.todayHours;
-
-  const getHeatRingColor = (hours: number): string => {
-    if (hours <= 1) return "rgb(59, 130, 246)"; // blue-500
-    if (hours <= 6) return "rgb(34, 197, 94)"; // green-500
-    if (hours <= 12) return "rgb(234, 179, 8)"; // yellow-500
-    if (hours <= 18) return "rgb(249, 115, 22)"; // orange-500
-    return "rgb(239, 68, 68)"; // red-500
-  };
-
-  const getProgressPercentage = (hours: number): number => {
-    const maxHours = goals.fastingHours;
-    return percentage(hours, maxHours);
   };
 
   // Backward compatibility functions for existing code
@@ -238,93 +211,72 @@ export default function FastingPage() {
       : 0;
 
   return (
-    <div className="fitcircle-page">
-      <div className="fitcircle-container">
+    <>
+      <WellnessPageShell
+        title="Fasting"
+        accent="#f59e0b"
+        onGoal={() => setIsGoalModalOpen(true)}
+      >
         {error && (
           <p role="alert" className="text-sm text-amber-300">
             {error}
           </p>
         )}
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="fitcircle-page-title">Fasting</h1>
-          <button
-            onClick={() => setIsGoalModalOpen(true)}
-            className="flex items-center space-x-1 fitcircle-text-muted hover:text-white transition-colors"
-          >
-            <Target className="w-5 h-5" />
-            <span>Goal</span>
-          </button>
-        </div>
 
-        {/* Today's Fasting Progress Circle */}
-        <div className="flex justify-center mb-4">
-          <GoalCircle
-            percentage={getProgressPercentage(getTodayFastingHours())}
-            color={getHeatRingColor(getTodayFastingHours())}
-            size={240}
-            strokeWidth={16}
-            currentValue={getTodayFastingHours()}
-            goalValue={goals.fastingHours}
-            unit="h"
-            title="Completed Today"
-            description={"Goal: " + goals.fastingHours + "h per fast"}
-          />
-        </div>
-
-        <div className="text-center text-sm text-slate-400 mb-8">
-          No active fast · Completed-fast heat level:{" "}
-          <span style={{ color: getHeatRingColor(getTodayFastingHours()) }}>
-            {getTodayFastingHours() <= 1
-              ? "Cool"
-              : getTodayFastingHours() <= 6
-                ? "Warm"
-                : getTodayFastingHours() <= 12
-                  ? "Hot"
-                  : getTodayFastingHours() <= 18
-                    ? "Very Hot"
-                    : "Extreme"}
-          </span>
-        </div>
-
-        {/* Last 10 Logs Progress Stats */}
-        <Card className="fitcircle-card-lg mb-6">
-          <CardContent className="p-4">
-            <h3 className="text-lg font-semibold mb-3 text-center">
-              Last 10 Calendar Days
-            </h3>
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div>
-                <div className="type-metric text-2xl font-bold text-amber-400">
-                  {getLast10LogsProgress().totalHours}h
-                </div>
-                <div className="text-sm text-slate-400">Completed</div>
-              </div>
-              <div>
-                <div className="type-metric text-2xl font-bold text-amber-400">
-                  {getLast10LogsProgress().averageHours}h
-                </div>
-                <div className="text-sm text-slate-400">
-                  Calendar-day average
-                </div>
-              </div>
+        <WellnessProgressHero
+          current={0}
+          target={goals.fastingHours}
+          unit="hr"
+          period="No active fast"
+          title="Current fasting progress"
+          inactive
+        />
+        <WellnessTodaySection title="Fasting timeline">
+          <dl className="wellness-timeline mt-3">
+            <div>
+              <dt>Start</dt>
+              <dd>Not started</dd>
             </div>
-            <p className="text-center text-sm text-slate-400 mt-3">
-              Recent consistency: {stats.consistency}% · {stats.achievedDays}/10
-              calendar days met goal
-            </p>
-          </CardContent>
-        </Card>
+            <div>
+              <dt>Elapsed</dt>
+              <dd>—</dd>
+            </div>
+            <div>
+              <dt>Target duration</dt>
+              <dd>{goals.fastingHours} hr</dd>
+            </div>
+            <div>
+              <dt>Target end / eating window</dt>
+              <dd>—</dd>
+            </div>
+          </dl>
+          <p className="text-xs text-slate-400 mt-3">
+            Completed today: {stats.todayHours.toFixed(1)} hr ·{" "}
+            {Math.round(stats.percentage)}% of duration goal
+          </p>
+        </WellnessTodaySection>
+        <WellnessRecentActivity
+          totals={fastingDailyHours(completedFasts(logs))}
+          unit="hr"
+          summary={(days, dates) => {
+            const recent = completedFasts(logs).filter((fast) =>
+              dates.includes(fast.date),
+            );
+            const achieved = new Set(
+              recent
+                .filter(
+                  (fast) =>
+                    goals.fastingHours > 0 && fast.hours >= goals.fastingHours,
+                )
+                .map((fast) => fast.date),
+            ).size;
+            return `Recent fasts · ${recent.length} completed in last ${days} days · ${achieved} of ${days} days met goal`;
+          }}
+        />
 
         {/* Add Fasting Log Button */}
-        <div className="mb-6">
-          <Button
+        <div>
+          <WellnessPrimaryAction
             onClick={() => {
               // Initialize form with current date/time using master timezone utilities
               const currentDate = getTodayString();
@@ -335,18 +287,13 @@ export default function FastingPage() {
               setEndTime(currentTime);
               setIsFastingDialogOpen(true);
             }}
-            className="w-full bg-amber-600 hover:bg-amber-700 flex items-center justify-center space-x-2"
           >
-            <Plus className="w-4 h-4" />
             <span>Add Fast</span>
-          </Button>
+          </WellnessPrimaryAction>
         </div>
 
         {/* Today's Fast */}
-        <div className="fitcircle-card-lg mb-8">
-          <h3 className="text-lg font-semibold mb-3">
-            Today's Completed Fasts
-          </h3>
+        <WellnessTodaySection title="Today's Completed Fasts">
           <div className="space-y-2">
             {(() => {
               const today = getTodayString();
@@ -363,21 +310,16 @@ export default function FastingPage() {
                   .reverse()
                   .map((fast) => {
                     const hours = fast.duration / 60;
-                    // Convert 24hr time to 12hr format
-                    const [hoursStr, minutes] = fast.startTime.split(":");
-                    const hour = parseInt(hoursStr);
-                    const ampm = hour >= 12 ? "PM" : "AM";
-                    const hour12 = hour % 12 || 12;
-                    const time12hr = `${hour12}:${minutes} ${ampm}`;
-
                     return (
                       <div
                         key={fast.id}
-                        className="flex justify-between items-center text-sm"
+                        className="wellness-record-row flex justify-between items-center text-sm"
                       >
-                        <div className="flex items-center space-x-3">
-                          <span className="text-slate-400">{time12hr}</span>
-                          <span className="text-slate-300">Fasting</span>
+                        <div className="flex items-center space-x-3 min-w-0">
+                          <span className="text-slate-300">
+                            {fast.startDate} {fast.startTime} → {fast.endDate}{" "}
+                            {fast.endTime}
+                          </span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <span className="text-amber-400 font-medium text-sm">
@@ -396,11 +338,11 @@ export default function FastingPage() {
               }
             })()}
           </div>
-        </div>
+        </WellnessTodaySection>
 
         {/* Fasting Log - Monthly Sections */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Fasting Log</h3>
+          <h3 className="text-lg font-semibold">History</h3>
           <div className="space-y-3">
             {Object.keys(monthlyLogs).length === 0 ? (
               <div className="text-center py-8 text-slate-400">
@@ -425,21 +367,11 @@ export default function FastingPage() {
                   }}
                 >
                   <CollapsibleTrigger asChild>
-                    <button className="w-full fitcircle-card hover:bg-slate-700 transition-colors">
-                      <div className="flex justify-between items-center">
-                        <span className="text-white font-medium">
-                          {monthName}
-                        </span>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-amber-400 text-sm">
-                            {monthLogs.length} fasts
-                          </span>
-                          <span className="text-slate-400">
-                            {expandedMonths.has(monthName) ? "−" : "+"}
-                          </span>
-                        </div>
-                      </div>
-                    </button>
+                    <WellnessHistoryRow
+                      month={monthName}
+                      count={monthLogs.length}
+                      unit="fasts"
+                    />
                   </CollapsibleTrigger>
 
                   <CollapsibleContent className="space-y-2 mt-2">
@@ -468,7 +400,7 @@ export default function FastingPage() {
                         return (
                           <div
                             key={log.id}
-                            className="glass-panel bg-slate-800 rounded-xl p-4 ml-4"
+                            className="bg-slate-800 rounded-xl p-3"
                           >
                             <div className="flex justify-between items-start mb-2">
                               <div className="text-sm text-slate-300">
@@ -476,12 +408,14 @@ export default function FastingPage() {
                               </div>
                               <div className="flex space-x-2">
                                 <button
+                                  aria-label="Edit fast"
                                   onClick={() => handleEditLog(log)}
                                   className="text-slate-400 hover:text-blue-400 transition-colors"
                                 >
                                   <Edit className="w-4 h-4" />
                                 </button>
                                 <button
+                                  aria-label="Delete fast"
                                   onClick={() => handleDeleteLog(log.id)}
                                   className="text-slate-400 hover:text-red-400 transition-colors"
                                 >
@@ -507,7 +441,7 @@ export default function FastingPage() {
                               </div>
 
                               {/* Duration */}
-                              <div className="text-xl font-bold text-amber-400 type-metric mb-2">
+                              <div className="text-lg font-bold text-amber-400 type-metric mb-2">
                                 {formatDuration(log.duration)}
                               </div>
 
@@ -526,11 +460,11 @@ export default function FastingPage() {
             )}
           </div>
         </div>
-      </div>
+      </WellnessPageShell>
 
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
-        <ViewportOverlay
+        <WellnessGoalSheet
           title="Fasting Goal"
           onDismiss={() => setIsGoalModalOpen(false)}
         >
@@ -620,7 +554,7 @@ export default function FastingPage() {
               </div>
             </div>
           </div>
-        </ViewportOverlay>
+        </WellnessGoalSheet>
       )}
 
       {/* Log Fast Dialog */}
@@ -727,6 +661,6 @@ export default function FastingPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
