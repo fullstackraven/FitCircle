@@ -125,7 +125,16 @@ test("compact rows compare correct age/sex references, limit overflow and preser
     dialog.getByRole("progressbar", { name: "Fiber", exact: true }),
   ).toHaveAttribute("aria-valuenow", "50");
   await expect(dialog.getByTestId("nutrient-sodium")).toContainText(
-    "2,450 / 2,300 mg limit",
+    "2,450 / 2,300 mg",
+  );
+  await expect(dialog.getByTestId("nutrient-sodium")).not.toContainText(
+    "limit",
+  );
+  await expect(dialog.getByTestId("nutrient-saturatedFat")).not.toContainText(
+    "limit",
+  );
+  await expect(dialog.getByTestId("nutrient-cholesterol")).toContainText(
+    "45 / 300 mg",
   );
   const sodium = dialog.getByRole("progressbar", {
     name: "Sodium",
@@ -142,14 +151,14 @@ test("compact rows compare correct age/sex references, limit overflow and preser
     "45 / 90 mg",
   );
   await expect(dialog.getByTestId("nutrient-sugar")).toHaveText(
-    "Total sugar24 g",
+    "Total sugar24 / 90 g",
   );
   await expect(
     dialog.getByTestId("nutrient-sugar").getByRole("progressbar"),
-  ).toHaveCount(0);
+  ).toHaveAttribute("aria-valuenow", "26.7");
   await expect(
     dialog.getByTestId("nutrient-cholesterol").getByRole("progressbar"),
-  ).toHaveCount(0);
+  ).toHaveAttribute("aria-valuenow", "15");
   await expect(dialog.getByTestId("nutrient-vitaminA")).toContainText(
     "< 0.1 µg",
   );
@@ -309,4 +318,39 @@ test("small iPhone modal scrolls nutrient rows without moving or hiding the clos
   );
   await close.click();
   await expect(dialog).toHaveCount(0);
+});
+
+test("label reference bars cap overages without visible limit suffixes or stored-data changes", async ({
+  page,
+}) => {
+  await seed(page);
+  await page.evaluate(() => {
+    const key = "fitcircle_food_2026-10-21";
+    const entries = JSON.parse(localStorage.getItem(key)!);
+    entries[0].sugar = 108;
+    entries[0].cholesterol = 360;
+    localStorage.setItem(key, JSON.stringify(entries));
+  });
+  await page.reload();
+  const before = await originals(page);
+  const dialog = await open(page);
+  await expect(dialog.getByTestId("nutrient-sugar")).toContainText(
+    "108 / 90 g",
+  );
+  await expect(dialog.getByTestId("nutrient-cholesterol")).toContainText(
+    "360 / 300 mg",
+  );
+  for (const key of ["sugar", "cholesterol", "sodium", "saturatedFat"]) {
+    await expect(dialog.getByTestId(`nutrient-${key}`)).not.toContainText(
+      "limit",
+    );
+  }
+  for (const key of ["sugar", "cholesterol"])
+    await expect(
+      dialog.getByTestId(`nutrient-${key}`).getByRole("progressbar"),
+    ).toHaveAttribute("aria-valuenow", "100");
+  await expect(
+    dialog.getByTestId("nutrient-sugar").locator("dd"),
+  ).toHaveAttribute("aria-label", /general label reference/);
+  expect(await originals(page)).toEqual(before);
 });

@@ -2,8 +2,8 @@ import type { Nutrient, Targets } from "./nutrition";
 
 export type NutrientReference = {
   value: number;
-  kind: "target" | "intake" | "limit";
-  source: "saved-target" | "dri" | "energy";
+  kind: "target" | "intake" | "limit" | "reference";
+  source: "saved-target" | "dri" | "energy" | "label-reference";
 };
 export type ReferenceProfile = { age?: unknown; sex?: unknown };
 export type NutrientReferences = Partial<Record<Nutrient, NutrientReference>>;
@@ -129,7 +129,11 @@ export function nutrientReferences(
   // DGA 2020–2025: less than 10% of energy from saturated fat, ages 2+.
   if (age >= 2 && refs.calories)
     put("saturatedFat", (refs.calories.value * 0.1) / 9, "limit", "energy");
-  // sugar is TOTAL sugar, not added sugar. Cholesterol has no universal DRI target.
+  // Label comparators, not personalized DRIs or physiological upper limits.
+  // EU 1169/2011 Annex XIII: adult total sugars RI, not the added-sugar DV.
+  if (age >= 19) put("sugar", 90, "reference", "label-reference");
+  // FDA Nutrition Facts cholesterol DV applies to adults and children age 4+.
+  if (age >= 4) put("cholesterol", 300, "reference", "label-reference");
   return refs;
 }
 

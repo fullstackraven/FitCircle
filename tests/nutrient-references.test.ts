@@ -86,10 +86,18 @@ test("missing and invalid profile values do not become demographic defaults or m
   assert.equal(ref.vitaminC, undefined);
   assert.equal(ref.calcium?.value, 1000);
 });
-test("total sugar, cholesterol and unit-ambiguous vitamin A never acquire invented targets", () => {
+test("sugar and cholesterol use applicable published label comparators, vitamin A stays unit-safe", () => {
   const refs = nutrientReferences({ age: 31, sex: "female" }, targets);
-  assert.equal(refs.sugar, undefined);
-  assert.equal(refs.cholesterol, undefined);
+  assert.deepEqual(refs.sugar, {
+    value: 90,
+    kind: "reference",
+    source: "label-reference",
+  });
+  assert.deepEqual(refs.cholesterol, {
+    value: 300,
+    kind: "reference",
+    source: "label-reference",
+  });
   assert.equal(refs.vitaminA, undefined);
 });
 test("references are read-only; no reference for zero/invalid goals, no fictional calorie fallback", () => {
@@ -161,4 +169,18 @@ test("reference rendering inputs do not change existing nutrient completeness or
   assert.deepEqual(totals.sugar, { value: 0, known: 0, total: 2 });
   nutrientReferences({ age: 31, sex: "male" }, targets);
   assert.equal(JSON.stringify(entries), original);
+});
+
+test("label comparators do not assume adult age or confuse total and added sugar", () => {
+  for (const age of [undefined, NaN, -1, 0, 3, 18])
+    assert.equal(nutrientReferences({ age }).sugar, undefined);
+  for (const age of [undefined, NaN, 0, 3])
+    assert.equal(nutrientReferences({ age }).cholesterol, undefined);
+  assert.equal(nutrientReferences({ age: 4 }).cholesterol?.value, 300);
+  assert.equal(nutrientReferences({ age: 19 }).sugar?.value, 90);
+  assert.equal(
+    nutrientReferences({ age: 31 }, { ...targets, calories: 4000 }).sugar
+      ?.value,
+    90,
+  );
 });
