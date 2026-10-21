@@ -5,6 +5,7 @@ import {
   readMeasurementSnapshot,
   readWeightGoals,
   weightGoalProgress,
+  remainingGoalWeight,
   saveMeasurements,
   saveMeasurementGoals,
 } from "../client/src/lib/measurement-integration";
@@ -241,19 +242,18 @@ test("ambiguous or malformed measurement inputs stay unchanged across repeated c
   }
 });
 
-test("calculator progress honors explicit loss, gain and maintenance intent", () => {
-  assert.equal(weightGoalProgress(180, 180, 180, "lose"), 100);
-  assert.equal(weightGoalProgress(180, 180, 180, "gain"), 100);
-  assert.equal(weightGoalProgress(180, 185, 180, "lose"), 0);
-  assert.equal(weightGoalProgress(200, 190, 180, "lose"), 50);
-  assert.equal(weightGoalProgress(200, 210, 180, "lose"), 0);
-  assert.equal(weightGoalProgress(150, 160, 170, "gain"), 50);
-  assert.equal(weightGoalProgress(150, 140, 170, "gain"), 0);
-  assert.equal(weightGoalProgress(200, 190, 180, "gain"), null);
-  assert.equal(weightGoalProgress(150, 160, 170, "lose"), null);
-  assert.equal(weightGoalProgress(200, 175, 180, "lose"), 100);
-  assert.equal(weightGoalProgress(150, 175, 170, "gain"), 100);
-  assert.equal(weightGoalProgress(null, 180.5, 180, "maintain"), 100);
-  assert.equal(weightGoalProgress(200, 190, 180, "maintain"), 0);
-  assert.equal(weightGoalProgress(200, 179.4, 180, "maintain"), 0);
+test("calculator remaining weight uses only current weight and target for the selected intent", () => {
+  assert.equal(remainingGoalWeight(210, 205, "lose"), 5);
+  assert.equal(remainingGoalWeight(190, 195, "gain"), 5);
+  assert.equal(remainingGoalWeight(190, 180, "lose"), 10);
+  assert.equal(remainingGoalWeight(175, 180, "lose"), 0);
+  assert.equal(remainingGoalWeight(175, 180, "gain"), 5);
+  assert.equal(remainingGoalWeight(185, 180, "gain"), 0);
+  assert.equal(remainingGoalWeight(180, 180, "lose"), 0);
+  assert.equal(remainingGoalWeight(180, 180, "gain"), 0);
+  assert.equal(remainingGoalWeight(180.5, 180, "maintain"), 0);
+  assert.equal(remainingGoalWeight(190, 180, "maintain"), 10);
+  assert.equal(remainingGoalWeight(null, 180, "lose"), null);
+  assert.equal(remainingGoalWeight(190, null, "gain"), null);
+  assert.equal(remainingGoalWeight(NaN, 180, "lose"), null);
 });

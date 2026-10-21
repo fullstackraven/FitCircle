@@ -212,18 +212,33 @@ export function weightGoalProgress(
   start: number | null,
   current: number | null,
   target: number | null,
-  intent?: Direction,
 ): number | null {
-  if (current === null || target === null) return null;
-  if (intent === "maintain") return Math.abs(current - target) <= 0.5 ? 100 : 0;
-  if (start === null) return null;
-  if (intent === "lose" && target > start) return null;
-  if (intent === "gain" && target < start) return null;
+  if (current === null || target === null || start === null) return null;
   if (start === target) return Math.abs(current - target) <= 0.5 ? 100 : 0;
   return Math.max(
     0,
     Math.min(100, ((current - start) / (target - start)) * 100),
   );
+}
+// Calculator goals depend on today's weight, not an unrelated historical baseline.
+export function remainingGoalWeight(
+  current: number | null,
+  target: number | null,
+  intent: Direction,
+): number | null {
+  if (
+    current === null ||
+    target === null ||
+    !Number.isFinite(current) ||
+    !Number.isFinite(target) ||
+    current <= 0 ||
+    target <= 0
+  )
+    return null;
+  if (intent === "lose") return Math.max(0, current - target);
+  if (intent === "gain") return Math.max(0, target - current);
+  const distance = Math.abs(current - target);
+  return distance <= 0.5 ? 0 : distance;
 }
 export function notifyIntegration() {
   if (typeof window !== "undefined")
