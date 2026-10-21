@@ -28,7 +28,9 @@
     "wellness-goals.test.ts",
     "browser/wellness-goals.spec.ts",
     "wellness-activity.test.ts",
-    "browser/wellness-design.spec.ts"
+    "browser/wellness-design.spec.ts",
+    "nutrient-references.test.ts",
+    "browser/nutrition-details.spec.ts"
   ],
   "exclude": [
     "../node_modules",

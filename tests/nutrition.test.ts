@@ -671,3 +671,46 @@ test("base serving rescaling uses a stable anchor, handles mass conversions and 
   for (const invalid of ["", "0", "-1", "Infinity"])
     assert.throws(() => rescaleServing(anchor, invalid, "g"));
 });
+
+test("derived nutrient references preserve profile, confirmed goals and food bytes through complete backup restore", async () => {
+  const { nutrientReferences } = await import(
+    "../client/src/lib/nutrient-references"
+  );
+  const { readFitnessProfile } = await import(
+    "../client/src/lib/fitness-profile"
+  );
+  const source = new MemoryStorage();
+  const snapshot = {
+    fitcircle_profile:
+      '{ "dateOfBirth":"1995-10-21", "gender":"female", "retain":"synthetic metadata" }',
+    fitcircle_nutrition_goals: JSON.stringify(goals),
+    fitcircle_food_database: JSON.stringify([
+      { ...food, source: "Open Food Facts", vitaminA: 1 },
+    ]),
+    "fitcircle_food_2026-10-19": JSON.stringify([
+      { ...food, calcium: 508, iron: 0, vitaminC: undefined },
+    ]),
+    fitness_calc_target_calories: "2000",
+    fitness_calc_target_protein: "150",
+    fitness_calc_target_carbs: "225",
+    fitness_calc_target_fat: "65",
+  };
+  for (const [key, raw] of Object.entries(snapshot)) source.setItem(key, raw);
+  const profile = readFitnessProfile(source, new Date(2026, 9, 21));
+  const references = nutrientReferences(
+    { age: profile.age, sex: profile.record.gender },
+    readCalculatorEstimate(source) ?? undefined,
+  );
+  assert.equal(references.iron?.value, 18);
+  assert.equal(references.calories?.value, 2000);
+  const backup = await createBackup(source, new IDBFactory());
+  const destination = new MemoryStorage();
+  applyRestore(prepareRestore(backup), destination, destination);
+  for (const [key, raw] of Object.entries(snapshot)) {
+    assert.equal(source.getItem(key), raw);
+    assert.equal(destination.getItem(key), raw);
+  }
+  const restored = readFoodDay("2026-10-19", destination).entries[0];
+  assert.equal(restored.iron, 0);
+  assert.equal(restored.vitaminC, undefined);
+});

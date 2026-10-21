@@ -105,7 +105,7 @@ test("dashboard uses calculator targets rather than obsolete nutrition goals and
     .getByRole("button", { name: "Nutrition Details", exact: true })
     .click();
   await expect(page.getByRole("dialog")).toContainText(
-    "1 of 1 foods have data",
+    "Some nutrient totals are partial",
   );
   await expect(page.getByRole("dialog")).toContainText("Not available");
   await expect(
@@ -741,16 +741,16 @@ test("nutrition details distinguish a known zero, an incomplete zero total, miss
   const dialog = page.getByRole("dialog");
   await expect(
     dialog.getByText("Fiber", { exact: true }).locator(".."),
-  ).toContainText("0 g known");
+  ).toContainText("0 g");
   await expect(
     dialog.getByText("Sodium", { exact: true }).locator(".."),
   ).toContainText("0 mg");
   await expect(
-    dialog.getByText("Sugar", { exact: true }).locator(".."),
+    dialog.getByText("Total sugar", { exact: true }).locator(".."),
   ).toContainText("Not available");
   await expect(
     dialog.getByText("Vitamin A", { exact: true }).locator(".."),
-  ).toContainText("< 0.1 µg known");
+  ).toContainText("Unit unavailable");
 });
 
 test("unit conversion requests an explicit piece weight and rescales consumed nutrients without altering saved foods", async ({
