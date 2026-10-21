@@ -15,6 +15,7 @@ export default function RemindersPage() {
   const { reminders, addReminder, updateReminder, deleteReminder, toggleReminder } = useReminders();
   
   const [showAddForm, setShowAddForm] = useState(false);
+  const dismissAfterPointerClick = useRef(false);
   const draftRef = useRef<HTMLFormElement>(null);
   const draftInputRef = useRef<HTMLInputElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -159,7 +160,21 @@ export default function RemindersPage() {
   };
 
   return (
-    <div className="min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+    <div className="min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}
+      onPointerDownCapture={event => {
+        dismissAfterPointerClick.current = showAddForm && !newReminderText.trim() && !draftRef.current?.contains(event.target as Node);
+      }}
+      onPointerCancelCapture={() => { dismissAfterPointerClick.current = false; }}
+      onKeyDownCapture={() => { dismissAfterPointerClick.current = false; }}
+      onClick={() => {
+        // Let an existing reminder action receive its click before removing the
+        // empty draft above it and moving the list. Keyboard blur stays immediate.
+        if (dismissAfterPointerClick.current) {
+          dismissAfterPointerClick.current = false;
+          if (document.activeElement !== draftInputRef.current) dismissDraft();
+        }
+      }}
+    >
       {/* Header is rendered into the non-scrolling shell host */}
       <AppHeader>
         <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
@@ -197,7 +212,7 @@ export default function RemindersPage() {
           </div>
         )}
 
-        {showAddForm ? (
+        {showAddForm && (
           <form ref={draftRef} aria-label="New reminder" onSubmit={event => { event.preventDefault(); handleAddReminder(); }} className="glass-row rounded-xl border border-slate-700/50 p-3 my-2">
             <div className="flex items-center gap-3">
               <span className="w-6 h-6 shrink-0 rounded-full border-2 border-slate-500" aria-hidden="true" />
@@ -205,21 +220,17 @@ export default function RemindersPage() {
                 const value = event.target.value;
                 setNewReminderText(value);
                 if (!value && newReminderText && !(event.nativeEvent as InputEvent).isComposing) setShowAddForm(false);
-              }} onBlur={() => { if (!newReminderText.trim()) dismissDraft(); }} onKeyDown={event => {
+              }} onBlur={() => { if (!newReminderText.trim() && !dismissAfterPointerClick.current) dismissDraft(); }} onKeyDown={event => {
                 if (event.nativeEvent.isComposing || event.keyCode === 229) return;
                 if (event.key === 'Enter') { event.preventDefault(); handleAddReminder(); }
                 if (event.key === 'Escape' || ((event.key === 'Backspace' || event.key === 'Delete') && !newReminderText)) { event.preventDefault(); dismissDraft(); }
-              }} className="min-w-0 flex-1 min-h-11 bg-transparent text-base text-white outline-none focus-visible:ring-1 focus-visible:ring-green-400 rounded" />
+              }} className="reminder-draft-input min-w-0 flex-1 min-h-11 bg-transparent text-base text-white" />
             </div>
           </form>
-        ) : (
-          <button type="button" aria-label="Write a reminder" onClick={openDraft} className="glass-row w-full rounded-xl border border-slate-700/50 p-3 my-2 flex items-center gap-3 min-h-16 text-left text-slate-400">
-            <span className="w-6 h-6 shrink-0 rounded-full border-2 border-slate-500" aria-hidden="true" /><span>New reminder</span>
-          </button>
         )}
 
         {reminders.length === 0 && !showAddForm ? (
-          <div className="min-h-[40dvh] flex items-center justify-center text-slate-500 text-lg">No Reminders</div>
+          <button type="button" aria-label="Write a reminder" onClick={openDraft} className="min-h-[50dvh] w-full flex items-center justify-center text-slate-500 text-lg">No Reminders</button>
         ) : (
           <ul aria-label="Reminders" className="divide-y divide-slate-700/30">
             {[...activeReminders, ...completedReminders].map(reminder => (
@@ -270,9 +281,11 @@ export default function RemindersPage() {
             ))}
           </ul>
         )}
+
         {completedReminders.length > 0 && !selectMode && (
           <button onClick={() => setSelectMode(true)} className="min-h-11 text-sm text-slate-400 hover:text-green-400 mt-2">Select completed</button>
         )}
+        {!showAddForm && reminders.length > 0 && <button type="button" aria-label="Write a reminder" onClick={openDraft} className="block min-h-[20dvh] w-full" />}
       </div>
 
       {createPortal(

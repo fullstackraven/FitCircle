@@ -138,3 +138,43 @@ test('Home dashboard button aligns with every dock page at phone and desktop wid
     expect(Math.max(...positions)-Math.min(...positions)).toBeLessThan(1);
   }
 });
+
+test('draft is absent until tapping blank space or plus, and focused input has only a caret', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await seed(page);
+  const original = await page.evaluate(() => localStorage.getItem('fitcircle_reminders'));
+  await expect(page.getByRole('form', { name: 'New reminder', exact: true })).toHaveCount(0);
+  await expect(page.getByText('New reminder', { exact: true })).toHaveCount(0);
+  const blank = page.getByRole('button', { name: 'Write a reminder', exact: true });
+  await expect(blank).toHaveText('');
+  await blank.click();
+  const input = page.getByRole('textbox', { name: 'New reminder', exact: true });
+  await expect(input).toBeFocused();
+  await expect(input).toHaveValue('');
+  expect(await input.getAttribute('placeholder')).toBeNull();
+  const styles = await input.evaluate(el => {
+    const style = getComputedStyle(el);
+    return { border: style.borderTopWidth, outline: style.outlineStyle, shadow: style.boxShadow, background: style.backgroundColor };
+  });
+  expect(styles).toEqual({ border: '0px', outline: 'none', shadow: 'none', background: 'rgba(0, 0, 0, 0)' });
+  expect(await page.evaluate(() => localStorage.getItem('fitcircle_reminders'))).toBe(original);
+  await input.press('Escape');
+  await expect(input).toHaveCount(0);
+  await page.getByRole('button', { name: 'New Reminder', exact: true }).click();
+  await expect(input).toBeFocused();
+  await input.press('Backspace');
+  await expect(input).toHaveCount(0);
+  await page.evaluate(() => localStorage.setItem('fitcircle_reminders', '[]'));
+  await page.reload();
+  await expect(page.getByRole('form', { name: 'New reminder', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Write a reminder', exact: true }).click();
+  await expect(input).toBeFocused();
+  await input.fill('Synthetic tap-created reminder');
+  await input.press('Enter');
+  await expect(page.getByRole('button', { name: 'Edit Synthetic tap-created reminder', exact: true })).toBeVisible();
+  await expect(input).toBeFocused();
+  await expect(input).toHaveValue('');
+  await input.press('Backspace');
+  await expect(input).toHaveCount(0);
+  await expect(page.getByText('New reminder', { exact: true })).toHaveCount(0);
+});
