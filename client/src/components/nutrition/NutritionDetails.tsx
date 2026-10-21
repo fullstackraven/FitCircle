@@ -68,7 +68,7 @@ export function NutritionDetails({
               ? nutrientProgress(item.value, reference.value)
               : null;
           const refText = reference
-            ? `${formatNutrientAmount(reference.value)} ${unit}${reference.kind === "limit" ? " limit" : ""}`
+            ? `${formatNutrientAmount(reference.value)} ${unit}`
             : "";
           return (
             <div
@@ -81,7 +81,7 @@ export function NutritionDetails({
                 <dt className="text-slate-300 min-w-0">{label}</dt>
                 <dd
                   className="tabular-nums text-white text-right text-sm min-w-0 max-w-full [overflow-wrap:anywhere]"
-                  aria-label={`${actual}${reference ? `; ${reference.kind === "limit" ? "limit" : reference.kind === "intake" ? "recommended intake" : "saved target"} ${formatNutrientAmount(reference.value)} ${unit}` : ""}${item.known < item.total ? "; partial recorded intake" : ""}`}
+                  aria-label={`${actual}${reference ? `; ${reference.kind === "limit" ? "limit" : reference.kind === "intake" ? "recommended intake" : reference.kind === "reference" ? "general label reference" : "saved target"} ${formatNutrientAmount(reference.value)} ${unit}` : ""}${item.known < item.total ? "; partial recorded intake" : ""}`}
                 >
                   {usable && reference ? (
                     <>
@@ -105,7 +105,10 @@ export function NutritionDetails({
                   label={label}
                   description={`${actual}; ${reference!.kind === "limit" ? "limit" : "reference"} ${formatNutrientAmount(reference!.value)} ${unit}${item.known < item.total ? "; partial recorded intake" : ""}`}
                   color={
-                    reference!.kind === "limit" ? "bg-blue-400" : "bg-green-400"
+                    reference!.kind === "limit" ||
+                    reference!.kind === "reference"
+                      ? "bg-blue-400"
+                      : "bg-green-400"
                   }
                 />
               )}
@@ -123,8 +126,11 @@ export function NutritionDetails({
         <p>
           Saved calorie/macronutrient targets; age/sex DRI intakes and sodium
           reduction thresholds. Fiber intake references and saturated-fat limits
-          may use saved calories. Limits are not minimum goals. Total sugar and
-          cholesterol have no universal target.
+          may use saved calories. Limits are not minimum goals. Total sugar is
+          not added sugar and has no configured reference. Cholesterol uses the
+          FDA label Daily Value of 300 mg for ages 4+, a general label
+          comparison, not a personalized recommended intake or physiological
+          upper limit.
         </p>
         <p className="mt-2">
           General references exclude pregnancy/lactation and smoking
@@ -149,6 +155,16 @@ export function NutritionDetails({
             rel="noreferrer"
           >
             DGA 2020–2025
+          </a>
+        </p>
+        <p className="mt-2">
+          <a
+            className="underline"
+            href="https://www.fda.gov/food/new-nutrition-facts-label/daily-value-new-nutrition-and-supplement-facts-labels"
+            target="_blank"
+            rel="noreferrer"
+          >
+            FDA Daily Values
           </a>
         </p>
       </details>
