@@ -240,3 +240,20 @@ test("ambiguous or malformed measurement inputs stay unchanged across repeated c
     assert.equal(s.getItem("fitcircle_measurements_history"), raw);
   }
 });
+
+test("calculator progress honors explicit loss, gain and maintenance intent", () => {
+  assert.equal(weightGoalProgress(180, 180, 180, "lose"), 100);
+  assert.equal(weightGoalProgress(180, 180, 180, "gain"), 100);
+  assert.equal(weightGoalProgress(180, 185, 180, "lose"), 0);
+  assert.equal(weightGoalProgress(200, 190, 180, "lose"), 50);
+  assert.equal(weightGoalProgress(200, 210, 180, "lose"), 0);
+  assert.equal(weightGoalProgress(150, 160, 170, "gain"), 50);
+  assert.equal(weightGoalProgress(150, 140, 170, "gain"), 0);
+  assert.equal(weightGoalProgress(200, 190, 180, "gain"), null);
+  assert.equal(weightGoalProgress(150, 160, 170, "lose"), null);
+  assert.equal(weightGoalProgress(200, 175, 180, "lose"), 100);
+  assert.equal(weightGoalProgress(150, 175, 170, "gain"), 100);
+  assert.equal(weightGoalProgress(null, 180.5, 180, "maintain"), 100);
+  assert.equal(weightGoalProgress(200, 190, 180, "maintain"), 0);
+  assert.equal(weightGoalProgress(200, 179.4, 180, "maintain"), 0);
+});

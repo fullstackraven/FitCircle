@@ -152,6 +152,7 @@ export default function FitnessCalculator({
     startingWeight,
     userData.weight || null,
     savedWeightGoal,
+    goalType as "lose" | "maintain" | "gain",
   );
 
   // BMR calculation using Mifflin-St Jeor Equation
@@ -504,6 +505,14 @@ export default function FitnessCalculator({
                 <p>
                   {userData.weight} lb current · {savedWeightGoal} lb goal
                 </p>
+                {goalProgress === null &&
+                  startingWeight !== null &&
+                  (goalType === "lose" || goalType === "gain") && (
+                    <p className="mt-1">
+                      Choose a goal {goalType === "lose" ? "below" : "above"}{" "}
+                      your starting weight of {startingWeight} lb.
+                    </p>
+                  )}
                 {goalProgress !== null && (
                   <>
                     <div
@@ -520,7 +529,11 @@ export default function FitnessCalculator({
                       />
                     </div>
                     <p className="mt-1">
-                      {Math.round(goalProgress)}% from first recorded weight
+                      {goalType === "maintain"
+                        ? goalProgress === 100
+                          ? "At goal weight"
+                          : `${Math.abs(userData.weight - savedWeightGoal).toFixed(1)} lb from goal weight`
+                        : `${Math.round(goalProgress)}% from first recorded weight`}
                     </p>
                   </>
                 )}
