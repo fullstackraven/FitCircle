@@ -591,3 +591,17 @@
 .wellness-quick-add button:disabled { opacity: .5; }
 .wellness-page button:focus-visible, .wellness-page summary:focus-visible { outline: 2px solid var(--wellness-accent); outline-offset: 3px; }
 .wellness-page button, .wellness-goal-sheet button { min-height: 44px; }
+
+/* Inline reminder drafts use their row as the surface; focus is the caret. */
+.app-content .reminder-draft-input,
+.app-content .reminder-draft-input:focus,
+.app-content .reminder-draft-input:focus-visible {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  caret-color: #4ade80;
+}
