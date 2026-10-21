@@ -59,7 +59,7 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3">
+        <div className="space-y-4 [@media(max-height:450px)]:space-y-3">
           {/* Routine Name */}
           <div className="space-y-1">
             <Label htmlFor="routine-name" className="block text-xs leading-4 font-medium text-slate-300">
@@ -71,7 +71,7 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
               value={routineName}
               onChange={(e) => setRoutineName(e.target.value)}
 
-              className="h-9 text-base text-white placeholder-slate-400 focus:border-green-500"
+              className="h-11 [@media(max-height:450px)]:h-9 rounded-xl bg-slate-800 text-base text-white placeholder-slate-400 focus:border-green-500"
               data-testid="input-routine-name"
             />
           </div>
@@ -80,7 +80,7 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
           <DaySelector compact
             selectedDays={selectedDays}
             onSelectionChange={setSelectedDays}
-            className="space-y-1"
+            className="space-y-2 [@media(max-height:450px)]:space-y-1"
           />
           <p className={`text-xs text-slate-400 mt-2 ${selectedDays.length ? "invisible" : ""}`} aria-hidden={selectedDays.length > 0}>
               Please select at least one day for this routine.
@@ -92,7 +92,7 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
           <Button
             variant="outline"
             onClick={handleClose}
-            className="text-white"
+            className="min-h-11 [@media(max-height:450px)]:min-h-10 text-white"
             data-testid="button-cancel-routine"
           >
             Cancel
@@ -100,7 +100,7 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
           <Button
             onClick={handleSave}
             disabled={!routineName.trim() || selectedDays.length === 0}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-slate-700 disabled:text-slate-400"
+            className="min-h-11 [@media(max-height:450px)]:min-h-10 flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-slate-700 disabled:text-slate-400"
             data-testid="button-save-routine"
           >
             {editingRoutine ? 'Update' : 'Save'}
