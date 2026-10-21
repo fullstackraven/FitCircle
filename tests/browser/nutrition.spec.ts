@@ -744,7 +744,7 @@ test("nutrition details distinguish a known zero, an incomplete zero total, miss
     dialog.getByText("Sodium", { exact: true }).locator(".."),
   ).toContainText("0 mg");
   await expect(
-    dialog.getByText("Total sugar", { exact: true }).locator(".."),
+    dialog.getByText("Sugar", { exact: true }).locator(".."),
   ).toContainText("Not available");
   await expect(
     dialog.getByText("Vitamin A", { exact: true }).locator(".."),

@@ -88,7 +88,7 @@ test("missing and invalid profile values do not become demographic defaults or m
 });
 test("cholesterol uses its label comparator without fabricating total-sugar or vitamin A targets", () => {
   const refs = nutrientReferences({ age: 31, sex: "female" }, targets);
-  assert.equal(refs.sugar, undefined);
+  assert.equal(refs.sugar?.value, 75);
   assert.deepEqual(refs.cholesterol, {
     value: 300,
     kind: "reference",
@@ -177,6 +177,24 @@ test("label comparators do not assume adult age or confuse total and added sugar
   assert.equal(
     nutrientReferences({ age: 31 }, { ...targets, calories: 4000 }).sugar
       ?.value,
-    undefined,
+    150,
   );
+});
+
+test("total sugar automatically uses 15% of confirmed calories without an invented fallback", () => {
+  const current = { ...targets, calories: 2902 };
+  assert.equal(nutrientReferences({}, current).sugar?.value, (2902 * 0.15) / 4);
+  assert.equal(nutrientReferences({}, current).sugar?.source, "app-convention");
+  assert.equal(nutrientReferences({}, current).sugar?.kind, "reference");
+  assert.equal(
+    nutrientReferences({}, { ...current, calories: 3000 }).sugar?.value,
+    112.5,
+  );
+  assert.equal(nutrientReferences({}).sugar, undefined);
+  for (const calories of [0, -1, NaN, Infinity, 100001])
+    assert.equal(
+      nutrientReferences({}, { ...targets, calories }).sugar,
+      undefined,
+    );
+  assert.equal(nutrientProgress(200, (2902 * 0.15) / 4), 100);
 });

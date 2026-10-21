@@ -151,11 +151,11 @@ test("compact rows compare correct age/sex references, limit overflow and preser
     "45 / 90 mg",
   );
   await expect(dialog.getByTestId("nutrient-sugar")).toHaveText(
-    "Total sugar24 g",
+    "Sugar24 / 75 g",
   );
   await expect(
     dialog.getByTestId("nutrient-sugar").getByRole("progressbar"),
-  ).toHaveCount(0);
+  ).toHaveAttribute("aria-valuenow", "32");
   await expect(
     dialog.getByTestId("nutrient-cholesterol").getByRole("progressbar"),
   ).toHaveAttribute("aria-valuenow", "15");
@@ -335,7 +335,7 @@ test("label reference bars cap overages without visible limit suffixes or stored
   const before = await originals(page);
   const dialog = await open(page);
   await expect(dialog.getByTestId("nutrient-sugar")).toContainText(
-    "Total sugar108 g",
+    "Sugar108 / 75 g",
   );
   await expect(dialog.getByTestId("nutrient-cholesterol")).toContainText(
     "360 / 300 mg",
@@ -353,6 +353,44 @@ test("label reference bars cap overages without visible limit suffixes or stored
   ).toHaveAttribute("aria-label", /general label reference/);
   await expect(
     dialog.getByTestId("nutrient-sugar").getByRole("progressbar"),
-  ).toHaveCount(0);
+  ).toHaveAttribute("aria-valuenow", "100");
   expect(await originals(page)).toEqual(before);
+});
+
+test("Sugar automatically follows confirmed calories without settings or storage writes", async ({
+  page,
+}) => {
+  await seed(page);
+  await page.evaluate(() =>
+    localStorage.setItem("fitness_calc_target_calories", "2902"),
+  );
+  await page.reload();
+  const original = await originals(page);
+  const dialog = await open(page);
+  await expect(dialog.getByTestId("nutrient-sugar")).toHaveText(
+    "Sugar24 / 108.8 g",
+  );
+  await expect(
+    dialog.getByTestId("nutrient-sugar").getByRole("progressbar"),
+  ).toHaveAttribute("aria-valuenow", "22.1");
+  await expect(
+    dialog.getByText(/Set Sugar target|Edit Sugar target|Save target/),
+  ).toHaveCount(0);
+  expect(await originals(page)).toEqual(original);
+  await page.evaluate(() => {
+    localStorage.setItem("fitness_calc_target_calories", "3000");
+    window.dispatchEvent(new Event("fitcircleCalculatorTargetsChanged"));
+  });
+  await expect(dialog.getByTestId("nutrient-sugar")).toHaveText(
+    "Sugar24 / 112.5 g",
+  );
+  const after = await originals(page);
+  original.forEach((raw, index) => {
+    if (index !== 5) expect(after[index]).toBe(raw);
+  });
+  await page.reload();
+  await open(page);
+  await expect(page.getByTestId("nutrient-sugar")).toHaveText(
+    "Sugar24 / 112.5 g",
+  );
 });

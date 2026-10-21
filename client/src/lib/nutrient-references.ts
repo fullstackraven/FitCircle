@@ -3,7 +3,12 @@ import type { Nutrient, Targets } from "./nutrition";
 export type NutrientReference = {
   value: number;
   kind: "target" | "intake" | "limit" | "reference";
-  source: "saved-target" | "dri" | "energy" | "label-reference";
+  source:
+    | "saved-target"
+    | "dri"
+    | "energy"
+    | "label-reference"
+    | "app-convention";
 };
 export type ReferenceProfile = { age?: unknown; sex?: unknown };
 export type NutrientReferences = Partial<Record<Nutrient, NutrientReference>>;
@@ -33,6 +38,14 @@ export function nutrientReferences(
   };
   for (const key of ["calories", "protein", "carbs", "fat"] as const)
     put(key, targets?.[key], "target", "saved-target");
+  // App-defined total-sugar tracking convention, not an RDA or FDA Daily Value.
+  if (refs.calories)
+    put(
+      "sugar",
+      (refs.calories.value * 0.15) / 4,
+      "reference",
+      "app-convention",
+    );
   const age =
     typeof profile.age === "number" &&
     Number.isInteger(profile.age) &&
@@ -130,8 +143,7 @@ export function nutrientReferences(
   if (age >= 2 && refs.calories)
     put("saturatedFat", (refs.calories.value * 0.1) / 9, "limit", "energy");
   // Label comparators, not personalized DRIs or physiological upper limits.
-  // Existing sugar data is total sugar; no added-sugar field or configured
-  // total-sugar reference exists. Do not fabricate a comparison denominator.
+  // Total sugar never substitutes the added-sugar Daily Value.
   // FDA Nutrition Facts cholesterol DV applies to adults and children age 4+.
   if (age >= 4) put("cholesterol", 300, "reference", "label-reference");
   return refs;
