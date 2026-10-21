@@ -18,7 +18,7 @@ import {
   readMeasurementSnapshot,
   readWeightGoals,
   saveMeasurementGoals,
-  weightGoalProgress,
+  remainingGoalWeight,
   INTEGRATION_CHANGED,
 } from "@/lib/measurement-integration";
 import {
@@ -70,7 +70,6 @@ export default function FitnessCalculator({
 
   const [weightGoal, setWeightGoal] = useState("");
   const [savedWeightGoal, setSavedWeightGoal] = useState<number | null>(null);
-  const [startingWeight, setStartingWeight] = useState<number | null>(null);
   const [inputError, setInputError] = useState("");
   const [goalError, setGoalError] = useState("");
   const [goalSaved, setGoalSaved] = useState(false);
@@ -87,7 +86,6 @@ export default function FitnessCalculator({
           age: profile.age,
           gender: profile.record.gender === "female" ? "female" : "male",
         });
-        setStartingWeight(measurements.startWeight?.value ?? null);
         setInputError("");
       } catch (error) {
         setInputError((error as Error).message);
@@ -148,8 +146,7 @@ export default function FitnessCalculator({
       setGoalSaved(false);
     }
   };
-  const goalProgress = weightGoalProgress(
-    startingWeight,
+  const remainingWeight = remainingGoalWeight(
     userData.weight || null,
     savedWeightGoal,
     goalType as "lose" | "maintain" | "gain",
@@ -505,37 +502,19 @@ export default function FitnessCalculator({
                 <p>
                   {userData.weight} lb current · {savedWeightGoal} lb goal
                 </p>
-                {goalProgress === null &&
-                  startingWeight !== null &&
-                  (goalType === "lose" || goalType === "gain") && (
-                    <p className="mt-1">
-                      Choose a goal {goalType === "lose" ? "below" : "above"}{" "}
-                      your starting weight of {startingWeight} lb.
-                    </p>
-                  )}
-                {goalProgress !== null && (
-                  <>
-                    <div
-                      role="progressbar"
-                      aria-label="Weight goal progress"
-                      aria-valuenow={Math.round(goalProgress)}
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      className="h-2 rounded-full bg-slate-700 mt-2 overflow-hidden"
-                    >
-                      <div
-                        className="h-full bg-green-400"
-                        style={{ width: goalProgress + "%" }}
-                      />
-                    </div>
-                    <p className="mt-1">
-                      {goalType === "maintain"
-                        ? goalProgress === 100
-                          ? "At goal weight"
-                          : `${Math.abs(userData.weight - savedWeightGoal).toFixed(1)} lb from goal weight`
-                        : `${Math.round(goalProgress)}% from first recorded weight`}
-                    </p>
-                  </>
+                {remainingWeight !== null && (
+                  <p
+                    className="mt-1 text-green-400"
+                    data-testid="weight-goal-status"
+                  >
+                    {remainingWeight === 0
+                      ? goalType === "maintain"
+                        ? "At goal weight"
+                        : "Goal reached"
+                      : goalType === "maintain"
+                        ? `${remainingWeight.toFixed(1)} lb from goal weight`
+                        : `${remainingWeight.toFixed(1)} lb to ${goalType}`}
+                  </p>
                 )}
               </div>
             )}

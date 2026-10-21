@@ -113,9 +113,9 @@ test("simple calculator goal reuses existing records, shows progress and keeps m
   await expect(
     dialog.getByLabel("Goal weight (lbs)", { exact: true }),
   ).toHaveValue("180");
-  await expect(
-    dialog.getByRole("progressbar", { name: "Weight goal progress" }),
-  ).toHaveAttribute("aria-valuenow", "50");
+  await expect(dialog.getByTestId("weight-goal-status")).toHaveText(
+    "10.0 lb to lose",
+  );
   await expect(
     dialog.getByText("Weight: 190 lbs", { exact: true }),
   ).toBeVisible();
@@ -292,46 +292,65 @@ test("missing measurements keep existing calorie targets and never invent goal p
   ).toBe(180);
 });
 
-test("selected intent immediately changes goal progress without rewriting measurements or targets", async ({
+test("calculator compares goals with current weight even when history started on the other side", async ({
   page,
 }) => {
   await seed(page);
+  const before = await snapshot(page);
   await page.getByTestId("button-calculator").click();
   const dialog = page.getByRole("dialog", {
     name: "Fitness Calculator",
     exact: true,
   });
-  const before = await snapshot(page);
-  await expect(
-    dialog.getByRole("progressbar", { name: "Weight goal progress" }),
-  ).toHaveCount(0);
-  await expect(
-    dialog.getByText("Choose a goal above your starting weight of 200 lb.", {
-      exact: true,
-    }),
-  ).toBeVisible();
+  // Original starting weight is 200. Current weight is 190, so gaining to 195 is valid.
+  await dialog.getByLabel("Goal weight (lbs)", { exact: true }).fill("195");
+  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(dialog.getByTestId("weight-goal-status")).toHaveText(
+    "5.0 lb to gain",
+  );
+  await page.evaluate(() => {
+    const history = JSON.parse(
+      localStorage.getItem("fitcircle_measurements_history")!,
+    );
+    history.weight = history.weight.filter(
+      (point: any) => point.date !== "2026-10-20",
+    );
+    history.weight.push({ date: "2026-10-20", value: 210 });
+    localStorage.setItem(
+      "fitcircle_measurements_history",
+      JSON.stringify(history),
+    );
+    window.dispatchEvent(new Event("fitcircleIntegrationChanged"));
+  });
+  const recorded = await snapshot(page);
   await dialog
     .getByRole("button", { name: "Lose Weight", exact: true })
     .click();
-  await expect(
-    dialog.getByRole("progressbar", { name: "Weight goal progress" }),
-  ).toHaveAttribute("aria-valuenow", "50");
-  await dialog.getByRole("button", { name: "Maintain", exact: true }).click();
-  await expect(
-    dialog.getByRole("progressbar", { name: "Weight goal progress" }),
-  ).toHaveAttribute("aria-valuenow", "0");
-  await expect(
-    dialog.getByText("10.0 lb from goal weight", { exact: true }),
-  ).toBeVisible();
-  await dialog.getByLabel("Goal weight (lbs)", { exact: true }).fill("190");
+  await dialog.getByLabel("Goal weight (lbs)", { exact: true }).fill("205");
   await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  // Losing to 205 is valid even though original starting weight was only 200.
+  await expect(dialog.getByTestId("weight-goal-status")).toHaveText(
+    "5.0 lb to lose",
+  );
   await expect(
-    dialog.getByText("At goal weight", { exact: true }),
-  ).toBeVisible();
-  await expect(
-    dialog.getByRole("progressbar", { name: "Weight goal progress" }),
-  ).toHaveAttribute("aria-valuenow", "100");
+    dialog.getByText(/Choose a goal .* your starting weight/),
+  ).toHaveCount(0);
+  await page.reload();
+  await page.getByTestId("button-calculator").click();
+  await expect(page.getByTestId("weight-goal-status")).toHaveText(
+    "5.0 lb to lose",
+  );
+  await page.getByRole("button", { name: "Maintain", exact: true }).click();
+  await expect(page.getByTestId("weight-goal-status")).toHaveText(
+    "5.0 lb from goal weight",
+  );
+  await page.getByLabel("Goal weight (lbs)", { exact: true }).fill("210");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page.getByTestId("weight-goal-status")).toHaveText(
+    "At goal weight",
+  );
   const after = await snapshot(page);
-  expect(after.measurements).toBe(before.measurements);
+  expect(after.measurements).toBe(recorded.measurements);
   expect(after.food).toBe(before.food);
+  expect(after.nutrition).toBe(before.nutrition);
 });
