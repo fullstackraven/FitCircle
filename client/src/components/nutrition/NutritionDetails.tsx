@@ -1,3 +1,4 @@
+import { NutritionProgressBar } from "./NutritionProgressBar";
 import { useId } from "react";
 import {
   dailyNutrition,
@@ -98,20 +99,15 @@ export function NutritionDetails({
                 </dd>
               </div>
               {progress !== null && (
-                <div
-                  role="progressbar"
-                  aria-label={label}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={Number(progress.toFixed(1))}
-                  aria-valuetext={`${actual}; ${reference!.kind === "limit" ? "limit" : "reference"} ${formatNutrientAmount(reference!.value)} ${unit}${item.known < item.total ? "; partial recorded intake" : ""}`}
-                  className="mt-2 h-1 rounded-full bg-slate-700 overflow-hidden"
-                >
-                  <div
-                    className={`h-full rounded-full ${reference!.kind === "limit" ? "bg-blue-400" : "bg-green-400"}`}
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
+                <NutritionProgressBar
+                  actual={item.value}
+                  target={reference!.value}
+                  label={label}
+                  description={`${actual}; ${reference!.kind === "limit" ? "limit" : "reference"} ${formatNutrientAmount(reference!.value)} ${unit}${item.known < item.total ? "; partial recorded intake" : ""}`}
+                  color={
+                    reference!.kind === "limit" ? "bg-blue-400" : "bg-green-400"
+                  }
+                />
               )}
             </div>
           );

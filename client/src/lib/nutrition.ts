@@ -146,30 +146,43 @@ export function calorieBalance(consumed: number, target: number) {
   };
 }
 export function nutritionWeek(
-  ending: string,
+  selectedDate: string,
   read: (date: string) => FoodEntry[],
 ) {
   const days: { date: string; entries: FoodEntry[] }[] = [];
   const unavailable: string[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const date = parseLocalDate(ending);
-    date.setDate(date.getDate() - i);
+  const calendarDays: {
+    date: string;
+    status: "logged" | "unlogged" | "unavailable";
+  }[] = [];
+  // Match Calendar: Sunday–Saturday, in local time. Keep historical diary weeks.
+  const start = parseLocalDate(selectedDate);
+  start.setHours(12, 0, 0, 0);
+  start.setDate(start.getDate() - start.getDay());
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(start);
+    date.setDate(start.getDate() + i);
     const key = getDateString(date);
     try {
       const entries = read(key);
       if (entries.length) days.push({ date: key, entries });
+      calendarDays.push({
+        date: key,
+        status: entries.length ? "logged" : "unlogged",
+      });
     } catch {
       unavailable.push(key);
+      calendarDays.push({ date: key, status: "unavailable" });
     }
   }
   const totals = dailyNutrition(days.flatMap((day) => day.entries));
   const averages = Object.fromEntries(
     (["calories", "protein", "carbs", "fat"] as const).map((key) => [
       key,
-      days.length ? totals[key].value / days.length : null,
+      days.length && totals[key].known ? totals[key].value / days.length : null,
     ]),
   ) as Record<keyof Targets, number | null>;
-  return { days: days.length, averages, unavailable };
+  return { days: days.length, averages, unavailable, calendarDays, totals };
 }
 
 export function consumedServingText(

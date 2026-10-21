@@ -120,7 +120,7 @@ test("serving scaling preserves explicit zeros and unknown nutrients; totals cou
 });
 test("weekly averages exclude unlogged days and unreadable days, retaining explicit zero-intake records", () => {
   const week = nutritionWeek("2026-10-20", (date) => {
-    if (date === "2026-10-16") throw new Error("Malformed");
+    if (date === "2026-10-18") throw new Error("Malformed");
     return date === "2026-10-19"
       ? [{ ...food, servings: 2 }]
       : date === "2026-10-20"
@@ -129,7 +129,7 @@ test("weekly averages exclude unlogged days and unreadable days, retaining expli
   });
   assert.equal(week.days, 2);
   assert.equal(week.averages.calories, 100);
-  assert.deepEqual(week.unavailable, ["2026-10-16"]);
+  assert.deepEqual(week.unavailable, ["2026-10-18"]);
   assert.equal(nutritionWeek("2026-10-20", () => []).averages.calories, null);
 });
 test("goals are explicit, metadata preserving, finite and independent of calculator updates", () => {
@@ -713,4 +713,57 @@ test("derived nutrient references preserve profile, confirmed goals and food byt
   const restored = readFoodDay("2026-10-19", destination).entries[0];
   assert.equal(restored.iron, 0);
   assert.equal(restored.vitaminC, undefined);
+});
+
+test("calendar nutrition weeks are local Sunday–Saturday across month/year boundaries", () => {
+  for (const [selected, first, last] of [
+    ["2026-10-20", "2026-10-18", "2026-10-24"],
+    ["2026-10-18", "2026-10-18", "2026-10-24"],
+    ["2026-10-24", "2026-10-18", "2026-10-24"],
+    ["2027-01-01", "2026-12-27", "2027-01-02"],
+    ["2026-11-01", "2026-11-01", "2026-11-07"],
+  ]) {
+    const seen: string[] = [];
+    const summary = nutritionWeek(selected, (date) => {
+      seen.push(date);
+      return [];
+    });
+    assert.equal(seen.length, 7);
+    assert.equal(seen[0], first);
+    assert.equal(seen[6], last);
+    assert.equal(summary.days, 0);
+    assert.equal(summary.averages.calories, null);
+    assert.ok(summary.calendarDays.every((day) => day.status === "unlogged"));
+  }
+});
+test("weekly indicators and averages use only logged calendar days, preserving input records", () => {
+  const records = {
+    "2026-10-18": [{ ...food, calories: 2000, servings: 1 }],
+    "2026-10-20": [{ ...food, calories: 2500, servings: 1 }],
+    "2026-10-24": [{ ...food, calories: 1500, servings: 1 }],
+  };
+  const original = JSON.stringify(records);
+  const week = nutritionWeek(
+    "2026-10-20",
+    (date) => records[date as keyof typeof records] ?? [],
+  );
+  assert.equal(week.days, 3);
+  assert.equal(week.averages.calories, 2000);
+  assert.deepEqual(
+    week.calendarDays.map((day) => day.status),
+    [
+      "logged",
+      "unlogged",
+      "logged",
+      "unlogged",
+      "unlogged",
+      "unlogged",
+      "logged",
+    ],
+  );
+  assert.equal(JSON.stringify(records), original);
+  const single = nutritionWeek("2026-10-20", (date) =>
+    date === "2026-10-20" ? [{ ...food, calories: 999, servings: 1 }] : [],
+  );
+  assert.equal(single.averages.calories, 999);
 });

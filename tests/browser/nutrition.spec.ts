@@ -116,11 +116,9 @@ test("dashboard uses calculator targets rather than obsolete nutrition goals and
     .getByRole("button", { name: "Weekly Overview", exact: true })
     .click();
   await expect(page.getByRole("dialog")).toContainText(
-    "2 days with recorded intake",
+    "2 of 7 days logged",
   );
-  await expect(
-    page.getByRole("dialog").getByText("150 kcal", { exact: true }),
-  ).toBeVisible();
+  await expect(page.getByTestId("weekly-calories")).toContainText("150 / 3,000 kcal");
   await page.getByRole("button", { name: "Close", exact: true }).click();
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
