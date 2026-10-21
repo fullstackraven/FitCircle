@@ -545,3 +545,49 @@
 @keyframes statistics-expand { from { height: 0; opacity: 0; } to { height: var(--radix-collapsible-content-height); opacity: 1; } }
 @keyframes statistics-collapse { from { height: var(--radix-collapsible-content-height); opacity: 1; } to { height: 0; opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .statistics-workout-totals { animation: none !important; } }
+
+/* Wellness 2.0: page-local presentation; existing shell owns dock/safe-area clearance. */
+.wellness-stack { display: flex; flex-direction: column; gap: 16px; }
+.wellness-header { display: grid; grid-template-columns: 70px minmax(0,1fr) 70px; align-items: center; gap: 4px; margin-bottom: 4px; }
+.wellness-header h1 { text-align: center; font-size: clamp(1.2rem,5vw,1.5rem); overflow-wrap: anywhere; }
+.wellness-header button { min-height: 44px; min-width: 44px; display: flex; align-items: center; gap: 5px; color: #94a3b8; }
+.wellness-header button:last-child { justify-content: flex-end; }
+.wellness-surface { background: #1e293b; border: 1px solid rgb(148 163 184 / .1); border-radius: 20px; padding: 18px; min-width: 0; }
+.wellness-hero { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wellness-eyebrow { color: #94a3b8; font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.wellness-value { font-family: var(--font-metric); margin-top: 14px; font-size: clamp(1.5rem,7vw,2rem); line-height: 1.2; font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.wellness-target { font-size: .65em; font-weight: 500; color: #94a3b8; }
+.wellness-accent { color: var(--wellness-accent); }
+.wellness-ring { width: 100px; height: 100px; flex: 0 0 100px; position: relative; }
+.wellness-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); fill: none; stroke-width: 8; }
+.wellness-ring-track { stroke: #334155; }
+.wellness-ring-value { stroke: var(--wellness-accent); stroke-linecap: round; transition: stroke-dashoffset .3s ease; }
+.wellness-ring span { position: absolute; inset: 0; display: grid; place-content: center; font-size: 1rem; color: white; }
+.wellness-window { min-width: 44px; min-height: 44px; border-radius: 12px; font-size: .75rem; color: #94a3b8; }
+.wellness-window[aria-pressed=true] { background: #334155; color: white; }
+.wellness-bars { height: 48px; display: grid; gap: 3px; align-items: end; }
+.wellness-bar-column { display: flex; align-items: end; justify-content: center; height: 100%; min-width: 0; }
+.wellness-bar { width: 100%; max-width: 18px; background: var(--wellness-accent); border-radius: 4px 4px 1px 1px; }
+.wellness-primary { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; border-radius: 14px; background: var(--wellness-accent); color: #0f172a; font-weight: 700; }
+.wellness-primary:disabled { opacity: .5; }
+.wellness-history-row { display: flex; align-items: center; gap: 10px; padding: 14px; min-height: 52px; width: 100%; border-radius: 14px; background: #1e293b; text-align: left; }
+.wellness-history-row > span:first-child { flex: 1; min-width: 0; overflow-wrap: anywhere; font-weight: 500; }
+.wellness-history-row[data-state=open] .wellness-history-chevron { transform: rotate(90deg); }
+.wellness-history-chevron { color: #94a3b8; transition: transform .2s ease; flex-shrink: 0; }
+.wellness-page .fitcircle-card.ml-4 { margin-left: 0; padding: 14px; }
+.wellness-page .wellness-today button, .wellness-page [data-state=open] button { min-height: 44px; min-width: 44px; }
+.wellness-goal-sheet { width: 100%; max-width: 32rem; }
+.wellness-goal-sheet > div { background: #1e293b; border: 1px solid rgb(148 163 184 / .15); border-radius: 20px; padding: 20px; }
+.wellness-quick-add { display: flex; flex-wrap: wrap; gap: 8px; }
+.wellness-quick-add button { flex: 1; min-height: 44px; border: 1px solid #475569; border-radius: 12px; font-variant-numeric: tabular-nums; }
+.wellness-timeline { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-left: 2px solid var(--wellness-accent); padding-left: 12px; }
+.wellness-timeline dt { font-size: .75rem; color: #94a3b8; }
+.wellness-timeline dd { margin-top: 4px; font-size: .875rem; overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) { .wellness-ring-value, .wellness-history-chevron { transition: none; } }
+@media (max-width: 350px) { .wellness-surface { padding: 14px; } .wellness-ring { width: 82px; height: 82px; flex-basis: 82px; } }
+.wellness-record-row { flex-wrap: wrap; gap: 6px; }
+.wellness-record-row > div:first-child { min-width: 0; flex: 1; }
+.wellness-record-row span { overflow-wrap: anywhere; }
+.wellness-quick-add button:disabled { opacity: .5; }
+.wellness-page button:focus-visible, .wellness-page summary:focus-visible { outline: 2px solid var(--wellness-accent); outline-offset: 3px; }
+.wellness-page button, .wellness-goal-sheet button { min-height: 44px; }

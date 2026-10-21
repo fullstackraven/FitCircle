@@ -131,7 +131,7 @@ test("weekly cardio uses 75/150 and a calendar week without rewriting saved hist
   await page.goto("cardio");
   await expect(page.locator(".type-caption").first()).toHaveText("50%");
   await expect(
-    page.getByText("This Week’s Cardio", { exact: true }),
+    page.getByRole("region", { name: "This Week’s Cardio", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByText("This calendar week", { exact: true }),
@@ -178,12 +178,12 @@ test("completed fast crossing midnight meets duration target rather than display
   );
   const before = await bytes(page);
   await page.goto("fasting");
-  await expect(page.locator(".type-caption").first()).toHaveText("100%");
+  await expect(page.locator(".type-caption").first()).toHaveText("0%");
   await expect(
-    page.getByText("Completed Today", { exact: true }),
+    page.getByText("Completed today: 16.0 hr · 100% of duration goal"),
   ).toBeVisible();
   await expect(page.getByText(/No active fast/)).toBeVisible();
-  await expect(page.getByText(/Recent consistency: 10%/)).toBeVisible();
+  await expect(page.getByText(/1 of 7 days met goal/)).toBeVisible();
   await page.getByRole("button", { name: "Goal", exact: true }).click();
   await expect(page.locator(".type-caption").last()).toHaveText("100%");
   expect(await bytes(page)).toEqual(before);
@@ -332,7 +332,7 @@ test("failed explicit hydration writes preserve original bytes and visible draft
   });
   await page.getByRole("button", { name: "Add Liquid", exact: true }).click();
   const dialog = page.getByRole("dialog");
-  await dialog.locator('input[type="number"]').fill("12");
+  await dialog.getByLabel("Amount (oz)", {exact: true}).fill("12");
   await dialog.getByRole("button", { name: "Add", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("quota");
   expect(await bytes(page)).toEqual(before);

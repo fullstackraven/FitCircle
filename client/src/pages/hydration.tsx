@@ -1,16 +1,23 @@
+import {
+  WellnessPageShell,
+  WellnessProgressHero,
+  WellnessRecentActivity,
+  WellnessTodaySection,
+  WellnessPrimaryAction,
+  WellnessHistoryRow,
+  WellnessGoalSheet,
+} from "@/components/wellness/WellnessUI";
+import { dailyTotals } from "@/lib/wellness-progress";
 import { WellnessHistory } from "@/components/WellnessHistory";
-import { percentage } from "@/lib/wellness-progress";
-import { ViewportOverlay } from "@/components/ui/viewport-overlay";
+import { percentage, amount } from "@/lib/wellness-progress";
 import { useState, useEffect } from "react";
-import { ArrowLeft, Plus, Target, X, Edit2, Trash2 } from "lucide-react";
-import { useLocation } from "wouter";
+import { Plus, X, Edit2, Trash2 } from "lucide-react";
 import {
   useHydration,
   HydrationLog,
   HydrationEntry,
 } from "@/hooks/use-hydration";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -28,31 +35,17 @@ import { GoalCircle } from "@/components/GoalCircle";
 import { groupLogsByMonth } from "@/lib/date-utils";
 
 export default function HydrationPage() {
-  const [, navigate] = useLocation();
-
-  // Check if we came from dashboard
-  const fromDashboard =
-    new URLSearchParams(window.location.search).get("from") === "dashboard";
-
-  const handleBack = () => {
-    navigate("/wellness");
-  };
   const {
     error,
     dailyGoalOz,
     currentDayOz,
-    progressPercentage,
     addHydration,
     editHydrationEntry,
     deleteHydrationEntry,
     setDailyGoal,
-    getRecentLogs,
     getAllLogs,
     getTodayEntries,
-    isGoalReached,
-    getLast10LogsProgress,
     getHistoricalStats,
-    getAllTimeGoalPercentage,
   } = useHydration();
 
   const [addAmount, setAddAmount] = useState("");
@@ -73,17 +66,6 @@ export default function HydrationPage() {
 
   const liquidTypes = ["Water", "Coffee", "Tea", "Custom"];
 
-  // const handleAddHydration = () => {
-  //   const amount = parseFloat(addAmount);
-  //   if (amount > 0) {
-  //     const liquidType = selectedLiquidType === 'Custom' ? customLiquidType || 'Custom' : selectedLiquidType;
-  //     if(!addHydration(amount, liquidType))return;
-  //     // Reset custom input after adding
-  //     if (selectedLiquidType === 'Custom') {
-  //       setCustomLiquidType('');
-  //     }
-  //   }
-  // };
   useEffect(() => setNewGoal(dailyGoalOz.toString()), [dailyGoalOz]);
 
   const handleAddHydration = () => {
@@ -165,164 +147,131 @@ export default function HydrationPage() {
     }
   };
 
-  const quickAddAmounts = [12, 16, 24, 34, 36];
+  const [quickAddAmounts, setQuickAddAmounts] = useState([8, 16, 24]);
   const recentLogs = getAllLogs();
   const todayEntries = getTodayEntries();
   const monthlyLogs = groupLogsByMonth(
     recentLogs.reduce((acc, log) => ({ ...acc, [log.date]: log }), {}),
   ) as { [monthName: string]: HydrationLog[] };
 
-  // Calculate progress ring
-  const circumference = 2 * Math.PI * 120;
-  const strokeDashoffset =
-    circumference - (progressPercentage / 100) * circumference;
-
   return (
-    <div className="fitcircle-page">
-      <div className="fitcircle-container">
+    <>
+      <WellnessPageShell
+        title="Hydration"
+        accent="#3b82f6"
+        onGoal={() => setIsGoalModalOpen(true)}
+      >
         {error && (
           <p role="alert" className="text-sm text-amber-300">
             {error}
           </p>
         )}
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="fitcircle-page-title">Hydration</h1>
-          <button
-            onClick={() => setIsGoalModalOpen(true)}
-            className="flex items-center space-x-1 fitcircle-text-muted hover:text-white transition-colors"
-          >
-            <Target className="w-5 h-5" />
-            <span>Goal</span>
-          </button>
-        </div>
 
-        <div className="space-y-8">
-          {/* Progress Circle */}
-          <div className="flex justify-center">
-            <GoalCircle
-              percentage={progressPercentage}
-              color="rgb(59, 130, 246)"
-              size={240}
-              strokeWidth={16}
-              currentValue={currentDayOz}
-              goalValue={dailyGoalOz}
-              unit="oz"
-              title="Today's Hydration"
-              description={`Goal: ${dailyGoalOz}oz/day`}
-            />
-          </div>
-
-          {isGoalReached && (
-            <div className="text-green-400 font-medium text-center -mt-4">
-              🎉 Daily goal achieved!
-            </div>
+        <div className="wellness-stack">
+          <WellnessProgressHero
+            current={currentDayOz}
+            target={dailyGoalOz}
+            unit="oz"
+            period="Today"
+            title="Today's Hydration"
+          />
+          {dailyGoalOz > 128 && (
+            <p className="text-sm text-amber-300">
+              High daily goal · review your target in Goal.
+            </p>
           )}
+          <WellnessRecentActivity
+            totals={dailyTotals("hydration", {
+              logs: Object.fromEntries(
+                recentLogs.map((log) => [log.date, log]),
+              ),
+            })}
+            unit="oz"
+          />
+          <WellnessTodaySection title="Quick add">
+            <div className="wellness-quick-add">
+              {quickAddAmounts.map((value, i) => (
+                <button
+                  key={i}
+                  disabled={!amount(value)}
+                  onClick={() => addHydration(value, "Water")}
+                >
+                  +{value} oz
+                </button>
+              ))}
+            </div>
 
-          {/* Last 10 Logs Progress Stats */}
-          <Card className="fitcircle-card-lg">
-            <CardContent className="p-4">
-              <h3 className="text-lg font-semibold mb-3 text-center">
-                Last 10 Calendar Days
-              </h3>
-              <div className="grid grid-cols-2 gap-4 text-center">
-                <div>
-                  <div className="type-metric text-2xl font-bold text-blue-400">
-                    {getLast10LogsProgress().totalOz}oz
-                  </div>
-                  <div className="text-sm text-slate-400">Completed</div>
-                </div>
-                <div>
-                  <div className="type-metric text-2xl font-bold text-blue-400">
-                    {getLast10LogsProgress().averageOz}oz
-                  </div>
-                  <div className="text-sm text-slate-400">
-                    10-day calendar average
-                  </div>
-                </div>
-              </div>
-              {getLast10LogsProgress().remaining > 0 && (
-                <div className="mt-3 text-center text-slate-300">
-                  <span className="text-sm">
-                    {getLast10LogsProgress().remaining} ounces · 10-day
-                    shortfall
-                  </span>
-                </div>
-              )}
-              <WellnessHistory stats={getHistoricalStats()} unit="oz" />
-            </CardContent>
-          </Card>
+            <p className="text-sm text-slate-400 mt-2">
+              {currentDayOz} oz today ·{" "}
+              {Math.max(0, dailyGoalOz - currentDayOz)} oz remaining
+            </p>
+          </WellnessTodaySection>
 
           {/* Add Liquid Button */}
-          <div className="mb-8">
-            <Button
+          <div>
+            <WellnessPrimaryAction
               onClick={() => setIsHydrationDialogOpen(true)}
-              className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center space-x-2"
             >
-              <Plus className="w-4 h-4" />
               <span>Add Liquid</span>
-            </Button>
+            </WellnessPrimaryAction>
           </div>
 
           {/* Today's Entries */}
-          {todayEntries.length > 0 && (
-            <div className="fitcircle-card-lg">
-              <h3 className="text-lg font-semibold mb-3">Today's Intake</h3>
-              <div className="space-y-2">
-                {todayEntries
-                  .slice()
-                  .reverse()
-                  .map((entry: HydrationEntry, index: number) => (
-                    <div
-                      key={entry.id}
-                      className="flex justify-between items-center text-sm relative"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <span className="text-slate-400">{entry.time}</span>
-                        <span className="text-slate-300">
-                          {entry.liquidType || "Water"}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-blue-400 font-medium">
-                          {entry.amount}oz
-                        </span>
-                        <div className="flex items-center space-x-1 ml-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEditEntry(entry)}
-                            className="text-slate-400 hover:text-white p-1 h-auto"
-                            data-testid={`button-edit-entry-${entry.id}`}
-                          >
-                            <Edit2 className="w-3 h-3" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteEntry(entry)}
-                            className="text-slate-400 hover:text-red-300 p-1 h-auto"
-                            data-testid={`button-delete-entry-${entry.id}`}
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        </div>
+
+          <WellnessTodaySection title="Today's Intake">
+            <div className="space-y-2">
+              {todayEntries.length === 0 && (
+                <p className="text-sm text-slate-400">No intake today yet</p>
+              )}
+              {todayEntries
+                .slice()
+                .reverse()
+                .map((entry: HydrationEntry, index: number) => (
+                  <div
+                    key={entry.id}
+                    className="wellness-record-row flex justify-between items-center text-sm relative"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="text-slate-400">{entry.time}</span>
+                      <span className="text-slate-300">
+                        {entry.liquidType || "Water"}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-blue-400 font-medium">
+                        {entry.amount}oz
+                      </span>
+                      <div className="flex items-center space-x-1 ml-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          aria-label="Edit intake"
+                          onClick={() => handleEditEntry(entry)}
+                          className="text-slate-400 hover:text-white p-1 h-auto"
+                          data-testid={`button-edit-entry-${entry.id}`}
+                        >
+                          <Edit2 className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          aria-label="Delete intake"
+                          onClick={() => handleDeleteEntry(entry)}
+                          className="text-slate-400 hover:text-red-300 p-1 h-auto"
+                          data-testid={`button-delete-entry-${entry.id}`}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
                       </div>
                     </div>
-                  ))}
-              </div>
+                  </div>
+                ))}
             </div>
-          )}
+          </WellnessTodaySection>
 
           {/* Hydration Log - Monthly Sections */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Hydration Log</h3>
+            <h3 className="text-lg font-semibold">History</h3>
             <div className="space-y-3">
               {Object.keys(monthlyLogs).length > 0 ? (
                 Object.entries(monthlyLogs).map(([monthName, monthLogs]) => (
@@ -340,21 +289,11 @@ export default function HydrationPage() {
                     }}
                   >
                     <CollapsibleTrigger asChild>
-                      <button className="w-full fitcircle-card hover:bg-slate-700 transition-colors">
-                        <div className="flex justify-between items-center">
-                          <span className="text-white font-medium">
-                            {monthName}
-                          </span>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-blue-400 text-sm">
-                              {monthLogs.length} days
-                            </span>
-                            <span className="text-slate-400">
-                              {expandedMonths.has(monthName) ? "−" : "+"}
-                            </span>
-                          </div>
-                        </div>
-                      </button>
+                      <WellnessHistoryRow
+                        month={monthName}
+                        count={monthLogs.length}
+                        unit="days"
+                      />
                     </CollapsibleTrigger>
 
                     <CollapsibleContent className="space-y-2 mt-2">
@@ -386,7 +325,7 @@ export default function HydrationPage() {
                             ).map((entry: HydrationEntry, index: number) => (
                               <div
                                 key={index}
-                                className="flex justify-between items-center text-xs"
+                                className="wellness-record-row flex justify-between items-center text-xs"
                               >
                                 <span className="text-slate-500">
                                   {entry.time}
@@ -398,6 +337,18 @@ export default function HydrationPage() {
                                   <span className="text-slate-300">
                                     {entry.amount}oz
                                   </span>
+                                  <button
+                                    aria-label="Edit historical intake"
+                                    onClick={() => handleEditEntry(entry)}
+                                  >
+                                    <Edit2 size={16} />
+                                  </button>
+                                  <button
+                                    aria-label="Delete historical intake"
+                                    onClick={() => handleDeleteEntry(entry)}
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
                                 </div>
                               </div>
                             ))}
@@ -433,11 +384,12 @@ export default function HydrationPage() {
             </div>
           </div>
         </div>
-      </div>
+        <WellnessHistory stats={getHistoricalStats()} unit="oz" />
+      </WellnessPageShell>
 
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
-        <ViewportOverlay
+        <WellnessGoalSheet
           title="Hydration Goal"
           onDismiss={() => setIsGoalModalOpen(false)}
         >
@@ -502,7 +454,7 @@ export default function HydrationPage() {
               </div>
             </div>
           </div>
-        </ViewportOverlay>
+        </WellnessGoalSheet>
       )}
 
       {/* Add Liquid Dialog */}
@@ -559,7 +511,7 @@ export default function HydrationPage() {
             </div>
 
             {/* Quick Add Buttons */}
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {quickAddAmounts.map((amount) => (
                 <Button
                   key={amount}
@@ -575,6 +527,31 @@ export default function HydrationPage() {
               ))}
             </div>
 
+            <details className="text-sm text-slate-400 mt-3">
+              <summary className="min-h-11 flex items-center cursor-pointer">
+                Customize shortcuts
+              </summary>
+              <div className="grid grid-cols-3 gap-2">
+                {quickAddAmounts.map((value, i) => (
+                  <div key={i}>
+                    <Label htmlFor={`quick-${i}`}>Amount {i + 1} (oz)</Label>
+                    <Input
+                      id={`quick-${i}`}
+                      type="number"
+                      min="1"
+                      value={value || ""}
+                      onChange={(event) =>
+                        setQuickAddAmounts((previous) =>
+                          previous.map((old, index) =>
+                            index === i ? amount(event.target.value) : old,
+                          ),
+                        )
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+            </details>
             {/* Custom Amount */}
             <div className="flex space-x-2">
               <div className="flex-1">
@@ -680,6 +657,6 @@ export default function HydrationPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
