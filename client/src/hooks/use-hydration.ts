@@ -1,7 +1,28 @@
-import { useState, useEffect } from 'react';
-import { getTodayString, getCurrentTime, getAllTimeHydrationAverage } from '@/lib/date-utils';
-import { STORAGE_KEYS, safeParseJSON } from '@/lib/storage-utils';
-
+import {
+  getTodayString,
+  getCurrentTime,
+  getAllTimeHydrationAverage,
+} from "@/lib/date-utils";
+import { STORAGE_KEYS } from "@/lib/storage-utils";
+import {
+  usePreservedWellness,
+  useWellnessClock,
+} from "./use-preserved-wellness";
+import {
+  hydrationRecord,
+  editHydration,
+  entryId,
+} from "@/lib/wellness-records";
+import {
+  amount,
+  historicalStats,
+  localDay,
+  dailyTotals,
+  percentage,
+  windowStats,
+} from "@/lib/wellness-progress";
+import { readWellnessGoals } from "@/lib/wellness-storage";
+import { updateGoal } from "@/lib/goals-utils";
 export interface HydrationEntry {
   id: string;
   time: string;
@@ -23,266 +44,97 @@ export interface HydrationData {
 }
 
 export function useHydration() {
-  const [data, setData] = useState<HydrationData>(() => {
-    const goalFromGoalsPage = localStorage.getItem('fitcircle_goal_hydration');
-    let goalValue = 64;
-    if (goalFromGoalsPage) {
-      const parsed = parseFloat(goalFromGoalsPage);
-      goalValue = isNaN(parsed) ? 64 : parsed;
-    }
-    const defaultData = {
-      dailyGoalOz: goalValue,
-      currentDayOz: 0,
-      logs: {},
-      lastDate: getTodayString()
-    };
-    
-    const saved = safeParseJSON(localStorage.getItem(STORAGE_KEYS.HYDRATION), defaultData);
-    
-    // Migrate liquid type and add IDs if not present
-    if (saved.logs) {
-      Object.values(saved.logs).forEach((dayLog: any) => {
-        if (dayLog.entries) {
-          dayLog.entries.forEach((entry: any, index: number) => {
-            if (!entry.liquidType) {
-              entry.liquidType = 'Water';
-            }
-            // Add unique ID if missing (for existing entries)
-            if (!entry.id) {
-              entry.id = `${dayLog.date}-${entry.time}-${index}-${Date.now()}`;
-            }
-          });
-        }
-      });
-    }
-    
-    // Sync goal from Goals page if it exists and is different
-    if (goalFromGoalsPage) {
-      const parsed = parseFloat(goalFromGoalsPage);
-      saved.dailyGoalOz = isNaN(parsed) ? 64 : parsed;
-    }
-    
-    return saved;
+  const now = useWellnessClock();
+  const { data, change, error } = usePreservedWellness<HydrationData>(
+    STORAGE_KEYS.HYDRATION,
+    { dailyGoalOz: 64, currentDayOz: 0, logs: {}, lastDate: getTodayString() },
+    hydrationRecord,
+  );
+  const today = getTodayString(),
+    dailyGoalOz = readWellnessGoals().hydrationOz;
+  const totals = dailyTotals("hydration", data),
+    currentDayOz = totals[today] ?? 0;
+  const viewLog = (date: string, log: HydrationLog) => ({
+    ...log,
+    date,
+    totalOz: totals[localDay(date) ?? date] ?? 0,
+    entries: (log.entries ?? []).map((entry, i) => ({
+      ...entry,
+      id: entryId(date, entry, i),
+      liquidType: entry.liquidType ?? "Water",
+    })),
   });
-
-  // Save to localStorage whenever data changes
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.HYDRATION, JSON.stringify(data));
-    } catch (error) {
-      console.error('Failed to save hydration data:', error);
-    }
-  }, [data]);
-
-  // Reset daily data if date has changed
-  useEffect(() => {
-    const checkDateChange = () => {
-      const today = getTodayString();
-      if (data.lastDate && data.lastDate !== today) {
-        setData(prev => ({
-          ...prev,
-          lastDate: today,
-          currentDayOz: 0
-        }));
-      }
-    };
-
-    checkDateChange();
-    // Check for date change every minute
-    const interval = setInterval(checkDateChange, 60000);
-    return () => clearInterval(interval);
-  }, [data.lastDate]);
-
-  const addHydration = (amountOz: number, liquidType: string = 'Water') => {
-    const today = getTodayString();
-    const currentTime = getCurrentTime();
-    
-    setData(prev => {
-      const newCurrentDayOz = prev.currentDayOz + amountOz;
-      const todayLog = prev.logs[today] || { date: today, totalOz: 0, entries: [] };
-      
-      const newEntry: HydrationEntry = {
-        id: Date.now().toString(),
-        time: currentTime,
-        amount: amountOz,
-        liquidType
+  const allLogs = () =>
+    Object.entries(data.logs)
+      .map(([date, log]) => viewLog(date, log))
+      .sort((a, b) => b.date.localeCompare(a.date));
+  const addHydration = (amountOz: number, liquidType = "Water") => {
+    if (!amount(amountOz)) return false;
+    return change((prev) => {
+      const day = prev.logs[today] ?? { date: today, totalOz: 0, entries: [] };
+      if (!Array.isArray(day.entries))
+        throw new Error(
+          "Saved hydration entries are incomplete. Restore a verified backup before changing this day.",
+        );
+      const entries = [
+        ...(day.entries ?? []),
+        {
+          id: Date.now().toString(),
+          time: getCurrentTime(),
+          amount: amountOz,
+          liquidType,
+        },
+      ];
+      const logs = {
+        ...prev.logs,
+        [today]: {
+          ...day,
+          entries,
+          totalOz: entries.reduce((sum, e) => sum + amount(e.amount), 0),
+        },
       };
-      
-      const updatedLog = {
-        ...todayLog,
-        totalOz: todayLog.totalOz + amountOz,
-        entries: [...todayLog.entries, newEntry]
-      };
-
+      const next = { ...prev, logs, lastDate: today };
       return {
-        ...prev,
-        currentDayOz: newCurrentDayOz,
-        logs: {
-          ...prev.logs,
-          [today]: updatedLog
-        }
+        ...next,
+        currentDayOz: dailyTotals("hydration", next)[today] ?? 0,
       };
     });
   };
-
-  const setDailyGoal = (goalOz: number) => {
-    setData(prev => ({ ...prev, dailyGoalOz: goalOz }));
-    // Sync with goals page
-    localStorage.setItem('fitcircle_goal_hydration', goalOz.toString());
-  };
-
-  const editHydrationEntry = (entryId: string, newAmount: number, newLiquidType: string = 'Water') => {
-    setData(prev => {
-      const updatedLogs = { ...prev.logs };
-      let totalDifference = 0;
-      
-      // Find and update the entry across all logs
-      Object.keys(updatedLogs).forEach(date => {
-        const log = updatedLogs[date];
-        const entryIndex = log.entries.findIndex(entry => entry.id === entryId);
-        
-        if (entryIndex !== -1) {
-          const oldAmount = log.entries[entryIndex].amount;
-          totalDifference = newAmount - oldAmount;
-          
-          // Update the entry
-          log.entries[entryIndex] = {
-            ...log.entries[entryIndex],
-            amount: newAmount,
-            liquidType: newLiquidType
-          };
-          
-          // Update the log's total
-          log.totalOz += totalDifference;
-        }
-      });
-      
-      return {
-        ...prev,
-        currentDayOz: prev.currentDayOz + totalDifference,
-        logs: updatedLogs
-      };
-    });
-  };
-
-  const deleteHydrationEntry = (entryId: string) => {
-    setData(prev => {
-      const updatedLogs = { ...prev.logs };
-      let deletedAmount = 0;
-      
-      // Find and remove the entry across all logs
-      Object.keys(updatedLogs).forEach(date => {
-        const log = updatedLogs[date];
-        const entryIndex = log.entries.findIndex(entry => entry.id === entryId);
-        
-        if (entryIndex !== -1) {
-          deletedAmount = log.entries[entryIndex].amount;
-          
-          // Remove the entry
-          log.entries.splice(entryIndex, 1);
-          
-          // Update the log's total
-          log.totalOz -= deletedAmount;
-        }
-      });
-      
-      return {
-        ...prev,
-        currentDayOz: prev.currentDayOz - deletedAmount,
-        logs: updatedLogs
-      };
-    });
-  };
-
-  const getProgressPercentage = () => {
-    return Math.min((data.currentDayOz / data.dailyGoalOz) * 100, 100);
-  };
-
-  const getRecentLogs = (days: number = 7) => {
-    const logs = Object.values(data.logs)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, days);
-    return logs;
-  };
-
-  const getAllLogs = () => {
-    return Object.values(data.logs)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  };
-
-  const getTodayEntries = () => {
-    const today = getTodayString();
-    const todayLog = data.logs[today];
-    return todayLog?.entries || [];
-  };
-
-  // Get last 10 logs hydration stats
   const getLast10LogsProgress = () => {
-    // Get the last 10 calendar days (today and previous 9 days)
-    const last10Days: string[] = [];
-    for (let i = 0; i < 10; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      last10Days.push(`${year}-${month}-${day}`);
-    }
-    
-    // For each of the last 10 days, get the hydration ounces (or 0 if no log)
-    const dailyOz = last10Days.map(dateKey => {
-      const log = data.logs[dateKey];
-      return log ? log.totalOz : 0;
-    });
-    
-    // Sum up the total ounces
-    const totalOz = dailyOz.reduce((sum, oz) => sum + oz, 0);
-    
-    const targetGoal = data.dailyGoalOz * 10; // 10 days worth of daily goals
-    const averageOz = totalOz / 10; // Always divide by 10 days
-    const goalProgress = targetGoal > 0 ? Math.min((totalOz / targetGoal) * 100, 100) : 0;
-    const remaining = Math.max(0, targetGoal - totalOz);
-    
-    // Count how many days actually have logs
-    const logsCount = dailyOz.filter(oz => oz > 0).length;
-    
+    const stats = windowStats(totals, now),
+      targetGoal = dailyGoalOz * 10;
     return {
-      totalOz: Math.round(totalOz),
-      averageOz: Math.round(averageOz * 10) / 10,
+      totalOz: stats.total,
+      averageOz: Math.round(stats.average * 10) / 10,
       targetGoal,
-      goalProgress: Math.round(goalProgress * 10) / 10, // Round to 1 decimal
-      remaining: Math.round(remaining),
-      logsCount // Number of days with actual logs (for display purposes)
+      goalProgress: percentage(stats.total, targetGoal),
+      remaining: Math.max(0, targetGoal - stats.total),
+      logsCount: stats.loggedDays,
     };
   };
-
-  // Get all-time goal percentage for goal modal
-  const getAllTimeGoalPercentage = (): number => {
-    if (Object.keys(data.logs).length === 0) return 0;
-    
-    const goalOz = data.dailyGoalOz || 64;
-    if (goalOz === 0) return 0;
-    
-    // Use the utility function that properly factors in missed days as zeros
-    const { averageOz } = getAllTimeHydrationAverage(data.logs);
-    
-    return Math.min((averageOz / goalOz) * 100, 100);
-  };
-
   return {
-    dailyGoalOz: data.dailyGoalOz,
-    currentDayOz: data.currentDayOz,
-    progressPercentage: getProgressPercentage(),
-    hasUserGoal: Boolean(localStorage.getItem('fitcircle_goal_hydration')), // Flag indicating if user has set a goal
+    error,
+    dailyGoalOz,
+    currentDayOz,
+    progressPercentage: percentage(currentDayOz, dailyGoalOz),
+    hasUserGoal: Boolean(localStorage.getItem(STORAGE_KEYS.GOAL_HYDRATION)),
     addHydration,
-    editHydrationEntry,
-    deleteHydrationEntry,
-    setDailyGoal,
-    getRecentLogs,
-    getAllLogs,
-    getTodayEntries,
-    isGoalReached: data.currentDayOz >= data.dailyGoalOz,
+    editHydrationEntry: (id: string, value: number, liquidType = "Water") =>
+      amount(value) > 0 &&
+      change((prev) =>
+        editHydration(prev, id, { amount: value, liquidType }, today),
+      ),
+    deleteHydrationEntry: (id: string) =>
+      change((prev) => editHydration(prev, id, null, today)),
+    setDailyGoal: (value: number) => updateGoal("hydrationOz", value),
+    getRecentLogs: (days = 7) => allLogs().slice(0, days),
+    getAllLogs: allLogs,
+    getTodayEntries: () =>
+      data.logs[today] ? viewLog(today, data.logs[today]).entries : [],
+    isGoalReached: dailyGoalOz > 0 && currentDayOz >= dailyGoalOz,
     getLast10LogsProgress,
-    getAllTimeGoalPercentage
+    getHistoricalStats: () => historicalStats(totals, now),
+    getAllTimeGoalPercentage: () =>
+      percentage(getAllTimeHydrationAverage(data.logs).averageOz, dailyGoalOz),
   };
 }

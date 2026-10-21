@@ -42,7 +42,7 @@ test('dated food history remains distinct when selecting yesterday and reloading
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('fitcircle_food_2026-10-16')!))).toEqual([]);
 });
 
-test('hydration midnight reset clears the daily counter while retaining historical entries', async ({ page }) => {
+test('hydration midnight display clears without rewriting stored records', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-16T23:59:30-04:00') });
   await page.goto('profile');
   const historical = { date: '2026-10-16', totalOz: 24,
@@ -53,9 +53,10 @@ test('hydration midnight reset clears the daily counter while retaining historic
   await page.goto('hydration');
   await expect(page.getByRole('heading', { name: 'Hydration', exact: true })).toBeVisible();
   await page.clock.runFor(61_000);
-  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('fitcircle_hydration_data')!).lastDate)).toBe('2026-10-17');
+  await expect(page.locator('.type-caption').first()).toHaveText('0%');
   const data = await page.evaluate(() => JSON.parse(localStorage.getItem('fitcircle_hydration_data')!));
-  expect(data.currentDayOz).toBe(0);
+  expect(data.currentDayOz).toBe(24);
+  expect(data.lastDate).toBe("2026-10-16");
   expect(data.dailyGoalOz).toBe(80);
   expect(data.logs['2026-10-16']).toEqual(historical);
   await page.reload();

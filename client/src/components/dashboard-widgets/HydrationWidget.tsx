@@ -1,7 +1,7 @@
-import { useHydration } from '@/hooks/use-hydration';
-import { GoalCircle } from '@/components/GoalCircle';
-import { Droplet } from 'lucide-react';
-import { DashboardWidget } from '@/hooks/use-dashboard-widgets';
+import { useHydration } from "@/hooks/use-hydration";
+import { GoalCircle } from "@/components/GoalCircle";
+import { Droplet } from "lucide-react";
+import { DashboardWidget } from "@/hooks/use-dashboard-widgets";
 
 interface HydrationWidgetProps {
   widget: DashboardWidget;
@@ -10,12 +10,15 @@ interface HydrationWidgetProps {
 
 export function HydrationWidget({ widget, onClick }: HydrationWidgetProps) {
   const { dailyGoalOz, currentDayOz, progressPercentage } = useHydration();
-  
-  const isGoalReached = currentDayOz >= dailyGoalOz;
 
-  if (widget.size === 'small') {
+  const isGoalReached = dailyGoalOz > 0 && currentDayOz >= dailyGoalOz;
+
+  if (widget.size === "small") {
     return (
-      <div className="fitcircle-card cursor-pointer hover:bg-slate-800/80 transition-colors" onClick={onClick}>
+      <div
+        className="fitcircle-card cursor-pointer hover:bg-slate-800/80 transition-colors"
+        onClick={onClick}
+      >
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <Droplet className="w-4 h-4 text-blue-400" />
@@ -29,7 +32,9 @@ export function HydrationWidget({ widget, onClick }: HydrationWidgetProps) {
             <div className="text-slate-400 text-xs">of {dailyGoalOz}oz</div>
           </div>
           <div className="text-right">
-            <div className="text-white text-sm font-medium">{Math.round(progressPercentage)}%</div>
+            <div className="text-white text-sm font-medium">
+              {Math.round(progressPercentage)}%
+            </div>
             <div className="text-slate-400 text-xs">Complete</div>
           </div>
         </div>
@@ -38,17 +43,22 @@ export function HydrationWidget({ widget, onClick }: HydrationWidgetProps) {
   }
 
   return (
-    <div className="fitcircle-card cursor-pointer hover:bg-slate-800/80 transition-colors" onClick={onClick}>
+    <div
+      className="fitcircle-card cursor-pointer hover:bg-slate-800/80 transition-colors"
+      onClick={onClick}
+    >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <Droplet className="w-5 h-5 text-blue-400" />
           <h3 className="text-lg font-semibold text-white">{widget.title}</h3>
         </div>
         {isGoalReached && (
-          <span className="text-green-400 text-sm font-medium">Goal Reached!</span>
+          <span className="text-green-400 text-sm font-medium">
+            Goal Reached!
+          </span>
         )}
       </div>
-      
+
       <div className="flex justify-center mb-4">
         <GoalCircle
           percentage={progressPercentage}
@@ -62,10 +72,12 @@ export function HydrationWidget({ widget, onClick }: HydrationWidgetProps) {
           description={`Goal: ${dailyGoalOz}oz/day`}
         />
       </div>
-      
+
       <div className="text-center">
         <div className="text-slate-300">
-          {currentDayOz > 0 ? 'Stay hydrated!' : 'Start tracking your water intake'}
+          {currentDayOz > 0
+            ? "Stay hydrated!"
+            : "Start tracking your water intake"}
         </div>
       </div>
     </div>

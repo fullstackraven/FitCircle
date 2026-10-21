@@ -33,7 +33,8 @@ test('valid cardio history and calculations load before effects without initiali
   const { api, writes } = mount({ [cardioKey]: raw });
   assert.deepEqual(api.data.dailyLogs, modernCardio.dailyLogs);
   assert.deepEqual(api.data.customTypes, modernCardio.customTypes);
-  assert.equal(api.data.goal.target, 21); // Existing weekly-to-daily display calculation.
+  assert.equal(api.data.goal.target, 150); // Weekly target is not divided or reinterpreted.
+  assert.equal(api.data.goal.period, "week");
   assert.deepEqual(api.getCardioStats(), { totalEntries: 1, totalDuration: 25.5, totalDistance: 2.25, favoriteType: 'running', typeStats: { running: 1 } });
   assert.deepEqual(writes, []);
 });

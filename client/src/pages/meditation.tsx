@@ -1,45 +1,75 @@
-import { ViewportOverlay } from '@/components/ui/viewport-overlay';
-import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Play, Pause, Square, Target, X, Plus } from 'lucide-react';
-import { useLocation } from 'wouter';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { GoalCircle } from '@/components/GoalCircle';
-import { useMeditation, type MeditationLog, type MeditationSession } from '@/hooks/use-meditation';
-import { useGoals } from '@/hooks/use-goals';
-import { 
-  calculateMeditation7DayAverage, 
-  calculateMeditationProgress 
-} from '@/utils/meditation-calc';
-import { groupLogsByMonth, getTodayString, getDateString } from '@/lib/date-utils';
+import { WellnessHistory } from "@/components/WellnessHistory";
+import { percentage } from "@/lib/wellness-progress";
+import { ViewportOverlay } from "@/components/ui/viewport-overlay";
+import { useState, useEffect, useRef } from "react";
+import { ArrowLeft, Play, Pause, Square, Target, X, Plus } from "lucide-react";
+import { useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { GoalCircle } from "@/components/GoalCircle";
+import {
+  useMeditation,
+  type MeditationLog,
+  type MeditationSession,
+} from "@/hooks/use-meditation";
+import { useGoals } from "@/hooks/use-goals";
+
+import {
+  groupLogsByMonth,
+  getTodayString,
+  getDateString,
+} from "@/lib/date-utils";
 
 export default function MeditationPage() {
   const [, navigate] = useLocation();
-  
+
   // Check if we came from dashboard
-  const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
-  
+  const fromDashboard =
+    new URLSearchParams(window.location.search).get("from") === "dashboard";
+
   const handleBack = () => {
-    navigate('/wellness');
+    navigate("/wellness");
   };
-  const { logs, dailyLogs, addLog, addSession, getTodayMinutes, getDailyGoal, getProgressPercentage, isGoalReached, getLast10LogsProgress, getAllTimeGoalPercentage } = useMeditation();
+  const {
+    error,
+    logs,
+    dailyLogs,
+    addLog,
+    addSession,
+    getTodayMinutes,
+    getDailyGoal,
+    getProgressPercentage,
+    isGoalReached,
+    getLast10LogsProgress,
+    getAllTimeGoalPercentage,
+    getHistoricalStats,
+  } = useMeditation();
   const { goals, updateGoal } = useGoals();
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0); // in seconds
   const [totalDuration, setTotalDuration] = useState(0); // in seconds
-  const [inputMinutes, setInputMinutes] = useState('');
+  const [inputMinutes, setInputMinutes] = useState("");
   const [showCompletion, setShowCompletion] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Goal state
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [isMeditationDialogOpen, setIsMeditationDialogOpen] = useState(false);
-  const [goalMinutesInput, setGoalMinutesInput] = useState('');
+  const [goalMinutesInput, setGoalMinutesInput] = useState("");
   const [inputMinutesFocused, setInputMinutesFocused] = useState(false);
   const [goalMinutesFocused, setGoalMinutesFocused] = useState(false);
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
@@ -48,46 +78,46 @@ export default function MeditationPage() {
   useEffect(() => {
     // Initialize goal input with current goal value from hook
     setGoalMinutesInput(getDailyGoal().toString());
-  }, [getDailyGoal]);
-  
+  }, [getDailyGoal()]);
+
   // Group logs by month for display (using legacy compatibility)
   const monthlyLogs = groupLogsByMonth(logs);
-  
+
   // Get today's sessions for the "Today's Meditation" section
   const getTodaySessions = () => {
     const today = getTodayString(); // YYYY-MM-DD format
-    const todayLegacy = new Date().toLocaleDateString('en-US'); // MM/DD/YYYY format
-    
+    const todayLegacy = new Date().toLocaleDateString("en-US"); // MM/DD/YYYY format
+
     // Try both date formats to handle legacy data
-    let todayLogKey = Object.keys(dailyLogs).find(date => date === today);
+    let todayLogKey = Object.keys(dailyLogs).find((date) => date === today);
     if (!todayLogKey) {
-      todayLogKey = Object.keys(dailyLogs).find(date => date === todayLegacy);
+      todayLogKey = Object.keys(dailyLogs).find((date) => date === todayLegacy);
     }
-    
+
     return todayLogKey ? dailyLogs[todayLogKey].sessions : [];
   };
-  
+
   const todaySessions = getTodaySessions();
-  
+
   // Listen for goal changes from other pages
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'fitcircle_goal_meditation') {
+      if (e.key === "fitcircle_goal_meditation") {
         setGoalMinutesInput(getDailyGoal().toString());
       }
     };
-    
-    window.addEventListener('storage', handleStorageChange);
-    
+
+    window.addEventListener("storage", handleStorageChange);
+
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
-  }, [getDailyGoal]);
+  }, [getDailyGoal()]);
 
   useEffect(() => {
     if (isActive && !isPaused && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
-        setTimeLeft(prev => {
+        setTimeLeft((prev) => {
           if (prev <= 1) {
             // Session completed
             handleSessionComplete();
@@ -110,59 +140,70 @@ export default function MeditationPage() {
     };
   }, [isActive, isPaused, timeLeft]);
 
-
-
   const playGongSound = async () => {
     try {
       // Create audio context - iOS requires user interaction first
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
+      const audioContext = new (
+        window.AudioContext || (window as any).webkitAudioContext
+      )();
+
       // Resume context if suspended (iOS requirement)
-      if (audioContext.state === 'suspended') {
+      if (audioContext.state === "suspended") {
         await audioContext.resume();
       }
-      
+
       // Create multiple oscillators for richer gong sound
       const oscillators = [
         { freq: 196, gain: 0.3 }, // G3
         { freq: 220, gain: 0.2 }, // A3
         { freq: 294, gain: 0.1 }, // D4
       ];
-      
+
       const masterGain = audioContext.createGain();
       masterGain.connect(audioContext.destination);
-      
+
       oscillators.forEach(({ freq, gain }) => {
         const osc = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
-        
+
         osc.connect(gainNode);
         gainNode.connect(masterGain);
-        
+
         osc.frequency.setValueAtTime(freq, audioContext.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(freq * 0.8, audioContext.currentTime + 0.1);
-        
+        osc.frequency.exponentialRampToValueAtTime(
+          freq * 0.8,
+          audioContext.currentTime + 0.1,
+        );
+
         gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(gain, audioContext.currentTime + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 3);
-        
+        gainNode.gain.linearRampToValueAtTime(
+          gain,
+          audioContext.currentTime + 0.01,
+        );
+        gainNode.gain.exponentialRampToValueAtTime(
+          0.001,
+          audioContext.currentTime + 3,
+        );
+
         osc.start(audioContext.currentTime);
         osc.stop(audioContext.currentTime + 3);
       });
-      
+
       // Set master volume
       masterGain.gain.setValueAtTime(0.5, audioContext.currentTime);
-      masterGain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 3);
-      
+      masterGain.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioContext.currentTime + 3,
+      );
     } catch (error) {
-      console.log('Could not play gong sound:', error);
+      console.log("Could not play gong sound:", error);
       // Fallback: try system beep or vibration
       try {
         if (navigator.vibrate) {
           navigator.vibrate([200, 100, 200, 100, 200]);
         }
       } catch (vibrateError) {
-        console.log('Vibration also not available');
+        console.log("Vibration also not available");
       }
     }
   };
@@ -170,33 +211,35 @@ export default function MeditationPage() {
   const handleSessionComplete = () => {
     setIsActive(false);
     setIsPaused(false);
-    
+
     // Play completion sound
     playGongSound();
-    
+
     // Show completion message
     setShowCompletion(true);
     setTimeout(() => setShowCompletion(false), 3000);
-    
+
     // Create meditation session entry
-    addSession(Math.floor(totalDuration / 60));
+    if (!addSession(Math.floor(totalDuration / 60))) return;
   };
 
   const startMeditation = async () => {
     const minutes = parseInt(inputMinutes);
     if (!minutes || minutes <= 0) {
-      alert('Please enter a valid duration in minutes');
+      alert("Please enter a valid duration in minutes");
       return;
     }
 
     // Initialize audio context on user interaction (iOS requirement)
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      if (audioContext.state === 'suspended') {
+      const audioContext = new (
+        window.AudioContext || (window as any).webkitAudioContext
+      )();
+      if (audioContext.state === "suspended") {
         await audioContext.resume();
       }
     } catch (error) {
-      console.log('Audio context initialization failed:', error);
+      console.log("Audio context initialization failed:", error);
     }
 
     const durationInSeconds = minutes * 60;
@@ -204,7 +247,7 @@ export default function MeditationPage() {
     setTimeLeft(durationInSeconds);
     setIsActive(true);
     setIsPaused(false);
-    setInputMinutes('');
+    setInputMinutes("");
   };
 
   const pauseMeditation = () => {
@@ -219,12 +262,12 @@ export default function MeditationPage() {
     // Calculate elapsed time before stopping
     const elapsedSeconds = totalDuration - timeLeft;
     const elapsedMinutes = Math.floor(elapsedSeconds / 60);
-    
+
     // Only log if there's at least 1 minute of elapsed time
     if (elapsedMinutes >= 1) {
       addSession(elapsedMinutes);
     }
-    
+
     // Reset timer state
     setIsActive(false);
     setIsPaused(false);
@@ -235,7 +278,7 @@ export default function MeditationPage() {
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   const getTimerProgressPercentage = (): number => {
@@ -252,31 +295,25 @@ export default function MeditationPage() {
 
   const handleSetGoal = async () => {
     const minutesGoal = parseFloat(goalMinutesInput);
-    
+
     if (isNaN(minutesGoal) || minutesGoal <= 0) {
-      alert('Please enter a valid goal in minutes');
+      alert("Please enter a valid goal in minutes");
       return;
     }
-    
-    // Set goal in localStorage with cross-page sync
-    localStorage.setItem('fitcircle_goal_meditation', minutesGoal.toString());
-    
-    // Trigger storage event for cross-page synchronization
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: 'fitcircle_goal_meditation',
-      newValue: minutesGoal.toString(),
-      oldValue: localStorage.getItem('fitcircle_goal_meditation'),
-      storageArea: localStorage
-    }));
-    
-    await updateGoal('meditationMinutes', minutesGoal);
+
+    if (!updateGoal("meditationMinutes", minutesGoal)) return;
     setIsGoalModalOpen(false);
-    alert('Meditation goal saved successfully!');
+    alert("Meditation goal saved successfully!");
   };
 
   return (
     <div className="fitcircle-page">
       <div className="fitcircle-container">
+        {error && (
+          <p role="alert" className="text-sm text-amber-300">
+            {error}
+          </p>
+        )}
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <button
@@ -297,11 +334,18 @@ export default function MeditationPage() {
 
         {/* Completion Notification */}
         {showCompletion && (
-          <ViewportOverlay title="Session Complete" onDismiss={() => setShowCompletion(false)}>
+          <ViewportOverlay
+            title="Session Complete"
+            onDismiss={() => setShowCompletion(false)}
+          >
             <div className="glass-panel bg-slate-800 rounded-xl p-8 text-center max-w-sm mx-4 border border-blue-500">
               <div className="text-6xl mb-4">🧘‍♂️</div>
-              <h2 className="text-2xl font-bold text-white mb-2">Session Complete!</h2>
-              <p className="text-slate-300">Well done on completing your meditation</p>
+              <h2 className="text-2xl font-bold text-white mb-2">
+                Session Complete!
+              </h2>
+              <p className="text-slate-300">
+                Well done on completing your meditation
+              </p>
             </div>
           </ViewportOverlay>
         )}
@@ -344,14 +388,17 @@ export default function MeditationPage() {
                   fill="none"
                   strokeLinecap="round"
                   strokeDasharray={`${2 * Math.PI * 104}`}
-                  strokeDashoffset={2 * Math.PI * 104 - (getTimerProgressPercentage() / 100) * 2 * Math.PI * 104}
+                  strokeDashoffset={
+                    2 * Math.PI * 104 -
+                    (getTimerProgressPercentage() / 100) * 2 * Math.PI * 104
+                  }
                   className="transition-all duration-1000 ease-linear"
                   style={{
-                    filter: 'drop-shadow(0 0 20px rgba(59, 130, 246, 0.5))'
+                    filter: "drop-shadow(0 0 20px rgba(59, 130, 246, 0.5))",
                   }}
                 />
               </svg>
-              
+
               {/* Time display */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
@@ -359,7 +406,7 @@ export default function MeditationPage() {
                     {formatTime(timeLeft)}
                   </div>
                   <div className="text-sm text-slate-400">
-                    {isPaused ? 'Paused' : 'Meditating...'}
+                    {isPaused ? "Paused" : "Meditating..."}
                   </div>
                 </div>
               </div>
@@ -376,7 +423,9 @@ export default function MeditationPage() {
         {/* Last 10 Logs Progress Stats */}
         <Card className="fitcircle-card-lg mb-6">
           <CardContent className="p-4">
-            <h3 className="text-lg font-semibold mb-3 text-center">Last 10 Logs</h3>
+            <h3 className="text-lg font-semibold mb-3 text-center">
+              Last 10 Calendar Days
+            </h3>
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
                 <div className="type-metric text-2xl font-bold text-purple-400">
@@ -388,16 +437,19 @@ export default function MeditationPage() {
                 <div className="type-metric text-2xl font-bold text-purple-400">
                   {getLast10LogsProgress().averageMinutes}min
                 </div>
-                <div className="text-sm text-slate-400">Average per Log</div>
+                <div className="text-sm text-slate-400">
+                  Calendar-day average
+                </div>
               </div>
             </div>
             {getLast10LogsProgress().remaining > 0 && (
               <div className="mt-3 text-center text-slate-300">
                 <span className="text-sm">
-                  {getLast10LogsProgress().remaining} minutes remaining
+                  {getLast10LogsProgress().remaining} minutes · 10-day shortfall
                 </span>
               </div>
             )}
+            <WellnessHistory stats={getHistoricalStats()} unit="min" />
           </CardContent>
         </Card>
 
@@ -453,19 +505,25 @@ export default function MeditationPage() {
           <h3 className="text-lg font-semibold mb-3">Today's Meditation</h3>
           <div className="space-y-2">
             {todaySessions.length > 0 ? (
-              todaySessions.slice().reverse().map((session: MeditationSession, index: number) => (
-                <div key={session.id} className="flex justify-between items-center text-sm relative">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-slate-400">{session.time}</span>
-                    <span className="text-slate-300">Meditation</span>
+              todaySessions
+                .slice()
+                .reverse()
+                .map((session: MeditationSession, index: number) => (
+                  <div
+                    key={session.id}
+                    className="flex justify-between items-center text-sm relative"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="text-slate-400">{session.time}</span>
+                      <span className="text-slate-300">Meditation</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-purple-400 font-medium text-sm">
+                        {session.duration}min
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-purple-400 font-medium text-sm">
-                      {session.duration}min
-                    </span>
-                  </div>
-                </div>
-              ))
+                ))
             ) : (
               <div className="text-center text-slate-500 py-4 text-sm">
                 No meditation sessions today yet
@@ -481,116 +539,142 @@ export default function MeditationPage() {
             {Object.keys(dailyLogs).length === 0 ? (
               <div className="text-center py-8 text-slate-400">
                 <p>No meditation sessions yet.</p>
-                <p className="text-sm mt-2">Complete a meditation session to see your log here.</p>
+                <p className="text-sm mt-2">
+                  Complete a meditation session to see your log here.
+                </p>
               </div>
             ) : (
-              Object.entries(groupLogsByMonth(Object.values(dailyLogs))).map(([monthName, monthLogs]) => (
-                <Collapsible
-                  key={monthName}
-                  open={expandedMonths.has(monthName)}
-                  onOpenChange={(isOpen) => {
-                    const newExpanded = new Set(expandedMonths);
-                    if (isOpen) {
-                      newExpanded.add(monthName);
-                    } else {
-                      newExpanded.delete(monthName);
-                    }
-                    setExpandedMonths(newExpanded);
-                  }}
-                >
-                  <CollapsibleTrigger asChild>
-                    <button className="w-full fitcircle-card hover:bg-slate-700 transition-colors">
-                      <div className="flex justify-between items-center">
-                        <span className="text-white font-medium">{monthName}</span>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-purple-400 text-sm">{monthLogs.length} days</span>
-                          <span className="text-slate-400">
-                            {expandedMonths.has(monthName) ? '−' : '+'}
-                          </span>
-                        </div>
-                      </div>
-                    </button>
-                  </CollapsibleTrigger>
-                  
-                  <CollapsibleContent className="space-y-2 mt-2">
-                    {monthLogs.sort((a, b) => b.date.localeCompare(a.date)).map((log) => (
-                      <div key={log.date} className="fitcircle-card ml-4">
-                        <div className="flex justify-between items-center mb-3">
+              Object.entries(groupLogsByMonth(Object.values(dailyLogs))).map(
+                ([monthName, monthLogs]) => (
+                  <Collapsible
+                    key={monthName}
+                    open={expandedMonths.has(monthName)}
+                    onOpenChange={(isOpen) => {
+                      const newExpanded = new Set(expandedMonths);
+                      if (isOpen) {
+                        newExpanded.add(monthName);
+                      } else {
+                        newExpanded.delete(monthName);
+                      }
+                      setExpandedMonths(newExpanded);
+                    }}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <button className="w-full fitcircle-card hover:bg-slate-700 transition-colors">
+                        <div className="flex justify-between items-center">
                           <span className="text-white font-medium">
-                            {(() => {
-                              try {
-                                // Handle both YYYY-MM-DD and other date formats
-                                let dateToFormat;
-                                if (log.date.includes('-')) {
-                                  // YYYY-MM-DD format
-                                  dateToFormat = new Date(log.date + 'T00:00:00');
-                                } else {
-                                  // Other formats, try direct parsing
-                                  dateToFormat = new Date(log.date);
-                                }
-                                
-                                if (isNaN(dateToFormat.getTime())) {
-                                  return log.date; // Fallback to raw date string
-                                }
-                                
-                                return dateToFormat.toLocaleDateString('en-US', { 
-                                  weekday: 'short', 
-                                  month: 'short', 
-                                  day: 'numeric' 
-                                });
-                              } catch (e) {
-                                return log.date; // Fallback to raw date string
-                              }
-                            })()}
+                            {monthName}
                           </span>
                           <div className="flex items-center space-x-2">
-                            <span className="text-purple-400 font-semibold text-sm">
-                              {log.totalMinutes}min
+                            <span className="text-purple-400 text-sm">
+                              {monthLogs.length} days
+                            </span>
+                            <span className="text-slate-400">
+                              {expandedMonths.has(monthName) ? "−" : "+"}
                             </span>
                           </div>
                         </div>
-                        <div className="text-xs text-slate-400 mb-2">
-                          {log.sessions.length} sessions
-                        </div>
-                        
-                        {/* Show detailed sessions for this day */}
-                        <div className="space-y-1">
-                          {(expandedDays.has(log.date) ? log.sessions : log.sessions.slice(0, 3)).map((session, index) => (
-                            <div key={session.id} className="flex justify-between items-center text-xs">
+                      </button>
+                    </CollapsibleTrigger>
+
+                    <CollapsibleContent className="space-y-2 mt-2">
+                      {monthLogs
+                        .sort((a, b) => b.date.localeCompare(a.date))
+                        .map((log) => (
+                          <div key={log.date} className="fitcircle-card ml-4">
+                            <div className="flex justify-between items-center mb-3">
+                              <span className="text-white font-medium">
+                                {(() => {
+                                  try {
+                                    // Handle both YYYY-MM-DD and other date formats
+                                    let dateToFormat;
+                                    if (log.date.includes("-")) {
+                                      // YYYY-MM-DD format
+                                      dateToFormat = new Date(
+                                        log.date + "T00:00:00",
+                                      );
+                                    } else {
+                                      // Other formats, try direct parsing
+                                      dateToFormat = new Date(log.date);
+                                    }
+
+                                    if (isNaN(dateToFormat.getTime())) {
+                                      return log.date; // Fallback to raw date string
+                                    }
+
+                                    return dateToFormat.toLocaleDateString(
+                                      "en-US",
+                                      {
+                                        weekday: "short",
+                                        month: "short",
+                                        day: "numeric",
+                                      },
+                                    );
+                                  } catch (e) {
+                                    return log.date; // Fallback to raw date string
+                                  }
+                                })()}
+                              </span>
                               <div className="flex items-center space-x-2">
-                                <span className="text-slate-500">{session.time}</span>
-                                <span className="text-slate-400">Meditation</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <span className="text-slate-300">{session.duration}min</span>
+                                <span className="text-purple-400 font-semibold text-sm">
+                                  {log.totalMinutes}min
+                                </span>
                               </div>
                             </div>
-                          ))}
-                          {log.sessions.length > 3 && (
-                            <button
-                              onClick={() => {
-                                const newExpanded = new Set(expandedDays);
-                                if (newExpanded.has(log.date)) {
-                                  newExpanded.delete(log.date);
-                                } else {
-                                  newExpanded.add(log.date);
-                                }
-                                setExpandedDays(newExpanded);
-                              }}
-                              className="text-xs text-slate-500 hover:text-slate-300 text-center mt-1 w-full transition-colors"
-                            >
-                              {expandedDays.has(log.date) 
-                                ? 'Show less' 
-                                : `+${log.sessions.length - 3} more sessions`
-                              }
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </CollapsibleContent>
-                </Collapsible>
-              ))
+                            <div className="text-xs text-slate-400 mb-2">
+                              {log.sessions.length} sessions
+                            </div>
+
+                            {/* Show detailed sessions for this day */}
+                            <div className="space-y-1">
+                              {(expandedDays.has(log.date)
+                                ? log.sessions
+                                : log.sessions.slice(0, 3)
+                              ).map((session, index) => (
+                                <div
+                                  key={session.id}
+                                  className="flex justify-between items-center text-xs"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-slate-500">
+                                      {session.time}
+                                    </span>
+                                    <span className="text-slate-400">
+                                      Meditation
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <span className="text-slate-300">
+                                      {session.duration}min
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                              {log.sessions.length > 3 && (
+                                <button
+                                  onClick={() => {
+                                    const newExpanded = new Set(expandedDays);
+                                    if (newExpanded.has(log.date)) {
+                                      newExpanded.delete(log.date);
+                                    } else {
+                                      newExpanded.add(log.date);
+                                    }
+                                    setExpandedDays(newExpanded);
+                                  }}
+                                  className="text-xs text-slate-500 hover:text-slate-300 text-center mt-1 w-full transition-colors"
+                                >
+                                  {expandedDays.has(log.date)
+                                    ? "Show less"
+                                    : `+${log.sessions.length - 3} more sessions`}
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                    </CollapsibleContent>
+                  </Collapsible>
+                ),
+              )
             )}
           </div>
         </div>
@@ -598,10 +682,15 @@ export default function MeditationPage() {
 
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
-        <ViewportOverlay title="Meditation Goal" onDismiss={() => setIsGoalModalOpen(false)}>
+        <ViewportOverlay
+          title="Meditation Goal"
+          onDismiss={() => setIsGoalModalOpen(false)}
+        >
           <div className="glass-panel bg-slate-800 rounded-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-white">Meditation Goal</h3>
+              <h3 className="text-lg font-semibold text-white">
+                Meditation Goal
+              </h3>
               <button
                 aria-label="Close"
                 onClick={() => setIsGoalModalOpen(false)}
@@ -614,14 +703,17 @@ export default function MeditationPage() {
             {/* Goal Progress Circle */}
             <div className="flex justify-center mb-8">
               <GoalCircle
-                percentage={getAllTimeGoalPercentage()}
+                percentage={percentage(
+                  getTodayMinutes(),
+                  Number(goalMinutesInput),
+                )}
                 color="rgb(147, 51, 234)"
                 size={120}
-                currentValue={Math.round(calculateMeditation7DayAverage(logs))}
+                currentValue={getTodayMinutes()}
                 goalValue={parseFloat(goalMinutesInput) || 0}
                 unit="min"
                 title="Daily Meditation"
-                description="All-time average"
+                description="Today"
               />
             </div>
 
@@ -662,9 +754,14 @@ export default function MeditationPage() {
       )}
 
       {/* Start Meditation Dialog */}
-      <Dialog open={isMeditationDialogOpen} onOpenChange={setIsMeditationDialogOpen}>
+      <Dialog
+        open={isMeditationDialogOpen}
+        onOpenChange={setIsMeditationDialogOpen}
+      >
         <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl">
-          <DialogTitle className="text-lg font-semibold text-center">Start Meditation</DialogTitle>
+          <DialogTitle className="text-lg font-semibold text-center">
+            Start Meditation
+          </DialogTitle>
           <DialogDescription className="sr-only">
             Set meditation duration and start your session
           </DialogDescription>

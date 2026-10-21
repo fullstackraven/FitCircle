@@ -24,7 +24,9 @@
     "nutrition.test.ts",
     "browser/nutrition.spec.ts",
     "measurement-nutrition-integration.test.ts",
-    "browser/measurement-nutrition-integration.spec.ts"
+    "browser/measurement-nutrition-integration.spec.ts",
+    "wellness-goals.test.ts",
+    "browser/wellness-goals.spec.ts"
   ],
   "exclude": [
     "../node_modules",
