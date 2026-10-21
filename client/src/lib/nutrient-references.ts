@@ -130,8 +130,8 @@ export function nutrientReferences(
   if (age >= 2 && refs.calories)
     put("saturatedFat", (refs.calories.value * 0.1) / 9, "limit", "energy");
   // Label comparators, not personalized DRIs or physiological upper limits.
-  // EU 1169/2011 Annex XIII: adult total sugars RI, not the added-sugar DV.
-  if (age >= 19) put("sugar", 90, "reference", "label-reference");
+  // Existing sugar data is total sugar; no added-sugar field or configured
+  // total-sugar reference exists. Do not fabricate a comparison denominator.
   // FDA Nutrition Facts cholesterol DV applies to adults and children age 4+.
   if (age >= 4) put("cholesterol", 300, "reference", "label-reference");
   return refs;

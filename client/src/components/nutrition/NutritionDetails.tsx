@@ -126,12 +126,11 @@ export function NutritionDetails({
         <p>
           Saved calorie/macronutrient targets; age/sex DRI intakes and sodium
           reduction thresholds. Fiber intake references and saturated-fat limits
-          may use saved calories. Limits are not minimum goals. Total sugar uses
-          the adult EU label reference of 90 g (2,000-kcal label basis), not an
-          added-sugar allowance; cholesterol uses the FDA label Daily Value of
-          300 mg for ages 4+. These are general label comparisons, not
-          personalized recommendations or established physiological upper
-          limits.
+          may use saved calories. Limits are not minimum goals. Total sugar is
+          not added sugar and has no configured reference. Cholesterol uses the
+          FDA label Daily Value of 300 mg for ages 4+, a general label
+          comparison, not a personalized recommended intake or physiological
+          upper limit.
         </p>
         <p className="mt-2">
           General references exclude pregnancy/lactation and smoking
@@ -159,15 +158,6 @@ export function NutritionDetails({
           </a>
         </p>
         <p className="mt-2">
-          <a
-            className="underline"
-            href="https://eur-lex.europa.eu/eli/reg/2011/1169/oj/eng"
-            target="_blank"
-            rel="noreferrer"
-          >
-            EU 1169/2011 Annex XIII
-          </a>
-          {" · "}
           <a
             className="underline"
             href="https://www.fda.gov/food/new-nutrition-facts-label/daily-value-new-nutrition-and-supplement-facts-labels"
