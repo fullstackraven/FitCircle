@@ -1,47 +1,63 @@
-import { ViewportOverlay } from '@/components/ui/viewport-overlay';
-import { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, Target, X, Edit2, Trash2 } from 'lucide-react';
-import { useLocation } from 'wouter';
-import { useHydration, HydrationLog, HydrationEntry } from '@/hooks/use-hydration';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { GoalCircle } from '@/components/GoalCircle';
-import { groupLogsByMonth } from '@/lib/date-utils';
-
-
+import { WellnessHistory } from "@/components/WellnessHistory";
+import { percentage } from "@/lib/wellness-progress";
+import { ViewportOverlay } from "@/components/ui/viewport-overlay";
+import { useState, useEffect } from "react";
+import { ArrowLeft, Plus, Target, X, Edit2, Trash2 } from "lucide-react";
+import { useLocation } from "wouter";
+import {
+  useHydration,
+  HydrationLog,
+  HydrationEntry,
+} from "@/hooks/use-hydration";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { GoalCircle } from "@/components/GoalCircle";
+import { groupLogsByMonth } from "@/lib/date-utils";
 
 export default function HydrationPage() {
   const [, navigate] = useLocation();
-  
+
   // Check if we came from dashboard
-  const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
-  
+  const fromDashboard =
+    new URLSearchParams(window.location.search).get("from") === "dashboard";
+
   const handleBack = () => {
-    navigate('/wellness');
+    navigate("/wellness");
   };
-  const { 
-    dailyGoalOz, 
-    currentDayOz, 
-    progressPercentage, 
-    addHydration, 
+  const {
+    error,
+    dailyGoalOz,
+    currentDayOz,
+    progressPercentage,
+    addHydration,
     editHydrationEntry,
     deleteHydrationEntry,
-    setDailyGoal, 
-    getRecentLogs, 
+    setDailyGoal,
+    getRecentLogs,
     getAllLogs,
     getTodayEntries,
     isGoalReached,
     getLast10LogsProgress,
-    getAllTimeGoalPercentage
+    getHistoricalStats,
+    getAllTimeGoalPercentage,
   } = useHydration();
 
-  const [addAmount, setAddAmount] = useState('');
-  const [selectedLiquidType, setSelectedLiquidType] = useState('Water');
-  const [customLiquidType, setCustomLiquidType] = useState('');
+  const [addAmount, setAddAmount] = useState("");
+  const [selectedLiquidType, setSelectedLiquidType] = useState("Water");
+  const [customLiquidType, setCustomLiquidType] = useState("");
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [newGoal, setNewGoal] = useState(dailyGoalOz.toString());
   const [isHydrationDialogOpen, setIsHydrationDialogOpen] = useState(false);
@@ -52,80 +68,65 @@ export default function HydrationPage() {
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<HydrationEntry | null>(null);
-  const [editAmount, setEditAmount] = useState('');
-  const [editLiquidType, setEditLiquidType] = useState('Water');
+  const [editAmount, setEditAmount] = useState("");
+  const [editLiquidType, setEditLiquidType] = useState("Water");
 
-  // Load goal from Goals page when it changes
-  useEffect(() => {
-    const hydrationGoalFromGoalsPage = localStorage.getItem('fitcircle_goal_hydration');
-    if (hydrationGoalFromGoalsPage) {
-      const goalValue = parseFloat(hydrationGoalFromGoalsPage);
-      if (goalValue > 0 && goalValue !== dailyGoalOz) {
-        setDailyGoal(goalValue);
-        setNewGoal(goalValue.toString());
-      }
-    }
-  }, [dailyGoalOz, setDailyGoal]);
-
-  const liquidTypes = ['Water', 'Coffee', 'Tea', 'Custom'];
+  const liquidTypes = ["Water", "Coffee", "Tea", "Custom"];
 
   // const handleAddHydration = () => {
   //   const amount = parseFloat(addAmount);
   //   if (amount > 0) {
   //     const liquidType = selectedLiquidType === 'Custom' ? customLiquidType || 'Custom' : selectedLiquidType;
-  //     addHydration(amount, liquidType);
+  //     if(!addHydration(amount, liquidType))return;
   //     // Reset custom input after adding
   //     if (selectedLiquidType === 'Custom') {
   //       setCustomLiquidType('');
   //     }
   //   }
   // };
+  useEffect(() => setNewGoal(dailyGoalOz.toString()), [dailyGoalOz]);
+
   const handleAddHydration = () => {
     const amount = parseFloat(addAmount);
     if (amount > 0) {
-      const liquidType = selectedLiquidType === 'Custom' ? customLiquidType || 'Custom' : selectedLiquidType;
-      addHydration(amount, liquidType);
+      const liquidType =
+        selectedLiquidType === "Custom"
+          ? customLiquidType || "Custom"
+          : selectedLiquidType;
+      if (!addHydration(amount, liquidType)) return;
 
       // Reset custom input and entered amount after adding
-      if (selectedLiquidType === 'Custom') {
-        setCustomLiquidType('');
+      if (selectedLiquidType === "Custom") {
+        setCustomLiquidType("");
       }
-      setAddAmount(''); // ← this resets the input field
+      setAddAmount("");
+      return true;
     }
+    return false;
   };
 
   const handleQuickAdd = (amount: number) => {
-    const liquidType = selectedLiquidType === 'Custom' ? customLiquidType || 'Custom' : selectedLiquidType;
-    addHydration(amount, liquidType);
+    const liquidType =
+      selectedLiquidType === "Custom"
+        ? customLiquidType || "Custom"
+        : selectedLiquidType;
+    if (!addHydration(amount, liquidType)) return false;
     // Reset custom input after adding
-    if (selectedLiquidType === 'Custom') {
-      setCustomLiquidType('');
+    if (selectedLiquidType === "Custom") {
+      setCustomLiquidType("");
     }
+    return true;
   };
 
   const handleSetGoal = () => {
     const goal = parseFloat(newGoal);
     if (goal > 0) {
-      setDailyGoal(goal);
-      // Cross-page sync: Update Goals page storage
-      localStorage.setItem('fitcircle_goal_hydration', goal.toString());
-      
-      // ALSO update any other hydration goal locations for full compatibility
-      const existingGoals = localStorage.getItem('fitcircle_goals');
-      let goalsObject = {};
-      if (existingGoals) {
-        try {
-          goalsObject = JSON.parse(existingGoals);
-        } catch (e) {
-          goalsObject = {};
-        }
+      try {
+        setDailyGoal(goal);
+      } catch {
+        alert("Goal could not be saved. Original records are unchanged.");
+        return;
       }
-      goalsObject = {
-        ...goalsObject,
-        hydrationOz: goal
-      };
-      localStorage.setItem('fitcircle_goals', JSON.stringify(goalsObject));
-      
       setIsGoalModalOpen(false);
     }
   };
@@ -139,16 +140,27 @@ export default function HydrationPage() {
 
   const handleSaveEdit = () => {
     if (!editingEntry || !editAmount || parseFloat(editAmount) <= 0) return;
-    
-    editHydrationEntry(editingEntry.id, parseFloat(editAmount), editLiquidType);
+
+    if (
+      !editHydrationEntry(
+        editingEntry.id,
+        parseFloat(editAmount),
+        editLiquidType,
+      )
+    )
+      return;
     setIsEditDialogOpen(false);
     setEditingEntry(null);
-    setEditAmount('');
-    setEditLiquidType('Water');
+    setEditAmount("");
+    setEditLiquidType("Water");
   };
 
   const handleDeleteEntry = (entry: HydrationEntry) => {
-    if (confirm(`Delete ${entry.amount}oz of ${entry.liquidType} from ${entry.time}?`)) {
+    if (
+      confirm(
+        `Delete ${entry.amount}oz of ${entry.liquidType} from ${entry.time}?`,
+      )
+    ) {
       deleteHydrationEntry(entry.id);
     }
   };
@@ -156,15 +168,23 @@ export default function HydrationPage() {
   const quickAddAmounts = [12, 16, 24, 34, 36];
   const recentLogs = getAllLogs();
   const todayEntries = getTodayEntries();
-  const monthlyLogs = groupLogsByMonth(recentLogs.reduce((acc, log) => ({ ...acc, [log.date]: log }), {})) as { [monthName: string]: HydrationLog[] };
+  const monthlyLogs = groupLogsByMonth(
+    recentLogs.reduce((acc, log) => ({ ...acc, [log.date]: log }), {}),
+  ) as { [monthName: string]: HydrationLog[] };
 
   // Calculate progress ring
   const circumference = 2 * Math.PI * 120;
-  const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
+  const strokeDashoffset =
+    circumference - (progressPercentage / 100) * circumference;
 
   return (
     <div className="fitcircle-page">
       <div className="fitcircle-container">
+        {error && (
+          <p role="alert" className="text-sm text-amber-300">
+            {error}
+          </p>
+        )}
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <button
@@ -186,29 +206,31 @@ export default function HydrationPage() {
         <div className="space-y-8">
           {/* Progress Circle */}
           <div className="flex justify-center">
-          <GoalCircle
-            percentage={progressPercentage}
-            color="rgb(59, 130, 246)"
-            size={240}
-            strokeWidth={16}
-            currentValue={currentDayOz}
-            goalValue={dailyGoalOz}
-            unit="oz"
-            title="Today's Hydration"
-            description={`Goal: ${dailyGoalOz}oz/day`}
-          />
+            <GoalCircle
+              percentage={progressPercentage}
+              color="rgb(59, 130, 246)"
+              size={240}
+              strokeWidth={16}
+              currentValue={currentDayOz}
+              goalValue={dailyGoalOz}
+              unit="oz"
+              title="Today's Hydration"
+              description={`Goal: ${dailyGoalOz}oz/day`}
+            />
           </div>
 
           {isGoalReached && (
-          <div className="text-green-400 font-medium text-center -mt-4">
-            🎉 Daily goal achieved!
-          </div>
+            <div className="text-green-400 font-medium text-center -mt-4">
+              🎉 Daily goal achieved!
+            </div>
           )}
 
           {/* Last 10 Logs Progress Stats */}
           <Card className="fitcircle-card-lg">
             <CardContent className="p-4">
-              <h3 className="text-lg font-semibold mb-3 text-center">Last 10 Logs</h3>
+              <h3 className="text-lg font-semibold mb-3 text-center">
+                Last 10 Calendar Days
+              </h3>
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
                   <div className="type-metric text-2xl font-bold text-blue-400">
@@ -220,16 +242,20 @@ export default function HydrationPage() {
                   <div className="type-metric text-2xl font-bold text-blue-400">
                     {getLast10LogsProgress().averageOz}oz
                   </div>
-                  <div className="text-sm text-slate-400">Daily Average</div>
+                  <div className="text-sm text-slate-400">
+                    10-day calendar average
+                  </div>
                 </div>
               </div>
               {getLast10LogsProgress().remaining > 0 && (
                 <div className="mt-3 text-center text-slate-300">
                   <span className="text-sm">
-                    {getLast10LogsProgress().remaining} ounces remaining
+                    {getLast10LogsProgress().remaining} ounces · 10-day
+                    shortfall
                   </span>
                 </div>
               )}
+              <WellnessHistory stats={getHistoricalStats()} unit="oz" />
             </CardContent>
           </Card>
 
@@ -249,37 +275,47 @@ export default function HydrationPage() {
             <div className="fitcircle-card-lg">
               <h3 className="text-lg font-semibold mb-3">Today's Intake</h3>
               <div className="space-y-2">
-                {todayEntries.slice().reverse().map((entry: HydrationEntry, index: number) => (
-                  <div key={entry.id} className="flex justify-between items-center text-sm relative">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-slate-400">{entry.time}</span>
-                      <span className="text-slate-300">{entry.liquidType || 'Water'}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-blue-400 font-medium">{entry.amount}oz</span>
-                      <div className="flex items-center space-x-1 ml-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditEntry(entry)}
-                          className="text-slate-400 hover:text-white p-1 h-auto"
-                          data-testid={`button-edit-entry-${entry.id}`}
-                        >
-                          <Edit2 className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteEntry(entry)}
-                          className="text-slate-400 hover:text-red-300 p-1 h-auto"
-                          data-testid={`button-delete-entry-${entry.id}`}
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
+                {todayEntries
+                  .slice()
+                  .reverse()
+                  .map((entry: HydrationEntry, index: number) => (
+                    <div
+                      key={entry.id}
+                      className="flex justify-between items-center text-sm relative"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <span className="text-slate-400">{entry.time}</span>
+                        <span className="text-slate-300">
+                          {entry.liquidType || "Water"}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-blue-400 font-medium">
+                          {entry.amount}oz
+                        </span>
+                        <div className="flex items-center space-x-1 ml-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEditEntry(entry)}
+                            className="text-slate-400 hover:text-white p-1 h-auto"
+                            data-testid={`button-edit-entry-${entry.id}`}
+                          >
+                            <Edit2 className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteEntry(entry)}
+                            className="text-slate-400 hover:text-red-300 p-1 h-auto"
+                            data-testid={`button-delete-entry-${entry.id}`}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           )}
@@ -306,26 +342,32 @@ export default function HydrationPage() {
                     <CollapsibleTrigger asChild>
                       <button className="w-full fitcircle-card hover:bg-slate-700 transition-colors">
                         <div className="flex justify-between items-center">
-                          <span className="text-white font-medium">{monthName}</span>
+                          <span className="text-white font-medium">
+                            {monthName}
+                          </span>
                           <div className="flex items-center space-x-2">
-                            <span className="text-blue-400 text-sm">{monthLogs.length} days</span>
+                            <span className="text-blue-400 text-sm">
+                              {monthLogs.length} days
+                            </span>
                             <span className="text-slate-400">
-                              {expandedMonths.has(monthName) ? '−' : '+'}
+                              {expandedMonths.has(monthName) ? "−" : "+"}
                             </span>
                           </div>
                         </div>
                       </button>
                     </CollapsibleTrigger>
-                    
+
                     <CollapsibleContent className="space-y-2 mt-2">
                       {monthLogs.map((log: HydrationLog) => (
                         <div key={log.date} className="fitcircle-card ml-4">
                           <div className="flex justify-between items-center mb-3">
                             <span className="text-white font-medium">
-                              {new Date(log.date + 'T00:00:00').toLocaleDateString('en-US', { 
-                                weekday: 'short', 
-                                month: 'short', 
-                                day: 'numeric' 
+                              {new Date(
+                                log.date + "T00:00:00",
+                              ).toLocaleDateString("en-US", {
+                                weekday: "short",
+                                month: "short",
+                                day: "numeric",
                               })}
                             </span>
                             <span className="text-blue-400 font-semibold">
@@ -335,15 +377,27 @@ export default function HydrationPage() {
                           <div className="text-xs text-slate-400 mb-2">
                             {log.entries.length} entries
                           </div>
-                          
+
                           {/* Show detailed entries for this day */}
                           <div className="space-y-1">
-                            {(expandedDays.has(log.date) ? log.entries : log.entries.slice(0, 3)).map((entry: HydrationEntry, index: number) => (
-                              <div key={index} className="flex justify-between items-center text-xs">
-                                <span className="text-slate-500">{entry.time}</span>
+                            {(expandedDays.has(log.date)
+                              ? log.entries
+                              : log.entries.slice(0, 3)
+                            ).map((entry: HydrationEntry, index: number) => (
+                              <div
+                                key={index}
+                                className="flex justify-between items-center text-xs"
+                              >
+                                <span className="text-slate-500">
+                                  {entry.time}
+                                </span>
                                 <div className="flex items-center space-x-1">
-                                  <span className="text-slate-400">{entry.liquidType || 'Water'}</span>
-                                  <span className="text-slate-300">{entry.amount}oz</span>
+                                  <span className="text-slate-400">
+                                    {entry.liquidType || "Water"}
+                                  </span>
+                                  <span className="text-slate-300">
+                                    {entry.amount}oz
+                                  </span>
                                 </div>
                               </div>
                             ))}
@@ -360,10 +414,9 @@ export default function HydrationPage() {
                                 }}
                                 className="text-xs text-slate-500 hover:text-slate-300 text-center mt-1 w-full transition-colors"
                               >
-                                {expandedDays.has(log.date) 
-                                  ? 'Show less' 
-                                  : `+${log.entries.length - 3} more entries`
-                                }
+                                {expandedDays.has(log.date)
+                                  ? "Show less"
+                                  : `+${log.entries.length - 3} more entries`}
                               </button>
                             )}
                           </div>
@@ -384,10 +437,15 @@ export default function HydrationPage() {
 
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
-        <ViewportOverlay title="Hydration Goal" onDismiss={() => setIsGoalModalOpen(false)}>
+        <ViewportOverlay
+          title="Hydration Goal"
+          onDismiss={() => setIsGoalModalOpen(false)}
+        >
           <div className="glass-panel bg-slate-800 rounded-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-white">Hydration Goal</h3>
+              <h3 className="text-lg font-semibold text-white">
+                Hydration Goal
+              </h3>
               <button
                 aria-label="Close"
                 onClick={() => setIsGoalModalOpen(false)}
@@ -400,14 +458,14 @@ export default function HydrationPage() {
             {/* Goal Progress Circle */}
             <div className="flex justify-center mb-8">
               <GoalCircle
-                percentage={getAllTimeGoalPercentage()}
+                percentage={percentage(currentDayOz, Number(newGoal))}
                 color="rgb(59, 130, 246)"
                 size={120}
                 currentValue={Math.round(currentDayOz)}
-                goalValue={parseFloat(newGoal) || dailyGoalOz}
+                goalValue={Number(newGoal)}
                 unit="oz"
                 title="Daily Hydration"
-                description="All-time average"
+                description="Today"
               />
             </div>
 
@@ -448,34 +506,46 @@ export default function HydrationPage() {
       )}
 
       {/* Add Liquid Dialog */}
-      <Dialog open={isHydrationDialogOpen} onOpenChange={setIsHydrationDialogOpen}>
+      <Dialog
+        open={isHydrationDialogOpen}
+        onOpenChange={setIsHydrationDialogOpen}
+      >
         <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl">
-          <DialogTitle className="text-lg font-semibold text-center">Add Liquid</DialogTitle>
+          <DialogTitle className="text-lg font-semibold text-center">
+            Add Liquid
+          </DialogTitle>
+          {error && (
+            <p role="alert" className="text-sm text-amber-300">
+              {error}
+            </p>
+          )}
           <DialogDescription className="sr-only">
             Add liquid consumption to your hydration tracking
           </DialogDescription>
           <div className="space-y-4">
             {/* Liquid Type Selection */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium text-slate-300">Liquid Type</Label>
+              <Label className="text-sm font-medium text-slate-300">
+                Liquid Type
+              </Label>
               <div className="grid grid-cols-4 gap-2">
-                {liquidTypes.map(type => (
+                {liquidTypes.map((type) => (
                   <button
                     key={type}
                     onClick={() => setSelectedLiquidType(type)}
                     className={`py-2 px-3 rounded-xl text-sm font-medium transition-colors ${
                       selectedLiquidType === type
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-700 hover:bg-slate-600 text-slate-300"
                     }`}
                   >
                     {type}
                   </button>
                 ))}
               </div>
-              
+
               {/* Custom Liquid Type Input */}
-              {selectedLiquidType === 'Custom' && (
+              {selectedLiquidType === "Custom" && (
                 <Input
                   type="text"
                   value={customLiquidType}
@@ -487,17 +557,16 @@ export default function HydrationPage() {
                 />
               )}
             </div>
-            
+
             {/* Quick Add Buttons */}
             <div className="grid grid-cols-5 gap-2">
-              {quickAddAmounts.map(amount => (
+              {quickAddAmounts.map((amount) => (
                 <Button
                   key={amount}
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    handleQuickAdd(amount);
-                    setIsHydrationDialogOpen(false);
+                    if (handleQuickAdd(amount)) setIsHydrationDialogOpen(false);
                   }}
                   className="border-slate-600 text-slate-300 hover:bg-slate-700"
                 >
@@ -521,8 +590,7 @@ export default function HydrationPage() {
               </div>
               <Button
                 onClick={() => {
-                  handleAddHydration();
-                  setIsHydrationDialogOpen(false);
+                  if (handleAddHydration()) setIsHydrationDialogOpen(false);
                 }}
                 className="bg-blue-600 hover:bg-blue-700"
               >
@@ -537,45 +605,51 @@ export default function HydrationPage() {
       {/* Edit Entry Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl">
-          <DialogTitle className="text-lg font-semibold text-center">Edit Entry</DialogTitle>
+          <DialogTitle className="text-lg font-semibold text-center">
+            Edit Entry
+          </DialogTitle>
           <DialogDescription className="sr-only">
             Edit your hydration entry
           </DialogDescription>
           <div className="space-y-4">
             {/* Liquid Type Selection */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium text-slate-300">Liquid Type</Label>
+              <Label className="text-sm font-medium text-slate-300">
+                Liquid Type
+              </Label>
               <div className="grid grid-cols-4 gap-2">
-                {liquidTypes.map(type => (
+                {liquidTypes.map((type) => (
                   <button
                     key={type}
                     onClick={() => setEditLiquidType(type)}
                     className={`py-2 px-3 rounded-xl text-sm font-medium transition-colors ${
                       editLiquidType === type
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-700 hover:bg-slate-600 text-slate-300"
                     }`}
                   >
                     {type}
                   </button>
                 ))}
               </div>
-              
+
               {/* Custom Liquid Type Input */}
-              {editLiquidType === 'Custom' && (
+              {editLiquidType === "Custom" && (
                 <Input
                   type="text"
-                  value={editLiquidType === 'Custom' ? editLiquidType : ''}
+                  value={editLiquidType === "Custom" ? editLiquidType : ""}
                   onChange={(e) => setEditLiquidType(e.target.value)}
                   aria-label="Liquid type"
                   className="bg-slate-700 border-slate-600 text-white"
                 />
               )}
             </div>
-            
+
             {/* Amount Input */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium text-slate-300">Amount (oz)</Label>
+              <Label className="text-sm font-medium text-slate-300">
+                Amount (oz)
+              </Label>
               <Input
                 type="number"
                 value={editAmount}

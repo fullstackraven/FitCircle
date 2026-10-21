@@ -26,7 +26,7 @@ const schemas: Record<string, z.ZodTypeAny> = {
   fitcircle_daily_quote: shaped({ text, author: text }),
   fitcircle_deleted_builtin_foods: z.array(text),
   fitcircle_hydration_data: shaped({ dailyGoalOz: number, currentDayOz: number, logs: record(shaped({ date: text, totalOz: number, entries: z.array(shaped({ time: text, amount: number })) })), lastDate: text }),
-  fitcircle_meditation_logs: z.union([z.array(session.extend({ date: text })), shaped({ dailyLogs: record(shaped({ date: text, totalMinutes: number, sessions: z.array(session) })), lastDate: text, currentDayMinutes: number })]),
+  fitcircle_meditation_logs: z.union([z.array(session.extend({ date: text })), shaped({ logs: z.array(session.extend({date:text})), dailyLogs: z.never().optional() }), shaped({ dailyLogs: record(shaped({ date: text, totalMinutes: number, sessions: z.array(session) })), lastDate: text, currentDayMinutes: number })]),
   fitcircle_fasting_logs: z.array(shaped({ id: text, startDate: text, startTime: text, endDate: text, endTime: text, duration: number, loggedAt: text })),
   fitcircle_cardio_data: shaped({ dailyLogs: record(shaped({ date: text, totalDuration: number, totalDistance: number, sessions: z.array(session.extend({ type: text })) })).optional(), entries: z.array(shaped({ id: text, date: text, type: text, duration: number })).optional(), goal: shaped({ type: z.enum(['distance', 'duration']), target: number }), customTypes: z.array(text).optional() }),
   fitcircle_measurements_history: record(z.array(shaped({ date: text, value: number }))),

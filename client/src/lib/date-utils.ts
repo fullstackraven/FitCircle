@@ -11,8 +11,8 @@
 export function getTodayString(): string {
   const today = new Date();
   const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
@@ -22,8 +22,8 @@ export function getTodayString(): string {
  */
 export function getDateString(date: Date): string {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
@@ -32,10 +32,10 @@ export function getDateString(date: Date): string {
  * Format: HH:MM AM/PM
  */
 export function getCurrentTime(): string {
-  return new Date().toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit',
-    hour12: true 
+  return new Date().toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   });
 }
 
@@ -45,8 +45,8 @@ export function getCurrentTime(): string {
  */
 export function getCurrentTime24(): string {
   const now = new Date();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
   return `${hours}:${minutes}`;
 }
 
@@ -57,13 +57,13 @@ export function getCurrentTime24(): string {
  */
 export function parseLocalDate(dateString: string): Date {
   // Handle both YYYY-MM-DD and MM/DD/YYYY formats
-  if (dateString.includes('/')) {
+  if (dateString.includes("/")) {
     // Handle MM/DD/YYYY format (legacy meditation entries)
-    const [month, day, year] = dateString.split('/').map(Number);
+    const [month, day, year] = dateString.split("/").map(Number);
     return new Date(year, month - 1, day);
   } else {
     // Handle YYYY-MM-DD format (standard)
-    const [year, month, day] = dateString.split('-').map(Number);
+    const [year, month, day] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day);
   }
 }
@@ -84,10 +84,10 @@ export function getYesterdayString(): string {
  */
 export function getDisplayDate(dateString: string): string {
   const date = parseLocalDate(dateString);
-  return date.toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric', 
-    year: 'numeric' 
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
   });
 }
 
@@ -112,43 +112,46 @@ export function isYesterday(dateString: string): boolean {
  * @param dateField - Field name containing the date (for array logs) or 'key' for object logs
  * @returns Object with month names as keys and arrays of logs as values
  */
-export function groupLogsByMonth<T>(logs: T[] | { [key: string]: T }, dateField: string = 'date'): { [monthName: string]: T[] } {
+export function groupLogsByMonth<T>(
+  logs: T[] | { [key: string]: T },
+  dateField: string = "date",
+): { [monthName: string]: T[] } {
   const monthGroups: { [monthName: string]: T[] } = {};
-  
+
   // Handle object-based logs (like hydration)
   if (!Array.isArray(logs)) {
     Object.entries(logs).forEach(([dateKey, log]) => {
       const date = parseLocalDate(dateKey);
-      const monthKey = date.toLocaleDateString('en-US', { 
-        month: 'long', 
-        year: 'numeric' 
+      const monthKey = date.toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
       });
-      
+
       if (!monthGroups[monthKey]) {
         monthGroups[monthKey] = [];
       }
       monthGroups[monthKey].push(log);
     });
-  } 
+  }
   // Handle array-based logs (like cardio, fasting, meditation)
   else {
     logs.forEach((log: any) => {
       let dateString: string;
-      
+
       // Handle different date field names
-      if (dateField === 'startDate') {
+      if (dateField === "startDate") {
         dateString = log.startDate; // For fasting logs
       } else {
         dateString = log[dateField]; // For cardio, meditation, etc.
       }
-      
+
       if (dateString) {
         const date = parseLocalDate(dateString);
-        const monthKey = date.toLocaleDateString('en-US', { 
-          month: 'long', 
-          year: 'numeric' 
+        const monthKey = date.toLocaleDateString("en-US", {
+          month: "long",
+          year: "numeric",
         });
-        
+
         if (!monthGroups[monthKey]) {
           monthGroups[monthKey] = [];
         }
@@ -156,21 +159,21 @@ export function groupLogsByMonth<T>(logs: T[] | { [key: string]: T }, dateField:
       }
     });
   }
-  
+
   // Sort months from newest to oldest
   const sortedMonths: { [monthName: string]: T[] } = {};
   Object.keys(monthGroups)
     .sort((a, b) => {
       // Parse "Month Year" format (e.g., "October 2025")
       // Create a date from "1 Month Year" format which is more reliable
-      const dateA = new Date('1 ' + a);
-      const dateB = new Date('1 ' + b);
+      const dateA = new Date("1 " + a);
+      const dateB = new Date("1 " + b);
       return dateB.getTime() - dateA.getTime();
     })
-    .forEach(month => {
+    .forEach((month) => {
       sortedMonths[month] = monthGroups[month];
     });
-  
+
   return sortedMonths;
 }
 
@@ -179,12 +182,18 @@ export function groupLogsByMonth<T>(logs: T[] | { [key: string]: T }, dateField:
  * Input: YYYY-MM-DD format strings
  * Output: Number of days including both start and end dates
  */
-export function getDaysBetweenInclusive(startDateStr: string, endDateStr: string): number {
-  const startDate = parseLocalDate(startDateStr);
-  const endDate = parseLocalDate(endDateStr);
-  const diffTime = endDate.getTime() - startDate.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays + 1; // +1 to make it inclusive
+export function getDaysBetweenInclusive(
+  startDateStr: string,
+  endDateStr: string,
+): number {
+  const ordinal = (value: string) => {
+    const date = parseLocalDate(value);
+    return (
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000
+    );
+  };
+  const days = ordinal(endDateStr) - ordinal(startDateStr) + 1;
+  return Number.isFinite(days) ? Math.max(0, days) : 0;
 }
 
 /**
@@ -192,151 +201,144 @@ export function getDaysBetweenInclusive(startDateStr: string, endDateStr: string
  * Input: Array of fasting logs with startDate and duration fields
  * Output: { averageHours: number, totalDays: number, totalHours: number }
  */
-export function getAllTimeFastingAverage(logs: { startDate: string; duration: number }[]): { averageHours: number; totalDays: number; totalHours: number } {
-  if (logs.length === 0) {
-    return { averageHours: 0, totalDays: 0, totalHours: 0 };
-  }
-  
-  // Calculate total hours from valid fasting logs
-  let totalHours = 0;
-  const startDates: string[] = [];
-  
-  logs.forEach(log => {
-    const durationHours = log.duration / 60;
-    if (durationHours > 0 && durationHours < 48) { // Valid fasting duration
-      totalHours += durationHours;
-      startDates.push(log.startDate);
-    }
+function historicalAverage(records: { date: unknown; value: unknown }[]) {
+  const valid = records.flatMap((record) => {
+    if (typeof record.date !== "string") return [];
+    const date = parseLocalDate(record.date),
+      key = getDateString(date);
+    const original = record.date.includes("/")
+      ? record.date.split("/").map(Number)
+      : null;
+    const expected = original
+      ? [
+          original[2],
+          String(original[0]).padStart(2, "0"),
+          String(original[1]).padStart(2, "0"),
+        ].join("-")
+      : record.date;
+    const value =
+      typeof record.value === "number" ||
+      (typeof record.value === "string" && record.value.trim() !== "")
+        ? Number(record.value)
+        : NaN;
+    return key === expected &&
+      key <= getTodayString() &&
+      Number.isFinite(value) &&
+      value >= 0
+      ? [{ date: key, value }]
+      : [];
   });
-  
-  if (startDates.length === 0) {
-    return { averageHours: 0, totalDays: 0, totalHours: 0 };
-  }
-  
-  // Find date range using string comparison (timezone-safe)
-  const sortedDates = startDates.sort();
-  const firstDate = sortedDates[0];
-  const today = getTodayString();
-  
-  // Calculate total days from first log to today (inclusive)
-  const totalDays = getDaysBetweenInclusive(firstDate, today);
-  const averageHours = totalHours / totalDays;
-  
+  const dates = valid.map((record) => record.date).sort();
+  if (!dates.length)
+    return {
+      total: 0,
+      totalDays: 0,
+      average: 0,
+      loggedDays: 0,
+      loggedDayAverage: 0,
+    };
+  const sum = valid.reduce((sum, record) => sum + record.value, 0),
+    total = Number.isFinite(sum) ? sum : 0;
+  const totalDays = getDaysBetweenInclusive(dates[0], getTodayString()),
+    loggedDays = new Set(dates).size;
   return {
-    averageHours: Math.round(averageHours * 10) / 10, // Round to 1 decimal
+    total,
     totalDays,
-    totalHours: Math.round(totalHours * 10) / 10
+    average: total / totalDays,
+    loggedDays,
+    loggedDayAverage: total / loggedDays,
   };
 }
-
-/**
- * Calculates all-time average hydration including days with no hydration (0 oz)
- * Input: Object with date keys and totalOz values
- * Output: { averageOz: number, totalDays: number, totalOz: number }
- */
-export function getAllTimeHydrationAverage(logs: { [date: string]: { totalOz: number } }): { averageOz: number; totalDays: number; totalOz: number } {
-  const logEntries = Object.entries(logs);
-  if (logEntries.length === 0) {
-    return { averageOz: 0, totalDays: 0, totalOz: 0 };
-  }
-  
-  // Find date range using string comparison (timezone-safe)
-  const dates = logEntries.map(([date]) => date).sort();
-  const firstDate = dates[0];
-  const today = getTodayString();
-  
-  // Calculate total days from first log to today (inclusive)
-  const totalDays = getDaysBetweenInclusive(firstDate, today);
-  
-  // Calculate total oz across all logged days
-  const totalOz = logEntries.reduce((sum, [, log]) => sum + (log.totalOz || 0), 0);
-  const averageOz = totalOz / totalDays;
-  
+const tenth = (value: number) =>
+  Number.isFinite(value) && Number.isFinite(value * 10)
+    ? Math.round(value * 10) / 10
+    : 0;
+export function getAllTimeFastingAverage(
+  logs: { startDate: string; duration: number }[],
+) {
+  const stats = historicalAverage(
+    (Array.isArray(logs) ? logs : []).map((log: any) => ({
+      date: log?.endDate ?? log?.startDate,
+      value: Number(log?.duration) / 60,
+    })),
+  );
   return {
-    averageOz: Math.round(averageOz * 10) / 10, // Round to 1 decimal
-    totalDays,
-    totalOz: Math.round(totalOz * 10) / 10
+    averageHours: tenth(stats.average),
+    totalDays: stats.totalDays,
+    totalHours: tenth(stats.total),
   };
 }
-
-/**
- * Calculates all-time average meditation including days with no meditation (0 minutes)  
- * Input: Array of meditation logs with date and duration fields
- * Output: { averageMinutes: number, totalDays: number, totalMinutes: number }
- */
-export function getAllTimeMeditationAverage(logs: { date: string; duration: number }[]): { averageMinutes: number; totalDays: number; totalMinutes: number } {
-  if (logs.length === 0) {
-    return { averageMinutes: 0, totalDays: 0, totalMinutes: 0 };
-  }
-  
-  // Group by date using timezone-safe parsing
-  const dailyTotals: { [date: string]: number } = {};
-  logs.forEach(session => {
-    const date = parseLocalDate(session.date);
-    const dateKey = date.toLocaleDateString('en-CA'); // YYYY-MM-DD format, timezone-safe
-    dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + session.duration;
-  });
-  
-  const dates = Object.keys(dailyTotals).sort();
-  if (dates.length === 0) {
-    return { averageMinutes: 0, totalDays: 0, totalMinutes: 0 };
-  }
-  
-  const firstDate = dates[0];
-  const today = getTodayString();
-  
-  // Calculate total days from first log to today (inclusive)
-  const totalDays = getDaysBetweenInclusive(firstDate, today);
-  
-  // Calculate total minutes across all logged days
-  const totalMinutes = Object.values(dailyTotals).reduce((sum, minutes) => sum + minutes, 0);
-  const averageMinutes = totalMinutes / totalDays;
-  
+export function getAllTimeHydrationAverage(logs: {
+  [date: string]: { totalOz: number };
+}) {
+  const records = Object.entries(logs ?? {}).map(
+    ([date, log]: [string, any]) => ({
+      date,
+      value: Array.isArray(log?.entries)
+        ? log.entries.reduce(
+            (sum: number, e: any) =>
+              sum +
+              (Number.isFinite(Number(e?.amount)) && Number(e?.amount) > 0
+                ? Number(e.amount)
+                : 0),
+            0,
+          )
+        : log?.totalOz,
+    }),
+  );
+  const stats = historicalAverage(records);
   return {
-    averageMinutes: Math.round(averageMinutes * 10) / 10, // Round to 1 decimal
-    totalDays,
-    totalMinutes: Math.round(totalMinutes * 10) / 10
+    averageOz: tenth(stats.average),
+    totalDays: stats.totalDays,
+    totalOz: tenth(stats.total),
   };
 }
-
-/**
- * Calculates all-time average cardio including days with no cardio (0 duration/distance)
- * Input: Array of cardio entries with date, duration, and distance fields
- * Output: { averageDuration: number, averageDistance: number, totalDays: number }
- */
-export function getAllTimeCardioAverage(entries: { date: string; duration: number; distance?: number }[]): { averageDuration: number; averageDistance: number; totalDays: number } {
-  if (entries.length === 0) {
-    return { averageDuration: 0, averageDistance: 0, totalDays: 0 };
-  }
-  
-  // Group by date and sum daily totals
-  const dailyTotals: { [date: string]: { duration: number; distance: number } } = {};
-  entries.forEach(entry => {
-    const dateKey = entry.date; // Already in YYYY-MM-DD format
-    if (!dailyTotals[dateKey]) {
-      dailyTotals[dateKey] = { duration: 0, distance: 0 };
-    }
-    dailyTotals[dateKey].duration += entry.duration || 0;
-    dailyTotals[dateKey].distance += entry.distance || 0;
-  });
-  
-  const dates = Object.keys(dailyTotals).sort();
-  const firstDate = dates[0];
-  const today = getTodayString();
-  
-  // Calculate total days from first log to today (inclusive)
-  const totalDays = getDaysBetweenInclusive(firstDate, today);
-  
-  // Calculate totals across all logged days
-  const totalDuration = Object.values(dailyTotals).reduce((sum, day) => sum + day.duration, 0);
-  const totalDistance = Object.values(dailyTotals).reduce((sum, day) => sum + day.distance, 0);
-  
-  const averageDuration = totalDuration / totalDays;
-  const averageDistance = totalDistance / totalDays;
-  
+export function getAllTimeMeditationAverage(
+  logs: { date: string; duration: number }[],
+) {
+  const stats = historicalAverage(
+    (Array.isArray(logs) ? logs : []).map((log) => ({
+      date: log?.date,
+      value: log?.duration,
+    })),
+  );
   return {
-    averageDuration: Math.round(averageDuration * 10) / 10, // Round to 1 decimal
-    averageDistance: Math.round(averageDistance * 10) / 10, // Round to 1 decimal
-    totalDays
+    averageMinutes: tenth(stats.average),
+    totalDays: stats.totalDays,
+    totalMinutes: tenth(stats.total),
+  };
+}
+export function getAllTimeCardioAverage(
+  entries: { date: string; duration: number; distance?: number }[],
+) {
+  const values = Array.isArray(entries) ? entries : [];
+  const duration = historicalAverage(
+    values.map((entry) => ({ date: entry?.date, value: entry?.duration })),
+  );
+  const distance = historicalAverage(
+    values.map((entry) => ({ date: entry?.date, value: entry?.distance })),
+  );
+  const dates = values
+    .filter((entry) => {
+      const date = entry?.date;
+      return (
+        typeof date === "string" &&
+        getDateString(parseLocalDate(date)) === date &&
+        date <= getTodayString() &&
+        ((Number.isFinite(Number(entry.duration)) &&
+          Number(entry.duration) >= 0) ||
+          (Number.isFinite(Number(entry.distance)) &&
+            Number(entry.distance) >= 0))
+      );
+    })
+    .map((entry) => entry.date)
+    .sort();
+  const totalDays = dates.length
+    ? getDaysBetweenInclusive(dates[0], getTodayString())
+    : 0;
+  return {
+    averageDuration: totalDays ? tenth(duration.total / totalDays) : 0,
+    averageDistance: totalDays ? tenth(distance.total / totalDays) : 0,
+    totalDays,
   };
 }
