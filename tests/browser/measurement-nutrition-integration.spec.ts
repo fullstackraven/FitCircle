@@ -102,6 +102,9 @@ test("simple calculator goal reuses existing records, shows progress and keeps m
 }) => {
   await seed(page);
   const before = await snapshot(page);
+  await page.evaluate(() =>
+    localStorage.setItem("fitness_calc_goal_type", "lose"),
+  );
   await page.getByTestId("button-calculator").click();
   const dialog = page.getByRole("dialog", {
     name: "Fitness Calculator",
@@ -287,4 +290,48 @@ test("missing measurements keep existing calorie targets and never invent goal p
       () => JSON.parse(localStorage.getItem("fitcircle_goals")!).targetWeight,
     ),
   ).toBe(180);
+});
+
+test("selected intent immediately changes goal progress without rewriting measurements or targets", async ({
+  page,
+}) => {
+  await seed(page);
+  await page.getByTestId("button-calculator").click();
+  const dialog = page.getByRole("dialog", {
+    name: "Fitness Calculator",
+    exact: true,
+  });
+  const before = await snapshot(page);
+  await expect(
+    dialog.getByRole("progressbar", { name: "Weight goal progress" }),
+  ).toHaveCount(0);
+  await expect(
+    dialog.getByText("Choose a goal above your starting weight of 200 lb.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await dialog
+    .getByRole("button", { name: "Lose Weight", exact: true })
+    .click();
+  await expect(
+    dialog.getByRole("progressbar", { name: "Weight goal progress" }),
+  ).toHaveAttribute("aria-valuenow", "50");
+  await dialog.getByRole("button", { name: "Maintain", exact: true }).click();
+  await expect(
+    dialog.getByRole("progressbar", { name: "Weight goal progress" }),
+  ).toHaveAttribute("aria-valuenow", "0");
+  await expect(
+    dialog.getByText("10.0 lb from goal weight", { exact: true }),
+  ).toBeVisible();
+  await dialog.getByLabel("Goal weight (lbs)", { exact: true }).fill("190");
+  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(
+    dialog.getByText("At goal weight", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByRole("progressbar", { name: "Weight goal progress" }),
+  ).toHaveAttribute("aria-valuenow", "100");
+  const after = await snapshot(page);
+  expect(after.measurements).toBe(before.measurements);
+  expect(after.food).toBe(before.food);
 });

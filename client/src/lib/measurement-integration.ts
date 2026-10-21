@@ -212,8 +212,13 @@ export function weightGoalProgress(
   start: number | null,
   current: number | null,
   target: number | null,
+  intent?: Direction,
 ): number | null {
-  if (current === null || target === null || start === null) return null;
+  if (current === null || target === null) return null;
+  if (intent === "maintain") return Math.abs(current - target) <= 0.5 ? 100 : 0;
+  if (start === null) return null;
+  if (intent === "lose" && target > start) return null;
+  if (intent === "gain" && target < start) return null;
   if (start === target) return Math.abs(current - target) <= 0.5 ? 100 : 0;
   return Math.max(
     0,
