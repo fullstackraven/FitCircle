@@ -62,7 +62,7 @@ test('floating add remains above dock through long-list scrolling and resizing; 
   const draft=page.getByRole('form',{name:'New reminder',exact:true});
   await expect(draft).toBeVisible();
   const input=draft.getByRole('textbox',{name:'New reminder',exact:true});
-  await expect(input).not.toBeFocused();
+  await expect(input).toBeFocused();
   await input.fill('Added synthetic reminder');
   await input.press('Enter');
   await expect(page.getByRole('list',{name:'Reminders',exact:true}).locator('li').first()).toContainText('Added synthetic reminder');
@@ -71,8 +71,9 @@ test('floating add remains above dock through long-list scrolling and resizing; 
   await expect(page.getByRole('button',{name:'Edit Added synthetic reminder',exact:true})).toBeVisible();
   await expect(page.getByRole('list',{name:'Reminders',exact:true}).locator('li').first()).toContainText('Added synthetic reminder');
   await add.click();
-  await page.getByRole('textbox',{name:'New reminder',exact:true}).fill('Discarded draft');
-  await page.getByRole('button',{name:'Cancel',exact:true}).click();
+  const discard = page.getByRole('textbox',{name:'New reminder',exact:true});
+  await discard.fill('Discarded draft');
+  await discard.fill('');
   await expect(page.getByRole('button',{name:'Edit Discarded draft',exact:true})).toHaveCount(0);
 });
 
@@ -88,4 +89,52 @@ test('empty list and completed selection retain add and delete functionality', a
   await expect(page.getByText('No Reminders',{exact:true})).toBeVisible();
   await expect(page.getByRole('button',{name:'Clear',exact:true})).toBeDisabled();
   await expect(page.getByRole('button',{name:'New Reminder',exact:true})).toBeVisible();
+});
+
+
+test('tap-to-write and Return support consecutive reminders without action buttons or blank records', async ({page}) => {
+  await seed(page);
+  await page.getByRole('button',{name:'Write a reminder',exact:true}).click();
+  const input=page.getByRole('textbox',{name:'New reminder',exact:true});
+  await expect(input).toBeFocused();
+  await expect(page.getByRole('form',{name:'New reminder'}).getByRole('button')).toHaveCount(0);
+  for (const text of ['First continuous reminder','Second continuous reminder']) {
+    await input.fill(text);
+    await input.press('Enter');
+    await expect(input).toHaveValue('');
+    await expect(input).toBeFocused();
+    await expect(page.getByRole('list',{name:'Reminders',exact:true}).locator('li').first()).toContainText(text);
+  }
+  await input.press('Enter');
+  await expect(input).toHaveCount(0);
+  await page.getByRole('button',{name:'Write a reminder',exact:true}).click();
+  await input.press('Backspace');
+  await expect(input).toHaveCount(0);
+  await page.getByRole('button',{name:'Write a reminder',exact:true}).click();
+  await input.fill('Remove the draft');
+  await input.fill('');
+  await expect(input).toHaveCount(0);
+  await page.getByRole('button',{name:'Write a reminder',exact:true}).click();
+  await input.fill('   ');
+  await input.press('Tab');
+  await expect(input).toHaveCount(0);
+  await page.reload();
+  const stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('fitcircle_reminders')!));
+  expect(stored).toHaveLength(5);
+  expect(stored.every((item: {text:string}) => Boolean(item.text.trim()))).toBe(true);
+  expect(stored[0].text).toBe('Second continuous reminder');
+});
+
+test('Home dashboard button aligns with every dock page at phone and desktop widths', async ({page}) => {
+  for (const width of [390,1280]) {
+    await page.setViewportSize({width,height:844});
+    const positions: number[] = [];
+    for (const route of ['', 'calendar','routines','wellness','reminders']) {
+      await page.goto(route);
+      const button=page.getByRole('button',{name:'Open Menu',exact:true});
+      await expect(button).toBeVisible();
+      positions.push((await button.boundingBox())!.x);
+    }
+    expect(Math.max(...positions)-Math.min(...positions)).toBeLessThan(1);
+  }
 });
