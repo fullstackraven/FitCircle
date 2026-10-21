@@ -42,7 +42,7 @@ Current Food Tracker uses its saved calculator calorie/macronutrient targets. Th
 
 ## No fabricated comparisons
 
-- The existing **sugar** field is **total sugar**, not added sugar. No separate added-sugar field or user-configurable total-sugar reference exists in the current food model, goal schemas, calculator targets, or storage registry. Total sugar therefore retains its intake and unit only, without a fabricated denominator or bar. No added-sugar Daily Value is applied to total sugar.
+- The existing **sugar** field is **total sugar**, not added sugar. There is no separate added-sugar field. Sugar uses the app-defined tracking convention `(confirmed calories × 0.15) / 4`, never the added-sugar Daily Value. See [automatic Sugar reference notes](../automatic-sugar-reference/README.md).
 - Cholesterol uses the **300 mg FDA Nutrition Facts Daily Value** for recorded ages 4+. This is a general label comparator, not a personalized prescription or a newly inferred universal DRI/upper limit.
 - The existing vitamin A field is inconsistent: the legacy custom-food form labels IU, while barcode normalization stores µg. The model does not identify the vitamin A form or retinol activity equivalents (RAE). No vitamin A target or percentage is assigned. Known scanned-source µg totals can be displayed, but a total containing unit-ambiguous legacy/custom records says **Unit unavailable** instead of incorrectly adding IU to µg. Original values, aggregation functions, product metadata and backups are untouched. Resolving legacy units requires a separate provenance/label-based correction, not guessed conversions.
 - Missing values remain missing; explicit zero remains zero. Unknown totals have no fabricated zero-progress bar. Known partial totals can have a bar and receive one modal-level disclosure plus accessible per-row partial-total semantics. Coverage counts remain in the unchanged `dailyNutrition` result.
@@ -65,7 +65,7 @@ All fixtures are synthetic. Production changes are confined to the modal compone
 
 Physical iPhone Safari/PWA testing is not claimed. Automated phone-size checks cover 320×568, safe-area offsets, scrollable last rows, horizontal fit and a stationary accessible close button. Real-device checks remain for enlarged system text, VoiceOver reading of partial totals/limits, and installed-PWA keyboard/viewport transitions.
 
-## Sugar/cholesterol display follow-up
+## Sugar/cholesterol display follow-up (PR #66, before automatic Sugar reference)
 
 The clarified request keeps total sugar intake-only because the app has neither separate added-sugar data nor an existing configurable total-sugar reference. The proposed 90 g comparator was removed before merge. No new settings, keys or fields are added. Cholesterol shows intake / 300 mg using the FDA label Daily Value for recorded ages 4+. Visible rows omit “limit” for sodium and saturated fat, while screen-reader descriptions retain the distinction. All source/applicability explanations stay in the collapsed Reference information section.
 

@@ -50,8 +50,7 @@ export function NutritionDetails({
         {nutrientFields.map((key) => {
           const item = totals[key];
           const reference = references[key];
-          const label =
-            key === "sugar" ? "Total sugar" : nutrientLabels[key][0];
+          const label = key === "sugar" ? "Sugar" : nutrientLabels[key][0];
           const unit = nutrientLabels[key][1];
           const usable =
             item.known > 0 &&
@@ -81,7 +80,7 @@ export function NutritionDetails({
                 <dt className="text-slate-300 min-w-0">{label}</dt>
                 <dd
                   className="tabular-nums text-white text-right text-sm min-w-0 max-w-full [overflow-wrap:anywhere]"
-                  aria-label={`${actual}${reference ? `; ${reference.kind === "limit" ? "limit" : reference.kind === "intake" ? "recommended intake" : reference.kind === "reference" ? "general label reference" : "saved target"} ${formatNutrientAmount(reference.value)} ${unit}` : ""}${item.known < item.total ? "; partial recorded intake" : ""}`}
+                  aria-label={`${actual}${reference ? `; ${reference.kind === "limit" ? "limit" : reference.kind === "intake" ? "recommended intake" : reference.kind === "reference" ? (reference.source === "app-convention" ? "app tracking reference" : "general label reference") : "saved target"} ${formatNutrientAmount(reference.value)} ${unit}` : ""}${item.known < item.total ? "; partial recorded intake" : ""}`}
                 >
                   {usable && reference ? (
                     <>
@@ -127,10 +126,11 @@ export function NutritionDetails({
           Saved calorie/macronutrient targets; age/sex DRI intakes and sodium
           reduction thresholds. Fiber intake references and saturated-fat limits
           may use saved calories. Limits are not minimum goals. Total sugar is
-          not added sugar and has no configured reference. Cholesterol uses the
-          FDA label Daily Value of 300 mg for ages 4+, a general label
-          comparison, not a personalized recommended intake or physiological
-          upper limit.
+          not added sugar; its reference is 15% of confirmed daily calories
+          divided by 4. This is an app-defined tracking convention, not an RDA
+          or FDA Daily Value. Cholesterol uses the FDA label Daily Value of 300
+          mg for ages 4+, a general label comparison, not a personalized
+          recommended intake or physiological upper limit.
         </p>
         <p className="mt-2">
           General references exclude pregnancy/lactation and smoking
