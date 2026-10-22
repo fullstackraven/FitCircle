@@ -104,22 +104,15 @@ test("dashboard uses calculator targets rather than obsolete nutrition goals and
   await page
     .getByRole("button", { name: "Nutrition Details", exact: true })
     .click();
-  await expect(page.getByRole("dialog")).toContainText(
+  await expect(page.getByRole("region", { name: "Nutrition Details", exact: true })).toContainText(
     "Some nutrient totals are partial",
   );
-  await expect(page.getByRole("dialog")).toContainText("Not available");
+  await expect(page.getByRole("region", { name: "Nutrition Details", exact: true })).toContainText("Not available");
   await expect(
-    page.getByRole("dialog").getByText("240 mg", { exact: true }),
+    page.getByRole("region", { name: "Nutrition Details", exact: true }).getByText("240 mg", { exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Close", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Weekly Overview", exact: true })
-    .click();
-  await expect(page.getByRole("dialog")).toContainText(
-    "2 of 7 days logged",
-  );
-  await expect(page.getByTestId("weekly-calories")).toContainText("150 / 3,000 kcal");
-  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.getByRole("button", {name:"Nutrition Details",exact:true}).click();
+  await expect(page.getByRole("button", {name:"Weekly Overview",exact:true})).toHaveCount(0);
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });
@@ -452,12 +445,12 @@ test("compact nutrition layouts and secondary views stay reachable at small and 
     await page
       .getByRole("button", { name: "Nutrition Details", exact: true })
       .click();
-    const dialog = page.getByRole("dialog");
+    const dialog = page.getByRole("region", { name: "Nutrition Details", exact: true });
     await dialog
       .getByText("Vitamin C", { exact: true })
       .scrollIntoViewIfNeeded();
     await expect(dialog.getByText("Vitamin C", { exact: true })).toBeVisible();
-    await dialog.getByRole("button", { name: "Close", exact: true }).click();
+    await page.getByRole("button", { name: "Nutrition Details", exact: true }).click();
     await page.getByTestId("button-add-snack").scrollIntoViewIfNeeded();
     const add = await page.getByTestId("button-add-snack").boundingBox();
     const dock = await page.locator(".app-dock").boundingBox();
@@ -699,7 +692,7 @@ test("complete Settings backup restores historical diary bytes, missing nutrient
     .click();
   await expect(
     page
-      .getByRole("dialog")
+      .getByRole("region", {name:"Nutrition Details",exact:true})
       .getByText("Not available", { exact: true })
       .first(),
   ).toBeVisible();
@@ -736,7 +729,7 @@ test("nutrition details distinguish a known zero, an incomplete zero total, miss
   await page
     .getByRole("button", { name: "Nutrition Details", exact: true })
     .click();
-  const dialog = page.getByRole("dialog");
+  const dialog = page.getByRole("region", {name:"Nutrition Details",exact:true});
   await expect(
     dialog.getByText("Fiber", { exact: true }).locator(".."),
   ).toContainText("0 g");
@@ -747,8 +740,8 @@ test("nutrition details distinguish a known zero, an incomplete zero total, miss
     dialog.getByText("Sugar", { exact: true }).locator(".."),
   ).toContainText("Not available");
   await expect(
-    dialog.getByText("Vitamin A", { exact: true }).locator(".."),
-  ).toContainText("Unit unavailable");
+    dialog.getByText("Vitamin A", { exact: true }),
+  ).toHaveCount(0);
 });
 
 test("unit conversion requests an explicit piece weight and rescales consumed nutrients without altering saved foods", async ({

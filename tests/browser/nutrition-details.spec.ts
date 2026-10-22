@@ -106,7 +106,7 @@ const open = async (page: Page) => {
   await page
     .getByRole("button", { name: "Nutrition Details", exact: true })
     .click();
-  return page.getByRole("dialog", { name: "Nutrition Details", exact: true });
+  return page.getByRole("region", { name: "Nutrition Details", exact: true });
 };
 test("compact rows compare correct age/sex references, limit overflow and preserve all original bytes", async ({
   page,
@@ -159,9 +159,7 @@ test("compact rows compare correct age/sex references, limit overflow and preser
   await expect(
     dialog.getByTestId("nutrient-cholesterol").getByRole("progressbar"),
   ).toHaveAttribute("aria-valuenow", "15");
-  await expect(dialog.getByTestId("nutrient-vitaminA")).toContainText(
-    "< 0.1 µg",
-  );
+  await expect(dialog.getByTestId("nutrient-vitaminA")).toHaveCount(0);
   await expect(
     dialog.getByTestId("nutrient-vitaminA").getByRole("progressbar"),
   ).toHaveCount(0);
@@ -177,7 +175,9 @@ test("compact rows compare correct age/sex references, limit overflow and preser
   for (const bar of await dialog.getByRole("progressbar").all())
     expect((await bar.boundingBox())!.height).toBe(4);
   expect(await originals(page)).toEqual(before);
-  await dialog.getByRole("button", { name: "Close", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Nutrition Details", exact: true })
+    .click();
   await page.reload();
   expect(await originals(page)).toEqual(before);
 });
@@ -205,7 +205,9 @@ test("partial values get a single accessible disclosure; confirmed zero and unav
     "data-complete",
     "true",
   );
-  await dialog.getByRole("button", { name: "Close", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Nutrition Details", exact: true })
+    .click();
   await page.evaluate(() =>
     localStorage.setItem(
       "fitcircle_food_2026-10-21",
@@ -249,9 +251,7 @@ test("unknown demographics are not inferred; ambiguous legacy vitamin A retains 
   await expect(dialog.getByTestId("nutrient-vitaminC")).toHaveText(
     "Vitamin C45 mg",
   );
-  await expect(dialog.getByTestId("nutrient-vitaminA")).toContainText(
-    "Unit unavailable",
-  );
+  await expect(dialog.getByTestId("nutrient-vitaminA")).toHaveCount(0);
   await expect(dialog.getByTestId("nutrient-calcium")).toContainText(
     "/ 1,000 mg",
   );
@@ -296,7 +296,7 @@ test("missing or malformed profile and calorie inputs do not fabricate personali
   );
   expect(await originals(page)).toEqual(before);
 });
-test("small iPhone modal scrolls nutrient rows without moving or hiding the close button", async ({
+test("small iPhone inline section scrolls naturally without horizontal overflow", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 568 });
@@ -305,18 +305,15 @@ test("small iPhone modal scrolls nutrient rows without moving or hiding the clos
     content: ":root { --safe-top: 20px; --safe-bottom: 34px; }",
   });
   const dialog = await open(page);
-  const close = dialog.getByRole("button", { name: "Close", exact: true });
-  const initial = (await close.boundingBox())!;
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await dialog.getByTestId("nutrient-vitaminC").scrollIntoViewIfNeeded();
-  await expect(close).toBeInViewport();
-  const final = (await close.boundingBox())!;
-  expect(final.y).toBe(initial.y);
-  expect(final.y).toBeGreaterThanOrEqual(20);
-  expect(final.y + final.height).toBeLessThanOrEqual(534);
+  await expect(dialog.getByTestId("nutrient-vitaminC")).toBeInViewport();
   expect(await dialog.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(
     true,
   );
-  await close.click();
+  await page
+    .getByRole("button", { name: "Nutrition Details", exact: true })
+    .click();
   await expect(dialog).toHaveCount(0);
 });
 
@@ -393,4 +390,71 @@ test("Sugar automatically follows confirmed calories without settings or storage
   await expect(page.getByTestId("nutrient-sugar")).toHaveText(
     "Sugar24 / 112.5 g",
   );
+});
+
+test("empty days show empty bars inline without unavailable text or Vitamin A, and preserve storage", async ({
+  page,
+}) => {
+  await seed(page);
+  await page.evaluate(() =>
+    localStorage.setItem("fitcircle_food_2026-10-21", "[]"),
+  );
+  await page.reload();
+  const before = await originals(page);
+  const toggle = page.getByRole("button", {
+    name: "Nutrition Details",
+    exact: true,
+  });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(
+    page.getByRole("button", { name: "Weekly Overview", exact: true }),
+  ).toHaveCount(0);
+  const region = await open(page);
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(region.getByText("Not available", { exact: true })).toHaveCount(
+    0,
+  );
+  await expect(region.getByTestId("nutrient-vitaminA")).toHaveCount(0);
+  await expect(
+    region.getByRole("img", { name: /no foods logged/ }),
+  ).toHaveCount(13);
+  await expect(region.getByTestId("nutrient-calories")).toContainText(
+    "— / 2,000 kcal",
+  );
+  await toggle.click();
+  await expect(region).toHaveCount(0);
+  expect(await originals(page)).toEqual(before);
+});
+
+test("expanded details follow the selected historical date without modifying records", async ({
+  page,
+}) => {
+  await seed(page);
+  await page.evaluate(() =>
+    localStorage.setItem("fitcircle_food_2026-10-21", "[]"),
+  );
+  await page.reload();
+  const before = await originals(page);
+  const region = await open(page);
+  await page.screenshot({
+    path: "docs/review/inline-nutrition/empty-day.png",
+    fullPage: true,
+  });
+  await page.getByTestId("button-previous-day").click();
+  await expect(region.getByTestId("nutrient-calories")).toContainText(
+    "1,000 / 2,000 kcal",
+  );
+  await expect(
+    region.getByRole("progressbar", { name: "Calories", exact: true }),
+  ).toHaveAttribute("aria-valuenow", "50");
+  await page.screenshot({
+    path: "docs/review/inline-nutrition/logged-day.png",
+    fullPage: true,
+  });
+  await page.getByTestId("button-next-day").click();
+  await expect(
+    region.getByRole("img", { name: /no foods logged/ }),
+  ).toHaveCount(13);
+  expect(await originals(page)).toEqual(before);
 });
