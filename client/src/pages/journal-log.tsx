@@ -220,7 +220,7 @@ export function JournalLog() {
       {/* Journal Entry Modal */}
       <Dialog open={isModalOpen} onOpenChange={handleModalClose}>
         <DialogContent className="max-w-2xl p-0 bg-slate-800 border-slate-600 overflow-hidden rounded-2xl">
-          <div className="flex flex-col min-h-0" style={{ backgroundColor: 'hsl(222, 47%, 15%)' }}>
+          <div className="flex flex-col" style={{ backgroundColor: 'hsl(222, 47%, 15%)' }}>
             {/* Modal Header */}
             <DialogHeader className="px-4 py-3 border-b border-slate-600">
               <DialogTitle className="text-lg font-bold text-white text-center">Daily Journal</DialogTitle>
@@ -245,12 +245,12 @@ export function JournalLog() {
             </div>
 
             {/* Main writing area */}
-            <div className="flex-1 px-4 py-4 flex flex-col overflow-hidden">
+            <div className="px-4 py-4 flex flex-col">
               <textarea
                 value={journalText}
                 onChange={(e) => setJournalText(e.target.value)}
                 aria-label="Journal entry"
-                className="flex-1 w-full p-0 bg-transparent text-white border-none resize-none focus:outline-none text-base leading-relaxed placeholder-slate-500"
+                className="w-full p-0 bg-transparent text-white border-none resize-none focus:outline-none text-base leading-relaxed placeholder-slate-500"
                 style={{
                   lineHeight: '1.6',
                   touchAction: 'manipulation',

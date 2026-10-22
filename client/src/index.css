@@ -390,14 +390,16 @@
   display: grid;
   gap: inherit;
   min-height: 0;
+  min-width: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   scroll-padding-block: 16px;
 }
-/* Compact editors keep every field in a static form; other dialogs retain
-   their existing internal scrolling behavior. */
-.dialog-body-static { overflow: visible; flex-shrink: 0; }
+/* Compact forms remain stationary when they fit, and scroll rather than
+   extending past the panel when the keyboard reduces available height. */
+.dialog-body-static { overflow-y: auto; flex-shrink: 1; }
+.dialog-body > * { min-width: 0; }
 .overlay-close {
   position: absolute;
   right: 8px;
