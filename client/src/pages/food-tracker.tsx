@@ -1,7 +1,6 @@
 import { readFoodDay, assertLoggableFood } from '@/lib/food-diary';
 import { DailyNutritionSummary } from '@/components/nutrition/DailyNutritionSummary';
 import { NutritionDetails } from '@/components/nutrition/NutritionDetails';
-import { WeeklyNutrition } from '@/components/nutrition/WeeklyNutrition';
 import { MealDiary } from '@/components/nutrition/MealDiary';
 import { FoodEntryForm } from '@/components/nutrition/FoodEntryForm';
 import { draftFromFood, type ProductDraft } from '@/lib/barcode-lookup';
@@ -50,7 +49,7 @@ export default function FoodTrackerPage() {
   const foodEntries = diary.entries;
   const [calculatorTargets, setCalculatorTargets] = useState<Targets | null>(null);
   const [targetsError, setTargetsError] = useState('');
-  const [nutritionView,setNutritionView] = useState<'details'|'week'|null>(null);
+  const [nutritionExpanded, setNutritionExpanded] = useState(false);
   const [barcodeOpen,setBarcodeOpen] = useState(false);
   const [showAllRecent, setShowAllRecent] = useState(false);
   const macroTargets = calculatorTargets ?? displayTargets;
@@ -588,18 +587,18 @@ export default function FoodTrackerPage() {
         {(diary.error || diary.saveError) && <div role="alert" className="rounded-xl border border-amber-500/40 p-3 text-sm text-amber-200 mb-3">{diary.error || diary.saveError}<Button variant="ghost" onClick={diary.retry}>Retry Loading Day</Button></div>}
         {targetsError && <div role="alert" className="text-sm text-amber-200 mb-3">{targetsError}<Button variant="ghost" onClick={reloadTargets}>Retry Targets</Button></div>}
         {diary.ready && <DailyNutritionSummary entries={foodEntries} targets={macroTargets} confirmed={!!calculatorTargets}/>}
-        <div className="flex flex-wrap gap-2 my-4">
-          <Button variant="ghost" disabled={!diary.ready} onClick={()=>setNutritionView('details')}>Nutrition Details</Button>
-          <Button variant="ghost" onClick={()=>setNutritionView('week')}>Weekly Overview</Button>
-        </div>
-        <Dialog open={nutritionView!==null} onOpenChange={open=>{if(!open)setNutritionView(null);}}>
-          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="max-w-md bg-slate-900 border-slate-700">
-            <DialogHeader><DialogTitle>{nutritionView==='details'?'Nutrition Details':'Weekly Nutrition'}</DialogTitle><DialogDescription className="sr-only">{getDateDisplayText()}</DialogDescription></DialogHeader>
-
-            {nutritionView==='details'&&<NutritionDetails entries={foodEntries} targets={calculatorTargets ?? undefined}/>}
-            {nutritionView==='week'&&<WeeklyNutrition date={selectedDate} targets={calculatorTargets ?? undefined}/>}
-          </DialogContent>
-        </Dialog>
+        <section className="my-4 rounded-2xl border border-slate-700/60 bg-slate-800/50">
+          <button id="nutrition-details-toggle" type="button" disabled={!diary.ready}
+            aria-expanded={nutritionExpanded} aria-controls="nutrition-details-content"
+            onClick={() => setNutritionExpanded(expanded => !expanded)}
+            className="flex min-h-12 w-full items-center justify-between gap-3 px-4 py-3 text-left font-semibold text-slate-100">
+            Nutrition Details
+            <ChevronRight aria-hidden="true" className={`h-5 w-5 shrink-0 transition-transform ${nutritionExpanded ? 'rotate-90' : ''}`} />
+          </button>
+          {nutritionExpanded && <div id="nutrition-details-content" role="region" aria-labelledby="nutrition-details-toggle" className="min-w-0 px-4 pb-4">
+            <NutritionDetails entries={foodEntries} targets={calculatorTargets ?? undefined}/>
+          </div>}
+        </section>
         <Dialog open={barcodeOpen} onOpenChange={setBarcodeOpen}>
           <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="max-w-lg bg-slate-900 border-slate-700">
             <DialogHeader><DialogTitle>Scan Barcode</DialogTitle><DialogDescription className="sr-only">Scan a barcode or enter it manually.</DialogDescription></DialogHeader>

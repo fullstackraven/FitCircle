@@ -28,14 +28,11 @@ export function NutritionDetails({
     targets,
   );
   const disclosureId = useId();
-  const incomplete = nutrientFields.some(
+  const displayedFields = nutrientFields.filter((key) => key !== "vitaminA");
+  const empty = entries.length === 0;
+  const incomplete = displayedFields.some(
     (key) => totals[key].known < totals[key].total,
   );
-  // Custom/legacy vitamin A was labelled IU, scanned products use µg. A numeric
-  // field alone cannot establish a shared unit or a retinol activity equivalent.
-  const vitaminAUnitKnown = entries
-    .filter((entry) => typeof entry.vitaminA === "number")
-    .every((entry) => "source" in entry && entry.source === "Open Food Facts");
   return (
     <div>
       {incomplete && (
@@ -47,20 +44,17 @@ export function NutritionDetails({
         className="divide-y divide-slate-700/50"
         aria-describedby={incomplete ? disclosureId : undefined}
       >
-        {nutrientFields.map((key) => {
+        {displayedFields.map((key) => {
           const item = totals[key];
           const reference = references[key];
           const label = key === "sugar" ? "Sugar" : nutrientLabels[key][0];
           const unit = nutrientLabels[key][1];
           const usable =
-            item.known > 0 &&
-            Number.isFinite(item.value) &&
-            item.value >= 0 &&
-            (key !== "vitaminA" || vitaminAUnitKnown);
+            item.known > 0 && Number.isFinite(item.value) && item.value >= 0;
           const actual = usable
             ? `${formatNutrientAmount(item.value)} ${unit}`
-            : key === "vitaminA" && item.known > 0 && !vitaminAUnitKnown
-              ? "Unit unavailable"
+            : empty
+              ? "—"
               : "Not available";
           const progress =
             usable && reference
@@ -97,19 +91,27 @@ export function NutritionDetails({
                   )}
                 </dd>
               </div>
-              {progress !== null && (
-                <NutritionProgressBar
-                  actual={item.value}
-                  target={reference!.value}
-                  label={label}
-                  description={`${actual}; ${reference!.kind === "limit" ? "limit" : "reference"} ${formatNutrientAmount(reference!.value)} ${unit}${item.known < item.total ? "; partial recorded intake" : ""}`}
-                  color={
-                    reference!.kind === "limit" ||
-                    reference!.kind === "reference"
-                      ? "bg-blue-400"
-                      : "bg-green-400"
-                  }
+              {empty ? (
+                <div
+                  role="img"
+                  aria-label={`${label}: no foods logged`}
+                  className="mt-2 h-1 rounded-full bg-slate-700"
                 />
+              ) : (
+                progress !== null && (
+                  <NutritionProgressBar
+                    actual={item.value}
+                    target={reference!.value}
+                    label={label}
+                    description={`${actual}; ${reference!.kind === "limit" ? "limit" : "reference"} ${formatNutrientAmount(reference!.value)} ${unit}${item.known < item.total ? "; partial recorded intake" : ""}`}
+                    color={
+                      reference!.kind === "limit" ||
+                      reference!.kind === "reference"
+                        ? "bg-blue-400"
+                        : "bg-green-400"
+                    }
+                  />
+                )
               )}
             </div>
           );
@@ -134,9 +136,7 @@ export function NutritionDetails({
         </p>
         <p className="mt-2">
           General references exclude pregnancy/lactation and smoking
-          adjustments. Missing demographics are not inferred. Vitamin A has no
-          comparison because legacy IU and µg/RAE are not interchangeable;
-          ambiguous totals are withheld.
+          adjustments. Missing demographics are not inferred.
         </p>
         <p className="mt-2">
           <a
