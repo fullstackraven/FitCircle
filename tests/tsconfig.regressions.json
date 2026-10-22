@@ -32,7 +32,8 @@
     "nutrient-references.test.ts",
     "browser/nutrition-details.spec.ts",
     "browser/weekly-nutrition.spec.ts",
-    "browser/routines-configuration.spec.ts"
+    "browser/routines-configuration.spec.ts",
+    "browser/modal-fields.spec.ts"
   ],
   "exclude": [
     "../node_modules",

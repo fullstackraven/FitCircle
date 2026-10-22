@@ -657,7 +657,7 @@ export default function FoodTrackerPage() {
               </div>
               <div className="flex items-center justify-between gap-3"><h3 className="text-lg font-semibold">{searchQuery ? 'Search Results' : 'Recent Foods'}</h3>{!searchQuery && filteredFoodHistory.length > 10 && <Button variant="ghost" className="text-green-400" onClick={() => setShowAllRecent(!showAllRecent)}>{showAllRecent ? 'Show less' : 'View all'}</Button>}</div>
               {/* Food List */}
-              <div className="overflow-y-scroll pr-2 -mr-2" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <div className="min-w-0 overflow-y-auto pr-2" style={{ WebkitOverflowScrolling: 'touch' }}>
                 {searchQuery ? (
                   // Search Results
                   searchResults.length > 0 ? (
