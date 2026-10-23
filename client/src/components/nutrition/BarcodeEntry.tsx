@@ -81,7 +81,7 @@ export function BarcodeEntry({
         }}
         className="space-y-3"
       >
-        <label className="block text-sm text-slate-300">
+        <label className="block text-sm text-supporting">
           Manual barcode
           <Input
             aria-label="Manual barcode"
@@ -94,22 +94,22 @@ export function BarcodeEntry({
         <Button
           disabled={busy || !code.trim()}
           type="submit"
-          className="w-full bg-green-400 text-slate-950"
+          className="w-full bg-green-400 text-on-bright"
         >
           {busy ? "Looking up…" : "Find Product"}
         </Button>
       </form>
       {error && (
-        <p role="alert" className="text-sm text-amber-300">
+        <p role="alert" className="text-sm text-warning-soft">
           {error}
         </p>
       )}
-      <p className="text-xs text-slate-400">
+      <p className="text-xs text-muted-foreground">
         <a
           href="https://world.openfoodfacts.org"
           target="_blank"
           rel="noreferrer"
-          className="text-green-400 underline"
+          className="text-accent-text underline"
         >
           Open Food Facts
         </a>{" "}

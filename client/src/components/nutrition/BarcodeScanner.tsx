@@ -112,15 +112,15 @@ export function BarcodeScanner({
         aria-label="Barcode camera preview"
         className="w-full aspect-video object-cover rounded-xl bg-slate-950"
       />
-      <p className="text-xs text-slate-400">
+      <p className="text-xs text-muted-foreground">
         Center a UPC or EAN barcode in the camera. Images stay on your device.
       </p>
       {error && (
-        <p role="alert" className="text-sm text-amber-300">
+        <p role="alert" className="text-sm text-warning-soft">
           {error}
         </p>
       )}
-      <button className="min-h-11 text-green-400" onClick={onStop}>
+      <button className="min-h-11 text-accent-text" onClick={onStop}>
         Stop Camera
       </button>
     </div>

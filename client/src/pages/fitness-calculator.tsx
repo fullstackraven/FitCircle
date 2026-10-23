@@ -196,12 +196,12 @@ export default function FitnessCalculator({
 
   // BMI category and color
   const getBMICategory = (bmi: number) => {
-    if (bmi < 18.5) return { category: "Low", color: "rgb(59, 130, 246)" }; // blue
+    if (bmi < 18.5) return { category: "Low", color: "var(--bmi-blue)" }; // blue
     if (bmi >= 18.5 && bmi < 25)
-      return { category: "Average", color: "rgb(34, 197, 94)" }; // green
+      return { category: "Average", color: "var(--bmi-green)" }; // green
     if (bmi >= 25 && bmi < 30)
-      return { category: "Above Average", color: "rgb(245, 158, 11)" }; // amber
-    return { category: "High", color: "rgb(239, 68, 68)" }; // red
+      return { category: "Above Average", color: "var(--bmi-amber)" }; // amber
+    return { category: "High", color: "var(--bmi-red)" }; // red
   };
 
   // Calorie target based on goal
@@ -310,7 +310,7 @@ export default function FitnessCalculator({
 
         <div className="space-y-8">
           {inputError && (
-            <p role="alert" className="text-sm text-amber-300">
+            <p role="alert" className="text-sm text-warning-soft">
               {inputError}
             </p>
           )}
@@ -318,7 +318,7 @@ export default function FitnessCalculator({
           {userData.age === null && (
             <div
               role="status"
-              className="rounded-xl border border-amber-500/40 p-3 text-sm text-amber-200"
+              className="rounded-xl border border-amber-500/40 p-3 text-sm text-warning"
             >
               A saved age or date of birth is needed for calorie and macro
               targets. Existing targets are kept.
@@ -331,19 +331,19 @@ export default function FitnessCalculator({
           {/* Calorie Tracker Section */}
           <div className="fitcircle-card-lg">
             <div className="flex items-center space-x-3 mb-6">
-              <Target className="w-6 h-6 text-green-400" />
-              <h2 className="text-xl font-semibold text-white">
+              <Target className="w-6 h-6 text-accent-text" />
+              <h2 className="text-xl font-semibold text-strong">
                 Calorie Tracker
               </h2>
             </div>
 
             <div className="space-y-4">
               <div className="text-center">
-                <div className="type-metric text-3xl font-bold text-green-400 mb-2">
+                <div className="type-metric text-3xl font-bold text-accent-text mb-2">
                   {!calorieTarget ? "—" : calorieTarget.toLocaleString()}
                 </div>
-                <div className="text-slate-300">calories per day</div>
-                <div className="text-sm text-slate-400 mt-2">
+                <div className="text-supporting">calories per day</div>
+                <div className="text-sm text-muted-foreground mt-2">
                   {goalType === "lose"
                     ? `To lose ${goalRate} lb${goalRate !== "1" ? "s" : ""} per week`
                     : goalType === "gain"
@@ -354,44 +354,44 @@ export default function FitnessCalculator({
 
               {/* Activity Level Selection */}
               <div className="space-y-2">
-                <Label className="text-slate-300">Activity Level</Label>
+                <Label className="text-supporting">Activity Level</Label>
                 <Select
                   value={activityLevel}
                   onValueChange={(value) =>
                     changeSetting("activity", value, setActivityLevel)
                   }
                 >
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                  <SelectTrigger className="bg-surface-secondary border-control text-strong">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-700 border-slate-600">
+                  <SelectContent className="bg-surface-secondary border-control">
                     <SelectItem
                       value="sedentary"
-                      className="text-white hover:bg-slate-600"
+                      className="text-strong hover:bg-control-strong"
                     >
                       Sedentary (little/no exercise)
                     </SelectItem>
                     <SelectItem
                       value="light"
-                      className="text-white hover:bg-slate-600"
+                      className="text-strong hover:bg-control-strong"
                     >
                       Light (1-3 days/week)
                     </SelectItem>
                     <SelectItem
                       value="moderate"
-                      className="text-white hover:bg-slate-600"
+                      className="text-strong hover:bg-control-strong"
                     >
                       Moderate (3-5 days/week)
                     </SelectItem>
                     <SelectItem
                       value="very"
-                      className="text-white hover:bg-slate-600"
+                      className="text-strong hover:bg-control-strong"
                     >
                       Very Active (6-7 days/week)
                     </SelectItem>
                     <SelectItem
                       value="extremely"
-                      className="text-white hover:bg-slate-600"
+                      className="text-strong hover:bg-control-strong"
                     >
                       Extremely Active (2x/day)
                     </SelectItem>
@@ -408,13 +408,16 @@ export default function FitnessCalculator({
                 ].map((goal) => (
                   <button
                     key={goal.value}
+                    aria-pressed={goalType === goal.value}
+                    data-selected={goalType === goal.value}
+                    data-goal-color={goal.color}
                     onClick={() =>
                       changeSetting("objective", goal.value, setGoalType)
                     }
-                    className={`glass-control p-3 rounded-xl border-2 transition-colors text-sm flex items-center justify-center ${
+                    className={`calculator-goal-option glass-control p-3 rounded-xl border-2 transition-colors text-sm flex items-center justify-center ${
                       goalType === goal.value
-                        ? `border-${goal.color}-500 bg-${goal.color}-500/20 text-${goal.color}-400`
-                        : "border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500"
+                        ? `border-${goal.color}-500 bg-${goal.color}-500/20 ${goal.color === "green" ? "text-accent-text" : goal.color === "blue" ? "text-feature-blue" : "text-feature-red"}`
+                        : "border-control bg-surface-secondary text-supporting hover:border-control-muted-border"
                     }`}
                   >
                     {goal.label}
@@ -424,38 +427,38 @@ export default function FitnessCalculator({
 
               {goalType !== "maintain" && (
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Rate (lbs per week)</Label>
+                  <Label className="text-supporting">Rate (lbs per week)</Label>
                   <Select
                     value={goalRate}
                     onValueChange={(value) =>
                       changeSetting("rate", value, setGoalRate)
                     }
                   >
-                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <SelectTrigger className="bg-surface-secondary border-control text-strong">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-700 border-slate-600">
+                    <SelectContent className="bg-surface-secondary border-control">
                       <SelectItem
                         value="0.5"
-                        className="text-white hover:bg-slate-600"
+                        className="text-strong hover:bg-control-strong"
                       >
                         0.5 lbs/week
                       </SelectItem>
                       <SelectItem
                         value="1"
-                        className="text-white hover:bg-slate-600"
+                        className="text-strong hover:bg-control-strong"
                       >
                         1 lb/week
                       </SelectItem>
                       <SelectItem
                         value="1.5"
-                        className="text-white hover:bg-slate-600"
+                        className="text-strong hover:bg-control-strong"
                       >
                         1.5 lbs/week
                       </SelectItem>
                       <SelectItem
                         value="2"
-                        className="text-white hover:bg-slate-600"
+                        className="text-strong hover:bg-control-strong"
                       >
                         2 lbs/week
                       </SelectItem>
@@ -467,7 +470,7 @@ export default function FitnessCalculator({
           </div>
 
           <section className="fitcircle-card-lg">
-            <h2 className="text-xl font-semibold text-white mb-4">
+            <h2 className="text-xl font-semibold text-strong mb-4">
               Goal Weight
             </h2>
             <Label htmlFor="calculator-goal-weight">Goal weight (lbs)</Label>
@@ -483,28 +486,28 @@ export default function FitnessCalculator({
                   setWeightGoal(event.target.value);
                   setGoalSaved(false);
                 }}
-                className="bg-slate-700 border-slate-600 text-white"
+                className="bg-surface-secondary border-control text-strong"
               />
               <Button onClick={saveGoal}>Save</Button>
             </div>
             {goalError && (
-              <p role="alert" className="text-sm text-red-400 mt-2">
+              <p role="alert" className="text-sm text-feature-red mt-2">
                 {goalError}
               </p>
             )}
             {goalSaved && (
-              <p role="status" className="text-sm text-green-400 mt-2">
+              <p role="status" className="text-sm text-accent-text mt-2">
                 Goal saved
               </p>
             )}
             {savedWeightGoal && userData.weight > 0 && (
-              <div className="mt-4 text-sm text-slate-300">
+              <div className="mt-4 text-sm text-supporting">
                 <p>
                   {userData.weight} lb current · {savedWeightGoal} lb goal
                 </p>
                 {remainingWeight !== null && (
                   <p
-                    className="mt-1 text-green-400"
+                    className="mt-1 text-accent-text"
                     data-testid="weight-goal-status"
                   >
                     {remainingWeight === 0
@@ -523,8 +526,8 @@ export default function FitnessCalculator({
           {/* BMI Calculator Section */}
           <div className="fitcircle-card-lg">
             <div className="flex items-center space-x-3 mb-6">
-              <Activity className="w-6 h-6 text-blue-400" />
-              <h2 className="text-xl font-semibold text-white">
+              <Activity className="w-6 h-6 text-feature-blue" />
+              <h2 className="text-xl font-semibold text-strong">
                 BMI Calculator
               </h2>
             </div>
@@ -542,7 +545,7 @@ export default function FitnessCalculator({
                       cx="80"
                       cy="80"
                       r="70"
-                      stroke="rgb(71, 85, 105)"
+                      stroke="var(--bmi-track)"
                       strokeWidth="12"
                       fill="none"
                     />
@@ -558,16 +561,16 @@ export default function FitnessCalculator({
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="type-metric text-2xl font-bold text-white">
+                    <div className="type-metric text-2xl font-bold text-strong">
                       {bmi}
                     </div>
-                    <div className="text-sm text-slate-400">
+                    <div className="text-sm text-muted-foreground">
                       {bmiInfo.category}
                     </div>
                   </div>
                 </div>
 
-                <div className="text-sm text-slate-300 space-y-1">
+                <div className="text-sm text-supporting space-y-1">
                   <div>
                     Height: {Math.floor(userData.height / 12)}'
                     {userData.height % 12}"
@@ -577,12 +580,12 @@ export default function FitnessCalculator({
               </div>
             ) : (
               <div className="text-center py-8">
-                <div className="text-slate-400 mb-4">
+                <div className="text-muted-foreground mb-4">
                   Add height and weight in Measurements to see your BMI
                 </div>
                 <Button
                   onClick={() => navigate("/measurements")}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:bg-blue-700 text-on-action"
                 >
                   Go to Measurements
                 </Button>
@@ -593,8 +596,8 @@ export default function FitnessCalculator({
           {/* Macro Calculator Section */}
           <div className="fitcircle-card-lg">
             <div className="flex items-center space-x-3 mb-6">
-              <Calculator className="w-6 h-6 text-purple-400" />
-              <h2 className="text-xl font-semibold text-white">
+              <Calculator className="w-6 h-6 text-feature-purple" />
+              <h2 className="text-xl font-semibold text-strong">
                 Macro Calculator
               </h2>
             </div>
@@ -602,7 +605,7 @@ export default function FitnessCalculator({
             {/* Personal macro percentages */}
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div>
-                <Label htmlFor="macro-carbs" className="text-slate-300 text-sm">
+                <Label htmlFor="macro-carbs" className="text-supporting text-sm">
                   Carbs %
                 </Label>
                 <Input
@@ -613,7 +616,7 @@ export default function FitnessCalculator({
                   onChange={(e) =>
                     changeSetting("carbs", e.target.value, setCustomCarbs)
                   }
-                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  className="bg-surface-secondary border-control text-strong mt-1"
                   min="0"
                   max="100"
                 />
@@ -621,7 +624,7 @@ export default function FitnessCalculator({
               <div>
                 <Label
                   htmlFor="macro-protein"
-                  className="text-slate-300 text-sm"
+                  className="text-supporting text-sm"
                 >
                   Protein %
                 </Label>
@@ -633,13 +636,13 @@ export default function FitnessCalculator({
                   onChange={(e) =>
                     changeSetting("protein", e.target.value, setCustomProtein)
                   }
-                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  className="bg-surface-secondary border-control text-strong mt-1"
                   min="0"
                   max="100"
                 />
               </div>
               <div>
-                <Label htmlFor="macro-fat" className="text-slate-300 text-sm">
+                <Label htmlFor="macro-fat" className="text-supporting text-sm">
                   Fat %
                 </Label>
                 <Input
@@ -650,20 +653,20 @@ export default function FitnessCalculator({
                   onChange={(e) =>
                     changeSetting("fat", e.target.value, setCustomFat)
                   }
-                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  className="bg-surface-secondary border-control text-strong mt-1"
                   min="0"
                   max="100"
                 />
               </div>
             </div>
             {!macroPercentagesValid && (
-              <p role="alert" className="text-sm text-amber-200 mb-4">
+              <p role="alert" className="text-sm text-warning mb-4">
                 Enter percentages from 0 to 100 that total 100%. Saved targets
                 stay unchanged until the split is valid.
               </p>
             )}
             {targetSaveError && (
-              <p role="alert" className="text-sm text-red-400 mb-4">
+              <p role="alert" className="text-sm text-feature-red mb-4">
                 {targetSaveError}
               </p>
             )}
@@ -671,7 +674,7 @@ export default function FitnessCalculator({
             {/* Macro Breakdown */}
             <div className="space-y-4">
               <div className="text-center mb-4">
-                <div className="text-lg font-semibold text-white">
+                <div className="text-lg font-semibold text-strong">
                   {!calorieTarget ? "—" : calorieTarget.toLocaleString()}{" "}
                   calories/day
                 </div>
@@ -679,38 +682,38 @@ export default function FitnessCalculator({
 
               {/* Macro Cards */}
               <div className="grid grid-cols-3 gap-4">
-                <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
-                  <div className="text-orange-400 font-semibold mb-2">
+                <div className="glass-card bg-surface-secondary rounded-xl p-6 flex flex-col items-center justify-center">
+                  <div className="text-feature-orange font-semibold mb-2">
                     Carbs
                   </div>
-                  <div className="type-metric text-2xl font-bold text-white">
+                  <div className="type-metric text-2xl font-bold text-strong">
                     {!calorieTarget || !macroPercentagesValid
                       ? "—"
                       : macros.carbs.grams + "g"}
                   </div>
-                  <div className="text-sm text-slate-400">
+                  <div className="text-sm text-muted-foreground">
                     {macros.carbs.percent}%
                   </div>
                 </div>
-                <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
-                  <div className="text-red-400 font-semibold mb-2">Protein</div>
-                  <div className="type-metric text-2xl font-bold text-white">
+                <div className="glass-card bg-surface-secondary rounded-xl p-6 flex flex-col items-center justify-center">
+                  <div className="text-feature-red font-semibold mb-2">Protein</div>
+                  <div className="type-metric text-2xl font-bold text-strong">
                     {!calorieTarget || !macroPercentagesValid
                       ? "—"
                       : macros.protein.grams + "g"}
                   </div>
-                  <div className="text-sm text-slate-400">
+                  <div className="text-sm text-muted-foreground">
                     {macros.protein.percent}%
                   </div>
                 </div>
-                <div className="glass-card bg-slate-700 rounded-xl p-6 flex flex-col items-center justify-center">
-                  <div className="text-yellow-400 font-semibold mb-2">Fat</div>
-                  <div className="type-metric text-2xl font-bold text-white">
+                <div className="glass-card bg-surface-secondary rounded-xl p-6 flex flex-col items-center justify-center">
+                  <div className="text-feature-yellow font-semibold mb-2">Fat</div>
+                  <div className="type-metric text-2xl font-bold text-strong">
                     {!calorieTarget || !macroPercentagesValid
                       ? "—"
                       : macros.fat.grams + "g"}
                   </div>
-                  <div className="text-sm text-slate-400">
+                  <div className="text-sm text-muted-foreground">
                     {macros.fat.percent}%
                   </div>
                 </div>

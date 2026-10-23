@@ -187,7 +187,7 @@ export default function FoodDatabasePage() {
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-muted-foreground hover:text-strong transition-colors"
             data-testid="button-back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -199,20 +199,20 @@ export default function FoodDatabasePage() {
         {/* Search Bar */}
         <div className="mb-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
               type="text"
               aria-label="Search foods"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-slate-800 border-slate-700 text-white placeholder-slate-400 rounded-xl"
+              className="pl-10 bg-surface border-separator text-strong placeholder-muted-foreground rounded-xl"
               data-testid="input-search"
             />
           </div>
         </div>
 
         {/* Stats */}
-        <div className="mb-4 text-sm text-slate-400 text-center">
+        <div className="mb-4 text-sm text-muted-foreground text-center">
           {loading ? (
             'Loading...'
           ) : (
@@ -225,11 +225,11 @@ export default function FoodDatabasePage() {
         {/* Food List */}
         <div ref={scrollContainerRef} className="">
           {loading ? (
-            <div className="text-center text-slate-400 py-12">
+            <div className="text-center text-muted-foreground py-12">
               Loading food database...
             </div>
           ) : filteredFoods.length === 0 ? (
-            <div className="text-center text-slate-400 py-12">
+            <div className="text-center text-muted-foreground py-12">
               {searchQuery ? 'No foods found matching your search' : 'No foods in database'}
             </div>
           ) : (
@@ -241,12 +241,12 @@ export default function FoodDatabasePage() {
                 return (
                   <Card 
                     key={food.id}
-                    className="p-4 bg-slate-800 border-slate-700 rounded-xl relative"
+                    className="p-4 bg-surface border-separator rounded-xl relative"
                     data-testid={`card-food-${food.id}`}
                   >
                     {/* Custom Badge - Fixed to top-right */}
                     {isCustom && (
-                      <span className="absolute top-3 right-3 px-2 py-0.5 text-xs bg-green-600 text-white rounded-xl">
+                      <span className="absolute top-3 right-3 px-2 py-0.5 text-xs bg-action text-on-action rounded-xl">
                         Custom
                       </span>
                     )}
@@ -254,33 +254,33 @@ export default function FoodDatabasePage() {
                     <div className="flex items-center justify-between gap-4">
                       {/* Food Info */}
                       <div className="flex-1 min-w-0 pr-16">
-                        <h3 className="font-medium text-white mb-1" data-testid={`text-name-${food.id}`}>
+                        <h3 className="font-medium text-strong mb-1" data-testid={`text-name-${food.id}`}>
                           {food.name}
                         </h3>
                         {food.brand && (
-                          <p className="text-sm text-slate-400 mb-2" data-testid={`text-brand-${food.id}`}>
+                          <p className="text-sm text-muted-foreground mb-2" data-testid={`text-brand-${food.id}`}>
                             {food.brand}
                           </p>
                         )}
                         
                         {/* Macros */}
                         <div className="flex flex-wrap gap-2 text-xs">
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl" data-testid={`text-calories-${food.id}`}>
-                            <span className="text-slate-400">Cal:</span> <span className="text-white font-medium">{food.calories}</span>
+                          <div className="px-2 py-1 bg-surface-secondary rounded-xl" data-testid={`text-calories-${food.id}`}>
+                            <span className="text-muted-foreground">Cal:</span> <span className="text-strong font-medium">{food.calories}</span>
                           </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl" data-testid={`text-carbs-${food.id}`}>
-                            <span className="text-slate-400">C:</span> <span className="text-white font-medium">{food.carbs}g</span>
+                          <div className="px-2 py-1 bg-surface-secondary rounded-xl" data-testid={`text-carbs-${food.id}`}>
+                            <span className="text-muted-foreground">C:</span> <span className="text-strong font-medium">{food.carbs}g</span>
                           </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl" data-testid={`text-protein-${food.id}`}>
-                            <span className="text-slate-400">P:</span> <span className="text-white font-medium">{food.protein}g</span>
+                          <div className="px-2 py-1 bg-surface-secondary rounded-xl" data-testid={`text-protein-${food.id}`}>
+                            <span className="text-muted-foreground">P:</span> <span className="text-strong font-medium">{food.protein}g</span>
                           </div>
-                          <div className="px-2 py-1 bg-slate-700 rounded-xl" data-testid={`text-fat-${food.id}`}>
-                            <span className="text-slate-400">F:</span> <span className="text-white font-medium">{food.fat}g</span>
+                          <div className="px-2 py-1 bg-surface-secondary rounded-xl" data-testid={`text-fat-${food.id}`}>
+                            <span className="text-muted-foreground">F:</span> <span className="text-strong font-medium">{food.fat}g</span>
                           </div>
                         </div>
                         
                         {/* Serving Size */}
-                        <div className="text-xs text-slate-500 mt-2">
+                        <div className="text-xs text-dim mt-2">
                           Per {food.quantity}{food.unit}
                         </div>
                       </div>
@@ -291,7 +291,7 @@ export default function FoodDatabasePage() {
                           onClick={() => handleEdit(food)}
                           variant="ghost"
                           size="sm"
-                          className="text-blue-400 hover:text-blue-300 hover:bg-blue-950"
+                          className="text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint"
                           data-testid={`button-edit-${food.id}`}
                         >
                           <Pencil className="w-4 h-4" />
@@ -300,7 +300,7 @@ export default function FoodDatabasePage() {
                           onClick={() => handleDelete(food.id, food.name)}
                           variant="ghost"
                           size="sm"
-                          className="text-red-400 hover:text-red-300 hover:bg-red-950"
+                          className="text-feature-red hover:text-feature-red-soft hover:bg-feature-red-tint"
                           data-testid={`button-delete-${food.id}`}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -320,14 +320,14 @@ export default function FoodDatabasePage() {
                     disabled={currentPage === 1}
                     variant="ghost"
                     size="sm"
-                    className="text-slate-400 hover:text-white disabled:opacity-30"
+                    className="text-muted-foreground hover:text-strong disabled:opacity-30"
                     data-testid="button-prev-page"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </Button>
                   
-                  <div className="flex items-center gap-2 text-sm text-slate-400">
-                    <span className="font-medium text-white">{currentPage}</span>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span className="font-medium text-strong">{currentPage}</span>
                     <span>•••</span>
                     <span>{totalPages}</span>
                   </div>
@@ -337,7 +337,7 @@ export default function FoodDatabasePage() {
                     disabled={currentPage === totalPages}
                     variant="ghost"
                     size="sm"
-                    className="text-slate-400 hover:text-white disabled:opacity-30"
+                    className="text-muted-foreground hover:text-strong disabled:opacity-30"
                     data-testid="button-next-page"
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -351,7 +351,7 @@ export default function FoodDatabasePage() {
 
       {/* Edit Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-md overflow-y-auto">
+        <DialogContent className="bg-canvas border-separator text-strong max-w-md overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Food</DialogTitle>
           </DialogHeader>
@@ -365,7 +365,7 @@ export default function FoodDatabasePage() {
                   id="edit-name"
                   value={editingFood.name}
                   onChange={(e) => setEditingFood({ ...editingFood, name: e.target.value })}
-                  className="bg-slate-800 border-slate-700 text-white"
+                  className="bg-surface border-separator text-strong"
                   data-testid="input-edit-name"
                 />
               </div>
@@ -377,7 +377,7 @@ export default function FoodDatabasePage() {
                   id="edit-brand"
                   value={editingFood.brand || ''}
                   onChange={(e) => setEditingFood({ ...editingFood, brand: e.target.value })}
-                  className="bg-slate-800 border-slate-700 text-white"
+                  className="bg-surface border-separator text-strong"
                   data-testid="input-edit-brand"
                 />
               </div>
@@ -391,7 +391,7 @@ export default function FoodDatabasePage() {
                     type="number"
                     value={editingFood.quantity}
                     onChange={(e) => setEditingFood({ ...editingFood, quantity: parseFloat(e.target.value) || 0 })}
-                    className="bg-slate-800 border-slate-700 text-white"
+                    className="bg-surface border-separator text-strong"
                     data-testid="input-edit-quantity"
                   />
                 </div>
@@ -401,10 +401,10 @@ export default function FoodDatabasePage() {
                     value={editingFood.unit}
                     onValueChange={(value: FoodUnit) => setEditingFood({ ...editingFood, unit: value })}
                   >
-                    <SelectTrigger className="bg-slate-800 border-slate-700 text-white" data-testid="select-edit-unit">
+                    <SelectTrigger className="bg-surface border-separator text-strong" data-testid="select-edit-unit">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                    <SelectContent className="bg-surface border-separator text-strong">
                       <SelectItem value="g">g</SelectItem>
                       <SelectItem value="oz">oz</SelectItem>
                       <SelectItem value="cup">cup</SelectItem>
@@ -426,7 +426,7 @@ export default function FoodDatabasePage() {
                     type="number"
                     value={editingFood.calories}
                     onChange={(e) => setEditingFood({ ...editingFood, calories: parseFloat(e.target.value) || 0 })}
-                    className="bg-slate-800 border-slate-700 text-white"
+                    className="bg-surface border-separator text-strong"
                     data-testid="input-edit-calories"
                   />
                 </div>
@@ -437,7 +437,7 @@ export default function FoodDatabasePage() {
                     type="number"
                     value={editingFood.carbs}
                     onChange={(e) => setEditingFood({ ...editingFood, carbs: parseFloat(e.target.value) || 0 })}
-                    className="bg-slate-800 border-slate-700 text-white"
+                    className="bg-surface border-separator text-strong"
                     data-testid="input-edit-carbs"
                   />
                 </div>
@@ -448,7 +448,7 @@ export default function FoodDatabasePage() {
                     type="number"
                     value={editingFood.protein}
                     onChange={(e) => setEditingFood({ ...editingFood, protein: parseFloat(e.target.value) || 0 })}
-                    className="bg-slate-800 border-slate-700 text-white"
+                    className="bg-surface border-separator text-strong"
                     data-testid="input-edit-protein"
                   />
                 </div>
@@ -459,7 +459,7 @@ export default function FoodDatabasePage() {
                     type="number"
                     value={editingFood.fat}
                     onChange={(e) => setEditingFood({ ...editingFood, fat: parseFloat(e.target.value) || 0 })}
-                    className="bg-slate-800 border-slate-700 text-white"
+                    className="bg-surface border-separator text-strong"
                     data-testid="input-edit-fat"
                   />
                 </div>
@@ -474,7 +474,7 @@ export default function FoodDatabasePage() {
                     type="number"
                     value={editingFood.fiber || ''}
                     onChange={(e) => setEditingFood({ ...editingFood, fiber: e.target.value ? parseFloat(e.target.value) : undefined })}
-                    className="bg-slate-800 border-slate-700 text-white"
+                    className="bg-surface border-separator text-strong"
                     data-testid="input-edit-fiber"
                   />
                 </div>
@@ -485,7 +485,7 @@ export default function FoodDatabasePage() {
                     type="number"
                     value={editingFood.sugar || ''}
                     onChange={(e) => setEditingFood({ ...editingFood, sugar: e.target.value ? parseFloat(e.target.value) : undefined })}
-                    className="bg-slate-800 border-slate-700 text-white"
+                    className="bg-surface border-separator text-strong"
                     data-testid="input-edit-sugar"
                   />
                 </div>
@@ -496,7 +496,7 @@ export default function FoodDatabasePage() {
                     type="number"
                     value={editingFood.sodium || ''}
                     onChange={(e) => setEditingFood({ ...editingFood, sodium: e.target.value ? parseFloat(e.target.value) : undefined })}
-                    className="bg-slate-800 border-slate-700 text-white"
+                    className="bg-surface border-separator text-strong"
                     data-testid="input-edit-sodium"
                   />
                 </div>
@@ -507,7 +507,7 @@ export default function FoodDatabasePage() {
                     type="number"
                     value={editingFood.saturatedFat || ''}
                     onChange={(e) => setEditingFood({ ...editingFood, saturatedFat: e.target.value ? parseFloat(e.target.value) : undefined })}
-                    className="bg-slate-800 border-slate-700 text-white"
+                    className="bg-surface border-separator text-strong"
                     data-testid="input-edit-saturatedFat"
                   />
                 </div>
@@ -521,14 +521,14 @@ export default function FoodDatabasePage() {
                     setEditingFood(null);
                   }}
                   variant="outline"
-                  className="flex-1 border-slate-700 text-slate-300 hover:bg-slate-800"
+                  className="flex-1 border-separator text-supporting hover:bg-surface"
                   data-testid="button-cancel-edit"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSaveEdit}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action"
                   data-testid="button-save-edit"
                 >
                   Save Changes
