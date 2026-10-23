@@ -197,26 +197,26 @@ export default function RestoreCustomFoodsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-6">
+    <div className="min-h-screen bg-canvas-deep text-strong p-6">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Button
             onClick={() => navigate('/food-tracker')}
             variant="ghost"
             size="sm"
-            className="text-slate-400 hover:text-white"
+            className="text-muted-foreground hover:text-strong"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <h1 className="text-2xl font-bold">Restore Custom Foods</h1>
         </div>
 
-        <div className="bg-slate-900 rounded-xl p-6 mb-6">
-          <p className="text-slate-300 mb-4">
+        <div className="bg-canvas rounded-xl p-6 mb-6">
+          <p className="text-supporting mb-4">
             This will restore {customFoods.length} custom foods to your database.
           </p>
 
-          <div className="mb-4 text-sm text-slate-400">
+          <div className="mb-4 text-sm text-muted-foreground">
             <p className="font-semibold mb-2">Foods to be restored:</p>
             <ul className="list-disc list-inside space-y-1 max-h-96 overflow-y-auto">
               {customFoods.map((food, idx) => (
@@ -230,7 +230,7 @@ export default function RestoreCustomFoodsPage() {
           <Button
             onClick={handleRestore}
             disabled={isRestoring}
-            className="w-full bg-green-600 hover:bg-green-700"
+            className="w-full bg-action hover:bg-action-hover text-on-action-soft"
           >
             {isRestoring ? 'Restoring...' : 'Restore All Custom Foods'}
           </Button>
@@ -238,8 +238,8 @@ export default function RestoreCustomFoodsPage() {
           {status && (
             <div className={`mt-4 p-3 rounded-xl text-sm text-center ${
               status.includes('Success')
-                ? 'bg-green-900/50 text-green-300 border border-green-700'
-                : 'bg-blue-900/50 text-blue-300 border border-blue-700'
+                ? 'bg-feature-green-tint/50 text-accent-soft border border-green-700'
+                : 'bg-feature-blue-deep-tint/50 text-feature-blue-soft border border-blue-700'
             }`}>
               {status}
             </div>

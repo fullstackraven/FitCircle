@@ -1,0 +1,145 @@
+{
+  "readings": [
+    {
+      "text": "FitCircle",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "Oct 18 - 24, 2026",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "WORKOUTS",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Sun",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "0",
+      "ratio": 6.03,
+      "required": 4.5
+    },
+    {
+      "text": "Mon",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "7",
+      "ratio": 6.03,
+      "required": 4.5
+    },
+    {
+      "text": "Tue",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "0",
+      "ratio": 6.03,
+      "required": 4.5
+    },
+    {
+      "text": "Wed",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "0",
+      "ratio": 6.03,
+      "required": 4.5
+    },
+    {
+      "text": "Thu",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "0",
+      "ratio": 6.03,
+      "required": 4.5
+    },
+    {
+      "text": "Fri",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "0",
+      "ratio": 6.03,
+      "required": 4.5
+    },
+    {
+      "text": "Sat",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "0",
+      "ratio": 6.03,
+      "required": 4.5
+    },
+    {
+      "text": "Total Reps: 7",
+      "ratio": 6.03,
+      "required": 4.5
+    },
+    {
+      "text": "Workout Statistics",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Recent Activity",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Today",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "PUSH",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "7 reps",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 15.39,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

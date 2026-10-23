@@ -101,7 +101,7 @@ export default function FastingPage() {
   // Backward compatibility functions for existing code
   const getHeatBarColor = (hours: number): string => {
     if (hours <= 1) return "bg-blue-500";
-    if (hours <= 6) return "bg-green-500";
+    if (hours <= 6) return "bg-action-selected";
     if (hours <= 12) return "bg-yellow-500";
     if (hours <= 18) return "bg-orange-500";
     return "bg-red-500";
@@ -214,11 +214,11 @@ export default function FastingPage() {
     <>
       <WellnessPageShell
         title="Fasting"
-        accent="#f59e0b"
+        accent="var(--wellness-amber)"
         onGoal={() => setIsGoalModalOpen(true)}
       >
         {error && (
-          <p role="alert" className="text-sm text-amber-300">
+          <p role="alert" className="text-sm text-warning-soft">
             {error}
           </p>
         )}
@@ -250,7 +250,7 @@ export default function FastingPage() {
               <dd>—</dd>
             </div>
           </dl>
-          <p className="text-xs text-slate-400 mt-3">
+          <p className="text-xs text-muted-foreground mt-3">
             Completed today: {stats.todayHours.toFixed(1)} hr ·{" "}
             {Math.round(stats.percentage)}% of duration goal
           </p>
@@ -316,13 +316,13 @@ export default function FastingPage() {
                         className="wellness-record-row flex justify-between items-center text-sm"
                       >
                         <div className="flex items-center space-x-3 min-w-0">
-                          <span className="text-slate-300">
+                          <span className="text-supporting">
                             {fast.startDate} {fast.startTime} → {fast.endDate}{" "}
                             {fast.endTime}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <span className="text-amber-400 font-medium text-sm">
+                          <span className="text-feature-amber font-medium text-sm">
                             {hours.toFixed(1)}h
                           </span>
                         </div>
@@ -331,7 +331,7 @@ export default function FastingPage() {
                   });
               } else {
                 return (
-                  <div className="text-center text-slate-500 py-4 text-sm">
+                  <div className="text-center text-dim py-4 text-sm">
                     No fasts today yet
                   </div>
                 );
@@ -345,7 +345,7 @@ export default function FastingPage() {
           <h3 className="text-lg font-semibold">History</h3>
           <div className="space-y-3">
             {Object.keys(monthlyLogs).length === 0 ? (
-              <div className="text-center py-8 text-slate-400">
+              <div className="text-center py-8 text-muted-foreground">
                 <p>No fasting logs yet.</p>
                 <p className="text-sm mt-2">
                   Start tracking your intermittent fasting journey!
@@ -400,24 +400,24 @@ export default function FastingPage() {
                         return (
                           <div
                             key={log.id}
-                            className="bg-slate-800 rounded-xl p-3"
+                            className="bg-surface rounded-xl p-3"
                           >
                             <div className="flex justify-between items-start mb-2">
-                              <div className="text-sm text-slate-300">
+                              <div className="text-sm text-supporting">
                                 {loggedDate} at {loggedTime}
                               </div>
                               <div className="flex space-x-2">
                                 <button
                                   aria-label="Edit fast"
                                   onClick={() => handleEditLog(log)}
-                                  className="text-slate-400 hover:text-blue-400 transition-colors"
+                                  className="text-muted-foreground hover:text-feature-blue transition-colors"
                                 >
                                   <Edit className="w-4 h-4" />
                                 </button>
                                 <button
                                   aria-label="Delete fast"
                                   onClick={() => handleDeleteLog(log.id)}
-                                  className="text-slate-400 hover:text-red-400 transition-colors"
+                                  className="text-muted-foreground hover:text-feature-red transition-colors"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
@@ -427,7 +427,7 @@ export default function FastingPage() {
                             <div className="text-center">
                               {/* Heat Bar */}
                               <div className="mb-2">
-                                <div className="w-full bg-slate-600 rounded-full h-2">
+                                <div className="w-full bg-control-strong rounded-full h-2">
                                   <div
                                     className={`h-2 rounded-full ${getHeatBarColor(hours)}`}
                                     title={
@@ -441,12 +441,12 @@ export default function FastingPage() {
                               </div>
 
                               {/* Duration */}
-                              <div className="text-lg font-bold text-amber-400 type-metric mb-2">
+                              <div className="text-lg font-bold text-feature-amber type-metric mb-2">
                                 {formatDuration(log.duration)}
                               </div>
 
                               {/* Fast Period */}
-                              <div className="text-sm text-slate-400">
+                              <div className="text-sm text-muted-foreground">
                                 {getDisplayDate(log.startDate)} -{" "}
                                 {getDisplayDate(log.endDate)}
                               </div>
@@ -468,13 +468,13 @@ export default function FastingPage() {
           title="Fasting Goal"
           onDismiss={() => setIsGoalModalOpen(false)}
         >
-          <div className="glass-panel bg-slate-800 rounded-xl p-6 w-full max-w-lg">
+          <div className="glass-panel bg-surface rounded-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-white">Fasting Goal</h3>
+              <h3 className="text-lg font-semibold text-strong">Fasting Goal</h3>
               <button
                 aria-label="Close"
                 onClick={() => setIsGoalModalOpen(false)}
-                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg"
+                className="p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -487,7 +487,7 @@ export default function FastingPage() {
                   stats.completedAverage,
                   Number(goalHoursInput),
                 )}
-                color="rgb(245, 158, 11)"
+                color="var(--bmi-amber)"
                 size={120}
                 currentValue={stats.completedAverage}
                 goalValue={parseFloat(goalHoursInput) || 0}
@@ -500,7 +500,7 @@ export default function FastingPage() {
             {/* Goal Input Form */}
             <div className="space-y-4">
               <div>
-                <Label htmlFor="goalHours" className="text-slate-300">
+                <Label htmlFor="goalHours" className="text-supporting">
                   Goal Hours per Fast
                 </Label>
                 <Input
@@ -510,11 +510,11 @@ export default function FastingPage() {
                   onChange={(e) => setGoalHoursInput(e.target.value)}
                   onFocus={() => setGoalHoursFocused(true)}
                   onBlur={() => setGoalHoursFocused(false)}
-                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  className="bg-surface-secondary border-control text-strong mt-1"
                 />
               </div>
               <div>
-                <Label htmlFor="maxHours" className="text-slate-300">
+                <Label htmlFor="maxHours" className="text-supporting">
                   Maximum Fasting Hours
                 </Label>
                 <Input
@@ -531,9 +531,9 @@ export default function FastingPage() {
                     }
                   }}
                   onBlur={() => setMaxHoursFocused(false)}
-                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  className="bg-surface-secondary border-control text-strong mt-1"
                 />
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Heat-bar scale only; achievement uses Goal Hours per Fast
                 </p>
               </div>
@@ -541,13 +541,13 @@ export default function FastingPage() {
                 <Button
                   variant="outline"
                   onClick={() => setIsGoalModalOpen(false)}
-                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className="flex-1 border-control text-supporting hover:bg-surface-secondary"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSetGoal}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action-soft"
                 >
                   Save Settings
                 </Button>
@@ -560,7 +560,7 @@ export default function FastingPage() {
       {/* Log Fast Dialog */}
       <Dialog open={isFastingDialogOpen} onOpenChange={setIsFastingDialogOpen}>
         <DialogContent
-          className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl"
+          className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <DialogTitle className="text-lg font-semibold text-center">
@@ -573,7 +573,7 @@ export default function FastingPage() {
           <div className="space-y-4">
             {/* Start Date & Time */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-supporting mb-2">
                 Start Fast
               </label>
               <div className="space-y-2 max-w-[280px] mx-auto">
@@ -581,20 +581,20 @@ export default function FastingPage() {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white text-base"
+                  className="bg-surface-secondary border-control text-strong text-base"
                 />
                 <Input
                   type="time"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white text-base"
+                  className="bg-surface-secondary border-control text-strong text-base"
                 />
               </div>
             </div>
 
             {/* End Date & Time */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-supporting mb-2">
                 End Fast
               </label>
               <div className="space-y-2 max-w-[280px] mx-auto">
@@ -602,13 +602,13 @@ export default function FastingPage() {
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white text-base"
+                  className="bg-surface-secondary border-control text-strong text-base"
                 />
                 <Input
                   type="time"
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white text-base"
+                  className="bg-surface-secondary border-control text-strong text-base"
                 />
               </div>
             </div>
@@ -616,13 +616,13 @@ export default function FastingPage() {
             {/* Duration Display */}
             {currentDuration > 0 && (
               <div className="text-center">
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-supporting mb-2">
                   Duration
                 </label>
-                <div className="bg-slate-700 rounded-xl p-4">
+                <div className="bg-surface-secondary rounded-xl p-4">
                   {/* Heat Bar */}
                   <div className="mb-2">
-                    <div className="w-full bg-slate-600 rounded-full h-2">
+                    <div className="w-full bg-control-strong rounded-full h-2">
                       <div
                         className={`h-2 rounded-full transition-all duration-500 ${getHeatBarColor(currentDuration / 60)}`}
                         title={
@@ -635,7 +635,7 @@ export default function FastingPage() {
                     </div>
                   </div>
                   {/* Duration Text */}
-                  <div className="type-metric text-2xl font-bold text-white">
+                  <div className="type-metric text-2xl font-bold text-strong">
                     {formatDuration(currentDuration)}
                   </div>
                 </div>
@@ -647,13 +647,13 @@ export default function FastingPage() {
               <Button
                 onClick={handleCancelEdit}
                 variant="outline"
-                className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                className="flex-1 border-control text-supporting hover:bg-surface-secondary"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleLogFast}
-                className="flex-1 bg-green-600 hover:bg-green-700"
+                className="flex-1 bg-action hover:bg-action-hover text-on-action"
               >
                 {editingLog ? "Update Fast" : "Log Fast"}
               </Button>

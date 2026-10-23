@@ -300,11 +300,11 @@ export default function MeditationPage() {
     <>
       <WellnessPageShell
         title="Meditation"
-        accent="#a855f7"
+        accent="var(--wellness-purple)"
         onGoal={() => setIsGoalModalOpen(true)}
       >
         {error && (
-          <p role="alert" className="text-sm text-amber-300">
+          <p role="alert" className="text-sm text-warning-soft">
             {error}
           </p>
         )}
@@ -315,12 +315,12 @@ export default function MeditationPage() {
             title="Session Complete"
             onDismiss={() => setShowCompletion(false)}
           >
-            <div className="glass-panel bg-slate-800 rounded-xl p-8 text-center max-w-sm mx-4 border border-purple-500">
+            <div className="glass-panel bg-surface rounded-xl p-8 text-center max-w-sm mx-4 border border-purple-500">
               <div className="text-6xl mb-4">🧘‍♂️</div>
-              <h2 className="text-2xl font-bold text-white mb-2">
+              <h2 className="text-2xl font-bold text-strong mb-2">
                 Session Complete!
               </h2>
-              <p className="text-slate-300">
+              <p className="text-supporting">
                 Well done on completing your meditation
               </p>
             </div>
@@ -347,7 +347,7 @@ export default function MeditationPage() {
                   cx="120"
                   cy="120"
                   r="104"
-                  stroke="rgba(100, 116, 139, 0.3)"
+                  stroke="var(--meditation-track)"
                   strokeWidth="16"
                   fill="none"
                 />
@@ -356,7 +356,7 @@ export default function MeditationPage() {
                   cx="120"
                   cy="120"
                   r="104"
-                  stroke="rgb(168, 85, 247)"
+                  stroke="var(--wellness-purple)"
                   strokeWidth="16"
                   fill="none"
                   strokeLinecap="round"
@@ -367,7 +367,7 @@ export default function MeditationPage() {
                   }
                   className="transition-all duration-1000 ease-linear"
                   style={{
-                    filter: "drop-shadow(0 0 20px rgba(168, 85, 247, 0.3))",
+                    filter: "var(--meditation-glow)",
                   }}
                 />
               </svg>
@@ -375,10 +375,10 @@ export default function MeditationPage() {
               {/* Time display */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="type-metric text-4xl font-bold text-white mb-2">
+                  <div className="type-metric text-4xl font-bold text-strong mb-2">
                     {formatTime(timeLeft)}
                   </div>
-                  <div className="text-sm text-slate-400">
+                  <div className="text-sm text-muted-foreground">
                     {isPaused ? "Paused" : "Meditating..."}
                   </div>
                 </div>
@@ -388,7 +388,7 @@ export default function MeditationPage() {
         </div>
 
         {!isActive && isGoalReached() && (
-          <div className="text-purple-400 font-medium text-center -mt-4 mb-6">
+          <div className="text-feature-purple font-medium text-center -mt-4 mb-6">
             🧘‍♂️ Daily goal achieved!
           </div>
         )}
@@ -420,7 +420,7 @@ export default function MeditationPage() {
                 <Button
                   onClick={pauseMeditation}
                   variant="outline"
-                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className="border-control text-supporting hover:bg-surface-secondary"
                 >
                   <Pause className="w-4 h-4 mr-2" />
                   Pause
@@ -428,7 +428,7 @@ export default function MeditationPage() {
               ) : (
                 <Button
                   onClick={resumeMeditation}
-                  className="bg-green-600 hover:bg-green-700"
+                  className="bg-action hover:bg-action-hover text-on-action-soft"
                 >
                   <Play className="w-4 h-4 mr-2" />
                   Resume
@@ -437,7 +437,7 @@ export default function MeditationPage() {
               <Button
                 onClick={stopMeditation}
                 variant="outline"
-                className="border-red-600 text-red-400 hover:bg-red-900/20"
+                className="border-red-600 text-feature-red hover:bg-feature-red-deep-tint/20"
               >
                 <Square className="w-4 h-4 mr-2" />
                 Stop
@@ -459,11 +459,11 @@ export default function MeditationPage() {
                     className="wellness-record-row flex justify-between items-center text-sm relative"
                   >
                     <div className="flex items-center space-x-3">
-                      <span className="text-slate-400">{session.time}</span>
-                      <span className="text-slate-300">Meditation</span>
+                      <span className="text-muted-foreground">{session.time}</span>
+                      <span className="text-supporting">Meditation</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="text-purple-400 font-medium text-sm">
+                      <span className="text-feature-purple font-medium text-sm">
                         {session.duration}min
                       </span>
                       <WellnessEntryActions
@@ -484,7 +484,7 @@ export default function MeditationPage() {
                   </div>
                 ))
             ) : (
-              <div className="text-center text-slate-500 py-4 text-sm">
+              <div className="text-center text-dim py-4 text-sm">
                 No meditation sessions today yet
               </div>
             )}
@@ -496,7 +496,7 @@ export default function MeditationPage() {
           <h3 className="text-lg font-semibold">History</h3>
           <div className="space-y-3">
             {Object.keys(dailyLogs).length === 0 ? (
-              <div className="text-center py-8 text-slate-400">
+              <div className="text-center py-8 text-muted-foreground">
                 <p>No meditation sessions yet.</p>
                 <p className="text-sm mt-2">
                   Complete a meditation session to see your log here.
@@ -532,7 +532,7 @@ export default function MeditationPage() {
                         .map((log) => (
                           <div key={log.date} className="fitcircle-card ml-4">
                             <div className="flex justify-between items-center mb-3">
-                              <span className="text-white font-medium">
+                              <span className="text-strong font-medium">
                                 {(() => {
                                   try {
                                     // Handle both YYYY-MM-DD and other date formats
@@ -565,12 +565,12 @@ export default function MeditationPage() {
                                 })()}
                               </span>
                               <div className="flex items-center space-x-2">
-                                <span className="text-purple-400 font-semibold text-sm">
+                                <span className="text-feature-purple font-semibold text-sm">
                                   {log.totalMinutes}min
                                 </span>
                               </div>
                             </div>
-                            <div className="text-xs text-slate-400 mb-2">
+                            <div className="text-xs text-muted-foreground mb-2">
                               {log.sessions.length} sessions
                             </div>
 
@@ -585,15 +585,15 @@ export default function MeditationPage() {
                                   className="wellness-record-row flex justify-between items-center text-xs"
                                 >
                                   <div className="flex items-center space-x-2">
-                                    <span className="text-slate-500">
+                                    <span className="text-dim">
                                       {session.time}
                                     </span>
-                                    <span className="text-slate-400">
+                                    <span className="text-muted-foreground">
                                       Meditation
                                     </span>
                                   </div>
                                   <div className="flex items-center space-x-1">
-                                    <span className="text-slate-300">
+                                    <span className="text-supporting">
                                       {session.duration}min
                                     </span>
                                     <WellnessEntryActions
@@ -628,7 +628,7 @@ export default function MeditationPage() {
                                     }
                                     setExpandedDays(newExpanded);
                                   }}
-                                  className="text-xs text-slate-500 hover:text-slate-300 text-center mt-1 w-full transition-colors"
+                                  className="text-xs text-dim hover:text-supporting text-center mt-1 w-full transition-colors"
                                 >
                                   {expandedDays.has(log.date)
                                     ? "Show less"
@@ -654,15 +654,15 @@ export default function MeditationPage() {
           title="Meditation Goal"
           onDismiss={() => setIsGoalModalOpen(false)}
         >
-          <div className="glass-panel bg-slate-800 rounded-xl p-6 w-full max-w-lg">
+          <div className="glass-panel bg-surface rounded-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-white">
+              <h3 className="text-lg font-semibold text-strong">
                 Meditation Goal
               </h3>
               <button
                 aria-label="Close"
                 onClick={() => setIsGoalModalOpen(false)}
-                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg"
+                className="p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -675,7 +675,7 @@ export default function MeditationPage() {
                   getTodayMinutes(),
                   Number(goalMinutesInput),
                 )}
-                color="rgb(147, 51, 234)"
+                color="var(--goal-purple)"
                 size={120}
                 currentValue={getTodayMinutes()}
                 goalValue={parseFloat(goalMinutesInput) || 0}
@@ -688,7 +688,7 @@ export default function MeditationPage() {
             {/* Goal Input Form */}
             <div className="space-y-4">
               <div>
-                <Label htmlFor="goalMinutes" className="text-slate-300">
+                <Label htmlFor="goalMinutes" className="text-supporting">
                   Daily Meditation Goal (minutes)
                 </Label>
                 <Input
@@ -698,20 +698,20 @@ export default function MeditationPage() {
                   onChange={(e) => setGoalMinutesInput(e.target.value)}
                   onFocus={() => setGoalMinutesFocused(true)}
                   onBlur={() => setGoalMinutesFocused(false)}
-                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  className="bg-surface-secondary border-control text-strong mt-1"
                 />
               </div>
               <div className="flex space-x-3 pt-4">
                 <Button
                   variant="outline"
                   onClick={() => setIsGoalModalOpen(false)}
-                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className="flex-1 border-control text-supporting hover:bg-surface-secondary"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSetGoal}
-                  className="flex-1 bg-purple-600 hover:bg-purple-700"
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-on-action-soft"
                 >
                   Set Goal
                 </Button>
@@ -727,7 +727,7 @@ export default function MeditationPage() {
           if (!open) setEditingSession(null);
         }}
       >
-        <DialogContent className="bg-slate-800 border-slate-700 text-white rounded-2xl">
+        <DialogContent className="bg-surface border-separator text-strong rounded-2xl">
           <DialogTitle>Edit Meditation</DialogTitle>
           <DialogDescription className="sr-only">
             Edit recorded session duration
@@ -745,7 +745,7 @@ export default function MeditationPage() {
             }
           />
           {error && (
-            <p role="alert" className="text-amber-300 text-sm">
+            <p role="alert" className="text-warning-soft text-sm">
               {error}
             </p>
           )}
@@ -773,7 +773,7 @@ export default function MeditationPage() {
         open={isMeditationDialogOpen}
         onOpenChange={setIsMeditationDialogOpen}
       >
-        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl">
+        <DialogContent className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl">
           <DialogTitle className="text-lg font-semibold text-center">
             Start Meditation
           </DialogTitle>
@@ -782,7 +782,7 @@ export default function MeditationPage() {
           </DialogDescription>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-supporting mb-2">
                 Duration (minutes)
               </label>
               <Input
@@ -792,7 +792,7 @@ export default function MeditationPage() {
                 onFocus={() => setInputMinutesFocused(true)}
                 onBlur={() => setInputMinutesFocused(false)}
                 aria-label="Duration (minutes)"
-                className="bg-slate-700 border-slate-600 text-white text-center"
+                className="bg-surface-secondary border-control text-strong text-center"
                 min="1"
               />
             </div>
@@ -818,7 +818,7 @@ export default function MeditationPage() {
                 startMeditation();
                 setIsMeditationDialogOpen(false);
               }}
-              className="w-full bg-purple-600 hover:bg-purple-700"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-on-action"
               data-testid="button-start-meditation"
             >
               <Play className="w-4 h-4 mr-2" />

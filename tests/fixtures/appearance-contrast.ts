@@ -23,7 +23,8 @@ export async function textContrast(page: Page) {
         .reduce((s, x, i) => s + x * [0.2126, 0.7152, 0.0722][i], 0);
     const scope =
       document.querySelector('[role="dialog"],[role="alertdialog"]') ??
-      document.querySelector(".app-shell")!;
+      document.querySelector(".app-shell") ??
+      document.body;
     const readings: { text: string; ratio: number; required: number }[] = [];
     for (const el of [scope, ...scope.querySelectorAll("*")]) {
       const text = Array.from(el.childNodes)

@@ -95,10 +95,10 @@ export function WellnessProgressHero({
             / {fmt(amount(target))} {unit}
           </span>
         </p>
-        <p className="text-sm text-slate-400 mt-1">{period}</p>
+        <p className="text-sm text-muted-foreground mt-1">{period}</p>
         <p className="text-sm mt-3 wellness-accent">{status}</p>
         {!inactive && amount(target) > 0 && (
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {fmt(Math.max(0, target - value))} {unit} remaining
           </p>
         )}
@@ -182,7 +182,7 @@ export function WellnessRecentActivity({
         ))}
       </div>
       <div
-        className="flex justify-between text-xs text-slate-400 mt-2"
+        className="flex justify-between text-xs text-muted-foreground mt-2"
         aria-hidden="true"
       >
         {days === 7 ? (
@@ -205,11 +205,11 @@ export function WellnessRecentActivity({
         <span className="type-metric wellness-accent">
           {fmt(activity.total)} {unit} total
         </span>
-        <span className="text-slate-400">
+        <span className="text-muted-foreground">
           {fmt(activity.average)} {unit}/calendar day
         </span>
       </div>
-      <p className="text-sm text-slate-300 mt-2">
+      <p className="text-sm text-supporting mt-2">
         {summary
           ? summary(
               days,
@@ -274,7 +274,7 @@ export const WellnessHistoryRow = forwardRef<
   return (
     <button {...props} ref={ref} className="wellness-history-row">
       <span>{month}</span>
-      <span className="text-sm text-slate-400">
+      <span className="text-sm text-muted-foreground">
         {count} {count === 1 ? unit.replace(/s$/, "") : unit}
       </span>
       <ChevronRight className="wellness-history-chevron" size={18} />
@@ -309,14 +309,14 @@ export function WellnessEntryActions({
   return (
     <span className="flex shrink-0">
       <button
-        className="min-h-11 min-w-11 grid place-content-center text-slate-400"
+        className="min-h-11 min-w-11 grid place-content-center text-muted-foreground"
         aria-label={`Edit ${label}`}
         onClick={onEdit}
       >
         <Pencil size={15} />
       </button>
       <button
-        className="min-h-11 min-w-11 grid place-content-center text-slate-400"
+        className="min-h-11 min-w-11 grid place-content-center text-muted-foreground"
         aria-label={`Delete ${label}`}
         onClick={onDelete}
       >

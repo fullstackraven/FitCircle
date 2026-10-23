@@ -336,3 +336,96 @@
   border-color: hsl(var(--goal-tone));
   background-color: hsl(var(--goal-tone) / .06);
 }
+
+/* Remaining application roles; exact Dark colors retained for visual baselines. */
+:root {
+  --wellness-green: #22c55e; --wellness-blue: #3b82f6;
+  --wellness-purple: #a855f7; --wellness-amber: #f59e0b;
+  --goal-purple: #9333ea; --goal-orange: #f97316;
+  --wellness-on-action: #0f172a;
+  --wellness-border: rgb(148 163 184 / .1);
+  --wellness-goal-border: rgb(148 163 184 / .15);
+  --journal-surface: hsl(222, 47%, 15%);
+  --scroll-track: hsl(217.2, 32.6%, 17.5%);
+  --scroll-thumb: hsl(215, 20.2%, 65.1%);
+  --scroll-thumb-hover: hsl(210, 40%, 80%);
+  --calendar-today: 135.29411764705881 100.00000000000000% 50.00000000000000%;
+  --page-dot: 0 0% 100%;
+  --error-soft: 0.00000000000000 96.29629629629632% 89.41176470588235%;
+  --error-pale: 0.00000000000000 85.71428571428578% 97.25490196078431%;
+  --error-icon: 0.00000000000000 84.23645320197043% 60.19607843137255%;
+  --feature-purple-tint: 273.64485981308411 65.64417177914112% 31.96078431372549%;
+  --feature-blue-deep-tint: 224.44444444444443 64.28571428571428% 32.94117647058823%;
+  --feature-green-tint: 143.80952380952382 61.16504854368932% 20.19607843137255%;
+  --feature-red-deep-tint: 0.00000000000000 62.82051282051282% 30.58823529411765%;
+  --energy-track: rgba(255,255,255,.1);
+  --energy-empty-dot: rgba(148,163,184,.6);
+  --energy-point-border: rgba(255,255,255,.8);
+  --meditation-track: rgba(100,116,139,.3);
+  --meditation-glow: drop-shadow(0 0 20px rgba(168,85,247,.3));
+  --calendar-grid: rgba(100,116,139,.2);
+  --calendar-complete: #00ff41; --calendar-recovery: #ff8c00;
+  --calendar-chart-glow: drop-shadow(0 0 4px rgba(0,255,65,.5));
+  --calendar-complete-shadow: 0 0 8px rgba(0,255,65,.4), 0 0 16px rgba(0,255,65,.2);
+  --calendar-recovery-shadow: 0 0 8px rgba(255,140,0,.4), 0 0 16px rgba(255,140,0,.2);
+}
+:root[data-appearance="light"] {
+  --wellness-green: #15803d; --wellness-blue: #1d4ed8;
+  --wellness-purple: #7e22ce; --wellness-amber: #b45309;
+  --goal-purple: #7e22ce; --goal-orange: #c2410c;
+  --wellness-on-action: white;
+  --wellness-border: hsl(var(--separator));
+  --wellness-goal-border: hsl(var(--separator));
+  --journal-surface: hsl(var(--surface));
+  --scroll-track: hsl(var(--surface-secondary));
+  --scroll-thumb: hsl(var(--control-border));
+  --scroll-thumb-hover: hsl(var(--text-secondary));
+  --calendar-today: var(--accent-text);
+  --page-dot: var(--text-secondary);
+  --error-soft: var(--feature-red); --error-pale: var(--feature-red);
+  --error-icon: var(--feature-red);
+  --feature-purple-tint: 270 100% 95%;
+  --feature-blue-deep-tint: 214 95% 93%;
+  --feature-green-tint: 141 84% 93%;
+  --feature-red-deep-tint: 0 93% 94%;
+  --energy-track: #cbd5e1; --energy-empty-dot: #64748b;
+  --energy-point-border: #475569;
+  --meditation-track: #cbd5e1; --meditation-glow: none;
+  --calendar-grid: #cbd5e1;
+  --calendar-chart-glow: none;
+  --calendar-complete-shadow: none; --calendar-recovery-shadow: none;
+}
+/* The HTML launch placeholder can inherit once CSS/controller have loaded.
+   Its pre-controller appearance remains Phase 5 bootstrap responsibility. */
+:root[data-appearance="light"] #fitcircle-startup {
+  background: var(--app-background) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+:root {
+  --energy-amber: #fbbf24;
+  --energy-gradient-purple: #8b5cf6; --energy-gradient-blue: #3b82f6; --energy-gradient-cyan: #06b6d4;
+  --calendar-chart-complete: #00ff41; --calendar-chart-recovery: #ff8c00;
+  --calendar-purple-shadow: 0 0 8px rgba(192,132,252,.4);
+  --calendar-yellow-shadow: 0 0 8px rgba(250,204,21,.4);
+  --calendar-blue-shadow: 0 0 8px rgba(96,165,250,.4);
+  --timer-inactive: rgb(156,163,175);
+}
+:root[data-appearance="light"] {
+  --energy-amber: #b45309;
+  --energy-gradient-purple: #7c3aed; --energy-gradient-blue: #2563eb; --energy-gradient-cyan: #0e7490;
+  --calendar-chart-complete: #15803d; --calendar-chart-recovery: #c2410c;
+  --calendar-purple-shadow: none; --calendar-yellow-shadow: none; --calendar-blue-shadow: none;
+  --timer-inactive: #64748b;
+}
+
+:root { --calendar-recovery-bar-shadow: 0 0 8px #ff8c0040; --calendar-complete-bar-shadow: 0 0 8px #00ff4140; }
+:root[data-appearance="light"] { --calendar-recovery-bar-shadow: none; --calendar-complete-bar-shadow: none; }
+
+/* Legacy actions inherited either body off-white or a white page/portal foreground. */
+.text-on-action-soft { color: inherit; }
+:root[data-appearance="light"] .text-on-action-soft { color: white; }
+
+:root[data-appearance="light"] .settings-toggle { background-color: hsl(var(--control-border)); }
+:root[data-appearance="light"] .settings-toggle[aria-pressed="true"] { background-color: hsl(var(--accent-text)); }
+:root[data-appearance="light"] .glass-toggle[data-state="unchecked"] { border-color: hsl(var(--control-border)); }

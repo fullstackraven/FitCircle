@@ -1,0 +1,35 @@
+{
+  "readings": [
+    {
+      "text": "Add New Supplement",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Add a new supplement to track your daily intake",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Supplement Name",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Measurement Type",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Amount/Quantity",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Cancel",
+      "ratio": 6.95,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

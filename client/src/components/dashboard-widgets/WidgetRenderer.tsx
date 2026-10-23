@@ -46,10 +46,10 @@ export function WidgetRenderer({ widget, onWorkoutClick, onNavigate, onOpenTimer
         return <QuoteWidget widget={widget} />;
       case 'goals':
         // TODO: Create GoalsWidget component
-        return <div className="fitcircle-card p-4"><p className="text-slate-400">Goals widget coming soon</p></div>;
+        return <div className="fitcircle-card p-4"><p className="text-muted-foreground">Goals widget coming soon</p></div>;
       case 'recent-activity':
-        // TODO: Create RecentActivityWidget component  
-        return <div className="fitcircle-card p-4"><p className="text-slate-400">Recent activity widget coming soon</p></div>;
+        // TODO: Create RecentActivityWidget component
+        return <div className="fitcircle-card p-4"><p className="text-muted-foreground">Recent activity widget coming soon</p></div>;
       default:
         return null;
     }

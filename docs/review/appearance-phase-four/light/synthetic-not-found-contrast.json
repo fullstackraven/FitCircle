@@ -1,0 +1,40 @@
+{
+  "readings": [
+    {
+      "text": "404 Page Not Found",
+      "ratio": 17.81,
+      "required": 3
+    },
+    {
+      "text": "Did you forget to add the page to the router?",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

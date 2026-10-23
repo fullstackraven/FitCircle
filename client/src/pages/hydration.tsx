@@ -158,11 +158,11 @@ export default function HydrationPage() {
     <>
       <WellnessPageShell
         title="Hydration"
-        accent="#3b82f6"
+        accent="var(--wellness-blue)"
         onGoal={() => setIsGoalModalOpen(true)}
       >
         {error && (
-          <p role="alert" className="text-sm text-amber-300">
+          <p role="alert" className="text-sm text-warning-soft">
             {error}
           </p>
         )}
@@ -176,7 +176,7 @@ export default function HydrationPage() {
             title="Today's Hydration"
           />
           {dailyGoalOz > 128 && (
-            <p className="text-sm text-amber-300">
+            <p className="text-sm text-warning-soft">
               High daily goal · review your target in Goal.
             </p>
           )}
@@ -201,7 +201,7 @@ export default function HydrationPage() {
               ))}
             </div>
 
-            <p className="text-sm text-slate-400 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               {currentDayOz} oz today ·{" "}
               {Math.max(0, dailyGoalOz - currentDayOz)} oz remaining
             </p>
@@ -221,7 +221,7 @@ export default function HydrationPage() {
           <WellnessTodaySection title="Today's Intake">
             <div className="space-y-2">
               {todayEntries.length === 0 && (
-                <p className="text-sm text-slate-400">No intake today yet</p>
+                <p className="text-sm text-muted-foreground">No intake today yet</p>
               )}
               {todayEntries
                 .slice()
@@ -232,13 +232,13 @@ export default function HydrationPage() {
                     className="wellness-record-row flex justify-between items-center text-sm relative"
                   >
                     <div className="flex items-center space-x-3">
-                      <span className="text-slate-400">{entry.time}</span>
-                      <span className="text-slate-300">
+                      <span className="text-muted-foreground">{entry.time}</span>
+                      <span className="text-supporting">
                         {entry.liquidType || "Water"}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="text-blue-400 font-medium">
+                      <span className="text-feature-blue font-medium">
                         {entry.amount}oz
                       </span>
                       <div className="flex items-center space-x-1 ml-2">
@@ -247,7 +247,7 @@ export default function HydrationPage() {
                           size="sm"
                           aria-label="Edit intake"
                           onClick={() => handleEditEntry(entry)}
-                          className="text-slate-400 hover:text-white p-1 h-auto"
+                          className="text-muted-foreground hover:text-strong p-1 h-auto"
                           data-testid={`button-edit-entry-${entry.id}`}
                         >
                           <Edit2 className="w-3 h-3" />
@@ -257,7 +257,7 @@ export default function HydrationPage() {
                           size="sm"
                           aria-label="Delete intake"
                           onClick={() => handleDeleteEntry(entry)}
-                          className="text-slate-400 hover:text-red-300 p-1 h-auto"
+                          className="text-muted-foreground hover:text-feature-red-soft p-1 h-auto"
                           data-testid={`button-delete-entry-${entry.id}`}
                         >
                           <Trash2 className="w-3 h-3" />
@@ -300,7 +300,7 @@ export default function HydrationPage() {
                       {monthLogs.map((log: HydrationLog) => (
                         <div key={log.date} className="fitcircle-card ml-4">
                           <div className="flex justify-between items-center mb-3">
-                            <span className="text-white font-medium">
+                            <span className="text-strong font-medium">
                               {new Date(
                                 log.date + "T00:00:00",
                               ).toLocaleDateString("en-US", {
@@ -309,11 +309,11 @@ export default function HydrationPage() {
                                 day: "numeric",
                               })}
                             </span>
-                            <span className="text-blue-400 font-semibold">
+                            <span className="text-feature-blue font-semibold">
                               {log.totalOz}oz
                             </span>
                           </div>
-                          <div className="text-xs text-slate-400 mb-2">
+                          <div className="text-xs text-muted-foreground mb-2">
                             {log.entries.length} entries
                           </div>
 
@@ -327,14 +327,14 @@ export default function HydrationPage() {
                                 key={index}
                                 className="wellness-record-row flex justify-between items-center text-xs"
                               >
-                                <span className="text-slate-500">
+                                <span className="text-dim">
                                   {entry.time}
                                 </span>
                                 <div className="flex items-center space-x-1">
-                                  <span className="text-slate-400">
+                                  <span className="text-muted-foreground">
                                     {entry.liquidType || "Water"}
                                   </span>
-                                  <span className="text-slate-300">
+                                  <span className="text-supporting">
                                     {entry.amount}oz
                                   </span>
                                   <button
@@ -363,7 +363,7 @@ export default function HydrationPage() {
                                   }
                                   setExpandedDays(newExpanded);
                                 }}
-                                className="text-xs text-slate-500 hover:text-slate-300 text-center mt-1 w-full transition-colors"
+                                className="text-xs text-dim hover:text-supporting text-center mt-1 w-full transition-colors"
                               >
                                 {expandedDays.has(log.date)
                                   ? "Show less"
@@ -377,7 +377,7 @@ export default function HydrationPage() {
                   </Collapsible>
                 ))
               ) : (
-                <div className="text-center text-slate-500 py-4">
+                <div className="text-center text-dim py-4">
                   No hydration history yet
                 </div>
               )}
@@ -393,15 +393,15 @@ export default function HydrationPage() {
           title="Hydration Goal"
           onDismiss={() => setIsGoalModalOpen(false)}
         >
-          <div className="glass-panel bg-slate-800 rounded-xl p-6 w-full max-w-lg">
+          <div className="glass-panel bg-surface rounded-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-white">
+              <h3 className="text-lg font-semibold text-strong">
                 Hydration Goal
               </h3>
               <button
                 aria-label="Close"
                 onClick={() => setIsGoalModalOpen(false)}
-                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg"
+                className="p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -411,7 +411,7 @@ export default function HydrationPage() {
             <div className="flex justify-center mb-8">
               <GoalCircle
                 percentage={percentage(currentDayOz, Number(newGoal))}
-                color="rgb(59, 130, 246)"
+                color="var(--bmi-blue)"
                 size={120}
                 currentValue={Math.round(currentDayOz)}
                 goalValue={Number(newGoal)}
@@ -424,7 +424,7 @@ export default function HydrationPage() {
             {/* Goal Input Form */}
             <div className="space-y-4">
               <div>
-                <Label htmlFor="goal" className="text-slate-300">
+                <Label htmlFor="goal" className="text-supporting">
                   Daily goal (oz)
                 </Label>
                 <Input
@@ -434,20 +434,20 @@ export default function HydrationPage() {
                   onChange={(e) => setNewGoal(e.target.value)}
                   onFocus={() => setGoalFocused(true)}
                   onBlur={() => setGoalFocused(false)}
-                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  className="bg-surface-secondary border-control text-strong mt-1"
                 />
               </div>
               <div className="flex space-x-3 pt-4">
                 <Button
                   variant="outline"
                   onClick={() => setIsGoalModalOpen(false)}
-                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className="flex-1 border-control text-supporting hover:bg-surface-secondary"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSetGoal}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action-soft"
                 >
                   Set Goal
                 </Button>
@@ -462,12 +462,12 @@ export default function HydrationPage() {
         open={isHydrationDialogOpen}
         onOpenChange={setIsHydrationDialogOpen}
       >
-        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl">
+        <DialogContent className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl">
           <DialogTitle className="text-lg font-semibold text-center">
             Add Liquid
           </DialogTitle>
           {error && (
-            <p role="alert" className="text-sm text-amber-300">
+            <p role="alert" className="text-sm text-warning-soft">
               {error}
             </p>
           )}
@@ -477,7 +477,7 @@ export default function HydrationPage() {
           <div className="space-y-4">
             {/* Liquid Type Selection */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium text-slate-300">
+              <Label className="text-sm font-medium text-supporting">
                 Liquid Type
               </Label>
               <div className="grid grid-cols-4 gap-2">
@@ -487,8 +487,8 @@ export default function HydrationPage() {
                     onClick={() => setSelectedLiquidType(type)}
                     className={`py-2 px-3 rounded-xl text-sm font-medium transition-colors ${
                       selectedLiquidType === type
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-700 hover:bg-slate-600 text-slate-300"
+                        ? "bg-blue-600 text-on-action"
+                        : "bg-surface-secondary hover:bg-control-strong text-supporting"
                     }`}
                   >
                     {type}
@@ -505,7 +505,7 @@ export default function HydrationPage() {
                   onFocus={() => setCustomLiquidFocused(true)}
                   onBlur={() => setCustomLiquidFocused(false)}
                   aria-label="Liquid type"
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-surface-secondary border-control text-strong"
                 />
               )}
             </div>
@@ -520,14 +520,14 @@ export default function HydrationPage() {
                   onClick={() => {
                     if (handleQuickAdd(amount)) setIsHydrationDialogOpen(false);
                   }}
-                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className="border-control text-supporting hover:bg-surface-secondary"
                 >
                   {amount}oz
                 </Button>
               ))}
             </div>
 
-            <details className="text-sm text-slate-400 mt-3">
+            <details className="text-sm text-muted-foreground mt-3">
               <summary className="min-h-11 flex items-center cursor-pointer">
                 Customize shortcuts
               </summary>
@@ -562,14 +562,14 @@ export default function HydrationPage() {
                   onFocus={() => setAddAmountFocused(true)}
                   onBlur={() => setAddAmountFocused(false)}
                   aria-label="Amount (oz)"
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-surface-secondary border-control text-strong"
                 />
               </div>
               <Button
                 onClick={() => {
                   if (handleAddHydration()) setIsHydrationDialogOpen(false);
                 }}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 text-on-action"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Add
@@ -581,7 +581,7 @@ export default function HydrationPage() {
 
       {/* Edit Entry Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-sm mx-auto rounded-2xl">
+        <DialogContent className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl">
           <DialogTitle className="text-lg font-semibold text-center">
             Edit Entry
           </DialogTitle>
@@ -591,7 +591,7 @@ export default function HydrationPage() {
           <div className="space-y-4">
             {/* Liquid Type Selection */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium text-slate-300">
+              <Label className="text-sm font-medium text-supporting">
                 Liquid Type
               </Label>
               <div className="grid grid-cols-4 gap-2">
@@ -601,8 +601,8 @@ export default function HydrationPage() {
                     onClick={() => setEditLiquidType(type)}
                     className={`py-2 px-3 rounded-xl text-sm font-medium transition-colors ${
                       editLiquidType === type
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-700 hover:bg-slate-600 text-slate-300"
+                        ? "bg-blue-600 text-on-action"
+                        : "bg-surface-secondary hover:bg-control-strong text-supporting"
                     }`}
                   >
                     {type}
@@ -617,14 +617,14 @@ export default function HydrationPage() {
                   value={editLiquidType === "Custom" ? editLiquidType : ""}
                   onChange={(e) => setEditLiquidType(e.target.value)}
                   aria-label="Liquid type"
-                  className="bg-slate-700 border-slate-600 text-white"
+                  className="bg-surface-secondary border-control text-strong"
                 />
               )}
             </div>
 
             {/* Amount Input */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium text-slate-300">
+              <Label className="text-sm font-medium text-supporting">
                 Amount (oz)
               </Label>
               <Input
@@ -632,7 +632,7 @@ export default function HydrationPage() {
                 value={editAmount}
                 onChange={(e) => setEditAmount(e.target.value)}
                 aria-label="Amount (oz)"
-                className="bg-slate-700 border-slate-600 text-white"
+                className="bg-surface-secondary border-control text-strong"
                 data-testid="input-edit-amount"
               />
             </div>
@@ -642,13 +642,13 @@ export default function HydrationPage() {
               <Button
                 variant="outline"
                 onClick={() => setIsEditDialogOpen(false)}
-                className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                className="flex-1 border-control text-supporting hover:bg-surface-secondary"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleSaveEdit}
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action"
                 data-testid="button-save-edit"
               >
                 Save Changes

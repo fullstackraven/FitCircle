@@ -119,16 +119,16 @@ export function JournalLog() {
   };
 
   return (
-    <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+    <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'var(--page-background)' }}>
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => navigate('/wellness')}
-          className="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors"
+          className="flex items-center space-x-2 text-muted-foreground hover:text-strong transition-colors"
           data-testid="button-back"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h1 className="text-xl font-bold text-white">Journal Log</h1>
+        <h1 className="text-xl font-bold text-strong">Journal Log</h1>
         <button
           onClick={() => {
             const today = new Date();
@@ -146,7 +146,7 @@ export function JournalLog() {
             
             setIsModalOpen(true);
           }}
-          className="text-slate-400 hover:text-white transition-colors"
+          className="text-muted-foreground hover:text-strong transition-colors"
           title="Write new journal entry"
         >
           <Plus className="w-5 h-5" />
@@ -159,22 +159,22 @@ export function JournalLog() {
             <button
               key={entry.date}
               onClick={() => handleEntryClick(entry.date)}
-              className="glass-panel w-full text-left p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
+              className="glass-panel w-full text-left p-4 bg-surface rounded-xl hover:bg-surface-secondary transition-colors"
             >
               <div className="flex items-start justify-between mb-2">
-                <h3 className="text-white font-medium">
+                <h3 className="text-strong font-medium">
                   {formatDateDisplay(entry.parsedDate)}
                 </h3>
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-muted-foreground">
                   {getTimeDisplay(entry.parsedDate)}
                 </span>
               </div>
               
-              <p className="text-slate-300 text-sm line-clamp-3">
+              <p className="text-supporting text-sm line-clamp-3">
                 {truncateText(entry.entry)}
               </p>
               
-              <div className="flex items-center mt-3 text-xs text-slate-500">
+              <div className="flex items-center mt-3 text-xs text-dim">
                 <Calendar className="w-3 h-3 mr-1" />
                 {format(entry.parsedDate, "MMM d, yyyy")}
                 {entry.timestamp && (
@@ -187,9 +187,9 @@ export function JournalLog() {
           ))
         ) : (
           <div className="text-center py-12">
-            <FileText className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-slate-400 mb-2">No Journal Entries Yet</h3>
-            <p className="text-sm text-slate-500 mb-6">
+            <FileText className="w-12 h-12 text-dim-strong mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-muted-foreground mb-2">No Journal Entries Yet</h3>
+            <p className="text-sm text-dim mb-6">
               Start writing in your daily journal to see entries here
             </p>
             <button
@@ -209,7 +209,7 @@ export function JournalLog() {
                 
                 setIsModalOpen(true);
               }}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors"
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-on-action rounded-xl transition-colors"
             >
               Write Your First Entry
             </button>
@@ -219,26 +219,26 @@ export function JournalLog() {
 
       {/* Journal Entry Modal */}
       <Dialog open={isModalOpen} onOpenChange={handleModalClose}>
-        <DialogContent className="max-w-2xl p-0 bg-slate-800 border-slate-600 overflow-hidden rounded-2xl">
-          <div className="flex flex-col" style={{ backgroundColor: 'hsl(222, 47%, 15%)' }}>
+        <DialogContent className="max-w-2xl p-0 bg-surface border-control overflow-hidden rounded-2xl">
+          <div className="flex flex-col" style={{ backgroundColor: 'var(--journal-surface)' }}>
             {/* Modal Header */}
-            <DialogHeader className="px-4 py-3 border-b border-slate-600">
-              <DialogTitle className="text-lg font-bold text-white text-center">Daily Journal</DialogTitle>
-              <DialogDescription className="text-slate-400 text-center text-sm">
+            <DialogHeader className="px-4 py-3 border-b border-control">
+              <DialogTitle className="text-lg font-bold text-strong text-center">Daily Journal</DialogTitle>
+              <DialogDescription className="text-muted-foreground text-center text-sm">
                 Write your thoughts and reflections for today
               </DialogDescription>
             </DialogHeader>
 
             {/* Date indicator */}
-            <div className="px-4 py-2 border-b border-slate-600">
+            <div className="px-4 py-2 border-b border-control">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-slate-400">{getDisplayDate()}</p>
-                <p className="text-xs text-slate-500" data-testid="text-word-count">
+                <p className="text-sm text-muted-foreground">{getDisplayDate()}</p>
+                <p className="text-xs text-dim" data-testid="text-word-count">
                   {getWordCount()} {getWordCount() === 1 ? 'word' : 'words'}
                 </p>
               </div>
               {lastSaved && (
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-dim mt-1">
                   Last saved: {format(new Date(lastSaved), "MMM d, yyyy 'at' h:mm a")}
                 </p>
               )}
@@ -250,7 +250,7 @@ export function JournalLog() {
                 value={journalText}
                 onChange={(e) => setJournalText(e.target.value)}
                 aria-label="Journal entry"
-                className="w-full p-0 bg-transparent text-white border-none resize-none focus:outline-none text-base leading-relaxed placeholder-slate-500"
+                className="w-full p-0 bg-transparent text-strong border-none resize-none focus:outline-none text-base leading-relaxed placeholder-dim"
                 style={{
                   lineHeight: '1.6',
                   touchAction: 'manipulation',
@@ -266,11 +266,11 @@ export function JournalLog() {
 
 
             {/* Action buttons */}
-            <div className="px-4 py-3 border-t border-slate-600">
+            <div className="px-4 py-3 border-t border-control">
               <div className="flex gap-3">
                 <button
                   onClick={handleJournalSubmit}
-                  className="flex-1 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors font-medium shadow-lg"
+                  className="flex-1 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-on-action rounded-xl transition-colors font-medium shadow-lg"
                   data-testid="button-save-journal"
                 >
                   Save Entry
@@ -278,7 +278,7 @@ export function JournalLog() {
                 {lastSaved && (
                   <button
                     onClick={handleDeleteEntry}
-                    className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-colors font-medium shadow-lg flex items-center gap-2"
+                    className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-on-action rounded-xl transition-colors font-medium shadow-lg flex items-center gap-2"
                     data-testid="button-delete-journal"
                   >
                     <Trash2 className="w-4 h-4" />

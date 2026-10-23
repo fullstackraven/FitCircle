@@ -14,6 +14,17 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        "calendar-today": "hsl(var(--calendar-today) / <alpha-value>)",
+        "page-dot": "hsl(var(--page-dot) / <alpha-value>)",
+        "error-soft": "hsl(var(--error-soft) / <alpha-value>)",
+        "error-pale": "hsl(var(--error-pale) / <alpha-value>)",
+        "error-icon": "hsl(var(--error-icon) / <alpha-value>)",
+        "feature-purple-tint": "hsl(var(--feature-purple-tint) / <alpha-value>)",
+        "feature-blue-deep-tint": "hsl(var(--feature-blue-deep-tint) / <alpha-value>)",
+        "feature-green-tint": "hsl(var(--feature-green-tint) / <alpha-value>)",
+        "feature-red-deep-tint": "hsl(var(--feature-red-deep-tint) / <alpha-value>)",
+        "control-muted": "hsl(var(--control-muted) / <alpha-value>)",
+
         "neutral-surface": "hsl(var(--neutral-surface) / <alpha-value>)",
         "neutral-supporting": "hsl(var(--neutral-supporting) / <alpha-value>)",
         "neutral-muted": "hsl(var(--neutral-muted) / <alpha-value>)",

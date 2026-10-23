@@ -42,7 +42,7 @@ export function GoalCircle({
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="rgb(71, 85, 105)"
+            stroke="var(--bmi-track)"
             strokeWidth={strokeWidth}
             fill="none"
           />
@@ -64,18 +64,18 @@ export function GoalCircle({
         {/* Center content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           {title === "Wellness Score" ? (
-            <div className="type-metric text-4xl font-bold text-white">
+            <div className="type-metric text-4xl font-bold text-strong">
               {Math.round(safePercentage)}
             </div>
           ) : (
             <>
-              <div className="type-metric text-lg font-bold text-white">
+              <div className="type-metric text-lg font-bold text-strong">
                 {Number.isFinite(goalValue) && goalValue > 0 ? goalValue : 0}{" "}
                 {goalValue === 1
                   ? unit.replace("days", "Day").replace("Days", "Day")
                   : unit.replace("days", "Days").replace("Days", "Days")}
               </div>
-              <div className="type-metric type-caption text-slate-400 text-center">
+              <div className="type-metric type-caption text-muted-foreground text-center">
                 {showPercentage ? `${Math.round(safePercentage)}%` : "—"}
               </div>
             </>
@@ -85,9 +85,9 @@ export function GoalCircle({
 
       {/* Title and description */}
       <div className="mt-4 text-center">
-        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <h3 className="text-lg font-semibold text-strong">{title}</h3>
         {description && (
-          <p className="text-sm text-slate-400 mt-1">{description}</p>
+          <p className="text-sm text-muted-foreground mt-1">{description}</p>
         )}
       </div>
     </div>

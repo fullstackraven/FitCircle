@@ -46,7 +46,7 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl overflow-y-auto bg-slate-800 border-slate-700 text-white rounded-2xl">
+      <DialogContent className="max-w-2xl overflow-y-auto bg-surface border-separator text-strong rounded-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <Settings className="w-5 h-5" />
@@ -85,15 +85,15 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
 
           {/* Widget List */}
           <div className="space-y-3">
-            <h3 className="text-lg font-semibold text-white">Available Widgets</h3>
+            <h3 className="text-lg font-semibold text-strong">Available Widgets</h3>
             <div className="space-y-2">
               {availableWidgets.map((widget) => (
                 <div
                   key={widget.id}
                   className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
-                    widget.enabled 
-                      ? 'border-blue-500 bg-blue-500/10' 
-                      : 'border-slate-600 bg-slate-800/50'
+                    widget.enabled
+                      ? 'border-blue-500 bg-blue-500/10'
+                      : 'border-control bg-surface/50'
                   }`}
                 >
                   <div className="flex items-center space-x-3">
@@ -102,8 +102,8 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
                       onCheckedChange={() => toggleWidget(widget.id)}
                     />
                     <div>
-                      <div className="text-white font-medium">{widget.title}</div>
-                      <div className="text-slate-400 text-sm flex items-center space-x-2">
+                      <div className="text-strong font-medium">{widget.title}</div>
+                      <div className="text-muted-foreground text-sm flex items-center space-x-2">
                         <span>Size: {getSizeLabel(widget.size)}</span>
                         <span>•</span>
                         <span>Position: {widget.position + 1}</span>
@@ -113,9 +113,9 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
                   
                   <div className="flex items-center space-x-2">
                     {widget.enabled ? (
-                      <Eye className="w-4 h-4 text-blue-400" />
+                      <Eye className="w-4 h-4 text-feature-blue" />
                     ) : (
-                      <EyeOff className="w-4 h-4 text-slate-400" />
+                      <EyeOff className="w-4 h-4 text-muted-foreground" />
                     )}
                     
                     {/* Reorder Controls */}
@@ -123,18 +123,18 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
                       <button
                         onClick={() => moveWidget(widget.id, 'up')}
                         disabled={widget.position === 0}
-                        className="p-1 hover:bg-slate-700 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-1 hover:bg-surface-secondary rounded disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Move up"
                       >
-                        <ChevronUp className="w-3 h-3 text-slate-400" />
+                        <ChevronUp className="w-3 h-3 text-muted-foreground" />
                       </button>
                       <button
                         onClick={() => moveWidget(widget.id, 'down')}
                         disabled={widget.position === availableWidgets.length - 1}
-                        className="p-1 hover:bg-slate-700 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-1 hover:bg-surface-secondary rounded disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Move down"
                       >
-                        <ChevronDown className="w-3 h-3 text-slate-400" />
+                        <ChevronDown className="w-3 h-3 text-muted-foreground" />
                       </button>
                     </div>
                   </div>
@@ -144,9 +144,9 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
           </div>
 
           {/* Instructions */}
-          <div className="border border-slate-600 rounded-xl p-4 bg-slate-800/30">
-            <h4 className="text-white font-medium mb-2">Widget Types</h4>
-            <div className="text-slate-300 text-sm space-y-1">
+          <div className="border border-control rounded-xl p-4 bg-surface/30">
+            <h4 className="text-strong font-medium mb-2">Widget Types</h4>
+            <div className="text-supporting text-sm space-y-1">
               <div><strong>Small:</strong> Compact view with key metrics</div>
               <div><strong>Medium:</strong> Balanced view with more details</div>
               <div><strong>Large:</strong> Full view with complete information</div>

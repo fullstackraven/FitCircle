@@ -8,12 +8,12 @@ import { format } from "date-fns";
 
 export function SupplementsPage() {
   const [, navigate] = useLocation();
-  const { 
+  const {
     supplements: allSupplements,
-    getSupplementLogsForDate, 
-    setSupplementLog, 
+    getSupplementLogsForDate,
+    setSupplementLog,
     deleteSupplement,
-    editSupplement 
+    editSupplement
   } = useSupplements();
   
   // Check if we came from wellness page
@@ -52,9 +52,9 @@ export function SupplementsPage() {
   }, []);
 
   const handleSupplementToggle = (supplementId: number) => {
-    setTempSupplementLogs(prev => 
-      prev.map(log => 
-        log.id === supplementId 
+    setTempSupplementLogs(prev =>
+      prev.map(log =>
+        log.id === supplementId
           ? { ...log, taken: !log.taken }
           : log
       )
@@ -103,7 +103,7 @@ export function SupplementsPage() {
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-muted-foreground hover:text-strong transition-colors"
             title="Back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -111,7 +111,7 @@ export function SupplementsPage() {
 
           <h1 className="fitcircle-page-title">Supplements</h1>
         
-        <AddSupplementDialog 
+        <AddSupplementDialog
           onSupplementAdded={() => window.location.reload()}
         />
       </div>
@@ -120,37 +120,37 @@ export function SupplementsPage() {
           {/* Today's Supplements */}
           <div className="fitcircle-card-lg">
               <div className="flex items-center space-x-3 mb-4">
-                <Pill className="w-6 h-6 text-green-400" />
+                <Pill className="w-6 h-6 text-accent-text" />
                 <div>
-                  <h2 className="text-lg font-semibold text-white">Today's Supplements</h2>
-                  <p className="text-sm text-slate-400">{format(new Date(), "MMMM d, yyyy")}</p>
+                  <h2 className="text-lg font-semibold text-strong">Today's Supplements</h2>
+                  <p className="text-sm text-muted-foreground">{format(new Date(), "MMMM d, yyyy")}</p>
                 </div>
               </div>
 
               {tempSupplementLogs.length > 0 ? (
                 <div className="space-y-3">
               {tempSupplementLogs.map(log => (
-                <div key={log.id} className="flex items-center justify-between p-3 bg-slate-700 rounded-xl">
+                <div key={log.id} className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl">
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={() => handleSupplementToggle(log.id)}
                       className={`w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center ${
                         log.taken
-                          ? 'bg-green-500 border-green-500'
-                          : 'border-slate-400 hover:border-slate-300'
+                          ? 'bg-action-selected border-green-500'
+                          : 'border-control-muted hover:border-supporting'
                       }`}
                     >
                       {log.taken && (
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-3 h-3 text-on-action" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                         </svg>
                       )}
                     </button>
-                    <span className={`font-medium ${log.taken ? 'text-green-400' : 'text-white'}`}>
+                    <span className={`font-medium ${log.taken ? 'text-accent-text' : 'text-strong'}`}>
                       {log.name}
                     </span>
                   </div>
-                  <span className={`text-sm ${log.taken ? 'text-green-400' : 'text-slate-400'}`}>
+                  <span className={`text-sm ${log.taken ? 'text-accent-text' : 'text-muted-foreground'}`}>
                     {log.taken ? 'Taken' : 'Not taken'}
                   </span>
                 </div>
@@ -158,46 +158,46 @@ export function SupplementsPage() {
               
               <button
                 onClick={handleSaveSupplements}
-                className="w-full mt-4 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors font-medium"
+                className="w-full mt-4 px-4 py-3 bg-action hover:bg-action-hover text-on-action rounded-xl transition-colors font-medium"
               >
                   Save Today's Log
                 </button>
               </div>
               ) : (
               <div className="text-center py-8">
-                <p className="text-slate-400">No supplements added yet</p>
+                <p className="text-muted-foreground">No supplements added yet</p>
               </div>
             )}
           </div>
 
           {/* Manage Supplements - Collapsible */}
           <Collapsible open={isManageOpen} onOpenChange={setIsManageOpen}>
-          <CollapsibleTrigger className="glass-panel flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors">
-            <h2 className="text-lg font-semibold text-white">Manage Supplements</h2>
+          <CollapsibleTrigger className="glass-panel flex items-center justify-between w-full p-4 bg-surface rounded-xl hover:bg-surface-secondary transition-colors">
+            <h2 className="text-lg font-semibold text-strong">Manage Supplements</h2>
             {isManageOpen ? (
-              <ChevronUp className="w-5 h-5 text-slate-400" />
+              <ChevronUp className="w-5 h-5 text-muted-foreground" />
             ) : (
-              <ChevronDown className="w-5 h-5 text-slate-400" />
+              <ChevronDown className="w-5 h-5 text-muted-foreground" />
             )}
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="glass-panel mt-4 bg-slate-800 rounded-xl p-6">
+            <div className="glass-panel mt-4 bg-surface rounded-xl p-6">
               {allSupplements.length > 0 ? (
                 <div className="space-y-3">
                   {allSupplements.map(supplement => (
-                    <div key={supplement.id} className="flex items-center justify-between p-3 bg-slate-700 rounded-xl">
+                    <div key={supplement.id} className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl">
                       {editingId === supplement.id ? (
                         <div className="flex items-center space-x-2 flex-1">
                           <input
                             type="text"
                             value={editingName}
                             onChange={(e) => setEditingName(e.target.value)}
-                            className="flex-1 px-3 py-2 bg-slate-800 text-white rounded border border-slate-500 focus:outline-none focus:border-blue-400"
+                            className="flex-1 px-3 py-2 bg-surface text-strong rounded border border-control-muted-border focus:outline-none focus:border-blue-400"
                             autoFocus
                           />
                           <button
                             onClick={handleSaveEdit}
-                            className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm"
+                            className="px-3 py-2 bg-action hover:bg-action-hover text-on-action rounded text-sm"
                           >
                             Save
                           </button>
@@ -206,7 +206,7 @@ export function SupplementsPage() {
                               setEditingId(null);
                               setEditingName("");
                             }}
-                            className="px-3 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded text-sm"
+                            className="px-3 py-2 bg-control-strong hover:bg-control-muted text-strong rounded text-sm"
                           >
                             Cancel
                           </button>
@@ -214,23 +214,23 @@ export function SupplementsPage() {
                       ) : (
                         <>
                           <div className="flex items-center space-x-3">
-                            <Pill className="w-4 h-4 text-green-400" />
-                            <span className="text-white font-medium">{supplement.name}</span>
-                            <span className="text-xs text-slate-400">
+                            <Pill className="w-4 h-4 text-accent-text" />
+                            <span className="text-strong font-medium">{supplement.name}</span>
+                            <span className="text-xs text-muted-foreground">
                               {supplement.amount} {supplement.measurementType}
                             </span>
                           </div>
                           <div className="flex items-center space-x-2">
                             <button
                               onClick={() => handleEditSupplement(supplement.id, supplement.name)}
-                              className="p-2 text-slate-400 hover:text-slate-200 transition-colors"
+                              className="p-2 text-muted-foreground hover:text-subtle transition-colors"
                               title="Edit supplement"
                             >
                               <Edit2 className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDeleteSupplement(supplement.id)}
-                              className="p-2 text-red-400 hover:text-red-300 transition-colors"
+                              className="p-2 text-feature-red hover:text-feature-red-soft transition-colors"
                               title="Delete supplement"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -243,15 +243,15 @@ export function SupplementsPage() {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-slate-400">No supplements added yet</p>
+                  <p className="text-muted-foreground">No supplements added yet</p>
                 </div>
               )}
             </div>
           </CollapsibleContent>
           </Collapsible>
 
-          <div className="bg-slate-700 rounded-xl p-4">
-            <p className="text-sm text-slate-300">
+          <div className="bg-surface-secondary rounded-xl p-4">
+            <p className="text-sm text-supporting">
               <Calendar className="w-4 h-4 inline mr-2" />
               Tip: Tap any day on the calendar to view or edit past supplement logs
             </p>

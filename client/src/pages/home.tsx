@@ -402,7 +402,7 @@ export default function Home() {
                           cx="48"
                           cy="48"
                           r="44"
-                          stroke="rgb(71, 85, 105)"
+                          stroke="var(--bmi-track)"
                           strokeWidth="8"
                           fill="none"
                         />
@@ -411,7 +411,7 @@ export default function Home() {
                           cx="48"
                           cy="48"
                           r="44"
-                          stroke={timerState.isRunning ? "rgb(34, 197, 94)" : "rgb(156, 163, 175)"}
+                          stroke={timerState.isRunning ? "var(--bmi-green)" : "var(--timer-inactive)"}
                           strokeWidth="8"
                           fill="none"
                           strokeLinecap="round"
@@ -431,7 +431,7 @@ export default function Home() {
                           cx="48"
                           cy="48"
                           r="44"
-                          stroke="rgb(71, 85, 105)"
+                          stroke="var(--bmi-track)"
                           strokeWidth="8"
                           fill="none"
                         />
@@ -440,7 +440,7 @@ export default function Home() {
                           cx="48"
                           cy="48"
                           r="44"
-                          stroke="rgb(34, 197, 94)"
+                          stroke="var(--bmi-green)"
                           strokeWidth="8"
                           fill="none"
                           strokeLinecap="round"

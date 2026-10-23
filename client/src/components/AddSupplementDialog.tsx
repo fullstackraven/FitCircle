@@ -57,23 +57,23 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button 
-          size="sm" 
-          className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 p-0"
+        <Button
+          size="sm"
+          className="bg-action-selected hover:bg-action text-on-action rounded-full w-8 h-8 p-0"
         >
           <Plus className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-md rounded-2xl">
+      <DialogContent className="bg-surface border-separator text-strong max-w-md rounded-2xl">
         <DialogHeader>
-          <DialogTitle className="text-white">Add New Supplement</DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogTitle className="text-strong">Add New Supplement</DialogTitle>
+          <DialogDescription className="text-muted-foreground">
             Add a new supplement to track your daily intake
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="supplement-name" className="text-sm font-medium text-slate-300">
+            <Label htmlFor="supplement-name" className="text-sm font-medium text-supporting">
               Supplement Name
             </Label>
             <Input
@@ -83,22 +83,22 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
               onChange={(e) => setName(e.target.value)}
               onFocus={() => setNameFocused(true)}
               onBlur={() => setNameFocused(false)}
-              className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
+              className="bg-surface-secondary border-control text-strong placeholder-muted-foreground"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="measurement-type" className="text-sm font-medium text-slate-300">
+            <Label htmlFor="measurement-type" className="text-sm font-medium text-supporting">
               Measurement Type
             </Label>
             <Select value={measurementType} onValueChange={setMeasurementType} required>
-              <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+              <SelectTrigger className="bg-surface-secondary border-control text-strong">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-700 border-slate-600">
+              <SelectContent className="bg-surface-secondary border-control">
                 {measurementTypes.map((type) => (
-                  <SelectItem key={type.value} value={type.value} className="text-white hover:bg-slate-600">
+                  <SelectItem key={type.value} value={type.value} className="text-strong hover:bg-control-strong">
                     {type.label}
                   </SelectItem>
                 ))}
@@ -107,7 +107,7 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="amount" className="text-sm font-medium text-slate-300">
+            <Label htmlFor="amount" className="text-sm font-medium text-supporting">
               Amount/Quantity
             </Label>
             <Input
@@ -117,29 +117,29 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
               onChange={(e) => setAmount(e.target.value)}
               onFocus={() => setAmountFocused(true)}
               onBlur={() => setAmountFocused(false)}
-              className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
+              className="bg-surface-secondary border-control text-strong placeholder-muted-foreground"
               min="1"
               required
             />
           </div>
 
           <div className="flex space-x-2 pt-4">
-            <Button 
-              type="submit" 
-              className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+            <Button
+              type="submit"
+              className="flex-1 bg-action-selected hover:bg-action text-on-action"
               disabled={!name.trim() || !measurementType || !amount.trim()}
             >
               Add Supplement
             </Button>
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               onClick={() => {
                 setName('');
                 setMeasurementType('');
                 setAmount('');
               }}
-              className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+              className="flex-1 border-control text-supporting hover:bg-surface-secondary"
             >
               Cancel
             </Button>
