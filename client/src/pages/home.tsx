@@ -205,8 +205,8 @@ export default function Home() {
 
   return (
     <div 
-      className="container mx-auto px-4 max-w-md min-h-screen text-white"
-      style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}
+      className="container mx-auto px-4 max-w-md min-h-screen text-strong"
+      style={{ backgroundColor: 'var(--page-background)' }}
     >
       {/* Header Section - Fixed */}
       <AppHeader>
@@ -214,13 +214,13 @@ export default function Home() {
           {/* Hamburger Menu Icon */}
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />
           </button>
 
-          <h1 className="fitcircle-wordmark text-2xl font-bold text-white">FitCircle</h1>
+          <h1 className="fitcircle-wordmark text-2xl font-bold text-strong">FitCircle</h1>
         </div>
       </AppHeader>
 
@@ -229,11 +229,11 @@ export default function Home() {
       {!isQuoteHidden && <QuoteOfTheDay compact />}
 
       <section className="mb-4" aria-labelledby="today-workout-heading">
-        <p className="text-xs font-medium text-slate-400 mb-1">
+        <p className="text-xs font-medium text-muted-foreground mb-1">
           {new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
         </p>
-        <h2 id="today-workout-heading" className="text-2xl font-bold text-white">Today's Workout</h2>
-        <p className="text-sm text-slate-400 mt-1">
+        <h2 id="today-workout-heading" className="text-2xl font-bold text-strong">Today's Workout</h2>
+        <p className="text-sm text-muted-foreground mt-1">
           {todaysRoutine && <><span className="entity-name">{todaysRoutine.name}</span><span aria-hidden="true"> · </span></>}
           {todaysWorkouts.length} {todaysWorkouts.length === 1 ? 'exercise' : 'exercises'}
         </p>
@@ -250,8 +250,8 @@ export default function Home() {
                   aria-describedby="workout-session-help"
                   className="text-black font-semibold py-3 px-4 rounded-xl flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 w-full"
                   style={{
-                    background: 'linear-gradient(135deg, #00ff41 0%, #00cc33 100%)',
-                    boxShadow: '0 0 10px rgba(0, 255, 65, 0.2)'
+                    background: 'var(--session-start-background)',
+                    boxShadow: 'var(--session-start-shadow)'
                   }}
                 >
                   <Play className="w-5 h-5 text-black" />
@@ -261,36 +261,36 @@ export default function Home() {
               </>
             ) : (
               <div className="w-full flex flex-col items-center space-y-4">
-                <div className="bg-slate-700 rounded-xl py-4 px-6 flex items-center justify-between w-full max-w-xs" style={{ minHeight: '56px' }}>
+                <div className="bg-surface-secondary rounded-xl py-4 px-6 flex items-center justify-between w-full max-w-xs" style={{ minHeight: '56px' }}>
                   <div className="flex items-center space-x-3">
-                    <div className={`w-3 h-3 rounded-full ${isWorkoutPaused ? 'bg-yellow-400' : 'bg-green-400 animate-pulse'}`}></div>
-                    <span className="text-white type-metric text-xl">{getCurrentSessionDuration()}</span>
+                    <div className={`w-3 h-3 rounded-full ${isWorkoutPaused ? 'bg-yellow-400' : 'bg-accent-bright animate-pulse'}`}></div>
+                    <span className="text-strong type-metric text-xl">{getCurrentSessionDuration()}</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={stopWorkout}
-                      className="w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-red-500 hover:bg-red-600 text-on-action rounded-full flex items-center justify-center transition-colors"
                       title="Stop workout"
                     >
                       <StopCircle className="w-5 h-5" />
                     </button>
                     <button
                       onClick={isWorkoutPaused ? resumeWorkout : pauseWorkout}
-                      className="w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-blue-500 hover:bg-blue-600 text-on-action rounded-full flex items-center justify-center transition-colors"
                       title={isWorkoutPaused ? "Resume workout" : "Pause workout"}
                     >
                       {isWorkoutPaused ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
                     </button>
                     <button
                       onClick={resetWorkout}
-                      className="w-10 h-10 bg-slate-600 hover:bg-slate-700 text-white rounded-full flex items-center justify-center transition-colors"
+                      className="w-10 h-10 bg-control-strong hover:bg-surface-secondary text-strong rounded-full flex items-center justify-center transition-colors"
                       title="Reset without saving"
                     >
                       <RotateCcw className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
-                <p className="text-sm text-slate-400 text-center">Workout session in progress</p>
+                <p className="text-sm text-muted-foreground text-center">Workout session in progress</p>
               </div>
             )}
           </div>
@@ -303,9 +303,9 @@ export default function Home() {
         <div className="space-y-5 overflow-visible">
           {/* No Workouts Message */}
           {todaysRoutine && todaysWorkouts.length === 0 && (
-            <div className="glass-panel bg-slate-800 rounded-xl p-6 text-center">
-              <h3 className="text-lg font-semibold text-white mb-2">No workouts scheduled for today!</h3>
-              <p className="text-slate-300">Enjoy an active recovery day!</p>
+            <div className="glass-panel bg-surface rounded-xl p-6 text-center">
+              <h3 className="text-lg font-semibold text-strong mb-2">No workouts scheduled for today!</h3>
+              <p className="text-supporting">Enjoy an active recovery day!</p>
             </div>
           )}
 
@@ -332,15 +332,15 @@ export default function Home() {
                     <div className="min-w-0 w-full text-center">
                       <button
                         onClick={() => handleEditWorkout(workout)}
-                        className="relative w-full min-h-11 text-center text-white hover:text-slate-200 transition-colors"
+                        className="relative w-full min-h-11 text-center text-strong hover:text-subtle transition-colors"
                         aria-label={`Edit ${workout.name}`}
                       >
                         <span className="entity-name block px-6 text-sm font-semibold">{workout.name}</span>
-                        <Edit size={14} className="absolute right-1 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+                        <Edit size={14} className="absolute right-1 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
                       </button>
-                      <p className="text-xs text-slate-400 mt-1">Goal: <span className="type-metric">{workout.dailyGoal}</span> reps</p>
+                      <p className="text-xs text-muted-foreground mt-1">Goal: <span className="type-metric">{workout.dailyGoal}</span> reps</p>
                       {workout.weightLbs && (
-                        <div className="text-xs text-slate-400">
+                        <div className="text-xs text-muted-foreground">
                           Weight: {workout.weightLbs}lbs
                         </div>
                       )}
@@ -348,14 +348,14 @@ export default function Home() {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => handleUndo(workout.id)}
-                        className="text-slate-400 hover:text-slate-200 transition-colors min-h-11 min-w-11 flex items-center justify-center"
+                        className="text-muted-foreground hover:text-subtle transition-colors min-h-11 min-w-11 flex items-center justify-center"
                         title="Undo last rep"
                       >
                         <Undo2 size={14} />
                       </button>
                       <button
                         onClick={() => handleDeleteWorkout(workout.id)}
-                        className="text-slate-400 hover:text-red-400 transition-colors min-h-11 min-w-11 flex items-center justify-center"
+                        className="text-muted-foreground hover:text-feature-red transition-colors min-h-11 min-w-11 flex items-center justify-center"
                         title="Delete workout"
                       >
                         <Trash2 size={14} />
@@ -453,23 +453,23 @@ export default function Home() {
                   )}
                   
                   {/* Timer circle - positioned on top */}
-                  <div className="absolute top-2 left-2 w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center border-4 border-slate-700 hover:border-slate-600 transition-colors z-10" style={{ width: '80px', height: '80px' }}>
+                  <div className="home-utility-circle absolute top-2 left-2 w-20 h-20 rounded-full bg-surface flex items-center justify-center border-4 border-separator hover:border-control transition-colors z-10" style={{ width: '80px', height: '80px' }}>
                     {timerState.remainingTime > 0 && timerState.isCompleted ? (
-                      <CheckCircle className="w-8 h-8 text-green-400" />
+                      <CheckCircle className="w-8 h-8 text-accent-text" />
                     ) : timerState.remainingTime > 0 && !timerState.isRunning ? (
-                      <Play className="w-8 h-8 text-blue-400" />
+                      <Play className="w-8 h-8 text-feature-blue" />
                     ) : (
-                      <Timer className="w-8 h-8 text-slate-400" />
+                      <Timer className="w-8 h-8 text-muted-foreground" />
                     )}
                   </div>
                 </div>
               </button>
               <div className="text-center">
-                <div className="text-sm text-slate-300 font-medium">
+                <div className="text-sm text-supporting font-medium">
                   {timerState.remainingTime > 0 && !timerState.isCompleted ? formatTime(timerState.remainingTime) : 
                    timerState.isCompleted ? "Completed!" : "Timer"}
                 </div>
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-muted-foreground">
                   {timerState.remainingTime > 0 && !timerState.isCompleted ? 
                     (timerState.isRunning ? "Running" : "Paused") :
                     timerState.isCompleted ? "Tap to reset" :
@@ -487,7 +487,7 @@ export default function Home() {
                       // Restart timer with the original total time
                       startTimerFromSeconds(timerState.totalTime);
                     }}
-                    className="text-slate-400 hover:text-slate-200 transition-colors p-1"
+                    className="text-muted-foreground hover:text-subtle transition-colors p-1"
                     title="Restart timer from beginning"
                   >
                     <RotateCcw size={14} />
@@ -500,7 +500,7 @@ export default function Home() {
                       setTimerMinutes('0');
                       setTimerSeconds('0');
                     }}
-                    className="text-slate-400 hover:text-red-400 transition-colors p-1"
+                    className="text-muted-foreground hover:text-feature-red transition-colors p-1"
                     title="Stop timer"
                   >
                     <Square size={14} />
@@ -515,16 +515,16 @@ export default function Home() {
                 <div className="w-24 h-24 flex items-center justify-center">
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center border-4 border-dashed border-slate-700 hover:border-slate-600 transition-colors"
+                  className="home-utility-circle w-20 h-20 rounded-full bg-surface flex items-center justify-center border-4 border-dashed border-separator hover:border-control transition-colors"
                   style={{ width: '80px', height: '80px' }}
                   title="Add new workout"
                 >
-                  <Plus className="w-8 h-8 text-slate-400" />
+                  <Plus className="w-8 h-8 text-muted-foreground" />
                 </button>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm text-slate-300 font-medium">Add</div>
-                  <div className="text-xs text-slate-400">New workout</div>
+                  <div className="text-sm text-supporting font-medium">Add</div>
+                  <div className="text-xs text-muted-foreground">New workout</div>
                 </div>
               </div>
             )}
@@ -536,15 +536,15 @@ export default function Home() {
       {/* Today's Totals Section */}
       {!isTodaysTotalsHidden && todaysTotals.some(w => w.count > 0) && (
         <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4 text-center text-white">Today's Totals</h2>
-          <div className="glass-panel bg-slate-800 rounded-xl p-4 space-y-3">
+          <h2 className="text-xl font-semibold mb-4 text-center text-strong">Today's Totals</h2>
+          <div className="glass-panel bg-surface rounded-xl p-4 space-y-3">
             {todaysTotals.filter(w => w.count > 0).map((workout) => (
               <div key={workout.id} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className={`w-4 h-4 rounded-full ${getColorClass(workout.color)}`}></div>
-                  <span className="entity-name font-medium text-white">{workout.name}</span>
+                  <span className="entity-name font-medium text-strong">{workout.name}</span>
                 </div>
-                <span className="type-metric shrink-0 text-lg font-bold text-white">{typeof workout.count === 'number' ? workout.count : 0}</span>
+                <span className="type-metric shrink-0 text-lg font-bold text-strong">{typeof workout.count === 'number' ? workout.count : 0}</span>
               </div>
             ))}
           </div>
@@ -571,7 +571,7 @@ export default function Home() {
 
       {/* Sidebar Dashboard */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetContent side="left" className="w-80 bg-slate-900 border-slate-700">
+        <SheetContent side="left" className="w-80 bg-canvas border-separator">
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation Menu</SheetTitle>
           </SheetHeader>
@@ -584,19 +584,19 @@ export default function Home() {
 
               {/* Settings */}
               <div 
-                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                className="flex items-center space-x-3 p-4 hover:bg-surface transition-colors cursor-pointer"
                 onClick={() => {
                   setIsSidebarOpen(false);
                   navigate('/settings?from=dashboard');
                 }}
               >
-                <Settings className="w-5 h-5 text-slate-400" />
-                <span className="text-white">Settings</span>
+                <Settings className="w-5 h-5 text-muted-foreground" />
+                <span className="text-strong">Settings</span>
               </div>
             </div>
 
             {/* Version */}
-            <div className="p-4 border-t border-slate-700">
+            <div className="p-4 border-t border-separator">
               <VersionLabel onActivate={() => setIsSidebarOpen(false)} />
             </div>
           </div>
@@ -605,7 +605,7 @@ export default function Home() {
 
       {/* Timer Dialog */}
       <Dialog open={isTimerOpen} onOpenChange={setIsTimerOpen}>
-        <DialogContent staticBody fixedFooter className="timer-dialog bg-slate-900 text-white border-slate-700 max-w-sm rounded-2xl p-4 gap-4">
+        <DialogContent staticBody fixedFooter className="timer-dialog bg-canvas text-strong border-separator max-w-sm rounded-2xl p-4 gap-4">
           <DialogHeader className="text-left sm:text-left pl-0 pr-10">
             <DialogTitle className="text-2xl font-bold">Timer</DialogTitle>
             <DialogDescription className="sr-only">Choose hours, minutes and seconds, then start your timer.</DialogDescription>
@@ -617,14 +617,14 @@ export default function Home() {
             <TimerWheel label="Seconds" unit="sec" max={59} value={Number(timerSeconds)} onChange={value => setTimerSeconds(String(value))} />
           </div>
           <DialogFooter className="flex-row justify-between sm:justify-between sm:space-x-0">
-            <Button onClick={() => setIsTimerOpen(false)} className="w-16 h-16 rounded-full bg-slate-800 text-slate-300 hover:bg-slate-700 p-0">Cancel</Button>
+            <Button onClick={() => setIsTimerOpen(false)} className="w-16 h-16 rounded-full bg-surface text-supporting hover:bg-surface-secondary p-0">Cancel</Button>
             <Button
               disabled={Number(timerHours) * 3600 + Number(timerMinutes) * 60 + Number(timerSeconds) === 0}
               onClick={() => {
                 const totalSeconds = Number(timerHours) * 3600 + Number(timerMinutes) * 60 + Number(timerSeconds);
                 if (totalSeconds > 0) { startTimerFromSeconds(totalSeconds); setIsTimerOpen(false); }
               }}
-              className="w-16 h-16 rounded-full bg-green-400/15 text-green-400 hover:bg-green-400/25 disabled:opacity-40 p-0"
+              className="w-16 h-16 rounded-full bg-accent-bright/15 text-accent-text hover:bg-accent-bright/25 disabled:opacity-40 p-0"
             >Start</Button>
           </DialogFooter>
         </DialogContent>

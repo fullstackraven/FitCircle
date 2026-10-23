@@ -63,7 +63,7 @@
     font-size: 1rem;
     line-height: 1.5;
     background-color: var(--app-background);
-    color: hsl(210, 40%, 98%);
+    color: hsl(var(--foreground));
     margin: 0;
     width: 100%;
     overscroll-behavior: none;
@@ -155,7 +155,7 @@
 @layer utilities {
   /* Page Layout */
   .fitcircle-page {
-    @apply text-white;
+    @apply text-strong;
     background-color: var(--app-background);
   }
   
@@ -169,63 +169,63 @@
   }
   
   .fitcircle-page-title {
-    @apply text-xl font-semibold text-white;
+    @apply text-xl font-semibold text-strong;
   }
   
   .fitcircle-back-button {
-    @apply text-slate-400 hover:text-white transition-colors flex items-center space-x-2;
+    @apply text-muted-foreground hover:text-strong transition-colors flex items-center space-x-2;
   }
   
   /* Card Styles */
   .fitcircle-card {
-    @apply bg-slate-800 rounded-xl p-4 border-slate-700;
+    @apply bg-surface rounded-xl p-4 border-separator;
   }
   
   .fitcircle-card-lg {
-    @apply bg-slate-800 rounded-xl p-6 border-slate-700;
+    @apply bg-surface rounded-xl p-6 border-separator;
   }
   
   /* Form Elements */
   .fitcircle-input {
-    @apply bg-slate-700 border-slate-600 text-white placeholder-slate-400 rounded-xl;
+    @apply bg-surface-secondary border-control text-strong placeholder-muted-foreground rounded-xl;
   }
   
   .fitcircle-select {
-    @apply bg-slate-700 border-slate-600 text-white rounded-xl;
+    @apply bg-surface-secondary border-control text-strong rounded-xl;
   }
   
   .fitcircle-label {
-    @apply text-sm font-medium text-slate-300;
+    @apply text-sm font-medium text-supporting;
   }
   
   /* Button Styles */
   .fitcircle-btn-primary {
-    @apply bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors;
+    @apply bg-action hover:bg-action-hover text-on-action rounded-xl transition-colors;
   }
   
   .fitcircle-btn-secondary {
-    @apply bg-slate-600 hover:bg-slate-700 text-white rounded-xl transition-colors;
+    @apply bg-control-strong hover:bg-surface-secondary text-strong rounded-xl transition-colors;
   }
   
   .fitcircle-btn-outline {
-    @apply border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 rounded-xl transition-colors;
+    @apply border-control bg-surface-secondary text-supporting hover:bg-control-strong rounded-xl transition-colors;
   }
   
   /* Text Styles */
   .fitcircle-text-muted {
-    @apply text-slate-400;
+    @apply text-muted-foreground;
   }
   
   .fitcircle-text-secondary {
-    @apply text-slate-300;
+    @apply text-supporting;
   }
   
   .fitcircle-text-xs {
-    @apply text-xs text-slate-400;
+    @apply text-xs text-muted-foreground;
   }
   
   .fitcircle-text-sm {
-    @apply text-sm text-slate-300;
+    @apply text-sm text-supporting;
   }
 }
 
@@ -511,7 +511,7 @@
   height: 44px;
   width: 100%;
   border-radius: 999px;
-  background: rgb(51 65 85 / .65);
+  background: var(--timer-selection);
   pointer-events: none;
 }
 .timer-wheel {
@@ -527,7 +527,7 @@
   mask-image: linear-gradient(transparent, black 28%, black 72%, transparent);
 }
 .timer-wheel::-webkit-scrollbar { display: none; }
-.timer-wheel:focus-visible { outline: 2px solid #4ade80; outline-offset: -2px; border-radius: 12px; }
+.timer-wheel:focus-visible { outline: 2px solid hsl(var(--focus)); outline-offset: -2px; border-radius: 12px; }
 .timer-wheel-option {
   height: 44px;
   scroll-snap-align: center;
@@ -607,5 +607,5 @@
   background: transparent;
   outline: none;
   box-shadow: none;
-  caret-color: #4ade80;
+  caret-color: hsl(var(--focus));
 }

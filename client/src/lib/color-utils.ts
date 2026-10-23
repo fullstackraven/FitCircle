@@ -55,3 +55,10 @@ export const getColorClass = (color: string): string => {
 export const getStrokeColor = (color: string): string => {
   return strokeColorMap[color] || '#22c55e';
 };
+/** Presentation only: preserve persisted hue identifiers and Dark strokes. */
+const lightStrokeColorMap: Record<string, string> = {
+  green: '#15803d', blue: '#1d4ed8', purple: '#6d28d9', amber: '#b45309',
+  red: '#b91c1c', pink: '#be185d', cyan: '#0e7490', lime: '#4d7c0f',
+  orange: '#c2410c', indigo: '#4338ca', emerald: '#047857', yellow: '#a16207',
+};
+export const getLightStrokeColor = (color: string): string => lightStrokeColorMap[color] || lightStrokeColorMap.green;

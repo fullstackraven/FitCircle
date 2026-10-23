@@ -1,0 +1,85 @@
+{
+  "readings": [
+    {
+      "text": "FitCircle",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "Cardio",
+      "ratio": 16.12,
+      "required": 4.5
+    },
+    {
+      "text": "Intermittent Fasting",
+      "ratio": 15.81,
+      "required": 4.5
+    },
+    {
+      "text": "Meditation",
+      "ratio": 15.68,
+      "required": 4.5
+    },
+    {
+      "text": "Hydration",
+      "ratio": 16.01,
+      "required": 4.5
+    },
+    {
+      "text": "Measurements",
+      "ratio": 16,
+      "required": 4.5
+    },
+    {
+      "text": "Food Tracker",
+      "ratio": 16.24,
+      "required": 4.5
+    },
+    {
+      "text": "Recovery",
+      "ratio": 15.81,
+      "required": 4.5
+    },
+    {
+      "text": "Daily Journal",
+      "ratio": 15.68,
+      "required": 4.5
+    },
+    {
+      "text": "Energy Level",
+      "ratio": 16.35,
+      "required": 4.5
+    },
+    {
+      "text": "Supplements",
+      "ratio": 15.73,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 15.39,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

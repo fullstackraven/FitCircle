@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react';
-import { useRef, useCallback, useEffect } from 'react';
-import { getColorClass, getStrokeColor } from '@/lib/color-utils';
+import { useRef, useCallback, useEffect, type CSSProperties } from 'react';
+import { getColorClass, getStrokeColor, getLightStrokeColor } from '@/lib/color-utils';
 
 interface ProgressCircleProps {
   ariaLabel?: string;
@@ -107,7 +107,7 @@ export function ProgressCircle({
     >
       {/* Background circle - more transparent when completed */}
       <div 
-        className={`absolute rounded-full ${getColorClass(color)} shadow-lg transition-opacity duration-300 ${
+        className={`workout-colored-surface absolute rounded-full ${getColorClass(color)} shadow-lg transition-opacity duration-300 ${
           progress >= 1 ? 'opacity-20' : 'opacity-40'
         }`}
         style={{ 
@@ -132,8 +132,8 @@ export function ProgressCircle({
           <Check 
             size={32} 
             style={{ 
-              color: '#00ff41', // Bright neon green
-              filter: 'drop-shadow(0 0 8px #00ff41) drop-shadow(0 0 16px #00ff41)',
+              color: 'var(--workout-complete)',
+              filter: 'var(--workout-complete-glow)',
               opacity: 1
             }} 
           />
@@ -141,8 +141,8 @@ export function ProgressCircle({
           <span 
             className="type-metric font-black text-xl"
             style={{ 
-              color: '#ffffff', 
-              textShadow: '0 2px 8px rgba(0,0,0,1), 0 4px 16px rgba(0,0,0,0.8), 0 0 8px rgba(255,255,255,0.5)',
+              color: 'var(--workout-number)',
+              textShadow: 'var(--workout-number-shadow)',
               opacity: 1,
               fontSize: '20px',
               fontWeight: 900
@@ -158,14 +158,14 @@ export function ProgressCircle({
         className="absolute transform -rotate-90"
         width={svgSize}
         height={svgSize}
-        style={{ top: 0, left: 0 }}
+        style={{ top: 0, left: 0, '--workout-stroke': getStrokeColor(color), '--workout-stroke-light': getLightStrokeColor(color) } as CSSProperties}
       >
         {/* Background ring - darker and thicker */}
         <circle
           cx={svgSize / 2}
           cy={svgSize / 2}
           r={radius}
-          stroke="rgba(255, 255, 255, 0.1)"
+          stroke="var(--workout-track)"
           strokeWidth={strokeWidth + 2}
           fill="none"
         />
@@ -180,9 +180,9 @@ export function ProgressCircle({
           strokeDasharray={strokeDasharray}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          className="transition-all duration-500 ease-out"
+          className="workout-progress-fill transition-all duration-500 ease-out"
           style={{
-            filter: progress >= 1 ? 'drop-shadow(0 0 16px currentColor) drop-shadow(0 0 32px currentColor)' : 'drop-shadow(0 0 4px currentColor)',
+            filter: progress >= 1 ? 'var(--workout-glow-complete)' : 'var(--workout-glow)',
             opacity: 0.9
           }}
         />

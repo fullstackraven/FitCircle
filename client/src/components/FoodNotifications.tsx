@@ -9,7 +9,7 @@ export function FoodNotifications() {
     <ToastProvider>
       {toasts.map(({ id, title, description, action, ...props }) => (
         <Toast key={id} {...props} duration={props.variant === 'destructive' ? Infinity : 6000}
-          className="bg-slate-800 text-slate-100 border-slate-600">
+          className="bg-surface text-soft border-control">
           <div className="grid gap-1">
             {title && <ToastTitle>{title}</ToastTitle>}
             {description && <ToastDescription>{description}</ToastDescription>}

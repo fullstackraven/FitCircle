@@ -13,6 +13,9 @@ const buttonVariants = cva(
         // and inherited. Preserve that baseline when making tokens valid.
         default: "bg-transparent text-inherit hover:bg-transparent",
         destructive: "bg-transparent text-inherit hover:bg-transparent",
+        primary: "bg-action-solid text-on-action hover:bg-action-hover",
+        danger: "bg-danger text-on-action hover:bg-danger-hover",
+        "quiet-destructive": "bg-transparent text-danger-text hover:bg-danger-tint",
         outline:
           "glass-button border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:

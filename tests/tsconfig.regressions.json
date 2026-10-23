@@ -1,6 +1,9 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "appearance-colors.test.ts",
+    "browser/appearance-phase-two.spec.ts",
+    "fixtures/appearance-pages.ts",
     "appearance.test.ts",
     "browser/appearance.spec.ts",
     "browser/appearance-baseline.spec.ts",

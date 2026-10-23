@@ -65,9 +65,9 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent fixedFooter staticBody className="max-w-md text-white p-4 gap-2">
+      <DialogContent fixedFooter staticBody className="max-w-md text-strong p-4 gap-2">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-white">
+          <DialogTitle className="text-xl font-semibold text-strong">
             {editingWorkout ? 'Edit Workout' : 'Add New Workout'}
           </DialogTitle>
           <DialogDescription className="sr-only">
@@ -79,7 +79,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
           <div className="grid grid-cols-2 gap-3">
             {/* Workout Name Input */}
             <div className="space-y-1">
-              <Label htmlFor="workout-name" className="block text-xs leading-4 font-medium text-white">
+              <Label htmlFor="workout-name" className="block text-xs leading-4 font-medium text-strong">
                 Workout Name
               </Label>
               <Input
@@ -87,18 +87,18 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
                 type="text"
                 value={workoutName}
                 onChange={(e) => setWorkoutName(e.target.value)}
-                className="h-9 text-base text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
+                className="h-9 text-base text-strong placeholder-muted-foreground focus:border-action-selected focus:ring-focus"
               />
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="workout-color" className="block text-xs leading-4 font-medium text-white">Color</Label>
+              <Label htmlFor="workout-color" className="block text-xs leading-4 font-medium text-strong">Color</Label>
               <div className="relative">
                 <span aria-hidden="true" className={`absolute left-3 top-3 h-3 w-3 rounded-full ${getColorClass(selectedColor)}`} />
                 <select id="workout-color" value={selectedColor} onChange={event => setSelectedColor(event.target.value)}
-                  className="glass-input block h-9 w-full rounded-xl border pl-8 pr-2 text-sm text-white" aria-label="Workout color">
+                  className="glass-input block h-9 w-full rounded-xl border pl-8 pr-2 text-sm text-strong" aria-label="Workout color">
                   {Array.from(new Set([...availableColors, selectedColor])).map(color => (
-                    <option key={color} value={color} className="bg-slate-900 text-white">{color.charAt(0).toUpperCase() + color.slice(1)}</option>
+                    <option key={color} value={color} className="bg-canvas text-strong">{color.charAt(0).toUpperCase() + color.slice(1)}</option>
                   ))}
                 </select>
               </div>
@@ -107,7 +107,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
           <div className="grid grid-cols-2 gap-3">
             {/* Weight Input */}
             <div className="space-y-1">
-              <Label htmlFor="weight-lbs" className="block text-xs leading-4 font-medium text-white">
+              <Label htmlFor="weight-lbs" className="block text-xs leading-4 font-medium text-strong">
                 Weight (lbs)
               </Label>
               <Input
@@ -137,13 +137,13 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
                   e.target.select(); // Select all text when focused
                 }}
 
-                className="h-9 text-base text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
+                className="h-9 text-base text-strong placeholder-muted-foreground focus:border-action-selected focus:ring-focus"
               />
             </div>
 
             {/* Daily Goal Input */}
             <div className="space-y-1">
-              <Label htmlFor="daily-goal" className="block text-xs leading-4 font-medium text-white">
+              <Label htmlFor="daily-goal" className="block text-xs leading-4 font-medium text-strong">
                 Daily Goal
               </Label>
               <Input
@@ -170,7 +170,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
                   e.target.select(); // Select all text when focused
                 }}
 
-                className="h-9 text-base text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
+                className="h-9 text-base text-strong placeholder-muted-foreground focus:border-action-selected focus:ring-focus"
               />
             </div>
 
@@ -186,11 +186,11 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
         </div>
 
         {/* Fixed Bottom Actions */}
-        <DialogFooter className={`grid ${editingWorkout && onDelete ? "grid-cols-3" : "grid-cols-2"} gap-2 border-t border-slate-700 pt-2 sm:space-x-0`}>
+        <DialogFooter className={`grid ${editingWorkout && onDelete ? "grid-cols-3" : "grid-cols-2"} gap-2 border-t border-separator pt-2 sm:space-x-0`}>
           <Button
             variant="outline"
             onClick={handleCancel}
-            className="px-2 text-white"
+            className="px-2 text-strong"
           >
             Cancel
           </Button>
@@ -203,7 +203,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
                   handleCancel();
                 }
               }}
-              className="px-2 bg-red-500 hover:bg-red-600 text-white border-red-600"
+              className="action-quiet-danger px-2 bg-red-500 hover:bg-red-600 text-on-action border-red-600"
             >
               Delete
             </Button>
@@ -212,7 +212,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
             onClick={handleSave}
             disabled={!workoutName.trim() || !dailyGoal || (typeof dailyGoal === 'number' && dailyGoal <= 0)}
             aria-label={editingWorkout ? "Update Workout" : "Add Workout"}
-            className="px-2 bg-green-500 hover:bg-green-600 text-white"
+            className="px-2 bg-action-selected hover:bg-action text-on-action"
           >
             {editingWorkout ? 'Update' : 'Add'}
           </Button>

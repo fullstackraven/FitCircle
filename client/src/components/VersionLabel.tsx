@@ -24,7 +24,7 @@ async function openDiagnostics() {
 
 export function VersionLabel({ onActivate }: { onActivate: () => void }) {
   const taps = useRef({ count: 0, last: 0 });
-  return <button type="button" className="text-slate-500 text-xs text-center block w-full py-4 -my-4" onClick={() => {
+  return <button type="button" className="text-dim text-xs text-center block w-full py-4 -my-4" onClick={() => {
     const now = performance.now();
     taps.current.count = now - taps.current.last <= 1500 ? taps.current.count + 1 : 1;
     taps.current.last = now;
