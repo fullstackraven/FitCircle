@@ -6,7 +6,7 @@ export function NutritionProgressBar({
   target,
   label,
   description,
-  color = "bg-green-400",
+  color = "bg-nutrition-green",
 }: {
   actual: number;
   target: number;
@@ -24,7 +24,7 @@ export function NutritionProgressBar({
       aria-valuemax={100}
       aria-valuenow={Number(progress.toFixed(1))}
       aria-valuetext={description}
-      className="mt-2 h-1 rounded-full bg-slate-700 overflow-hidden"
+      className="mt-2 h-1 rounded-full bg-nutrition-track overflow-hidden"
     >
       <div
         className={`h-full rounded-full ${color}`}

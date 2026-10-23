@@ -128,13 +128,13 @@ export function FoodEntryForm({
   return (
     <div className="space-y-3">
       <div>
-        <h3 className="text-xl font-semibold text-white">
+        <h3 className="text-xl font-semibold text-strong">
           {draft.name || "Scanned food"}
         </h3>
-        {draft.brand && <p className="text-sm text-slate-400">{draft.brand}</p>}
+        {draft.brand && <p className="text-sm text-muted-foreground">{draft.brand}</p>}
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <label className="text-sm text-slate-300">
+        <label className="text-sm text-supporting">
           Base serving quantity
           <Input
             aria-label="Product serving quantity"
@@ -145,11 +145,11 @@ export function FoodEntryForm({
             onChange={(e) => setQuantity(e.target.value)}
           />
         </label>
-        <label className="text-sm text-slate-300">
+        <label className="text-sm text-supporting">
           Base serving unit
           <select
             aria-label="Product serving unit"
-            className="w-full min-h-10 bg-slate-800 rounded-lg px-2"
+            className="nutrition-unit-select w-full min-h-10 bg-surface rounded-lg px-2"
             value={unit}
             onChange={(e) => {
               setUnit(e.target.value as FoodUnit);
@@ -165,7 +165,7 @@ export function FoodEntryForm({
         </label>
       </div>
       {needsEquivalent && (
-        <label className="block text-sm text-slate-300">
+        <label className="block text-sm text-supporting">
           One {unit} equals how many {anchor.unit}?
           <Input
             aria-label="Equivalent original quantity"
@@ -175,13 +175,13 @@ export function FoodEntryForm({
             value={equivalent}
             onChange={(e) => setEquivalent(e.target.value)}
           />
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-muted-foreground">
             Check the label or weigh the serving. Weight, volume and pieces
             cannot be converted without this information.
           </span>
         </label>
       )}
-      <label className="block text-sm text-slate-300">
+      <label className="block text-sm text-supporting">
         Servings eaten (multiplier)
         <Input
           data-testid="input-add-servings"
@@ -192,13 +192,13 @@ export function FoodEntryForm({
           onChange={(e) => setServings(e.target.value)}
         />
       </label>
-      <p className="text-sm tabular-nums text-green-400">
+      <p className="text-sm tabular-nums text-accent-text">
         {consumedServingText(Number(quantity), unit, servings)}
       </p>
-      <label className="block text-sm text-slate-300">
+      <label className="block text-sm text-supporting">
         Meal
         <Select value={meal} onValueChange={(value) => setMeal(value as Meal)}>
-          <SelectTrigger aria-label="Meal" className="bg-slate-800">
+          <SelectTrigger aria-label="Meal" className="bg-surface">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -213,13 +213,13 @@ export function FoodEntryForm({
         </Select>
       </label>
       <div
-        className="grid grid-cols-4 gap-2 rounded-xl bg-slate-800 p-4 text-center tabular-nums"
+        className="grid grid-cols-4 gap-2 rounded-xl bg-surface p-4 text-center tabular-nums"
         data-testid="entry-nutrition-summary"
       >
         {(["calories", "carbs", "fat", "protein"] as const).map((key) => (
           <div key={key}>
             <strong
-              className={`text-lg ${key === "protein" ? "text-green-400" : key === "carbs" ? "text-blue-400" : key === "fat" ? "text-rose-400" : "text-white"}`}
+              className={`text-lg ${key === "protein" ? "text-accent-text" : key === "carbs" ? "text-feature-blue" : key === "fat" ? "text-feature-rose" : "text-strong"}`}
             >
               {scalingError ||
               draft.values[key] === "" ||
@@ -239,7 +239,7 @@ export function FoodEntryForm({
                 ? "g"
                 : ""}
             </strong>
-            <div className="text-xs text-slate-400">
+            <div className="text-xs text-muted-foreground">
               {key === "calories" ? "cal" : nutrientLabels[key][0]}
             </div>
           </div>
@@ -247,12 +247,12 @@ export function FoodEntryForm({
       </div>
       <details
         open={missingCore || undefined}
-        className="rounded-xl bg-slate-800 p-3"
+        className="rounded-xl bg-surface p-3"
       >
-        <summary className="text-sm text-green-400 cursor-pointer">
+        <summary className="text-sm text-accent-text cursor-pointer">
           Edit label nutrition
         </summary>
-        <p className="text-xs text-slate-400 my-2">
+        <p className="text-xs text-muted-foreground my-2">
           Values per {quantity} {unit}. Blank means unknown; enter zero only
           when confirmed.
         </p>
@@ -266,7 +266,7 @@ export function FoodEntryForm({
         </label>
         <div className="grid grid-cols-2 gap-3 mt-3">
           {nutrientFields.map((key) => (
-            <label key={key} className="text-sm text-slate-300">
+            <label key={key} className="text-sm text-supporting">
               {nutrientLabels[key][0]} ({nutrientLabels[key][1]})
               <Input
                 aria-label={`Product ${nutrientLabels[key][0]}`}
@@ -281,15 +281,15 @@ export function FoodEntryForm({
           ))}
         </div>
         {initial.warnings.map((warning) => (
-          <p key={warning} className="text-xs text-amber-200">
+          <p key={warning} className="text-xs text-warning">
             {warning}
           </p>
         ))}
         {draft.source === "Open Food Facts" && (
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted-foreground">
             Product data:{" "}
             <a
-              className="text-green-400 underline"
+              className="text-accent-text underline"
               target="_blank"
               rel="noreferrer"
               href={draft.sourceUrl ?? "https://world.openfoodfacts.org"}
@@ -310,7 +310,7 @@ export function FoodEntryForm({
         )}
       </details>
       {(error || saveError || scalingError) && (
-        <p role="alert" className="text-sm text-red-400">
+        <p role="alert" className="text-sm text-feature-red">
           {error || saveError || scalingError}
           {saved.current && saveError
             ? " Product is saved offline; the diary entry has not been saved."
@@ -324,7 +324,7 @@ export function FoodEntryForm({
         <Button
           data-testid="button-save-add-entry"
           disabled={busy}
-          className="bg-green-400 text-slate-950"
+          className="bg-green-400 text-on-bright"
           onClick={() => void add()}
         >
           {busy ? "Saving…" : "Add"}

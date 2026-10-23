@@ -4,7 +4,7 @@ export function NutritionProgress({
   value,
   target,
   label,
-  color = "bg-green-400",
+  color = "bg-nutrition-green",
 }: {
   value: number;
   target: number;
@@ -21,7 +21,7 @@ export function NutritionProgress({
       aria-valuemax={100}
       aria-valuenow={Math.round(percent)}
       aria-valuetext={`${value.toFixed(1)} of ${target}`}
-      className="h-2 rounded-full bg-slate-700 overflow-hidden"
+      className="h-2 rounded-full bg-nutrition-track overflow-hidden"
     >
       <div
         className={`h-full rounded-full ${color}`}
@@ -44,24 +44,24 @@ export function DailyNutritionSummary({
   const balance = calorieBalance(calories, targets.calories);
   return (
     <section aria-label="Daily nutrition overview" className="space-y-3">
-      <div className="rounded-2xl bg-slate-800 p-4 space-y-3">
+      <div className="rounded-2xl bg-surface p-4 space-y-3">
         <div className="flex justify-between gap-3 items-start">
           <div>
-            <h2 className="text-sm text-slate-300">
+            <h2 className="text-sm text-supporting">
               {balance.over > 0 ? "Above daily target" : "Calories remaining"}
             </h2>
             <p
-              className="type-metric text-4xl font-bold text-white mt-1"
+              className="type-metric text-4xl font-bold text-strong mt-1"
               data-testid="calories-remaining"
             >
               {Math.round(balance.over || balance.remaining).toLocaleString()}
             </p>
           </div>
           <div className="text-right">
-            <p className="type-metric text-xl font-bold text-green-400">
+            <p className="type-metric text-xl font-bold text-accent-text">
               {Math.round(balance.percent)}%
             </p>
-            <p className="text-xs text-slate-400">of daily target consumed</p>
+            <p className="text-xs text-muted-foreground">of daily target consumed</p>
           </div>
         </div>
         <NutritionProgress
@@ -69,18 +69,18 @@ export function DailyNutritionSummary({
           target={targets.calories}
           label="Calories consumed"
         />
-        <div className="flex justify-between gap-2 text-sm text-slate-400">
+        <div className="flex justify-between gap-2 text-sm text-muted-foreground">
           <span>{Math.round(calories).toLocaleString()} consumed</span>
           <span>{targets.calories.toLocaleString()} target</span>
         </div>
         {balance.over > 0 && (
-          <p className="text-xs text-slate-300">
+          <p className="text-xs text-supporting">
             {Math.round(balance.over)} kcal above your target. Your intake is
             still recorded in full.
           </p>
         )}
         {!confirmed && (
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted-foreground">
             Reference targets — set your targets in Fitness Calculator.
           </p>
         )}
@@ -88,16 +88,16 @@ export function DailyNutritionSummary({
       <div className="grid grid-cols-3 gap-2">
         {(
           [
-            ["protein", "Protein", "bg-green-400"],
-            ["carbs", "Carbs", "bg-blue-400"],
-            ["fat", "Fat", "bg-amber-400"],
+            ["protein", "Protein", "bg-nutrition-green"],
+            ["carbs", "Carbs", "bg-nutrition-blue"],
+            ["fat", "Fat", "bg-nutrition-amber"],
           ] as const
         ).map(([key, label, color]) => (
-          <div key={key} className="rounded-xl bg-slate-800 p-3 min-w-0">
-            <h3 className="text-sm text-slate-300 mb-2">{label}</h3>
-            <p className="tabular-nums text-sm font-semibold text-white mb-2 break-words">
+          <div key={key} className="rounded-xl bg-surface p-3 min-w-0">
+            <h3 className="text-sm text-supporting mb-2">{label}</h3>
+            <p className="tabular-nums text-sm font-semibold text-strong mb-2 break-words">
               {totals[key].value.toFixed(1)}{" "}
-              <span className="text-slate-400 font-normal">
+              <span className="text-muted-foreground font-normal">
                 / {targets[key]}g
               </span>
             </p>

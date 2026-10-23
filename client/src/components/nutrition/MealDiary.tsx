@@ -25,7 +25,7 @@ export function MealDiary({
           meal === "snack" ? "Snacks" : meal[0].toUpperCase() + meal.slice(1);
         const calories = Math.round(dailyNutrition(foods).calories.value);
         return (
-          <section key={meal} className="rounded-2xl bg-slate-800 p-3">
+          <section key={meal} className="rounded-2xl bg-surface p-3">
             <div className="flex gap-2 items-center">
               <button
                 aria-label={`${label} ${calories} cal`}
@@ -37,16 +37,16 @@ export function MealDiary({
                 }
               >
                 <span>
-                  <span className="font-semibold text-white block">
+                  <span className="font-semibold text-strong block">
                     {label}
                   </span>
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-muted-foreground">
                     {foods.length
                       ? `${foods.length} ${foods.length === 1 ? "food" : "foods"}`
                       : "No foods logged"}
                   </span>
                 </span>
-                <span className="flex items-center gap-2 text-slate-400 text-sm tabular-nums">
+                <span className="flex items-center gap-2 text-muted-foreground text-sm tabular-nums">
                   {calories} cal
                   <ChevronDown
                     size={16}
@@ -59,7 +59,7 @@ export function MealDiary({
                 onClick={() => onAdd(meal)}
                 aria-label={`Add Food to ${label}`}
                 data-testid={`button-add-${meal}`}
-                className="min-w-11 min-h-11 flex items-center justify-center text-green-400 disabled:opacity-40"
+                className="min-w-11 min-h-11 flex items-center justify-center text-accent-text disabled:opacity-40"
               >
                 <PlusCircle size={22} />
               </button>
@@ -67,7 +67,7 @@ export function MealDiary({
             {expanded[meal] && (
               <div
                 id={`meal-${meal}`}
-                className="divide-y divide-slate-700 mt-2"
+                className="divide-y divide-separator mt-2"
               >
                 {foods.length ? (
                   foods.map((entry) => (
@@ -81,15 +81,15 @@ export function MealDiary({
                         onClick={() => onEdit(entry)}
                         className="flex-1 text-left min-w-0"
                       >
-                        <span className="block font-medium text-white break-words">
+                        <span className="block font-medium text-strong break-words">
                           {entry.name}
                         </span>
                         {entry.brand && (
-                          <span className="block text-xs text-slate-400">
+                          <span className="block text-xs text-muted-foreground">
                             {entry.brand}
                           </span>
                         )}
-                        <span className="block text-xs text-slate-400 mt-1">
+                        <span className="block text-xs text-muted-foreground mt-1">
                           {Number(
                             ((entry.quantity ?? 1) * servingsOf(entry)).toFixed(
                               2,
@@ -98,7 +98,7 @@ export function MealDiary({
                           {entry.unit ?? "serving"} ·{" "}
                           {Math.round(entry.calories * servingsOf(entry))} kcal
                         </span>
-                        <span className="block text-xs text-slate-300 mt-1 tabular-nums">
+                        <span className="block text-xs text-supporting mt-1 tabular-nums">
                           P{" "}
                           {Number(
                             (entry.protein * servingsOf(entry)).toFixed(1),
@@ -114,14 +114,14 @@ export function MealDiary({
                         aria-label={`Delete ${entry.name}`}
                         onClick={() => onDelete(entry.id)}
                         data-testid={`button-delete-${entry.id}`}
-                        className="min-w-11 min-h-11 self-center flex items-center justify-center text-slate-400 hover:text-red-400"
+                        className="min-w-11 min-h-11 self-center flex items-center justify-center text-muted-foreground hover:text-feature-red"
                       >
                         <Trash2 size={18} />
                       </button>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-slate-400 py-2">No foods logged</p>
+                  <p className="text-sm text-muted-foreground py-2">No foods logged</p>
                 )}
               </div>
             )}

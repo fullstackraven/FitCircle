@@ -36,12 +36,12 @@ export function NutritionDetails({
   return (
     <div>
       {incomplete && (
-        <p id={disclosureId} className="text-xs text-slate-400 mb-2">
+        <p id={disclosureId} className="text-xs text-muted-foreground mb-2">
           Some nutrient totals are partial; bars show recorded intake only.
         </p>
       )}
       <dl
-        className="divide-y divide-slate-700/50"
+        className="divide-y divide-separator/50"
         aria-describedby={incomplete ? disclosureId : undefined}
       >
         {displayedFields.map((key) => {
@@ -71,21 +71,21 @@ export function NutritionDetails({
               data-complete={item.known === item.total}
             >
               <div className="flex flex-wrap justify-between items-baseline gap-x-3 gap-y-1">
-                <dt className="text-slate-300 min-w-0">{label}</dt>
+                <dt className="text-supporting min-w-0">{label}</dt>
                 <dd
-                  className="tabular-nums text-white text-right text-sm min-w-0 max-w-full [overflow-wrap:anywhere]"
+                  className="tabular-nums text-strong text-right text-sm min-w-0 max-w-full [overflow-wrap:anywhere]"
                   aria-label={`${actual}${reference ? `; ${reference.kind === "limit" ? "limit" : reference.kind === "intake" ? "recommended intake" : reference.kind === "reference" ? (reference.source === "app-convention" ? "app tracking reference" : "general label reference") : "saved target"} ${formatNutrientAmount(reference.value)} ${unit}` : ""}${item.known < item.total ? "; partial recorded intake" : ""}`}
                 >
                   {usable && reference ? (
                     <>
                       {formatNutrientAmount(item.value)}
-                      <span className="text-slate-400"> / {refText}</span>
+                      <span className="text-muted-foreground"> / {refText}</span>
                     </>
                   ) : (
                     <>
                       {actual}
                       {reference && (
-                        <span className="text-slate-400"> / {refText}</span>
+                        <span className="text-muted-foreground"> / {refText}</span>
                       )}
                     </>
                   )}
@@ -95,7 +95,7 @@ export function NutritionDetails({
                 <div
                   role="img"
                   aria-label={`${label}: no foods logged`}
-                  className="mt-2 h-1 rounded-full bg-slate-700"
+                  className="mt-2 h-1 rounded-full bg-nutrition-track"
                 />
               ) : (
                 progress !== null && (
@@ -107,8 +107,8 @@ export function NutritionDetails({
                     color={
                       reference!.kind === "limit" ||
                       reference!.kind === "reference"
-                        ? "bg-blue-400"
-                        : "bg-green-400"
+                        ? "bg-nutrition-blue"
+                        : "bg-nutrition-green"
                     }
                   />
                 )
@@ -118,9 +118,9 @@ export function NutritionDetails({
         })}
       </dl>
       {entries.length === 0 && (
-        <p className="text-xs text-slate-400 mt-3">No foods logged.</p>
+        <p className="text-xs text-muted-foreground mt-3">No foods logged.</p>
       )}
-      <details className="mt-3 text-xs text-slate-400">
+      <details className="mt-3 text-xs text-muted-foreground">
         <summary className="min-h-11 flex items-center cursor-pointer">
           Reference information
         </summary>

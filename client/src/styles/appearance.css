@@ -266,3 +266,73 @@
 :root[data-appearance="light"] .reminders-add-button {
   --tw-shadow-color: rgb(15 23 42 / 0.12);
 }
+
+/* Phase 3: nutrition roles and legacy gray surfaces preserve exact Dark RGB. */
+:root {
+  --neutral-surface: 215.00000000000000 27.90697674418605% 16.86274509803922%;
+  --neutral-control: 216.92307692307696 19.11764705882353% 26.66666666666667%;
+  --neutral-control-border: 215.00000000000003 13.79310344827586% 34.11764705882353%;
+  --neutral-supporting: 215.99999999999989 12.19512195121951% 83.92156862745097%;
+  --neutral-muted: 217.89473684210535 10.61452513966480% 64.90196078431373%;
+  --neutral-dim: 219.99999999999997 8.93617021276595% 46.07843137254902%;
+  --warning-soft: 45.94285714285714 96.68508287292819% 64.50980392156863%;
+  --feature-blue-soft: 211.69811320754715 96.36363636363637% 78.43137254901961%;
+  --feature-red-soft: 0.00000000000000 93.54838709677421% 81.76470588235294%;
+  --feature-rose: 351.30434782608694 94.52054794520548% 71.37254901960783%;
+  --feature-blue-tint: 226.22950819672133 57.00934579439252% 20.98039215686275%;
+  --feature-red-tint: 0.00000000000000 74.68354430379746% 15.49019607843137%;
+  --nutrition-track: 215.29411764705881 24.99999999999999% 26.66666666666667%;
+  --nutrition-green: 141.89189189189190 69.15887850467290% 58.03921568627452%;
+  --nutrition-blue: 213.11688311688312 93.90243902439025% 67.84313725490196%;
+  --nutrition-amber: 43.25581395348837 96.41255605381164% 56.27450980392157%;
+  --bmi-track: #475569;
+  --bmi-blue: #3b82f6;
+  --bmi-green: #22c55e;
+  --bmi-amber: #f59e0b;
+  --bmi-red: #ef4444;
+  --chart-series: #3b82f6;
+}
+:root[data-appearance="light"] {
+  --neutral-surface: 0.00000000000000 0.00000000000000% 100.00000000000000%;
+  --neutral-control: 209.99999999999989 40.00000000000003% 96.07843137254901%;
+  --neutral-control-border: 214.83870967741933 13.41991341991342% 54.70588235294117%;
+  --neutral-supporting: 215.29411764705881 19.31818181818182% 34.50980392156863%;
+  --neutral-muted: 215.29411764705881 19.31818181818182% 34.50980392156863%;
+  --neutral-dim: 215.29411764705881 19.31818181818182% 34.50980392156863%;
+  --warning-soft: 22.72727272727273 82.50000000000000% 31.37254901960784%;
+  --feature-blue-soft: 224.27807486631019 76.32653061224489% 48.03921568627451%;
+  --feature-red-soft: 0.00000000000000 73.70892018779344% 41.76470588235293%;
+  --feature-rose: 345.34883720930230 82.69230769230769% 40.78431372549019%;
+  --feature-blue-tint: 214.28571428571428 94.59459459459461% 92.74509803921569%;
+  --feature-red-tint: 0.00000000000000 93.33333333333336% 94.11764705882352%;
+  --nutrition-track: 214.28571428571428 31.81818181818182% 91.37254901960785%;
+  --nutrition-green: 142.42990654205607 71.81208053691275% 29.21568627450981%;
+  --nutrition-blue: 221.21212121212122 83.19327731092436% 53.33333333333334%;
+  --nutrition-amber: 25.96491228070175 90.47619047619048% 37.05882352941177%;
+  --bmi-track: #cbd5e1;
+  --bmi-blue: #1d4ed8;
+  --bmi-green: #15803d;
+  --bmi-amber: #b45309;
+  --bmi-red: #b91c1c;
+  --chart-series: #2563eb;
+}
+
+/* Scoped Light controls; Dark geometry and caller styling stay unchanged. */
+:root[data-appearance="light"] .food-scan-action {
+  border-color: hsl(var(--control-border));
+}
+:root[data-appearance="light"] .nutrition-unit-select {
+  background-color: hsl(var(--surface-secondary));
+  box-shadow: inset 0 0 0 1px hsl(var(--control-border));
+}
+:root[data-appearance="light"] .nutrition-unit-select:focus-visible {
+  box-shadow: inset 0 0 0 2px hsl(var(--focus));
+}
+:root[data-appearance="light"] .calculator-goal-option[data-goal-color="red"] { --goal-tone: var(--feature-red); }
+:root[data-appearance="light"] .calculator-goal-option[data-goal-color="blue"] { --goal-tone: var(--feature-blue); }
+:root[data-appearance="light"] .calculator-goal-option[data-goal-color="green"] { --goal-tone: var(--accent-text); }
+:root[data-appearance="light"] .calculator-goal-option[data-selected="true"] {
+  color: hsl(var(--goal-tone));
+  border-color: hsl(var(--goal-tone));
+  background-color: hsl(var(--goal-tone) / .06);
+}

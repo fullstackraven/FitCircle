@@ -1,0 +1,95 @@
+{
+  "readings": [
+    {
+      "text": "Add Food",
+      "ratio": 17.84,
+      "required": 3
+    },
+    {
+      "text": "Search your food database",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Scan Barcode",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Identify packaged food",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Custom Food",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Enter nutrition manually",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Search Results",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Synthetic oats",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Synthetic brand",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Cal:",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "150",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "C:",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "27g",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "P:",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "5g",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "F:",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "3g",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Per 40g",
+      "ratio": 6.31,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

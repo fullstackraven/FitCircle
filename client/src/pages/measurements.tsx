@@ -91,11 +91,11 @@ export default function MeasurementsPage() {
   const getTrendIcon = (trend: "up" | "down" | "neutral") => {
     switch (trend) {
       case "up":
-        return <TrendingUp className="w-4 h-4 text-green-400" />;
+        return <TrendingUp className="w-4 h-4 text-accent-text" />;
       case "down":
-        return <TrendingDown className="w-4 h-4 text-red-400" />;
+        return <TrendingDown className="w-4 h-4 text-feature-red" />;
       default:
-        return <Minus className="w-4 h-4 text-slate-400" />;
+        return <Minus className="w-4 h-4 text-muted-foreground" />;
     }
   };
 
@@ -115,7 +115,7 @@ export default function MeasurementsPage() {
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-muted-foreground hover:text-strong transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -124,7 +124,7 @@ export default function MeasurementsPage() {
         </div>
 
         {(measurementError || saveError) && (
-          <p role="alert" className="text-sm text-amber-300 mb-4">
+          <p role="alert" className="text-sm text-warning-soft mb-4">
             {measurementError || saveError}
           </p>
         )}
@@ -137,7 +137,7 @@ export default function MeasurementsPage() {
         <div className="space-y-6">
           {Object.entries(categorizedFields).map(([category, fields]) => (
             <section key={category} className="fitcircle-card-lg">
-              <h2 className="text-lg font-semibold mb-4 text-white">
+              <h2 className="text-lg font-semibold mb-4 text-strong">
                 {category}
               </h2>
 
@@ -146,7 +146,7 @@ export default function MeasurementsPage() {
                   <div key={field.key}>
                     <Label
                       htmlFor={field.key}
-                      className="text-slate-300 flex items-center space-x-2"
+                      className="text-supporting flex items-center space-x-2"
                     >
                       <span>{field.label}</span>
                       {getLatestValue(field.key) &&
@@ -160,10 +160,10 @@ export default function MeasurementsPage() {
                       onChange={(e) =>
                         handleInputChange(field.key, e.target.value)
                       }
-                      className="bg-slate-700 border-slate-600 text-white mt-1"
+                      className="bg-surface-secondary border-control text-strong mt-1"
                     />
                     {getLatestValue(field.key) && (
-                      <div className="text-xs text-slate-400 mt-1">
+                      <div className="text-xs text-muted-foreground mt-1">
                         Last: {getLatestValue(field.key)}
                         {field.unit}
                       </div>
@@ -177,14 +177,14 @@ export default function MeasurementsPage() {
           <Button
             disabled={!!measurementError}
             onClick={handleSave}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-medium"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-on-action py-3 rounded-xl font-medium"
           >
             Save Measurements
           </Button>
 
           {/* Trend Graphs Section */}
-          <section className="glass-panel bg-slate-800 rounded-xl p-6">
-            <h2 className="text-lg font-semibold mb-4 text-white">
+          <section className="glass-panel bg-surface rounded-xl p-6">
+            <h2 className="text-lg font-semibold mb-4 text-strong">
               Trend Graphs
             </h2>
 
@@ -203,9 +203,9 @@ export default function MeasurementsPage() {
                   return (
                     <div
                       key={field.key}
-                      className="flex-shrink-0 w-80 bg-slate-700 rounded-xl p-4"
+                      className="flex-shrink-0 w-80 bg-surface-secondary rounded-xl p-4"
                     >
-                      <h3 className="text-lg font-semibold mb-2 text-white flex items-center space-x-2">
+                      <h3 className="text-lg font-semibold mb-2 text-strong flex items-center space-x-2">
                         <span>{field.label}</span>
                         {getTrendIcon(getValueTrend(field.key))}
                       </h3>
@@ -216,12 +216,12 @@ export default function MeasurementsPage() {
                               dataKey="date"
                               axisLine={false}
                               tickLine={false}
-                              tick={{ fontSize: 10, fill: "#94a3b8" }}
+                              tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
                             />
                             <YAxis
                               axisLine={false}
                               tickLine={false}
-                              tick={{ fontSize: 10, fill: "#94a3b8" }}
+                              tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
                               domain={
                                 chartData.length === 1
                                   ? ["dataMin - 5", "dataMax + 5"]
@@ -231,20 +231,20 @@ export default function MeasurementsPage() {
                             <Line
                               type="monotone"
                               dataKey="value"
-                              stroke="#3b82f6"
+                              stroke="var(--chart-series)"
                               strokeWidth={2}
-                              dot={{ r: 5, fill: "#3b82f6" }}
+                              dot={{ r: 5, fill: "var(--chart-series)" }}
                               connectNulls={false}
                             />
                           </LineChart>
                         </ResponsiveContainer>
                       </div>
-                      <div className="mt-2 text-sm text-slate-400">
+                      <div className="mt-2 text-sm text-muted-foreground">
                         Latest: {getLatestValue(field.key)}
                         {field.unit} |{chartData.length} data point
                         {chartData.length > 1 ? "s" : ""}
                         {chartData.length === 1 && (
-                          <div className="text-xs text-blue-400 mt-1">
+                          <div className="text-xs text-feature-blue mt-1">
                             Add more entries to see trend line
                           </div>
                         )}
@@ -257,7 +257,7 @@ export default function MeasurementsPage() {
             {measurementFields.filter(
               (field) => getChartData(field.key).length > 0,
             ).length === 0 && (
-              <div className="text-center text-slate-500 py-8">
+              <div className="text-center text-dim py-8">
                 <div className="text-4xl mb-2">📈</div>
                 <h3 className="text-md font-semibold mb-1">
                   No Trend Data Yet

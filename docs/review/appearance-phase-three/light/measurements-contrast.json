@@ -1,0 +1,95 @@
+{
+  "readings": [
+    {
+      "text": "Measurements",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Body",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Weight",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Last: 190lbs",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Height",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Last: 70in",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Body Fat",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Last: 20%",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Circumference",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Neck",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Chest",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Waist",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Hips",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Arms",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Bicep (L)",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Bicep (R)",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Forearm (L)",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Forearm (R)",
+      "ratio": 7.56,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}
