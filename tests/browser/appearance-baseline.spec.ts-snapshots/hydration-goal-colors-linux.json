@@ -1,0 +1,55 @@
+{
+  "body": {
+    "background": "rgb(15, 23, 42)",
+    "color": "rgb(248, 250, 252)",
+    "border": "rgb(248, 250, 252)",
+    "shadow": "none",
+    "backdrop": "none"
+  },
+  ".app-shell": {
+    "background": "rgb(15, 23, 42)",
+    "color": "rgb(248, 250, 252)",
+    "border": "rgb(248, 250, 252)",
+    "shadow": "none",
+    "backdrop": "none"
+  },
+  ".app-header": {
+    "background": "rgb(15, 23, 42)",
+    "color": "rgb(248, 250, 252)",
+    "border": "rgb(248, 250, 252)",
+    "shadow": "none",
+    "backdrop": "none"
+  },
+  ".dock-nav": null,
+  ".dock-tab[aria-current=\"page\"]": null,
+  ".fitcircle-card": null,
+  ".glass-card": null,
+  ".glass-dialog": {
+    "background": "rgba(15, 23, 42, 0.96)",
+    "color": "rgb(248, 250, 252)",
+    "border": "rgba(203, 213, 225, 0.2)",
+    "shadow": "rgba(0, 0, 0, 0.28) 0px 12px 32px 0px, rgba(255, 255, 255, 0.1) 0px 1px 0px 0px inset",
+    "backdrop": "blur(16px) saturate(1.15)"
+  },
+  ".wellness-surface": {
+    "background": "rgb(30, 41, 59)",
+    "color": "rgb(255, 255, 255)",
+    "border": "rgba(148, 163, 184, 0.1)",
+    "shadow": "none",
+    "backdrop": "none"
+  },
+  "input": {
+    "background": "rgba(30, 41, 59, 0.88)",
+    "color": "rgb(255, 255, 255)",
+    "border": "rgba(203, 213, 225, 0.2)",
+    "shadow": "rgba(255, 255, 255, 0.04) 0px 1px 0px 0px inset",
+    "backdrop": "none"
+  },
+  "button": {
+    "background": "rgba(0, 0, 0, 0)",
+    "color": "rgb(148, 163, 184)",
+    "border": "rgb(148, 163, 184)",
+    "shadow": "none",
+    "backdrop": "none"
+  }
+}

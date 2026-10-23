@@ -9,9 +9,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        // Invalid semantic colors previously rendered these variants transparent
+        // and inherited. Preserve that baseline when making tokens valid.
+        default: "bg-transparent text-inherit hover:bg-transparent",
+        destructive: "bg-transparent text-inherit hover:bg-transparent",
         outline:
           "glass-button border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:

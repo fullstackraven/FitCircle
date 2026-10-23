@@ -39,6 +39,7 @@ export const structured = {
   [`fitcircle_food_${date}`]: [meal], [`fitcircle_food_tracker${date}`]: [meal],
 };
 export const scalars: Record<string, string> = {
+  fitcircle_appearance: 'system',
   fitcircle_username: 'Synthetic person', fitcircle_age: '37', fitcircle_weight: '165.50', fitcircle_fitness_goal: 'strength', fitcircle_weight_goal_type: 'lose', fitcircle_device_id: 'synthetic-device', fitcircle_food_database_migrated: 'true', fitcircle_auto_backup_enabled: 'false', fitcircle_last_auto_backup: '2026-10-14T20:00:00Z', fitcircle_quote_date: date, fitcircle_last_quote_index: '7', fitcircle_height: '70', fitcircle_body_fat: '20', fitcircle_neck: '15', fitcircle_chest: '40', fitcircle_waist: '32', fitcircle_hips: '38', fitcircle_bicep_left: '13', fitcircle_bicep_right: '13.5', fitcircle_forearm_left: '11', fitcircle_forearm_right: '11', fitcircle_thigh_left: '22', fitcircle_thigh_right: '22', fitcircle_calf_left: '15', fitcircle_calf_right: '15',
   fitness_calc_activity_level: 'moderate', fitness_calc_goal_type: 'lose', fitness_calc_goal_rate: '0.5', fitness_calc_macro_style: 'custom', fitness_calc_custom_carbs: '40', fitness_calc_custom_protein: '30', fitness_calc_custom_fat: '30', fitness_calc_target_calories: '2100', fitness_calc_target_carbs: '210', fitness_calc_target_protein: '157.5', fitness_calc_target_fat: '70',
   fitcircle_goal_hydration: '80', fitcircle_goal_meditation: '10', fitcircle_goal_fasting: '16', fitcircle_goal_weight: '160', fitcircle_goal_bodyfat: '18',

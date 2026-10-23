@@ -38,7 +38,8 @@ export default function SettingsPage() {
     setIsExporting(true);
     try {
       await localFoodService.ready;
-      const completeSnapshot = await createBackup();
+      const warnings: string[] = [];
+      const completeSnapshot = await createBackup(undefined, undefined, warning => warnings.push(warning));
       const blob = new Blob([JSON.stringify(completeSnapshot, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -54,8 +55,8 @@ export default function SettingsPage() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      setStatus(`Exported ${Object.keys(completeSnapshot.localStorage).length} items successfully!`);
-      setTimeout(() => setStatus(''), 3000);
+      setStatus(`Exported ${Object.keys(completeSnapshot.localStorage).length} items successfully!${warnings.length ? ' ' + warnings.join(' ') : ''}`);
+      if (!warnings.length) setTimeout(() => setStatus(''), 3000);
     } catch (error) {
       console.error('Export failed:', error);
       setStatus(`Export failed: ${error instanceof Error ? error.message : 'Storage could not be read. Please try again.'}`);
