@@ -1,7 +1,9 @@
-/** Phase 1 infrastructure only. Production remains dark until route conversion is approved. */
+/** Shared production/development appearance controller; no default storage writes. */
 export const APPEARANCE_KEY = "fitcircle_appearance";
 export type AppearancePreference = "dark" | "light" | "system";
 export type Appearance = "dark" | "light";
+// Match the established app-background palette and the tiny pre-bundle bootstrap.
+export const APPEARANCE_COLORS = { dark: "#0f172a", light: "#f8fafc" } as const;
 export function isAppearancePreference(
   value: unknown,
 ): value is AppearancePreference {
@@ -24,9 +26,13 @@ export interface AppearanceSnapshot {
 
 export function startAppearanceController({
   browser = window,
-  allowPreview = false,
-}: { browser?: Window; allowPreview?: boolean } = {}) {
-  const media = browser.matchMedia("(prefers-color-scheme: dark)");
+}: { browser?: Window } = {}) {
+  let media: MediaQueryList | undefined;
+  try {
+    media = browser.matchMedia?.("(prefers-color-scheme: dark)");
+  } catch {
+    /* System falls back to Dark. */
+  }
   const root = browser.document.documentElement;
   const subscribers = new Set<() => void>();
   let stopped = false;
@@ -37,9 +43,13 @@ export function startAppearanceController({
     error: null,
   };
   const publish = (preference: AppearancePreference, error: string | null) => {
-    const resolved = resolveAppearance(preference, media.matches);
-    const applied = allowPreview ? resolved : "dark";
+    const resolved = resolveAppearance(preference, media?.matches !== false);
+    const applied = resolved;
     if (root.dataset.appearance !== applied) root.dataset.appearance = applied;
+    root.style.colorScheme = applied;
+    browser.document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", APPEARANCE_COLORS[applied]);
     const next = { preference, resolved, applied, error };
     if (JSON.stringify(next) !== JSON.stringify(snapshot)) {
       snapshot = next;
@@ -63,9 +73,15 @@ export function startAppearanceController({
     if (snapshot.preference === "system")
       publish(snapshot.preference, snapshot.error);
   };
+  const onVisible = () => {
+    if (browser.document.visibilityState !== "hidden") reload();
+  };
   browser.addEventListener("storage", onStorage);
   browser.addEventListener("pageshow", reload);
-  media.addEventListener("change", onSystemChange);
+  browser.addEventListener("focus", reload);
+  browser.document.addEventListener("visibilitychange", onVisible);
+  if (media?.addEventListener) media.addEventListener("change", onSystemChange);
+  else media?.addListener?.(onSystemChange);
   reload();
   return {
     getSnapshot: () => snapshot,
@@ -94,8 +110,26 @@ export function startAppearanceController({
       stopped = true;
       browser.removeEventListener("storage", onStorage);
       browser.removeEventListener("pageshow", reload);
-      media.removeEventListener("change", onSystemChange);
+      browser.removeEventListener("focus", reload);
+      browser.document.removeEventListener("visibilitychange", onVisible);
+      if (media?.removeEventListener)
+        media.removeEventListener("change", onSystemChange);
+      else media?.removeListener?.(onSystemChange);
       subscribers.clear();
     },
   };
+}
+
+// Started exactly once by main.tsx, after interrupted-restore recovery. Importing
+// this module (including from backup validation) never reads browser storage.
+let applicationController:
+  | ReturnType<typeof startAppearanceController>
+  | undefined;
+export function initializeAppearance() {
+  return (applicationController ??= startAppearanceController());
+}
+export function getAppearanceController() {
+  if (!applicationController)
+    throw new Error("Appearance has not initialized.");
+  return applicationController;
 }

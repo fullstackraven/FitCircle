@@ -1,0 +1,55 @@
+{
+  "readings": [
+    {
+      "text": "Fasting Goal",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "16 hrs",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "100%",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Average Fast Duration",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "All-time completed-fast average",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Goal Hours per Fast",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Maximum Fasting Hours",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Heat-bar scale only; achievement uses Goal Hours per Fast",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Cancel",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Save Settings",
+      "ratio": 5.17,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

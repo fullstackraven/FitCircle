@@ -1,0 +1,105 @@
+{
+  "readings": [
+    {
+      "text": "Edit Workout",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Workout Name",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Color",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Weight (lbs)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Daily Goal",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Scheduled Days",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Clear",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Sun",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Mon",
+      "ratio": 5.02,
+      "required": 4.5
+    },
+    {
+      "text": "Tue",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Wed",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Thu",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Fri",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Sat",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Every Day",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Weekdays",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Weekends",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Cancel",
+      "ratio": 16.37,
+      "required": 4.5
+    },
+    {
+      "text": "Delete",
+      "ratio": 5.93,
+      "required": 4.5
+    },
+    {
+      "text": "Update",
+      "ratio": 5.02,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

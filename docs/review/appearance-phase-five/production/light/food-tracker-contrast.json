@@ -1,0 +1,150 @@
+{
+  "readings": [
+    {
+      "text": "Food Tracker",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Today",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Daily nutrition overview",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Calories remaining",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "1,700",
+      "ratio": 17.85,
+      "required": 3
+    },
+    {
+      "text": "15%",
+      "ratio": 5.02,
+      "required": 3
+    },
+    {
+      "text": "of daily target consumed",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "300 consumed",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "2,000 target",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Protein",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "10.0",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "/ 150g",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Carbs",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "54.0",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "/ 225g",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Fat",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "6.0",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "/ 65g",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Nutrition Details",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "Today's Meals",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Breakfast",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "1 food",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "300 cal",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Lunch",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "No foods logged",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "0 cal",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Dinner",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "No foods logged",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "0 cal",
+      "ratio": 7.58,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

@@ -1,0 +1,180 @@
+{
+  "readings": [
+    {
+      "text": "Forearm (L)",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Forearm (R)",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Legs",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Thigh (L)",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Thigh (R)",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Calf (L)",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Calf (R)",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Save Measurements",
+      "ratio": 5.17,
+      "required": 4.5
+    },
+    {
+      "text": "Trend Graphs",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Weight",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Sep 30",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Oct 9",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Oct 18",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "189",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "192",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "195",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "198",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "201",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Latest: 190lbs |3 data points",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Height",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Sep 30",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "65",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "68",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "71",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "75",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Latest: 70in |1 data point",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Add more entries to see trend line",
+      "ratio": 6.12,
+      "required": 4.5
+    },
+    {
+      "text": "Body Fat",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Oct 18",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "15",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "18",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "21",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "25",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Latest: 20% |1 data point",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Add more entries to see trend line",
+      "ratio": 6.12,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

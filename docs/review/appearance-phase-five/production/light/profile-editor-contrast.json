@@ -1,0 +1,30 @@
+{
+  "readings": [
+    {
+      "text": "Edit Profile",
+      "ratio": 17.86,
+      "required": 4.5
+    },
+    {
+      "text": "Name",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Date of Birth (optional)",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Cancel",
+      "ratio": 16.39,
+      "required": 4.5
+    },
+    {
+      "text": "Save Profile",
+      "ratio": 11.58,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

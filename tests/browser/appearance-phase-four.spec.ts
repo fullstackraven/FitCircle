@@ -6,7 +6,9 @@ import {
 } from "../fixtures/appearance-wellness";
 import { textContrast } from "../fixtures/appearance-contrast";
 test.use({
-  baseURL: "http://127.0.0.1:4184/FitCircle/",
+  baseURL: process.env.APPEARANCE_PRODUCTION_REVIEW
+    ? "http://127.0.0.1:4173/FitCircle/"
+    : "http://127.0.0.1:4184/FitCircle/",
   viewport: { width: 390, height: 844 },
   timezoneId: "America/New_York",
 });
@@ -32,13 +34,13 @@ for (const mode of modes)
           maxDiffPixels: 0,
         });
       await page.screenshot({
-        path: `docs/review/appearance-phase-four/${process.env.APPEARANCE_CAPTURE_BEFORE ? "before" : mode}/${name}.png`,
+        path: `${process.env.APPEARANCE_PRODUCTION_REVIEW ? "docs/review/appearance-phase-five/production" : "docs/review/appearance-phase-four"}/${process.env.APPEARANCE_CAPTURE_BEFORE ? "before" : mode}/${name}.png`,
         animations: "disabled",
       });
       if (mode === "light") {
         const contrast = await textContrast(page);
         fs.writeFileSync(
-          `docs/review/appearance-phase-four/light/${name}-contrast.json`,
+          `${process.env.APPEARANCE_PRODUCTION_REVIEW ? "docs/review/appearance-phase-five/production" : "docs/review/appearance-phase-four"}/light/${name}-contrast.json`,
           JSON.stringify(contrast, null, 2),
         );
         expect(contrast.failures).toEqual([]);
@@ -208,8 +210,12 @@ for (const mode of ["dark", "light"]) {
     const before = await wellnessBytes(page);
     await page.goto("calendar");
     await expect(page.locator('[aria-current="date"]')).toHaveText("19");
-    await expect(page.getByText("Workouts complete",{exact:true})).toHaveCount(1);
-    await expect(page.getByText("Recovery day",{exact:true})).toHaveCount(1);
+    await expect(
+      page.getByText("Workouts complete", { exact: true }),
+    ).toHaveCount(1);
+    await expect(page.getByText("Recovery day", { exact: true })).toHaveCount(
+      1,
+    );
     const cells = await page
       .locator(".calendar-classic [style]")
       .evaluateAll((nodes) =>
@@ -329,59 +335,74 @@ test("System preview updates wellness rings, Calendar and recovery surfaces with
   );
   expect(await wellnessBytes(page)).toEqual(before);
 });
-test("web startup placeholder inherits resolved preview without changing bootstrap or original records", async ({
-  page,
-}) => {
-  await seedWellnessAppearance(page, "light");
-  await page.route("**/src/App.tsx*", (route) => route.abort());
-  await page.goto("./");
-  await expect(page.locator("#fitcircle-startup")).toBeVisible();
-  await expect(page.locator("html")).toHaveAttribute(
-    "data-appearance",
-    "light",
-  );
-  expect(
-    await page
-      .locator("#fitcircle-startup")
-      .evaluate((el) => getComputedStyle(el).color),
-  ).toBe("rgb(15, 23, 41)");
+test.describe("startup placeholder", () => {
+  test.use({ serviceWorkers: "block" });
+  test("web startup placeholder inherits resolved preview without changing bootstrap or original records", async ({
+    page,
+  }) => {
+    await seedWellnessAppearance(page, "light");
+    await page.route(
+      process.env.APPEARANCE_PRODUCTION_REVIEW
+        ? "**/assets/App-*.js"
+        : "**/src/App.tsx*",
+      (route) => route.abort(),
+    );
+    await page.goto("./");
+    await expect(page.locator("#fitcircle-startup")).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-appearance",
+      "light",
+    );
+    expect(
+      await page
+        .locator("#fitcircle-startup")
+        .evaluate((el) => getComputedStyle(el).color),
+    ).toBe("rgb(15, 23, 41)");
+  });
 });
+
 test.describe("production", () => {
   test.use({ baseURL: "http://127.0.0.1:4173/FitCircle/" });
-  test("all remaining production routes stay Dark with a saved Light preference and no public selector", async ({
+  test("all remaining production routes apply Dark, Light and System with the public selector", async ({
     page,
   }) => {
     test.setTimeout(60000);
-    await seedWellnessAppearance(page, "light");
-    await page.emulateMedia({ colorScheme: "light" });
-    for (const route of [
-      "cardio",
-      "fasting",
-      "meditation",
-      "hydration",
-      "calendar",
-      "workout-statistics",
-      "daily-journal",
-      "journal-log",
-      "energy-level",
-      "supplements-page",
-      "recovery",
-      "dynamic-overview/2026-10-19",
-      "restore-custom-foods",
-      "settings",
-      "synthetic-not-found",
-    ]) {
-      await page.goto(route);
-      await expect(page.locator("html")).toHaveAttribute(
-        "data-appearance",
-        "dark",
+    await seedWellnessAppearance(page, "dark");
+    for (const preference of ["dark", "light", "system"]) {
+      await page.evaluate(
+        (value) => localStorage.setItem("fitcircle_appearance", value),
+        preference,
       );
-      await expect(page.locator("h1").first()).toBeVisible();
+      await page.emulateMedia({ colorScheme: "light" });
+      for (const route of [
+        "cardio",
+        "fasting",
+        "meditation",
+        "hydration",
+        "calendar",
+        "workout-statistics",
+        "daily-journal",
+        "journal-log",
+        "energy-level",
+        "supplements-page",
+        "recovery",
+        "dynamic-overview/2026-10-19",
+        "restore-custom-foods",
+        "settings",
+        "synthetic-not-found",
+      ]) {
+        await page.goto(route);
+        await expect(page.locator("html")).toHaveAttribute(
+          "data-appearance",
+          preference === "dark" ? "dark" : "light",
+        );
+        await expect(page.locator("h1").first()).toBeVisible();
+      }
+      await page.goto("settings");
+      await expect(
+        page.getByRole("radio", { name: preference, exact: false }),
+      ).toBeChecked();
     }
-    await page.goto("settings");
-    await expect(
-      page.getByRole("combobox", { name: /appearance/i }),
-    ).toHaveCount(0);
   });
 });
 

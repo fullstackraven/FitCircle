@@ -1,0 +1,90 @@
+{
+  "readings": [
+    {
+      "text": "Recovery",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "Recovery Statistics",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "1",
+      "ratio": 6.67,
+      "required": 4.5
+    },
+    {
+      "text": "Recovery Days",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "2",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Workout Days",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "50.0%",
+      "ratio": 6.67,
+      "required": 4.5
+    },
+    {
+      "text": "Recovery Rate",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Mark days as recovery days to maintain consistency without requiring workout com",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Recent Recovery Days",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "October 18, 2026",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Recovery Day",
+      "ratio": 6.67,
+      "required": 4.5
+    },
+    {
+      "text": "How to Mark Recovery Days",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "• Go back to the Calendar page",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "• Tap any day to open the Dynamic Overview",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "• Use the Recovery toggle to mark/unmark days",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "• Recovery days count toward consistency without requiring workouts",
+      "ratio": 7.56,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

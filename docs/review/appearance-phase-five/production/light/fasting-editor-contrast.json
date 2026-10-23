@@ -1,0 +1,30 @@
+{
+  "readings": [
+    {
+      "text": "Log Fast",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Start Fast",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "End Fast",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Cancel",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Log Fast",
+      "ratio": 5.02,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

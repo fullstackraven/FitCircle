@@ -1,0 +1,125 @@
+{
+  "readings": [
+    {
+      "text": "Restore Custom Foods",
+      "ratio": 16.3,
+      "required": 3
+    },
+    {
+      "text": "This will restore 15 custom foods to your database.",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Foods to be restored:",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Eggs - Great Value (300g)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Oatmeal - Great Value (0.5cup)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Raw Honey  (21g)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Whole Carrots - Grimmway Farms (78g)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Chicken Breast - Kirkwood (4oz)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Sweet Potato  (150g)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Spring Mix - Aldi (1cup)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Strawberries  (85g)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Blueberries  (85g)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Kalamata Olive - pitted  (6piece)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Blue Cheese  (14g)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Super Zero Yogurt - Nonfat Greek - Friendly Farms (170g)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Whey Protein - Double Rich Chocolate - Optimum Nutrition (93g)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "PB Fit  (32g)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Whole Milk  (480g)",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Restore All Custom Foods",
+      "ratio": 5.02,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

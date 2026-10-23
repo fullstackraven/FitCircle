@@ -1,0 +1,110 @@
+{
+  "readings": [
+    {
+      "text": "Fitness Calculator",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Calorie Tracker",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "2,826",
+      "ratio": 5,
+      "required": 3
+    },
+    {
+      "text": "calories per day",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "To maintain current weight",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Activity Level",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Moderate (3-5 days/week)",
+      "ratio": 16.37,
+      "required": 4.5
+    },
+    {
+      "text": "Lose Weight",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Maintain",
+      "ratio": 6.1,
+      "required": 4.5
+    },
+    {
+      "text": "Gain Weight",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Goal Weight",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Goal weight (lbs)",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Save",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "190 lb current · 180 lb goal",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "10.0 lb from goal weight",
+      "ratio": 5,
+      "required": 4.5
+    },
+    {
+      "text": "BMI Calculator",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

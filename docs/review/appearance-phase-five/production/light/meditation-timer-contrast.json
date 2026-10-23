@@ -1,0 +1,110 @@
+{
+  "readings": [
+    {
+      "text": "10:00",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "Paused",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Last 7 days",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "7D",
+      "ratio": 14.48,
+      "required": 4.5
+    },
+    {
+      "text": "30D",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "90D",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "10 min total",
+      "ratio": 6.98,
+      "required": 4.5
+    },
+    {
+      "text": "1.4 min/calendar day",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Practice consistency · 1 of 7 days practiced",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Resume",
+      "ratio": 7.13,
+      "required": 4.5
+    },
+    {
+      "text": "Stop",
+      "ratio": 5.92,
+      "required": 4.5
+    },
+    {
+      "text": "Today's Meditation",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "10:00 AM",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Meditation",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "10min",
+      "ratio": 6.98,
+      "required": 4.5
+    },
+    {
+      "text": "History",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "October 2026",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "1 day",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Historical averages",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "All-time calendar-day average: 10 min · 1 days",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "All-time logged-day average: 10 min · 1 logged days",
+      "ratio": 7.24,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

@@ -1,0 +1,35 @@
+{
+  "readings": [
+    {
+      "text": "Journal Log",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "Today",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Today",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Synthetic journal reflection for appearance review.",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Oct 19, 2026",
+      "ratio": 6.29,
+      "required": 4.5
+    },
+    {
+      "text": "• 10:00 AM",
+      "ratio": 6.29,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

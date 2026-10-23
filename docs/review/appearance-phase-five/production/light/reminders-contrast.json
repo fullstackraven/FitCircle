@@ -1,0 +1,50 @@
+{
+  "readings": [
+    {
+      "text": "FitCircle",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "Reminders",
+      "ratio": 4.79,
+      "required": 3
+    },
+    {
+      "text": "0 Completed",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "No Reminders",
+      "ratio": 6.03,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 15.39,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

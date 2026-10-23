@@ -1,0 +1,50 @@
+{
+  "readings": [
+    {
+      "text": "Edit Entry",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Liquid Type",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Water",
+      "ratio": 5.17,
+      "required": 4.5
+    },
+    {
+      "text": "Coffee",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Tea",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Custom",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Amount (oz)",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Cancel",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Save Changes",
+      "ratio": 5.17,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}
