@@ -1,6 +1,9 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "appearance.test.ts",
+    "browser/appearance.spec.ts",
+    "browser/appearance-baseline.spec.ts",
     "dashboard-and-dates.test.ts",
     "browser/persistence-regressions.spec.ts",
     "historical-integrity.test.ts",

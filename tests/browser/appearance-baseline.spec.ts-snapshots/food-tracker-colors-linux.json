@@ -1,0 +1,37 @@
+{
+  "body": {
+    "background": "rgb(15, 23, 42)",
+    "color": "rgb(248, 250, 252)",
+    "border": "rgb(248, 250, 252)",
+    "shadow": "none",
+    "backdrop": "none"
+  },
+  ".app-shell": {
+    "background": "rgb(15, 23, 42)",
+    "color": "rgb(248, 250, 252)",
+    "border": "rgb(248, 250, 252)",
+    "shadow": "none",
+    "backdrop": "none"
+  },
+  ".app-header": {
+    "background": "rgb(15, 23, 42)",
+    "color": "rgb(248, 250, 252)",
+    "border": "rgb(248, 250, 252)",
+    "shadow": "none",
+    "backdrop": "none"
+  },
+  ".dock-nav": null,
+  ".dock-tab[aria-current=\"page\"]": null,
+  ".fitcircle-card": null,
+  ".glass-card": null,
+  ".glass-dialog": null,
+  ".wellness-surface": null,
+  "input": null,
+  "button": {
+    "background": "rgba(0, 0, 0, 0)",
+    "color": "rgb(148, 163, 184)",
+    "border": "rgb(148, 163, 184)",
+    "shadow": "none",
+    "backdrop": "none"
+  }
+}

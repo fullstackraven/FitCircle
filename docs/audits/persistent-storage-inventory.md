@@ -22,6 +22,7 @@ The table traces actual TypeScript/JavaScript AST calls, imported constants, fin
 
 | Key / pattern | Mechanism | Feature | Read/write source files (operations) | Classification | Backup | Restore | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| `fitcircle_appearance` | localStorage | Appearance preference | `client/src/lib/appearance.ts` (getItem)<br>`client/src/lib/appearance.ts` (setItem) | settings | Included | Restorable | Explicit dark/light/system preference; validated before scalar handling; no default write or fitness-data migration. |
 | `fitcircle_nutrition_goals` | localStorage | Explicit nutrition targets | `client/src/lib/nutrition.ts` (getItem)<br>`client/src/lib/nutrition.ts` (setItem) | user data | Included | Restorable | User-confirmed calorie and macro goals; independent of calculator estimates. |
 | `workout-tracker-data` | localStorage | Workouts, routines, daily logs and journal | `client/src/hooks/use-recovery.ts` (getItem)<br>`client/src/hooks/use-workouts.ts` (getItem)<br>`client/src/hooks/use-workouts.ts` (setItem)<br>`client/src/lib/fitness-profile.ts` (getItem)<br>`client/src/lib/goals-utils.ts` (getItem) | user data | Included | Restorable | Preserve current and recoverable records with existing version 2 validation. |
 | `workout-tracker-logs` | localStorage | Legacy workout logs | `client/src/lib/goals-utils.ts` (getItem) | legacy data | Included | Restorable | Preserve current and recoverable records with existing version 2 validation. |

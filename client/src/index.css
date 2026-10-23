@@ -47,7 +47,9 @@
 
 @layer base {
   * {
-    @apply border-border;
+    /* Before token repair this declaration fell back to currentColor.
+       Preserve that default; explicit border-border utilities are now valid. */
+    border-color: currentColor;
   }
   
   html, body { height: 100%; }

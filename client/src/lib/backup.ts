@@ -1,3 +1,4 @@
+import { APPEARANCE_KEY, isAppearancePreference } from './appearance';
 import { nutritionGoalsSchema } from './nutrition';
 import { findStorageSource, isBackupKey as isAppKey, scalarKeys, calculatorKeys, goalKey, datedFoodKey } from './storage-registry';
 import { z } from 'zod';
@@ -58,6 +59,10 @@ export interface Backup {
 export interface RestorePlan { entries: Record<string, string>; ignoredKeys: string[] }
 const plain = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value);
 function validateEntry(key: string, raw: string) {
+  if (key === APPEARANCE_KEY) {
+    if (!isAppearancePreference(raw)) throw new Error('Invalid appearance preference');
+    return;
+  }
   if (scalarKeys.has(key) || calculatorKeys.has(key)) return;
   if (goalKey.test(key)) {
     if (!raw.trim() || !Number.isFinite(Number(raw))) throw new Error(`Invalid numeric goal: ${key}`);
