@@ -25,7 +25,7 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm run build
-      - run: npx playwright install-deps chromium
+      # The Ubuntu 24.04 runner already supplies Chrome runtime dependencies.
       # Exact screenshot references were captured with Chromium 154. Keep the
       # browser and OS explicit; update them with a reviewed visual comparison.
       - name: Install reference screenshot browser

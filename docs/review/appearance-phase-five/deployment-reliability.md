@@ -65,6 +65,8 @@ a dependency update must not silently change the rendering environment.
 
 ## Validation and scope
 
+Final local full browser verification passed **347/347 tests (4.9 minutes)**.
+
 Local checks completed successfully: `npm run check`,
 `npx tsc -p tests/tsconfig.regressions.json`, `npm test` (298 tests),
 `npm run audit:storage`, and `npm run build`.
