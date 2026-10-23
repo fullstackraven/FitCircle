@@ -15,7 +15,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npx playwright install chromium
+      - run: |
+          curl --fail --location --retry 2 https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chrome-linux64.zip -o /tmp/chrome.zip
+          unzip -q /tmp/chrome.zip -d /tmp/fitcircle-chrome
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/tmp/fitcircle-chrome/chrome-linux64/chrome" >> "$GITHUB_ENV"
       - run: npx playwright test tests/browser/appearance-baseline.spec.ts
         continue-on-error: true
       - name: Diagnose pixel differences
