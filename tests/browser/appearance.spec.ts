@@ -130,12 +130,10 @@ test("internal preview follows live System changes and explicit choices survive 
     "data-appearance",
     "light",
   );
-  const styles = await page
-    .locator("#portal")
-    .evaluate((el) => ({
-      color: getComputedStyle(el).color,
-      background: getComputedStyle(el).backgroundColor,
-    }));
+  const styles = await page.locator("#portal").evaluate((el) => ({
+    color: getComputedStyle(el).color,
+    background: getComputedStyle(el).backgroundColor,
+  }));
   expect(styles.color).toBe("rgb(15, 23, 41)");
   expect(styles.background).toBe("rgba(255, 255, 255, 0.98)");
   await page.emulateMedia({ colorScheme: "light" });
@@ -264,4 +262,89 @@ test("blocked preference writes report failure and retain the applied preference
   expect(result.state.applied).toBe("dark");
   expect(result.stored).toBe("dark");
   expect(result.save.error).toMatch(/could not be saved/);
+});
+
+test("Settings exports fitness data despite an invalid appearance and discloses the omitted preference", async ({
+  page,
+}) => {
+  const { completeStorage } = await import("../fixtures/complete-storage");
+  await page.goto("settings");
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        localStorage.getItem("fitcircle_food_database_migrated"),
+      ),
+    )
+    .toBe("true");
+  await page.evaluate((records) => {
+    for (const [key, value] of Object.entries(records))
+      localStorage.setItem(key, value);
+    localStorage.setItem("fitcircle_appearance", "auto");
+  }, completeStorage);
+  const before = await page.evaluate(() =>
+    Object.fromEntries(
+      Object.keys(localStorage).map((key) => [key, localStorage.getItem(key)]),
+    ),
+  );
+  const downloadEvent = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Download Complete Backup", exact: true })
+    .click();
+  const download = await downloadEvent;
+  const stream = await download.createReadStream();
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
+  const backup = JSON.parse(Buffer.concat(chunks).toString());
+  expect(backup.version).toBe(2);
+  expect(backup.localStorage.fitcircle_appearance).toBeUndefined();
+  expect(backup.manifest.localStorageKeys).toEqual(
+    Object.keys(backup.localStorage).sort(),
+  );
+  for (const [key, value] of Object.entries(completeStorage)) {
+    if (key !== "fitcircle_appearance")
+      expect(backup.localStorage[key]).toBe(value);
+  }
+  expect(
+    await page.evaluate(() =>
+      Object.fromEntries(
+        Object.keys(localStorage).map((key) => [
+          key,
+          localStorage.getItem(key),
+        ]),
+      ),
+    ),
+  ).toEqual(before);
+  await expect(
+    page.getByText(
+      /Invalid optional appearance preference omitted from backup/,
+    ),
+  ).toBeVisible();
+  // Validate the exported file through the real importer, then cancel at its
+  // confirmation. Unit coverage also applies the same backup and compares bytes.
+  page.once("dialog", dialog => dialog.dismiss());
+  await page.locator('input[type=file]').setInputFiles({ name: "valid-omission.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(backup)) });
+  await expect(page.getByText("Restore cancelled.", { exact: true })).toBeVisible();
+  // An explicitly invalid restore still rejects before modifying any records.
+  backup.localStorage.fitcircle_appearance = "auto";
+  backup.manifest.localStorageKeys = Object.keys(backup.localStorage).sort();
+  await page
+    .locator("input[type=file]")
+    .setInputFiles({
+      name: "invalid-appearance.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(backup)),
+    });
+  await expect(
+    page.getByText(/Import failed: Invalid appearance preference/),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() =>
+      Object.fromEntries(
+        Object.keys(localStorage).map((key) => [
+          key,
+          localStorage.getItem(key),
+        ]),
+      ),
+    ),
+  ).toEqual(before);
 });

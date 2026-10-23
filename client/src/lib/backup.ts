@@ -203,12 +203,13 @@ export async function readIndexedFoods(factory: IDBFactory = indexedDB): Promise
     };
   });
 }
-export async function createBackup(storage: Storage = localStorage, factory: IDBFactory = indexedDB): Promise<Backup> {
+export async function createBackup(storage: Storage = localStorage, factory: IDBFactory = indexedDB, onWarning: (message: string) => void = console.warn): Promise<Backup> {
   // Never call a partially applied restore a complete backup. Recovery remains
   // the existing explicit startup path; exporting does not write any data.
   if (storage.getItem(JOURNAL) !== null) throw new Error('Reload to recover the interrupted restore before exporting a backup');
   const customFoods = await readIndexedFoods(factory);
   const entries: Record<string, string> = Object.create(null);
+  let omittedAppearance = false;
   const length = storage.length;
   for (let i = 0; i < length; i++) {
     const key = storage.key(i);
@@ -217,6 +218,12 @@ export async function createBackup(storage: Storage = localStorage, factory: IDB
     let raw: string | null;
     try { raw = storage.getItem(key); } catch { throw new Error(`Cannot read backup source: ${key}`); }
     if (raw === null) throw new Error(`Backup source disappeared while reading: ${key}`);
+    // Appearance is optional: preserve invalid source bytes, but do not let
+    // them prevent exporting otherwise valid fitness records.
+    if (key === APPEARANCE_KEY && !isAppearancePreference(raw)) {
+      omittedAppearance = true;
+      continue;
+    }
     entries[key] = raw;
   }
   if (storage.length !== length) throw new Error('Storage changed while reading; retry the backup');
@@ -226,5 +233,6 @@ export async function createBackup(storage: Storage = localStorage, factory: IDB
     manifest: { version: 1, localStorageKeys: Object.keys(entries).sort(), indexedDB: [{ database: 'FitCircleCustomFoods', store: 'foods', records: customFoods.length }] },
   };
   prepareRestore(backup);
+  if (omittedAppearance) onWarning('Invalid optional appearance preference omitted from backup. Its stored value was left unchanged.');
   return backup;
 }

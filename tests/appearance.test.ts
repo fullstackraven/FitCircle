@@ -194,7 +194,11 @@ test("all preferences round-trip complete v2 JSON backups without altering unrel
       source.data.set(key, value);
     source.data.set(APPEARANCE_KEY, preference);
     const before = [...source.data];
-    const backup = await createBackup(source, new IDBFactory());
+    const warnings: string[] = [];
+    const backup = await createBackup(source, new IDBFactory(), (warning) =>
+      warnings.push(warning),
+    );
+    assert.deepEqual(warnings, []);
     assert.deepEqual([...source.data], before);
     assert.equal(backup.localStorage[APPEARANCE_KEY], preference);
     const destination = new Store();
@@ -248,4 +252,60 @@ test("malformed appearance backups and caller-supplied restore plans fail before
     );
     assert.deepEqual([...storage.data], before);
   }
+});
+
+test("malformed optional appearance never blocks a full export, changes source bytes or contaminates its manifest", async () => {
+  for (const invalid of ["auto", "", "LIGHT", '"dark"']) {
+    const source = new Store();
+    for (const [key, raw] of Object.entries(completeStorage))
+      source.data.set(key, raw);
+    source.data.set(APPEARANCE_KEY, invalid);
+    const before = [...source.data];
+    const warnings: string[] = [];
+    const backup = await createBackup(source, new IDBFactory(), (warning) =>
+      warnings.push(warning),
+    );
+    assert.deepEqual([...source.data], before);
+    assert.equal(source.getItem(APPEARANCE_KEY), invalid);
+    assert.equal(source.writes, 0);
+    const expected = Object.fromEntries(
+      before.filter(([key]) => key !== APPEARANCE_KEY),
+    );
+    assert.deepEqual({ ...backup.localStorage }, expected);
+    assert.deepEqual(
+      backup.manifest!.localStorageKeys,
+      Object.keys(expected).sort(),
+    );
+    assert.equal(backup.version, 2);
+    assert.equal(warnings.length, 1);
+    assert.match(warnings[0], /appearance preference omitted/);
+    const restored = new Store();
+    applyRestore(
+      prepareRestore(JSON.parse(JSON.stringify(backup))),
+      restored,
+      new Store(),
+    );
+    assert.deepEqual(Object.fromEntries(restored.data), expected);
+    const invalidRestore = {
+      ...backup,
+      localStorage: { ...backup.localStorage, [APPEARANCE_KEY]: invalid },
+      manifest: undefined,
+    };
+    assert.throws(() => prepareRestore(invalidRestore), /Invalid appearance/);
+    assert.deepEqual([...source.data], before);
+  }
+});
+
+test("the export exception never hides invalid fitness records or announces a failed export as successful", async () => {
+  const source = new Store();
+  source.data.set(APPEARANCE_KEY, "auto");
+  source.data.set("fitcircle_hydration_data", "{broken");
+  const before = [...source.data];
+  const warnings: string[] = [];
+  await assert.rejects(
+    createBackup(source, new IDBFactory(), (warning) => warnings.push(warning)),
+    /Invalid JSON/,
+  );
+  assert.deepEqual([...source.data], before);
+  assert.deepEqual(warnings, []);
 });

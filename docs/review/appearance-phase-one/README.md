@@ -39,7 +39,7 @@ Internal preview: run `npm run dev`, use the browser console to explicitly set `
 
 One new scalar key: `fitcircle_appearance`, raw `dark`, `light` or `system`. No default writes, migration or automatic repair. Malformed original bytes remain untouched. Read failures fall back to Dark; write failures return `ok: false` and leave the saved/selected preference unchanged. A later explicit successful save can replace an invalid preference.
 
-The storage registry includes the key as a backed-up setting. Backup validation checks its enum **before** the generic scalar shortcut. Current v2 export/import preserves all unrelated strings and records; the backup version is unchanged. Old backups omit it and neither create a preference nor reset an existing one. Invalid values in a restore plan/file reject the restore before writes. Export follows existing byte-preservation behavior: it preserves a malformed raw value, while restoring that malformed preference is rejected rather than silently repaired. Interrupted-restore recovery still runs before controller initialization.
+The storage registry includes the key as a backed-up setting. Backup validation checks its enum **before** the generic scalar shortcut. Current v2 export/import preserves all unrelated strings and records; the backup version is unchanged. Old backups omit it and neither create a preference nor reset an existing one. Invalid values in a restore plan/file reject the restore before writes. Export now omits only an invalid optional appearance preference, without touching its original localStorage bytes. The exported manifest contains only the included keys. A warning callback (console warning by default) reports the omission after successful validation; Settings displays that warning alongside successful export and does not auto-clear it. No fields or version changes were added to the backup format. Restoring a file that explicitly contains an invalid preference still fails before writes. All other validation/read failures remain errors. Interrupted-restore recovery still runs before controller initialization.
 
 ## Rendered Dark evidence
 
@@ -141,3 +141,26 @@ Coverage includes preference validation/defaults, live System changes, explicit 
 - Early HTML bootstrap, dynamic theme-color, native color-scheme, Settings UI and PWA appearance validation remain Phase 5. No claim of physical iPhone verification or initial-flash prevention is made here.
 - Screenshots use Chromium/Linux and fixed synthetic data. Real Safari/PWA launch/status-bar/keyboard behavior requires physical-device checks later.
 - Approval is required before Phase 2. Review the preserved Dark baseline, the internal Light palette direction, and the compatibility treatment for previously ineffective semantic styles. No Phase 2 work has started.
+
+## PR #72 final-review correction
+
+Malformed optional appearance values no longer block otherwise valid full-app backups. Tests cover `auto`, empty values, uppercase values and JSON-quoted strings, exact preservation of every other fixture record, unchanged source bytes, accurate manifests, valid restore, valid Dark/Light/System round trips, rejection of explicit invalid restores and continued rejection of invalid fitness data.
+
+The default/destructive Button variants remain intentionally transparent/inherited compatibility adjustments: the old invalid color declarations rendered that way before Phase 1. No button code or action handler changed in this correction. Existing reminder clearing and routine deletion tests exercise confirmation, cancellation, actual deletion and preservation of unrelated/retained records.
+
+For Phase 2 review: define deliberate branded-primary and destructive foreground/background/hover/focus roles with contrast checks, distinguish quiet versus filled destructive actions, and retain explicit caller color overrides. This is a future semantic improvement, not authorization to redesign buttons now.
+
+Final correction verification results are recorded in the PR description. No fitness calculations, records, persistent formats, appearance selector, production gate or screenshot baselines changed. The original full-suite barcode flake remains documented above; physical iPhone validation remains deferred. No Phase 2 work has started.
+
+### Final-review correction verification
+
+- Application TypeScript and regression-test TypeScript checks passed.
+- Unit suite: **293 passed, 0 failed**.
+- Storage audit: **160 call sites, 0 errors**.
+- Production build passed.
+- Relevant backup/appearance/app/reminder/routine browser tests: **29 passed**.
+- Editor/destructive confirmation browser tests: **5 passed**, including routine cancellation/deletion and retained workout/history checks.
+- Original Dark screenshot/JSON baselines passed unchanged. No baseline files were edited.
+- Production still applies Dark only, regardless of saved preference/device appearance; no public appearance selector.
+
+The previous full-run barcode flake remains documented in the original results. This correction was verified with the relevant suites above; no service-worker, barcode, button design, fitness record/calculation, storage format or backup version changes. No Phase 2 work.
