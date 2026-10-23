@@ -20,6 +20,8 @@ jobs:
           unzip -q /tmp/chrome.zip -d /tmp/fitcircle-chrome
           echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/tmp/fitcircle-chrome/chrome-linux64/chrome" >> "$GITHUB_ENV"
       - run: npx playwright test tests/browser/appearance-baseline.spec.ts
+        env:
+          FONTCONFIG_FILE: ${{ github.workspace }}/tests/fixtures/screenshot-fonts.conf
         continue-on-error: true
       - name: Diagnose pixel differences
         run: |
