@@ -1,0 +1,45 @@
+{
+  "readings": [
+    {
+      "text": "Add Cardio Entry",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Log your cardio workout details",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Cardio Type",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Duration (minutes)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Distance (miles)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Notes - Optional",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Add Entry",
+      "ratio": 5.02,
+      "required": 4.5
+    },
+    {
+      "text": "Cancel",
+      "ratio": 16.37,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

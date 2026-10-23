@@ -269,7 +269,7 @@ export default function CardioPage() {
     <>
       <WellnessPageShell
         title="Cardio"
-        accent="#22c55e"
+        accent="var(--wellness-green)"
         onGoal={handleOpenGoalDialog}
       >
         <WellnessProgressHero
@@ -292,7 +292,7 @@ export default function CardioPage() {
           unit={data.goal.type === "duration" ? "min" : "mi"}
         />
         <WellnessTodaySection title="Weekly activity">
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-muted-foreground">
             {weeklyProgress.totalDuration} min this week ·{" "}
             {
               weekDates().filter(
@@ -310,18 +310,18 @@ export default function CardioPage() {
           <DialogTrigger asChild>
             <WellnessPrimaryAction>Log Cardio</WellnessPrimaryAction>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700 text-white rounded-2xl">
+          <DialogContent className="sm:max-w-md bg-surface border-separator text-strong rounded-2xl">
             <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-center text-white">
+              <DialogTitle className="text-xl font-semibold text-center text-strong">
                 Add Cardio Entry
               </DialogTitle>
-              <DialogDescription className="text-sm text-slate-400 text-center">
+              <DialogDescription className="text-sm text-muted-foreground text-center">
                 Log your cardio workout details
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-3">
-                <Label className="text-sm font-medium text-white">
+                <Label className="text-sm font-medium text-strong">
                   Cardio Type
                 </Label>
                 <div className="flex space-x-2">
@@ -331,10 +331,10 @@ export default function CardioPage() {
                       setNewEntry({ ...newEntry, type: value })
                     }
                   >
-                    <SelectTrigger className="flex-1 bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500">
+                    <SelectTrigger className="flex-1 bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-700 border-slate-600">
+                    <SelectContent className="bg-surface-secondary border-control">
                       {cardioTypes.map((type) => (
                         <SelectItem key={type} value={type}>
                           {type}
@@ -351,25 +351,25 @@ export default function CardioPage() {
                         <Plus className="w-4 h-4" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700 text-white rounded-2xl">
+                    <DialogContent className="sm:max-w-md bg-surface border-separator text-strong rounded-2xl">
                       <DialogHeader>
-                        <DialogTitle className="text-lg font-semibold text-center text-white">
+                        <DialogTitle className="text-lg font-semibold text-center text-strong">
                           Add Custom Type
                         </DialogTitle>
-                        <DialogDescription className="text-sm text-slate-400 text-center">
+                        <DialogDescription className="text-sm text-muted-foreground text-center">
                           Create a new cardio type
                         </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div>
-                          <Label className="text-sm font-medium text-white">
+                          <Label className="text-sm font-medium text-strong">
                             Type Name
                           </Label>
                           <Input
                             value={newCustomType}
                             onChange={(e) => setNewCustomType(e.target.value)}
                             aria-label="Type Name"
-                            className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
+                            className="bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500"
                           />
                         </div>
                         <div className="flex space-x-2">
@@ -382,7 +382,7 @@ export default function CardioPage() {
                           <Button
                             variant="outline"
                             onClick={() => setIsAddCustomTypeOpen(false)}
-                            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                            className="border-control text-supporting hover:bg-surface-secondary"
                           >
                             Cancel
                           </Button>
@@ -395,7 +395,7 @@ export default function CardioPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-white">
+                  <Label className="text-sm font-medium text-strong">
                     Duration (minutes)
                   </Label>
                   <Input
@@ -405,11 +405,11 @@ export default function CardioPage() {
                     onChange={(e) =>
                       setNewEntry({ ...newEntry, duration: e.target.value })
                     }
-                    className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
+                    className="bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500"
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-white">
+                  <Label className="text-sm font-medium text-strong">
                     Distance (miles)
                   </Label>
                   <Input
@@ -420,13 +420,13 @@ export default function CardioPage() {
                     onChange={(e) =>
                       setNewEntry({ ...newEntry, distance: e.target.value })
                     }
-                    className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
+                    className="bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-3">
-                <Label className="text-sm font-medium text-white">
+                <Label className="text-sm font-medium text-strong">
                   Notes - Optional
                 </Label>
                 <Textarea
@@ -434,7 +434,7 @@ export default function CardioPage() {
                   onChange={(e) =>
                     setNewEntry({ ...newEntry, notes: e.target.value })
                   }
-                  className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
+                  className="bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500"
                   rows={2}
                 />
               </div>
@@ -442,7 +442,7 @@ export default function CardioPage() {
               <div className="flex space-x-2">
                 <Button
                   onClick={handleAddEntry}
-                  className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+                  className="flex-1 bg-action-selected hover:bg-action text-on-action"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Entry
@@ -463,7 +463,7 @@ export default function CardioPage() {
         <WellnessTodaySection title="Today's Cardio">
           <div className="space-y-2">
             {todaySessions.length === 0 && (
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 No cardio sessions today yet
               </p>
             )}
@@ -476,20 +476,20 @@ export default function CardioPage() {
                   className="wellness-record-row flex justify-between items-center text-sm relative"
                 >
                   <div className="flex items-center space-x-3">
-                    <span className="text-slate-400">
+                    <span className="text-muted-foreground">
                       {formatTimeFor12Hour(session.time)}
                     </span>
-                    <span className="text-slate-300">{session.type}</span>
+                    <span className="text-supporting">{session.type}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="flex flex-col items-end space-y-1">
                       {session.duration > 0 && (
-                        <span className="text-green-400 font-medium text-xs">
+                        <span className="text-accent-text font-medium text-xs">
                           {formatDuration(session.duration)}
                         </span>
                       )}
                       {session.distance && session.distance > 0 && (
-                        <span className="text-blue-400 font-medium text-xs">
+                        <span className="text-feature-blue font-medium text-xs">
                           {session.distance}mi
                         </span>
                       )}
@@ -508,7 +508,7 @@ export default function CardioPage() {
                           });
                           setIsEditDialogOpen(true);
                         }}
-                        className="text-slate-400 hover:text-white p-1 h-auto"
+                        className="text-muted-foreground hover:text-strong p-1 h-auto"
                         data-testid={`button-edit-session-${session.id}`}
                       >
                         <Edit2 className="w-3 h-3" />
@@ -530,7 +530,7 @@ export default function CardioPage() {
                             deleteCardioSession(entryToDelete.date, session.id);
                           }
                         }}
-                        className="text-slate-400 hover:text-red-300 p-1 h-auto"
+                        className="text-muted-foreground hover:text-feature-red-soft p-1 h-auto"
                         data-testid={`button-delete-session-${session.id}`}
                       >
                         <Trash2 className="w-3 h-3" />
@@ -577,7 +577,7 @@ export default function CardioPage() {
                       .map((log) => (
                         <div key={log.date} className="fitcircle-card ml-4">
                           <div className="flex justify-between items-center mb-3">
-                            <span className="text-white font-medium">
+                            <span className="text-strong font-medium">
                               {new Date(
                                 log.date + "T00:00:00",
                               ).toLocaleDateString("en-US", {
@@ -588,18 +588,18 @@ export default function CardioPage() {
                             </span>
                             <div className="flex items-center space-x-2">
                               {log.totalDuration > 0 && (
-                                <span className="text-green-400 font-semibold text-sm">
+                                <span className="text-accent-text font-semibold text-sm">
                                   {formatDuration(log.totalDuration)}
                                 </span>
                               )}
                               {log.totalDistance > 0 && (
-                                <span className="text-blue-400 font-semibold text-sm">
+                                <span className="text-feature-blue font-semibold text-sm">
                                   {log.totalDistance.toFixed(1)}mi
                                 </span>
                               )}
                             </div>
                           </div>
-                          <div className="text-xs text-slate-400 mb-2">
+                          <div className="text-xs text-muted-foreground mb-2">
                             {log.sessions.length} sessions
                           </div>
 
@@ -614,21 +614,21 @@ export default function CardioPage() {
                                 className="wellness-record-row flex justify-between items-center text-xs"
                               >
                                 <div className="flex items-center space-x-2">
-                                  <span className="text-slate-500">
+                                  <span className="text-dim">
                                     {formatTimeFor12Hour(session.time)}
                                   </span>
-                                  <span className="text-slate-400">
+                                  <span className="text-muted-foreground">
                                     {session.type}
                                   </span>
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   {session.duration > 0 && (
-                                    <span className="text-slate-300">
+                                    <span className="text-supporting">
                                       {formatDuration(session.duration)}
                                     </span>
                                   )}
                                   {session.distance && session.distance > 0 && (
-                                    <span className="text-slate-300">
+                                    <span className="text-supporting">
                                       {session.distance}mi
                                     </span>
                                   )}
@@ -669,7 +669,7 @@ export default function CardioPage() {
                                   }
                                   setExpandedDays(newExpanded);
                                 }}
-                                className="text-xs text-slate-500 hover:text-slate-300 text-center mt-1 w-full transition-colors"
+                                className="text-xs text-dim hover:text-supporting text-center mt-1 w-full transition-colors"
                               >
                                 {expandedDays.has(log.date)
                                   ? "Show less"
@@ -685,7 +685,7 @@ export default function CardioPage() {
             ) : (
               <Card className="fitcircle-card">
                 <CardContent className="p-8 text-center">
-                  <div className="text-slate-400">
+                  <div className="text-muted-foreground">
                     <Activity className="w-12 h-12 mx-auto mb-2" />
                     <p>No cardio activity yet</p>
                     <p className="text-sm">Tap "Log Cardio" to get started!</p>
@@ -698,18 +698,18 @@ export default function CardioPage() {
 
         {/* Edit Entry Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700 text-white rounded-2xl">
+          <DialogContent className="sm:max-w-md bg-surface border-separator text-strong rounded-2xl">
             <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-center text-white">
+              <DialogTitle className="text-xl font-semibold text-center text-strong">
                 Edit Cardio Entry
               </DialogTitle>
-              <DialogDescription className="text-sm text-slate-400 text-center">
+              <DialogDescription className="text-sm text-muted-foreground text-center">
                 Update your cardio workout details
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-3">
-                <Label className="text-sm font-medium text-white">
+                <Label className="text-sm font-medium text-strong">
                   Cardio Type
                 </Label>
                 <Select
@@ -718,10 +718,10 @@ export default function CardioPage() {
                     setNewEntry({ ...newEntry, type: value })
                   }
                 >
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500">
+                  <SelectTrigger className="bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-700 border-slate-600">
+                  <SelectContent className="bg-surface-secondary border-control">
                     {cardioTypes.map((type) => (
                       <SelectItem key={type} value={type}>
                         {type}
@@ -733,7 +733,7 @@ export default function CardioPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-white">
+                  <Label className="text-sm font-medium text-strong">
                     Duration (minutes)
                   </Label>
                   <Input
@@ -742,11 +742,11 @@ export default function CardioPage() {
                     onChange={(e) =>
                       setNewEntry({ ...newEntry, duration: e.target.value })
                     }
-                    className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
+                    className="bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500"
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-white">
+                  <Label className="text-sm font-medium text-strong">
                     Distance (miles)
                   </Label>
                   <Input
@@ -756,13 +756,13 @@ export default function CardioPage() {
                     onChange={(e) =>
                       setNewEntry({ ...newEntry, distance: e.target.value })
                     }
-                    className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
+                    className="bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-3">
-                <Label className="text-sm font-medium text-white">
+                <Label className="text-sm font-medium text-strong">
                   Notes - Optional
                 </Label>
                 <Textarea
@@ -770,7 +770,7 @@ export default function CardioPage() {
                   onChange={(e) =>
                     setNewEntry({ ...newEntry, notes: e.target.value })
                   }
-                  className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-green-500 focus:ring-green-500"
+                  className="bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500"
                   rows={2}
                 />
               </div>
@@ -778,7 +778,7 @@ export default function CardioPage() {
               <div className="flex space-x-2">
                 <Button
                   onClick={handleUpdateEntry}
-                  className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+                  className="flex-1 bg-action-selected hover:bg-action text-on-action"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   Update Entry
@@ -805,13 +805,13 @@ export default function CardioPage() {
           title="Cardio Goal"
           onDismiss={() => setIsGoalDialogOpen(false)}
         >
-          <div className="glass-panel bg-slate-800 rounded-xl p-6 w-full max-w-lg">
+          <div className="glass-panel bg-surface rounded-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-white">Cardio Goal</h3>
+              <h3 className="text-lg font-semibold text-strong">Cardio Goal</h3>
               <button
                 aria-label="Close"
                 onClick={() => setIsGoalDialogOpen(false)}
-                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg"
+                className="p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -821,7 +821,7 @@ export default function CardioPage() {
             <div className="flex justify-center mb-8">
               <GoalCircle
                 percentage={percentage(todaysValue, Number(goalInput))}
-                color="rgb(34, 197, 94)"
+                color="var(--bmi-green)"
                 size={120}
                 currentValue={todaysValue}
                 goalValue={Number(goalInput)}
@@ -852,7 +852,7 @@ export default function CardioPage() {
             {/* Goal Input Form */}
             <div className="space-y-4">
               <div>
-                <Label htmlFor="goalTarget" className="text-slate-300">
+                <Label htmlFor="goalTarget" className="text-supporting">
                   {data.goal.period === "week" ? "Weekly" : "Daily"} Goal (
                   {data.goal.type === "duration" ? "minutes" : "miles"})
                 </Label>
@@ -863,7 +863,7 @@ export default function CardioPage() {
                   onChange={(e) => setGoalInput(e.target.value)}
                   onFocus={() => setGoalInputFocused(true)}
                   onBlur={() => setGoalInputFocused(false)}
-                  className="bg-slate-700 border-slate-600 text-white mt-1"
+                  className="bg-surface-secondary border-control text-strong mt-1"
                   step="0.1"
                 />
               </div>
@@ -886,7 +886,7 @@ export default function CardioPage() {
                     }
                   }}
                   variant="outline"
-                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className="flex-1 border-control text-supporting hover:bg-surface-secondary"
                 >
                   Switch to{" "}
                   {data.goal.type === "duration" ? "Miles" : "Minutes"}
@@ -897,13 +897,13 @@ export default function CardioPage() {
                 <Button
                   variant="outline"
                   onClick={() => setIsGoalDialogOpen(false)}
-                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className="flex-1 border-control text-supporting hover:bg-surface-secondary"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSetGoal}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action-soft"
                 >
                   Save Goal
                 </Button>

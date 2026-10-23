@@ -36,10 +36,10 @@ interface DynamicOverviewProps {
 
 export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
   const [, navigate] = useLocation();
-  const { 
-    getWorkoutLogsForDate, 
-    editWorkoutForDate, 
-    getJournalEntry, 
+  const {
+    getWorkoutLogsForDate,
+    editWorkoutForDate,
+    getJournalEntry,
     addJournalEntry,
     isWorkoutActiveOnDay
   } = useWorkouts();
@@ -80,7 +80,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     
     // Filter workouts to show only those with activity (count > 0) on this date
     // This ensures historical workouts remain visible regardless of current schedule
-    const filteredWorkouts = workoutData.filter(workout => 
+    const filteredWorkouts = workoutData.filter(workout =>
       workout.count > 0
     );
 
@@ -109,9 +109,9 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
       editWorkoutForDate(editingWorkoutId, selectedDate, newCount);
       
       // Update local state
-      setWorkouts(prev => 
-        prev.map(workout => 
-          workout.id === editingWorkoutId 
+      setWorkouts(prev =>
+        prev.map(workout =>
+          workout.id === editingWorkoutId
             ? { ...workout, count: newCount }
             : workout
         )
@@ -140,9 +140,9 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
   };
 
   const handleSupplementToggle = (supplementId: number) => {
-    setSupplementLogs(prev => 
-      prev.map(log => 
-        log.id === supplementId 
+    setSupplementLogs(prev =>
+      prev.map(log =>
+        log.id === supplementId
           ? { ...log, taken: !log.taken }
           : log
       )
@@ -207,10 +207,10 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
   };
 
   const getEnergyColor = (level: number) => {
-    if (level === 0) return 'text-slate-500';
-    if (level <= 3) return 'text-red-400';
-    if (level <= 6) return 'text-yellow-400';
-    return 'text-green-400';
+    if (level === 0) return 'text-dim';
+    if (level <= 3) return 'text-feature-red';
+    if (level <= 6) return 'text-feature-yellow';
+    return 'text-accent-text';
   };
 
   const getJournalWordCount = () => {
@@ -219,25 +219,25 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
   };
 
   return (
-    <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)', paddingBottom: 'var(--bottom-nav-padding)' }}>
+    <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'var(--page-background)', paddingBottom: 'var(--bottom-nav-padding)' }}>
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => navigate("/calendar")}
-          className="text-slate-500 hover:text-white transition-colors"
+          className="text-dim hover:text-strong transition-colors"
           title="Back to Calendar"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
 
-        <h1 className="text-xl font-bold text-white">Dynamic Overview</h1>
+        <h1 className="text-xl font-bold text-strong">Dynamic Overview</h1>
         <div className="w-[20px]" />
       </div>
 
       <div className="text-center mb-6">
-        <h2 className="text-lg font-semibold text-white">
+        <h2 className="text-lg font-semibold text-strong">
           {format(selectedDateObj, "MMMM d, yyyy")}
         </h2>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-muted-foreground">
           {format(selectedDateObj, "EEEE")}
         </p>
       </div>
@@ -245,17 +245,17 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
       <div className="space-y-6">
         {/* Workout Statistics */}
         {workouts.length > 0 && (
-          <div className="glass-panel bg-slate-800 rounded-xl p-6">
+          <div className="glass-panel bg-surface rounded-xl p-6">
             <div className="flex items-center space-x-3 mb-4">
-              <BarChart3 className="w-5 h-5 text-blue-400" />
-              <h3 className="text-lg font-semibold text-white">Workout Statistics</h3>
+              <BarChart3 className="w-5 h-5 text-feature-blue" />
+              <h3 className="text-lg font-semibold text-strong">Workout Statistics</h3>
             </div>
             <div className="space-y-3">
               {workouts.map((workout) => (
-                <div key={workout.id} className="flex items-center justify-between p-3 bg-slate-700 rounded-xl">
+                <div key={workout.id} className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl">
                   <div className="flex items-center space-x-3">
                     <div className={`w-3 h-3 rounded-full ${colorClassMap[workout.color]}`}></div>
-                    <span className="text-sm font-medium text-white">{workout.name}</span>
+                    <span className="text-sm font-medium text-strong">{workout.name}</span>
                   </div>
                   
                   {editingWorkoutId === workout.id ? (
@@ -264,20 +264,20 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                         type="number"
                         value={editingWorkoutCount}
                         onChange={(e) => setEditingWorkoutCount(e.target.value)}
-                        className="w-16 px-2 py-1 text-sm bg-slate-800 text-white rounded border border-slate-500 focus:outline-none focus:border-blue-400"
+                        className="w-16 px-2 py-1 text-sm bg-surface text-strong rounded border border-control-muted-border focus:outline-none focus:border-blue-400"
                         min="0"
                         autoFocus
                       />
                       <button
                         onClick={handleSaveWorkoutEdit}
-                        className="p-1 text-green-400 hover:text-green-300 transition-colors"
+                        className="p-1 text-accent-text hover:text-accent-soft transition-colors"
                         title="Save"
                       >
                         <Save size={14} />
                       </button>
                       <button
                         onClick={handleCancelWorkoutEdit}
-                        className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                        className="p-1 text-feature-red hover:text-feature-red-soft transition-colors"
                         title="Cancel"
                       >
                         <X size={14} />
@@ -285,10 +285,10 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                     </div>
                   ) : (
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm font-bold text-white">{workout.count}</span>
+                      <span className="text-sm font-bold text-strong">{workout.count}</span>
                       <button
                         onClick={() => handleEditWorkout(workout.id, workout.count)}
-                        className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
+                        className="p-1 text-muted-foreground hover:text-subtle transition-colors"
                         title="Edit count"
                       >
                         <Edit2 size={14} />
@@ -305,15 +305,15 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
               return workoutDuration > 0 ? (
                 <button
                   onClick={handleOpenDurationModal}
-                  className="mt-4 p-3 bg-slate-700 rounded-xl w-full hover:bg-slate-600 transition-colors"
+                  className="mt-4 p-3 bg-surface-secondary rounded-xl w-full hover:bg-control-strong transition-colors"
                   data-testid="button-edit-workout-duration"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <Timer className="w-4 h-4 text-green-400" />
-                      <span className="text-sm font-medium text-white">Workout Duration</span>
+                      <Timer className="w-4 h-4 text-accent-text" />
+                      <span className="text-sm font-medium text-strong">Workout Duration</span>
                     </div>
-                    <span className="text-sm font-bold text-green-400">{formatDuration(workoutDuration)}</span>
+                    <span className="text-sm font-bold text-accent-text">{formatDuration(workoutDuration)}</span>
                   </div>
                 </button>
               ) : null;
@@ -322,38 +322,38 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
         )}
 
         {/* Recovery Day */}
-        <div className="glass-panel bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-surface rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Heart className="w-5 h-5 text-orange-400" />
-              <h3 className="text-lg font-semibold text-white">Recovery Day</h3>
+              <Heart className="w-5 h-5 text-feature-orange" />
+              <h3 className="text-lg font-semibold text-strong">Recovery Day</h3>
             </div>
             <button
               onClick={handleRecoveryToggle}
               className={`px-4 py-2 rounded-xl transition-colors ${
-                isRecovery 
-                  ? 'bg-orange-600 hover:bg-orange-700 text-white' 
-                  : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+                isRecovery
+                  ? 'bg-orange-600 hover:bg-orange-700 text-strong'
+                  : 'bg-surface-secondary hover:bg-control-strong text-supporting'
               }`}
             >
               {isRecovery ? 'Recovery Day' : 'Mark as Recovery'}
             </button>
           </div>
           {isRecovery && (
-            <p className="text-sm text-orange-400 mt-2">
+            <p className="text-sm text-feature-orange mt-2">
               This day is marked as a recovery day - workout goals don't apply
             </p>
           )}
         </div>
 
         {/* Journal Entry */}
-        <div className="glass-panel bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-surface rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <BookOpen className="w-5 h-5 text-purple-400" />
-              <h3 className="text-lg font-semibold text-white">Journal Entry</h3>
+              <BookOpen className="w-5 h-5 text-feature-purple" />
+              <h3 className="text-lg font-semibold text-strong">Journal Entry</h3>
             </div>
-            <p className="text-xs text-slate-500" data-testid="text-journal-word-count">
+            <p className="text-xs text-dim" data-testid="text-journal-word-count">
               {getJournalWordCount()} {getJournalWordCount() === 1 ? 'word' : 'words'}
             </p>
           </div>
@@ -362,7 +362,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
               value={journalText}
               onChange={(e) => setJournalText(e.target.value)}
               aria-label="Journal entry"
-              className="w-full h-32 p-3 bg-slate-700 text-white rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full h-32 p-3 bg-surface-secondary text-strong rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
               autoComplete="off"
               autoCorrect="on"
               autoCapitalize="sentences"
@@ -371,7 +371,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
             />
             <button
               onClick={handleJournalSave}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors"
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-on-action rounded-xl transition-colors"
             >
               Save Entry
             </button>
@@ -379,17 +379,17 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
         </div>
 
         {/* Energy Level */}
-        <div className="glass-panel bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-surface rounded-xl p-6">
           <div className="flex items-center space-x-3 mb-4">
-            <Zap className="w-5 h-5 text-yellow-400" />
-            <h3 className="text-lg font-semibold text-white">Energy Level</h3>
+            <Zap className="w-5 h-5 text-feature-yellow" />
+            <h3 className="text-lg font-semibold text-strong">Energy Level</h3>
           </div>
           <div className="flex items-center justify-between">
             <button
               onClick={handleEnergyTap}
-              className="w-20 h-20 rounded-full border-4 border-slate-600 bg-slate-700 flex items-center justify-center transition-all hover:scale-105"
+              className="w-20 h-20 rounded-full border-4 border-control bg-surface-secondary flex items-center justify-center transition-all hover:scale-105"
               style={{
-                borderColor: energyLevel > 0 ? (energyLevel <= 3 ? '#ef4444' : energyLevel <= 6 ? '#fbbf24' : '#22c55e') : '#475569'
+                borderColor: energyLevel > 0 ? (energyLevel <= 3 ? 'var(--bmi-red)' : energyLevel <= 6 ? 'var(--energy-amber)' : 'var(--bmi-green)') : 'hsl(var(--control-border))'
               }}
             >
               <div className={`type-metric text-2xl font-bold ${getEnergyColor(energyLevel)}`}>
@@ -397,12 +397,12 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
               </div>
             </button>
             <div className="flex-1 ml-4">
-              <p className="text-sm text-slate-300 mb-2">
+              <p className="text-sm text-supporting mb-2">
                 Tap the circle to set energy level (1-10 scale)
               </p>
               <button
                 onClick={handleEnergySave}
-                className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-xl transition-colors"
+                className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-on-action rounded-xl transition-colors"
               >
                 Save Level
               </button>
@@ -411,15 +411,15 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
         </div>
 
         {/* Supplements */}
-        <div className="glass-panel bg-slate-800 rounded-xl p-6">
+        <div className="glass-panel bg-surface rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <Pill className="w-5 h-5 text-green-400" />
-              <h3 className="text-lg font-semibold text-white">Supplements</h3>
+              <Pill className="w-5 h-5 text-accent-text" />
+              <h3 className="text-lg font-semibold text-strong">Supplements</h3>
             </div>
             <button
               onClick={() => setIsAddingSupplement(true)}
-              className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+              className="bg-action-selected hover:bg-action text-on-action rounded-full w-8 h-8 flex items-center justify-center transition-colors"
               title="Add supplement"
             >
               <Plus className="w-4 h-4" />
@@ -427,19 +427,19 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
           </div>
 
           {isAddingSuplement && (
-            <div className="mb-4 p-3 bg-slate-700 rounded-xl">
+            <div className="mb-4 p-3 bg-surface-secondary rounded-xl">
               <div className="flex items-center space-x-2">
                 <input
                   type="text"
                   value={newSupplementName}
                   onChange={(e) => setNewSupplementName(e.target.value)}
                   aria-label="Supplement name"
-                  className="flex-1 px-3 py-2 bg-slate-800 text-white rounded border border-slate-500 focus:outline-none focus:border-green-400"
+                  className="flex-1 px-3 py-2 bg-surface text-strong rounded border border-control-muted-border focus:outline-none focus:border-green-400"
                   autoFocus
                 />
                 <button
                   onClick={handleAddSupplement}
-                  className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm"
+                  className="px-3 py-2 bg-action hover:bg-action-hover text-on-action rounded text-sm"
                 >
                   Add
                 </button>
@@ -448,7 +448,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                     setIsAddingSupplement(false);
                     setNewSupplementName("");
                   }}
-                  className="px-3 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded text-sm"
+                  className="px-3 py-2 bg-control-strong hover:bg-control-muted text-strong rounded text-sm"
                 >
                   Cancel
                 </button>
@@ -459,14 +459,14 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
           {allSupplements.length > 0 ? (
             <div className="space-y-3">
               {supplementLogs.map(log => (
-                <div key={log.id} className="flex items-center justify-between p-3 bg-slate-700 rounded-xl">
+                <div key={log.id} className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl">
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={() => handleSupplementToggle(log.id)}
                       className={`w-6 h-6 rounded-full border-2 transition-all ${
                         log.taken
-                          ? 'bg-green-500 border-green-500'
-                          : 'border-slate-400 hover:border-slate-300'
+                          ? 'bg-action-selected border-green-500'
+                          : 'border-control-muted hover:border-supporting'
                       }`}
                     >
                       {log.taken && (
@@ -475,26 +475,26 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                         </div>
                       )}
                     </button>
-                    <span className={`font-medium ${log.taken ? 'text-green-400' : 'text-white'}`}>
+                    <span className={`font-medium ${log.taken ? 'text-accent-text' : 'text-strong'}`}>
                       {log.name}
                     </span>
                   </div>
-                  <span className={`text-sm ${log.taken ? 'text-green-400' : 'text-slate-400'}`}>
+                  <span className={`text-sm ${log.taken ? 'text-accent-text' : 'text-muted-foreground'}`}>
                     {log.taken ? 'Taken' : 'Not taken'}
                   </span>
                 </div>
               ))}
               <button
                 onClick={handleSupplementsSave}
-                className="w-full mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors"
+                className="w-full mt-4 px-4 py-2 bg-action hover:bg-action-hover text-on-action rounded-xl transition-colors"
               >
                 Save Supplement Log
               </button>
             </div>
           ) : (
             <div className="text-center py-6">
-              <p className="text-slate-400 mb-2">No supplements added yet</p>
-              <p className="text-sm text-slate-500">Click the + button above to add your first supplement</p>
+              <p className="text-muted-foreground mb-2">No supplements added yet</p>
+              <p className="text-sm text-dim">Click the + button above to add your first supplement</p>
             </div>
           )}
         </div>
@@ -502,45 +502,45 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
 
       {/* Duration Edit Modal */}
       <Dialog open={isDurationModalOpen} onOpenChange={setIsDurationModalOpen}>
-        <DialogContent className="bg-slate-800 text-white border-slate-700">
+        <DialogContent className="bg-surface text-strong border-separator">
           <DialogHeader>
             <DialogTitle>Edit Workout Duration</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-muted-foreground">
               Adjust the total workout duration for {format(selectedDateObj, "MMMM d, yyyy")}
             </p>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="text-sm text-slate-400 block mb-2">Hours</label>
+                <label className="text-sm text-muted-foreground block mb-2">Hours</label>
                 <input
                   type="number"
                   value={editHours}
                   onChange={(e) => setEditHours(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:outline-none focus:border-green-400"
+                  className="w-full px-3 py-2 bg-surface-secondary text-strong rounded-lg border border-control focus:outline-none focus:border-green-400"
                   min="0"
                   data-testid="input-duration-hours"
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-400 block mb-2">Minutes</label>
+                <label className="text-sm text-muted-foreground block mb-2">Minutes</label>
                 <input
                   type="number"
                   value={editMinutes}
                   onChange={(e) => setEditMinutes(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:outline-none focus:border-green-400"
+                  className="w-full px-3 py-2 bg-surface-secondary text-strong rounded-lg border border-control focus:outline-none focus:border-green-400"
                   min="0"
                   max="59"
                   data-testid="input-duration-minutes"
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-400 block mb-2">Seconds</label>
+                <label className="text-sm text-muted-foreground block mb-2">Seconds</label>
                 <input
                   type="number"
                   value={editSeconds}
                   onChange={(e) => setEditSeconds(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:outline-none focus:border-green-400"
+                  className="w-full px-3 py-2 bg-surface-secondary text-strong rounded-lg border border-control focus:outline-none focus:border-green-400"
                   min="0"
                   max="59"
                   data-testid="input-duration-seconds"
@@ -550,14 +550,14 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
           </div>
           <DialogFooter className="flex flex-col sm:flex-row gap-2">
             {getEditDurationTotal() === 0 && (
-              <p className="text-sm text-red-400 flex-1 text-center sm:text-left">
+              <p className="text-sm text-feature-red flex-1 text-center sm:text-left">
                 Duration must be greater than 0
               </p>
             )}
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setIsDurationModalOpen(false)}
-                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-surface-secondary hover:bg-control-strong text-strong rounded-lg transition-colors"
                 data-testid="button-cancel-duration"
               >
                 Cancel
@@ -565,7 +565,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
               <button
                 onClick={handleSaveDuration}
                 disabled={getEditDurationTotal() === 0}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
+                className="px-4 py-2 bg-action hover:bg-action-hover text-on-action rounded-lg transition-colors disabled:bg-control-strong disabled:cursor-not-allowed disabled:opacity-50"
                 data-testid="button-save-duration"
               >
                 Save Duration

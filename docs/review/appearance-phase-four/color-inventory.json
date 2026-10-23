@@ -1,0 +1,2363 @@
+{
+  "base": "770815c",
+  "scope": "All client/src TS/TSX/CSS, client/index.html and textual public assets",
+  "categories": {
+    "1": "Intentionally theme-independent or centralized appearance palette",
+    "2": "Meaningful feature/accent color",
+    "3": "Unconverted neutral interface",
+    "4": "Phase 5 bootstrap/platform handling"
+  },
+  "counts": {
+    "1": 173,
+    "2": 154,
+    "3": 0,
+    "4": 8
+  },
+  "records": [
+    {
+      "file": "client/src/index.css",
+      "line": 11,
+      "category": 1,
+      "reason": "Central base palette, intentional dimming overlay or mask; other neutral consumers now use variables.",
+      "source": "--app-background: #0f172a;"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 234,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "background: linear-gradient(135deg, #10b981, #059669);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 235,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 239,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "background: linear-gradient(135deg, #3b82f6, #2563eb);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 240,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 244,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "background: linear-gradient(135deg, #8b5cf6, #7c3aed);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 245,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 249,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "background: linear-gradient(135deg, #f59e0b, #d97706);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 250,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 254,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "background: linear-gradient(135deg, #ef4444, #dc2626);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 255,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 259,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "background: linear-gradient(135deg, #ec4899, #db2777);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 260,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 264,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "background: linear-gradient(135deg, #06b6d4, #0891b2);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 265,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 269,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "background: linear-gradient(135deg, #65a30d, #4d7c0f);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 270,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "box-shadow: 0 0 20px rgba(101, 163, 13, 0.3);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 274,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "background: linear-gradient(135deg, #ea580c, #c2410c);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 275,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "box-shadow: 0 0 20px rgba(234, 88, 12, 0.3);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 279,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "background: linear-gradient(135deg, #6366f1, #4f46e5);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 280,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 284,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "background: linear-gradient(135deg, #059669, #047857);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 285,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "box-shadow: 0 0 20px rgba(5, 150, 105, 0.3);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 289,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "background: linear-gradient(135deg, #eab308, #ca8a04);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 290,
+      "category": 2,
+      "reason": "Workout identity gradient/glow.",
+      "source": "box-shadow: 0 0 20px rgba(234, 179, 8, 0.3);"
+    },
+    {
+      "file": "client/src/index.css",
+      "line": 329,
+      "category": 1,
+      "reason": "Central base palette, intentional dimming overlay or mask; other neutral consumers now use variables.",
+      "source": "background-color: rgba(0, 0, 0, 0.7);"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 19,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "green: '#22c55e',"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 20,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "blue: '#3b82f6',"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 21,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "purple: '#8b5cf6',"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 22,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "amber: '#f59e0b',"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 23,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "red: '#ef4444',"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 24,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "pink: '#ec4899',"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 25,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "cyan: '#06b6d4',"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 26,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "lime: '#84cc16',"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 27,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "orange: '#f97316',"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 28,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "indigo: '#6366f1',"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 29,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "emerald: '#10b981',"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 30,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "yellow: '#eab308'"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 37,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "if (ratio >= 0.9) return '#dc2626'; // red-600 - extreme"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 38,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "if (ratio >= 0.75) return '#ea580c'; // orange-600 - high"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 39,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "if (ratio >= 0.5) return '#f59e0b'; // amber-500 - medium"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 40,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "if (ratio >= 0.25) return '#22c55e'; // green-500 - low"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 41,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "return '#6b7280'; // gray-500 - minimal"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 56,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "return strokeColorMap[color] || '#22c55e';"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 60,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "green: '#15803d', blue: '#1d4ed8', purple: '#6d28d9', amber: '#b45309',"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 61,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "red: '#b91c1c', pink: '#be185d', cyan: '#0e7490', lime: '#4d7c0f',"
+    },
+    {
+      "file": "client/src/lib/color-utils.ts",
+      "line": 62,
+      "category": 2,
+      "reason": "Persisted hue identity or intensity color scale; Light stroke alternatives already exist.",
+      "source": "orange: '#c2410c', indigo: '#4338ca', emerald: '#047857', yellow: '#a16207',"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 22,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--overlay: rgb(0 0 0 / 0.8);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 62,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--page-background: hsl(222, 47%, 11%);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 63,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--workout-number: #ffffff;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 65,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "0 2px 8px rgba(0, 0, 0, 1), 0 4px 16px rgba(0, 0, 0, 0.8),"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 66,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "0 0 8px rgba(255, 255, 255, 0.5);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 67,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--workout-track: rgba(255, 255, 255, 0.1);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 68,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--workout-complete: #00ff41;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 69,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--workout-complete-glow: drop-shadow(0 0 8px #00ff41)"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 70,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "drop-shadow(0 0 16px #00ff41);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 74,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--control-hover-color: rgb(51 65 85);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 75,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--control-focus-color: rgb(203 213 225);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 76,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--field-focus-color: rgb(74 222 128 / 0.65);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 77,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--placeholder-color: rgb(148 163 184);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 78,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--dock-text: rgb(141 157 177);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 80,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--dock-selected: rgb(148 163 184 / 0.1);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 81,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--dock-pressed: rgb(148 163 184 / 0.14);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 82,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--dock-icon: #00ff41;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 83,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--row-surface: rgb(30 41 59 / 0.4);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 84,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--timer-selection: rgb(51 65 85 / 0.65);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 90,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--session-start-background: linear-gradient(135deg, #00ff41 0%, #00cc33 100%);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 91,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--session-start-shadow: 0 0 10px rgba(0, 255, 65, 0.2);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 97,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--app-background: #f8fafc;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 129,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--overlay: rgb(15 23 42 / 0.4);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 130,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface: rgb(255 255 255);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 131,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-elevated: rgb(255 255 255);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 132,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-interactive: rgb(241 245 249);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 133,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-nav: rgb(255 255 255);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 134,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-border: rgb(100 116 139 / 0.25);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 135,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-border-highlight: rgb(255 255 255 / 0.8);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 137,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "0 4px 14px rgb(15 23 42 / 0.06), inset 0 1px 0 var(--glass-border-highlight);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 139,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "0 12px 32px rgb(15 23 42 / 0.12),"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 168,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--workout-number: #0f172a;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 170,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--workout-track: #7c899b;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 171,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--workout-complete: #15803d;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 175,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--control-hover-color: #e2e8f0;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 176,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--control-focus-color: #15803d;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 177,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--field-focus-color: #15803d;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 178,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--placeholder-color: #475569;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 179,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--dock-text: #475569;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 180,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--dock-selected-text: #0f172a;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 181,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--dock-selected: rgb(15 23 42 / 0.07);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 182,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--dock-pressed: rgb(15 23 42 / 0.1);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 183,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--dock-icon: #15803d;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 184,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--row-surface: #ffffff;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 185,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--timer-selection: #e2e8f0;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 186,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-control-border: #7c899b;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 191,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--session-start-background: #4ade80;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 198,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface: rgb(255 255 255 / 0.95);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 199,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-elevated: rgb(255 255 255 / 0.98);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 200,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-interactive: rgb(241 245 249 / 0.95);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 201,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-nav: rgb(255 255 255 / 0.85);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 208,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-interactive: rgb(241 245 249);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 243,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--row-opaque: rgb(30 41 59);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 258,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--dock-border: rgb(148 163 184 / 0.2);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 260,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "0 4px 14px rgb(0 0 0 / 0.14), inset 0 1px 0 rgb(255 255 255 / 0.035);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 267,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--tw-shadow-color: rgb(15 23 42 / 0.12);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 288,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--bmi-track: #475569;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 289,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--bmi-blue: #3b82f6;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 290,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--bmi-green: #22c55e;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 291,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--bmi-amber: #f59e0b;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 292,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--bmi-red: #ef4444;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 293,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--chart-series: #3b82f6;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 312,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--bmi-track: #cbd5e1;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 313,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--bmi-blue: #1d4ed8;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 314,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--bmi-green: #15803d;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 315,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--bmi-amber: #b45309;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 316,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--bmi-red: #b91c1c;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 317,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--chart-series: #2563eb;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 342,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--wellness-green: #22c55e; --wellness-blue: #3b82f6;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 343,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--wellness-purple: #a855f7; --wellness-amber: #f59e0b;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 344,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--goal-purple: #9333ea; --goal-orange: #f97316;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 345,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--wellness-on-action: #0f172a;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 346,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--wellness-border: rgb(148 163 184 / .1);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 347,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--wellness-goal-border: rgb(148 163 184 / .15);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 348,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--journal-surface: hsl(222, 47%, 15%);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 349,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--scroll-track: hsl(217.2, 32.6%, 17.5%);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 350,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--scroll-thumb: hsl(215, 20.2%, 65.1%);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 351,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--scroll-thumb-hover: hsl(210, 40%, 80%);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 361,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--energy-track: rgba(255,255,255,.1);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 362,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--energy-empty-dot: rgba(148,163,184,.6);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 363,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--energy-point-border: rgba(255,255,255,.8);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 364,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--meditation-track: rgba(100,116,139,.3);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 365,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--meditation-glow: drop-shadow(0 0 20px rgba(168,85,247,.3));"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 366,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--calendar-grid: rgba(100,116,139,.2);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 367,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--calendar-complete: #00ff41; --calendar-recovery: #ff8c00;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 368,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--calendar-chart-glow: drop-shadow(0 0 4px rgba(0,255,65,.5));"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 369,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--calendar-complete-shadow: 0 0 8px rgba(0,255,65,.4), 0 0 16px rgba(0,255,65,.2);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 370,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--calendar-recovery-shadow: 0 0 8px rgba(255,140,0,.4), 0 0 16px rgba(255,140,0,.2);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 373,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--wellness-green: #15803d; --wellness-blue: #1d4ed8;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 374,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--wellness-purple: #7e22ce; --wellness-amber: #b45309;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 375,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--goal-purple: #7e22ce; --goal-orange: #c2410c;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 391,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--energy-track: #cbd5e1; --energy-empty-dot: #64748b;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 392,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--energy-point-border: #475569;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 393,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--meditation-track: #cbd5e1; --meditation-glow: none;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 394,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--calendar-grid: #cbd5e1;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 406,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--energy-amber: #fbbf24;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 407,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--energy-gradient-purple: #8b5cf6; --energy-gradient-blue: #3b82f6; --energy-gradient-cyan: #06b6d4;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 408,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--calendar-chart-complete: #00ff41; --calendar-chart-recovery: #ff8c00;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 409,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--calendar-purple-shadow: 0 0 8px rgba(192,132,252,.4);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 410,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--calendar-yellow-shadow: 0 0 8px rgba(250,204,21,.4);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 411,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--calendar-blue-shadow: 0 0 8px rgba(96,165,250,.4);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 412,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--timer-inactive: rgb(156,163,175);"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 415,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--energy-amber: #b45309;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 416,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--energy-gradient-purple: #7c3aed; --energy-gradient-blue: #2563eb; --energy-gradient-cyan: #0e7490;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 417,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--calendar-chart-complete: #15803d; --calendar-chart-recovery: #c2410c;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 419,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--timer-inactive: #64748b;"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 422,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": ":root { --calendar-recovery-bar-shadow: 0 0 8px #ff8c0040; --calendar-complete-bar-shadow: 0 0 8px #00ff4140; }"
+    },
+    {
+      "file": "client/src/styles/appearance.css",
+      "line": 427,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": ":root[data-appearance=\"light\"] .text-on-action-soft { color: white; }"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 3,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface: rgb(30 41 59);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 4,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-elevated: rgb(15 23 42);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 5,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-interactive: rgb(30 41 59);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 6,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-nav: rgb(30 41 59);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 8,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-border: rgb(203 213 225 / .2);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 9,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-border-highlight: rgb(255 255 255 / .1);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 10,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-shadow: 0 4px 14px rgb(0 0 0 / .16), inset 0 1px 0 var(--glass-border-highlight);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 11,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-shadow-elevated: 0 12px 32px rgb(0 0 0 / .28), inset 0 1px 0 var(--glass-border-highlight);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 23,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface: rgb(30 41 59 / .9);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 24,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-elevated: rgb(15 23 42 / .96);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 25,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-interactive: rgb(30 41 59 / .88);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 26,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-nav: rgb(30 41 59 / .65);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 48,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "box-shadow: inset 0 1px 0 rgb(255 255 255 / .04);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 51,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": ".glass-button:hover:not(:disabled) { background-color: var(--control-hover-color, rgb(51 65 85)); }"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 52,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": ".glass-button:active:not(:disabled) { box-shadow: inset 0 2px 5px rgb(0 0 0 / .2); }"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 54,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "outline: 2px solid var(--control-focus-color, rgb(203 213 225));"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 57,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": ".glass-input::placeholder { color: var(--placeholder-color, rgb(148 163 184)); opacity: 1; }"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 63,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": ".dock-nav { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; border: 1px solid var(--dock-border, rgb(148 163 184 / .2)); border-radius: 24px; padding: 8px 8px; box-shadow: var(--dock-shadow, 0 4px 14px rgb(0 0 0 / .14), inset 0 1px 0 rgb(255 255 255 / .035"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 65,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": ".dock-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; border-radius: 16px; border: none; background-color: transparent; color: var(--dock-text, rgb(141 157 177)); cursor: pointer; min-width: 0; flex: 1 1 0; min-height: 48px; gap: 4px; transition"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 66,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": ".dock-tab[aria-current=\"page\"] { color: var(--dock-selected-text, white); background-color: var(--dock-selected, rgb(148 163 184 / .1)); }"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 67,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": ".dock-tab[aria-current=\"page\"] svg { color: var(--dock-icon, #00ff41); }"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 69,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": ".dock-tab:active { transform: translateY(1px); background-color: var(--dock-pressed, rgb(148 163 184 / .14)); }"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 78,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface: rgb(30 41 59);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 79,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-elevated: rgb(15 23 42);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 80,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-interactive: rgb(30 41 59);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 81,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--glass-surface-nav: rgb(30 41 59);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 104,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "background-image: linear-gradient(145deg, rgb(255 255 255 / .035), transparent 55%);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 105,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "box-shadow: var(--glass-shadow), inset 0 0 0 1px rgb(255 255 255 / .08);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 108,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "background-color: var(--row-surface, rgb(30 41 59 / .4));"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 110,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "box-shadow: inset 0 -1px 0 rgb(203 213 225 / .07);"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 112,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": ".glass-toggle { box-shadow: inset 0 1px 2px rgb(0 0 0 / .2), 0 1px 0 rgb(255 255 255 / .06); }"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 114,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": ".glass-control:active:not(:disabled) { box-shadow: inset 0 2px 5px rgb(0 0 0 / .2); }"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 115,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": ".glass-tile:focus-visible, .glass-control:focus-visible { outline: 2px solid var(--control-focus-color, rgb(203 213 225)); outline-offset: 2px; }"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 127,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "@media (prefers-reduced-transparency: reduce) { .glass-row { background-color: var(--row-opaque, rgb(30 41 59)); } }"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 133,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "outline: 2px solid var(--control-focus-color, rgb(203 213 225));"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 155,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--tw-ring-offset-shadow: 0 0 #0000;"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 156,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "--tw-ring-shadow: 0 0 #0000;"
+    },
+    {
+      "file": "client/src/styles/glass.css",
+      "line": 157,
+      "category": 1,
+      "reason": "Central theme palette, material definition or compatibility fallback; values intentionally selected by appearance.",
+      "source": "box-shadow: inset 0 0 0 1px var(--field-focus-color, rgb(74 222 128 / .65));"
+    },
+    {
+      "file": "client/src/components/WorkoutDataRecovery.tsx",
+      "line": 46,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<a className=\"inline-block rounded-xl bg-blue-600 px-4 py-3 text-on-action-soft\" href={`${import.meta.env.BASE_URL}settings`}>Open Settings to restore a backup</a>"
+    },
+    {
+      "file": "client/src/components/workout-modal.tsx",
+      "line": 206,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"action-quiet-danger px-2 bg-red-500 hover:bg-red-600 text-on-action border-red-600\""
+    },
+    {
+      "file": "client/src/components/CardioDataRecovery.tsx",
+      "line": 45,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<a className=\"inline-block rounded-xl bg-blue-600 px-4 py-3 text-on-action-soft\" href={`${import.meta.env.BASE_URL}settings`}>Open Settings to restore a backup</a>"
+    },
+    {
+      "file": "client/src/pages/dynamic-overview.tsx",
+      "line": 267,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-16 px-2 py-1 text-sm bg-surface text-strong rounded border border-control-muted-border focus:outline-none focus:border-blue-400\""
+    },
+    {
+      "file": "client/src/pages/dynamic-overview.tsx",
+      "line": 335,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "? 'bg-orange-600 hover:bg-orange-700 text-strong'"
+    },
+    {
+      "file": "client/src/pages/dynamic-overview.tsx",
+      "line": 374,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"px-4 py-2 bg-purple-600 hover:bg-purple-700 text-on-action rounded-xl transition-colors\""
+    },
+    {
+      "file": "client/src/pages/dynamic-overview.tsx",
+      "line": 405,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-on-action rounded-xl transition-colors\""
+    },
+    {
+      "file": "client/src/pages/dynamic-overview.tsx",
+      "line": 437,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"flex-1 px-3 py-2 bg-surface text-strong rounded border border-control-muted-border focus:outline-none focus:border-green-400\""
+    },
+    {
+      "file": "client/src/pages/dynamic-overview.tsx",
+      "line": 468,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "? 'bg-action-selected border-green-500'"
+    },
+    {
+      "file": "client/src/pages/dynamic-overview.tsx",
+      "line": 474,
+      "category": 1,
+      "reason": "White control thumb/marker, dark text on bright action fill or dimming overlay.",
+      "source": "<div className=\"w-2 h-2 bg-white rounded-full\" />"
+    },
+    {
+      "file": "client/src/pages/dynamic-overview.tsx",
+      "line": 520,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-full px-3 py-2 bg-surface-secondary text-strong rounded-lg border border-control focus:outline-none focus:border-green-400\""
+    },
+    {
+      "file": "client/src/pages/dynamic-overview.tsx",
+      "line": 531,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-full px-3 py-2 bg-surface-secondary text-strong rounded-lg border border-control focus:outline-none focus:border-green-400\""
+    },
+    {
+      "file": "client/src/pages/dynamic-overview.tsx",
+      "line": 543,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-full px-3 py-2 bg-surface-secondary text-strong rounded-lg border border-control focus:outline-none focus:border-green-400\""
+    },
+    {
+      "file": "client/src/pages/daily-journal.tsx",
+      "line": 157,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-full max-w-sm mx-auto block px-6 py-3 bg-purple-600 hover:bg-purple-700 text-on-action rounded-xl transition-colors font-medium shadow-lg\""
+    },
+    {
+      "file": "client/src/pages/food-tracker.tsx",
+      "line": 587,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "{(diary.error || diary.saveError) && <div role=\"alert\" className=\"rounded-xl border border-amber-500/40 p-3 text-sm text-warning mb-3\">{diary.error || diary.saveError}<Button variant=\"ghost\" onClick={diary.retry}>Retry Loading Day</Button></div>}"
+    },
+    {
+      "file": "client/src/pages/food-tracker.tsx",
+      "line": 650,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<button type=\"button\" aria-label=\"Scan Barcode\" onClick={()=>{setSearchOpen(false);setBarcodeOpen(true);}} className=\"food-scan-action flex min-h-32 flex-col items-center justify-center gap-2 rounded-3xl border border-green-400/30 bg-green-400/15 p-4 text-center hover:bg-green-400/20\">"
+    },
+    {
+      "file": "client/src/pages/food-tracker.tsx",
+      "line": 1230,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"flex-1 bg-blue-600 hover:bg-blue-700 text-on-action rounded-xl\""
+    },
+    {
+      "file": "client/src/pages/food-database.tsx",
+      "line": 531,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"flex-1 bg-blue-600 hover:bg-blue-700 text-on-action\""
+    },
+    {
+      "file": "client/src/pages/measurements.tsx",
+      "line": 180,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-full bg-blue-600 hover:bg-blue-700 text-on-action py-3 rounded-xl font-medium\""
+    },
+    {
+      "file": "client/src/pages/profile.tsx",
+      "line": 58,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "{profile.error && <div role=\"alert\" className=\"rounded-xl border border-amber-500/40 p-3 text-sm text-warning\">{profile.error}<div className=\"flex gap-3 mt-2\"><button className=\"min-h-11\" onClick={refresh}>Retry</button><button className=\"min-h-11\" onClick={() => navigate('/settings')}>Open Settings"
+    },
+    {
+      "file": "client/src/pages/routines.tsx",
+      "line": 388,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<Button variant=\"destructive\" className=\"min-h-11 bg-red-600 text-on-action hover:bg-red-700\" aria-label=\"Delete routine\" onClick={handleConfirmRoutineDeletion}>Delete</Button>"
+    },
+    {
+      "file": "client/src/pages/settings.tsx",
+      "line": 176,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2\""
+    },
+    {
+      "file": "client/src/pages/settings.tsx",
+      "line": 185,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "? 'bg-feature-green-tint/50 text-accent-soft border border-green-700'"
+    },
+    {
+      "file": "client/src/pages/settings.tsx",
+      "line": 186,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": ": 'bg-feature-red-deep-tint/50 text-feature-red-soft border border-red-700'"
+    },
+    {
+      "file": "client/src/pages/settings.tsx",
+      "line": 206,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2\""
+    },
+    {
+      "file": "client/src/pages/settings.tsx",
+      "line": 234,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "settings.hideQuoteOfTheDay ? 'bg-green-400' : 'bg-control-strong'"
+    },
+    {
+      "file": "client/src/pages/settings.tsx",
+      "line": 238,
+      "category": 1,
+      "reason": "White control thumb/marker, dark text on bright action fill or dimming overlay.",
+      "source": "className={`inline-block w-5 h-5 bg-white rounded-full transition-transform ${"
+    },
+    {
+      "file": "client/src/pages/settings.tsx",
+      "line": 255,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "settings.hideTodaysTotals ? 'bg-green-400' : 'bg-control-strong'"
+    },
+    {
+      "file": "client/src/pages/settings.tsx",
+      "line": 259,
+      "category": 1,
+      "reason": "White control thumb/marker, dark text on bright action fill or dimming overlay.",
+      "source": "className={`inline-block w-5 h-5 bg-white rounded-full transition-transform ${"
+    },
+    {
+      "file": "client/src/pages/settings.tsx",
+      "line": 276,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "settings.hideRecentActivity ? 'bg-green-400' : 'bg-control-strong'"
+    },
+    {
+      "file": "client/src/pages/settings.tsx",
+      "line": 280,
+      "category": 1,
+      "reason": "White control thumb/marker, dark text on bright action fill or dimming overlay.",
+      "source": "className={`inline-block w-5 h-5 bg-white rounded-full transition-transform ${"
+    },
+    {
+      "file": "client/src/pages/settings.tsx",
+      "line": 291,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<div className=\"bg-feature-red-deep-tint/20 border border-red-700 rounded-xl p-6 mb-6\">"
+    },
+    {
+      "file": "client/src/pages/settings.tsx",
+      "line": 299,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-full bg-red-600 hover:bg-red-700 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2\""
+    },
+    {
+      "file": "client/src/pages/settings.tsx",
+      "line": 313,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"flex-1 bg-red-600 hover:bg-red-700 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2\""
+    },
+    {
+      "file": "client/src/pages/journal-log.tsx",
+      "line": 212,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"px-4 py-2 bg-purple-600 hover:bg-purple-700 text-on-action rounded-xl transition-colors\""
+    },
+    {
+      "file": "client/src/pages/journal-log.tsx",
+      "line": 273,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"flex-1 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-on-action rounded-xl transition-colors font-medium shadow-lg\""
+    },
+    {
+      "file": "client/src/pages/journal-log.tsx",
+      "line": 281,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"px-4 py-2.5 bg-red-600 hover:bg-red-700 text-on-action rounded-xl transition-colors font-medium shadow-lg flex items-center gap-2\""
+    },
+    {
+      "file": "client/src/pages/meditation.tsx",
+      "line": 318,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<div className=\"glass-panel bg-surface rounded-xl p-8 text-center max-w-sm mx-4 border border-purple-500\">"
+    },
+    {
+      "file": "client/src/pages/meditation.tsx",
+      "line": 440,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"border-red-600 text-feature-red hover:bg-feature-red-deep-tint/20\""
+    },
+    {
+      "file": "client/src/pages/meditation.tsx",
+      "line": 714,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"flex-1 bg-purple-600 hover:bg-purple-700 text-on-action-soft\""
+    },
+    {
+      "file": "client/src/pages/meditation.tsx",
+      "line": 821,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-full bg-purple-600 hover:bg-purple-700 text-on-action\""
+    },
+    {
+      "file": "client/src/pages/fitness-calculator.tsx",
+      "line": 321,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"rounded-xl border border-amber-500/40 p-3 text-sm text-warning\""
+    },
+    {
+      "file": "client/src/pages/fitness-calculator.tsx",
+      "line": 588,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"bg-blue-600 hover:bg-blue-700 text-on-action\""
+    },
+    {
+      "file": "client/src/pages/hydration.tsx",
+      "line": 450,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"flex-1 bg-blue-600 hover:bg-blue-700 text-on-action-soft\""
+    },
+    {
+      "file": "client/src/pages/hydration.tsx",
+      "line": 490,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "? \"bg-blue-600 text-on-action\""
+    },
+    {
+      "file": "client/src/pages/hydration.tsx",
+      "line": 572,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"bg-blue-600 hover:bg-blue-700 text-on-action\""
+    },
+    {
+      "file": "client/src/pages/hydration.tsx",
+      "line": 604,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "? \"bg-blue-600 text-on-action\""
+    },
+    {
+      "file": "client/src/pages/hydration.tsx",
+      "line": 651,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"flex-1 bg-blue-600 hover:bg-blue-700 text-on-action\""
+    },
+    {
+      "file": "client/src/pages/cardio.tsx",
+      "line": 334,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<SelectTrigger className=\"flex-1 bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500\">"
+    },
+    {
+      "file": "client/src/pages/cardio.tsx",
+      "line": 372,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500\""
+    },
+    {
+      "file": "client/src/pages/cardio.tsx",
+      "line": 408,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500\""
+    },
+    {
+      "file": "client/src/pages/cardio.tsx",
+      "line": 423,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500\""
+    },
+    {
+      "file": "client/src/pages/cardio.tsx",
+      "line": 437,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500\""
+    },
+    {
+      "file": "client/src/pages/cardio.tsx",
+      "line": 721,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<SelectTrigger className=\"bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500\">"
+    },
+    {
+      "file": "client/src/pages/cardio.tsx",
+      "line": 745,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500\""
+    },
+    {
+      "file": "client/src/pages/cardio.tsx",
+      "line": 759,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500\""
+    },
+    {
+      "file": "client/src/pages/cardio.tsx",
+      "line": 773,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500\""
+    },
+    {
+      "file": "client/src/pages/cardio.tsx",
+      "line": 906,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"flex-1 bg-blue-600 hover:bg-blue-700 text-on-action-soft\""
+    },
+    {
+      "file": "client/src/pages/home.tsx",
+      "line": 251,
+      "category": 1,
+      "reason": "White control thumb/marker, dark text on bright action fill or dimming overlay.",
+      "source": "className=\"text-black font-semibold py-3 px-4 rounded-xl flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 w-full\""
+    },
+    {
+      "file": "client/src/pages/home.tsx",
+      "line": 257,
+      "category": 1,
+      "reason": "White control thumb/marker, dark text on bright action fill or dimming overlay.",
+      "source": "<Play className=\"w-5 h-5 text-black\" />"
+    },
+    {
+      "file": "client/src/pages/home.tsx",
+      "line": 258,
+      "category": 1,
+      "reason": "White control thumb/marker, dark text on bright action fill or dimming overlay.",
+      "source": "<span className=\"text-base text-black whitespace-nowrap\">Start Workout Session</span>"
+    },
+    {
+      "file": "client/src/pages/home.tsx",
+      "line": 266,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<div className={`w-3 h-3 rounded-full ${isWorkoutPaused ? 'bg-yellow-400' : 'bg-accent-bright animate-pulse'}`}></div>"
+    },
+    {
+      "file": "client/src/pages/home.tsx",
+      "line": 272,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-10 h-10 bg-red-500 hover:bg-red-600 text-on-action rounded-full flex items-center justify-center transition-colors\""
+    },
+    {
+      "file": "client/src/pages/home.tsx",
+      "line": 279,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-10 h-10 bg-blue-500 hover:bg-blue-600 text-on-action rounded-full flex items-center justify-center transition-colors\""
+    },
+    {
+      "file": "client/src/pages/energy-level.tsx",
+      "line": 86,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<div className=\"bg-gradient-to-br from-feature-purple-tint/30 to-feature-blue-deep-tint/30 rounded-xl p-6 border border-purple-500/20\">"
+    },
+    {
+      "file": "client/src/pages/energy-level.tsx",
+      "line": 185,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<div className=\"w-2 h-2 bg-yellow-400 rounded-full text-on-action-soft\"></div>"
+    },
+    {
+      "file": "client/src/pages/energy-level.tsx",
+      "line": 388,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"px-6 py-2 bg-yellow-600 hover:bg-yellow-700 text-on-action rounded-xl transition-colors font-medium\""
+    },
+    {
+      "file": "client/src/pages/calendar-new.tsx",
+      "line": 584,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "${isRecovery ? \"bg-orange-500 text-strong shadow-lg shadow-orange-500/50\" : \"\"}`}"
+    },
+    {
+      "file": "client/src/pages/calendar-new.tsx",
+      "line": 588,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "color: '#000000',"
+    },
+    {
+      "file": "client/src/pages/calendar-new.tsx",
+      "line": 593,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "color: '#000000',"
+    },
+    {
+      "file": "client/src/pages/calendar-new.tsx",
+      "line": 607,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<div className=\"w-1.5 h-1.5 bg-purple-400 rounded-full text-on-action-soft\" />"
+    },
+    {
+      "file": "client/src/pages/calendar-new.tsx",
+      "line": 610,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<div className=\"w-1.5 h-1.5 bg-yellow-400 rounded-full text-on-action-soft\" />"
+    },
+    {
+      "file": "client/src/pages/calendar-new.tsx",
+      "line": 613,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<div className=\"w-1.5 h-1.5 bg-blue-400 rounded-full text-on-action-soft\" />"
+    },
+    {
+      "file": "client/src/pages/supplements.tsx",
+      "line": 139,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "? 'bg-action-selected border-green-500'"
+    },
+    {
+      "file": "client/src/pages/supplements.tsx",
+      "line": 195,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"flex-1 px-3 py-2 bg-surface text-strong rounded border border-control-muted-border focus:outline-none focus:border-blue-400\""
+    },
+    {
+      "file": "client/src/pages/fasting.tsx",
+      "line": 103,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "if (hours <= 1) return \"bg-blue-500\";"
+    },
+    {
+      "file": "client/src/pages/fasting.tsx",
+      "line": 105,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "if (hours <= 12) return \"bg-yellow-500\";"
+    },
+    {
+      "file": "client/src/pages/fasting.tsx",
+      "line": 106,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "if (hours <= 18) return \"bg-orange-500\";"
+    },
+    {
+      "file": "client/src/pages/fasting.tsx",
+      "line": 107,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "return \"bg-red-500\";"
+    },
+    {
+      "file": "client/src/pages/fasting.tsx",
+      "line": 550,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"flex-1 bg-blue-600 hover:bg-blue-700 text-on-action-soft\""
+    },
+    {
+      "file": "client/src/pages/restore-custom-foods.tsx",
+      "line": 241,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "? 'bg-feature-green-tint/50 text-accent-soft border border-green-700'"
+    },
+    {
+      "file": "client/src/pages/restore-custom-foods.tsx",
+      "line": 242,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": ": 'bg-feature-blue-deep-tint/50 text-feature-blue-soft border border-blue-700'"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 24,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "bgColor: 'bg-orange-400/10',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 25,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "hoverBg: 'hover:bg-orange-400/20',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 33,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "bgColor: 'bg-purple-400/10',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 34,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "hoverBg: 'hover:bg-purple-400/20',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 42,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "bgColor: 'bg-cyan-400/10',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 43,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "hoverBg: 'hover:bg-cyan-400/20',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 51,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "bgColor: 'bg-teal-400/10',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 52,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "hoverBg: 'hover:bg-teal-400/20',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 60,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "bgColor: 'bg-amber-400/10',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 61,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "hoverBg: 'hover:bg-amber-400/20',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 69,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "bgColor: 'bg-orange-400/10',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 70,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "hoverBg: 'hover:bg-orange-400/20',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 78,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "bgColor: 'bg-purple-400/10',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 79,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "hoverBg: 'hover:bg-purple-400/20',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 87,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "bgColor: 'bg-yellow-400/10',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 88,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "hoverBg: 'hover:bg-yellow-400/20',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 96,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "bgColor: 'bg-blue-400/10',"
+    },
+    {
+      "file": "client/src/pages/wellness.tsx",
+      "line": 97,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "hoverBg: 'hover:bg-blue-400/20',"
+    },
+    {
+      "file": "client/src/components/ui/viewport-overlay.tsx",
+      "line": 15,
+      "category": 1,
+      "reason": "White control thumb/marker, dark text on bright action fill or dimming overlay.",
+      "source": "<DialogPrimitive.Overlay className={`overlay-frame viewport-overlay bg-black/50 ${className}`}>"
+    },
+    {
+      "file": "client/src/components/ui/toast.tsx",
+      "line": 78,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "\"toast-close-control absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:foc"
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
+      "line": 30,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<div className={`w-2 h-2 rounded-full ${isWorkoutPaused ? 'bg-yellow-400' : 'bg-green-400 animate-pulse'}`} />"
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
+      "line": 79,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<div className={`w-3 h-3 rounded-full ${isWorkoutPaused ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'}`} />"
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
+      "line": 87,
+      "category": 1,
+      "reason": "White control thumb/marker, dark text on bright action fill or dimming overlay.",
+      "source": "className=\"w-full flex items-center justify-center space-x-3 py-4 px-6 rounded-xl font-medium text-black transition-all duration-300 hover:scale-105 active:scale-95\""
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
+      "line": 89,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "background: 'linear-gradient(135deg, #00ff41 0%, #00cc33 100%)',"
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
+      "line": 90,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "boxShadow: '0 0 10px rgba(0, 255, 65, 0.2)'"
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
+      "line": 104,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<div className={`w-3 h-3 rounded-full ${isWorkoutPaused ? 'bg-yellow-400' : 'bg-green-400 animate-pulse'}`}></div>"
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
+      "line": 110,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-10 h-10 bg-red-500 hover:bg-red-600 text-on-action rounded-full flex items-center justify-center transition-colors\""
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
+      "line": 117,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-10 h-10 bg-blue-500 hover:bg-blue-600 text-on-action rounded-full flex items-center justify-center transition-colors\""
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/WorkoutWidget.tsx",
+      "line": 76,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "? 'border-green-500 bg-action-selected/10'"
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/TimerWidget.tsx",
+      "line": 56,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<div className={`w-2 h-2 rounded-full ${isPaused ? 'bg-yellow-400' : 'bg-green-400'}`} />"
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/TimerWidget.tsx",
+      "line": 105,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "<div className={`w-3 h-3 rounded-full ${isPaused ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'}`} />"
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/TimerWidget.tsx",
+      "line": 121,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors text-on-action-soft\""
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/TimerWidget.tsx",
+      "line": 128,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-xl transition-colors text-on-action-soft\""
+    },
+    {
+      "file": "client/src/components/dashboard-widgets/WidgetSettings.tsx",
+      "line": 95,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "? 'border-blue-500 bg-blue-500/10'"
+    },
+    {
+      "file": "client/src/components/nutrition/FoodEntryForm.tsx",
+      "line": 327,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"bg-green-400 text-on-bright\""
+    },
+    {
+      "file": "client/src/components/nutrition/BarcodeEntry.tsx",
+      "line": 97,
+      "category": 2,
+      "reason": "Meaningful feature fill, border, gradient, button accent or dark text on a bright Calendar state; neutral surfaces/text are semantic.",
+      "source": "className=\"w-full bg-green-400 text-on-bright\""
+    },
+    {
+      "file": "client/src/components/nutrition/BarcodeScanner.tsx",
+      "line": 113,
+      "category": 1,
+      "reason": "Camera preview remains intentionally dark in either appearance.",
+      "source": "className=\"w-full aspect-video object-cover rounded-xl bg-slate-950\""
+    },
+    {
+      "file": "client/index.html",
+      "line": 6,
+      "category": 4,
+      "reason": "Launch/startup metadata or pre-controller placeholder; Phase 5 platform/bootstrap handling.",
+      "source": "<meta name=\"theme-color\" content=\"#0f172a\" />"
+    },
+    {
+      "file": "client/index.html",
+      "line": 19,
+      "category": 4,
+      "reason": "Launch/startup metadata or pre-controller placeholder; Phase 5 platform/bootstrap handling.",
+      "source": "<section id=\"fitcircle-startup\" style=\"max-width:32rem;margin:10vh auto;padding:2rem;background:#0f172a;color:#fff;border-radius:1rem;font-family:system-ui\">"
+    },
+    {
+      "file": "client/public/manifest.json",
+      "line": 6,
+      "category": 4,
+      "reason": "Launch/startup metadata or pre-controller placeholder; Phase 5 platform/bootstrap handling.",
+      "source": "\"background_color\": \"#0f172a\","
+    },
+    {
+      "file": "client/public/manifest.json",
+      "line": 7,
+      "category": 4,
+      "reason": "Launch/startup metadata or pre-controller placeholder; Phase 5 platform/bootstrap handling.",
+      "source": "\"theme_color\": \"#0f172a\","
+    },
+    {
+      "file": "client/public/layout-diagnostics.js",
+      "line": 89,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": "panel.style.cssText = 'position:fixed;z-index:10000;right:8px;top:calc(env(safe-area-inset-top, 0px) + 8px);max-width:min(340px,calc(100vw - 16px));max-height:60vh;overflow:auto;background:#0f172a;color:#f8fafc;border:1px solid #94a3b8;border-radius:8px;padding:8px;font:12px/1.4 monospace;';"
+    },
+    {
+      "file": "client/public/layout-diagnostics.js",
+      "line": 112,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": "boundary.style.cssText = 'position:fixed;left:0;right:0;border-top:2px solid #22d3ee;z-index:9998;pointer-events:none;';"
+    },
+    {
+      "file": "client/public/layout-diagnostics.js",
+      "line": 143,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": "el.style.cssText = 'min-height:44px;padding:8px;background:#1e293b;color:#fff;border:1px solid #64748b;border-radius:4px;';"
+    },
+    {
+      "file": "client/public/layout-diagnostics.js",
+      "line": 153,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": "hint.style.cssText = 'margin:0;position:absolute;top:calc(env(safe-area-inset-top, 0px) + 60px);left:8px;padding:8px;background:#0f172a;color:white;font:14px monospace;';"
+    },
+    {
+      "file": "client/public/layout-diagnostics.js",
+      "line": 156,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": "cancel.style.cssText = 'min-height:44px;margin-left:8px;padding:8px;background:#1e293b;color:white;border:1px solid #94a3b8;';"
+    },
+    {
+      "file": "client/public/layout-diagnostics.js",
+      "line": 171,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": "marker.style.cssText = `position:fixed;left:0;right:0;top:${cutoffY}px;border-top:1px solid #f87171;z-index:9999;pointer-events:none;`;"
+    },
+    {
+      "file": "client/public/viewport-test/index.html",
+      "line": 2,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": "<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" content=\"#0f172a\"><title>FitCircle iPhone layout test</title>"
+    },
+    {
+      "file": "client/public/viewport-test/index.html",
+      "line": 3,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": "<style>body{background:#0f172a;color:#f8fafc;font:18px/1.5 system-ui;max-width:38rem;margin:auto;padding:24px}a{color:#7dd3fc}li{margin:20px 0}</style></head><body>"
+    },
+    {
+      "file": "client/public/viewport-test/test.css",
+      "line": 1,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": ":root { color-scheme: dark; background: #0f172a; color: #f8fafc; font: 16px/1.5 system-ui; --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px); --dock-height: 0px; }"
+    },
+    {
+      "file": "client/public/viewport-test/test.css",
+      "line": 4,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": ".shell { position: fixed; inset: 0 0 auto; height: 100%; height: 100dvh; display: flex; flex-direction: column; background: #0f172a; padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px); }"
+    },
+    {
+      "file": "client/public/viewport-test/test.css",
+      "line": 5,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": "header { flex: none; padding: calc(var(--safe-top) + 12px) 16px 12px; background: #0f172a; }"
+    },
+    {
+      "file": "client/public/viewport-test/test.css",
+      "line": 8,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": "button, input { font: inherit; min-height: 48px; border-radius: 12px; border: 1px solid #94a3b8; background: #334155; color: #fff; padding: 8px 12px; }"
+    },
+    {
+      "file": "client/public/viewport-test/test.css",
+      "line": 12,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": ".card, #last-card { padding: 40px 20px; margin-block: 16px; background: #164e63; border-radius: 24px; }"
+    },
+    {
+      "file": "client/public/viewport-test/standard/manifest.json",
+      "line": 8,
+      "category": 4,
+      "reason": "Launch/startup metadata or pre-controller placeholder; Phase 5 platform/bootstrap handling.",
+      "source": "\"theme_color\": \"#0f172a\","
+    },
+    {
+      "file": "client/public/viewport-test/standard/manifest.json",
+      "line": 9,
+      "category": 4,
+      "reason": "Launch/startup metadata or pre-controller placeholder; Phase 5 platform/bootstrap handling.",
+      "source": "\"background_color\": \"#0f172a\","
+    },
+    {
+      "file": "client/public/viewport-test/standard/index.html",
+      "line": 4,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": "<meta name=\"theme-color\" content=\"#0f172a\">"
+    },
+    {
+      "file": "client/public/viewport-test/control/manifest.json",
+      "line": 8,
+      "category": 4,
+      "reason": "Launch/startup metadata or pre-controller placeholder; Phase 5 platform/bootstrap handling.",
+      "source": "\"theme_color\": \"#0f172a\","
+    },
+    {
+      "file": "client/public/viewport-test/control/manifest.json",
+      "line": 9,
+      "category": 4,
+      "reason": "Launch/startup metadata or pre-controller placeholder; Phase 5 platform/bootstrap handling.",
+      "source": "\"background_color\": \"#0f172a\","
+    },
+    {
+      "file": "client/public/viewport-test/control/index.html",
+      "line": 4,
+      "category": 1,
+      "reason": "Explicit developer diagnostic/installation experiment, outside app routing; fixed-appearance controls or diagnostic color markers.",
+      "source": "<meta name=\"theme-color\" content=\"#0f172a\">"
+    }
+  ]
+}

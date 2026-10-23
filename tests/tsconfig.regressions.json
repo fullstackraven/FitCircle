@@ -4,6 +4,8 @@
     "appearance-colors.test.ts",
     "browser/appearance-phase-two.spec.ts",
     "browser/appearance-phase-three.spec.ts",
+    "browser/appearance-phase-four.spec.ts",
+    "fixtures/appearance-wellness.ts",
     "fixtures/appearance-nutrition.ts",
     "fixtures/appearance-contrast.ts",
     "fixtures/appearance-pages.ts",

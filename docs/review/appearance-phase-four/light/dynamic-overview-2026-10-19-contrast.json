@@ -1,0 +1,100 @@
+{
+  "readings": [
+    {
+      "text": "Dynamic Overview",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "October 19, 2026",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Monday",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Workout Statistics",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Push-ups",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "7",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Recovery Day",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Mark as Recovery",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Journal Entry",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "6 words",
+      "ratio": 6.29,
+      "required": 4.5
+    },
+    {
+      "text": "Synthetic journal reflection for appearance review.",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Save Entry",
+      "ratio": 5.38,
+      "required": 4.5
+    },
+    {
+      "text": "Energy Level",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Tap the circle to set energy level (1-10 scale)",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

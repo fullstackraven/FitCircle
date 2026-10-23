@@ -64,11 +64,11 @@ type WeeklyViewPage = 'workouts' | 'duration' | 'journal' | 'energy' | 'suppleme
 export default function CalendarPage() {
   const [, navigate] = useLocation();
   const { 
-    getWorkoutArray, 
-    getDailyLogs, 
-    addJournalEntry, 
-    getJournalEntry, 
-    getMonthlyStats, 
+    getWorkoutArray,
+    getDailyLogs,
+    addJournalEntry,
+    getJournalEntry,
+    getMonthlyStats,
     getTotalStats,
     getIndividualWorkoutTotals,
     editWorkoutForDate,
@@ -132,7 +132,7 @@ export default function CalendarPage() {
     navigate(`/dynamic-overview/${dateString}`);
   };
 
-  // Calculate day completion - check if all workouts with activity met their goals  
+  // Calculate day completion - check if all workouts with activity met their goals
   const isDayComplete = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -269,45 +269,45 @@ export default function CalendarPage() {
         const weekTotalReps = weekDays.reduce((sum, date) => sum + getTotalRepsForDate(date), 0);
         return (
           <div className="space-y-3">
-            <h3 className="text-center text-base font-semibold text-white mb-3">WORKOUTS</h3>
+            <h3 className="text-center text-base font-semibold text-strong mb-3">WORKOUTS</h3>
             <div className="flex items-end justify-between h-40 px-2 gap-2">
               {weekDays.map((date, index) => {
                 const totalReps = getTotalRepsForDate(date);
                 const isRecovery = isRecoveryDay(`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
                 const barHeightPercent = Math.min((totalReps / 800) * 100, 100);
                 const barHeight = isRecovery ? 100 : (totalReps > 0 ? Math.max(barHeightPercent, 5) : 0);
-                const barColor = isRecovery ? '#ff8c00' : '#00ff41';
+                const barColor = isRecovery ? 'var(--calendar-chart-recovery)' : 'var(--calendar-chart-complete)';
                 
                 return (
                   <div key={index} className="flex-1 flex flex-col items-center space-y-1">
                     <div className="w-full flex items-end justify-center" style={{ height: '120px' }}>
                       {totalReps > 0 || isRecovery ? (
-                        <div 
+                        <div
                           className="w-full max-w-[35px] rounded-t-2xl transition-all"
                           style={{
                             height: `${barHeight}%`,
                             backgroundColor: barColor,
-                            boxShadow: `0 0 8px ${barColor}40`
+                            boxShadow: isRecovery ? 'var(--calendar-recovery-bar-shadow)' : 'var(--calendar-complete-bar-shadow)'
                           }}
                         />
                       ) : (
-                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded-full" />
+                        <div className="w-full max-w-[35px] h-1 bg-surface-secondary rounded-full" />
                       )}
                     </div>
-                    <div className="text-xs text-slate-400">{dayNames[index]}</div>
-                    <div className="text-xs text-slate-500">{totalReps}</div>
+                    <div className="text-xs text-muted-foreground">{dayNames[index]}</div>
+                    <div className="text-xs text-dim">{totalReps}</div>
                   </div>
                 );
               })}
             </div>
-            <div className="text-center text-xs text-slate-500 mt-2">Total Reps: {weekTotalReps}</div>
+            <div className="text-center text-xs text-dim mt-2">Total Reps: {weekTotalReps}</div>
           </div>
         );
 
       case 'duration':
         return (
           <div className="space-y-3">
-            <h3 className="text-center text-base font-semibold text-white mb-3">DURATION</h3>
+            <h3 className="text-center text-base font-semibold text-strong mb-3">DURATION</h3>
             <div className="h-40 px-2">
               <div className="relative h-[120px] flex">
                 <div className="flex-1 relative">
@@ -320,7 +320,7 @@ export default function CalendarPage() {
                         y1={100 - percent}
                         x2="100"
                         y2={100 - percent}
-                        stroke="rgba(100, 116, 139, 0.2)"
+                        stroke="var(--calendar-grid)"
                         strokeWidth="0.5"
                         vectorEffect="non-scaling-stroke"
                       />
@@ -335,12 +335,12 @@ export default function CalendarPage() {
                         return `${x},${y}`;
                       }).join(' ')}
                       fill="none"
-                      stroke="#00ff41"
+                      stroke="var(--calendar-chart-complete)"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       vectorEffect="non-scaling-stroke"
-                      style={{ filter: 'drop-shadow(0 0 4px rgba(0, 255, 65, 0.5))' }}
+                      style={{ filter: 'var(--calendar-chart-glow)' }}
                     />
                     
                     {/* Data points */}
@@ -355,9 +355,9 @@ export default function CalendarPage() {
                           cx={x}
                           cy={y}
                           r="2"
-                          fill="#00ff41"
+                          fill="var(--calendar-chart-complete)"
                           vectorEffect="non-scaling-stroke"
-                          style={{ filter: 'drop-shadow(0 0 4px rgba(0, 255, 65, 0.5))' }}
+                          style={{ filter: 'var(--calendar-chart-glow)' }}
                         />
                       );
                     })}
@@ -365,7 +365,7 @@ export default function CalendarPage() {
                 </div>
                 
                 {/* Y-axis labels */}
-                <div className="flex flex-col justify-between h-full ml-2 text-xs text-slate-400">
+                <div className="flex flex-col justify-between h-full ml-2 text-xs text-muted-foreground">
                   <div>60</div>
                   <div>40</div>
                   <div>20</div>
@@ -376,18 +376,18 @@ export default function CalendarPage() {
               {/* Day labels */}
               <div className="flex justify-between mt-1 pr-8">
                 {dayNames.map((name, index) => (
-                  <div key={index} className="text-xs text-slate-400 flex-1 text-center">{name}</div>
+                  <div key={index} className="text-xs text-muted-foreground flex-1 text-center">{name}</div>
                 ))}
               </div>
             </div>
-            <div className="text-center text-xs text-slate-500 mt-2">Minutes per day</div>
+            <div className="text-center text-xs text-dim mt-2">Minutes per day</div>
           </div>
         );
 
       case 'journal':
         return (
           <div className="space-y-3">
-            <h3 className="text-center text-base font-semibold text-white mb-3">JOURNAL</h3>
+            <h3 className="text-center text-base font-semibold text-strong mb-3">JOURNAL</h3>
             <div className="flex items-end justify-between h-40 px-2 gap-2">
               {weekDays.map((date, index) => {
                 const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -397,31 +397,31 @@ export default function CalendarPage() {
                   <div key={index} className="flex-1 flex flex-col items-center space-y-1">
                     <div className="w-full flex items-end justify-center" style={{ height: '120px' }}>
                       {hasJournal ? (
-                        <div 
+                        <div
                           className="w-full max-w-[35px] rounded-t-2xl transition-all"
                           style={{
                             height: '100%',
-                            backgroundColor: '#c084fc',
-                            boxShadow: '0 0 8px rgba(192, 132, 252, 0.4)'
+                            backgroundColor: 'hsl(var(--feature-purple))',
+                            boxShadow: 'var(--calendar-purple-shadow)'
                           }}
                         />
                       ) : (
-                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded-full" />
+                        <div className="w-full max-w-[35px] h-1 bg-surface-secondary rounded-full" />
                       )}
                     </div>
-                    <div className="text-xs text-slate-400">{dayNames[index]}</div>
+                    <div className="text-xs text-muted-foreground">{dayNames[index]}</div>
                   </div>
                 );
               })}
             </div>
-            <div className="text-center text-xs text-slate-500 mt-2">Logged / Not Logged</div>
+            <div className="text-center text-xs text-dim mt-2">Logged / Not Logged</div>
           </div>
         );
 
       case 'energy':
         return (
           <div className="space-y-3">
-            <h3 className="text-center text-base font-semibold text-white mb-3">ENERGY LEVEL</h3>
+            <h3 className="text-center text-base font-semibold text-strong mb-3">ENERGY LEVEL</h3>
             <div className="flex items-end justify-between h-40 px-2 gap-2">
               {weekDays.map((date, index) => {
                 const hasEnergy = hasEnergyLevel(date);
@@ -430,31 +430,31 @@ export default function CalendarPage() {
                   <div key={index} className="flex-1 flex flex-col items-center space-y-1">
                     <div className="w-full flex items-end justify-center" style={{ height: '120px' }}>
                       {hasEnergy ? (
-                        <div 
+                        <div
                           className="w-full max-w-[35px] rounded-t-2xl transition-all"
                           style={{
                             height: '100%',
-                            backgroundColor: '#facc15',
-                            boxShadow: '0 0 8px rgba(250, 204, 21, 0.4)'
+                            backgroundColor: 'hsl(var(--feature-yellow))',
+                            boxShadow: 'var(--calendar-yellow-shadow)'
                           }}
                         />
                       ) : (
-                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded-full" />
+                        <div className="w-full max-w-[35px] h-1 bg-surface-secondary rounded-full" />
                       )}
                     </div>
-                    <div className="text-xs text-slate-400">{dayNames[index]}</div>
+                    <div className="text-xs text-muted-foreground">{dayNames[index]}</div>
                   </div>
                 );
               })}
             </div>
-            <div className="text-center text-xs text-slate-500 mt-2">Logged / Not Logged</div>
+            <div className="text-center text-xs text-dim mt-2">Logged / Not Logged</div>
           </div>
         );
 
       case 'supplements':
         return (
           <div className="space-y-3">
-            <h3 className="text-center text-base font-semibold text-white mb-3">SUPPLEMENTS</h3>
+            <h3 className="text-center text-base font-semibold text-strong mb-3">SUPPLEMENTS</h3>
             <div className="flex items-end justify-between h-40 px-2 gap-2">
               {weekDays.map((date, index) => {
                 const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -464,44 +464,44 @@ export default function CalendarPage() {
                   <div key={index} className="flex-1 flex flex-col items-center space-y-1">
                     <div className="w-full flex items-end justify-center" style={{ height: '120px' }}>
                       {hasSupplements ? (
-                        <div 
+                        <div
                           className="w-full max-w-[35px] rounded-t-2xl transition-all"
                           style={{
                             height: '100%',
-                            backgroundColor: '#60a5fa',
-                            boxShadow: '0 0 8px rgba(96, 165, 250, 0.4)'
+                            backgroundColor: 'hsl(var(--feature-blue))',
+                            boxShadow: 'var(--calendar-blue-shadow)'
                           }}
                         />
                       ) : (
-                        <div className="w-full max-w-[35px] h-1 bg-slate-700 rounded-full" />
+                        <div className="w-full max-w-[35px] h-1 bg-surface-secondary rounded-full" />
                       )}
                     </div>
-                    <div className="text-xs text-slate-400">{dayNames[index]}</div>
+                    <div className="text-xs text-muted-foreground">{dayNames[index]}</div>
                   </div>
                 );
               })}
             </div>
-            <div className="text-center text-xs text-slate-500 mt-2">Logged / Not Logged</div>
+            <div className="text-center text-xs text-dim mt-2">Logged / Not Logged</div>
           </div>
         );
     }
   };
 
   return (
-    <div className="calendar-classic max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)' } as React.CSSProperties}>
+    <div className="calendar-classic max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'var(--page-background)' } as React.CSSProperties}>
       {/* Header is rendered into the non-scrolling shell host */}
       <AppHeader>
         <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           {/* Hamburger Menu Icon */}
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />
           </button>
 
-          <h1 className="fitcircle-wordmark text-2xl font-bold text-white">FitCircle</h1>
+          <h1 className="fitcircle-wordmark text-2xl font-bold text-strong">FitCircle</h1>
         </div>
       </AppHeader>
 
@@ -512,17 +512,17 @@ export default function CalendarPage() {
         <div className="flex items-center space-x-4">
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(subMonths(currentMonth, 1)) : setCurrentWeek(subWeeks(currentWeek, 1))}
-            className="text-slate-400 hover:text-white transition"
+            className="text-muted-foreground hover:text-strong transition"
             data-testid="button-prev-period"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <h2 className="text-lg font-semibold text-white">
+          <h2 className="text-lg font-semibold text-strong">
             {viewMode === 'monthly' ? format(currentMonth, "MMMM yyyy") : getWeekRangeString()}
           </h2>
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(addMonths(currentMonth, 1)) : setCurrentWeek(addWeeks(currentWeek, 1))}
-            className="text-slate-400 hover:text-white transition"
+            className="text-muted-foreground hover:text-strong transition"
             data-testid="button-next-period"
           >
             <ChevronRight className="w-5 h-5" />
@@ -542,7 +542,7 @@ export default function CalendarPage() {
               setViewMode('monthly');
             }
           }}
-          className="text-slate-400 hover:text-white transition-colors"
+          className="text-muted-foreground hover:text-strong transition-colors"
           data-testid="button-toggle-view"
         >
           {viewMode === 'monthly' ? <BarChart3 className="w-5 h-5" /> : <CalendarIcon className="w-5 h-5" />}
@@ -554,7 +554,7 @@ export default function CalendarPage() {
         {/* Monthly View */}
         {viewMode === 'monthly' && (
         <>
-          <div className="grid grid-cols-7 gap-2 text-center text-xs text-slate-400 mb-2">
+          <div className="grid grid-cols-7 gap-2 text-center text-xs text-muted-foreground mb-2">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => (
               <div key={d}>{d}</div>
             ))}
@@ -579,37 +579,38 @@ export default function CalendarPage() {
                   key={date.toISOString()}
                   onClick={() => handleDateClick(date)}
                   className={`aspect-square rounded-xl flex items-center justify-center relative text-sm font-medium cursor-pointer transition-all hover:opacity-80
-                    ${isCurrent ? "bg-slate-800 text-white" : "bg-slate-700 text-slate-500"} 
-                    ${complete && !isRecovery ? "bg-green-500 text-white shadow-lg shadow-green-500/50" : ""}
-                    ${isRecovery ? "bg-orange-500 text-white shadow-lg shadow-orange-500/50" : ""}`}
+                    ${isCurrent ? "bg-surface text-strong" : "bg-surface-secondary text-dim"}
+                    ${complete && !isRecovery ? "bg-action-selected text-on-action shadow-lg shadow-green-500/50" : ""}
+                    ${isRecovery ? "bg-orange-500 text-strong shadow-lg shadow-orange-500/50" : ""}`}
                   style={complete && !isRecovery ? {
-                    backgroundColor: '#00ff41',
-                    boxShadow: '0 0 8px rgba(0, 255, 65, 0.4), 0 0 16px rgba(0, 255, 65, 0.2)',
+                    backgroundColor: 'var(--calendar-complete)',
+                    boxShadow: 'var(--calendar-complete-shadow)',
                     color: '#000000',
                     fontWeight: 'bold'
                   } : isRecovery ? {
-                    backgroundColor: '#ff8c00',
-                    boxShadow: '0 0 8px rgba(255, 140, 0, 0.4), 0 0 16px rgba(255, 140, 0, 0.2)',
+                    backgroundColor: 'var(--calendar-recovery)',
+                    boxShadow: 'var(--calendar-recovery-shadow)',
                     color: '#000000',
                     fontWeight: 'bold'
                   } : {}}
                 >
                   <span
                     aria-current={isToday(date) ? "date" : undefined}
-                    className={isToday(date) ? `text-[#00ff41] font-semibold${complete || isRecovery ? " rounded bg-slate-900 px-1" : ""}` : undefined}
+                    className={isToday(date) ? `text-calendar-today font-semibold${complete || isRecovery ? " rounded bg-canvas px-1" : ""}` : undefined}
                   >
                     {format(date, "d")}
                   </span>
+                  <span className="sr-only">{isRecovery ? "Recovery day" : complete ? "Workouts complete" : ""}</span>
                   {(hasJournal || hasEnergy || hasSupplements) && (
                     <div className="absolute bottom-1 left-0 w-full flex justify-center space-x-1">
                       {hasJournal && (
-                        <div className="w-1.5 h-1.5 bg-purple-400 rounded-full" />
+                        <div className="w-1.5 h-1.5 bg-purple-400 rounded-full text-on-action-soft" />
                       )}
                       {hasEnergy && (
-                        <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full" />
+                        <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full text-on-action-soft" />
                       )}
                       {hasSupplements && (
-                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
+                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full text-on-action-soft" />
                       )}
                     </div>
                   )}
@@ -624,7 +625,7 @@ export default function CalendarPage() {
         {viewMode === 'weekly' && (
           <div className="space-y-6 mb-6">
           {/* Weekly content */}
-          <div className="bg-slate-900 rounded-xl p-4">
+          <div className="bg-canvas rounded-xl p-4">
             {renderWeeklyContent()}
           </div>
 
@@ -634,9 +635,9 @@ export default function CalendarPage() {
               onClick={prevPage}
               disabled={currentPageIndex === 0}
               className={`p-2 rounded-lg transition-colors ${
-                currentPageIndex === 0 
-                  ? 'text-slate-600 cursor-not-allowed' 
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                currentPageIndex === 0
+                  ? 'text-dim-strong cursor-not-allowed'
+                  : 'text-muted-foreground hover:text-strong hover:bg-surface'
               }`}
               data-testid="button-prev-page"
             >
@@ -650,9 +651,9 @@ export default function CalendarPage() {
                   key={page.id}
                   onClick={() => setWeeklyPage(page.id)}
                   className={`w-2 h-2 rounded-full transition-all ${
-                    index === currentPageIndex 
-                      ? 'bg-white w-4' 
-                      : 'bg-slate-600 hover:bg-slate-500'
+                    index === currentPageIndex
+                      ? 'bg-page-dot w-4'
+                      : 'bg-control-strong hover:bg-control-muted'
                   }`}
                   data-testid={`dot-${page.id}`}
                 />
@@ -663,9 +664,9 @@ export default function CalendarPage() {
               onClick={nextPage}
               disabled={currentPageIndex === pages.length - 1}
               className={`p-2 rounded-lg transition-colors ${
-                currentPageIndex === pages.length - 1 
-                  ? 'text-slate-600 cursor-not-allowed' 
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                currentPageIndex === pages.length - 1
+                  ? 'text-dim-strong cursor-not-allowed'
+                  : 'text-muted-foreground hover:text-strong hover:bg-surface'
               }`}
               data-testid="button-next-page"
             >
@@ -680,13 +681,13 @@ export default function CalendarPage() {
           {/* Workout Statistics Panel */}
           <button
             onClick={() => navigate("/workout-statistics")}
-            className="flex items-center justify-between w-full p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
+            className="flex items-center justify-between w-full p-4 bg-surface rounded-xl hover:bg-surface-secondary transition-colors"
           >
             <div className="flex items-center space-x-3">
-              <BarChart3 className="w-5 h-5 text-green-400" />
-              <span className="text-white font-medium">Workout Statistics</span>
+              <BarChart3 className="w-5 h-5 text-accent-text" />
+              <span className="text-strong font-medium">Workout Statistics</span>
             </div>
-            <ChevronRight className="w-5 h-5 text-slate-400" />
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
           </button>
 
           {/* Recent Activity Panel */}
@@ -705,7 +706,7 @@ export default function CalendarPage() {
 
       {/* Sidebar Dashboard */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetContent side="left" className="w-80 bg-slate-900 border-slate-700">
+        <SheetContent side="left" className="w-80 bg-canvas border-separator">
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation Menu</SheetTitle>
           </SheetHeader>
@@ -716,20 +717,20 @@ export default function CalendarPage() {
             {/* Dashboard Menu Items */}
             <div className="flex-1 py-4">
               {/* Settings */}
-              <div 
-                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+              <div
+                className="flex items-center space-x-3 p-4 hover:bg-surface transition-colors cursor-pointer"
                 onClick={() => {
                   setIsSidebarOpen(false);
                   navigate('/settings?from=dashboard');
                 }}
               >
-                <Settings className="w-5 h-5 text-slate-400" />
-                <span className="text-white">Settings</span>
+                <Settings className="w-5 h-5 text-muted-foreground" />
+                <span className="text-strong">Settings</span>
               </div>
             </div>
 
             {/* Version */}
-            <div className="p-4 border-t border-slate-700">
+            <div className="p-4 border-t border-separator">
               <VersionLabel onActivate={() => setIsSidebarOpen(false)} />
             </div>
           </div>

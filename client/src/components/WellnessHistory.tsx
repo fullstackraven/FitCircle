@@ -17,7 +17,7 @@ export function WellnessHistory({
         : Math.round(n * 10) / 10
       : 0;
   return (
-    <details className="mt-4 text-sm text-slate-400">
+    <details className="mt-4 text-sm text-muted-foreground">
       <summary className="cursor-pointer">Historical averages</summary>
       <p className="mt-2">
         All-time calendar-day average: {value(stats.average)} {unit} ·{" "}

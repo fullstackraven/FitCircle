@@ -79,21 +79,21 @@ export function DailyJournal() {
   };
 
   return (
-    <div className="flex flex-col" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}>
+    <div className="flex flex-col" style={{ backgroundColor: 'var(--page-background)' }}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 mb-2">
         <button
           onClick={handleBack}
-          className="text-slate-400 hover:text-white transition-colors"
+          className="text-muted-foreground hover:text-strong transition-colors"
           title="Back"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
 
-        <h1 className="text-xl font-bold text-white">Daily Journal</h1>
+        <h1 className="text-xl font-bold text-strong">Daily Journal</h1>
         <button
           onClick={() => navigate(`/journal-log${fromWellness ? '?from=wellness' : ''}`)}
-          className="text-slate-500 hover:text-white transition-colors"
+          className="text-dim hover:text-strong transition-colors"
           title="View all journal entries"
         >
           <FileText className="w-5 h-5" />
@@ -103,13 +103,13 @@ export function DailyJournal() {
       {/* Date indicator */}
       <div className="px-4 mb-4">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-slate-400">{getDisplayDate()}</p>
-          <p className="text-xs text-slate-500" data-testid="text-word-count">
+          <p className="text-sm text-muted-foreground">{getDisplayDate()}</p>
+          <p className="text-xs text-dim" data-testid="text-word-count">
             {getWordCount()} {getWordCount() === 1 ? 'word' : 'words'}
           </p>
         </div>
         {lastSaved && (
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-dim mt-1">
             Last saved: {format(new Date(lastSaved), "MMM d, yyyy 'at' h:mm a")}
           </p>
         )}
@@ -121,7 +121,7 @@ export function DailyJournal() {
           value={journalText}
           onChange={(e) => setJournalText(e.target.value)}
           aria-label="Journal entry"
-          className="flex-1 w-full p-0 bg-transparent text-white border-none resize-none focus:outline-none text-base leading-relaxed placeholder-slate-500"
+          className="flex-1 w-full p-0 bg-transparent text-strong border-none resize-none focus:outline-none text-base leading-relaxed placeholder-dim"
           style={{
             lineHeight: '1.6',
             touchAction: 'manipulation',
@@ -137,13 +137,13 @@ export function DailyJournal() {
 
       {/* Save confirmation toast */}
       {showSaveConfirmation && (
-        <div 
+        <div
           className="sticky top-0 z-50 flex justify-center"
           style={{
             animation: 'fadeInOut 2s ease-in-out'
           }}
         >
-          <div className="bg-green-600 text-white px-4 py-3 rounded-xl flex items-center space-x-2 shadow-lg">
+          <div className="bg-action text-on-action px-4 py-3 rounded-xl flex items-center space-x-2 shadow-lg">
             <Check className="w-5 h-5" />
             <span>Journal entry saved successfully!</span>
           </div>
@@ -154,7 +154,7 @@ export function DailyJournal() {
       <div className="sticky px-4 pb-4 z-40" style={{ bottom: 'max(var(--dock-height), var(--safe-bottom))' }}>
         <button
           onClick={handleJournalSubmit}
-          className="w-full max-w-sm mx-auto block px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors font-medium shadow-lg"
+          className="w-full max-w-sm mx-auto block px-6 py-3 bg-purple-600 hover:bg-purple-700 text-on-action rounded-xl transition-colors font-medium shadow-lg"
           data-testid="button-save-journal"
         >
           Save Entry

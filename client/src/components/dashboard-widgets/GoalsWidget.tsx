@@ -30,28 +30,28 @@ export function GoalsWidget({ widget, onClick }: GoalsWidgetProps) {
   if (widget.size === "small") {
     return (
       <div
-        className="fitcircle-card cursor-pointer hover:bg-slate-800/80 transition-colors"
+        className="fitcircle-card cursor-pointer hover:bg-surface/80 transition-colors"
         onClick={onClick}
       >
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
-            <Target className="w-4 h-4 text-green-400" />
-            <h3 className="text-sm font-semibold text-white">Goals</h3>
+            <Target className="w-4 h-4 text-accent-text" />
+            <h3 className="text-sm font-semibold text-strong">Goals</h3>
           </div>
-          <span className="text-slate-400 text-xs">
+          <span className="text-muted-foreground text-xs">
             {progressValues.length}
           </span>
         </div>
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-white font-medium">
+            <div className="text-strong font-medium">
               {Math.round(totalProgress)}%
             </div>
-            <div className="text-slate-400 text-xs">Current goal periods</div>
+            <div className="text-muted-foreground text-xs">Current goal periods</div>
           </div>
-          <div className="w-8 h-2 bg-slate-700 rounded-full overflow-hidden">
+          <div className="w-8 h-2 bg-surface-secondary rounded-full overflow-hidden">
             <div
-              className="h-full bg-green-400 transition-all duration-300"
+              className="h-full bg-nutrition-green transition-all duration-300"
               style={{ width: `${Math.min(totalProgress, 100)}%` }}
             />
           </div>
@@ -62,31 +62,31 @@ export function GoalsWidget({ widget, onClick }: GoalsWidgetProps) {
 
   return (
     <div
-      className="fitcircle-card cursor-pointer hover:bg-slate-800/80 transition-colors"
+      className="fitcircle-card cursor-pointer hover:bg-surface/80 transition-colors"
       onClick={onClick}
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
-          <Target className="w-5 h-5 text-green-400" />
-          <h3 className="text-lg font-semibold text-white">{widget.title}</h3>
+          <Target className="w-5 h-5 text-accent-text" />
+          <h3 className="text-lg font-semibold text-strong">{widget.title}</h3>
         </div>
-        <span className="text-slate-400 text-sm">
+        <span className="text-muted-foreground text-sm">
           {progressValues.length} goals
         </span>
       </div>
 
       <div className="space-y-3">
         {!progress || progressValues.length === 0 ? (
-          <div className="text-center text-slate-400 py-4">
+          <div className="text-center text-muted-foreground py-4">
             <p>No goals set yet</p>
           </div>
         ) : (
           <>
             <div className="text-center mb-4">
-              <div className="type-metric text-2xl font-bold text-white mb-1">
+              <div className="type-metric text-2xl font-bold text-strong mb-1">
                 {Math.round(totalProgress)}%
               </div>
-              <div className="text-slate-400">Current goal periods</div>
+              <div className="text-muted-foreground">Current goal periods</div>
             </div>
 
             {Object.entries(progress)
@@ -110,16 +110,16 @@ export function GoalsWidget({ widget, onClick }: GoalsWidgetProps) {
                 return (
                   <div key={index} className="space-y-1">
                     <div className="flex justify-between text-sm">
-                      <span className="text-white capitalize">
+                      <span className="text-strong capitalize">
                         {displayName}
                       </span>
-                      <span className="text-slate-400">
+                      <span className="text-muted-foreground">
                         {Math.round(progressValue)}%
                       </span>
                     </div>
-                    <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-surface-secondary rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-green-400 transition-all duration-300"
+                        className="h-full bg-nutrition-green transition-all duration-300"
                         style={{ width: `${Math.min(progressValue, 100)}%` }}
                       />
                     </div>
@@ -128,7 +128,7 @@ export function GoalsWidget({ widget, onClick }: GoalsWidgetProps) {
               })}
 
             {progressValues.length > 3 && (
-              <div className="text-center text-slate-400 text-sm">
+              <div className="text-center text-muted-foreground text-sm">
                 +{progressValues.length - 3} more goals
               </div>
             )}

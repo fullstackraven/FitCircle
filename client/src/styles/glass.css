@@ -137,8 +137,8 @@
 /* Calendar retains its pre-modernization card appearance. */
 .calendar-classic .fitcircle-card,
 .calendar-classic .fitcircle-card-lg {
-  background-color: rgb(30 41 59);
-  border-color: rgb(51 65 85);
+  background-color: hsl(var(--surface));
+  border-color: hsl(var(--separator));
   box-shadow: none;
 }
 

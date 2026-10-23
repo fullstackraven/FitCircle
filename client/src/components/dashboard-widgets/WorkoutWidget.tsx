@@ -28,21 +28,21 @@ export function WorkoutWidget({ widget, onWorkoutClick }: WorkoutWidgetProps) {
     return (
       <div className="fitcircle-card">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-white">{widget.title}</h3>
-          <span className="text-sm text-slate-400">{todaysWorkouts.length} active</span>
+          <h3 className="text-lg font-semibold text-strong">{widget.title}</h3>
+          <span className="text-sm text-muted-foreground">{todaysWorkouts.length} active</span>
         </div>
         <div className="flex justify-center">
           <ProgressCircle
             count={averageProgress}
             goal={100}
-            color="rgb(168, 85, 247)"
+            color="var(--wellness-purple)"
             size={80}
             strokeWidth={8}
           />
         </div>
         <div className="text-center mt-2">
-          <div className="text-white font-medium">{Math.round(averageProgress)}%</div>
-          <div className="text-slate-400 text-sm">Average Progress</div>
+          <div className="text-strong font-medium">{Math.round(averageProgress)}%</div>
+          <div className="text-muted-foreground text-sm">Average Progress</div>
         </div>
       </div>
     );
@@ -52,12 +52,12 @@ export function WorkoutWidget({ widget, onWorkoutClick }: WorkoutWidgetProps) {
   return (
     <div className="fitcircle-card">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-white">{widget.title}</h3>
-        <span className="text-sm text-slate-400">{todaysWorkouts.length} workouts</span>
+        <h3 className="text-lg font-semibold text-strong">{widget.title}</h3>
+        <span className="text-sm text-muted-foreground">{todaysWorkouts.length} workouts</span>
       </div>
       
       {todaysWorkouts.length === 0 ? (
-        <div className="text-center text-slate-400 py-8">
+        <div className="text-center text-muted-foreground py-8">
           <p>No workouts scheduled for today</p>
         </div>
       ) : (
@@ -69,12 +69,12 @@ export function WorkoutWidget({ widget, onWorkoutClick }: WorkoutWidgetProps) {
             const isCompleted = currentCount >= workout.dailyGoal;
 
             return (
-              <div 
+              <div
                 key={workout.id}
                 className={`p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
-                  isCompleted 
-                    ? 'border-green-500 bg-green-500/10' 
-                    : `border-slate-600 bg-slate-800/50 hover:border-slate-500`
+                  isCompleted
+                    ? 'border-green-500 bg-action-selected/10'
+                    : `border-control bg-surface/50 hover:border-control-muted-border`
                 }`}
                 onClick={() => onWorkoutClick?.(workout.id)}
               >
@@ -88,8 +88,8 @@ export function WorkoutWidget({ widget, onWorkoutClick }: WorkoutWidgetProps) {
                       strokeWidth={6}
                     />
                   </div>
-                  <h4 className="text-white font-medium text-sm mb-1">{workout.name}</h4>
-                  <div className="text-slate-400 text-xs">
+                  <h4 className="text-strong font-medium text-sm mb-1">{workout.name}</h4>
+                  <div className="text-muted-foreground text-xs">
                     {currentCount} / {workout.dailyGoal}
                   </div>
                 </div>

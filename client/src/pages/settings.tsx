@@ -140,7 +140,7 @@ export default function SettingsPage() {
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={handleBack}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-muted-foreground hover:text-strong transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -150,13 +150,13 @@ export default function SettingsPage() {
 
         {/* Backup & Restore Section */}
         <div className="fitcircle-card-lg mb-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Complete Data Backup</h2>
+          <h2 className="text-lg font-semibold text-strong mb-4">Complete Data Backup</h2>
           
           <div className="space-y-4">
             <button
               onClick={exportSnapshot}
               disabled={isExporting}
-              className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+              className="w-full bg-action hover:bg-action-hover disabled:opacity-50 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2"
             >
               <Download className="w-5 h-5" />
               {isExporting ? 'Creating Backup...' : 'Download Complete Backup'}
@@ -173,7 +173,7 @@ export default function SettingsPage() {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isImporting}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2"
             >
               <Upload className="w-5 h-5" />
               {isImporting ? 'Restoring...' : 'Restore from Backup'}
@@ -181,55 +181,57 @@ export default function SettingsPage() {
             
             {status && (
               <div className={`p-3 rounded-xl text-sm text-center ${
-                status.includes('Success') || status.includes('Exported') 
-                  ? 'bg-green-900/50 text-green-300 border border-green-700' 
-                  : 'bg-red-900/50 text-red-300 border border-red-700'
+                status.includes('Success') || status.includes('Exported')
+                  ? 'bg-feature-green-tint/50 text-accent-soft border border-green-700'
+                  : 'bg-feature-red-deep-tint/50 text-feature-red-soft border border-red-700'
               }`}>
                 {status}
               </div>
             )}
             
-            <p className="text-xs text-slate-400 text-center">
+            <p className="text-xs text-muted-foreground text-center">
               This creates a complete snapshot of all your FitCircle data. Restore validates the entire file, replaces matching FitCircle items, and keeps other data. Close other FitCircle tabs before restoring.
             </p>
           </div>
         </div>
 
         {/* Force Refresh Section */}
-        <div className="glass-panel bg-slate-800 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-4">App Updates</h2>
+        <div className="glass-panel bg-surface rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-strong mb-4">App Updates</h2>
           
           <div className="space-y-4">
             <button
               onClick={forceRefresh}
               disabled={isRefreshing}
-              className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+              className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2"
               data-testid="button-force-refresh"
             >
               <RotateCcw className="w-5 h-5" />
               {isRefreshing ? 'Updating app...' : 'Force Refresh App'}
             </button>
             
-            <p className="text-xs text-slate-400 text-center">
+            <p className="text-xs text-muted-foreground text-center">
               Reloads the app, just like closing and reopening it. Your data stays safe.
             </p>
           </div>
         </div>
 
         {/* Controls Section */}
-        <div className="glass-panel bg-slate-800 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-6">Controls</h2>
+        <div className="glass-panel bg-surface rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-strong mb-6">Controls</h2>
           
           <div className="space-y-4">
             {/* Hide Quote of the Day */}
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white font-small">Hide Quote of the Day</p>
+                <p className="text-strong font-small">Hide Quote of the Day</p>
               </div>
               <button
                 onClick={() => updateSetting('hideQuoteOfTheDay', !settings.hideQuoteOfTheDay)}
-                className={`relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
-                  settings.hideQuoteOfTheDay ? 'bg-green-400' : 'bg-slate-600'
+                aria-label="Hide Quote of the Day"
+                aria-pressed={settings.hideQuoteOfTheDay}
+                className={`settings-toggle relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
+                  settings.hideQuoteOfTheDay ? 'bg-green-400' : 'bg-control-strong'
                 }`}
               >
                 <span
@@ -243,12 +245,14 @@ export default function SettingsPage() {
             {/* Hide Today's Totals */}
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white font-small">Hide Today's Totals</p>
+                <p className="text-strong font-small">Hide Today's Totals</p>
               </div>
               <button
                 onClick={() => updateSetting('hideTodaysTotals', !settings.hideTodaysTotals)}
-                className={`relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
-                  settings.hideTodaysTotals ? 'bg-green-400' : 'bg-slate-600'
+                aria-label="Hide Today's Totals"
+                aria-pressed={settings.hideTodaysTotals}
+                className={`settings-toggle relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
+                  settings.hideTodaysTotals ? 'bg-green-400' : 'bg-control-strong'
                 }`}
               >
                 <span
@@ -262,12 +266,14 @@ export default function SettingsPage() {
             {/* Hide Recent Activity */}
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white font-small">Hide Recent Activity</p>
+                <p className="text-strong font-small">Hide Recent Activity</p>
               </div>
               <button
                 onClick={() => updateSetting('hideRecentActivity', !settings.hideRecentActivity)}
-                className={`relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
-                  settings.hideRecentActivity ? 'bg-green-400' : 'bg-slate-600'
+                aria-label="Hide Recent Activity"
+                aria-pressed={settings.hideRecentActivity}
+                className={`settings-toggle relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${
+                  settings.hideRecentActivity ? 'bg-green-400' : 'bg-control-strong'
                 }`}
               >
                 <span
@@ -282,15 +288,15 @@ export default function SettingsPage() {
 
         {/* REMOVED: Bug reporting section removed per user request - no server calls */}
         {/* Erase All Data Section */}
-        <div className="bg-red-900/20 border border-red-700 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-red-400 mb-4">Danger Zone</h2>
+        <div className="bg-feature-red-deep-tint/20 border border-red-700 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-feature-red mb-4">Danger Zone</h2>
 
           <div className="space-y-4">
             {!showEraseConfirm ? (
               <>
                 <button
                   onClick={() => setShowEraseConfirm(true)}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+                  className="w-full bg-red-600 hover:bg-red-700 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2"
                 >
                   <Trash2 className="w-5 h-5" />
                   Erase All Data
@@ -298,20 +304,20 @@ export default function SettingsPage() {
               </>
             ) : (
               <>
-                <p className="text-red-200 text-sm font-medium mb-4">
+                <p className="text-error-soft text-sm font-medium mb-4">
                   ⚠️ Are you absolutely sure? This action cannot be undone!
                 </p>
                 <div className="flex space-x-3">
                   <button
                     onClick={eraseAllData}
-                    className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2"
                   >
                     <Trash2 className="w-5 h-5" />
                     Yes, Erase Everything
                   </button>
                   <button
                     onClick={() => setShowEraseConfirm(false)}
-                    className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-3 px-4 rounded-xl"
+                    className="flex-1 bg-control-strong hover:bg-surface-secondary text-strong py-3 px-4 rounded-xl"
                   >
                     Cancel
                   </button>

@@ -1,0 +1,45 @@
+{
+  "readings": [
+    {
+      "text": "Meditation Goal",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "20 min",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "50%",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Daily Meditation",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Today",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Daily Meditation Goal (minutes)",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Cancel",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Set Goal",
+      "ratio": 5.38,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}
