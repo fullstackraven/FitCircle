@@ -224,6 +224,32 @@ test("malformed diary cannot be replaced by empty initialization or editing", as
     ),
   ).toBe("{synthetic");
 });
+// These tests exercise the real PWA offline reload as well as a routed API.
+// Finish installation and enter a controlled document before routing requests;
+// this keeps clients.claim() out of both the lookup and offline-reload steps.
+async function prepareBarcodeLookup(page: Page) {
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+  });
+  await page.reload();
+  await expect
+    .poll(() =>
+      page.evaluate(() => Boolean(navigator.serviceWorker.controller)),
+    )
+    .toBe(true);
+  await expect(page.getByTestId("button-add-breakfast")).toBeVisible();
+}
+async function findMockedBarcode(page: Page, productName: string) {
+  const responsePromise = page.waitForResponse((response) =>
+    response.url().startsWith(
+      "https://world.openfoodfacts.org/api/v3/product/036000291452?",
+    ),
+  );
+  await page.getByRole("button", { name: "Find Product" }).click();
+  const response = await responsePromise;
+  expect(response.status()).toBe(200);
+  expect((await response.json()).product.product_name).toBe(productName);
+}
 async function openBarcode(page: Page) {
   await page.getByTestId("button-add-breakfast").click();
   await page.getByRole("button", { name: "Scan Barcode", exact: true }).click();
@@ -261,6 +287,7 @@ test("scans open Add Entry, automatically cache label servings and remain usable
   context,
 }) => {
   await seed(page);
+  await prepareBarcodeLookup(page);
   await page
     .context()
     .route("https://world.openfoodfacts.org/api/v3/product/**", (route) =>
@@ -291,7 +318,7 @@ test("scans open Add Entry, automatically cache label servings and remain usable
     );
   await openBarcode(page);
   await page.getByLabel("Manual barcode").fill("036000291452");
-  await page.getByRole("button", { name: "Find Product" }).click();
+  await findMockedBarcode(page, "Synthetic scanned bar");
   await page.getByText("Edit label nutrition", { exact: true }).click();
   await expect(page.getByLabel("Product Fiber", { exact: true })).toHaveValue(
     "",
@@ -351,6 +378,7 @@ test("missing core barcode nutrients require label review; camera denial leaves 
   page,
 }) => {
   await seed(page);
+  await prepareBarcodeLookup(page);
   await page.evaluate(() =>
     Object.defineProperty(navigator, "mediaDevices", {
       configurable: true,
@@ -382,7 +410,7 @@ test("missing core barcode nutrients require label review; camera denial leaves 
       }),
     );
   await page.getByLabel("Manual barcode").fill("036000291452");
-  await page.getByRole("button", { name: "Find Product" }).click();
+  await findMockedBarcode(page, "Synthetic incomplete label");
   await page.getByTestId("button-save-add-entry").click();
   await expect(page.getByRole("alert")).toContainText("required");
   await expect(
@@ -780,6 +808,7 @@ test("automatic scan caching failure blocks logging; diary failure retains cache
   page,
 }) => {
   await seed(page);
+  await prepareBarcodeLookup(page);
   await page
     .context()
     .route("https://world.openfoodfacts.org/api/v3/product/**", (route) =>
@@ -802,7 +831,7 @@ test("automatic scan caching failure blocks logging; diary failure retains cache
     );
   await openBarcode(page);
   await page.getByLabel("Manual barcode").fill("036000291452");
-  await page.getByRole("button", { name: "Find Product" }).click();
+  await findMockedBarcode(page, "Synthetic retry product");
   await expect(
     page.getByRole("heading", { name: "Add Entry", exact: true }),
   ).toBeVisible();

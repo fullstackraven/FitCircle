@@ -108,16 +108,18 @@ Legacy Dark exceptions, including some white-on-green action text and muted smal
 
 No hook, calculation utility, persistence module, storage registry, backup parser, appearance controller or preference format changed. No new dependencies or migrations. Domain bytes are checked across navigation and theme changes; historical hydration entries remain unchanged after today's edit; timer pause/resume/completion and manual journal/supplement editing retain their existing behavior. Goal-circle zero/partial/complete/over-target display is exercised without saving changes. Existing full regression coverage remains enabled.
 
-- `npm run check`: passed.
-- Regression TypeScript checks: passed.
-- `npm test`: 294 passed, zero failures.
+The focused final-review correction is documented in [Browser-test reliability review](test-reliability.md), including the original failures, diagnostic runs, Phase 3 comparison, exact validation commands and limitations. It changes two browser-test fixtures only: worker lifecycle readiness plus explicit synthetic barcode response checks, and deterministic overlay/chart screenshot positioning. Original screenshot baselines and exact comparisons remain intact. No application behavior or production networking changed.
+
+- `npm run check` and regression TypeScript: passed.
+- `npm test`: 294 passed.
 - `npm run audit:storage`: 160 call sites, zero errors.
-- `npm run build`: passed.
-- Focused Phase 4 browser coverage: 15 tests passed.
-- Initial full two-worker run: 318 passed.
-- Final full one-worker run: **317 passed, 1 failed** in an unchanged mocked barcode lookup (`nutrition.spec.ts:259`); isolated rerun: **1 passed**.
-- Other observed repeat-run failures: unchanged Phase 3 barcode backdrop-scroll screenshot (isolated suite 16/16 passed) and previously documented automatic-scan caching lookup (isolated 1/1 passed).
-- All Phase 4 tests and original Phase 1–3 appearance checks passed in the final full run. **Full-suite repeatability is an unresolved validation limitation; do not interpret the initial green run or isolated passes as a consistently green final full suite.**
+- `npm run build`: passed; production assets are byte-identical to the prior Phase 4 build.
+- Complete nutrition browser suite: 21 passed.
+- Complete appearance browser suites: 54 passed, including all 15 Phase 4 cases and prior baselines.
+- Repeated affected cases: 30 barcode cases and 10 barcode screenshot checkpoints passed. A later chart-framing failure was corrected in the test fixture; the final full visual case then passed 4/4 repetitions.
+- Final full two-worker runs: **318/318 passed twice consecutively** (5.0m and 4.9m), without retries.
+
+Earlier full-run failures are retained in the reliability report rather than treated as resolved by isolated reruns. Physical iPhone/PWA validation remains outstanding.
 
 ## Phase 5 dependencies and iPhone checklist
 
@@ -187,3 +189,10 @@ The dormant Goals widget's progress fill reuses the existing nutrition-green tok
 The unchanged Phase 3 suite passed in isolation (16/16). Another two-worker full repeat passed the appearance checks but returned 317/318 in the automatic-scan caching test before Add Entry opened. This intermittent case is already recorded in the [earlier modal review](../modal-fields/README.md). Its isolated rerun passed (1/1). No barcode code, existing tests, timeouts or retry configuration were changed. Final full serial verification is reported below; two-worker CI timing variability remains a known limitation.
 
 The final serial run returned 317/318 in `nutrition.spec.ts:259` (“scans open Add Entry…”) with the same “Failed to fetch” state before Add Entry. That unchanged test passed immediately in isolation (1/1). All test assertions and original baseline files remain intact. This PR completes the presentation conversion, but full-suite stability still needs review before treating every completion criterion as satisfied. Barcode implementation/test-environment stabilization is intentionally not bundled into the theming changes.
+
+### Final-review correction files
+
+- `tests/browser/nutrition.spec.ts`: controlled-worker fixture readiness and exact synthetic response assertions.
+- `tests/browser/appearance-phase-three.spec.ts`: settled overlay and chart scenes, retained exact screenshots and added background-scroll assertions.
+- `docs/review/appearance-phase-four/test-reliability.md`: diagnostic evidence, commands, results and limitations.
+- This review document: updated validation summary.

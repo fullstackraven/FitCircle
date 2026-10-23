@@ -20,6 +20,21 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
     test.setTimeout(90000);
     await seedNutritionAppearance(page, mode);
     const before = await nutritionBytes(page);
+    const scroller = page.locator(".app-content");
+    async function settleFoodOverlay() {
+      // Radix restores focus after its closing animation. That can scroll the
+      // background after a new panel is already visible. Use the original
+      // screenshot scene (page bottom) only after outgoing panels unmount.
+      await expect(
+        page.locator('.dialog-panel[data-state="closed"]'),
+      ).toHaveCount(0);
+      await expect(
+        page.locator('.dialog-panel[data-state="open"]'),
+      ).toHaveCount(1);
+      await scroller.evaluate((el) => {
+        el.scrollTop = el.scrollHeight;
+      });
+    }
     async function capture(name: string) {
       await expect(page.locator("#fitcircle-startup")).toHaveCount(0);
       await page.evaluate(() => document.fonts.ready);
@@ -72,6 +87,7 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
     await page.getByTestId("button-add-breakfast").click();
     await page.getByTestId("input-search").fill("Synthetic oats");
     await page.getByTestId(`row-food-${sampleFood.id}`).waitFor();
+    await settleFoodOverlay();
     await capture("food-search");
     await page
       .getByRole("button", { name: "Create Custom Food", exact: true })
@@ -85,13 +101,21 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
     await page
       .getByRole("button", { name: "Scan Barcode", exact: true })
       .click();
+    await settleFoodOverlay();
+    const barcodeScrollTop = await scroller.evaluate((el) => el.scrollTop);
     await capture("barcode");
+    expect(await scroller.evaluate((el) => el.scrollTop)).toBe(
+      barcodeScrollTop,
+    );
     await page.getByLabel("Manual barcode").fill("123");
     await page
       .getByRole("button", { name: "Find Product", exact: true })
       .click();
     await expect(page.getByRole("alert")).toBeVisible();
     await capture("barcode-error");
+    expect(await scroller.evaluate((el) => el.scrollTop)).toBe(
+      barcodeScrollTop,
+    );
     await page
       .getByRole("dialog")
       .getByRole("button", { name: "Close", exact: true })
@@ -132,7 +156,17 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
       .getByRole("heading", { name: "Trend Graphs", exact: true })
       .scrollIntoViewIfNeeded();
     await expect(page.locator(".recharts-line").first()).toBeVisible();
+    // Recharts renders dots after its JS line animation finishes. Hovering the
+    // growing SVG earlier scrolls the horizontal carousel to a different offset.
+    await expect(
+      page.locator(".recharts-line").first().locator(".recharts-line-dot"),
+    ).toHaveCount(3);
     await page.locator(".recharts-line").first().hover();
+    // The original 390px baseline captures this carousel at 77px. SVG hover
+    // auto-scrolling depends on its animated bounds; fix the scene explicitly.
+    await page.locator(".horizontal-scroll").evaluate((el) => {
+      el.scrollLeft = 77;
+    });
     await capture("measurement-chart");
     expect(await nutritionBytes(page)).toEqual(before);
   });
