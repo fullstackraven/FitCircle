@@ -39,7 +39,7 @@ async function fixture(page: Page, preference?: string) {
   await page.evaluate(() => {
     (window as any).appearanceController = (
       window as any
-    ).appearanceModule.startAppearanceController({ allowPreview: true });
+    ).appearanceModule.startAppearanceController();
   });
 }
 
@@ -60,8 +60,8 @@ for (const os of ["light", "dark"] as const) {
       await page.evaluate(() => localStorage.getItem("fitcircle_appearance")),
     ).toBeNull();
     await expect(
-      page.getByRole("button", { name: /^(Light|Dark|System)$/ }),
-    ).toHaveCount(0);
+      page.getByRole("radio", { name: "Dark", exact: true }),
+    ).toBeChecked();
     expect(
       await page
         .locator(".app-shell")
@@ -69,8 +69,8 @@ for (const os of ["light", "dark"] as const) {
     ).toBe("rgb(15, 23, 42)");
   });
 }
-for (const saved of ["light", "system", "malformed"]) {
-  test(`production cannot expose unfinished light pages from saved ${saved}`, async ({
+for (const saved of ["dark", "light", "system", "malformed"]) {
+  test(`production applies the public appearance from saved ${saved}`, async ({
     page,
   }) => {
     await page.emulateMedia({ colorScheme: "light" });
@@ -81,12 +81,12 @@ for (const saved of ["light", "system", "malformed"]) {
     await page.goto("settings?appearance=light");
     await expect(page.locator("html")).toHaveAttribute(
       "data-appearance",
-      "dark",
+      saved === "light" || saved === "system" ? "light" : "dark",
     );
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute(
       "data-appearance",
-      "dark",
+      saved === "light" || saved === "system" ? "light" : "dark",
     );
     expect(
       await page.evaluate(() => localStorage.getItem("fitcircle_appearance")),
@@ -119,7 +119,7 @@ test("internal preview follows live System changes and explicit choices survive 
   await page.evaluate(() => {
     (window as any).appearanceController = (
       window as any
-    ).appearanceModule.startAppearanceController({ allowPreview: true });
+    ).appearanceModule.startAppearanceController();
     const portal = document.createElement("div");
     portal.id = "portal";
     portal.className = "glass-dialog text-foreground";
@@ -321,19 +321,25 @@ test("Settings exports fitness data despite an invalid appearance and discloses 
   ).toBeVisible();
   // Validate the exported file through the real importer, then cancel at its
   // confirmation. Unit coverage also applies the same backup and compares bytes.
-  page.once("dialog", dialog => dialog.dismiss());
-  await page.locator('input[type=file]').setInputFiles({ name: "valid-omission.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(backup)) });
-  await expect(page.getByText("Restore cancelled.", { exact: true })).toBeVisible();
-  // An explicitly invalid restore still rejects before modifying any records.
-  backup.localStorage.fitcircle_appearance = "auto";
-  backup.manifest.localStorageKeys = Object.keys(backup.localStorage).sort();
+  page.once("dialog", (dialog) => dialog.dismiss());
   await page
     .locator("input[type=file]")
     .setInputFiles({
-      name: "invalid-appearance.json",
+      name: "valid-omission.json",
       mimeType: "application/json",
       buffer: Buffer.from(JSON.stringify(backup)),
     });
+  await expect(
+    page.getByText("Restore cancelled.", { exact: true }),
+  ).toBeVisible();
+  // An explicitly invalid restore still rejects before modifying any records.
+  backup.localStorage.fitcircle_appearance = "auto";
+  backup.manifest.localStorageKeys = Object.keys(backup.localStorage).sort();
+  await page.locator("input[type=file]").setInputFiles({
+    name: "invalid-appearance.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(backup)),
+  });
   await expect(
     page.getByText(/Import failed: Invalid appearance preference/),
   ).toBeVisible();

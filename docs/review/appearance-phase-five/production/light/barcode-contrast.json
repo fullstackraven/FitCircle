@@ -1,0 +1,35 @@
+{
+  "readings": [
+    {
+      "text": "Scan Barcode",
+      "ratio": 17.86,
+      "required": 4.5
+    },
+    {
+      "text": "Start Camera",
+      "ratio": 16.39,
+      "required": 4.5
+    },
+    {
+      "text": "Manual barcode",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "·",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Open Food Facts",
+      "ratio": 5.01,
+      "required": 4.5
+    },
+    {
+      "text": "ODbL",
+      "ratio": 7.57,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

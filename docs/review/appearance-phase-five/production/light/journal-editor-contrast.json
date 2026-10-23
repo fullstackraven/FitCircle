@@ -1,0 +1,45 @@
+{
+  "readings": [
+    {
+      "text": "Daily Journal",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Write your thoughts and reflections for today",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "October 19, 2026",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "6 words",
+      "ratio": 6.31,
+      "required": 4.5
+    },
+    {
+      "text": "Last saved: Oct 19, 2026 at 10:00 AM",
+      "ratio": 6.31,
+      "required": 4.5
+    },
+    {
+      "text": "Synthetic journal reflection for appearance review.",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Save Entry",
+      "ratio": 5.38,
+      "required": 4.5
+    },
+    {
+      "text": "Delete",
+      "ratio": 4.83,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

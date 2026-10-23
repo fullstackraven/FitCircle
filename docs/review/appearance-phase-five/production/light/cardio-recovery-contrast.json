@@ -1,0 +1,115 @@
+{
+  "readings": [
+    {
+      "text": "FitCircle",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "“Success is not final, failure is not fatal: it is the courage to continue that ",
+      "ratio": 7.38,
+      "required": 4.5
+    },
+    {
+      "text": "— Winston Churchill",
+      "ratio": 7.38,
+      "required": 4.5
+    },
+    {
+      "text": "Mon, Oct 19, 2026",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Today's Workout",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "1 exercise",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "PUSH",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Start Workout Session",
+      "ratio": 12.05,
+      "required": 4.5
+    },
+    {
+      "text": "7",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "Push-ups",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Goal:  reps",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "20",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Timer",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Tap to start",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Add",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "New workout",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Today's Totals",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 15.39,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

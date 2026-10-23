@@ -1,0 +1,85 @@
+{
+  "readings": [
+    {
+      "text": "Edit Food",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Name *",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Brand",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Quantity *",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Unit *",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "g",
+      "ratio": 16.37,
+      "required": 4.5
+    },
+    {
+      "text": "Calories *",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Carbs (g) *",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Protein (g) *",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Fat (g) *",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Fiber (g)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Sugar (g)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Sodium (mg)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Sat Fat (g)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Cancel",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Save Changes",
+      "ratio": 5.17,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

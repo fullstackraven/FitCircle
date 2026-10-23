@@ -1,0 +1,125 @@
+{
+  "readings": [
+    {
+      "text": "My Fitness Profile",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "Your fitness journey",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Your personal training overview",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Current Focus",
+      "ratio": 17.77,
+      "required": 4.5
+    },
+    {
+      "text": "Set a personal fitness objective",
+      "ratio": 17.77,
+      "required": 4.5
+    },
+    {
+      "text": "Your Training",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Active Days",
+      "ratio": 7.54,
+      "required": 4.5
+    },
+    {
+      "text": "0",
+      "ratio": 17.77,
+      "required": 3
+    },
+    {
+      "text": "Consistency",
+      "ratio": 7.54,
+      "required": 4.5
+    },
+    {
+      "text": "0.0%",
+      "ratio": 17.77,
+      "required": 3
+    },
+    {
+      "text": "Total Reps",
+      "ratio": 7.54,
+      "required": 4.5
+    },
+    {
+      "text": "7",
+      "ratio": 17.77,
+      "required": 3
+    },
+    {
+      "text": "View Workout Statistics",
+      "ratio": 4.79,
+      "required": 4.5
+    },
+    {
+      "text": "Active days and consistency use the same completed-day definitions as Workout St",
+      "ratio": 6.03,
+      "required": 4.5
+    },
+    {
+      "text": "Personal Details",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Date of Birth",
+      "ratio": 17.77,
+      "required": 4.5
+    },
+    {
+      "text": "Age 31 · calculator profile",
+      "ratio": 7.54,
+      "required": 4.5
+    },
+    {
+      "text": "Body Measurements",
+      "ratio": 17.77,
+      "required": 4.5
+    },
+    {
+      "text": "Fitness Goals",
+      "ratio": 17.77,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

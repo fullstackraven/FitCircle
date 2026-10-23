@@ -1,0 +1,215 @@
+{
+  "readings": [
+    {
+      "text": "Nutrition Details",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "Some nutrient totals are partial; bars show recorded intake only.",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Calories",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "300",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "/ 2,000 kcal",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Protein",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "10",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "/ 150 g",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Carbohydrates",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "54",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "/ 225 g",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Fat",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "6",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "/ 65 g",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Fiber",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "8",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "/ 28 g",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Sugar",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "4",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "/ 75 g",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Sodium",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "0",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "/ 2,300 mg",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Saturated fat",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Not available",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "/ 22.2 g",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Cholesterol",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "0",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "/ 300 mg",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Potassium",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Not available",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "/ 3,400 mg",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Calcium",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "100",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "/ 1,000 mg",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Iron",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "4",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "/ 8 mg",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Vitamin C",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Not available",
+      "ratio": 17.45,
+      "required": 4.5
+    },
+    {
+      "text": "/ 90 mg",
+      "ratio": 7.41,
+      "required": 4.5
+    },
+    {
+      "text": "Reference information",
+      "ratio": 7.41,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

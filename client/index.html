@@ -4,6 +4,38 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#0f172a" />
+    <!-- appearance-startup:start -->
+    <style>
+      html { background: #0f172a; color-scheme: dark; --startup-background: #0f172a; --startup-foreground: #fff; }
+      html[data-appearance="light"] { background: #f8fafc; color-scheme: light; --startup-background: #f8fafc; --startup-foreground: hsl(222 47% 11%); }
+      body { background: inherit; }
+      #fitcircle-startup { background: var(--startup-background); color: var(--startup-foreground); }
+    </style>
+    <script id="fitcircle-appearance-bootstrap">
+      // Small pre-paint decision table, parity-tested against appearance.ts.
+      // No writes, listeners, fitness-data recovery or second theme controller.
+      (() => {
+        let preference;
+        try {
+          preference = localStorage.getItem('fitcircle_appearance');
+          const pending = localStorage.getItem('fitcircle_restore_journal_v2');
+          if (pending) {
+            // Read only the previous appearance when rollback is pending. The
+            // real recovery still validates/restores all data before App loads.
+            const previous = JSON.parse(pending);
+            if (previous && Object.prototype.hasOwnProperty.call(previous, 'fitcircle_appearance'))
+              preference = previous.fitcircle_appearance;
+          }
+        } catch { preference = undefined; }
+        let systemDark = true;
+        try { if (typeof matchMedia === 'function') systemDark = matchMedia('(prefers-color-scheme: dark)').matches !== false; } catch { /* Dark fallback. */ }
+        const appearance = preference === 'light' || (preference === 'system' && !systemDark) ? 'light' : 'dark';
+        document.documentElement.dataset.appearance = appearance;
+        document.documentElement.style.colorScheme = appearance;
+        document.querySelector('meta[name="theme-color"]').content = appearance === 'light' ? '#f8fafc' : '#0f172a';
+      })();
+    </script>
+    <!-- appearance-startup:end -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FitCircle" />
@@ -16,7 +48,7 @@
   </head>
   <body>
     <div id="root">
-      <section id="fitcircle-startup" style="max-width:32rem;margin:10vh auto;padding:2rem;background:#0f172a;color:#fff;border-radius:1rem;font-family:system-ui">
+      <section id="fitcircle-startup" style="max-width:32rem;margin:10vh auto;padding:2rem;border-radius:1rem;font-family:system-ui">
         <h1>FitCircle</h1>
         <p id="fitcircle-startup-message" role="status">Opening FitCircle…</p>
         <button id="fitcircle-recover" type="button" hidden>Reload app safely</button>

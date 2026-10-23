@@ -1,0 +1,100 @@
+{
+  "readings": [
+    {
+      "text": "Create Custom Food",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Basic Information",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Food Name *",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Brand (Optional)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Serving Size *",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Unit",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "grams (g)",
+      "ratio": 16.37,
+      "required": 4.5
+    },
+    {
+      "text": "Macronutrients (per serving)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Calories",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Carbs (g)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Protein (g)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Fat (g)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Additional Nutrients (Optional)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Fiber (g)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Sugar (g)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Sodium (mg)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Saturated Fat (g)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Cholesterol (mg)",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Potassium (mg)",
+      "ratio": 17.84,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

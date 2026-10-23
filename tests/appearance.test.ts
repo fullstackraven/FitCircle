@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import vm from "node:vm";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { IDBFactory } from "fake-indexeddb";
@@ -11,6 +13,7 @@ import {
   createBackup,
   prepareRestore,
   applyRestore,
+  recoverInterruptedRestore,
 } from "../client/src/lib/backup";
 import { completeStorage } from "./fixtures/complete-storage";
 
@@ -48,16 +51,22 @@ function browser(preference?: string, systemDark = false) {
   const host = Object.assign(new EventTarget(), {
     localStorage: storage,
     matchMedia: () => media,
-    document: { documentElement: { dataset: {} as Record<string, string> } },
+    document: Object.assign(new EventTarget(), {
+      documentElement: {
+        dataset: {} as Record<string, string>,
+        style: { colorScheme: "" },
+      },
+      querySelector: () => null,
+      visibilityState: "visible",
+    }),
   });
   return {
     storage,
     media,
     host,
-    start: (allowPreview = true) =>
+    start: () =>
       startAppearanceController({
         browser: host as unknown as Window,
-        allowPreview,
       }),
   };
 }
@@ -98,18 +107,22 @@ for (const value of [undefined, "corrupt"])
     c.stop();
   });
 
-test("public production gate preserves dark even with a saved light or system preference", () => {
-  for (const preference of ["light", "system"]) {
-    const b = browser(preference);
-    const c = b.start(false);
-    assert.deepEqual(c.getSnapshot(), {
-      preference,
-      resolved: "light",
-      applied: "dark",
-      error: null,
-    });
-    assert.equal(b.storage.getItem(APPEARANCE_KEY), preference);
-    c.stop();
+test("production resolves all three preferences identically to the bootstrap decision table", () => {
+  for (const preference of ["dark", "light", "system"] as const) {
+    for (const systemDark of [false, true]) {
+      const b = browser(preference, systemDark);
+      const c = b.start();
+      const expected = resolveAppearance(preference, systemDark);
+      assert.deepEqual(c.getSnapshot(), {
+        preference,
+        resolved: expected,
+        applied: expected,
+        error: null,
+      });
+      assert.equal(b.host.document.documentElement.style.colorScheme, expected);
+      assert.equal(b.storage.getItem(APPEARANCE_KEY), preference);
+      c.stop();
+    }
   }
 });
 
@@ -308,4 +321,119 @@ test("the export exception never hides invalid fitness records or announces a fa
   );
   assert.deepEqual([...source.data], before);
   assert.deepEqual(warnings, []);
+});
+
+// The classic pre-paint script intentionally has no module/network dependency.
+// Exercise its tiny duplicated decision table against the production controller.
+
+const bootstrap = fs
+  .readFileSync("client/index.html", "utf8")
+  .match(
+    /<script id="fitcircle-appearance-bootstrap">([\s\S]*?)<\/script>/,
+  )![1];
+function launch(
+  b: ReturnType<typeof browser>,
+  matchMedia: unknown = b.host.matchMedia,
+) {
+  const meta = { content: "" };
+  const document = {
+    documentElement: b.host.document.documentElement,
+    querySelector: () => meta,
+  };
+  vm.runInNewContext(bootstrap, {
+    localStorage: b.storage,
+    document,
+    matchMedia,
+  });
+  return { root: document.documentElement, meta };
+}
+
+test("early bootstrap and controller agree for every preference, OS, malformed value and missing media API without writes", () => {
+  for (const preference of [
+    undefined,
+    "dark",
+    "light",
+    "system",
+    "auto",
+    "",
+    '"light"',
+  ]) {
+    for (const systemDark of [false, true]) {
+      for (const supported of [true, false]) {
+        const b = browser(preference, systemDark);
+        if (!supported) (b.host as any).matchMedia = undefined;
+        const before = [...b.storage.data];
+        const early = launch(b);
+        const expected = resolveAppearance(
+          preference,
+          supported ? systemDark : true,
+        );
+        assert.equal(early.root.dataset.appearance, expected);
+        assert.equal(early.root.style.colorScheme, expected);
+        assert.equal(
+          early.meta.content,
+          expected === "light" ? "#f8fafc" : "#0f172a",
+        );
+        const c = b.start();
+        assert.equal(c.getSnapshot().applied, expected);
+        assert.equal(b.storage.writes, 0);
+        assert.deepEqual([...b.storage.data], before);
+        c.stop();
+      }
+    }
+  }
+});
+
+test("bootstrap tolerates blocked storage and throwing media APIs; original bytes stay intact", () => {
+  const b = browser("light");
+  const before = [...b.storage.data];
+  b.storage.failRead = true;
+  const early = launch(b, () => {
+    throw Error("unsupported");
+  });
+  assert.equal(early.root.dataset.appearance, "dark");
+  assert.deepEqual([...b.storage.data], before);
+  assert.equal(b.storage.writes, 0);
+});
+
+test("read-only bootstrap recovery hint agrees with authoritative rollback before App rendering", () => {
+  for (const previous of [null, "dark", "light", "system"]) {
+    const b = browser("dark", false);
+    b.storage.data.set(
+      "fitcircle_restore_journal_v2",
+      JSON.stringify({ [APPEARANCE_KEY]: previous }),
+    );
+    const before = [...b.storage.data];
+    const early = launch(b);
+    assert.equal(
+      early.root.dataset.appearance,
+      resolveAppearance(previous, false),
+    );
+    assert.deepEqual([...b.storage.data], before);
+    assert.equal(b.storage.writes, 0);
+    recoverInterruptedRestore(b.storage, b.storage);
+    const c = b.start();
+    assert.equal(c.getSnapshot().applied, early.root.dataset.appearance);
+    assert.equal(b.storage.getItem(APPEARANCE_KEY), previous);
+    assert.equal(b.storage.getItem("fitcircle_restore_journal_v2"), null);
+    c.stop();
+  }
+});
+
+test("resumption reconciles System without a media event, explicit overrides persist, and all lifecycle listeners clean up", () => {
+  const b = browser("system");
+  const c = b.start();
+  b.media.matches = true;
+  b.host.document.dispatchEvent(new Event("visibilitychange"));
+  assert.equal(c.getSnapshot().applied, "dark");
+  assert.equal(b.storage.getItem(APPEARANCE_KEY), "system");
+  c.setPreference("light");
+  b.host.dispatchEvent(new Event("focus"));
+  assert.equal(c.getSnapshot().applied, "light");
+  const before = c.getSnapshot();
+  c.stop();
+  b.storage.data.set(APPEARANCE_KEY, "dark");
+  b.host.document.dispatchEvent(new Event("visibilitychange"));
+  b.host.dispatchEvent(new Event("focus"));
+  assert.equal(c.getSnapshot(), before);
 });

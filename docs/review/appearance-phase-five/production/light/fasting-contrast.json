@@ -1,0 +1,135 @@
+{
+  "readings": [
+    {
+      "text": "Fasting",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Goal",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Current progress",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "0",
+      "ratio": 17.85,
+      "required": 3
+    },
+    {
+      "text": "/ 16 hr",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "No active fast",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Not started",
+      "ratio": 5.02,
+      "required": 4.5
+    },
+    {
+      "text": "0%",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Fasting timeline",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Start",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Not started",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Elapsed",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "—",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Target duration",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "16 hr",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Target end / eating window",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "—",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Completed today: 16.0 hr · 100% of duration goal",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Last 7 days",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "7D",
+      "ratio": 14.48,
+      "required": 4.5
+    },
+    {
+      "text": "30D",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "90D",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "16 hr total",
+      "ratio": 5.02,
+      "required": 4.5
+    },
+    {
+      "text": "2.3 hr/calendar day",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Recent fasts · 1 completed in last 7 days · 1 of 7 days met goal",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Add Fast",
+      "ratio": 5.02,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

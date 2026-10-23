@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useSyncExternalStore } from 'react';
 import { ArrowLeft, Upload, Download, Trash2, RotateCcw } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { getAppearanceController, type AppearancePreference } from '@/lib/appearance';
 import { useControls } from '@/hooks/use-controls';
 import { refreshApp } from '@/lib/pwa-update';
 import { getTodayString } from '@/lib/date-utils';
@@ -10,6 +11,8 @@ import { createBackup, prepareRestore, applyRestore, isAppKey } from '@/lib/back
 
 export default function SettingsPage() {
   const [, navigate] = useLocation();
+  const appearanceController = getAppearanceController();
+  const appearance = useSyncExternalStore(appearanceController.subscribe, appearanceController.getSnapshot);
   const [isImporting, setIsImporting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -286,6 +289,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
+
         {/* REMOVED: Bug reporting section removed per user request - no server calls */}
         {/* Erase All Data Section */}
         <div className="bg-feature-red-deep-tint/20 border border-red-700 rounded-xl p-6 mb-6">
@@ -326,6 +330,28 @@ export default function SettingsPage() {
             )}
           </div>
         </div>
+        <section className="glass-panel bg-surface rounded-xl p-6 mb-6" aria-labelledby="appearance-heading">
+          <h2 id="appearance-heading" className="text-lg font-semibold text-strong mb-4">Appearance</h2>
+          <fieldset aria-describedby="appearance-description" className="min-w-0">
+            <legend className="sr-only">Appearance</legend>
+            <div className="grid grid-cols-3 gap-2">
+              {(['light', 'dark', 'system'] as AppearancePreference[]).map(preference => (
+                <label key={preference} className="min-w-0 cursor-pointer">
+                  <input type="radio" name="appearance" value={preference}
+                    checked={appearance.preference === preference}
+                    onChange={() => appearanceController.setPreference(preference)}
+                    className="peer sr-only" />
+                  <span className="flex min-h-11 items-center justify-center rounded-xl border border-control-border bg-input-background px-2 text-sm text-strong peer-checked:border-accent-text peer-checked:bg-feature-green-tint peer-checked:text-accent-text peer-checked:font-semibold peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring">
+                    {preference[0].toUpperCase() + preference.slice(1)}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <p id="appearance-description" className="text-xs text-muted-foreground mt-3">System follows your device’s appearance settings.</p>
+          {appearance.error && <p role="alert" className="text-sm text-feature-red mt-3">{appearance.error}</p>}
+        </section>
+
       </div>
     </div>
   );

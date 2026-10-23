@@ -1,0 +1,105 @@
+{
+  "readings": [
+    {
+      "text": "Edit Entry",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Synthetic oats",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Synthetic brand",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Base serving (product label)",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "40g",
+      "ratio": 6.12,
+      "required": 4.5
+    },
+    {
+      "text": "2. Choose how much you ate. This multiplies the totals below and does not edit t",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Servings eaten (multiplier)",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "2 × 40 g = 80 g consumed",
+      "ratio": 5.01,
+      "required": 4.5
+    },
+    {
+      "text": "Meal",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Breakfast",
+      "ratio": 16.37,
+      "required": 4.5
+    },
+    {
+      "text": "300",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "cal",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "54g",
+      "ratio": 6.4,
+      "required": 4.5
+    },
+    {
+      "text": "Carbs",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "6g",
+      "ratio": 6.18,
+      "required": 4.5
+    },
+    {
+      "text": "Fat",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "10g",
+      "ratio": 4.79,
+      "required": 4.5
+    },
+    {
+      "text": "Protein",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Cancel",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Save",
+      "ratio": 5.17,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

@@ -1,0 +1,75 @@
+{
+  "readings": [
+    {
+      "text": "FitCircle",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "Routines",
+      "ratio": 4.79,
+      "required": 3
+    },
+    {
+      "text": "PUSH",
+      "ratio": 17.69,
+      "required": 4.5
+    },
+    {
+      "text": "Mon · 1 exercise",
+      "ratio": 7.51,
+      "required": 4.5
+    },
+    {
+      "text": "Push-ups",
+      "ratio": 16.85,
+      "required": 4.5
+    },
+    {
+      "text": "20 reps",
+      "ratio": 7.15,
+      "required": 4.5
+    },
+    {
+      "text": "Add Workout",
+      "ratio": 7.15,
+      "required": 4.5
+    },
+    {
+      "text": "Create Routine",
+      "ratio": 5.02,
+      "required": 4.5
+    },
+    {
+      "text": "Edit Workouts",
+      "ratio": 16.33,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 15.39,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

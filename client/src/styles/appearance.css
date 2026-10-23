@@ -1,6 +1,5 @@
-/* Shared appearance tokens. Core pages opt in; remaining routes are converted in later phases.
-   Channels are consumed with hsl(var(--token) / <alpha-value>) in Tailwind.
-   The production controller pins the root to dark; light is development-only. */
+/* Shared app-wide appearance tokens. Channels are consumed with
+   hsl(var(--token) / <alpha-value>) in Tailwind. */
 :root {
   --surface: 217.24137931034483 32.58426966292136% 17.45098039215686%;
   --surface-secondary: 215.29411764705881 24.99999999999999% 26.66666666666667%;
@@ -395,8 +394,7 @@
   --calendar-chart-glow: none;
   --calendar-complete-shadow: none; --calendar-recovery-shadow: none;
 }
-/* The HTML launch placeholder can inherit once CSS/controller have loaded.
-   Its pre-controller appearance remains Phase 5 bootstrap responsibility. */
+/* Keep the launch placeholder consistent after the full palette loads. */
 :root[data-appearance="light"] #fitcircle-startup {
   background: var(--app-background) !important;
   color: hsl(var(--foreground)) !important;
@@ -429,3 +427,13 @@
 :root[data-appearance="light"] .settings-toggle { background-color: hsl(var(--control-border)); }
 :root[data-appearance="light"] .settings-toggle[aria-pressed="true"] { background-color: hsl(var(--accent-text)); }
 :root[data-appearance="light"] .glass-toggle[data-state="unchecked"] { border-color: hsl(var(--control-border)); }
+
+/* Preserve original Dark picker/spinner glyphs while native picker panels
+   inherit the resolved scheme. Legacy glyph contrast is intentionally unchanged. */
+:root[data-appearance="dark"] :is(input[type="date"], input[type="time"], input[type="datetime-local"], input[type="month"], input[type="week"])::-webkit-calendar-picker-indicator {
+  color-scheme: light;
+}
+:root[data-appearance="dark"] input::-webkit-inner-spin-button,
+:root[data-appearance="dark"] input::-webkit-outer-spin-button {
+  color-scheme: light;
+}

@@ -1,0 +1,130 @@
+{
+  "readings": [
+    {
+      "text": "Cardio",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Goal",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Current progress",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "75",
+      "ratio": 17.85,
+      "required": 3
+    },
+    {
+      "text": "/ 150 min",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "This calendar week",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "In progress",
+      "ratio": 5.02,
+      "required": 4.5
+    },
+    {
+      "text": "75 min remaining",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "50%",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Last 7 days",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "7D",
+      "ratio": 14.48,
+      "required": 4.5
+    },
+    {
+      "text": "30D",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "90D",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "75 min total",
+      "ratio": 5.02,
+      "required": 4.5
+    },
+    {
+      "text": "10.7 min/calendar day",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "1 of 7 days active",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Weekly activity",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "75 min this week · 1 active days",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Log Cardio",
+      "ratio": 5.02,
+      "required": 4.5
+    },
+    {
+      "text": "Today's Cardio",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "10:00 AM",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Walking",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "1h 15min",
+      "ratio": 5.02,
+      "required": 4.5
+    },
+    {
+      "text": "3mi",
+      "ratio": 6.7,
+      "required": 4.5
+    },
+    {
+      "text": "History",
+      "ratio": 17.06,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

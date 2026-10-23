@@ -1,0 +1,40 @@
+{
+  "readings": [
+    {
+      "text": "Your saved workouts need attention",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "FitCircle could not read or validate your saved workout records. It has left the",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Keep an original-data recovery copy before attempting repairs. This copy is not ",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Download original stored data",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Retry loading",
+      "ratio": 16.3,
+      "required": 4.5
+    },
+    {
+      "text": "Open Settings to restore a backup",
+      "ratio": 5.17,
+      "required": 4.5
+    },
+    {
+      "text": "Settings can restore an existing verified JSON backup using the usual confirmati",
+      "ratio": 17.06,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

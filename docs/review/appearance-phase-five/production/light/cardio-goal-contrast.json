@@ -1,0 +1,60 @@
+{
+  "readings": [
+    {
+      "text": "Cardio Goal",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "150 min",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "50%",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "This Week",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Current calendar week",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Daily",
+      "ratio": 16.39,
+      "required": 4.5
+    },
+    {
+      "text": "Weekly",
+      "ratio": 17.87,
+      "required": 4.5
+    },
+    {
+      "text": "Weekly Goal (minutes)",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Switch to Miles",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Cancel",
+      "ratio": 6.95,
+      "required": 4.5
+    },
+    {
+      "text": "Save Goal",
+      "ratio": 5.17,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

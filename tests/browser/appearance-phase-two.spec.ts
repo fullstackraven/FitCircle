@@ -3,7 +3,9 @@ import fs from "node:fs";
 import { seedAppearance } from "../fixtures/appearance-pages";
 
 test.use({
-  baseURL: "http://127.0.0.1:4184/FitCircle/",
+  baseURL: process.env.APPEARANCE_PRODUCTION_REVIEW
+    ? "http://127.0.0.1:4173/FitCircle/"
+    : "http://127.0.0.1:4184/FitCircle/",
   viewport: { width: 390, height: 844 },
   timezoneId: "America/New_York",
 });
@@ -46,7 +48,7 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
           threshold: 0,
         });
       await page.screenshot({
-        path: `docs/review/appearance-phase-two/${process.env.APPEARANCE_CAPTURE_BEFORE ? "before" : mode}/${name}.png`,
+        path: `${process.env.APPEARANCE_PRODUCTION_REVIEW ? "docs/review/appearance-phase-five/production" : "docs/review/appearance-phase-two"}/${process.env.APPEARANCE_CAPTURE_BEFORE ? "before" : mode}/${name}.png`,
         animations: "disabled",
       });
       expect(
@@ -58,7 +60,7 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
         const findings = await textContrast(page);
         expect(findings.failures, `Contrast: ${name}`).toEqual([]);
         fs.writeFileSync(
-          `docs/review/appearance-phase-two/light/${name}-contrast.json`,
+          `${process.env.APPEARANCE_PRODUCTION_REVIEW ? "docs/review/appearance-phase-five/production" : "docs/review/appearance-phase-two"}/light/${name}-contrast.json`,
           JSON.stringify(findings, null, 2),
         );
       }

@@ -1,0 +1,115 @@
+{
+  "readings": [
+    {
+      "text": "Lose Weight",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Maintain",
+      "ratio": 6.1,
+      "required": 4.5
+    },
+    {
+      "text": "Gain Weight",
+      "ratio": 6.92,
+      "required": 4.5
+    },
+    {
+      "text": "Goal Weight",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Goal weight (lbs)",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Save",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "190 lb current · 180 lb goal",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "10.0 lb from goal weight",
+      "ratio": 5,
+      "required": 4.5
+    },
+    {
+      "text": "BMI Calculator",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "27.3",
+      "ratio": 17.81,
+      "required": 3
+    },
+    {
+      "text": "Above Average",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Height: 5'10\"",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Weight: 190 lbs",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Macro Calculator",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Carbs %",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Protein %",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Fat %",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

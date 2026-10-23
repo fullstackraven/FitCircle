@@ -7,7 +7,9 @@ import {
   sampleFood,
 } from "../fixtures/appearance-nutrition";
 test.use({
-  baseURL: "http://127.0.0.1:4184/FitCircle/",
+  baseURL: process.env.APPEARANCE_PRODUCTION_REVIEW
+    ? "http://127.0.0.1:4173/FitCircle/"
+    : "http://127.0.0.1:4184/FitCircle/",
   viewport: { width: 390, height: 844 },
   timezoneId: "America/New_York",
 });
@@ -45,7 +47,7 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
           threshold: 0,
         });
       await page.screenshot({
-        path: `docs/review/appearance-phase-three/${process.env.APPEARANCE_CAPTURE_BEFORE ? "before" : mode}/${name}.png`,
+        path: `${process.env.APPEARANCE_PRODUCTION_REVIEW ? "docs/review/appearance-phase-five/production" : "docs/review/appearance-phase-three"}/${process.env.APPEARANCE_CAPTURE_BEFORE ? "before" : mode}/${name}.png`,
         animations: "disabled",
       });
       expect(
@@ -56,7 +58,7 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
       if (mode === "light") {
         const contrast = await textContrast(page);
         fs.writeFileSync(
-          `docs/review/appearance-phase-three/light/${name}-contrast.json`,
+          `${process.env.APPEARANCE_PRODUCTION_REVIEW ? "docs/review/appearance-phase-five/production" : "docs/review/appearance-phase-three"}/light/${name}-contrast.json`,
           JSON.stringify(contrast, null, 2),
         );
         expect(contrast.failures).toEqual([]);
@@ -509,19 +511,20 @@ for (const mode of ["dark", "light"]) {
       expect((await textContrast(page)).failures).toEqual([]);
   });
 }
-test.describe("production gate", () => {
+test.describe("production appearance", () => {
   test.use({ baseURL: "http://127.0.0.1:4173/FitCircle/" });
-  test("Phase 3 routes remain Dark with saved Light or System preferences", async ({
+  test("Phase 3 production routes apply Dark, Light and System preferences", async ({
     page,
   }) => {
-    for (const preference of ["light", "system"]) {
+    for (const preference of ["dark", "light", "system"]) {
       await page.emulateMedia({ colorScheme: "light" });
       // clock is installed once per page; remaining iterations reuse it.
-      if (preference === "light")
+      if (preference === "dark")
         await seedNutritionAppearance(page, preference);
       else
-        await page.evaluate(() =>
-          localStorage.setItem("fitcircle_appearance", "system"),
+        await page.evaluate(
+          (value) => localStorage.setItem("fitcircle_appearance", value),
+          preference,
         );
       for (const route of [
         "food-tracker",
@@ -533,7 +536,7 @@ test.describe("production gate", () => {
         await expect(page.locator(".app-shell")).toBeVisible();
         await expect(page.locator("html")).toHaveAttribute(
           "data-appearance",
-          "dark",
+          preference === "dark" ? "dark" : "light",
         );
       }
     }

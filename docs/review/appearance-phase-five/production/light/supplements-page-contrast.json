@@ -1,0 +1,45 @@
+{
+  "readings": [
+    {
+      "text": "Supplements",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Today's Supplements",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "October 19, 2026",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Synthetic supplement",
+      "ratio": 4.58,
+      "required": 4.5
+    },
+    {
+      "text": "Taken",
+      "ratio": 4.58,
+      "required": 4.5
+    },
+    {
+      "text": "Save Today's Log",
+      "ratio": 5.02,
+      "required": 4.5
+    },
+    {
+      "text": "Manage Supplements",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Tip: Tap any day on the calendar to view or edit past supplement logs",
+      "ratio": 6.92,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

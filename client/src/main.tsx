@@ -14,14 +14,13 @@ import { restorePagesRoute, registerPWA } from "@/lib/pwa";
 import { CardioDataBoundary } from "@/components/CardioDataRecovery";
 import { WorkoutDataBoundary } from "@/components/WorkoutDataRecovery";
 
-import { startAppearanceController } from "@/lib/appearance";
+import { initializeAppearance } from "@/lib/appearance";
 
 import { recoverInterruptedRestore } from "@/lib/backup";
 
 recoverInterruptedRestore();
-// Light is an internal development preview until every route is converted.
-// There is no production URL, storage value or UI control that enables it yet.
-startAppearanceController({ allowPreview: import.meta.env.DEV });
+// Reconcile the early bootstrap with recovered storage before App can render.
+initializeAppearance();
 restorePagesRoute();
 registerPWA();
 

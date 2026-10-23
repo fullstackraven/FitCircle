@@ -1,0 +1,25 @@
+{
+  "readings": [
+    {
+      "text": "Start Meditation",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Duration (minutes)",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Log completed session",
+      "ratio": 16.37,
+      "required": 4.5
+    },
+    {
+      "text": "Start Meditation",
+      "ratio": 5.38,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

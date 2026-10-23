@@ -1,0 +1,115 @@
+{
+  "readings": [
+    {
+      "text": "Workout Statistics",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "All-Time Statistics",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Total Reps",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "27",
+      "ratio": 17.81,
+      "required": 3
+    },
+    {
+      "text": "Days Completed",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "2",
+      "ratio": 17.81,
+      "required": 3
+    },
+    {
+      "text": "Overall Consistency",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "25.0%",
+      "ratio": 6.69,
+      "required": 3
+    },
+    {
+      "text": "Monthly Statistics",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "October 2026",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Monthly Reps",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "27",
+      "ratio": 17.81,
+      "required": 3
+    },
+    {
+      "text": "Days Completed",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "2",
+      "ratio": 17.81,
+      "required": 3
+    },
+    {
+      "text": "Monthly Consistency",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "25.0%",
+      "ratio": 5,
+      "required": 3
+    },
+    {
+      "text": "Individual Workout Totals",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}
