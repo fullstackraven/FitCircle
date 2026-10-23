@@ -57,7 +57,7 @@ export function TimerWheel({ label, unit, max, value, onChange }: {
           aria-selected={number === value}
           aria-label={`${number} ${label.toLowerCase()}`}
           onClick={() => select(number)}
-          className={`timer-wheel-option ${number === value ? 'text-white' : 'text-slate-500'}`}
+          className={`timer-wheel-option ${number === value ? 'text-strong' : 'text-dim'}`}
         >
           <span className="type-metric text-2xl">{number}</span>
           <span className={`text-sm font-medium ${number === value ? '' : 'invisible'}`} aria-hidden="true">{unit}</span>

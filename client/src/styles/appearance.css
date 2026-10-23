@@ -1,15 +1,15 @@
-/* Phase 1 token foundation. Existing page colors are converted in later phases.
+/* Shared appearance tokens. Core pages opt in; remaining routes are converted in later phases.
    Channels are consumed with hsl(var(--token) / <alpha-value>) in Tailwind.
    The production controller pins the root to dark; light is development-only. */
 :root {
-  --surface: 217.2 32.6% 17.5%;
-  --surface-secondary: 215 25% 27%;
+  --surface: 217.24137931034483 32.58426966292136% 17.45098039215686%;
+  --surface-secondary: 215.29411764705881 24.99999999999999% 26.66666666666667%;
   --surface-elevated: 222 47% 11%;
   --progress-track: 215 25% 27%;
-  --accent-text: 142 69% 58%;
+  --accent-text: 141.8918918918919 69.1588785046729% 58.03921568627452%;
   --accent-fill: 142 71% 45%;
   --on-accent: 222 47% 11%;
-  --separator: var(--border);
+  --separator: 215.29411764705881 24.99999999999999% 26.66666666666667%;
   --input-background: var(--surface);
   --input-border: var(--border);
   --hover: var(--secondary);
@@ -17,8 +17,8 @@
   --navigation: var(--surface);
   --dialog-surface: var(--surface-elevated);
   --sheet-surface: var(--surface-elevated);
-  --text-secondary: 215 20% 75%;
-  --focus: 142 69% 58%;
+  --text-secondary: 212.72727272727269 26.82926829268293% 83.92156862745097%;
+  --focus: 141.8918918918919 69.1588785046729% 58.03921568627452%;
   --overlay: rgb(0 0 0 / 0.8);
   --sidebar-background: var(--surface-elevated);
   --sidebar-foreground: var(--foreground);
@@ -28,6 +28,68 @@
   --sidebar-accent-foreground: var(--accent-foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
+  --canvas: 222.22222222222226 47.36842105263158% 11.17647058823529%;
+  --canvas-deep: 228.57142857142856 84% 4.90196078431373%;
+  --control-strong: 215.29411764705881 19.31818181818182% 34.50980392156863%;
+  --control-muted: 215.38461538461539 16.31799163179916% 46.86274509803921%;
+  --text-strong: 0 0% 100%;
+  --text-soft: 209.99999999999989 40.00000000000003% 96.07843137254901%;
+  --text-subtle: 214.28571428571428 31.81818181818182% 91.37254901960785%;
+  --muted-foreground: 215.00000000000003 20.22471910112359% 65.09803921568627%;
+  --text-dim: 215.38461538461539 16.31799163179916% 46.86274509803921%;
+  --text-dim-strong: 215.29411764705881 19.31818181818182% 34.50980392156863%;
+  --control-border: 215.29411764705881 19.31818181818182% 34.50980392156863%;
+  --control-border-muted: 215.38461538461539 16.31799163179916%
+    46.86274509803921%;
+  --accent-soft: 141.71428571428572 76.64233576642336% 73.13725490196079%;
+  --action: 142.12765957446808 76.21621621621621% 36.27450980392157%;
+  --action-hover: 142.42990654205607 71.81208053691275% 29.21568627450981%;
+  --action-selected: 142.08588957055215 70.56277056277057% 45.29411764705883%;
+  --on-action: 0 0% 100%;
+  --on-bright: 228.57142857142856 84% 4.90196078431373%;
+  --accent-bright: 141.8918918918919 69.1588785046729% 58.03921568627452%;
+  --accent-bright-hover: 141.71428571428572 76.64233576642336%
+    73.13725490196079%;
+  --warning: 48 96.63865546218489% 76.66666666666666%;
+  --feature-blue: 213.11688311688312 93.90243902439025% 67.84313725490196%;
+  --feature-purple: 270 95.23809523809526% 75.29411764705883%;
+  --feature-red: 0 90.60402684563759% 70.78431372549019%;
+  --feature-amber: 43.25581395348837 96.41255605381164% 56.27450980392157%;
+  --feature-yellow: 47.94759825327511 95.81589958158996% 53.13725490196079%;
+  --feature-orange: 27.01570680628273 95.97989949748745% 60.98039215686274%;
+  --feature-cyan: 187.94117647058826 85.71428571428572% 53.33333333333334%;
+  --feature-teal: 172.45508982035929 66.00790513833994% 50.3921568627451%;
+  --page-background: hsl(222, 47%, 11%);
+  --workout-number: #ffffff;
+  --workout-number-shadow:
+    0 2px 8px rgba(0, 0, 0, 1), 0 4px 16px rgba(0, 0, 0, 0.8),
+    0 0 8px rgba(255, 255, 255, 0.5);
+  --workout-track: rgba(255, 255, 255, 0.1);
+  --workout-complete: #00ff41;
+  --workout-complete-glow: drop-shadow(0 0 8px #00ff41)
+    drop-shadow(0 0 16px #00ff41);
+  --workout-glow: drop-shadow(0 0 4px currentColor);
+  --workout-glow-complete: drop-shadow(0 0 16px currentColor)
+    drop-shadow(0 0 32px currentColor);
+  --control-hover-color: rgb(51 65 85);
+  --control-focus-color: rgb(203 213 225);
+  --field-focus-color: rgb(74 222 128 / 0.65);
+  --placeholder-color: rgb(148 163 184);
+  --dock-text: rgb(141 157 177);
+  --dock-selected-text: white;
+  --dock-selected: rgb(148 163 184 / 0.1);
+  --dock-pressed: rgb(148 163 184 / 0.14);
+  --dock-icon: #00ff41;
+  --row-surface: rgb(30 41 59 / 0.4);
+  --timer-selection: rgb(51 65 85 / 0.65);
+  --glass-control-border: var(--glass-border);
+  --danger: 0 72% 42%;
+  --danger-text: var(--foreground);
+  --danger-hover: 0 74% 35%;
+  --danger-tint: 0 0% 0% / 0;
+  --session-start-background: linear-gradient(135deg, #00ff41 0%, #00cc33 100%);
+  --session-start-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+  --action-solid: 142.12389380530973 71.97452229299363% 30.784313725490197%;
 }
 
 :root[data-appearance="light"] {
@@ -38,13 +100,12 @@
   --card-foreground: var(--foreground);
   --popover: 0 0% 100%;
   --popover-foreground: var(--foreground);
-  /* Primary remains a neutral role, not an alias for FitCircle green. */
   --primary: 222 47% 11%;
   --primary-foreground: 210 40% 98%;
   --secondary: 210 40% 96%;
   --secondary-foreground: var(--foreground);
   --muted: 210 40% 96%;
-  --muted-foreground: 215 25% 35%;
+  --muted-foreground: 215.29411764705881 19.31818181818182% 34.50980392156863%;
   --accent: 210 40% 96%;
   --accent-foreground: var(--foreground);
   --destructive: 0 72% 42%;
@@ -53,13 +114,13 @@
   --input: 214 32% 83%;
   --ring: 142 72% 29%;
   --surface: 0 0% 100%;
-  --surface-secondary: 210 40% 96%;
+  --surface-secondary: 209.99999999999989 40.00000000000003% 96.07843137254901%;
   --surface-elevated: 0 0% 100%;
   --progress-track: 214 32% 88%;
-  --accent-text: 142 72% 29%;
+  --accent-text: 142.42990654205607 71.81208053691275% 29.21568627450981%;
   --on-accent: 222 47% 11%;
-  --text-secondary: 215 25% 35%;
-  --focus: 142 72% 29%;
+  --text-secondary: 215.29411764705881 19.31818181818182% 34.50980392156863%;
+  --focus: 142.42990654205607 71.81208053691275% 29.21568627450981%;
   --chart-1: 221 83% 40%;
   --chart-2: 160 84% 25%;
   --chart-3: 25 95% 35%;
@@ -77,6 +138,58 @@
   --glass-shadow-elevated:
     0 12px 32px rgb(15 23 42 / 0.12),
     inset 0 1px 0 var(--glass-border-highlight);
+  --canvas: 210.00000000000023 40.00000000000017% 98.03921568627452%;
+  --canvas-deep: 209.99999999999989 40.00000000000003% 96.07843137254901%;
+  --control-strong: 214.28571428571428 31.81818181818182% 91.37254901960785%;
+  --control-muted: 212.72727272727269 26.82926829268293% 83.92156862745097%;
+  --text-strong: 222.22222222222226 47.36842105263158% 11.17647058823529%;
+  --text-soft: 222.22222222222226 47.36842105263158% 11.17647058823529%;
+  --text-subtle: 215.29411764705881 24.99999999999999% 26.66666666666667%;
+  --text-dim: 215.00000000000003 18% 39.21568627450981%;
+  --text-dim-strong: 215.29411764705881 19.31818181818182% 34.50980392156863%;
+  --separator: 212.72727272727269 26.82926829268293% 83.92156862745097%;
+  --control-border: 214.83870967741933 13.41991341991342% 54.70588235294117%;
+  --control-border-muted: 215.38461538461539 16.31799163179916%
+    46.86274509803921%;
+  --accent-soft: 142.42990654205607 71.81208053691275% 29.21568627450981%;
+  --action: 142.42990654205607 71.81208053691275% 29.21568627450981%;
+  --action-hover: 142.7848101265823 64.22764227642277% 24.11764705882353%;
+  --action-selected: 142.42990654205607 71.81208053691275% 29.21568627450981%;
+  --warning: 22.72727272727273 82.5% 31.37254901960784%;
+  --feature-blue: 224.27807486631019 76.32653061224489% 48.03921568627451%;
+  --feature-purple: 272.09302325581393 71.66666666666667% 47.05882352941176%;
+  --feature-red: 0 73.70892018779344% 41.76470588235293%;
+  --feature-amber: 22.72727272727273 82.5% 31.37254901960784%;
+  --feature-yellow: 31.76470588235293 80.95238095238095% 28.82352941176471%;
+  --feature-orange: 15 79.06976744186048% 33.72549019607843%;
+  --feature-cyan: 192.92307692307691 82.27848101265822% 30.98039215686275%;
+  --feature-teal: 175.33980582524271 77.44360902255639% 26.07843137254902%;
+  --page-background: var(--app-background);
+  --workout-number: #0f172a;
+  --workout-number-shadow: none;
+  --workout-track: #7c899b;
+  --workout-complete: #15803d;
+  --workout-complete-glow: none;
+  --workout-glow: none;
+  --workout-glow-complete: none;
+  --control-hover-color: #e2e8f0;
+  --control-focus-color: #15803d;
+  --field-focus-color: #15803d;
+  --placeholder-color: #475569;
+  --dock-text: #475569;
+  --dock-selected-text: #0f172a;
+  --dock-selected: rgb(15 23 42 / 0.07);
+  --dock-pressed: rgb(15 23 42 / 0.1);
+  --dock-icon: #15803d;
+  --row-surface: #ffffff;
+  --timer-selection: #e2e8f0;
+  --glass-control-border: #7c899b;
+  --danger: 0 72% 42%;
+  --danger-hover: 0 74% 35%;
+  --danger-text: 0 72% 42%;
+  --danger-tint: 0 86% 97%;
+  --session-start-background: #4ade80;
+  --session-start-shadow: none;
 }
 @supports (
   (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
@@ -95,4 +208,61 @@
     --glass-surface-interactive: rgb(241 245 249);
     --glass-surface-nav: white;
   }
+}
+
+/* Phase 2 semantic roles: exact Dark values, contrast-adjusted Light roles. */
+.glass-button,
+.glass-input {
+  border-color: var(--glass-control-border);
+}
+:root[data-appearance="light"] .workout-progress-fill {
+  stroke: var(--workout-stroke-light);
+}
+:root[data-appearance="light"] input[type="checkbox"] {
+  accent-color: hsl(var(--accent-text));
+}
+:root[data-appearance="light"] .action-quiet-danger {
+  color: hsl(var(--feature-red));
+}
+:root[data-appearance="light"] .home-utility-circle {
+  border-color: hsl(var(--control-border));
+}
+:root[data-appearance="light"] .workout-colored-surface {
+  box-shadow: none;
+}
+@media (forced-colors: active) {
+  .glass-button,
+  .glass-input {
+    border-color: ButtonText;
+  }
+  :root[data-appearance="light"] .action-quiet-danger {
+    color: ButtonText;
+  }
+}
+:root {
+  --row-opaque: rgb(30 41 59);
+}
+:root[data-appearance="light"] {
+  --row-opaque: white;
+}
+:root[data-appearance="light"] :is(.fitcircle-input, .fitcircle-select) {
+  border-color: var(--glass-control-border);
+}
+:root[data-appearance="light"] .toast-close-control {
+  color: hsl(var(--text-strong));
+}
+:root[data-appearance="light"] .destructive .toast-close-control {
+  color: hsl(var(--feature-red));
+}
+:root {
+  --dock-border: rgb(148 163 184 / 0.2);
+  --dock-shadow:
+    0 4px 14px rgb(0 0 0 / 0.14), inset 0 1px 0 rgb(255 255 255 / 0.035);
+}
+:root[data-appearance="light"] {
+  --dock-border: var(--glass-border);
+  --dock-shadow: var(--glass-shadow);
+}
+:root[data-appearance="light"] .reminders-add-button {
+  --tw-shadow-color: rgb(15 23 42 / 0.12);
 }

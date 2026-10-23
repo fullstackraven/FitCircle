@@ -49,9 +49,9 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent fixedFooter staticBody className="max-w-md text-white p-4 gap-2">
+      <DialogContent fixedFooter staticBody className="max-w-md text-strong p-4 gap-2">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-white">
+          <DialogTitle className="text-xl font-semibold text-strong">
             {editingRoutine ? 'Edit Routine' : 'Add New Routine'}
           </DialogTitle>
           <DialogDescription className="sr-only">
@@ -62,7 +62,7 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
         <div className="space-y-4 [@media(max-height:450px)]:space-y-3">
           {/* Routine Name */}
           <div className="space-y-1">
-            <Label htmlFor="routine-name" className="block text-xs leading-4 font-medium text-slate-300">
+            <Label htmlFor="routine-name" className="block text-xs leading-4 font-medium text-supporting">
               Routine Name
             </Label>
             <Input
@@ -71,7 +71,7 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
               value={routineName}
               onChange={(e) => setRoutineName(e.target.value)}
 
-              className="h-11 [@media(max-height:450px)]:h-9 rounded-xl bg-slate-800 text-base text-white placeholder-slate-400 focus:border-green-500"
+              className="h-11 [@media(max-height:450px)]:h-9 rounded-xl bg-surface text-base text-strong placeholder-muted-foreground focus:border-action-selected"
               data-testid="input-routine-name"
             />
           </div>
@@ -82,17 +82,17 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
             onSelectionChange={setSelectedDays}
             className="space-y-2 [@media(max-height:450px)]:space-y-1"
           />
-          <p className={`text-xs text-slate-400 mt-2 ${selectedDays.length ? "invisible" : ""}`} aria-hidden={selectedDays.length > 0}>
+          <p className={`text-xs text-muted-foreground mt-2 ${selectedDays.length ? "invisible" : ""}`} aria-hidden={selectedDays.length > 0}>
               Please select at least one day for this routine.
           </p>
         </div>
 
         {/* Action Buttons */}
-        <DialogFooter className="grid grid-cols-2 gap-3 border-t border-slate-700 pt-2 sm:space-x-0">
+        <DialogFooter className="grid grid-cols-2 gap-3 border-t border-separator pt-2 sm:space-x-0">
           <Button
             variant="outline"
             onClick={handleClose}
-            className="min-h-11 [@media(max-height:450px)]:min-h-10 text-white"
+            className="min-h-11 [@media(max-height:450px)]:min-h-10 text-strong"
             data-testid="button-cancel-routine"
           >
             Cancel
@@ -100,7 +100,7 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
           <Button
             onClick={handleSave}
             disabled={!routineName.trim() || selectedDays.length === 0}
-            className="min-h-11 [@media(max-height:450px)]:min-h-10 flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-slate-700 disabled:text-slate-400"
+            className="min-h-11 [@media(max-height:450px)]:min-h-10 flex-1 bg-action hover:bg-action-hover text-on-action disabled:bg-surface-secondary disabled:text-muted-foreground"
             data-testid="button-save-routine"
           >
             {editingRoutine ? 'Update' : 'Save'}

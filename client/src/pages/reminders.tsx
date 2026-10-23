@@ -160,7 +160,7 @@ export default function RemindersPage() {
   };
 
   return (
-    <div className="min-h-dvh" style={{ backgroundColor: 'hsl(222, 47%, 11%)' }}
+    <div className="min-h-dvh" style={{ backgroundColor: 'var(--page-background)' }}
       onPointerDownCapture={event => {
         dismissAfterPointerClick.current = showAddForm && !newReminderText.trim() && !draftRef.current?.contains(event.target as Node);
       }}
@@ -180,12 +180,12 @@ export default function RemindersPage() {
         <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />
           </button>
-          <h1 className="fitcircle-wordmark text-2xl font-bold text-white">FitCircle</h1>
+          <h1 className="fitcircle-wordmark text-2xl font-bold text-strong">FitCircle</h1>
         </div>
       </AppHeader>
 
@@ -193,29 +193,29 @@ export default function RemindersPage() {
       <div>
         <div className="container mx-auto px-4 max-w-md reminders-list">
 
-        <h2 ref={headingRef} className="text-3xl font-bold text-green-400 tracking-tight mb-4">Reminders</h2>
-        <div className="flex items-center gap-2 text-sm text-slate-400 border-b border-slate-700/60 pb-3 mb-1">
+        <h2 ref={headingRef} className="text-3xl font-bold text-accent-text tracking-tight mb-4">Reminders</h2>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground border-b border-separator/60 pb-3 mb-1">
           <span aria-live="polite">{completedReminders.length} Completed</span>
           <span aria-hidden="true">•</span>
           <button
             onClick={() => setConfirmClear(true)}
             disabled={completedReminders.length === 0}
-            className="min-h-11 px-1 text-green-400 hover:text-green-300 disabled:text-slate-600 disabled:cursor-not-allowed"
+            className="min-h-11 px-1 text-accent-text hover:text-accent-soft disabled:text-dim-strong disabled:cursor-not-allowed"
           >Clear</button>
         </div>
 
         {selectMode && (
           <div className="flex flex-wrap items-center gap-3 py-2">
-            <button onClick={selectAllCompleted} className="min-h-11 text-sm text-green-400">Select All</button>
-            <button onClick={deleteSelectedCompleted} disabled={selectedCompleted.size === 0} className="min-h-11 text-sm text-red-400 disabled:text-slate-600">Delete Selected ({selectedCompleted.size})</button>
-            <button onClick={() => { setSelectMode(false); setSelectedCompleted(new Set()); }} className="min-h-11 text-sm text-slate-300">Done</button>
+            <button onClick={selectAllCompleted} className="min-h-11 text-sm text-accent-text">Select All</button>
+            <button onClick={deleteSelectedCompleted} disabled={selectedCompleted.size === 0} className="min-h-11 text-sm text-feature-red disabled:text-dim-strong">Delete Selected ({selectedCompleted.size})</button>
+            <button onClick={() => { setSelectMode(false); setSelectedCompleted(new Set()); }} className="min-h-11 text-sm text-supporting">Done</button>
           </div>
         )}
 
         {showAddForm && (
-          <form ref={draftRef} aria-label="New reminder" onSubmit={event => { event.preventDefault(); handleAddReminder(); }} className="glass-row rounded-xl border border-slate-700/50 p-3 my-2">
+          <form ref={draftRef} aria-label="New reminder" onSubmit={event => { event.preventDefault(); handleAddReminder(); }} className="glass-row rounded-xl border border-separator/50 p-3 my-2">
             <div className="flex items-center gap-3">
-              <span className="w-6 h-6 shrink-0 rounded-full border-2 border-slate-500" aria-hidden="true" />
+              <span className="w-6 h-6 shrink-0 rounded-full border-2 border-control-muted-border" aria-hidden="true" />
               <input ref={draftInputRef} aria-label="New reminder" enterKeyHint="next" autoComplete="off" value={newReminderText} onChange={event => {
                 const value = event.target.value;
                 setNewReminderText(value);
@@ -224,15 +224,15 @@ export default function RemindersPage() {
                 if (event.nativeEvent.isComposing || event.keyCode === 229) return;
                 if (event.key === 'Enter') { event.preventDefault(); handleAddReminder(); }
                 if (event.key === 'Escape' || ((event.key === 'Backspace' || event.key === 'Delete') && !newReminderText)) { event.preventDefault(); dismissDraft(); }
-              }} className="reminder-draft-input min-w-0 flex-1 min-h-11 bg-transparent text-base text-white" />
+              }} className="reminder-draft-input min-w-0 flex-1 min-h-11 bg-transparent text-base text-strong" />
             </div>
           </form>
         )}
 
         {reminders.length === 0 && !showAddForm ? (
-          <button type="button" aria-label="Write a reminder" onClick={openDraft} className="min-h-[50dvh] w-full flex items-center justify-center text-slate-500 text-lg">No Reminders</button>
+          <button type="button" aria-label="Write a reminder" onClick={openDraft} className="min-h-[50dvh] w-full flex items-center justify-center text-dim text-lg">No Reminders</button>
         ) : (
-          <ul aria-label="Reminders" className="divide-y divide-slate-700/30">
+          <ul aria-label="Reminders" className="divide-y divide-separator/30">
             {[...activeReminders, ...completedReminders].map(reminder => (
               <li key={reminder.id} data-testid={`reminder-${reminder.id}`} className="glass-row flex items-center gap-1 min-h-16 py-2">
                 <button
@@ -242,7 +242,7 @@ export default function RemindersPage() {
                   className="min-h-11 min-w-11 shrink-0 flex items-center justify-center"
                 >
                   <span className={`w-6 h-6 border-2 flex items-center justify-center ${selectMode && reminder.completed ? 'rounded-md' : 'rounded-full'} ${
-                    (selectMode && reminder.completed ? selectedCompleted.has(reminder.id) : reminder.completed) ? 'border-green-400 bg-green-400 text-slate-950' : 'border-slate-500'
+                    (selectMode && reminder.completed ? selectedCompleted.has(reminder.id) : reminder.completed) ? 'border-accent-text bg-accent-bright text-on-bright' : 'border-control-muted-border'
                   }`}>
                     {(selectMode && reminder.completed ? selectedCompleted.has(reminder.id) : reminder.completed) && <Check size={15} aria-hidden="true" />}
                   </span>
@@ -254,25 +254,25 @@ export default function RemindersPage() {
                     onChange={e => setEditText(e.target.value)}
                     onKeyDown={handleEditKeyPress}
                     onBlur={() => saveEdit()}
-                    className="glass-input min-w-0 flex-1 min-h-11 rounded-lg px-2 text-base text-white"
+                    className="glass-input min-w-0 flex-1 min-h-11 rounded-lg px-2 text-base text-strong"
                     autoFocus
                   />
                 ) : (
                   <button
                     onClick={() => !selectMode && startEditing(reminder)}
                     aria-label={`Edit ${reminder.text}`}
-                    className={`min-w-0 flex-1 text-left min-h-11 break-words whitespace-pre-wrap text-base ${reminder.completed ? 'text-slate-500' : 'text-white'}`}
+                    className={`min-w-0 flex-1 text-left min-h-11 break-words whitespace-pre-wrap text-base ${reminder.completed ? 'text-dim' : 'text-strong'}`}
                   >{reminder.text}</button>
                 )}
                 {!selectMode && editingId !== reminder.id && (
                   <div className="relative shrink-0">
-                    <button aria-label={`Options for ${reminder.text}`} aria-expanded={showMenuId === reminder.id} onClick={() => toggleMenu(reminder.id)} className="min-h-11 min-w-11 flex items-center justify-center text-slate-500 hover:text-white">
+                    <button aria-label={`Options for ${reminder.text}`} aria-expanded={showMenuId === reminder.id} onClick={() => toggleMenu(reminder.id)} className="min-h-11 min-w-11 flex items-center justify-center text-dim hover:text-strong">
                       <MoreHorizontal size={18} />
                     </button>
                     {showMenuId === reminder.id && (
-                      <div className="glass-panel absolute right-0 top-full rounded-xl border border-slate-600 p-1 z-10 min-w-[120px]">
-                        <button onClick={() => startEditing(reminder)} className="w-full min-h-11 px-3 text-left text-white flex items-center gap-2 text-sm"><Edit3 size={14} />Edit</button>
-                        <button onClick={() => handleDeleteReminder(reminder.id)} className="w-full min-h-11 px-3 text-left text-red-400 flex items-center gap-2 text-sm"><Trash2 size={14} />Delete</button>
+                      <div className="glass-panel absolute right-0 top-full rounded-xl border border-control p-1 z-10 min-w-[120px]">
+                        <button onClick={() => startEditing(reminder)} className="w-full min-h-11 px-3 text-left text-strong flex items-center gap-2 text-sm"><Edit3 size={14} />Edit</button>
+                        <button onClick={() => handleDeleteReminder(reminder.id)} className="w-full min-h-11 px-3 text-left text-feature-red flex items-center gap-2 text-sm"><Trash2 size={14} />Delete</button>
                       </div>
                     )}
                   </div>
@@ -283,33 +283,33 @@ export default function RemindersPage() {
         )}
 
         {completedReminders.length > 0 && !selectMode && (
-          <button onClick={() => setSelectMode(true)} className="min-h-11 text-sm text-slate-400 hover:text-green-400 mt-2">Select completed</button>
+          <button onClick={() => setSelectMode(true)} className="min-h-11 text-sm text-muted-foreground hover:text-accent-text mt-2">Select completed</button>
         )}
         {!showAddForm && reminders.length > 0 && <button type="button" aria-label="Write a reminder" onClick={openDraft} className="block min-h-[20dvh] w-full" />}
       </div>
 
       {createPortal(
-        <button onClick={openDraft} aria-label="New Reminder" className="reminders-add-button rounded-full bg-green-400 text-slate-950 shadow-lg shadow-black/30 hover:bg-green-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-400">
+        <button onClick={openDraft} aria-label="New Reminder" className="reminders-add-button rounded-full bg-accent-bright text-on-bright shadow-lg shadow-black/30 hover:bg-accent-bright-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus">
           <Plus size={28} aria-hidden="true" />
         </button>, document.body
       )}
 
       <Dialog open={confirmClear} onOpenChange={setConfirmClear}>
-        <DialogContent staticBody fixedFooter className="bg-slate-900 border-slate-700">
+        <DialogContent staticBody fixedFooter className="bg-canvas border-separator">
           <DialogHeader>
             <DialogTitle>Clear completed reminders?</DialogTitle>
             <DialogDescription>This deletes {completedReminders.length} completed reminders. Your active reminders will stay.</DialogDescription>
           </DialogHeader>
           <DialogFooter className="grid grid-cols-2 gap-3">
             <Button variant="outline" onClick={() => setConfirmClear(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={deleteAllCompleted}>Clear completed</Button>
+            <Button variant="quiet-destructive" onClick={deleteAllCompleted}>Clear completed</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Sidebar Dashboard */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetContent side="left" className="w-80 bg-slate-900 border-slate-700">
+        <SheetContent side="left" className="w-80 bg-canvas border-separator">
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation Menu</SheetTitle>
           </SheetHeader>
@@ -318,18 +318,18 @@ export default function RemindersPage() {
 
             <div className="flex-1 py-4">
               <div 
-                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                className="flex items-center space-x-3 p-4 hover:bg-surface transition-colors cursor-pointer"
                 onClick={() => {
                   setIsSidebarOpen(false);
                   navigate('/settings?from=dashboard');
                 }}
               >
-                <Settings className="w-5 h-5 text-slate-400" />
-                <span className="text-white">Settings</span>
+                <Settings className="w-5 h-5 text-muted-foreground" />
+                <span className="text-strong">Settings</span>
               </div>
             </div>
 
-            <div className="p-4 border-t border-slate-700">
+            <div className="p-4 border-t border-separator">
               <VersionLabel onActivate={() => setIsSidebarOpen(false)} />
             </div>
           </div>

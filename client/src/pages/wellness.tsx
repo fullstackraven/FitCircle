@@ -11,16 +11,16 @@ const DEFAULT_FEATURES = [
     id: 'cardio',
     title: 'Cardio',
     icon: Activity,
-    color: 'text-green-400',
-    bgColor: 'bg-green-400/10',
-    hoverBg: 'hover:bg-green-400/20',
+    color: 'text-accent-text',
+    bgColor: 'bg-accent-bright/10',
+    hoverBg: 'hover:bg-accent-bright/20',
     path: '/cardio'
   },
   {
     id: 'fasting',
     title: 'Intermittent Fasting',
     icon: Clock,
-    color: 'text-orange-400',
+    color: 'text-feature-orange',
     bgColor: 'bg-orange-400/10',
     hoverBg: 'hover:bg-orange-400/20',
     path: '/fasting'
@@ -29,7 +29,7 @@ const DEFAULT_FEATURES = [
     id: 'meditation',
     title: 'Meditation',
     icon: Brain,
-    color: 'text-purple-400',
+    color: 'text-feature-purple',
     bgColor: 'bg-purple-400/10',
     hoverBg: 'hover:bg-purple-400/20',
     path: '/meditation'
@@ -38,7 +38,7 @@ const DEFAULT_FEATURES = [
     id: 'hydration',
     title: 'Hydration',
     icon: Droplet,
-    color: 'text-cyan-400',
+    color: 'text-feature-cyan',
     bgColor: 'bg-cyan-400/10',
     hoverBg: 'hover:bg-cyan-400/20',
     path: '/hydration'
@@ -47,7 +47,7 @@ const DEFAULT_FEATURES = [
     id: 'measurements',
     title: 'Measurements',
     icon: User,
-    color: 'text-teal-400',
+    color: 'text-feature-teal',
     bgColor: 'bg-teal-400/10',
     hoverBg: 'hover:bg-teal-400/20',
     path: '/measurements'
@@ -56,7 +56,7 @@ const DEFAULT_FEATURES = [
     id: 'food-tracker',
     title: 'Food Tracker',
     icon: UtensilsCrossed,
-    color: 'text-amber-400',
+    color: 'text-feature-amber',
     bgColor: 'bg-amber-400/10',
     hoverBg: 'hover:bg-amber-400/20',
     path: '/food-tracker'
@@ -65,7 +65,7 @@ const DEFAULT_FEATURES = [
     id: 'recovery',
     title: 'Recovery',
     icon: Heart,
-    color: 'text-orange-400',
+    color: 'text-feature-orange',
     bgColor: 'bg-orange-400/10',
     hoverBg: 'hover:bg-orange-400/20',
     path: '/recovery'
@@ -74,7 +74,7 @@ const DEFAULT_FEATURES = [
     id: 'journal',
     title: 'Daily Journal',
     icon: BookOpen,
-    color: 'text-purple-400', 
+    color: 'text-feature-purple',
     bgColor: 'bg-purple-400/10',
     hoverBg: 'hover:bg-purple-400/20',
     path: '/journal-log'
@@ -83,7 +83,7 @@ const DEFAULT_FEATURES = [
     id: 'energy',
     title: 'Energy Level',
     icon: Zap,
-    color: 'text-yellow-400',
+    color: 'text-feature-yellow',
     bgColor: 'bg-yellow-400/10', 
     hoverBg: 'hover:bg-yellow-400/20',
     path: '/energy-level'
@@ -92,7 +92,7 @@ const DEFAULT_FEATURES = [
     id: 'supplements',
     title: 'Supplements',
     icon: Pill,
-    color: 'text-blue-400',
+    color: 'text-feature-blue',
     bgColor: 'bg-blue-400/10',
     hoverBg: 'hover:bg-blue-400/20', 
     path: '/supplements-page'
@@ -176,12 +176,12 @@ export default function WellnessPage() {
         <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />
           </button>
-          <h1 className="fitcircle-wordmark text-2xl font-bold text-white">FitCircle</h1>
+          <h1 className="fitcircle-wordmark text-2xl font-bold text-strong">FitCircle</h1>
         </div>
       </AppHeader>
       
@@ -193,7 +193,7 @@ export default function WellnessPage() {
         <div className="flex justify-end mb-3">
           <button
             onClick={() => isEditMode ? handleDone() : setIsEditMode(true)}
-            className="text-slate-400 hover:text-white transition-colors min-h-11 min-w-11 justify-center flex items-center space-x-1"
+            className="text-muted-foreground hover:text-strong transition-colors min-h-11 min-w-11 justify-center flex items-center space-x-1"
             title={isEditMode ? "Done editing" : "Edit layout"}
             data-testid={isEditMode ? "button-done-edit" : "button-edit-layout"}
           >
@@ -226,7 +226,7 @@ export default function WellnessPage() {
                         className="absolute top-2 left-1/2 -translate-x-1/2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-up-${feature.id}`}
                       >
-                        <ChevronUp className="w-5 h-5 text-white" />
+                        <ChevronUp className="w-5 h-5 text-strong" />
                       </button>
                     )}
                     {canMoveDown(index) && (
@@ -238,7 +238,7 @@ export default function WellnessPage() {
                         className="absolute bottom-2 left-1/2 -translate-x-1/2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-down-${feature.id}`}
                       >
-                        <ChevronDown className="w-5 h-5 text-white" />
+                        <ChevronDown className="w-5 h-5 text-strong" />
                       </button>
                     )}
                     {canMoveLeft(index) && (
@@ -250,7 +250,7 @@ export default function WellnessPage() {
                         className="absolute top-1/2 -translate-y-1/2 left-2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-left-${feature.id}`}
                       >
-                        <ChevronLeft className="w-5 h-5 text-white" />
+                        <ChevronLeft className="w-5 h-5 text-strong" />
                       </button>
                     )}
                     {canMoveRight(index) && (
@@ -262,7 +262,7 @@ export default function WellnessPage() {
                         className="absolute top-1/2 -translate-y-1/2 right-2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-right-${feature.id}`}
                       >
-                        <ChevronRight className="w-5 h-5 text-white" />
+                        <ChevronRight className="w-5 h-5 text-strong" />
                       </button>
                     )}
                   </div>
@@ -274,7 +274,7 @@ export default function WellnessPage() {
                   data-testid={`card-${feature.id}`}
                 >
                   <Icon className={`w-7 h-7 shrink-0 ${feature.color}`} aria-hidden="true" />
-                  <span className="text-white font-medium text-center text-sm leading-tight min-h-10 flex items-center justify-center">
+                  <span className="text-strong font-medium text-center text-sm leading-tight min-h-10 flex items-center justify-center">
                     {feature.title}
                   </span>
                 </button>
@@ -286,7 +286,7 @@ export default function WellnessPage() {
 
       {/* Sidebar Dashboard */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetContent side="left" className="w-80 bg-slate-900 border-slate-700">
+        <SheetContent side="left" className="w-80 bg-canvas border-separator">
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation Menu</SheetTitle>
           </SheetHeader>
@@ -295,18 +295,18 @@ export default function WellnessPage() {
 
             <div className="flex-1 py-4">
               <div 
-                className="flex items-center space-x-3 p-4 hover:bg-slate-800 transition-colors cursor-pointer"
+                className="flex items-center space-x-3 p-4 hover:bg-surface transition-colors cursor-pointer"
                 onClick={() => {
                   setIsSidebarOpen(false);
                   navigate('/settings?from=dashboard');
                 }}
               >
-                <Settings className="w-5 h-5 text-slate-400" />
-                <span className="text-white">Settings</span>
+                <Settings className="w-5 h-5 text-muted-foreground" />
+                <span className="text-strong">Settings</span>
               </div>
             </div>
 
-            <div className="p-4 border-t border-slate-700">
+            <div className="p-4 border-t border-separator">
               <VersionLabel onActivate={() => setIsSidebarOpen(false)} />
             </div>
           </div>

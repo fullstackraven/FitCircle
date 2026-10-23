@@ -43,13 +43,13 @@ export function DaySelector({ selectedDays, onSelectionChange, className, compac
     <div className={className}>
       <div className={compact ? "mb-1" : "mb-3"}>
         <div className={compact ? "flex items-center justify-between" : ""}>
-        <label className={compact ? "block text-xs leading-4 font-medium text-white" : "block text-sm font-medium text-white mb-2"}>
+        <label className={compact ? "block text-xs leading-4 font-medium text-strong" : "block text-sm font-medium text-strong mb-2"}>
           Scheduled Days
         </label>
         {compact && <Button type="button" variant="ghost" disabled={!selectedDays.length} onClick={clearAllDays}
-          aria-label="Clear Selection" className="h-5 px-1 py-0 text-xs text-slate-400">Clear</Button>}
+          aria-label="Clear Selection" className="h-5 px-1 py-0 text-xs text-muted-foreground">Clear</Button>}
         </div>
-        {!compact && <p className="text-xs text-slate-400 mb-3">
+        {!compact && <p className="text-xs text-muted-foreground mb-3">
           {selectedDays.length === 0 
             ? "Select days to perform this workout" 
             : isEveryDay 
@@ -74,8 +74,8 @@ export function DaySelector({ selectedDays, onSelectionChange, className, compac
             aria-pressed={selectedDays.includes(day.index)}
             className={`${compact ? "h-8 min-w-0 px-0" : "h-10"} text-xs font-medium transition-all ${
               selectedDays.includes(day.index)
-                ? 'bg-green-500 hover:bg-green-600 text-white border-green-500'
-                : 'bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600'
+                ? 'bg-action-selected hover:bg-action text-on-action border-action-selected'
+                : 'bg-surface-secondary hover:bg-control-strong text-supporting border-control'
             }`}
             title={day.full}
           >
@@ -91,7 +91,7 @@ export function DaySelector({ selectedDays, onSelectionChange, className, compac
           size="sm"
           onClick={selectAllDays}
           disabled={isEveryDay}
-          className={`${compact ? "h-7 px-2" : ""} flex-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600`}
+          className={`${compact ? "h-7 px-2" : ""} flex-1 text-xs bg-surface-secondary hover:bg-control-strong text-supporting border-control`}
         >
           Every Day
         </Button>
@@ -101,7 +101,7 @@ export function DaySelector({ selectedDays, onSelectionChange, className, compac
           size="sm" 
           onClick={() => onSelectionChange([1, 2, 3, 4, 5])}
           disabled={isWeekdays}
-          className={`${compact ? "h-7 px-2" : ""} flex-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600`}
+          className={`${compact ? "h-7 px-2" : ""} flex-1 text-xs bg-surface-secondary hover:bg-control-strong text-supporting border-control`}
         >
           Weekdays
         </Button>
@@ -111,7 +111,7 @@ export function DaySelector({ selectedDays, onSelectionChange, className, compac
           size="sm"
           onClick={() => onSelectionChange([0, 6])}
           disabled={isWeekends}
-          className={`${compact ? "h-7 px-2" : ""} flex-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600`}
+          className={`${compact ? "h-7 px-2" : ""} flex-1 text-xs bg-surface-secondary hover:bg-control-strong text-supporting border-control`}
         >
           Weekends
         </Button>
@@ -123,7 +123,7 @@ export function DaySelector({ selectedDays, onSelectionChange, className, compac
           variant="ghost"
           size="sm"
           onClick={clearAllDays}
-          className="w-full mt-2 text-xs text-slate-400 hover:text-white hover:bg-slate-700"
+          className="w-full mt-2 text-xs text-muted-foreground hover:text-strong hover:bg-surface-secondary"
         >
           Clear Selection
         </Button>

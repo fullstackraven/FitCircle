@@ -19,13 +19,13 @@ export function SidebarProfileCard({ open, returnTo, onNavigate }: {
     navigate(`/profile?from=dashboard&returnTo=${encodeURIComponent(returnTo)}`);
   };
   return (
-    <button className="w-full rounded-xl bg-slate-800/60 border border-slate-700/40 p-3 text-left hover:bg-slate-800 transition-colors" onClick={openProfile}>
+    <button className="w-full rounded-xl bg-surface/60 border border-separator/40 p-3 text-left hover:bg-surface transition-colors" onClick={openProfile}>
       <span className="flex items-center gap-3">
-        <span className="w-11 h-11 shrink-0 rounded-full bg-green-400/10 flex items-center justify-center"><User size={24} className="text-green-400" aria-hidden="true" /></span>
-        <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-white">My Fitness Profile</span><span className="block text-xs text-slate-400 mt-1">Training overview &amp; goals</span></span>
-        <ChevronRight size={18} className="shrink-0 text-slate-400" aria-hidden="true" />
+        <span className="w-11 h-11 shrink-0 rounded-full bg-accent-bright/10 flex items-center justify-center"><User size={24} className="text-accent-text" aria-hidden="true" /></span>
+        <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-strong">My Fitness Profile</span><span className="block text-xs text-muted-foreground mt-1">Training overview &amp; goals</span></span>
+        <ChevronRight size={18} className="shrink-0 text-muted-foreground" aria-hidden="true" />
       </span>
-      <span className="flex flex-wrap justify-between gap-2 border-t border-slate-700/60 mt-3 pt-3 text-xs text-slate-400"><span>Your progress at a glance</span><span className="text-green-400">{training && (training.totalReps > 0 || training.totalCompletedDays > 0) ? `${training.totalCompletedDays} active ${training.totalCompletedDays === 1 ? 'day' : 'days'}` : training ? 'No workouts recorded yet' : 'Training history unavailable'}</span></span>
+      <span className="flex flex-wrap justify-between gap-2 border-t border-separator/60 mt-3 pt-3 text-xs text-muted-foreground"><span>Your progress at a glance</span><span className="text-accent-text">{training && (training.totalReps > 0 || training.totalCompletedDays > 0) ? `${training.totalCompletedDays} active ${training.totalCompletedDays === 1 ? 'day' : 'days'}` : training ? 'No workouts recorded yet' : 'Training history unavailable'}</span></span>
     </button>
   );
 }

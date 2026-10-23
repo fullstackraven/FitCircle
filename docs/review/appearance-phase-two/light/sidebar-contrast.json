@@ -1,0 +1,35 @@
+{
+  "readings": [
+    {
+      "text": "My Fitness Profile",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Training overview & goals",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "Your progress at a glance",
+      "ratio": 7.57,
+      "required": 4.5
+    },
+    {
+      "text": "0 active days",
+      "ratio": 5.01,
+      "required": 4.5
+    },
+    {
+      "text": "Settings",
+      "ratio": 17.84,
+      "required": 4.5
+    },
+    {
+      "text": "Version 2.1.0",
+      "ratio": 6.3,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}
