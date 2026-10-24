@@ -1,0 +1,624 @@
+[
+  {
+    "run_id": 40055053422,
+    "url": "https://github.com/fullstackraven/FitCircle/actions/runs/40055053422",
+    "variant": "four shards, serial checks",
+    "event": "PR",
+    "created_at": "2026-10-24T02:39:04Z",
+    "completed_at": "2026-10-24T02:43:28Z",
+    "workflow_wall_seconds": 264,
+    "passed": 365,
+    "failed": 0,
+    "sum_job_wall_seconds": 580,
+    "slowest_shard": {
+      "name": "browser (1/4)",
+      "conclusion": "success",
+      "job_seconds": 213,
+      "passed": 125,
+      "summary": "125 passed (3.2m)",
+      "browser_test_seconds": 195
+    },
+    "jobs": [
+      {
+        "name": "prepare",
+        "conclusion": "success",
+        "job_seconds": 41
+      },
+      {
+        "name": "browser (3/4)",
+        "conclusion": "success",
+        "job_seconds": 91,
+        "passed": 91,
+        "summary": "91 passed (1.2m)",
+        "browser_test_seconds": 74
+      },
+      {
+        "name": "browser (2/4)",
+        "conclusion": "success",
+        "job_seconds": 128,
+        "passed": 63,
+        "summary": "63 passed (1.7m)",
+        "browser_test_seconds": 104
+      },
+      {
+        "name": "browser (1/4)",
+        "conclusion": "success",
+        "job_seconds": 213,
+        "passed": 125,
+        "summary": "125 passed (3.2m)",
+        "browser_test_seconds": 195
+      },
+      {
+        "name": "browser (4/4)",
+        "conclusion": "success",
+        "job_seconds": 103,
+        "passed": 86,
+        "summary": "86 passed (1.3m)",
+        "browser_test_seconds": 81
+      },
+      {
+        "name": "build",
+        "conclusion": "success",
+        "job_seconds": 4
+      },
+      {
+        "name": "deploy",
+        "conclusion": "skipped",
+        "job_seconds": 0
+      }
+    ],
+    "api_head_sha": "6ed356efc4595195fb00bd60f0fad26f9ea49839"
+  },
+  {
+    "run_id": 40055415401,
+    "url": "https://github.com/fullstackraven/FitCircle/actions/runs/40055415401",
+    "variant": "four shards, serial checks",
+    "event": "manual",
+    "created_at": "2026-10-24T02:44:17Z",
+    "completed_at": "2026-10-24T02:48:51Z",
+    "workflow_wall_seconds": 274,
+    "passed": 365,
+    "failed": 0,
+    "sum_job_wall_seconds": 570,
+    "slowest_shard": {
+      "name": "browser (1/4)",
+      "conclusion": "success",
+      "job_seconds": 206,
+      "passed": 125,
+      "summary": "125 passed (3.1m)",
+      "browser_test_seconds": 189
+    },
+    "jobs": [
+      {
+        "name": "prepare",
+        "conclusion": "success",
+        "job_seconds": 58
+      },
+      {
+        "name": "browser (2/4)",
+        "conclusion": "success",
+        "job_seconds": 96,
+        "passed": 63,
+        "summary": "63 passed (1.2m)",
+        "browser_test_seconds": 74
+      },
+      {
+        "name": "browser (3/4)",
+        "conclusion": "success",
+        "job_seconds": 118,
+        "passed": 91,
+        "summary": "91 passed (1.7m)",
+        "browser_test_seconds": 100
+      },
+      {
+        "name": "browser (4/4)",
+        "conclusion": "success",
+        "job_seconds": 90,
+        "passed": 86,
+        "summary": "86 passed (1.2m)",
+        "browser_test_seconds": 72
+      },
+      {
+        "name": "browser (1/4)",
+        "conclusion": "success",
+        "job_seconds": 206,
+        "passed": 125,
+        "summary": "125 passed (3.1m)",
+        "browser_test_seconds": 189
+      },
+      {
+        "name": "build",
+        "conclusion": "success",
+        "job_seconds": 2
+      },
+      {
+        "name": "deploy",
+        "conclusion": "skipped",
+        "job_seconds": 0
+      }
+    ],
+    "api_head_sha": "6ed356efc4595195fb00bd60f0fad26f9ea49839"
+  },
+  {
+    "run_id": 40055741084,
+    "url": "https://github.com/fullstackraven/FitCircle/actions/runs/40055741084",
+    "variant": "ten shards, serial checks",
+    "event": "PR",
+    "created_at": "2026-10-24T02:49:00Z",
+    "completed_at": "2026-10-24T02:52:25Z",
+    "workflow_wall_seconds": 205,
+    "passed": 365,
+    "failed": 0,
+    "sum_job_wall_seconds": 897,
+    "slowest_shard": {
+      "name": "browser (1/10)",
+      "conclusion": "success",
+      "job_seconds": 137,
+      "passed": 49,
+      "summary": "49 passed (1.8m)",
+      "browser_test_seconds": 110
+    },
+    "jobs": [
+      {
+        "name": "prepare",
+        "conclusion": "success",
+        "job_seconds": 58
+      },
+      {
+        "name": "browser (2/10)",
+        "conclusion": "success",
+        "job_seconds": 100,
+        "passed": 27,
+        "summary": "27 passed (1.3m)",
+        "browser_test_seconds": 81
+      },
+      {
+        "name": "browser (3/10)",
+        "conclusion": "success",
+        "job_seconds": 81,
+        "passed": 49,
+        "summary": "49 passed (57.1s)",
+        "browser_test_seconds": 58
+      },
+      {
+        "name": "browser (8/10)",
+        "conclusion": "success",
+        "job_seconds": 52,
+        "passed": 32,
+        "summary": "32 passed (31.8s)",
+        "browser_test_seconds": 32
+      },
+      {
+        "name": "browser (1/10)",
+        "conclusion": "success",
+        "job_seconds": 137,
+        "passed": 49,
+        "summary": "49 passed (1.8m)",
+        "browser_test_seconds": 110
+      },
+      {
+        "name": "browser (5/10)",
+        "conclusion": "success",
+        "job_seconds": 76,
+        "passed": 40,
+        "summary": "40 passed (55.6s)",
+        "browser_test_seconds": 56
+      },
+      {
+        "name": "browser (4/10)",
+        "conclusion": "success",
+        "job_seconds": 84,
+        "passed": 23,
+        "summary": "23 passed (1.1m)",
+        "browser_test_seconds": 66
+      },
+      {
+        "name": "browser (9/10)",
+        "conclusion": "success",
+        "job_seconds": 73,
+        "passed": 39,
+        "summary": "39 passed (44.2s)",
+        "browser_test_seconds": 45
+      },
+      {
+        "name": "browser (7/10)",
+        "conclusion": "success",
+        "job_seconds": 62,
+        "passed": 31,
+        "summary": "31 passed (42.8s)",
+        "browser_test_seconds": 44
+      },
+      {
+        "name": "browser (6/10)",
+        "conclusion": "success",
+        "job_seconds": 84,
+        "passed": 42,
+        "summary": "42 passed (1.0m)",
+        "browser_test_seconds": 61
+      },
+      {
+        "name": "browser (10/10)",
+        "conclusion": "success",
+        "job_seconds": 86,
+        "passed": 33,
+        "summary": "33 passed (55.4s)",
+        "browser_test_seconds": 57
+      },
+      {
+        "name": "build",
+        "conclusion": "success",
+        "job_seconds": 4
+      },
+      {
+        "name": "deploy",
+        "conclusion": "skipped",
+        "job_seconds": 0
+      }
+    ],
+    "api_head_sha": "a307a2f33c6fb273b60e1dc3374c2bdaf8166456"
+  },
+  {
+    "run_id": 40056030645,
+    "url": "https://github.com/fullstackraven/FitCircle/actions/runs/40056030645",
+    "variant": "ten shards, serial checks",
+    "event": "manual",
+    "created_at": "2026-10-24T02:53:11Z",
+    "completed_at": "2026-10-24T02:55:57Z",
+    "workflow_wall_seconds": 166,
+    "passed": 365,
+    "failed": 0,
+    "sum_job_wall_seconds": 766,
+    "slowest_shard": {
+      "name": "browser (4/10)",
+      "conclusion": "success",
+      "job_seconds": 99,
+      "passed": 23,
+      "summary": "23 passed (1.2m)",
+      "browser_test_seconds": 75
+    },
+    "jobs": [
+      {
+        "name": "prepare",
+        "conclusion": "success",
+        "job_seconds": 56
+      },
+      {
+        "name": "browser (1/10)",
+        "conclusion": "success",
+        "job_seconds": 95,
+        "passed": 49,
+        "summary": "49 passed (1.3m)",
+        "browser_test_seconds": 78
+      },
+      {
+        "name": "browser (5/10)",
+        "conclusion": "success",
+        "job_seconds": 56,
+        "passed": 40,
+        "summary": "40 passed (38.6s)",
+        "browser_test_seconds": 39
+      },
+      {
+        "name": "browser (6/10)",
+        "conclusion": "success",
+        "job_seconds": 65,
+        "passed": 42,
+        "summary": "42 passed (47.4s)",
+        "browser_test_seconds": 48
+      },
+      {
+        "name": "browser (3/10)",
+        "conclusion": "success",
+        "job_seconds": 75,
+        "passed": 49,
+        "summary": "49 passed (52.3s)",
+        "browser_test_seconds": 53
+      },
+      {
+        "name": "browser (4/10)",
+        "conclusion": "success",
+        "job_seconds": 99,
+        "passed": 23,
+        "summary": "23 passed (1.2m)",
+        "browser_test_seconds": 75
+      },
+      {
+        "name": "browser (2/10)",
+        "conclusion": "success",
+        "job_seconds": 72,
+        "passed": 27,
+        "summary": "27 passed (53.6s)",
+        "browser_test_seconds": 54
+      },
+      {
+        "name": "browser (7/10)",
+        "conclusion": "success",
+        "job_seconds": 48,
+        "passed": 31,
+        "summary": "31 passed (27.6s)",
+        "browser_test_seconds": 28
+      },
+      {
+        "name": "browser (8/10)",
+        "conclusion": "success",
+        "job_seconds": 61,
+        "passed": 32,
+        "summary": "32 passed (39.8s)",
+        "browser_test_seconds": 41
+      },
+      {
+        "name": "browser (9/10)",
+        "conclusion": "success",
+        "job_seconds": 74,
+        "passed": 39,
+        "summary": "39 passed (49.3s)",
+        "browser_test_seconds": 50
+      },
+      {
+        "name": "browser (10/10)",
+        "conclusion": "success",
+        "job_seconds": 62,
+        "passed": 33,
+        "summary": "33 passed (39.8s)",
+        "browser_test_seconds": 41
+      },
+      {
+        "name": "build",
+        "conclusion": "success",
+        "job_seconds": 3
+      },
+      {
+        "name": "deploy",
+        "conclusion": "skipped",
+        "job_seconds": 0
+      }
+    ],
+    "api_head_sha": "a307a2f33c6fb273b60e1dc3374c2bdaf8166456"
+  },
+  {
+    "run_id": 40056217649,
+    "url": "https://github.com/fullstackraven/FitCircle/actions/runs/40056217649",
+    "variant": "ten shards, parallel checks",
+    "event": "PR",
+    "created_at": "2026-10-24T02:55:56Z",
+    "completed_at": "2026-10-24T02:58:39Z",
+    "workflow_wall_seconds": 163,
+    "passed": 365,
+    "failed": 0,
+    "sum_job_wall_seconds": 852,
+    "slowest_shard": {
+      "name": "browser (1/10)",
+      "conclusion": "success",
+      "job_seconds": 127,
+      "passed": 49,
+      "summary": "49 passed (1.7m)",
+      "browser_test_seconds": 104
+    },
+    "jobs": [
+      {
+        "name": "checks",
+        "conclusion": "success",
+        "job_seconds": 48
+      },
+      {
+        "name": "prepare",
+        "conclusion": "success",
+        "job_seconds": 27
+      },
+      {
+        "name": "browser (6/10)",
+        "conclusion": "success",
+        "job_seconds": 76,
+        "passed": 42,
+        "summary": "42 passed (57.1s)",
+        "browser_test_seconds": 58
+      },
+      {
+        "name": "browser (8/10)",
+        "conclusion": "success",
+        "job_seconds": 54,
+        "passed": 32,
+        "summary": "32 passed (32.4s)",
+        "browser_test_seconds": 33
+      },
+      {
+        "name": "browser (3/10)",
+        "conclusion": "success",
+        "job_seconds": 66,
+        "passed": 49,
+        "summary": "49 passed (39.4s)",
+        "browser_test_seconds": 39
+      },
+      {
+        "name": "browser (2/10)",
+        "conclusion": "success",
+        "job_seconds": 95,
+        "passed": 27,
+        "summary": "27 passed (1.2m)",
+        "browser_test_seconds": 74
+      },
+      {
+        "name": "browser (10/10)",
+        "conclusion": "success",
+        "job_seconds": 54,
+        "passed": 33,
+        "summary": "33 passed (35.5s)",
+        "browser_test_seconds": 36
+      },
+      {
+        "name": "browser (1/10)",
+        "conclusion": "success",
+        "job_seconds": 127,
+        "passed": 49,
+        "summary": "49 passed (1.7m)",
+        "browser_test_seconds": 104
+      },
+      {
+        "name": "browser (7/10)",
+        "conclusion": "success",
+        "job_seconds": 61,
+        "passed": 31,
+        "summary": "31 passed (40.4s)",
+        "browser_test_seconds": 41
+      },
+      {
+        "name": "browser (5/10)",
+        "conclusion": "success",
+        "job_seconds": 79,
+        "passed": 40,
+        "summary": "40 passed (1.0m)",
+        "browser_test_seconds": 61
+      },
+      {
+        "name": "browser (4/10)",
+        "conclusion": "success",
+        "job_seconds": 93,
+        "passed": 23,
+        "summary": "23 passed (1.2m)",
+        "browser_test_seconds": 73
+      },
+      {
+        "name": "browser (9/10)",
+        "conclusion": "success",
+        "job_seconds": 69,
+        "passed": 39,
+        "summary": "39 passed (48.9s)",
+        "browser_test_seconds": 50
+      },
+      {
+        "name": "build",
+        "conclusion": "success",
+        "job_seconds": 3
+      },
+      {
+        "name": "deploy",
+        "conclusion": "skipped",
+        "job_seconds": 0
+      }
+    ],
+    "api_head_sha": "76a6cfddf44283191f5663a43bcadf021dcde642"
+  },
+  {
+    "run_id": 40056442347,
+    "url": "https://github.com/fullstackraven/FitCircle/actions/runs/40056442347",
+    "variant": "ten shards, parallel checks",
+    "event": "manual",
+    "created_at": "2026-10-24T02:59:19Z",
+    "completed_at": "2026-10-24T03:01:49Z",
+    "workflow_wall_seconds": 150,
+    "passed": 365,
+    "failed": 0,
+    "sum_job_wall_seconds": 824,
+    "slowest_shard": {
+      "name": "browser (1/10)",
+      "conclusion": "success",
+      "job_seconds": 114,
+      "passed": 49,
+      "summary": "49 passed (1.5m)",
+      "browser_test_seconds": 89
+    },
+    "jobs": [
+      {
+        "name": "prepare",
+        "conclusion": "success",
+        "job_seconds": 26
+      },
+      {
+        "name": "checks",
+        "conclusion": "success",
+        "job_seconds": 45
+      },
+      {
+        "name": "browser (1/10)",
+        "conclusion": "success",
+        "job_seconds": 114,
+        "passed": 49,
+        "summary": "49 passed (1.5m)",
+        "browser_test_seconds": 89
+      },
+      {
+        "name": "browser (3/10)",
+        "conclusion": "success",
+        "job_seconds": 70,
+        "passed": 49,
+        "summary": "49 passed (51.4s)",
+        "browser_test_seconds": 52
+      },
+      {
+        "name": "browser (8/10)",
+        "conclusion": "success",
+        "job_seconds": 43,
+        "passed": 32,
+        "summary": "32 passed (27.3s)",
+        "browser_test_seconds": 28
+      },
+      {
+        "name": "browser (6/10)",
+        "conclusion": "success",
+        "job_seconds": 74,
+        "passed": 42,
+        "summary": "42 passed (56.7s)",
+        "browser_test_seconds": 58
+      },
+      {
+        "name": "browser (2/10)",
+        "conclusion": "success",
+        "job_seconds": 91,
+        "passed": 27,
+        "summary": "27 passed (1.2m)",
+        "browser_test_seconds": 73
+      },
+      {
+        "name": "browser (7/10)",
+        "conclusion": "success",
+        "job_seconds": 57,
+        "passed": 31,
+        "summary": "31 passed (34.0s)",
+        "browser_test_seconds": 35
+      },
+      {
+        "name": "browser (9/10)",
+        "conclusion": "success",
+        "job_seconds": 63,
+        "passed": 39,
+        "summary": "39 passed (39.7s)",
+        "browser_test_seconds": 41
+      },
+      {
+        "name": "browser (5/10)",
+        "conclusion": "success",
+        "job_seconds": 77,
+        "passed": 40,
+        "summary": "40 passed (54.2s)",
+        "browser_test_seconds": 55
+      },
+      {
+        "name": "browser (4/10)",
+        "conclusion": "success",
+        "job_seconds": 86,
+        "passed": 23,
+        "summary": "23 passed (1.1m)",
+        "browser_test_seconds": 64
+      },
+      {
+        "name": "browser (10/10)",
+        "conclusion": "success",
+        "job_seconds": 77,
+        "passed": 33,
+        "summary": "33 passed (51.4s)",
+        "browser_test_seconds": 52
+      },
+      {
+        "name": "build",
+        "conclusion": "success",
+        "job_seconds": 2
+      },
+      {
+        "name": "deploy",
+        "conclusion": "skipped",
+        "job_seconds": -1
+      }
+    ],
+    "api_head_sha": "76a6cfddf44283191f5663a43bcadf021dcde642"
+  }
+]

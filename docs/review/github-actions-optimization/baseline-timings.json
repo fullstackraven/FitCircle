@@ -1,0 +1,630 @@
+[
+  {
+    "run_id": 39094017329,
+    "url": "https://github.com/fullstackraven/FitCircle/actions/runs/39094017329",
+    "event": "push",
+    "commit": "99c77789714c214527b8c9abc021d4c3e5b11595",
+    "created_at": "2026-10-18T03:33:00Z",
+    "completed_at": "2026-10-18T03:35:56Z",
+    "workflow_wall_seconds": 176,
+    "jobs": [
+      {
+        "name": "build",
+        "seconds": 159,
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "conclusion": "success",
+            "seconds": 2
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Run npm ci",
+            "conclusion": "success",
+            "seconds": 7
+          },
+          {
+            "name": "Run npm run check",
+            "conclusion": "success",
+            "seconds": 8
+          },
+          {
+            "name": "Run npm test",
+            "conclusion": "success",
+            "seconds": 8
+          },
+          {
+            "name": "Run npm run build",
+            "conclusion": "success",
+            "seconds": 7
+          },
+          {
+            "name": "Run npx playwright install --with-deps chromium",
+            "conclusion": "success",
+            "seconds": 24
+          },
+          {
+            "name": "Run npm run test:e2e",
+            "conclusion": "success",
+            "seconds": 97
+          },
+          {
+            "name": "Run actions/upload-pages-artifact@v3",
+            "conclusion": "success",
+            "seconds": 2
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "conclusion": "success",
+            "seconds": 0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "conclusion": "success",
+            "seconds": 0
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "seconds": 0
+          }
+        ]
+      },
+      {
+        "name": "deploy",
+        "seconds": 10,
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Deploy",
+            "conclusion": "success",
+            "seconds": 6
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "seconds": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "run_id": 39458476561,
+    "url": "https://github.com/fullstackraven/FitCircle/actions/runs/39458476561",
+    "event": "push",
+    "commit": "6bc123fb0ccdb3b8e4c5733313177d9bcb597918",
+    "created_at": "2026-10-20T16:33:24Z",
+    "completed_at": "2026-10-20T16:36:24Z",
+    "workflow_wall_seconds": 180,
+    "jobs": [
+      {
+        "name": "build",
+        "seconds": 165,
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "conclusion": "success",
+            "seconds": 2
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Run npm ci",
+            "conclusion": "success",
+            "seconds": 7
+          },
+          {
+            "name": "Run npm run check",
+            "conclusion": "success",
+            "seconds": 8
+          },
+          {
+            "name": "Run npm test",
+            "conclusion": "success",
+            "seconds": 8
+          },
+          {
+            "name": "Run npm run build",
+            "conclusion": "success",
+            "seconds": 8
+          },
+          {
+            "name": "Run npx playwright install --with-deps chromium",
+            "conclusion": "success",
+            "seconds": 18
+          },
+          {
+            "name": "Run npm run test:e2e",
+            "conclusion": "success",
+            "seconds": 105
+          },
+          {
+            "name": "Run actions/upload-pages-artifact@v3",
+            "conclusion": "success",
+            "seconds": 2
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "conclusion": "success",
+            "seconds": 2
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "conclusion": "success",
+            "seconds": 0
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "seconds": 0
+          }
+        ]
+      },
+      {
+        "name": "deploy",
+        "seconds": 8,
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "seconds": 0
+          },
+          {
+            "name": "Deploy",
+            "conclusion": "success",
+            "seconds": 6
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "seconds": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "run_id": 39507019105,
+    "url": "https://github.com/fullstackraven/FitCircle/actions/runs/39507019105",
+    "event": "push",
+    "commit": "04cefde58433436ddc2e906990d8ec536026e3db",
+    "created_at": "2026-10-20T22:17:33Z",
+    "completed_at": "2026-10-20T22:20:02Z",
+    "workflow_wall_seconds": 149,
+    "jobs": [
+      {
+        "name": "build",
+        "seconds": 132,
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "conclusion": "success",
+            "seconds": 2
+          },
+          {
+            "name": "Run npm ci",
+            "conclusion": "success",
+            "seconds": 3
+          },
+          {
+            "name": "Run npm run check",
+            "conclusion": "success",
+            "seconds": 5
+          },
+          {
+            "name": "Run npm test",
+            "conclusion": "success",
+            "seconds": 6
+          },
+          {
+            "name": "Run npm run build",
+            "conclusion": "success",
+            "seconds": 6
+          },
+          {
+            "name": "Run npx playwright install --with-deps chromium",
+            "conclusion": "success",
+            "seconds": 16
+          },
+          {
+            "name": "Run npm run test:e2e",
+            "conclusion": "success",
+            "seconds": 89
+          },
+          {
+            "name": "Run actions/upload-pages-artifact@v3",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "conclusion": "success",
+            "seconds": 0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "conclusion": "success",
+            "seconds": 0
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "seconds": 0
+          }
+        ]
+      },
+      {
+        "name": "deploy",
+        "seconds": 9,
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Deploy",
+            "conclusion": "success",
+            "seconds": 6
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "seconds": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "run_id": 39871454349,
+    "url": "https://github.com/fullstackraven/FitCircle/actions/runs/39871454349",
+    "event": "push",
+    "commit": "67235ffedd55a9b8ec014b33d4cf03864fb1212b",
+    "created_at": "2026-10-22T23:23:28Z",
+    "completed_at": "2026-10-22T23:26:46Z",
+    "workflow_wall_seconds": 198,
+    "jobs": [
+      {
+        "name": "build",
+        "seconds": 181,
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "conclusion": "success",
+            "seconds": 2
+          },
+          {
+            "name": "Run npm ci",
+            "conclusion": "success",
+            "seconds": 5
+          },
+          {
+            "name": "Run npm run check",
+            "conclusion": "success",
+            "seconds": 6
+          },
+          {
+            "name": "Run npm test",
+            "conclusion": "success",
+            "seconds": 7
+          },
+          {
+            "name": "Run npm run build",
+            "conclusion": "success",
+            "seconds": 7
+          },
+          {
+            "name": "Run npx playwright install --with-deps chromium",
+            "conclusion": "success",
+            "seconds": 21
+          },
+          {
+            "name": "Run npm run test:e2e",
+            "conclusion": "success",
+            "seconds": 126
+          },
+          {
+            "name": "Run actions/upload-pages-artifact@v3",
+            "conclusion": "success",
+            "seconds": 2
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "conclusion": "success",
+            "seconds": 0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "conclusion": "success",
+            "seconds": 0
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "seconds": 0
+          }
+        ]
+      },
+      {
+        "name": "deploy",
+        "seconds": 10,
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Deploy",
+            "conclusion": "success",
+            "seconds": 6
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "seconds": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "run_id": 40036758108,
+    "url": "https://github.com/fullstackraven/FitCircle/actions/runs/40036758108",
+    "event": "push",
+    "commit": "8d2022e38a593e352b02c727fe73e90bc28ce0b9",
+    "created_at": "2026-10-23T22:56:43Z",
+    "completed_at": "2026-10-23T23:03:36Z",
+    "workflow_wall_seconds": 413,
+    "jobs": [
+      {
+        "name": "build",
+        "seconds": 396,
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "seconds": 2
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "conclusion": "success",
+            "seconds": 2
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "conclusion": "success",
+            "seconds": 2
+          },
+          {
+            "name": "Run npm ci",
+            "conclusion": "success",
+            "seconds": 5
+          },
+          {
+            "name": "Run npm run check",
+            "conclusion": "success",
+            "seconds": 6
+          },
+          {
+            "name": "Run npm test",
+            "conclusion": "success",
+            "seconds": 9
+          },
+          {
+            "name": "Run npm run build",
+            "conclusion": "success",
+            "seconds": 7
+          },
+          {
+            "name": "Install reference screenshot browser",
+            "conclusion": "success",
+            "seconds": 4
+          },
+          {
+            "name": "Run npm run test:e2e",
+            "conclusion": "success",
+            "seconds": 354
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "conclusion": "skipped",
+            "seconds": 0
+          },
+          {
+            "name": "Run actions/upload-pages-artifact@v3",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "conclusion": "success",
+            "seconds": 0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "seconds": 0
+          }
+        ]
+      },
+      {
+        "name": "deploy",
+        "seconds": 11,
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Deploy",
+            "conclusion": "success",
+            "seconds": 7
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "seconds": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "run_id": 40053068504,
+    "url": "https://github.com/fullstackraven/FitCircle/actions/runs/40053068504",
+    "event": "push",
+    "commit": "409f1cff18072df367af0280c687dcbdf57bf688",
+    "created_at": "2026-10-24T02:10:34Z",
+    "completed_at": "2026-10-24T02:19:32Z",
+    "workflow_wall_seconds": 538,
+    "jobs": [
+      {
+        "name": "build",
+        "seconds": 521,
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "conclusion": "success",
+            "seconds": 2
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Run npm ci",
+            "conclusion": "success",
+            "seconds": 10
+          },
+          {
+            "name": "Run npm run check",
+            "conclusion": "success",
+            "seconds": 9
+          },
+          {
+            "name": "Run npm test",
+            "conclusion": "success",
+            "seconds": 11
+          },
+          {
+            "name": "Run npm run build",
+            "conclusion": "success",
+            "seconds": 9
+          },
+          {
+            "name": "Install reference screenshot browser",
+            "conclusion": "success",
+            "seconds": 4
+          },
+          {
+            "name": "Run npm run test:e2e",
+            "conclusion": "success",
+            "seconds": 471
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "conclusion": "skipped",
+            "seconds": 0
+          },
+          {
+            "name": "Run actions/upload-pages-artifact@v3",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "conclusion": "success",
+            "seconds": 0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "seconds": 0
+          }
+        ]
+      },
+      {
+        "name": "deploy",
+        "seconds": 10,
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "seconds": 1
+          },
+          {
+            "name": "Deploy",
+            "conclusion": "success",
+            "seconds": 7
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "seconds": 0
+          }
+        ]
+      }
+    ]
+  }
+]
