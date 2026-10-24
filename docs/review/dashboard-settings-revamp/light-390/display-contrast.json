@@ -1,0 +1,95 @@
+{
+  "readings": [
+    {
+      "text": "Display",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "App Updates",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Force Refresh App",
+      "ratio": 5.38,
+      "required": 4.5
+    },
+    {
+      "text": "Reloads the app, just like closing and reopening it. Your data stays safe.",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Controls",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Hide Quote of the Day",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Hide Today's Totals",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Hide Recent Activity",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Appearance",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Light",
+      "ratio": 4.59,
+      "required": 4.5
+    },
+    {
+      "text": "Dark",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "System",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "System follows your device’s appearance settings.",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

@@ -1,6 +1,8 @@
-import { useState, useRef, useSyncExternalStore } from 'react';
+import { useState, useRef, useSyncExternalStore, Fragment } from 'react';
 import { ArrowLeft, Upload, Download, Trash2, RotateCcw } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { AppHeader } from '@/components/AppHeader';
+import { dashboardContext, reopenDashboard } from '@/lib/dashboard-navigation';
 import { getAppearanceController, type AppearancePreference } from '@/lib/appearance';
 import { useControls } from '@/hooks/use-controls';
 import { refreshApp } from '@/lib/pwa-update';
@@ -9,7 +11,7 @@ import { localFoodService } from '@/lib/local-food-service';
 import { createBackup, prepareRestore, applyRestore, isAppKey } from '@/lib/backup';
 
 
-export default function SettingsPage() {
+export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy' | 'account' | 'display' }) {
   const [, navigate] = useLocation();
   const appearanceController = getAppearanceController();
   const appearance = useSyncExternalStore(appearanceController.subscribe, appearanceController.getSnapshot);
@@ -24,16 +26,10 @@ export default function SettingsPage() {
 
 
   
-  // Check if we came from dashboard
-  const fromDashboard = new URLSearchParams(window.location.search).get('from') === 'dashboard';
-
+  const context = dashboardContext();
   const handleBack = () => {
-    if (fromDashboard) {
-      sessionStorage.setItem('fitcircle_dashboard_open', 'true');
-      navigate('/');
-    } else {
-      navigate('/');
-    }
+    if (context.fromDashboard) reopenDashboard();
+    navigate(context.fromDashboard ? context.returnTo : '/');
   };
 
   // Export complete localStorage data as JSON (includes food database)
@@ -136,21 +132,23 @@ export default function SettingsPage() {
     }
   };
 
+  const Header = section === 'legacy' ? Fragment : AppHeader;
   return (
     <div className="fitcircle-page">
-      <div className="fitcircle-container">
+      <div className={`fitcircle-container ${section === 'legacy' ? '' : 'pt-4'}`}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <Header><div className={section === 'legacy' ? "flex items-center justify-between mb-8" : "w-full max-w-md mx-auto px-4 min-h-14 flex items-center justify-between gap-2"}>
           <button
-            onClick={handleBack}
-            className="text-muted-foreground hover:text-strong transition-colors"
+            aria-label="Back" onClick={handleBack}
+            className={`${section === 'legacy' ? '' : 'min-h-11 min-w-11 inline-flex items-center justify-center rounded-xl'} text-muted-foreground hover:text-strong transition-colors`}
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="fitcircle-page-title">Settings</h1>
+          <h1 className="fitcircle-page-title">{section === 'account' ? 'Account Data' : section === 'display' ? 'Display' : 'Settings'}</h1>
           <div className="w-5"></div>
-        </div>
+        </div></Header>
 
+        {section !== 'display' && <>
         {/* Backup & Restore Section */}
         <div className="fitcircle-card-lg mb-6">
           <h2 className="text-lg font-semibold text-strong mb-4">Complete Data Backup</h2>
@@ -183,7 +181,7 @@ export default function SettingsPage() {
             </button>
             
             {status && (
-              <div className={`p-3 rounded-xl text-sm text-center ${
+              <div role="status" aria-live="polite" className={`p-3 rounded-xl text-sm text-center ${
                 status.includes('Success') || status.includes('Exported')
                   ? 'bg-feature-green-tint/50 text-accent-soft border border-green-700'
                   : 'bg-feature-red-deep-tint/50 text-feature-red-soft border border-red-700'
@@ -198,6 +196,9 @@ export default function SettingsPage() {
           </div>
         </div>
 
+        </>}
+        {section !== 'account' && <>
+        {section === 'display' && status && <p role="status" className="mb-4 text-sm text-supporting">{status}</p>}
         {/* Force Refresh Section */}
         <div className="glass-panel bg-surface rounded-xl p-6 mb-6">
           <h2 className="text-lg font-semibold text-strong mb-4">App Updates</h2>
@@ -290,6 +291,8 @@ export default function SettingsPage() {
         </div>
 
 
+        </>}
+        {section !== 'display' && <>
         {/* REMOVED: Bug reporting section removed per user request - no server calls */}
         {/* Erase All Data Section */}
         <div className="bg-feature-red-deep-tint/20 border border-red-700 rounded-xl p-6 mb-6">
@@ -330,7 +333,8 @@ export default function SettingsPage() {
             )}
           </div>
         </div>
-        <section className="glass-panel bg-surface rounded-xl p-6 mb-6" aria-labelledby="appearance-heading">
+        </>}
+        {section !== 'account' && <section className="glass-panel bg-surface rounded-xl p-6 mb-6" aria-labelledby="appearance-heading">
           <h2 id="appearance-heading" className="text-lg font-semibold text-strong mb-4">Appearance</h2>
           <fieldset aria-describedby="appearance-description" className="min-w-0">
             <legend className="sr-only">Appearance</legend>
@@ -350,7 +354,7 @@ export default function SettingsPage() {
           </fieldset>
           <p id="appearance-description" className="text-xs text-muted-foreground mt-3">System follows your device’s appearance settings.</p>
           {appearance.error && <p role="alert" className="text-sm text-feature-red mt-3">{appearance.error}</p>}
-        </section>
+        </section>}
 
       </div>
     </div>

@@ -42,7 +42,7 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
       await page.locator(".app-shell").waitFor();
       await page.evaluate(() => document.fonts.ready);
       if (mode === "dark")
-        await expect(page).toHaveScreenshot(`${name}.png`, {
+        await expect(page).toHaveScreenshot(`${name === "sidebar" ? "sidebar-revamp" : name}.png`, {
           animations: "disabled",
           maxDiffPixels: 0,
           threshold: 0,

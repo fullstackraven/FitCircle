@@ -1,0 +1,60 @@
+{
+  "readings": [
+    {
+      "text": "About",
+      "ratio": 17.08,
+      "required": 3
+    },
+    {
+      "text": "Terms of Service",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Privacy Policy",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Licenses",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Version",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "1.0.0 (8d2022e3)",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

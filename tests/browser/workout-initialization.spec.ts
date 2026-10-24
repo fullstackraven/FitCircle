@@ -36,7 +36,7 @@ test('Settings restores a verified backup after a blocked initialization without
   const raw = malformedWorkouts[0].raw;
   await seed(page, raw);
   await page.goto('./');
-  await page.getByRole('link', { name: 'Open Settings to restore a backup' }).click();
+  await page.getByRole('link', { name: 'Open Account Data to restore a backup' }).click();
   await expect(page.getByRole('button', { name: 'Download Complete Backup' })).toBeVisible();
   expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe(raw);
   await page.getByRole('button', { name: 'Download Complete Backup' }).click();
@@ -167,7 +167,7 @@ for (const format of ['legacy objects', 'legacy raw strings', 'old version 2'] a
     await page.reload();
     await expect(page.getByRole('heading', { name: 'Your saved workouts need attention' })).toBeVisible();
     expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe(raw);
-    await page.getByRole('link', { name: 'Open Settings to restore a backup' }).click();
+    await page.getByRole('link', { name: 'Open Account Data to restore a backup' }).click();
     const complete = { ...partial, routines: {} };
     await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-verified-complete.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ [key]: complete })) });
     await expect(page.getByText('Synthetic imported movement', { exact: true })).toBeVisible();

@@ -42,8 +42,8 @@ function CardioDataRecovery({ error }: { error: StoredCardioDataError }) {
         <button type="button" className="block rounded-xl bg-surface-secondary px-4 py-3 disabled:opacity-50" disabled={Object.keys(error.originals).length === 0} onClick={downloadOriginal}>Download original stored data</button>
         {Object.keys(error.originals).length === 0 && <p>The original data could not be read, so a recovery download is unavailable. Check browser storage access and retry.</p>}
         <button type="button" className="block rounded-xl bg-surface-secondary px-4 py-3" onClick={() => window.location.reload()}>Retry loading</button>
-        <a className="inline-block rounded-xl bg-blue-600 px-4 py-3 text-on-action-soft" href={`${import.meta.env.BASE_URL}settings`}>Open Settings to restore a backup</a>
-        <p>Settings can restore an existing verified JSON backup using the usual confirmation. Matching records will be replaced only if you choose to restore. If this screen returns after an older backup is imported, cardio tracking has not resumed: records may still be incomplete or unreadable. FitCircle does not fill them automatically. Keep the imported data’s recovery copy before trying another verified backup.</p>
+        <a className="inline-block rounded-xl bg-blue-600 px-4 py-3 text-on-action-soft" href={`${import.meta.env.BASE_URL}account-data`}>Open Account Data to restore a backup</a>
+        <p>Account Data can restore an existing verified JSON backup using the usual confirmation. Matching records will be replaced only if you choose to restore. If this screen returns after an older backup is imported, cardio tracking has not resumed: records may still be incomplete or unreadable. FitCircle does not fill them automatically. Keep the imported data’s recovery copy before trying another verified backup.</p>
         <p role="status">{status}</p>
       </div>
     </section>

@@ -78,7 +78,7 @@ test('raw cardio recovery download survives browser handoff and complete backup 
   expect(JSON.parse(Buffer.concat(chunks).toString())).toEqual({ [cardioKey]: raw });
   await expect(page.getByRole('status')).toContainText('Download requested');
   await expect(page.locator('a[download]')).toHaveCount(1);
-  await page.getByRole('link', { name: 'Open Settings to restore a backup' }).click();
+  await page.getByRole('link', { name: 'Open Account Data to restore a backup' }).click();
   page.on('dialog', dialog => dialog.accept());
   await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-cardio-backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ [cardioKey]: modernCardio })) });
   await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
@@ -98,7 +98,7 @@ test('accepted incomplete cardio backup remains blocked and another verified bac
   await expect(page.locator('body')).toContainText('cardio tracking has not resumed');
   await expect(page.locator('body')).not.toContainText('successfully');
   expect(await page.evaluate(key => localStorage.getItem(key), cardioKey)).toBe(JSON.stringify(partial));
-  await page.getByRole('link', { name: 'Open Settings to restore a backup' }).click();
+  await page.getByRole('link', { name: 'Open Account Data to restore a backup' }).click();
   await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-complete.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ [cardioKey]: modernCardio })) });
   await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
   await page.goto('cardio');

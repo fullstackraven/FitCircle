@@ -1,0 +1,19 @@
+{
+  "@radix-ui/primitive@1.1.2": "radix.LICENSE",
+  "@radix-ui/react-compose-refs@1.1.2": "radix.LICENSE",
+  "@radix-ui/react-context@1.1.2": "radix.LICENSE",
+  "@radix-ui/react-id@1.1.1": "radix.LICENSE",
+  "@radix-ui/react-use-layout-effect@1.1.1": "radix.LICENSE",
+  "react-remove-scroll-bar@2.3.8": "scrollbar.LICENSE",
+  "@radix-ui/react-use-callback-ref@1.1.1": "radix.LICENSE",
+  "@radix-ui/react-use-escape-keydown@1.1.1": "radix.LICENSE",
+  "@radix-ui/react-focus-guards@1.1.2": "radix.LICENSE",
+  "@radix-ui/number@1.1.1": "radix.LICENSE",
+  "@radix-ui/react-direction@1.1.1": "radix.LICENSE",
+  "@radix-ui/react-use-size@1.1.1": "radix.LICENSE",
+  "@radix-ui/react-use-rect@1.1.1": "radix.LICENSE",
+  "@radix-ui/rect@1.1.1": "radix.LICENSE",
+  "@radix-ui/react-use-previous@1.1.1": "radix.LICENSE",
+  "victory-vendor@36.9.2": "victory.LICENSE",
+  "wouter@3.7.1": "wouter-3.7.1.LICENSE"
+}

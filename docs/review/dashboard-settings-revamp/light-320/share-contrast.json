@@ -1,0 +1,55 @@
+{
+  "readings": [
+    {
+      "text": "Share FitCircle",
+      "ratio": 17.08,
+      "required": 3
+    },
+    {
+      "text": "FitCircle",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Your workouts, nutrition, and wellness in one local-first fitness tracker.",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "https://fullstackraven.github.io/FitCircle/",
+      "ratio": 5,
+      "required": 4.5
+    },
+    {
+      "text": "Copy Link",
+      "ratio": 5.02,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

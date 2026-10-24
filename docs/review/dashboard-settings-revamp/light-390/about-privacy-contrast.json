@@ -1,0 +1,65 @@
+{
+  "readings": [
+    {
+      "text": "Privacy Policy",
+      "ratio": 17.08,
+      "required": 3
+    },
+    {
+      "text": "Scope and local-first design",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "This policy describes the FitCircle web application. FitCircle has no applicatio",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Browser storage",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "FitCircle uses localStorage for application records and preferences, including a",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "JSON backup and restore",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Complete backups are files you download and choose where to save. They may conta",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}
