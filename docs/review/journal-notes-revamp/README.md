@@ -64,7 +64,7 @@ Original review evidence remains intact: [old library](../appearance-phase-four/
 
 ## Validation
 
-Local validation stopped at the owner's request. No additional tests or screenshots were generated after that instruction. Browser runs used Chromium 154.0.8037.57 (`/usr/bin/chromium`) and `tests/fixtures/screenshot-fonts.conf`; no retries or threshold changes.
+The initial full local validation was stopped at the owner's request. The subsequently authorized editor-baseline correction ran only the affected appearance test, as recorded below. Browser runs used Chromium 154.0.8037.57 (`/usr/bin/chromium`) and `tests/fixtures/screenshot-fonts.conf`; no retries or threshold changes.
 
 | Check already executed | Result |
 |---|---|
@@ -75,13 +75,21 @@ Local validation stopped at the owner's request. No additional tests or screensh
 | `npm run audit:storage` | 163 call sites, zero errors |
 | `npm run build` | Passed; existing bundle-size/Browserslist notices remain |
 | Focused Journal/modal/viewport run | 8 passed before the final search-label adjustment; subsequent full-run Journal cases also passed |
-| Targeted Dark appearance capture | Passed before the final explicit Edit-click addition |
+| Targeted Dark appearance capture | Follow-up correction: 1 passed (10.5s), including the explicit Edit click; only the Journal editor baseline refreshed |
 | Earlier complete two-worker run | 370 passed, 1 failed: new search placeholder violated the existing no-placeholder assertion. Replaced with a label; assertion unchanged. |
 | Latest `npm run test:e2e -- --workers=2` | Interrupted at owner request, roughly 280 cases reported passed; no complete-suite pass claimed. The route smoke test and Journal cases passed in this run. GitHub Actions must complete final regression validation. |
 
-### Known review issue: editor screenshot baseline
+### Editor screenshot correction (PR #80 follow-up)
 
-The final appearance-test adjustment explicitly clicks **Edit** before capturing `journal-editor`, preserving the original test's editor coverage now that opening an entry starts in reading mode. That last adjustment has not been run. The newly added `journal-editor-notes-linux.png` was captured before the adjustment and depicts the reader, so a screenshot mismatch is expected until that editor baseline is intentionally refreshed and reviewed. Screenshot generation was stopped as requested; the original pre-revamp baselines remain untouched. Do not treat this PR as merge-ready on local evidence alone.
+`journal-editor-notes-linux.png` now depicts the focused textarea and Save Entry action after clicking **Edit**, rather than the reader. Only that baseline was removed and recreated with Playwright's `--update-snapshots=missing`; all other existing screenshot assertions ran normally with unchanged `threshold: 0` and `maxDiffPixels: 0`. The affected Dark appearance test passed: **1 test, 10.5s**. No full suite or additional screenshot gallery was run. Existing review-image side effects from the test were restored; no unrelated baselines changed.
+
+Command (with existing Chromium/font environment):
+
+```sh
+PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium FONTCONFIG_FILE="$PWD/tests/fixtures/screenshot-fonts.conf" npx playwright test tests/browser/appearance-phase-four.spec.ts --workers=2 --grep 'dark: remaining routes, goals and nested editors preserve visual baseline' --update-snapshots=missing
+```
+
+The existing focused history test in `tests/browser/journal-notes.spec.ts` was reviewed without modification or rerunning: it dismisses the unsaved-discard prompt after browser Back and asserts the draft remains; after testing failed persistence it accepts a subsequent Back prompt and asserts the dialog closes and the Journal library is visible. Full regression validation remains with GitHub Actions.
 
 The 19 existing Journal screenshot views have accompanying contrast readings: 152 visible-text readings, zero failures, minimum measured ratio 5.02:1. These are existing capture results, not a claim that all accessibility or physical-device checks have passed.
 
