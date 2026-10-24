@@ -614,7 +614,12 @@
 .journal-library { padding: 16px; padding-bottom: calc(max(var(--dock-height), var(--safe-bottom)) + 100px); }
 .journal-toolbar { position: fixed; z-index: 40; left: max(16px, var(--safe-left)); right: max(16px, var(--safe-right)); bottom: calc(max(var(--dock-height), var(--safe-bottom)) + 12px); display: flex; gap: 12px; max-width: 736px; margin-inline: auto; }
 .keyboard-open .journal-toolbar { bottom: auto; top: calc(var(--overlay-top) + var(--overlay-height) - 60px); }
-.journal-reader { gap: 12px; }
-.journal-writing-area { min-height: 240px; font-size: 17px; line-height: 1.7; }
-.journal-reader-actions { position: sticky; top: 0; z-index: 1; background: hsl(var(--surface)); }
-textarea.journal-writing-area { min-height: 100px; height: clamp(100px, calc(var(--overlay-height) - var(--safe-top) - var(--safe-bottom) - 240px), 420px); }
+
+
+.journal-entry-page { min-height: 100%; padding: 0 8px 24px; }
+.journal-entry-actions { position: sticky; top: 0; z-index: 1; padding-block: 8px; background: var(--page-background); }
+.journal-page-editor { min-height: 160px; height: max(160px, calc(var(--overlay-height) - var(--safe-top) - var(--safe-bottom) - 180px)); font-size: 17px; line-height: 1.7; }
+
+.app-content textarea.journal-plain-editor,
+.app-content textarea.journal-plain-editor:focus,
+.app-content textarea.journal-plain-editor:focus-visible { outline: none; border: 0; box-shadow: none; caret-color: hsl(var(--focus)); }
