@@ -1,0 +1,95 @@
+{
+  "readings": [
+    {
+      "text": "Journal",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "8 entries",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Previous 30 Days",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Leg Day Workout",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Oct 24, 2026  Focused on quads and hamstrings. Keep the original whitespace.",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Rest Day Reflections",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Oct 11, 2026  Feeling good today.",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Boundary reflection",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Sep 25, 2026  Thirty calendar days.",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "September",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Nutrition Progress",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Sep 24, 2026  Hit my protein goal.",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "August",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Protein Shake Recipe",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Aug 2, 2026  Two scoops.",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "2025",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Meal Plan Ideas",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Search journal…",
+      "ratio": 7.58,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

@@ -1,64 +1,112 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, BookOpen, Calendar, FileText, Check } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
+import { useJournalReaderHistory } from "@/hooks/use-journal-reader-history";
 import { format } from "date-fns";
 
 export function DailyJournal() {
   const [, navigate] = useLocation();
-  const { getJournalEntry, getJournalEntryWithTimestamp, addJournalEntry } = useWorkouts();
+  const { getJournalEntry, getJournalEntryWithTimestamp, addJournalEntry } =
+    useWorkouts({ skipInitialWrite: true });
   const [journalText, setJournalText] = useState("");
+  const originalText = useRef("");
+  const editor = useRef<HTMLTextAreaElement>(null);
   const [currentDate, setCurrentDate] = useState("");
   const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const [writeError, setWriteError] = useState("");
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
-  
+
   // Check if we came from wellness page
   const urlParams = new URLSearchParams(window.location.search);
-  const fromWellness = urlParams.get('from') === 'wellness';
-  
+  const fromWellness = urlParams.get("from") === "wellness";
+
   const handleBack = () => {
+    if (
+      journalText !== originalText.current &&
+      !confirm("Discard unsaved journal changes?")
+    )
+      return false;
     if (fromWellness) {
-      navigate('/wellness');
+      navigate("/wellness");
     } else {
-      navigate('/calendar');
+      navigate("/calendar");
     }
+    return true;
   };
+  useJournalReaderHistory(journalText !== originalText.current, handleBack);
+
+  useEffect(() => {
+    const guardDock = (event: MouseEvent) => {
+      if (
+        journalText !== originalText.current &&
+        event.target instanceof Element &&
+        event.target.closest(".app-dock") &&
+        !confirm("Discard unsaved journal changes?")
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+    document.addEventListener("click", guardDock, true);
+    return () => document.removeEventListener("click", guardDock, true);
+  }, [journalText]);
 
   useEffect(() => {
     // Check for date parameter in URL
     const urlParams = new URLSearchParams(window.location.search);
-    const dateParam = urlParams.get('date');
-    
+    const dateParam = urlParams.get("date");
+
     let dateStr: string;
     let displayDate: Date;
-    
+
     if (dateParam) {
       dateStr = dateParam;
-      displayDate = new Date(dateParam + 'T00:00:00');
+      displayDate = new Date(dateParam + "T00:00:00");
     } else {
       // Load today's journal entry
       const today = new Date();
       const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, '0');
-      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
       dateStr = `${year}-${month}-${day}`;
       displayDate = today;
     }
-    
+
     setCurrentDate(dateStr);
     const entry = getJournalEntry(dateStr);
-    setJournalText(entry || '');
-    
+    setJournalText(entry || "");
+    originalText.current = entry || "";
+    editor.current?.focus();
+
     // Get timestamp for existing entry
     const entryWithTimestamp = getJournalEntryWithTimestamp(dateStr);
     setLastSaved(entryWithTimestamp?.timestamp || null);
   }, [window.location.search]);
 
+  useEffect(() => {
+    const warn = (e: BeforeUnloadEvent) => {
+      if (journalText !== originalText.current) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [journalText]);
+
   const handleJournalSubmit = () => {
     if (journalText.trim()) {
-      addJournalEntry(currentDate, journalText);
+      if (!addJournalEntry(currentDate, journalText)) {
+        setWriteError(
+          "Could not save this entry. Your draft is still open. Free device storage and try again.",
+        );
+        return;
+      }
+      setWriteError("");
+      originalText.current = journalText;
       setLastSaved(new Date().toISOString());
-      
+
       // Show success confirmation instead of native alert
       setShowSaveConfirmation(true);
       setTimeout(() => {
@@ -69,8 +117,10 @@ export function DailyJournal() {
 
   const getDisplayDate = () => {
     if (!currentDate) return format(new Date(), "MMMM d, yyyy");
-    const date = new Date(currentDate + 'T00:00:00');
-    return format(date, "MMMM d, yyyy");
+    const date = new Date(currentDate + "T00:00:00");
+    return Number.isFinite(date.getTime())
+      ? format(date, "MMMM d, yyyy")
+      : "Undated entry";
   };
 
   const getWordCount = () => {
@@ -79,7 +129,10 @@ export function DailyJournal() {
   };
 
   return (
-    <div className="flex flex-col" style={{ backgroundColor: 'var(--page-background)' }}>
+    <div
+      className="flex flex-col max-w-3xl mx-auto"
+      style={{ backgroundColor: "var(--page-background)" }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between p-4 mb-2">
         <button
@@ -92,7 +145,13 @@ export function DailyJournal() {
 
         <h1 className="text-xl font-bold text-strong">Daily Journal</h1>
         <button
-          onClick={() => navigate(`/journal-log${fromWellness ? '?from=wellness' : ''}`)}
+          onClick={() => {
+            if (
+              journalText === originalText.current ||
+              confirm("Discard unsaved journal changes?")
+            )
+              navigate(`/journal-log${fromWellness ? "?from=wellness" : ""}`);
+          }}
           className="text-dim hover:text-strong transition-colors"
           title="View all journal entries"
         >
@@ -105,10 +164,10 @@ export function DailyJournal() {
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">{getDisplayDate()}</p>
           <p className="text-xs text-dim" data-testid="text-word-count">
-            {getWordCount()} {getWordCount() === 1 ? 'word' : 'words'}
+            {getWordCount()} {getWordCount() === 1 ? "word" : "words"}
           </p>
         </div>
-        {lastSaved && (
+        {lastSaved && Number.isFinite(new Date(lastSaved).getTime()) && (
           <p className="text-xs text-dim mt-1">
             Last saved: {format(new Date(lastSaved), "MMM d, yyyy 'at' h:mm a")}
           </p>
@@ -118,14 +177,15 @@ export function DailyJournal() {
       {/* Main writing area - flexbox layout */}
       <div className="flex-1 px-4 pb-6 flex flex-col">
         <textarea
+          ref={editor}
           value={journalText}
           onChange={(e) => setJournalText(e.target.value)}
           aria-label="Journal entry"
           className="flex-1 w-full p-0 bg-transparent text-strong border-none resize-none focus:outline-none text-base leading-relaxed placeholder-dim"
           style={{
-            lineHeight: '1.6',
-            touchAction: 'manipulation',
-            minHeight: '200px' // Minimum height instead of vh-based
+            lineHeight: "1.6",
+            touchAction: "manipulation",
+            minHeight: "200px", // Minimum height instead of vh-based
           }}
           autoComplete="off"
           autoCorrect="on"
@@ -135,12 +195,17 @@ export function DailyJournal() {
         />
       </div>
 
+      {writeError && (
+        <p role="alert" className="px-4 text-danger-text">
+          {writeError}
+        </p>
+      )}
       {/* Save confirmation toast */}
       {showSaveConfirmation && (
         <div
           className="sticky top-0 z-50 flex justify-center"
           style={{
-            animation: 'fadeInOut 2s ease-in-out'
+            animation: "fadeInOut 2s ease-in-out",
           }}
         >
           <div className="bg-action text-on-action px-4 py-3 rounded-xl flex items-center space-x-2 shadow-lg">
@@ -151,10 +216,13 @@ export function DailyJournal() {
       )}
 
       {/* Floating save button - positioned above nav bar */}
-      <div className="sticky px-4 pb-4 z-40" style={{ bottom: 'max(var(--dock-height), var(--safe-bottom))' }}>
+      <div
+        className="sticky px-4 pb-4 z-40"
+        style={{ bottom: "max(var(--dock-height), var(--safe-bottom))" }}
+      >
         <button
           onClick={handleJournalSubmit}
-          className="w-full max-w-sm mx-auto block px-6 py-3 bg-purple-600 hover:bg-purple-700 text-on-action rounded-xl transition-colors font-medium shadow-lg"
+          className="w-full max-w-sm mx-auto block px-6 py-3 bg-action hover:bg-action-hover text-on-action rounded-xl transition-colors font-medium shadow-lg"
           data-testid="button-save-journal"
         >
           Save Entry

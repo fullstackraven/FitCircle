@@ -1,0 +1,35 @@
+{
+  "readings": [
+    {
+      "text": "Journal",
+      "ratio": 17.06,
+      "required": 3
+    },
+    {
+      "text": "1 entry",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Previous 30 Days",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Short reflection",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Oct 23, 2026  A quiet day.",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Search journal…",
+      "ratio": 7.58,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

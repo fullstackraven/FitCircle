@@ -1,0 +1,85 @@
+{
+  "readings": [
+    {
+      "text": "September",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Nutrition Progress",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Sep 24, 2026  Hit my protein goal.",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "August",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Protein Shake Recipe",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Aug 2, 2026  Two scoops.",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "2025",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Meal Plan Ideas",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Jul 18, 2025  Increase daily protein.",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "2024",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Older reflection",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Jan 1, 2024  New year.",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Undated",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Undated reflection",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Undated · unparsed  Preserved legacy key",
+      "ratio": 7.58,
+      "required": 4.5
+    },
+    {
+      "text": "Search journal…",
+      "ratio": 7.58,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

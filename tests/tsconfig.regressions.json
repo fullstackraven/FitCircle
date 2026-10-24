@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "journal-library.test.ts",
+    "browser/journal-notes.spec.ts",
     "appearance-colors.test.ts",
     "browser/appearance-phase-two.spec.ts",
     "browser/appearance-phase-three.spec.ts",

@@ -1,293 +1,338 @@
-import React, { useState, useEffect } from "react";
-import { Plus, Calendar, FileText, ArrowLeft, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  ArrowLeft,
+  ChevronRight,
+  FileText,
+  Search,
+  SquarePen,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
-import { format, parseISO, isValid } from "date-fns";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useJournalReaderHistory } from "@/hooks/use-journal-reader-history";
+import { getTodayString } from "@/lib/date-utils";
+import {
+  groupJournal,
+  journalItems,
+  searchJournal,
+  type JournalItem,
+} from "@/lib/journal-library";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export function JournalLog() {
   const [, navigate] = useLocation();
-  const { getAllJournalEntries, getJournalEntry, getJournalEntryWithTimestamp, addJournalEntry, deleteJournalEntry } = useWorkouts();
-  
-  // Modal state
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [journalText, setJournalText] = useState("");
-  const [currentDate, setCurrentDate] = useState("");
-  const [lastSaved, setLastSaved] = useState<string | null>(null);
-  
-  // Check if we came from wellness page
-  const urlParams = new URLSearchParams(window.location.search);
-  const fromWellness = urlParams.get('from') === 'wellness';
-
-  // Get all journal entries
-  const allJournalEntries = getAllJournalEntries();
-  const journalEntries = Object.entries(allJournalEntries)
-    .map(([dateString, entry]) => {
-      const date = new Date(dateString + 'T00:00:00');
-      const text = typeof entry === 'string' ? entry : entry.text;
-      const timestamp = typeof entry === 'string' ? null : entry.timestamp;
-      
-      return {
-        date: dateString,
-        entry: text,
-        timestamp: timestamp,
-        parsedDate: date,
-        timestampDate: timestamp ? new Date(timestamp) : null,
-        isValidDate: isValid(date)
-      };
-    })
-    .filter((entry) => entry.isValidDate && entry.entry && entry.entry.trim())
-    .sort((a, b) => {
-      // Sort by timestamp if available, otherwise by date
-      const aTime = a.timestampDate?.getTime() || a.parsedDate.getTime();
-      const bTime = b.timestampDate?.getTime() || b.parsedDate.getTime();
-      return bTime - aTime;
+  const { getAllJournalEntries, addJournalEntry, deleteJournalEntry } =
+    useWorkouts({ skipInitialWrite: true });
+  const [query, setQuery] = useState("");
+  const [now, setNow] = useState(() => new Date());
+  const [selected, setSelected] = useState<JournalItem | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [text, setText] = useState("");
+  const [writeError, setWriteError] = useState("");
+  const editor = useRef<HTMLTextAreaElement>(null);
+  const items = journalItems(getAllJournalEntries());
+  const results = searchJournal(items, query);
+  const dirty = !!selected && text !== (selected.text ?? "");
+  useEffect(() => {
+    const update = () => setNow(new Date());
+    const timer = window.setInterval(update, 60000);
+    window.addEventListener("focus", update);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("focus", update);
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, []);
+  useEffect(() => {
+    if (editing) editor.current?.focus();
+  }, [editing, selected?.id]);
+  useEffect(() => {
+    const warn = (e: BeforeUnloadEvent) => {
+      if (dirty) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
+  const close = () => {
+    if (!dirty || confirm("Discard unsaved journal changes?")) {
+      setSelected(null);
+      setEditing(false);
+      return true;
+    }
+    return false;
+  };
+  useJournalReaderHistory(!!selected, close);
+  const open = (item: JournalItem, edit = false) => {
+    setWriteError("");
+    setSelected(item);
+    setText(item.text ?? "");
+    setEditing(edit && item.text !== null);
+  };
+  const create = () =>
+    open(
+      items.find((i) => i.id === getTodayString()) ?? {
+        id: getTodayString(),
+        text: "",
+        date: new Date(new Date().setHours(0, 0, 0, 0)),
+        timestamp: null,
+        title: "New entry",
+        preview: "",
+      },
+      true,
+    );
+  const save = () => {
+    if (!selected || !text.trim()) return;
+    if (!addJournalEntry(selected.id, text)) {
+      setWriteError(
+        "Could not save this entry. Your draft is still open. Free device storage and try again.",
+      );
+      return;
+    }
+    setWriteError("");
+    setSelected({
+      ...selected,
+      text,
+      title: text.split(/\r?\n/).find((s) => s.trim()) ?? "Untitled entry",
+      timestamp: new Date(),
     });
-
-  const handleEntryClick = (dateString: string) => {
-    setCurrentDate(dateString);
-    const entry = getJournalEntry(dateString);
-    setJournalText(entry || '');
-    
-    const entryWithTimestamp = getJournalEntryWithTimestamp(dateString);
-    setLastSaved(entryWithTimestamp?.timestamp || null);
-    
-    setIsModalOpen(true);
+    setEditing(false);
   };
-
-  const truncateText = (text: string, maxLength: number = 100) => {
-    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-  };
-
-  const formatDateDisplay = (date: Date) => {
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    
-    if (date.toDateString() === today.toDateString()) {
-      return "Today";
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return "Yesterday";
-    } else {
-      return format(date, "MMMM d, yyyy");
-    }
-  };
-
-  const getTimeDisplay = (date: Date) => {
-    const now = new Date();
-    const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) return "Today";
-    if (diffDays === 1) return "Yesterday";
-    if (diffDays < 7) return `${diffDays} days ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
-    return `${Math.floor(diffDays / 365)} years ago`;
-  };
-
-  const handleJournalSubmit = () => {
-    if (journalText.trim()) {
-      addJournalEntry(currentDate, journalText);
-      setLastSaved(new Date().toISOString());
-      
-      // Close modal first
-      setIsModalOpen(false);
-    }
-  };
-
-  // Handle modal close (including ESC key, click outside, etc.)
-  const handleModalClose = (open: boolean) => {
-    setIsModalOpen(open);
-  };
-
-  const getDisplayDate = () => {
-    if (!currentDate) return format(new Date(), "MMMM d, yyyy");
-    const date = new Date(currentDate + 'T00:00:00');
-    return format(date, "MMMM d, yyyy");
-  };
-
-  const getWordCount = () => {
-    if (!journalText.trim()) return 0;
-    return journalText.trim().split(/\s+/).length;
-  };
-
-  const handleDeleteEntry = () => {
-    if (confirm('Are you sure you want to delete this journal entry? This action cannot be undone.')) {
-      deleteJournalEntry(currentDate);
-      setIsModalOpen(false);
-    }
-  };
-
+  const dateLabel = (item: JournalItem) =>
+    item.date?.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }) ?? `Undated · ${item.id}`;
   return (
-    <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'var(--page-background)' }}>
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={() => navigate('/wellness')}
-          className="flex items-center space-x-2 text-muted-foreground hover:text-strong transition-colors"
-          data-testid="button-back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <h1 className="text-xl font-bold text-strong">Journal Log</h1>
-        <button
-          onClick={() => {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            const dateStr = `${year}-${month}-${day}`;
-            
-            setCurrentDate(dateStr);
-            const entry = getJournalEntry(dateStr);
-            setJournalText(entry || '');
-            
-            const entryWithTimestamp = getJournalEntryWithTimestamp(dateStr);
-            setLastSaved(entryWithTimestamp?.timestamp || null);
-            
-            setIsModalOpen(true);
-          }}
-          className="text-muted-foreground hover:text-strong transition-colors"
-          title="Write new journal entry"
-        >
-          <Plus className="w-5 h-5" />
-        </button>
-      </div>
-
-      <div className="space-y-4">
-        {journalEntries.length > 0 ? (
-          journalEntries.map((entry) => (
-            <button
-              key={entry.date}
-              onClick={() => handleEntryClick(entry.date)}
-              className="glass-panel w-full text-left p-4 bg-surface rounded-xl hover:bg-surface-secondary transition-colors"
-            >
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="text-strong font-medium">
-                  {formatDateDisplay(entry.parsedDate)}
-                </h3>
-                <span className="text-xs text-muted-foreground">
-                  {getTimeDisplay(entry.parsedDate)}
-                </span>
-              </div>
-              
-              <p className="text-supporting text-sm line-clamp-3">
-                {truncateText(entry.entry)}
-              </p>
-              
-              <div className="flex items-center mt-3 text-xs text-dim">
-                <Calendar className="w-3 h-3 mr-1" />
-                {format(entry.parsedDate, "MMM d, yyyy")}
-                {entry.timestamp && (
-                  <span className="ml-3">
-                    • {format(entry.timestampDate!, "h:mm a")}
+    <div className="journal-library max-w-3xl mx-auto text-strong">
+      <button
+        aria-label="Back to Logs"
+        data-testid="button-back"
+        className="h-11 w-11 flex items-center justify-center rounded-full bg-surface text-supporting"
+        onClick={() => navigate("/wellness")}
+      >
+        <ArrowLeft className="w-5 h-5" />
+      </button>
+      <h1 className="text-3xl font-bold mt-4">Journal</h1>
+      <p className="text-sm text-muted-foreground mt-1 mb-6" aria-live="polite">
+        {query.trim()
+          ? `${results.length} ${results.length === 1 ? "result" : "results"}`
+          : `${items.length} ${items.length === 1 ? "entry" : "entries"}`}
+      </p>
+      {groupJournal(results, now).map((group) => (
+        <section key={group.label} className="mb-7">
+          <h2 className="text-lg font-bold mb-2">{group.label}</h2>
+          <div className="rounded-2xl bg-surface overflow-hidden divide-y divide-border">
+            {group.entries.map((item) => (
+              <button
+                key={item.id}
+                className="w-full text-left px-4 py-4 flex items-center gap-3 hover:bg-surface-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px]"
+                onClick={() => open(item)}
+              >
+                <span className="min-w-0 flex-1">
+                  <span className="font-semibold block truncate">
+                    {item.title}
                   </span>
-                )}
-              </div>
-            </button>
-          ))
-        ) : (
-          <div className="text-center py-12">
-            <FileText className="w-12 h-12 text-dim-strong mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-muted-foreground mb-2">No Journal Entries Yet</h3>
-            <p className="text-sm text-dim mb-6">
-              Start writing in your daily journal to see entries here
-            </p>
-            <button
-              onClick={() => {
-                const today = new Date();
-                const year = today.getFullYear();
-                const month = String(today.getMonth() + 1).padStart(2, '0');
-                const day = String(today.getDate()).padStart(2, '0');
-                const dateStr = `${year}-${month}-${day}`;
-                
-                setCurrentDate(dateStr);
-                const entry = getJournalEntry(dateStr);
-                setJournalText(entry || '');
-                
-                const entryWithTimestamp = getJournalEntryWithTimestamp(dateStr);
-                setLastSaved(entryWithTimestamp?.timestamp || null);
-                
-                setIsModalOpen(true);
-              }}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-on-action rounded-xl transition-colors"
-            >
-              Write Your First Entry
-            </button>
+                  <span className="text-sm text-muted-foreground block truncate mt-1">
+                    {dateLabel(item)}
+                    {item.preview && `  ${item.preview}`}
+                  </span>
+                </span>
+                <ChevronRight
+                  aria-hidden="true"
+                  className="w-4 h-4 shrink-0 text-muted-foreground"
+                />
+              </button>
+            ))}
           </div>
-        )}
+        </section>
+      ))}
+      {!results.length && (
+        <div className="py-16 text-center text-muted-foreground">
+          <FileText className="w-9 h-9 mx-auto mb-3" />
+          <h2 className="font-semibold">
+            {query.trim() ? "No matching entries" : "No Journal Entries Yet"}
+          </h2>
+          <p className="text-sm mt-2">
+            {query.trim()
+              ? "Try another word or date."
+              : "Tap compose to write your daily reflection."}
+          </p>
+        </div>
+      )}
+      <div
+        className="journal-toolbar"
+        role="search"
+        aria-label="Search journal"
+      >
+        <div className="relative flex items-center gap-2 rounded-full bg-surface border border-control px-4 flex-1 min-w-0 shadow-sm">
+          <Search
+            aria-hidden="true"
+            className="w-4 h-4 shrink-0 text-muted-foreground"
+          />
+          <input
+            type="search"
+            aria-label="Search journal"
+            id="journal-search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="w-full min-w-0 h-12 bg-transparent border-0 text-strong placeholder:text-muted-foreground outline-none"
+          />
+          {!query && (
+            <label
+              htmlFor="journal-search"
+              className="absolute left-10 top-1/2 -translate-y-1/2 text-muted-foreground"
+            >
+              Search journal…
+            </label>
+          )}
+          {query && (
+            <button
+              aria-label="Clear search"
+              className="h-10 w-8 shrink-0"
+              onClick={() => setQuery("")}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+        <button
+          aria-label="Write new journal entry"
+          title="Write new journal entry"
+          onClick={create}
+          className="rounded-full h-12 w-12 shrink-0 bg-action text-on-action flex items-center justify-center shadow-sm"
+        >
+          <SquarePen className="w-5 h-5" />
+        </button>
       </div>
-
-      {/* Journal Entry Modal */}
-      <Dialog open={isModalOpen} onOpenChange={handleModalClose}>
-        <DialogContent className="max-w-2xl p-0 bg-surface border-control overflow-hidden rounded-2xl">
-          <div className="flex flex-col" style={{ backgroundColor: 'var(--journal-surface)' }}>
-            {/* Modal Header */}
-            <DialogHeader className="px-4 py-3 border-b border-control">
-              <DialogTitle className="text-lg font-bold text-strong text-center">Daily Journal</DialogTitle>
-              <DialogDescription className="text-muted-foreground text-center text-sm">
-                Write your thoughts and reflections for today
-              </DialogDescription>
-            </DialogHeader>
-
-            {/* Date indicator */}
-            <div className="px-4 py-2 border-b border-control">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">{getDisplayDate()}</p>
-                <p className="text-xs text-dim" data-testid="text-word-count">
-                  {getWordCount()} {getWordCount() === 1 ? 'word' : 'words'}
-                </p>
-              </div>
-              {lastSaved && (
-                <p className="text-xs text-dim mt-1">
-                  Last saved: {format(new Date(lastSaved), "MMM d, yyyy 'at' h:mm a")}
-                </p>
-              )}
-            </div>
-
-            {/* Main writing area */}
-            <div className="px-4 py-4 flex flex-col">
-              <textarea
-                value={journalText}
-                onChange={(e) => setJournalText(e.target.value)}
-                aria-label="Journal entry"
-                className="w-full p-0 bg-transparent text-strong border-none resize-none focus:outline-none text-base leading-relaxed placeholder-dim"
-                style={{
-                  lineHeight: '1.6',
-                  touchAction: 'manipulation',
-                  minHeight: '200px'
-                }}
-                autoComplete="off"
-                autoCorrect="on"
-                autoCapitalize="sentences"
-                spellCheck={true}
-                data-testid="textarea-journal-entry"
-              />
-            </div>
-
-
-            {/* Action buttons */}
-            <div className="px-4 py-3 border-t border-control">
-              <div className="flex gap-3">
+      <Dialog
+        open={!!selected}
+        onOpenChange={(value) => {
+          if (!value) close();
+        }}
+      >
+        <DialogContent
+          className="journal-reader max-w-2xl bg-surface text-strong"
+          onEscapeKeyDown={(e) => {
+            e.preventDefault();
+            close();
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle className="sr-only">Daily Journal</DialogTitle>
+            <DialogDescription className="sr-only">
+              Read or edit your daily reflection. Changes are saved only with
+              Save Entry.
+            </DialogDescription>
+          </DialogHeader>
+          {selected && (
+            <>
+              <div className="journal-reader-actions flex items-center gap-2 pr-7">
                 <button
-                  onClick={handleJournalSubmit}
-                  className="flex-1 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-on-action rounded-xl transition-colors font-medium shadow-lg"
-                  data-testid="button-save-journal"
+                  aria-label="Back to journal library"
+                  className="h-11 w-11 flex items-center justify-center text-supporting"
+                  onClick={close}
                 >
-                  Save Entry
+                  <ArrowLeft className="w-5 h-5" />
                 </button>
-                {lastSaved && (
+                <span className="flex-1" />
+                {selected.text !== null && !editing && (
                   <button
-                    onClick={handleDeleteEntry}
-                    className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-on-action rounded-xl transition-colors font-medium shadow-lg flex items-center gap-2"
-                    data-testid="button-delete-journal"
+                    className="h-11 px-3 text-accent-text font-semibold"
+                    onClick={() => setEditing(true)}
                   >
-                    <Trash2 className="w-4 h-4" />
-                    Delete
+                    Edit
+                  </button>
+                )}
+                {editing && (
+                  <button
+                    data-testid="button-save-journal"
+                    disabled={!text.trim()}
+                    className="h-11 px-3 font-semibold text-accent-text disabled:opacity-50"
+                    onClick={save}
+                  >
+                    Save Entry
+                  </button>
+                )}
+                {items.some((i) => i.id === selected.id) && (
+                  <button
+                    aria-label="Delete journal entry"
+                    data-testid="button-delete-journal"
+                    className="h-11 w-11 flex items-center justify-center text-danger-text"
+                    onClick={() => {
+                      if (
+                        confirm(
+                          "Are you sure you want to delete this journal entry? This action cannot be undone.",
+                        )
+                      ) {
+                        if (deleteJournalEntry(selected.id)) setSelected(null);
+                        else
+                          setWriteError(
+                            "Could not delete this entry. The original record is unchanged.",
+                          );
+                      }
+                    }}
+                  >
+                    <Trash2 className="w-5 h-5" />
                   </button>
                 )}
               </div>
-            </div>
-          </div>
+              <p className="text-xs text-muted-foreground text-center">
+                {dateLabel(selected)}
+                {selected.timestamp &&
+                  ` · ${selected.timestamp.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`}
+              </p>
+              {writeError && (
+                <p role="alert" className="text-danger-text text-sm">
+                  {writeError}
+                </p>
+              )}
+              {selected.text === null ? (
+                <p role="alert">
+                  This entry cannot be read safely. Its original record has been
+                  preserved. Download a complete backup from Account Data before
+                  attempting recovery.
+                </p>
+              ) : editing ? (
+                <textarea
+                  ref={editor}
+                  aria-label="Journal entry"
+                  data-testid="textarea-journal-entry"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  className="journal-writing-area w-full bg-transparent text-strong border-0 resize-none focus:outline-none focus:ring-0"
+                  autoCapitalize="sentences"
+                  spellCheck
+                />
+              ) : (
+                <div
+                  className="journal-writing-area whitespace-pre-wrap break-words leading-relaxed"
+                  data-testid="journal-reader-text"
+                >
+                  {selected.text || "This entry is empty."}
+                </div>
+              )}
+              {editing && (
+                <p
+                  className="text-xs text-muted-foreground"
+                  data-testid="text-word-count"
+                >
+                  {text.trim() ? text.trim().split(/\s+/).length : 0} words
+                </p>
+              )}
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>

@@ -1,0 +1,60 @@
+{
+  "readings": [
+    {
+      "text": "Journal",
+      "ratio": 17.85,
+      "required": 3
+    },
+    {
+      "text": "3 results",
+      "ratio": 6.96,
+      "required": 4.5
+    },
+    {
+      "text": "September",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Nutrition Progress",
+      "ratio": 14.63,
+      "required": 4.5
+    },
+    {
+      "text": "Sep 24, 2026  Hit my protein goal.",
+      "ratio": 5.71,
+      "required": 4.5
+    },
+    {
+      "text": "August",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Protein Shake Recipe",
+      "ratio": 14.63,
+      "required": 4.5
+    },
+    {
+      "text": "Aug 2, 2026  Two scoops.",
+      "ratio": 5.71,
+      "required": 4.5
+    },
+    {
+      "text": "2025",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "Meal Plan Ideas",
+      "ratio": 14.63,
+      "required": 4.5
+    },
+    {
+      "text": "Jul 18, 2025  Increase daily protein.",
+      "ratio": 5.71,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

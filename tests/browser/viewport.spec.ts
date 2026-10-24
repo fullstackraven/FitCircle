@@ -184,6 +184,7 @@ test('nested dialogs keep background locked until the last overlay closes', asyn
   await page.setViewportSize({ width: 390, height: 430 });
   await assertSafeClose(journal, 59, 396);
   await expect(journal.getByTestId('textarea-journal-entry')).toHaveValue('Unsaved journal draft');
+  page.once('dialog', dialog => dialog.accept());
   await journal.getByRole('button', { name: 'Close', exact: true }).click();
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
 });

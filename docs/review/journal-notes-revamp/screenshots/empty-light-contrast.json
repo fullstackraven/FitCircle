@@ -1,0 +1,15 @@
+{
+  "readings": [
+    {
+      "text": "FitCircle",
+      "ratio": 17.08,
+      "required": 3
+    },
+    {
+      "text": "Opening FitCircle…",
+      "ratio": 17.08,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

@@ -167,7 +167,7 @@ const cases: {
   {
     name: "journal textarea",
     route: "journal-log",
-    open: (page) => button(page, "Write Your First Entry").click(),
+    open: (page) => button(page, "Write new journal entry").click(),
   },
   {
     name: "supplement form",

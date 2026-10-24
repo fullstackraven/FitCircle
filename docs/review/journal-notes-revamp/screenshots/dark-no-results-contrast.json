@@ -1,0 +1,25 @@
+{
+  "readings": [
+    {
+      "text": "Journal",
+      "ratio": 17.85,
+      "required": 3
+    },
+    {
+      "text": "0 results",
+      "ratio": 6.96,
+      "required": 4.5
+    },
+    {
+      "text": "No matching entries",
+      "ratio": 6.96,
+      "required": 4.5
+    },
+    {
+      "text": "Try another word or date.",
+      "ratio": 6.96,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}
