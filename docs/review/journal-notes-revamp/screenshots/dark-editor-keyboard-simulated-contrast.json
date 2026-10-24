@@ -1,0 +1,25 @@
+{
+  "readings": [
+    {
+      "text": "Save Entry",
+      "ratio": 8.4,
+      "required": 4.5
+    },
+    {
+      "text": "Oct 24, 2026 · 10:00 AM",
+      "ratio": 6.96,
+      "required": 4.5
+    },
+    {
+      "text": "Leg Day Workout\n\nFocused on quads and hamstrings.\nKeep the original whitespace.",
+      "ratio": 17.85,
+      "required": 4.5
+    },
+    {
+      "text": "12 words",
+      "ratio": 6.96,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

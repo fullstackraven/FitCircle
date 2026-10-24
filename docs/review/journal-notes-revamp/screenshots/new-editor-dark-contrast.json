@@ -1,0 +1,15 @@
+{
+  "readings": [
+    {
+      "text": "Oct 24, 2026",
+      "ratio": 6.96,
+      "required": 4.5
+    },
+    {
+      "text": "0 words",
+      "ratio": 6.96,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

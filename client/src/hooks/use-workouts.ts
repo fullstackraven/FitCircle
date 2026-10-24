@@ -1,5 +1,5 @@
 import { getTotalWorkoutStats } from '@/lib/workout-statistics';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getTodayString, getDateString } from '@/lib/date-utils';
 import { STORAGE_KEYS } from '@/lib/storage-utils';
 import { parseStoredWorkouts, StoredWorkoutDataError } from '@/lib/workout-initialization';
@@ -49,7 +49,8 @@ const WORKOUT_COLORS = [
   'green', 'blue', 'purple', 'amber', 'red', 'pink', 'cyan', 'lime', 'orange', 'indigo', 'emerald', 'yellow'
 ];
 
-export function useWorkouts() {
+export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
+  const initialPersistence = useRef(true);
   const [data, setData] = useState<WorkoutData>(() => {
     let raw: string | null;
     try {
@@ -69,6 +70,10 @@ export function useWorkouts() {
 
   // Save to localStorage whenever data changes
   useEffect(() => {
+    if (initialPersistence.current) {
+      initialPersistence.current = false;
+      if (options?.skipInitialWrite) return;
+    }
     try {
       localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(data));
     } catch (error) {
@@ -382,13 +387,29 @@ export function useWorkouts() {
     }));
   };
 
+  // Journal actions report durable success before the editor leaves its draft.
+  const persistJournal = (update: (previous: WorkoutData) => WorkoutData) => {
+    // Other feature callers retain their existing deferred persistence behavior.
+    if (!options?.skipInitialWrite) {
+      setData(update);
+      return true;
+    }
+    const next = update(data);
+    try {
+      localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(next));
+    } catch {
+      return false;
+    }
+    setData(next);
+    return true;
+  };
   const addJournalEntry = (date: string, entry: string) => {
     const timestamp = new Date().toISOString();
-    setData(prev => ({
-      ...prev,
+    return persistJournal(previous => ({
+      ...previous,
       journalEntries: {
-        ...prev.journalEntries,
-        [date]: { text: entry, timestamp }
+        ...previous.journalEntries,
+        [date]: { ...(typeof previous.journalEntries[date] === 'object' ? previous.journalEntries[date] : {}), text: entry, timestamp }
       }
     }));
   };
@@ -415,13 +436,10 @@ export function useWorkouts() {
   };
 
   const deleteJournalEntry = (date: string) => {
-    setData(prev => {
-      const newJournalEntries = { ...prev.journalEntries };
-      delete newJournalEntries[date];
-      return {
-        ...prev,
-        journalEntries: newJournalEntries
-      };
+    return persistJournal(previous => {
+      const journalEntries = { ...previous.journalEntries };
+      delete journalEntries[date];
+      return { ...previous, journalEntries };
     });
   };
 
