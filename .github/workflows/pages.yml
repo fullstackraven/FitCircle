@@ -39,13 +39,14 @@ jobs:
           retention-days: 1
 
   browser:
-    name: browser (${{ matrix.shard }}/4)
+    name: browser (${{ matrix.shard }}/10)
     needs: prepare
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
+      max-parallel: 10
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     env:
       FONTCONFIG_FILE: ${{ github.workspace }}/tests/fixtures/screenshot-fonts.conf
     steps:
@@ -73,7 +74,7 @@ jobs:
           curl --fail --location --retry 2 https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chrome-linux64.zip -o "$RUNNER_TEMP/chrome.zip"
           unzip -q "$RUNNER_TEMP/chrome.zip" -d "$RUNNER_TEMP/fitcircle-browser"
           echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$RUNNER_TEMP/fitcircle-browser/chrome-linux64/chrome" >> "$GITHUB_ENV"
-      - run: npm run test:e2e -- --workers=2 --shard=${{ matrix.shard }}/4
+      - run: npm run test:e2e -- --workers=2 --shard=${{ matrix.shard }}/10
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

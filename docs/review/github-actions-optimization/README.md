@@ -51,6 +51,10 @@ start/end intervals, so queue and transition overhead are not all runner executi
 | [40053068504](https://github.com/fullstackraven/FitCircle/actions/runs/40053068504) | PR #78 | 8:58 | 7:51 | 0:04 | 0:07 |
 
 Older four-sample mean: **2:55.75**. Recent two-sample mean: **7:55.5**.
+The latest five successful runs immediately before appearance work already averaged
+**3:42**. Across all 25 older successful main runs in the fetched 35-run history,
+the mean was **3:27.36** (median 3:11). The four older rows above are illustrative,
+not an estimate of every historical run. Some growth therefore preceded theming.
 These are small descriptive samples, not a guarantee or statistically controlled
 benchmark. Recent browser steps averaged **6:52.5**, versus **1:44.25** in the older
 sample. Recent publishing itself still takes seven seconds.
@@ -86,7 +90,7 @@ inside browser validation, not npm, browser download, Vite, or Pages publishing.
 PR / main push / manual
   prepare: immutable SHA checkout -> npm ci -> types/regression types/unit/storage
            -> production build ONCE -> immutable tested-site artifact
-  browser: 1/4, 2/4, 3/4, 4/4 in parallel, each with two workers
+  browser: 1/10 through 10/10 in parallel, each with two workers
            exact SHA checkout + same built artifact + same pinned browser/fonts
   build:   always-run aggregate gate, succeeds only if prepare AND all shards succeed
   deploy:  only successful push to refs/heads/main
@@ -105,17 +109,17 @@ name within the same workflow run. No cross-run/token/artifact promotion is used
 worker, manifest, recovery HTML and `.nojekyll` before testing. Deployment downloads
 the same named artifact after the complete gate; it never builds a different copy.
 
-Native Playwright shard listings contain **125 + 63 + 91 + 86 = 365** disjoint test
-IDs, exactly matching the unsharded list. Counts differ because file/serial-suite
+Native Playwright shard listings contain **49 + 27 + 49 + 23 + 40 + 42 + 31 + 32 + 39 + 33 = 365**
+disjoint test IDs, exactly matching the unsharded list. Counts differ because file/serial-suite
 semantics are retained. No `fullyParallel`, retries, test exclusions, screenshot
 threshold changes, or browser/configuration changes are introduced. `fail-fast:
 false` lets all shards report even when another fails. Failure artifacts have
 unique shard names and retain the existing seven-day policy; successful runs do
 not upload test traces. The site artifact is retained for one day.
 
-Four runners increase setup overhead/parallel resource usage. Each still uses the
+Up to ten browser runners increase setup overhead/parallel resource usage. Each still uses the
 same two workers, avoiding a change to per-runner screenshot/test contention.
-Queue delays and uneven file runtimes mean speedup will not necessarily be 4×.
+Queue delays and uneven file runtimes mean speedup will not necessarily be 10×.
 
 ### Caching and avoided complexity
 
@@ -171,7 +175,29 @@ Local validation before opening the PR:
   recovery document, and generated worker exist with `/FitCircle/` references.
 - No application, package, Playwright configuration, or original snapshot changes.
 
-Live PR and manual results will be recorded here after actual GitHub-hosted runs.
+### Hosted pilot: four shards
+
+[PR run 40055053422](https://github.com/fullstackraven/FitCircle/actions/runs/40055053422)
+passed all 365 tests and the preserved `build` gate; deploy was skipped. Wall time
+was **4:24**, versus **8:56** for the previous serial
+[PR validation](https://github.com/fullstackraven/FitCircle/actions/runs/40052266214)
+(365 tests). This is a **4:32 / 50.7%** measured reduction in validation latency,
+not a production deployment measurement.
+
+Prepare took 41 seconds; browser jobs took 213, 128, 91, and 103 seconds. Their
+actual browser-test steps took 195, 104, 74, and 81 seconds. Artifact downloads took
+0–2 seconds, upload one second, and the aggregate gate four seconds. The pilot's
+summed job durations were 580 seconds versus 533 for the prior serial validation
+job. These are runner wall seconds, not exact CPU time or rounded billable minutes.
+
+The visual-heavy first shard dominated. The final candidate uses ten native
+shards to separate those file groups, without changing within-file semantics or
+per-runner workers. This is still one simple fixed matrix, not a custom timing
+scheduler. More runners are an explicit latency/resource tradeoff; actual charged
+usage depends on plan and per-job rounding. Available concurrency/queueing can
+limit the gain. A smaller matrix remains an option if resource usage matters more.
+
+Live final-candidate PR and manual measurements will be recorded after completion.
 No optimized production deployment is performed in this task. The post-merge
 publish duration cannot be measured until the owner merges an approved change.
 A 1–3 minute deployment is a performance objective, not a guarantee. Report measured
