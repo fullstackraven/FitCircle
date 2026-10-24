@@ -1,4 +1,4 @@
-import { SidebarProfileCard } from '@/components/SidebarProfileCard';
+import { DashboardMenu } from '@/components/DashboardMenu';
 import { VersionLabel } from "@/components/VersionLabel";
 import { AppHeader } from "@/components/AppHeader";
 import { useState, useEffect } from 'react';
@@ -291,20 +291,7 @@ export default function WellnessPage() {
             <SheetTitle>Navigation Menu</SheetTitle>
           </SheetHeader>
           <div className="flex flex-col h-full">
-            <SidebarProfileCard open={isSidebarOpen} returnTo="/wellness" onNavigate={() => setIsSidebarOpen(false)} />
-
-            <div className="flex-1 py-4">
-              <div 
-                className="flex items-center space-x-3 p-4 hover:bg-surface transition-colors cursor-pointer"
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                  navigate('/settings?from=dashboard');
-                }}
-              >
-                <Settings className="w-5 h-5 text-muted-foreground" />
-                <span className="text-strong">Settings</span>
-              </div>
-            </div>
+            <DashboardMenu open={isSidebarOpen} returnTo="/wellness" onNavigate={() => setIsSidebarOpen(false)} />
 
             <div className="p-4 border-t border-separator">
               <VersionLabel onActivate={() => setIsSidebarOpen(false)} />

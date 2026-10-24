@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, User, CalendarDays, Ruler, Target, Pencil, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { dashboardQuery } from '@/lib/dashboard-navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -55,7 +56,7 @@ export default function ProfilePage() {
         <button onClick={back} className="min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong" aria-label="Back"><ArrowLeft size={20} /></button>
         <h1 className="text-2xl font-bold tracking-tight text-strong">My Fitness Profile</h1>
       </div>
-      {profile.error && <div role="alert" className="rounded-xl border border-amber-500/40 p-3 text-sm text-warning">{profile.error}<div className="flex gap-3 mt-2"><button className="min-h-11" onClick={refresh}>Retry</button><button className="min-h-11" onClick={() => navigate('/settings')}>Open Settings</button></div></div>}
+      {profile.error && <div role="alert" className="rounded-xl border border-amber-500/40 p-3 text-sm text-warning">{profile.error}<div className="flex gap-3 mt-2"><button className="min-h-11" onClick={refresh}>Retry</button><button className="min-h-11" onClick={() => navigate('/account-data' + (fromDashboard ? dashboardQuery(returnTo) : ''))}>Open Account Data</button></div></div>}
       <header className="flex items-center gap-3">
         <div className="w-14 h-14 shrink-0 rounded-full bg-accent-bright/10 flex items-center justify-center"><User size={28} className="text-accent-text" aria-hidden="true" /></div>
         <div className="min-w-0 flex-1"><h2 className="entity-name text-xl font-semibold text-strong">{profile.name || 'Your fitness journey'}</h2><p className="text-sm text-muted-foreground mt-1">Your personal training overview</p></div>

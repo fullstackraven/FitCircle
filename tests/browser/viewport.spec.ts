@@ -83,10 +83,10 @@ test('all navigation sheets keep close, profile, Settings, and version accessibl
     const sheet = page.getByRole('dialog', { name: 'Navigation Menu' });
     await expect(sheet).toBeVisible();
     await assertSafeClose(sheet);
-    const version = await sheet.getByText('Version 2.1.0').boundingBox();
+    const version = await sheet.getByRole('button', { name: /^Version \d+\./ }).boundingBox();
     expect(version!.y + version!.height).toBeLessThanOrEqual(810);
     await expect(sheet.getByRole('button', { name: /My Fitness Profile/ })).toBeVisible();
-    await expect(sheet.getByText('Settings', { exact: true })).toBeVisible();
+    await expect(sheet.getByText('Account Data', { exact: true })).toBeVisible();
     expect(await page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('hidden');
     const before = await page.locator('main').evaluate(el => el.scrollTop);
     await page.mouse.move(380, 450); await page.mouse.wheel(0, 500);
@@ -217,7 +217,7 @@ test('sidebar profile and Settings links retain the Pages path and release their
   const sidebar = page.getByRole('dialog', { name: 'Navigation Menu' });
   await expect(sidebar).toBeVisible();
   expect(new URL(page.url()).pathname).toBe('/FitCircle/');
-  await sidebar.getByText('Settings', { exact: true }).click();
-  await page.waitForURL(/\/FitCircle\/settings\?from=dashboard/);
+  await sidebar.getByText('Account Data', { exact: true }).click();
+  await page.waitForURL(/\/FitCircle\/account-data\?from=dashboard/);
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
 });

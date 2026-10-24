@@ -1,0 +1,75 @@
+{
+  "readings": [
+    {
+      "text": "Licenses",
+      "ratio": 17.08,
+      "required": 3
+    },
+    {
+      "text": "Third-party software and font notices for this build. Production notices are gen",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Open Food Facts data",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Product data is provided under the Open Database License (ODbL). Individual cont",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Open Food Facts terms and attribution",
+      "ratio": 5,
+      "required": 4.5
+    },
+    {
+      "text": "@floating-ui/core",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "1.7.2 · MIT",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "LICENSE",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "MIT License\n\nCopyright (c) 2021-present Floating UI contributors\n\nPermission is ",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

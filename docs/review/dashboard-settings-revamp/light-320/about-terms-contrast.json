@@ -1,0 +1,65 @@
+{
+  "readings": [
+    {
+      "text": "Terms of Service",
+      "ratio": 17.08,
+      "required": 3
+    },
+    {
+      "text": "Using FitCircle",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "FitCircle is a personal fitness and wellness tracking application. It helps you ",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Your responsibilities",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "You are responsible for the accuracy of your entries, choosing activities approp",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Fitness and nutrition information",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Calculations, nutrient references, goals, and activity summaries are information",
+      "ratio": 7.24,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

@@ -13,6 +13,9 @@ import ProfilePage from "@/pages/profile";
 import MeasurementsPage from "@/pages/measurements";
 import FitnessCalculator from "@/pages/fitness-calculator";
 import SettingsPage from "@/pages/settings";
+import SharePage from "@/pages/share";
+import AboutPage from "@/pages/about";
+import { LegalPage, LicensesPage } from "@/pages/legal";
 import FastingPage from "@/pages/fasting";
 import MeditationPage from "@/pages/meditation";
 import HydrationPage from "@/pages/hydration";
@@ -61,7 +64,14 @@ function Router() {
 
       <Route path="/reminders" component={RemindersPage} />
 
-      <Route path="/settings" component={SettingsPage} />
+      <Route path="/account-data"><SettingsPage section="account" /></Route>
+      <Route path="/display"><SettingsPage section="display" /></Route>
+      <Route path="/share" component={SharePage} />
+      <Route path="/about/terms"><LegalPage kind="terms" /></Route>
+      <Route path="/about/privacy"><LegalPage kind="privacy" /></Route>
+      <Route path="/about/licenses" component={LicensesPage} />
+      <Route path="/about" component={AboutPage} />
+      <Route path="/settings"><SettingsPage /></Route>
       <Route component={NotFound} />
     </Switch>
   );

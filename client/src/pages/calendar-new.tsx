@@ -1,4 +1,4 @@
-import { SidebarProfileCard } from '@/components/SidebarProfileCard';
+import { DashboardMenu } from '@/components/DashboardMenu';
 import { VersionLabel } from "@/components/VersionLabel";
 import { AppHeader } from "@/components/AppHeader";
 import React, { useState, useRef, useCallback, useEffect } from "react";
@@ -712,24 +712,8 @@ export default function CalendarPage() {
           </SheetHeader>
           <div className="flex flex-col h-full">
             {/* User Profile Section */}
-            <SidebarProfileCard open={isSidebarOpen} returnTo="/calendar" onNavigate={() => setIsSidebarOpen(false)} />
+            <DashboardMenu open={isSidebarOpen} returnTo="/calendar" onNavigate={() => setIsSidebarOpen(false)} />
 
-            {/* Dashboard Menu Items */}
-            <div className="flex-1 py-4">
-              {/* Settings */}
-              <div
-                className="flex items-center space-x-3 p-4 hover:bg-surface transition-colors cursor-pointer"
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                  navigate('/settings?from=dashboard');
-                }}
-              >
-                <Settings className="w-5 h-5 text-muted-foreground" />
-                <span className="text-strong">Settings</span>
-              </div>
-            </div>
-
-            {/* Version */}
             <div className="p-4 border-t border-separator">
               <VersionLabel onActivate={() => setIsSidebarOpen(false)} />
             </div>

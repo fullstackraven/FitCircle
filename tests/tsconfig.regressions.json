@@ -44,7 +44,9 @@
     "nutrient-references.test.ts",
     "browser/nutrition-details.spec.ts",
     "browser/routines-configuration.spec.ts",
-    "browser/modal-fields.spec.ts"
+    "browser/modal-fields.spec.ts",
+    "dashboard-sharing.test.ts",
+    "browser/dashboard-settings.spec.ts"
   ],
   "exclude": [
     "../node_modules",

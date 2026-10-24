@@ -1,0 +1,65 @@
+{
+  "readings": [
+    {
+      "text": "Account Data",
+      "ratio": 17.06,
+      "required": 4.5
+    },
+    {
+      "text": "Complete Data Backup",
+      "ratio": 17.81,
+      "required": 4.5
+    },
+    {
+      "text": "Download Complete Backup",
+      "ratio": 5.02,
+      "required": 4.5
+    },
+    {
+      "text": "Restore from Backup",
+      "ratio": 5.17,
+      "required": 4.5
+    },
+    {
+      "text": "This creates a complete snapshot of all your FitCircle data. Restore validates t",
+      "ratio": 7.56,
+      "required": 4.5
+    },
+    {
+      "text": "Danger Zone",
+      "ratio": 5.99,
+      "required": 4.5
+    },
+    {
+      "text": "Erase All Data",
+      "ratio": 4.83,
+      "required": 4.5
+    },
+    {
+      "text": "Home",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Calendar",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Routines",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Logs",
+      "ratio": 7.53,
+      "required": 4.5
+    },
+    {
+      "text": "Reminders",
+      "ratio": 7.53,
+      "required": 4.5
+    }
+  ],
+  "failures": []
+}

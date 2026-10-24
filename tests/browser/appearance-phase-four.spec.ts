@@ -28,7 +28,7 @@ for (const mode of modes)
       await page.locator("h1").first().waitFor();
       await page.evaluate(() => document.fonts.ready);
       if (mode === "dark" && name !== "synthetic-not-found")
-        await expect(page).toHaveScreenshot(`${name}.png`, {
+        await expect(page).toHaveScreenshot(`${["cardio-recovery", "workout-recovery"].includes(name) ? `${name}-account-data` : name}.png`, {
           animations: "disabled",
           threshold: 0,
           maxDiffPixels: 0,
