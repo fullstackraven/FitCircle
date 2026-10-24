@@ -4,49 +4,104 @@ on:
     branches: [main]
   push:
     branches: [main]
+  # Manual runs validate completely but never publish, even on main.
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: github-pages-${{ github.event.pull_request.number || github.ref }}
+  group: github-pages-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
-  build:
+  prepare:
     runs-on: ubuntu-24.04
-    env:
-      FONTCONFIG_FILE: ${{ github.workspace }}/tests/fixtures/screenshot-fonts.conf
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
       - run: npm run check
+      - run: npx tsc --noEmit -p tests/tsconfig.regressions.json
       - run: npm test
+      - run: npm run audit:storage
       - run: npm run build
-      # The Ubuntu 24.04 runner already supplies Chrome runtime dependencies.
-      # Exact screenshot references were captured with Chromium 154. Keep the
-      # browser and OS explicit; update them with a reviewed visual comparison.
+      # Build exactly once. All browser shards and Pages consume this same
+      # immutable artifact from this run, never an artifact from a PR run.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tested-site
+          path: dist/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
+
+  browser:
+    name: browser (${{ matrix.shard }}/4)
+    needs: prepare
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    env:
+      FONTCONFIG_FILE: ${{ github.workspace }}/tests/fixtures/screenshot-fonts.conf
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: tested-site
+          path: dist/
+      - name: Verify production artifact
+        run: |
+          for file in index.html sw.js 404.html manifest.json .nojekyll; do
+            test -f "dist/$file"
+          done
+      # Preserve the exact reference browser, OS, fonts and worker count.
+      # Native Playwright sharding preserves file/serial-suite semantics.
       - name: Install reference screenshot browser
         run: |
           curl --fail --location --retry 2 https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chrome-linux64.zip -o "$RUNNER_TEMP/chrome.zip"
           unzip -q "$RUNNER_TEMP/chrome.zip" -d "$RUNNER_TEMP/fitcircle-browser"
           echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$RUNNER_TEMP/fitcircle-browser/chrome-linux64/chrome" >> "$GITHUB_ENV"
-      - run: npm run test:e2e
+      - run: npm run test:e2e -- --workers=2 --shard=${{ matrix.shard }}/4
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: browser-test-results
+          name: browser-test-results-${{ matrix.shard }}
           path: test-results/
           retention-days: 7
-      - uses: actions/upload-pages-artifact@v3
-        if: github.event_name != 'pull_request'
-        with:
-          path: dist
+
+  # Keep the existing required-check name. Always evaluate failed/skipped
+  # dependencies so a failed shard cannot leave this check pending or green.
+  build:
+    needs: [prepare, browser]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    permissions: {}
+    steps:
+      - name: Require every validation job
+        env:
+          PREPARE_RESULT: ${{ needs.prepare.result }}
+          BROWSER_RESULT: ${{ needs.browser.result }}
+        run: |
+          if [[ "$PREPARE_RESULT" != success || "$BROWSER_RESULT" != success ]]; then
+            echo "::error::Validation failed: prepare=$PREPARE_RESULT, browser=$BROWSER_RESULT"
+            exit 1
+          fi
+
   deploy:
-    needs: build
-    if: github.event_name != 'pull_request'
+    needs: [prepare, build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.build.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -55,6 +110,13 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: tested-site
+          path: dist/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
