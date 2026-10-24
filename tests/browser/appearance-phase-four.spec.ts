@@ -28,7 +28,7 @@ for (const mode of modes)
       await page.locator("h1").first().waitFor();
       await page.evaluate(() => document.fonts.ready);
       if (mode === "dark" && name !== "synthetic-not-found")
-        await expect(page).toHaveScreenshot(`${name === "journal-log" || name === "journal-editor" || name === "daily-journal" ? `${name}-notes` : ["cardio-recovery", "workout-recovery"].includes(name) ? `${name}-account-data` : name}.png`, {
+        await expect(page).toHaveScreenshot(`${name === "journal-editor" ? "journal-editor-full-page" : name === "daily-journal" ? "daily-journal-checkmark" : name === "journal-log" ? `${name}-notes` : ["cardio-recovery", "workout-recovery"].includes(name) ? `${name}-account-data` : name}.png`, {
           animations: "disabled",
           threshold: 0,
           maxDiffPixels: 0,
@@ -105,10 +105,7 @@ for (const mode of modes)
       .click();
     await page.getByRole("button", { name: "Edit", exact: true }).click();
     await capture("journal-editor");
-    await page
-      .getByRole("dialog")
-      .getByRole("button", { name: "Close", exact: true })
-      .click();
+    await page.getByRole("button", { name: "Back to journal library" }).click();
     const after = await wellnessBytes(page);
     // Some existing pages initialize control preferences; domain history must stay byte-exact.
     for (const key of Object.keys(before).filter(

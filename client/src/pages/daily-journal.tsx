@@ -181,7 +181,7 @@ export function DailyJournal() {
           value={journalText}
           onChange={(e) => setJournalText(e.target.value)}
           aria-label="Journal entry"
-          className="flex-1 w-full p-0 bg-transparent text-strong border-none resize-none focus:outline-none text-base leading-relaxed placeholder-dim"
+          className="journal-plain-editor flex-1 w-full p-0 bg-transparent text-strong border-none resize-none focus:outline-none text-base leading-relaxed placeholder-dim"
           style={{
             lineHeight: "1.6",
             touchAction: "manipulation",
@@ -222,10 +222,12 @@ export function DailyJournal() {
       >
         <button
           onClick={handleJournalSubmit}
-          className="w-full max-w-sm mx-auto block px-6 py-3 bg-action hover:bg-action-hover text-on-action rounded-xl transition-colors font-medium shadow-lg"
+          aria-label="Save Entry"
+          title="Save Entry"
+          className="ml-auto flex h-11 w-11 items-center justify-center bg-action hover:bg-action-hover text-on-action rounded-full transition-colors"
           data-testid="button-save-journal"
         >
-          Save Entry
+          <Check className="h-6 w-6" aria-hidden="true" />
         </button>
       </div>
     </div>

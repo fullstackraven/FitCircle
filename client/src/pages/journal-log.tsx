@@ -1,16 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   ChevronRight,
   FileText,
   Search,
   SquarePen,
-  Trash2,
   X,
 } from "lucide-react";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
-import { useJournalReaderHistory } from "@/hooks/use-journal-reader-history";
 import { getTodayString } from "@/lib/date-utils";
 import {
   groupJournal,
@@ -18,28 +16,29 @@ import {
   searchJournal,
   type JournalItem,
 } from "@/lib/journal-library";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 
 export function JournalLog() {
   const [, navigate] = useLocation();
-  const { getAllJournalEntries, addJournalEntry, deleteJournalEntry } =
-    useWorkouts({ skipInitialWrite: true });
-  const [query, setQuery] = useState("");
+  const { getAllJournalEntries } = useWorkouts({ skipInitialWrite: true });
+  const search = useSearch();
+  const query = new URLSearchParams(search).get("q") ?? "";
+  const setQuery = (value: string) => {
+    navigate(`/journal-log${value ? `?q=${encodeURIComponent(value)}` : ""}`, {
+      replace: true,
+      state: history.state,
+    });
+  };
   const [now, setNow] = useState(() => new Date());
-  const [selected, setSelected] = useState<JournalItem | null>(null);
-  const [editing, setEditing] = useState(false);
-  const [text, setText] = useState("");
-  const [writeError, setWriteError] = useState("");
-  const editor = useRef<HTMLTextAreaElement>(null);
   const items = journalItems(getAllJournalEntries());
   const results = searchJournal(items, query);
-  const dirty = !!selected && text !== (selected.text ?? "");
+  useEffect(() => {
+    const top = history.state?.journalScrollTop;
+    const frame = requestAnimationFrame(() => {
+      if (typeof top === "number")
+        document.querySelector("main")?.scrollTo(0, top);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
   useEffect(() => {
     const update = () => setNow(new Date());
     const timer = window.setInterval(update, 60000);
@@ -51,63 +50,23 @@ export function JournalLog() {
       document.removeEventListener("visibilitychange", update);
     };
   }, []);
-  useEffect(() => {
-    if (editing) editor.current?.focus();
-  }, [editing, selected?.id]);
-  useEffect(() => {
-    const warn = (e: BeforeUnloadEvent) => {
-      if (dirty) {
-        e.preventDefault();
-        e.returnValue = "";
-      }
-    };
-    window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty]);
-  const close = () => {
-    if (!dirty || confirm("Discard unsaved journal changes?")) {
-      setSelected(null);
-      setEditing(false);
-      return true;
-    }
-    return false;
-  };
-  useJournalReaderHistory(!!selected, close);
-  const open = (item: JournalItem, edit = false) => {
-    setWriteError("");
-    setSelected(item);
-    setText(item.text ?? "");
-    setEditing(edit && item.text !== null);
-  };
-  const create = () =>
-    open(
-      items.find((i) => i.id === getTodayString()) ?? {
-        id: getTodayString(),
-        text: "",
-        date: new Date(new Date().setHours(0, 0, 0, 0)),
-        timestamp: null,
-        title: "New entry",
-        preview: "",
+  const open = (item: { id: string }, edit = false) => {
+    history.replaceState(
+      {
+        ...history.state,
+        journalScrollTop: document.querySelector("main")?.scrollTop ?? 0,
       },
-      true,
+      "",
+      window.location.href,
     );
-  const save = () => {
-    if (!selected || !text.trim()) return;
-    if (!addJournalEntry(selected.id, text)) {
-      setWriteError(
-        "Could not save this entry. Your draft is still open. Free device storage and try again.",
-      );
-      return;
-    }
-    setWriteError("");
-    setSelected({
-      ...selected,
-      text,
-      title: text.split(/\r?\n/).find((s) => s.trim()) ?? "Untitled entry",
-      timestamp: new Date(),
+    const params = new URLSearchParams({ date: item.id });
+    if (edit) params.set("edit", "1");
+    if (query) params.set("q", query);
+    navigate(`/journal-entry?${params}`, {
+      state: { journalFromLibrary: true },
     });
-    setEditing(false);
   };
+  const create = () => open({ id: getTodayString() }, true);
   const dateLabel = (item: JournalItem) =>
     item.date?.toLocaleDateString("en-US", {
       month: "short",
@@ -216,125 +175,6 @@ export function JournalLog() {
           <SquarePen className="w-5 h-5" />
         </button>
       </div>
-      <Dialog
-        open={!!selected}
-        onOpenChange={(value) => {
-          if (!value) close();
-        }}
-      >
-        <DialogContent
-          className="journal-reader max-w-2xl bg-surface text-strong"
-          onEscapeKeyDown={(e) => {
-            e.preventDefault();
-            close();
-          }}
-        >
-          <DialogHeader>
-            <DialogTitle className="sr-only">Daily Journal</DialogTitle>
-            <DialogDescription className="sr-only">
-              Read or edit your daily reflection. Changes are saved only with
-              Save Entry.
-            </DialogDescription>
-          </DialogHeader>
-          {selected && (
-            <>
-              <div className="journal-reader-actions flex items-center gap-2 pr-7">
-                <button
-                  aria-label="Back to journal library"
-                  className="h-11 w-11 flex items-center justify-center text-supporting"
-                  onClick={close}
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </button>
-                <span className="flex-1" />
-                {selected.text !== null && !editing && (
-                  <button
-                    className="h-11 px-3 text-accent-text font-semibold"
-                    onClick={() => setEditing(true)}
-                  >
-                    Edit
-                  </button>
-                )}
-                {editing && (
-                  <button
-                    data-testid="button-save-journal"
-                    disabled={!text.trim()}
-                    className="h-11 px-3 font-semibold text-accent-text disabled:opacity-50"
-                    onClick={save}
-                  >
-                    Save Entry
-                  </button>
-                )}
-                {items.some((i) => i.id === selected.id) && (
-                  <button
-                    aria-label="Delete journal entry"
-                    data-testid="button-delete-journal"
-                    className="h-11 w-11 flex items-center justify-center text-danger-text"
-                    onClick={() => {
-                      if (
-                        confirm(
-                          "Are you sure you want to delete this journal entry? This action cannot be undone.",
-                        )
-                      ) {
-                        if (deleteJournalEntry(selected.id)) setSelected(null);
-                        else
-                          setWriteError(
-                            "Could not delete this entry. The original record is unchanged.",
-                          );
-                      }
-                    }}
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground text-center">
-                {dateLabel(selected)}
-                {selected.timestamp &&
-                  ` · ${selected.timestamp.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`}
-              </p>
-              {writeError && (
-                <p role="alert" className="text-danger-text text-sm">
-                  {writeError}
-                </p>
-              )}
-              {selected.text === null ? (
-                <p role="alert">
-                  This entry cannot be read safely. Its original record has been
-                  preserved. Download a complete backup from Account Data before
-                  attempting recovery.
-                </p>
-              ) : editing ? (
-                <textarea
-                  ref={editor}
-                  aria-label="Journal entry"
-                  data-testid="textarea-journal-entry"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  className="journal-writing-area w-full bg-transparent text-strong border-0 resize-none focus:outline-none focus:ring-0"
-                  autoCapitalize="sentences"
-                  spellCheck
-                />
-              ) : (
-                <div
-                  className="journal-writing-area whitespace-pre-wrap break-words leading-relaxed"
-                  data-testid="journal-reader-text"
-                >
-                  {selected.text || "This entry is empty."}
-                </div>
-              )}
-              {editing && (
-                <p
-                  className="text-xs text-muted-foreground"
-                  data-testid="text-word-count"
-                >
-                  {text.trim() ? text.trim().split(/\s+/).length : 0} words
-                </p>
-              )}
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

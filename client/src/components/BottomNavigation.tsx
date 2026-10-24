@@ -14,6 +14,7 @@ export default function BottomNavigation() {
     '/food-tracker',
     '/recovery',
     '/journal-log',
+    '/journal-entry',
     '/energy-level',
     '/supplements-page'
   ];

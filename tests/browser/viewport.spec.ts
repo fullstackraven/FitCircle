@@ -179,13 +179,17 @@ test('nested dialogs keep background locked until the last overlay closes', asyn
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
   await page.goto('journal-log');
   await page.getByRole('button', { name: 'Write new journal entry' }).click();
-  const journal = page.getByRole('dialog', { name: 'Daily Journal' });
+  const journal = page.getByRole('region', { name: 'Daily Journal' });
+  await expect(page).toHaveURL(/journal-entry/);
+  await expect(page.getByRole('dialog')).toHaveCount(0);
   await journal.getByTestId('textarea-journal-entry').fill('Unsaved journal draft');
   await page.setViewportSize({ width: 390, height: 430 });
-  await assertSafeClose(journal, 59, 396);
+  const save = await journal.getByTestId('button-save-journal').boundingBox();
+  expect(save!.y).toBeGreaterThanOrEqual(59);
+  expect(save!.y + save!.height).toBeLessThanOrEqual(396);
   await expect(journal.getByTestId('textarea-journal-entry')).toHaveValue('Unsaved journal draft');
   page.once('dialog', dialog => dialog.accept());
-  await journal.getByRole('button', { name: 'Close', exact: true }).click();
+  await journal.getByRole('button', { name: 'Back to journal library' }).click();
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
 });
 

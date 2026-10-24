@@ -322,6 +322,30 @@ for (const example of cases)
       content: ":root { --safe-top: 59px; --safe-bottom: 34px; }",
     });
     await example.open(page);
+    if (example.name === "journal textarea") {
+      await expect(page).toHaveURL(/journal-entry/);
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+      const field = page.getByTestId("textarea-journal-entry");
+      await field.fill("Full-page journal draft");
+      await page.evaluate(() => {
+        Object.defineProperties(window.visualViewport!, {
+          height: { configurable: true, value: 430 },
+          offsetTop: { configurable: true, value: 40 },
+        });
+        window.visualViewport!.dispatchEvent(new Event("resize"));
+      });
+      await settle(page);
+      await field.scrollIntoViewIfNeeded();
+      await expect(field).toBeInViewport();
+      await expect(field).toHaveValue("Full-page journal draft");
+      const style = await field.evaluate(el => ({ outline: getComputedStyle(el).outlineStyle, shadow: getComputedStyle(el).boxShadow, horizontalOverflow: el.closest('main')!.scrollWidth > el.closest('main')!.clientWidth }));
+      expect(style.outline).toBe("none");
+      expect(style.shadow).not.toContain("203, 213, 225");
+      expect(style.horizontalOverflow).toBe(false);
+      await expect(page.getByTestId("button-save-journal")).toBeInViewport();
+      await expect(page.getByRole("button", { name: "Back to journal library" })).toBeInViewport();
+      return;
+    }
     const dialog = page.getByRole("dialog").last();
     await expect(dialog).toBeVisible();
     await dialog.evaluate((el) =>

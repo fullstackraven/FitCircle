@@ -123,11 +123,19 @@ for (const mode of ["light", "dark"])
     await shot(page, `${mode}-no-results`);
     await page.getByRole("button", { name: "Clear search" }).click();
     await page.getByText("Leg Day Workout", { exact: true }).click();
+    await expect(page).toHaveURL(/journal-entry/);
+    await expect(page.getByRole("dialog")).toHaveCount(0);
     await shot(page, `${mode}-reader`);
     await page.getByRole("button", { name: "Edit", exact: true }).click();
     await expect(page.getByTestId("textarea-journal-entry")).toHaveValue(
       entries["2026-10-24"].text,
     );
+    await expect(page.getByRole("button", { name: "Save Entry" })).toHaveText(
+      "",
+    );
+    await expect(
+      page.getByTestId("button-save-journal").locator("svg.lucide-check"),
+    ).toBeVisible();
     await shot(page, `${mode}-editor`);
     await page.evaluate(() => {
       Object.defineProperties(window.visualViewport!, {
@@ -146,7 +154,7 @@ for (const mode of ["light", "dark"])
       });
       window.visualViewport!.dispatchEvent(new Event("resize"));
     });
-    await page.getByRole("button", { name: "Close", exact: true }).click();
+    await page.getByRole("button", { name: "Back to journal library" }).click();
     expect(
       await page.evaluate(() => localStorage.getItem("workout-tracker-data")),
     ).toBe(raw);
@@ -171,7 +179,7 @@ for (const mode of ["light", "dark"])
       .getByTestId("textarea-journal-entry")
       .fill("Edited reflection\nOriginal date retained.");
     await page.getByTestId("button-save-journal").click();
-    await page.getByRole("button", { name: "Close", exact: true }).click();
+    await page.getByRole("button", { name: "Back to journal library" }).click();
     await search.fill("Edited reflection");
     await expect(page.getByText("1 result", { exact: true })).toBeVisible();
     const saved = await page.evaluate(() =>
@@ -205,14 +213,16 @@ test("empty compose, unsaved dismissal, save, delete and System updates", async 
     .getByTestId("textarea-journal-entry")
     .fill("New reflection\nMultiline preserved.");
   page.once("dialog", (d) => d.dismiss());
-  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.getByRole("button", { name: "Back to journal library" }).click();
   await expect(page.getByTestId("textarea-journal-entry")).toHaveValue(
     "New reflection\nMultiline preserved.",
   );
   await page.getByTestId("button-save-journal").click();
   page.once("dialog", (d) => d.dismiss());
   await page.getByTestId("button-delete-journal").click();
-  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Daily Journal" }),
+  ).toBeVisible();
   page.once("dialog", (d) => d.accept());
   await page.getByTestId("button-delete-journal").click();
   await expect(page.getByText("No Journal Entries Yet")).toBeVisible();
@@ -294,7 +304,10 @@ test("browser Back protects a dirty reader and failed persistence retains the dr
   ).toBe(before);
   page.once("dialog", (d) => d.accept());
   await page.goBack();
-  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "Daily Journal" })).toHaveCount(
+    0,
+  );
+  await expect(page).toHaveURL(/journal-log/);
   await expect(
     page.getByRole("heading", { name: "Journal", exact: true }),
   ).toBeVisible();
@@ -309,7 +322,7 @@ test("a small library keeps compose reachable without placeholder saved entries"
   await page.getByRole("button", { name: "Write new journal entry" }).click();
   await expect(page.getByTestId("textarea-journal-entry")).toHaveValue("");
   await expect(page.getByTestId("button-save-journal")).toBeDisabled();
-  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.getByRole("button", { name: "Back to journal library" }).click();
   const records = await page.evaluate(
     () =>
       JSON.parse(localStorage.getItem("workout-tracker-data")!).journalEntries,
