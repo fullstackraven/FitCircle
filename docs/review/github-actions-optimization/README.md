@@ -88,11 +88,12 @@ inside browser validation, not npm, browser download, Vite, or Pages publishing.
 
 ```text
 PR / main push / manual
-  prepare: immutable SHA checkout -> npm ci -> types/regression types/unit/storage
-           -> production build ONCE -> immutable tested-site artifact
+  checks:  immutable SHA checkout -> npm ci -> types/regression types/unit/storage
+  prepare: immutable SHA checkout -> npm ci -> production build ONCE
+           -> immutable tested-site artifact (runs alongside checks)
   browser: 1/10 through 10/10 in parallel, each with two workers
            exact SHA checkout + same built artifact + same pinned browser/fonts
-  build:   always-run aggregate gate, succeeds only if prepare AND all shards succeed
+  build:   always-run aggregate gate, succeeds only if checks AND prepare AND all shards succeed
   deploy:  only successful push to refs/heads/main
            download that same artifact -> Pages artifact upload -> Pages deploy
 ```
@@ -138,9 +139,9 @@ the intended use without unnecessary scheduled Actions consumption.
 
 - The required-check identity **`build`** is preserved in the same workflow file
   and workflow name. It is now a complete aggregate rather than the serial job.
-- `build` uses `always()` and verifies both dependency results. Local execution of
-  its shell gate checked all 16 combinations of success/failure/cancelled/skipped;
-  only two successes pass. Failed/skipped preparation or any failed shard cannot
+- `build` uses `always()` and verifies all three dependency results. Local execution of
+  its shell gate checked all 64 combinations of success/failure/cancelled/skipped;
+  only three successes pass. Failed/skipped preparation or any failed shard cannot
   leave it permanently pending or falsely green. Canceled old runs are superseded
   by the next run as before.
 - The existing **`backup-coverage`** check and workflow are untouched.
@@ -159,7 +160,9 @@ the intended use without unnecessary scheduled Actions consumption.
 Before merge, the owner should verify Settings -> Branches/Rulesets and required
 checks in case settings changed since this audit. If merge blocking is desired,
 require `build` and `backup-coverage` from GitHub Actions; do not require an obsolete
-conditional job name. No protection settings are enabled by this PR. Any later
+conditional job name. Also verify Actions settings retain read-only fork PR tokens, no production
+secrets sent to forks, and the expected approval policy: the admin token-policy
+endpoint was inaccessible. No protection settings are enabled by this PR. Any later
 proposal to omit post-merge testing needs enforced PR checks, direct-push/bypass
 controls and up-to-date/merge-queue or equivalent exact-commit assurance first.
 
@@ -169,7 +172,7 @@ Local validation before opening the PR:
 
 - `actionlint` 1.7.7 passes both workflows, including expression/action input checks.
 - YAML/event/permissions/dependency/artifact/concurrency invariants inspected.
-- Aggregate gate truth table: 16/16 combinations correct.
+- Aggregate gate truth table: 64/64 combinations correct.
 - Shard union: 365 unique IDs, no overlap/omission, same total as the full listing.
 - `npm run build` passes; original Pages base path, icons, manifest, `.nojekyll`,
   recovery document, and generated worker exist with `/FitCircle/` references.
@@ -195,7 +198,13 @@ shards to separate those file groups, without changing within-file semantics or
 per-runner workers. This is still one simple fixed matrix, not a custom timing
 scheduler. More runners are an explicit latency/resource tradeoff; actual charged
 usage depends on plan and per-job rounding. Available concurrency/queueing can
-limit the gain. A smaller matrix remains an option if resource usage matters more.
+limit the gain. A smaller matrix remains an option if resource usage matters more. Static checks
+now run alongside artifact preparation instead of blocking it; the ten-shard
+trial spent 30 seconds in independent checks before the build. The gate still
+requires those checks, preparation, and every shard, including when a dependency
+fails/skips. This adds one isolated npm setup, not a duplicate build. A bad PR can
+spend browser runner time while static checks are failing; it still cannot pass
+or publish, and newer commits cancel its outdated run.
 
 Live final-candidate PR and manual measurements will be recorded after completion.
 No optimized production deployment is performed in this task. The post-merge

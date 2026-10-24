@@ -23,10 +23,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run check
-      - run: npx tsc --noEmit -p tests/tsconfig.regressions.json
-      - run: npm test
-      - run: npm run audit:storage
       - run: npm run build
       # Build exactly once. All browser shards and Pages consume this same
       # immutable artifact from this run, never an artifact from a PR run.
@@ -37,6 +33,22 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 1
+
+  checks:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npx tsc --noEmit -p tests/tsconfig.regressions.json
+      - run: npm test
+      - run: npm run audit:storage
 
   browser:
     name: browser (${{ matrix.shard }}/10)
@@ -85,7 +97,7 @@ jobs:
   # Keep the existing required-check name. Always evaluate failed/skipped
   # dependencies so a failed shard cannot leave this check pending or green.
   build:
-    needs: [prepare, browser]
+    needs: [prepare, checks, browser]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     permissions: {}
@@ -93,10 +105,11 @@ jobs:
       - name: Require every validation job
         env:
           PREPARE_RESULT: ${{ needs.prepare.result }}
+          CHECKS_RESULT: ${{ needs.checks.result }}
           BROWSER_RESULT: ${{ needs.browser.result }}
         run: |
-          if [[ "$PREPARE_RESULT" != success || "$BROWSER_RESULT" != success ]]; then
-            echo "::error::Validation failed: prepare=$PREPARE_RESULT, browser=$BROWSER_RESULT"
+          if [[ "$PREPARE_RESULT" != success || "$CHECKS_RESULT" != success || "$BROWSER_RESULT" != success ]]; then
+            echo "::error::Validation failed: prepare=$PREPARE_RESULT, checks=$CHECKS_RESULT, browser=$BROWSER_RESULT"
             exit 1
           fi
 
