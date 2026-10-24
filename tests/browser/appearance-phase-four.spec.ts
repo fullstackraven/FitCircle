@@ -106,6 +106,7 @@ for (const mode of modes)
     await page.getByRole("button", { name: "Edit", exact: true }).click();
     await capture("journal-editor");
     await page.getByRole("button", { name: "Back to journal library" }).click();
+    await expect(page).toHaveURL(/\/journal-log(?:\?|$)/);
     const after = await wellnessBytes(page);
     // Some existing pages initialize control preferences; domain history must stay byte-exact.
     for (const key of Object.keys(before).filter(
@@ -118,6 +119,10 @@ for (const mode of modes)
     await page.getByLabel("Duration (minutes)", { exact: true }).fill("10");
     await page.getByTestId("button-start-meditation").click();
     await page.getByRole("button", { name: "Pause", exact: true }).click();
+    await expect(page.getByText("Paused", { exact: true })).toBeVisible();
+    // The established baseline shows the bottom of the page. Pin that position
+    // rather than depending on click auto-scroll during the timer layout change.
+    await page.locator("main").evaluate(el => el.scrollTo(0, el.scrollHeight));
     await capture("meditation-timer");
     await page.evaluate(() =>
       localStorage.setItem("fitcircle_cardio_data", "{synthetic malformed"),

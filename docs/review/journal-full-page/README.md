@@ -32,3 +32,21 @@ Physical iPhone Safari/installed-PWA checks remain manual: native keyboard/selec
 ## Rollback
 
 Revert this presentation/navigation PR and redeploy the prior build. Saved journal data remains compatible; do not clear storage or reinstall the PWA.
+
+
+## PR #81 CI correction
+
+The first CI run passed prepare/backup checks and browser shards 2/4 and 4/4. Shards 1/4 and 3/4 reported three failures; the aggregate build gate correctly failed and deployment stayed skipped.
+
+- **Canceled browser Back discarded the editor:** a route-changing popstate reached the router before the draft handler could preserve the mounted component. A transient same-route history fence now holds the editor in place for confirmation. Cancel restores the fence and retains the draft; confirmed navigation consumes it before returning to the library. Saving removes the fence. No persistent data or storage schema changed.
+- **Dark narrow-library hover contrast:** preview text on the hovered secondary surface measured 4.04:1. The existing `supporting` semantic text token is now applied on row hover. Normal row colors and all unrelated components remain unchanged. Existing contrast assertions remain intact.
+- **Meditation timer screenshot:** the CI mismatch did not reproduce locally. Its existing baseline depicts the bottom of the scroll surface, so the fixture now explicitly waits for the paused state and pins that scroll position instead of depending on click auto-scrolling during a layout transition. Journal return navigation also waits for the library URL before continuing the walkthrough. No Meditation application code, image baseline, pixel threshold or retry setting changed. CI artifact/log downloads returned 403; the available check annotations supplied the failures.
+
+Focused follow-up validation only:
+
+- `npm run build`: passed.
+- `npm run check`: passed.
+- The three failed cases (`journal-notes.spec.ts` Dark library + browser Back, and `appearance-phase-four.spec.ts` Dark walkthrough): **3 passed, 12.8s**.
+- After the explicit scroll/navigation waits, the affected Dark walkthrough repeated twice with two workers: **2 passed, 14.1s**, against the unchanged zero-tolerance baselines.
+
+No full local suite was run. Existing review-gallery side effects were restored and no screenshots were added or changed by this correction. Final complete validation remains with GitHub Actions.

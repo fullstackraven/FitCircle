@@ -20,39 +20,62 @@ export function JournalEntryPage() {
   const [error, setError] = useState("");
   const editor = useRef<HTMLTextAreaElement>(null);
   const allowedToLeave = useRef(false);
+  const draftFence = useRef<string | null>(null);
   const dirty = text !== savedText;
   const returnURL = `/journal-log${params.get("q") ? `?q=${encodeURIComponent(params.get("q")!)}` : ""}`;
   const fromLibrary = useRef(history.state?.journalFromLibrary === true);
   useEffect(() => {
     if (editing) editor.current?.focus({ preventScroll: true });
   }, [editing]);
+  const returnToLibrary = () => {
+    if (fromLibrary.current) history.back();
+    else navigate(returnURL, { replace: true });
+  };
   useEffect(() => {
-    const currentURL = window.location.href;
     const warn = (event: BeforeUnloadEvent) => {
       if (dirty && !allowedToLeave.current) {
         event.preventDefault();
         event.returnValue = "";
       }
     };
-    const back = (event: PopStateEvent) => {
-      // Capture before the router so a canceled Back never unmounts the draft.
-      // The forward event restoring this URL is allowed through unchanged.
-      if (
-        window.location.href === currentURL ||
-        !dirty ||
-        allowedToLeave.current
-      )
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
+  useEffect(() => {
+    if (!dirty) return;
+    // Stay on this route while asking about Back. Intercepting a route-changing
+    // popstate is too late: the router can already have unmounted the draft.
+    const marker = `journal-draft-${Date.now()}-${Math.random()}`;
+    const pushFence = () => {
+      history.pushState(
+        { ...history.state, journalDraftFence: marker },
+        "",
+        window.location.href,
+      );
+      draftFence.current = marker;
+    };
+    pushFence();
+    const back = () => {
+      if (allowedToLeave.current || history.state?.journalDraftFence === marker)
         return;
       if (!confirm("Discard unsaved journal changes?")) {
-        event.stopImmediatePropagation();
-        history.forward();
+        pushFence();
+        return;
       }
+      allowedToLeave.current = true;
+      draftFence.current = null;
+      returnToLibrary();
     };
-    window.addEventListener("beforeunload", warn);
-    window.addEventListener("popstate", back, true);
+    window.addEventListener("popstate", back);
     return () => {
-      window.removeEventListener("beforeunload", warn);
-      window.removeEventListener("popstate", back, true);
+      window.removeEventListener("popstate", back);
+      draftFence.current = null;
+      // Save removes the transient fence; explicit navigation already consumes it.
+      if (
+        !allowedToLeave.current &&
+        history.state?.journalDraftFence === marker
+      )
+        history.back();
     };
   }, [dirty]);
   const leave = (discardConfirmed = false) => {
@@ -63,8 +86,11 @@ export function JournalEntryPage() {
     )
       return;
     allowedToLeave.current = true;
-    if (fromLibrary.current) history.back();
-    else navigate(returnURL, { replace: true });
+    if (draftFence.current) {
+      // Consume the same-route draft fence before returning to the prior page.
+      window.addEventListener("popstate", returnToLibrary, { once: true });
+      history.back();
+    } else returnToLibrary();
   };
   const save = () => {
     if (!text.trim()) return;

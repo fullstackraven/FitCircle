@@ -96,14 +96,14 @@ export function JournalLog() {
             {group.entries.map((item) => (
               <button
                 key={item.id}
-                className="w-full text-left px-4 py-4 flex items-center gap-3 hover:bg-surface-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px]"
+                className="group w-full text-left px-4 py-4 flex items-center gap-3 hover:bg-surface-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px]"
                 onClick={() => open(item)}
               >
                 <span className="min-w-0 flex-1">
                   <span className="font-semibold block truncate">
                     {item.title}
                   </span>
-                  <span className="text-sm text-muted-foreground block truncate mt-1">
+                  <span className="text-sm text-muted-foreground group-hover:text-supporting block truncate mt-1">
                     {dateLabel(item)}
                     {item.preview && `  ${item.preview}`}
                   </span>
