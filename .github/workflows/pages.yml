@@ -23,6 +23,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run check
+      - run: npx tsc --noEmit -p tests/tsconfig.regressions.json
+      - run: npm test
+      - run: npm run audit:storage
       - run: npm run build
       # Build exactly once. All browser shards and Pages consume this same
       # immutable artifact from this run, never an artifact from a PR run.
@@ -34,31 +38,14 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  checks:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run check
-      - run: npx tsc --noEmit -p tests/tsconfig.regressions.json
-      - run: npm test
-      - run: npm run audit:storage
-
   browser:
-    name: browser (${{ matrix.shard }}/10)
+    name: browser (${{ matrix.shard }}/4)
     needs: prepare
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
-      max-parallel: 10
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        shard: [1, 2, 3, 4]
     env:
       FONTCONFIG_FILE: ${{ github.workspace }}/tests/fixtures/screenshot-fonts.conf
     steps:
@@ -86,7 +73,7 @@ jobs:
           curl --fail --location --retry 2 https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chrome-linux64.zip -o "$RUNNER_TEMP/chrome.zip"
           unzip -q "$RUNNER_TEMP/chrome.zip" -d "$RUNNER_TEMP/fitcircle-browser"
           echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$RUNNER_TEMP/fitcircle-browser/chrome-linux64/chrome" >> "$GITHUB_ENV"
-      - run: npm run test:e2e -- --workers=2 --shard=${{ matrix.shard }}/10
+      - run: npm run test:e2e -- --workers=2 --shard=${{ matrix.shard }}/4
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -97,7 +84,7 @@ jobs:
   # Keep the existing required-check name. Always evaluate failed/skipped
   # dependencies so a failed shard cannot leave this check pending or green.
   build:
-    needs: [prepare, checks, browser]
+    needs: [prepare, browser]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     permissions: {}
@@ -105,11 +92,10 @@ jobs:
       - name: Require every validation job
         env:
           PREPARE_RESULT: ${{ needs.prepare.result }}
-          CHECKS_RESULT: ${{ needs.checks.result }}
           BROWSER_RESULT: ${{ needs.browser.result }}
         run: |
-          if [[ "$PREPARE_RESULT" != success || "$CHECKS_RESULT" != success || "$BROWSER_RESULT" != success ]]; then
-            echo "::error::Validation failed: prepare=$PREPARE_RESULT, checks=$CHECKS_RESULT, browser=$BROWSER_RESULT"
+          if [[ "$PREPARE_RESULT" != success || "$BROWSER_RESULT" != success ]]; then
+            echo "::error::Validation failed: prepare=$PREPARE_RESULT, browser=$BROWSER_RESULT"
             exit 1
           fi
 
