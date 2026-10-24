@@ -161,3 +161,11 @@ test('Display keyboard appearance selection and legacy clipboard fallback remain
   await page.addInitScript(()=>{Object.defineProperty(navigator,'clipboard',{value:undefined});document.execCommand=()=>{(window as any).copied=document.querySelector('textarea')?.value;return true;};});
   await page.goto('share');await page.getByRole('button',{name:'Copy Link',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Link copied.');expect(await page.evaluate(()=>(window as any).copied)).toBe(FITCIRCLE_URL);await expect(page.locator('textarea')).toHaveCount(0);
 });
+
+
+test('profile recovery keeps the originating dashboard and preserves malformed records',async({page})=>{
+  await seed(page);await page.evaluate(()=>localStorage.setItem('fitcircle_profile','{'));
+  await page.goto('profile?from=dashboard&returnTo=%2Froutines');await page.getByRole('button',{name:'Open Account Data',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Account Data',exact:true})).toBeVisible();await page.getByRole('button',{name:'Back',exact:true}).click();
+  await expect(page.getByRole('dialog',{name:'Navigation Menu'})).toBeVisible();expect(new URL(page.url()).pathname).toBe('/FitCircle/routines');expect(await page.evaluate(()=>localStorage.getItem('fitcircle_profile'))).toBe('{');
+});

@@ -177,7 +177,12 @@ Account Data label and metadata-derived version; assertions are retained.
 - Production build passes and includes generated notices.
 - Initial core appearance/new-navigation run: 25 pass.
 - Broader navigation/viewport/diagnostics/recovery run: 42 pass.
-- Final full-suite command and outcome are recorded in the PR description/checks.
+- Full local implementation suite: **364 passed (5.3 minutes)**.
+- Post-refinement core/new-page run: **28 passed (59.9 seconds)**.
+- Final suite adds a Profile recovery return-context regression (365 browser cases).
+  The final run outcome and GitHub runner results are linked from
+  [PR #78](https://github.com/fullstackraven/FitCircle/pull/78) and its
+  [checks](https://github.com/fullstackraven/FitCircle/pull/78/checks).
 
 ```sh
 npm run check
@@ -193,6 +198,16 @@ npm run test:e2e -- --workers=2
 The browser override uses the reference Chromium 154 available in this workspace;
 GitHub uses PR #77's pinned reference browser/font configuration. No retries,
 threshold relaxation, timeout inflation, or skipped existing tests were added.
+
+## Known limitations requiring review
+
+- The legal operator/contact/regional details and final legal wording require owner review.
+- Physical iPhone, native sharing, camera scanning, and Files handoff are not claimed as tested.
+- Web Share is unavailable in some browsers; Copy Link remains available there.
+- Package metadata remains 1.0.0; the old footer's hardcoded 2.1.0 was not treated
+  as an authoritative release version. Future version bumps should update metadata.
+- Upstream notice provenance and the missing published scrollbar gitHead are
+  disclosed above; review notice mappings when dependencies change.
 
 ## Manual iPhone review
 
