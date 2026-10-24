@@ -11,9 +11,9 @@ export function SidebarProfileCard({ open, returnTo, onNavigate }: {
 }) {
   const [, navigate] = useLocation();
   const [training, setTraining] = useState<ReturnType<typeof readTrainingOverview>>(null);
-  const [profile, setProfile] = useState<ReturnType<typeof readFitnessProfile> | null>(null);
+  const profile = open ? readFitnessProfile() : null;
   useEffect(() => {
-    if (open) { setTraining(readTrainingOverview()); setProfile(readFitnessProfile()); }
+    if (open) { setTraining(readTrainingOverview()); }
   }, [open]);
   const openProfile = () => {
     onNavigate();

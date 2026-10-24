@@ -13,6 +13,8 @@ export async function copyFitcircleLink() {
   }
   const field = document.createElement('textarea');
   field.value = FITCIRCLE_URL;
+  field.readOnly = true;
+  field.tabIndex = -1;
   field.setAttribute('aria-label', 'FitCircle link');
   field.style.position = 'fixed'; field.style.opacity = '0';
   const previous = document.activeElement as HTMLElement | null;
