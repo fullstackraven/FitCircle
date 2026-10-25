@@ -31,13 +31,15 @@ import { useFasting, type FastingLog } from "@/hooks/use-fasting";
 import { useGoals } from "@/hooks/use-goals";
 import {
   getTodayString,
+  getDateString,
   getCurrentTime24,
   getDisplayDate,
   groupLogsByMonth,
 } from "@/lib/date-utils";
 
 export default function FastingPage() {
-  const { error, stats, logs, addLog, updateLog, deleteLog } = useFasting();
+  const { error, stats, logs, now, addLog, updateLog, deleteLog } = useFasting();
+  const completed = completedFasts(logs, now);
   const { goals, updateGoal } = useGoals();
   const [isFastingDialogOpen, setIsFastingDialogOpen] = useState(false);
   const [editingLog, setEditingLog] = useState<FastingLog | null>(null);
@@ -224,12 +226,11 @@ export default function FastingPage() {
         )}
 
         <WellnessProgressHero
-          current={0}
+          current={stats.todayHours}
           target={goals.fastingHours}
           unit="hr"
-          period="No active fast"
-          title="Current fasting progress"
-          inactive
+          period="Today’s Completed Fast"
+          title="Today’s Completed Fast"
         />
         <WellnessTodaySection title="Fasting timeline">
           <dl className="wellness-timeline mt-3">
@@ -256,10 +257,10 @@ export default function FastingPage() {
           </p>
         </WellnessTodaySection>
         <WellnessRecentActivity
-          totals={fastingDailyHours(completedFasts(logs))}
+          totals={fastingDailyHours(completed)}
           unit="hr"
           summary={(days, dates) => {
-            const recent = completedFasts(logs).filter((fast) =>
+            const recent = completed.filter((fast) =>
               dates.includes(fast.date),
             );
             const achieved = new Set(
@@ -296,8 +297,8 @@ export default function FastingPage() {
         <WellnessTodaySection title="Today's Completed Fasts">
           <div className="space-y-2">
             {(() => {
-              const today = getTodayString();
-              const todayFasts = completedFasts(logs)
+              const today = getDateString(now);
+              const todayFasts = completed
                 .filter((f) => f.date === today)
                 .map((f) => ({
                   ...f.log,
@@ -332,7 +333,7 @@ export default function FastingPage() {
               } else {
                 return (
                   <div className="text-center text-dim py-4 text-sm">
-                    No fasts today yet
+                    No completed fast today
                   </div>
                 );
               }

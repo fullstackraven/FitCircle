@@ -172,13 +172,13 @@ test("meditation retains timer and can manually log a completed session", async 
     page.getByRole("button", { name: "Pause", exact: true }),
   ).toBeVisible();
 });
-test("completed fasts never become active progress and the timeline keeps actual completed dates", async ({
+test("today’s completed fast populates the ring without becoming an active timer", async ({
   page,
 }) => {
   await seed(page);
   await page.goto("fasting");
   await expect(
-    page.getByRole("img", { name: "0% of goal", exact: true }),
+    page.getByRole("img", { name: "100% of goal", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByText("Completed today: 16.0 hr · 100% of duration goal"),
