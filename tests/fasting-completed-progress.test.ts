@@ -123,17 +123,25 @@ test("local midnight resets progress; a midnight completion belongs to the new d
   );
 });
 test("DST overnight durations keep their full recorded elapsed time on the end date", () => {
-  // Run under America/New_York: spring-forward loses an hour, fall-back gains one.
-  for (const [startDate, endDate, hours] of [
-    ["2026-03-07", "2026-03-08", 15],
-    ["2026-10-31", "2026-11-01", 17],
-  ] as const) {
-    const record = { ...overnight, startDate, endDate, duration: hours * 60 };
-    const end = new Date(`${endDate}T12:00:00`);
-    assert.equal(fastingProgress([record], 16, end).todayHours, hours);
-    assert.equal(completedFasts([record], end)[0].date, endDate);
-    const { duration, ...legacy } = record;
-    assert.equal(fastingProgress([legacy], 16, end).todayHours, hours);
+  // Local-time legacy durations require a real DST zone. Keep this synchronous
+  // test isolated from the runner's timezone and restore it even on failure.
+  const previousTimezone = process.env.TZ;
+  try {
+    process.env.TZ = "America/New_York";
+    for (const [startDate, endDate, hours] of [
+      ["2026-03-07", "2026-03-08", 15],
+      ["2026-10-31", "2026-11-01", 17],
+    ] as const) {
+      const record = { ...overnight, startDate, endDate, duration: hours * 60 };
+      const end = new Date(`${endDate}T12:00:00`);
+      assert.equal(fastingProgress([record], 16, end).todayHours, hours);
+      assert.equal(completedFasts([record], end)[0].date, endDate);
+      const { duration, ...legacy } = record;
+      assert.equal(fastingProgress([legacy], 16, end).todayHours, hours);
+    }
+  } finally {
+    if (previousTimezone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousTimezone;
   }
 });
 test("future completions, malformed end dates/times and invalid durations do not populate today", () => {
