@@ -28,7 +28,7 @@ for (const mode of modes)
       await page.locator("h1").first().waitFor();
       await page.evaluate(() => document.fonts.ready);
       if (mode === "dark" && name !== "synthetic-not-found")
-        await expect(page).toHaveScreenshot(`${name === "journal-editor" ? "journal-editor-full-page" : name === "daily-journal" ? "daily-journal-checkmark" : name === "journal-log" ? `${name}-notes` : ["cardio-recovery", "workout-recovery"].includes(name) ? `${name}-account-data` : name}.png`, {
+        await expect(page).toHaveScreenshot(`${name === "fasting" || name.startsWith("fasting-") ? `${name}-completed` : name === "journal-editor" ? "journal-editor-full-page" : name === "daily-journal" ? "daily-journal-checkmark" : name === "journal-log" ? `${name}-notes` : ["cardio-recovery", "workout-recovery"].includes(name) ? `${name}-account-data` : name}.png`, {
           animations: "disabled",
           threshold: 0,
           maxDiffPixels: 0,
@@ -147,7 +147,7 @@ for (const mode of ["dark", "light"]) {
       ["cardio", 50],
       ["hydration", 25],
       ["meditation", 50],
-      ["fasting", 0],
+      ["fasting", 100],
     ] as const) {
       await page.goto(route);
       await expect(

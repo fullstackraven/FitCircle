@@ -58,6 +58,7 @@ export function useFasting() {
     logs,
     error,
     stats,
+    now,
     hasUserGoal: Boolean(localStorage.getItem(STORAGE_KEYS.GOAL_FASTING)),
     addLog: (log: Omit<FastingLog, "id" | "loggedAt">) =>
       amount(log.duration) > 0 &&

@@ -76,7 +76,7 @@ for (const route of ["hydration", "meditation", "fasting"])
       await page.goto(route);
       await expect(page.locator(".type-caption").first()).toHaveText("0%");
       if (route === "fasting")
-        await expect(page.getByText(/No active fast/)).toBeVisible();
+        await expect(page.getByText("Today’s Completed Fast", { exact: true })).toBeVisible();
       else {
         await page.getByRole("button", { name: "Goal", exact: true }).click();
         await expect(page.locator(".type-caption").last()).toHaveText("0%");
@@ -178,11 +178,11 @@ test("completed fast crossing midnight meets duration target rather than display
   );
   const before = await bytes(page);
   await page.goto("fasting");
-  await expect(page.locator(".type-caption").first()).toHaveText("0%");
+  await expect(page.locator(".type-caption").first()).toHaveText("100%");
   await expect(
     page.getByText("Completed today: 16.0 hr · 100% of duration goal"),
   ).toBeVisible();
-  await expect(page.getByText(/No active fast/)).toBeVisible();
+  await expect(page.getByText("Today’s Completed Fast", { exact: true })).toBeVisible();
   await expect(page.getByText(/1 of 7 days met goal/)).toBeVisible();
   await page.getByRole("button", { name: "Goal", exact: true }).click();
   await expect(page.locator(".type-caption").last()).toHaveText("100%");

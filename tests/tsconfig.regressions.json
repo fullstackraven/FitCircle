@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "fasting-completed-progress.test.ts",
+    "browser/fasting-completed-progress.spec.ts",
     "journal-library.test.ts",
     "browser/journal-notes.spec.ts",
     "appearance-colors.test.ts",
