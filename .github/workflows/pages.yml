@@ -70,7 +70,12 @@ jobs:
       # Native Playwright sharding preserves file/serial-suite semantics.
       - name: Install reference screenshot browser
         run: |
-          curl --fail --location --retry 2 https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chrome-linux64.zip -o "$RUNNER_TEMP/chrome.zip"
+          # Avoid HTTP/2 stream failures (curl 92) on the browser CDN.
+          # Retry transport failures as well as HTTP failures; never skip tests.
+          curl --http1.1 --fail --location --retry 2 --retry-all-errors \
+            --connect-timeout 30 --max-time 180 \
+            https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.57/linux64/chrome-linux64.zip \
+            -o "$RUNNER_TEMP/chrome.zip"
           unzip -q "$RUNNER_TEMP/chrome.zip" -d "$RUNNER_TEMP/fitcircle-browser"
           echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$RUNNER_TEMP/fitcircle-browser/chrome-linux64/chrome" >> "$GITHUB_ENV"
       - run: npm run test:e2e -- --workers=2 --shard=${{ matrix.shard }}/4
