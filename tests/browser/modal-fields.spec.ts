@@ -127,9 +127,9 @@ const cases: {
     },
   },
   {
-    name: "Fitness Calculator",
-    route: "food-tracker",
-    open: (page) => page.getByTestId("button-calculator").click(),
+    name: "profile editor",
+    route: "profile",
+    open: (page) => button(page, "Edit Profile").click(),
   },
   {
     name: "food database editor",

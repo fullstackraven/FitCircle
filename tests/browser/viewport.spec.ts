@@ -96,14 +96,15 @@ test('all navigation sheets keep close, profile, Settings, and version accessibl
   }
 });
 
-test('calculator stays bounded with an always-visible header and close during scrolling and keyboard panning', async ({ page }) => {
+test('profile editor stays bounded with an always-visible header and close during scrolling and keyboard panning', async ({ page }) => {
   await page.goto('food-tracker');
-  await page.getByTestId('button-calculator').click();
-  const dialog = page.getByRole('dialog', { name: 'Fitness Calculator' });
+  await page.goto('profile');
+  await page.getByRole('button', { name: 'Edit Profile', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Edit Profile' });
   await expect(dialog).toBeVisible(); await assertSafeClose(dialog);
-  const title = await dialog.getByRole('heading', { name: 'Fitness Calculator', exact: true }).boundingBox();
+  const title = await dialog.getByRole('heading', { name: 'Edit Profile', exact: true }).boundingBox();
   await dialog.locator('.dialog-body').evaluate(el => { el.scrollTop = el.scrollHeight; });
-  expect((await dialog.getByRole('heading', { name: 'Fitness Calculator', exact: true }).boundingBox())!.y).toBeCloseTo(title!.y, 0);
+  expect((await dialog.getByRole('heading', { name: 'Edit Profile', exact: true }).boundingBox())!.y).toBeCloseTo(title!.y, 0);
   await assertSafeClose(dialog);
   const field = dialog.locator('input').first();
   await field.fill('35');
@@ -123,7 +124,7 @@ test('calculator stays bounded with an always-visible header and close during sc
   expect(active!.y).toBeGreaterThanOrEqual(body!.y);
   expect(active!.y + active!.height).toBeLessThanOrEqual(body!.y + body!.height);
   await dialog.getByRole('button', { name: 'Close', exact: true }).click();
-  await expect(page.getByTestId('button-calculator')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Edit Profile', exact: true })).toBeVisible();
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
   await page.evaluate(() => {
     Object.defineProperties(window.visualViewport!, {
@@ -157,8 +158,9 @@ test('dialogs, rotation, and route changes preserve editing state and scroll rec
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('food-tracker');
-  await page.getByTestId('button-calculator').click();
-  await assertSafeClose(page.getByRole('dialog', { name: 'Fitness Calculator' }), 59, 866);
+  await page.goto('profile');
+  await page.getByRole('button', { name: 'Edit Profile', exact: true }).click();
+  await assertSafeClose(page.getByRole('dialog', { name: 'Edit Profile' }), 59, 866);
 });
 
 test('nested dialogs keep background locked until the last overlay closes', async ({ page }) => {
@@ -205,8 +207,9 @@ test('desktop layout remains bounded without mobile safe-area overrides', async 
     await assertSafeClose(page.getByRole('dialog', { name: 'Navigation Menu' }), 0, 900);
     await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).click();
     await page.goto('http://127.0.0.1:4173/FitCircle/food-tracker');
-    await page.getByTestId('button-calculator').click();
-    await assertSafeClose(page.getByRole('dialog', { name: 'Fitness Calculator' }), 0, 900);
+    await page.goto('profile');
+  await page.getByRole('button', { name: 'Edit Profile', exact: true }).click();
+    await assertSafeClose(page.getByRole('dialog', { name: 'Edit Profile' }), 0, 900);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1280);
   } finally { await context.close(); }
 });

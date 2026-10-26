@@ -133,24 +133,15 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
       .getByRole("button", { name: "Close", exact: true })
       .click();
     await page.goto("fitness-calculator");
-    await expect(
-      page.getByText("Weight: 190 lbs", { exact: true }),
-    ).toBeVisible();
-    await page.locator(".app-content").evaluate((el) => {
-      el.scrollTop = 0;
-    });
-    await capture("fitness-calculator");
-    await page
-      .getByText("BMI Calculator", { exact: true })
-      .scrollIntoViewIfNeeded();
-    await capture("calculator-bmi");
+    await expect(page.getByRole("tab", { name: "Calorie Tracker", exact: true })).toHaveAttribute("aria-selected", "true");
+    await page.getByRole("tab", { name: "BMI Calculator", exact: true }).click();
+    await expect(page.getByText("Weight: 190 lbs", { exact: true })).toBeVisible();
+    // Routed calculator screenshots live in calculator-route.spec.ts.
     await page.goto("food-tracker");
     await page.getByTestId("button-calculator").click();
-    await capture("calculator-modal");
-    await page
-      .getByRole("dialog")
-      .getByRole("button", { name: "Close", exact: true })
-      .click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.getByRole("tab", { name: "Calorie Tracker", exact: true })).toHaveAttribute("aria-selected", "true");
+    await page.getByRole("button", { name: "Back", exact: true }).click();
     await page.goto("measurements");
     await expect(page.getByLabel("Weight", { exact: true })).toHaveValue("190");
     await capture("measurements");
@@ -417,7 +408,7 @@ test("System development appearance updates charts, portals and nutrition withou
 });
 
 for (const mode of ["dark", "light"]) {
-  test(`${mode}: calculator objectives, select portals, validation and embedded keyboard form`, async ({
+  test(`${mode}: calculator objectives, select portals, validation and routed keyboard form`, async ({
     page,
   }) => {
     await seedNutritionAppearance(page, mode);
@@ -428,9 +419,9 @@ for (const mode of ["dark", "light"]) {
         .getByText("calories per day", { exact: true })
         .locator("..")
         .innerText();
-    await expect(
-      page.getByText("Weight: 190 lbs", { exact: true }),
-    ).toBeVisible();
+    await page.getByRole("tab", { name: "BMI Calculator", exact: true }).click();
+    await expect(page.getByText("Weight: 190 lbs", { exact: true })).toBeVisible();
+    await page.getByRole("tab", { name: "Calorie Tracker", exact: true }).click();
     const standalone = await readCalories();
     for (const label of ["Lose Weight", "Gain Weight", "Maintain"]) {
       const goal = page.getByRole("button", { name: label, exact: true });
@@ -451,15 +442,17 @@ for (const mode of ["dark", "light"]) {
       .getByRole("option", { name: "Moderate (3-5 days/week)", exact: true })
       .click();
     expect(await readCalories()).toBe(standalone);
+    await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
     await page.getByLabel("Carbs %", { exact: true }).fill("200");
     await expect(page.getByRole("alert")).toContainText("total 100%");
     await page.getByLabel("Carbs %", { exact: true }).fill("40");
     await expect(page.getByRole("alert")).toHaveCount(0);
     await page.goto("food-tracker");
     await page.getByTestId("button-calculator").click();
-    await expect(page.getByRole("dialog")).toContainText(
+    await expect(page.getByTestId("fitness-calculator-page")).toContainText(
       standalone.split("\n")[0],
     );
+    await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
     const input = page.getByLabel("Fat %", { exact: true });
     await input.scrollIntoViewIfNeeded();
     await input.focus();
@@ -473,7 +466,7 @@ for (const mode of ["dark", "light"]) {
     await expect
       .poll(() =>
         page
-          .getByRole("dialog")
+          .locator(".app-shell")
           .evaluate((el) => el.getBoundingClientRect().bottom),
       )
       .toBeLessThanOrEqual(470);
@@ -481,11 +474,8 @@ for (const mode of ["dark", "light"]) {
     expect(
       await input.evaluate((el) => getComputedStyle(el).outlineStyle),
     ).toBe("none");
-    await expect(
-      page
-        .getByRole("dialog")
-        .getByRole("button", { name: "Close", exact: true }),
-    ).toBeVisible();
+    await page.getByRole("button", { name: "Back", exact: true }).scrollIntoViewIfNeeded();
+    await expect(page.getByRole("button", { name: "Back", exact: true })).toBeInViewport();
     expect(await nutritionBytes(page)).toEqual(before);
   });
   test(`${mode}: malformed measurement history stays intact in error state`, async ({

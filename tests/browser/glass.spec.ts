@@ -23,8 +23,9 @@ test('glass dock retains compact geometry, semantic selection and visible keyboa
 test('glass dialog remains nearly opaque, internally scrollable and safely closable', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 650 });
   await page.goto('food-tracker');
-  await page.getByTestId('button-calculator').click();
-  const dialog = page.getByRole('dialog', { name: 'Fitness Calculator' });
+  await page.goto('profile');
+  await page.getByRole('button', { name: 'Edit Profile', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Edit Profile' });
   await expect(dialog).toHaveClass(/glass-dialog/);
   const alpha = await dialog.evaluate(el => {
     const color = getComputedStyle(el).backgroundColor;

@@ -918,10 +918,7 @@ test("calculator immediately controls diary calories and personal macros, surviv
     localStorage.getItem("fitcircle_food_2026-10-20"),
   );
   await page.getByTestId("button-calculator").click();
-  const dialog = page.getByRole("dialog", {
-    name: "Fitness Calculator",
-    exact: true,
-  });
+  const dialog = page.getByTestId("fitness-calculator-page");
   for (const name of ["Standard", "High Protein", "Low Carb", "Tailored"])
     await expect(dialog.getByRole("button", { name, exact: true })).toHaveCount(
       0,
@@ -929,9 +926,13 @@ test("calculator immediately controls diary calories and personal macros, surviv
   await expect(
     dialog.getByText("Compare Styles:", { exact: true }),
   ).toHaveCount(0);
+  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
   await dialog.getByLabel("Carbs %", { exact: true }).fill("50");
+  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
   await dialog.getByLabel("Protein %", { exact: true }).fill("25");
+  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
   await dialog.getByLabel("Fat %", { exact: true }).fill("25");
+  await page.getByRole("tab", { name: "Calorie Tracker", exact: true }).click();
   await dialog
     .getByRole("button", { name: "Gain Weight", exact: true })
     .click();
@@ -939,6 +940,7 @@ test("calculator immediately controls diary calories and personal macros, surviv
     Number(localStorage.getItem("fitness_calc_target_calories")),
   );
   expect(calories).toBeGreaterThan(1800);
+  await dialog.getByRole("button", { name: "Back", exact: true }).click();
   await expect(page.getByTestId("calories-remaining")).toHaveText(
     (calories - 200).toLocaleString(),
   );
@@ -947,11 +949,13 @@ test("calculator immediately controls diary calories and personal macros, surviv
       Number(localStorage.getItem("fitness_calc_target_protein")),
     ),
   ).toBe(Math.round((calories * 0.25) / 4));
+  await page.getByTestId("button-calculator").click();
   const targets = await page.evaluate(() =>
     ["calories", "protein", "carbs", "fat"].map((key) =>
       localStorage.getItem(`fitness_calc_target_${key}`),
     ),
   );
+  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
   await dialog.getByLabel("Carbs %", { exact: true }).fill("");
   await expect(dialog.getByRole("alert")).toContainText("total 100%");
   expect(
@@ -961,14 +965,17 @@ test("calculator immediately controls diary calories and personal macros, surviv
       ),
     ),
   ).toEqual(targets);
+  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
   await dialog.getByLabel("Carbs %", { exact: true }).fill("50");
-  await dialog.getByRole("button", { name: "Close", exact: true }).click();
+  await dialog.getByRole("button", { name: "Back", exact: true }).click();
   await page.getByTestId("button-calculator").click();
+  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
   await expect(dialog.getByLabel("Carbs %", { exact: true })).toHaveValue("50");
+  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
   await expect(dialog.getByLabel("Protein %", { exact: true })).toHaveValue(
     "25",
   );
-  await dialog.getByRole("button", { name: "Close", exact: true }).click();
+  await dialog.getByRole("button", { name: "Back", exact: true }).click();
   await page.reload();
   await expect(page.getByTestId("calories-remaining")).toHaveText(
     (calories - 200).toLocaleString(),
@@ -1016,16 +1023,15 @@ test("calculator target write failures are visible and do not claim a successful
     };
   });
   await page.getByTestId("button-calculator").click();
-  const dialog = page.getByRole("dialog", {
-    name: "Fitness Calculator",
-    exact: true,
-  });
+  const dialog = page.getByTestId("fitness-calculator-page");
   await expect(dialog.getByRole("alert")).toContainText(
     "Could not save calculator targets",
   );
+  await page.getByRole("tab", { name: "Calorie Tracker", exact: true }).click();
   await dialog
     .getByRole("button", { name: "Gain Weight", exact: true })
     .click();
+  await dialog.getByRole("button", { name: "Back", exact: true }).click();
   await expect(page.getByTestId("calories-remaining")).toHaveText("1,600");
   expect(
     await page.evaluate(() =>
