@@ -205,11 +205,11 @@
 .calculator-input-unit > span { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: hsl(var(--text-secondary)); font-size: 13px; pointer-events: none; }
 .calculator-page .calculator-save { width: 100%; min-height: 46px; background: hsl(var(--surface-secondary)); color: hsl(var(--text-strong)); border: 1px solid hsl(var(--separator)); font-size: 15px; font-weight: 600; box-shadow: none; }
 .calculator-bmi-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0,1.1fr); gap: 14px; align-items: center; margin: 10px 0 20px; }
-.calculator-gauge { position: relative; width: 100%; max-width: 190px; margin: auto; }
+.calculator-gauge { position: relative; width: 100%; max-width: 190px; margin: auto; container-type: inline-size; }
 .calculator-gauge svg { display: block; width: 100%; }
 .calculator-gauge-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .calculator-gauge-label strong { font-size: clamp(24px,7vw,36px); }
-.calculator-gauge-label span { color: var(--bmi-amber); font-size: 12px; font-weight: 600; text-align: center; }
+.calculator-gauge-label span { color: var(--bmi-amber); font-size: clamp(9px, 8cqw, 11px); font-weight: 600; line-height: 1.2; text-align: center; width: 68%; margin-inline: auto; overflow-wrap: anywhere; }
 .calculator-bmi-category { border: 1px solid hsl(var(--separator)); border-radius: 12px; background: hsl(var(--surface-secondary) / .5); padding: 14px; }
 .calculator-macro-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
 .calculator-macro-card { border: 1px solid hsl(var(--separator)); border-radius: 11px; padding: 12px 8px; min-width: 0; --macro-color: var(--feature-orange); }
