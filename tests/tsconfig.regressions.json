@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "browser/calculator-route.spec.ts",
     "fasting-completed-progress.test.ts",
     "browser/fasting-completed-progress.spec.ts",
     "journal-library.test.ts",

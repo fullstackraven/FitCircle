@@ -36,14 +36,16 @@ test('reminder glass rows preserve create, complete and reload behavior', async 
 test('glass controls do not add nested blur and calculator edits survive closing', async ({ page }) => {
   await page.goto('food-tracker');
   await page.getByTestId('button-calculator').click();
-  const dialog = page.getByRole('dialog', { name: 'Fitness Calculator' });
+  const dialog = page.getByTestId("fitness-calculator-page");
+  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
   const input = dialog.getByLabel('Carbs %', { exact: true });
   await input.fill('35');
   await input.blur();
   for (const control of await dialog.locator('.glass-input').all()) {
     expect(await control.evaluate(el => getComputedStyle(el).backdropFilter)).toBe('none');
   }
-  await dialog.getByRole('button', { name: 'Close', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Back', exact: true }).click();
   await page.getByTestId('button-calculator').click();
-  await expect(page.getByRole('dialog').getByLabel('Carbs %', { exact: true })).toHaveValue('35');
+  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
+  await expect(page.getByTestId('fitness-calculator-page').getByLabel('Carbs %', { exact: true })).toHaveValue('35');
 });

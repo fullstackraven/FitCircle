@@ -163,3 +163,18 @@
     box-shadow: none;
   }
 }
+
+/* Keep the calculator's contained field focus treatment after leaving its modal. */
+.app-content .calculator-page :is(input, [role="combobox"]):is(:focus, :focus-visible) {
+  outline: none;
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  box-shadow: inset 0 0 0 1px var(--field-focus-color, rgb(74 222 128 / .65));
+}
+@media (forced-colors: active) {
+  .app-content .calculator-page :is(input, [role="combobox"]):focus-visible {
+    outline: 1px solid Highlight;
+    outline-offset: -2px;
+    box-shadow: none;
+  }
+}

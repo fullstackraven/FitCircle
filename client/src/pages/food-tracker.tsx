@@ -18,7 +18,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { getTodayString, getDateString, parseLocalDate, isToday } from '@/lib/date-utils';
 import { localFoodService, LocalFoodItem, FoodEntry, FoodUnit } from '@/lib/local-food-service';
 import { useToast } from '@/hooks/use-toast';
-import FitnessCalculator from '@/pages/fitness-calculator';
 
 // Keep dialogs readable on opening; the user chooses when to show the keyboard.
 const focusPanelOnOpen = (event: Event) => {
@@ -112,7 +111,6 @@ export default function FoodTrackerPage() {
   const [editEntryMeal, setEditEntryMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
   
   // Calculator modal state
-  const [calculatorOpen, setCalculatorOpen] = useState(false);
 
   const handleBack = () => {
     navigate('/wellness');
@@ -539,7 +537,7 @@ export default function FoodTrackerPage() {
               <Database className="w-5 h-5" />
             </button>
             <button
-              onClick={() => setCalculatorOpen(true)}
+              onClick={() => navigate("/fitness-calculator", { state: { calculatorFrom: window.location.pathname + window.location.search } })}
               className="text-muted-foreground hover:text-strong transition-colors min-h-11 min-w-11 flex items-center justify-center"
               aria-label="Fitness Calculator"
               data-testid="button-calculator"
@@ -1238,15 +1236,7 @@ export default function FoodTrackerPage() {
           </DialogContent>
         </Dialog>
 
-        {/* Fitness Calculator Modal */}
-        <Dialog open={calculatorOpen} onOpenChange={setCalculatorOpen}>
-          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="max-w-4xl overflow-y-auto bg-canvas border-separator">
-            <DialogHeader className="sm:text-center">
-              <DialogTitle className="fitcircle-page-title">Fitness Calculator</DialogTitle>
-            </DialogHeader>
-            <FitnessCalculator embedded />
-          </DialogContent>
-        </Dialog>
+
         
       </div>
     </div>
