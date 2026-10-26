@@ -73,7 +73,12 @@ for (const mode of modes)
       "synthetic-not-found",
     ]) {
       await page.goto(route);
-      await capture(route.replace("/", "-"));
+      if (route.startsWith("dynamic-overview/")) {
+        // The redesigned page has dedicated exact visual references in dynamic-overview.spec.ts.
+        await expect(page.getByRole("tab", { name: "Daily Overview", exact: true })).toHaveAttribute("aria-selected", "true");
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        if (mode === "light") expect((await textContrast(page)).failures).toEqual([]);
+      } else await capture(route.replace("/", "-"));
       if (route === "calendar") {
         await page.getByTestId("button-toggle-view").click();
         await capture("calendar-weekly");

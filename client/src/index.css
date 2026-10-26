@@ -624,6 +624,83 @@
 .app-content textarea.journal-plain-editor:focus,
 .app-content textarea.journal-plain-editor:focus-visible { outline: none; border: 0; box-shadow: none; caret-color: hsl(var(--focus)); }
 
+/* Dynamic Overview keeps the application shell as its only page scroller. */
+.dynamic-overview-page { max-width: 620px; margin-inline: auto; padding: 16px 16px calc(var(--safe-bottom) + 24px); color: hsl(var(--text-strong)); }
+.overview-header { display: grid; grid-template-columns: 40px minmax(0,1fr) 40px; align-items: center; margin-bottom: 12px; }
+.overview-header button { min-height: 44px; color: hsl(var(--text-secondary)); }
+.overview-header h1 { font-size: 20px; font-weight: 700; text-align: center; }
+.overview-date { text-align: center; margin-bottom: 18px; }
+.overview-date p { font-size: 11px; text-transform: uppercase; color: hsl(var(--muted-foreground)); margin-bottom: 3px; }
+.overview-date h2 { font-size: 21px; font-weight: 700; }
+.overview-tabs { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 12px; background: hsl(var(--surface)); border: 1px solid hsl(var(--separator) / .4); margin-bottom: 12px; }
+.overview-tabs button { min-height: 38px; border-radius: 9px; font-size: 13px; font-weight: 600; color: hsl(var(--muted-foreground)); transition: background-color .15s; }
+.overview-tabs button[aria-selected="true"] { background: hsl(var(--surface-secondary)); color: hsl(var(--text-strong)); }
+.overview-stack { display: grid; gap: 10px; }
+.overview-card { padding: 14px 16px; border: 1px solid hsl(var(--separator) / .5); border-radius: 14px; background: hsl(var(--surface)); min-width: 0; --overview-accent: var(--feature-blue); }
+.overview-recovery { --overview-accent: var(--feature-orange); }
+.overview-energy { --overview-accent: var(--feature-yellow); }
+.overview-journal { --overview-accent: var(--feature-purple); }
+.overview-supplements { --overview-accent: var(--accent-text); }
+.overview-card-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.overview-card-heading > svg { width: 22px; height: 22px; color: hsl(var(--overview-accent)); flex-shrink: 0; }
+.overview-card-heading h3 { font-size: 15px; line-height: 1.3; font-weight: 700; flex: 1; min-width: 0; }
+.overview-card-heading > span { font-size: 11px; color: hsl(var(--muted-foreground)); }
+.overview-card-heading > strong { color: hsl(var(--overview-accent)); font-size: 14px; }
+.overview-status { padding: 4px 8px; border-radius: 8px; background: hsl(var(--surface-secondary) / .55); }
+.overview-recovery-actions { display: flex; align-items: center; gap: 12px; }
+.overview-recovery-actions p { flex: 1; color: hsl(var(--muted-foreground)); font-size: 11px; line-height: 1.5; }
+.dynamic-overview-page .overview-action { min-height: 36px; padding: 6px 12px; border: 1px solid hsl(var(--overview-accent)); border-radius: 10px; font-size: 12px; line-height: 1.4; font-weight: 600; color: hsl(var(--overview-accent)); background: transparent; position: relative; }
+.overview-action::after { content: ""; position: absolute; inset: -4px 0; }
+.overview-action:hover { background: hsl(var(--overview-accent) / .08); }
+.overview-action:disabled { opacity: .5; }
+.overview-wide { width: 100%; }
+.overview-energy-controls { display: flex; align-items: center; gap: 18px; margin: 4px 0 8px; }
+.overview-energy-gauge { position: relative; width: 92px; flex: 0 0 92px; color: hsl(var(--overview-accent)); }
+.overview-energy-gauge svg { width: 100%; display: block; }
+.overview-energy-gauge circle:last-child { transition: stroke-dasharray .2s; }
+.overview-energy-gauge > div { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.overview-energy-gauge strong { font-size: 26px; line-height: 1.2; color: hsl(var(--text-strong)); }
+.overview-energy-gauge span { font-size: 11px; color: hsl(var(--muted-foreground)); }
+.overview-slider { flex: 1; min-width: 0; }
+.overview-slider > div { display: flex; justify-content: space-between; font-size: 11px; color: hsl(var(--muted-foreground)); }
+.overview-slider input { appearance: none; width: 100%; height: 28px; background: transparent; cursor: pointer; }
+.overview-slider input::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: linear-gradient(to right,hsl(var(--overview-accent)) var(--energy-fill),hsl(var(--progress-track)) var(--energy-fill)); }
+.overview-slider input::-moz-range-track { height: 4px; border-radius: 4px; background: hsl(var(--progress-track)); }
+.overview-slider input::-moz-range-progress { height: 4px; background: hsl(var(--overview-accent)); }
+.overview-slider input::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; margin-top: -5px; border-radius: 50%; background: hsl(var(--text-strong)); }
+.overview-slider input::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: hsl(var(--text-strong)); }
+.overview-journal textarea { width: 100%; min-height: 66px; field-sizing: content; max-height: 240px; resize: vertical; padding: 10px 12px; font-size: 16px; border: 1px solid hsl(var(--separator)); border-radius: 10px; background: transparent; color: hsl(var(--text-strong)); }
+.overview-journal textarea::placeholder { color: hsl(var(--muted-foreground)); font-size: 12px; }
+.overview-journal-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+.overview-journal-actions button { min-width: 110px; }
+.overview-summary { width: 100%; text-align: left; }
+.overview-summary p { font-size: 11px; color: hsl(var(--muted-foreground)); margin-top: 8px; }
+.overview-card-heading .overview-chevron { color: hsl(var(--muted-foreground)); width: 14px; }
+.overview-progress { height: 5px; border-radius: 99px; background: hsl(var(--progress-track)); overflow: hidden; }
+.overview-progress > div { height: 100%; border-radius: inherit; background: hsl(var(--accent-fill)); transition: width .2s; }
+.overview-supplement-list { display: grid; gap: 5px; margin: 18px 0; }
+.overview-supplement-row { display: flex; align-items: center; gap: 10px; padding: 9px 10px; min-height: 44px; border: 1px solid hsl(var(--separator)); border-radius: 10px; text-align: left; }
+.overview-supplement-row > span:last-child { font-size: 11px; flex-shrink: 0; }
+.overview-supplement-name { font-size: 13px; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.overview-check { display: flex; align-items: center; justify-content: center; width: 21px; height: 21px; border: 1px solid hsl(var(--control-border-muted)); border-radius: 50%; flex-shrink: 0; }
+.overview-check.is-taken { color: hsl(var(--on-action)); background: hsl(var(--accent-fill)); border-color: hsl(var(--accent-fill)); }
+.overview-supplement-actions { display: flex; justify-content: space-between; gap: 10px; }
+.dynamic-overview-page .overview-add { display: flex; align-items: center; gap: 5px; border-color: hsl(var(--separator)); color: hsl(var(--text-secondary)); }
+.overview-add-form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.overview-add-form input { min-width: 0; flex: 1 1 100%; padding: 8px; border-radius: 8px; background: transparent; border: 1px solid hsl(var(--separator)); }
+.overview-manage { display: block; min-height: 36px; margin-top: 10px; color: hsl(var(--muted-foreground)); font-size: 11px; text-decoration: underline; }
+@media (max-width: 359px) {
+ .dynamic-overview-page { padding-inline: 12px; }
+ .overview-card { padding: 12px; }
+ .overview-header h1 { font-size: 18px; }
+ .overview-card-heading { gap: 7px; }
+ .overview-recovery-actions { flex-wrap: wrap; }
+ .overview-supplement-actions { gap: 6px; }
+ .dynamic-overview-page .overview-action { padding-inline: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .overview-energy-gauge circle:last-child, .overview-progress > div, .overview-tabs button { transition: none; } }
+.overview-supplement-actions .overview-action { font-size: 11px; padding-inline: 8px; white-space: nowrap; }
+
 /* Focus belongs to the rounded search surface, not the rectangular input. */
 #journal-search:is(:focus, :focus-visible) {
   outline: none;
