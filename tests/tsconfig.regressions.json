@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "browser/dynamic-overview.spec.ts",
     "browser/calculator-route.spec.ts",
     "fasting-completed-progress.test.ts",
     "browser/fasting-completed-progress.spec.ts",

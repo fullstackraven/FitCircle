@@ -21,7 +21,7 @@ export default function BottomNavigation() {
   ];
 
   // Don't render navigation on wellness sub-pages
-  if (wellnessSubPages.includes(location)) {
+  if (wellnessSubPages.includes(location) || location.startsWith("/dynamic-overview/")) {
     return null;
   }
 
