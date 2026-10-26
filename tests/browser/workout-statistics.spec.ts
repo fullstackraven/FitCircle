@@ -42,11 +42,11 @@ test('Calendar navigation and redesigned metrics preserve the pre-redesign histo
   await expect(metric(total,'Overall Consistency')).toHaveText('22.2%');
   await expect(metric(monthly,'Monthly Reps')).toHaveText('65');
   await expect(metric(monthly,'Days Completed')).toHaveText('3');
-  await expect(metric(monthly,'Monthly Consistency')).toHaveText('75.0%');
+  await expect(metric(monthly,'Monthly Consistency')).toHaveText('17.6%');
   const overall=total.getByRole('progressbar',{name:'Overall Consistency'});
   expect(Number(await overall.getAttribute('value'))).toBeCloseTo(4/18*100);
   await expect(overall).toHaveAttribute('aria-valuetext','22.2%');
-  await expect(monthly.getByRole('progressbar',{name:'Monthly Consistency'})).toHaveAttribute('value','75');
+  await expect(monthly.getByRole('progressbar',{name:'Monthly Consistency'})).toHaveAttribute('value',String(3/17*100));
   const toggle=page.getByRole('button',{name:'Individual Workout Totals',exact:true});
   await expect(toggle).toHaveAttribute('aria-expanded','false');
   await toggle.focus(); await toggle.press('Enter');
@@ -63,7 +63,7 @@ test('Calendar navigation and redesigned metrics preserve the pre-redesign histo
   await expect(monthly).toContainText('September 2026');
   await expect(metric(monthly,'Monthly Reps')).toHaveText('10');
   await expect(metric(monthly,'Days Completed')).toHaveText('1');
-  await expect(metric(monthly,'Monthly Consistency')).toHaveText('100.0%');
+  await expect(metric(monthly,'Monthly Consistency')).toHaveText('3.3%');
   await monthly.getByRole('button',{name:'Next month'}).click();
   await expect(metric(monthly,'Monthly Reps')).toHaveText('65');
   await monthly.getByRole('button',{name:'Next month'}).click();

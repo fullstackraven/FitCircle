@@ -596,7 +596,7 @@ export default function CalendarPage() {
                 >
                   <span
                     aria-current={isToday(date) ? "date" : undefined}
-                    className={isToday(date) ? `text-calendar-today font-semibold${complete || isRecovery ? " rounded bg-canvas px-1" : ""}` : undefined}
+                    className={isToday(date) && !(complete && !isRecovery) ? `text-calendar-today font-semibold${complete || isRecovery ? " rounded bg-canvas px-1" : ""}` : undefined}
                   >
                     {format(date, "d")}
                   </span>
