@@ -448,10 +448,18 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
     const workoutArray = Object.values(data.workouts || {});
     const today = getTodayString();
     
+    const todayDate = new Date();
+    const isFutureMonth = year > todayDate.getFullYear() ||
+      (year === todayDate.getFullYear() && month > todayDate.getMonth());
+    const isCurrentMonth = year === todayDate.getFullYear() && month === todayDate.getMonth();
+    // Calendar components avoid elapsed-millisecond errors around DST.
+    const elapsedDaysInMonth = isFutureMonth ? 0 : isCurrentMonth
+      ? todayDate.getDate() : new Date(year, month + 1, 0).getDate();
+
     let monthlyReps = 0;
     let monthlyCompletedDays = 0;
 
-    if (workoutArray.length === 0) {
+    if (workoutArray.length === 0 || isFutureMonth) {
       return {
         monthlyReps: 0,
         monthlyCompletedDays: 0,
@@ -505,14 +513,11 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
     }
 
     // Determine the end date (today if current month, else last day of month)
-    const todayDate = new Date();
-    const isCurrentMonth = (todayDate.getFullYear() === year && todayDate.getMonth() === month);
     const endDateStr = isCurrentMonth ? today : getDateString(new Date(year, month + 1, 0));
     
-    // Calculate days in range (from first active date to end date)
+    // Keep the existing activity iteration and completion rules.
     const firstDate = new Date(firstActiveDateInMonth + 'T00:00:00');
     const endDate = new Date(endDateStr + 'T00:00:00');
-    const daysInRange = Math.floor((endDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
     // Iterate through each day from first workout to end date (same approach as getTotalStats)
     for (let d = new Date(firstDate); d <= endDate; d.setDate(d.getDate() + 1)) {
@@ -560,8 +565,8 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
       }
     }
 
-    const monthlyConsistency = daysInRange > 0 
-      ? Math.min((monthlyCompletedDays / daysInRange) * 100, 100) 
+    const monthlyConsistency = elapsedDaysInMonth > 0
+      ? Math.max(0, Math.min((monthlyCompletedDays / elapsedDaysInMonth) * 100, 100))
       : 0;
 
     return {
