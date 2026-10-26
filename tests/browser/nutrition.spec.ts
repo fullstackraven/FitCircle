@@ -926,13 +926,13 @@ test("calculator immediately controls diary calories and personal macros, surviv
   await expect(
     dialog.getByText("Compare Styles:", { exact: true }),
   ).toHaveCount(0);
-  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
+  await page.getByRole("tab", { name: "Macros", exact: true }).click();
   await dialog.getByLabel("Carbs %", { exact: true }).fill("50");
-  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
+  await page.getByRole("tab", { name: "Macros", exact: true }).click();
   await dialog.getByLabel("Protein %", { exact: true }).fill("25");
-  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
+  await page.getByRole("tab", { name: "Macros", exact: true }).click();
   await dialog.getByLabel("Fat %", { exact: true }).fill("25");
-  await page.getByRole("tab", { name: "Calorie Tracker", exact: true }).click();
+  await page.getByRole("tab", { name: "Calories", exact: true }).click();
   await dialog
     .getByRole("button", { name: "Gain Weight", exact: true })
     .click();
@@ -955,7 +955,7 @@ test("calculator immediately controls diary calories and personal macros, surviv
       localStorage.getItem(`fitness_calc_target_${key}`),
     ),
   );
-  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
+  await page.getByRole("tab", { name: "Macros", exact: true }).click();
   await dialog.getByLabel("Carbs %", { exact: true }).fill("");
   await expect(dialog.getByRole("alert")).toContainText("total 100%");
   expect(
@@ -965,13 +965,13 @@ test("calculator immediately controls diary calories and personal macros, surviv
       ),
     ),
   ).toEqual(targets);
-  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
+  await page.getByRole("tab", { name: "Macros", exact: true }).click();
   await dialog.getByLabel("Carbs %", { exact: true }).fill("50");
   await dialog.getByRole("button", { name: "Back", exact: true }).click();
   await page.getByTestId("button-calculator").click();
-  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
+  await page.getByRole("tab", { name: "Macros", exact: true }).click();
   await expect(dialog.getByLabel("Carbs %", { exact: true })).toHaveValue("50");
-  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
+  await page.getByRole("tab", { name: "Macros", exact: true }).click();
   await expect(dialog.getByLabel("Protein %", { exact: true })).toHaveValue(
     "25",
   );
@@ -1027,7 +1027,7 @@ test("calculator target write failures are visible and do not claim a successful
   await expect(dialog.getByRole("alert")).toContainText(
     "Could not save calculator targets",
   );
-  await page.getByRole("tab", { name: "Calorie Tracker", exact: true }).click();
+  await page.getByRole("tab", { name: "Calories", exact: true }).click();
   await dialog
     .getByRole("button", { name: "Gain Weight", exact: true })
     .click();

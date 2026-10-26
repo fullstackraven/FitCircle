@@ -92,10 +92,8 @@ test("Measurements has no goal feature and does not rewrite stored goals", async
   expect(history.bodyFat).toEqual(JSON.parse(before.measurements!).bodyFat);
   await page.goto("food-tracker");
   await page.getByTestId("button-calculator").click();
-  await page.getByRole("tab", { name: "BMI Calculator", exact: true }).click();
-  await expect(
-    page.getByText("Weight: 185 lbs", { exact: true }),
-  ).toBeVisible();
+  await page.getByRole("tab", { name: "BMI", exact: true }).click();
+  await expect(page.getByLabel("Weight", { exact: true })).toHaveValue("185");
 });
 
 test("simple calculator goal reuses existing records, shows progress and keeps macro fields", async ({
@@ -108,19 +106,17 @@ test("simple calculator goal reuses existing records, shows progress and keeps m
   );
   await page.getByTestId("button-calculator").click();
   const dialog = page.getByTestId("fitness-calculator-page");
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await expect(
     dialog.getByLabel("Goal weight (lbs)", { exact: true }),
   ).toHaveValue("180");
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await expect(dialog.getByTestId("weight-goal-status")).toHaveText(
     "10.0 lb to lose",
   );
-  await page.getByRole("tab", { name: "BMI Calculator", exact: true }).click();
-  await expect(
-    dialog.getByText("Weight: 190 lbs", { exact: true }),
-  ).toBeVisible();
-  await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
+  await page.getByRole("tab", { name: "BMI", exact: true }).click();
+  await expect(dialog.getByLabel("Weight", { exact: true })).toHaveValue("190");
+  await page.getByRole("tab", { name: "Macros", exact: true }).click();
   for (const label of ["Carbs %", "Protein %", "Fat %"])
     await expect(dialog.getByLabel(label, { exact: true })).toBeVisible();
   await expect(
@@ -130,9 +126,9 @@ test("simple calculator goal reuses existing records, shows progress and keeps m
     dialog.getByText("Calculation sex", { exact: true }),
   ).toHaveCount(0);
   await expect(page.getByTestId("target-review")).toHaveCount(0);
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await dialog.getByLabel("Goal weight (lbs)", { exact: true }).fill("175");
-  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  await dialog.getByRole("button", { name: "Save Goal Weight", exact: true }).click();
   await expect(
     dialog.getByRole("status").filter({ hasText: "Goal saved" }),
   ).toBeVisible();
@@ -148,7 +144,7 @@ test("simple calculator goal reuses existing records, shows progress and keeps m
     await page.evaluate(() => localStorage.getItem("fitcircle_goal_weight")),
   ).toBe("175");
   await page.reload();
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await expect(
     page.getByLabel("Goal weight (lbs)", { exact: true }),
   ).toHaveValue("175");
@@ -176,10 +172,8 @@ test("measurement updates quietly refresh BMI and calories without changing goal
     );
     window.dispatchEvent(new Event("fitcircleIntegrationChanged"));
   });
-  await page.getByRole("tab", { name: "BMI Calculator", exact: true }).click();
-  await expect(
-    page.getByText("Weight: 185 lbs", { exact: true }),
-  ).toBeVisible();
+  await page.getByRole("tab", { name: "BMI", exact: true }).click();
+  await expect(page.getByLabel("Weight", { exact: true })).toHaveValue("185");
   await expect
     .poll(() =>
       page.evaluate(() => localStorage.getItem("fitness_calc_target_calories")),
@@ -210,7 +204,7 @@ test("malformed measurements and failed goal saves preserve original bytes", asy
       localStorage.getItem("fitness_calc_target_calories"),
     ),
   ).toBe("2222");
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await page.getByLabel("Goal weight (lbs)", { exact: true }).fill("175");
   await page.evaluate(() => {
     const original = Storage.prototype.setItem;
@@ -220,7 +214,7 @@ test("malformed measurements and failed goal saves preserve original bytes", asy
       return original.call(this, key, value);
     };
   });
-  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await page.getByRole("button", { name: "Save Goal Weight", exact: true }).click();
   await expect(page.getByText("Goal saved", { exact: true })).toHaveCount(0);
   expect(
     await page.evaluate(
@@ -256,10 +250,8 @@ test("cross-tab weight changes update the calculator without changing stored goa
       JSON.stringify(data),
     );
   });
-  await page.getByRole("tab", { name: "BMI Calculator", exact: true }).click();
-  await expect(
-    page.getByText("Weight: 188 lbs", { exact: true }),
-  ).toBeVisible();
+  await page.getByRole("tab", { name: "BMI", exact: true }).click();
+  await expect(page.getByLabel("Weight", { exact: true })).toHaveValue("188");
   expect((await snapshot(page)).goals).toBe(before.goals);
   await other.close();
 });
@@ -273,7 +265,7 @@ test("missing measurements keep existing calorie targets and never invent goal p
     localStorage.setItem("fitness_calc_target_calories", "2222");
   });
   await page.getByTestId("button-calculator").click();
-  await page.getByRole("tab", { name: "BMI Calculator", exact: true }).click();
+  await page.getByRole("tab", { name: "BMI", exact: true }).click();
   await expect(
     page.getByText("Add height and weight in Measurements to see your BMI", {
       exact: true,
@@ -287,9 +279,9 @@ test("missing measurements keep existing calorie targets and never invent goal p
       localStorage.getItem("fitness_calc_target_calories"),
     ),
   ).toBe("2222");
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await page.getByLabel("Goal weight (lbs)", { exact: true }).fill("0");
-  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await page.getByRole("button", { name: "Save Goal Weight", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText(
     "Enter a valid goal weight.",
   );
@@ -308,10 +300,10 @@ test("calculator compares goals with current weight even when history started on
   await page.getByTestId("button-calculator").click();
   const dialog = page.getByTestId("fitness-calculator-page");
   // Original starting weight is 200. Current weight is 190, so gaining to 195 is valid.
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await dialog.getByLabel("Goal weight (lbs)", { exact: true }).fill("195");
-  await dialog.getByRole("button", { name: "Save", exact: true }).click();
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await dialog.getByRole("button", { name: "Save Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await expect(dialog.getByTestId("weight-goal-status")).toHaveText(
     "5.0 lb to gain",
   );
@@ -330,15 +322,15 @@ test("calculator compares goals with current weight even when history started on
     window.dispatchEvent(new Event("fitcircleIntegrationChanged"));
   });
   const recorded = await snapshot(page);
-  await page.getByRole("tab", { name: "Calorie Tracker", exact: true }).click();
+  await page.getByRole("tab", { name: "Calories", exact: true }).click();
   await dialog
     .getByRole("button", { name: "Lose Weight", exact: true })
     .click();
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await dialog.getByLabel("Goal weight (lbs)", { exact: true }).fill("205");
-  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  await dialog.getByRole("button", { name: "Save Goal Weight", exact: true }).click();
   // Losing to 205 is valid even though original starting weight was only 200.
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await expect(dialog.getByTestId("weight-goal-status")).toHaveText(
     "5.0 lb to lose",
   );
@@ -346,20 +338,20 @@ test("calculator compares goals with current weight even when history started on
     dialog.getByText(/Choose a goal .* your starting weight/),
   ).toHaveCount(0);
   await page.reload();
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await expect(page.getByTestId("weight-goal-status")).toHaveText(
     "5.0 lb to lose",
   );
-  await page.getByRole("tab", { name: "Calorie Tracker", exact: true }).click();
+  await page.getByRole("tab", { name: "Calories", exact: true }).click();
   await page.getByRole("button", { name: "Maintain", exact: true }).click();
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await expect(page.getByTestId("weight-goal-status")).toHaveText(
     "5.0 lb from goal weight",
   );
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await page.getByLabel("Goal weight (lbs)", { exact: true }).fill("210");
-  await page.getByRole("button", { name: "Save", exact: true }).click();
-  await page.getByRole("tab", { name: "Goal Weight", exact: true }).click();
+  await page.getByRole("button", { name: "Save Goal Weight", exact: true }).click();
+  await page.getByRole("tab", { name: "Goal", exact: true }).click();
   await expect(page.getByTestId("weight-goal-status")).toHaveText(
     "At goal weight",
   );

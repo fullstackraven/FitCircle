@@ -12,6 +12,7 @@ export default function BottomNavigation() {
     '/hydration',
     '/measurements',
     '/food-tracker',
+    '/fitness-calculator',
     '/recovery',
     '/journal-log',
     '/journal-entry',
