@@ -83,7 +83,10 @@ test('GitHub Pages 404 recovery preserves deep route and query without a service
   });
   await page.goto('dynamic-overview/2026-10-14?from=dashboard');
   await page.waitForURL('http://127.0.0.1:4173/FitCircle/dynamic-overview/2026-10-14?from=dashboard');
-  await expect(page.getByRole('button', { name: 'Home', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Dynamic Overview', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'October 14, 2026', exact: true })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Daily Overview', exact: true })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('navigation', { name: 'Bottom navigation' })).toHaveCount(0);
   await expect(page.locator('body')).not.toContainText('Opening FitCircle');
 });
 
