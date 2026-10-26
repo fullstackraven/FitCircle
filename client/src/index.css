@@ -623,3 +623,14 @@
 .app-content textarea.journal-plain-editor,
 .app-content textarea.journal-plain-editor:focus,
 .app-content textarea.journal-plain-editor:focus-visible { outline: none; border: 0; box-shadow: none; caret-color: hsl(var(--focus)); }
+
+/* Focus belongs to the rounded search surface, not the rectangular input. */
+#journal-search:is(:focus, :focus-visible) {
+  outline: none;
+  box-shadow: none;
+  caret-color: hsl(var(--focus));
+}
+.journal-search-field:focus-within { border-color: hsl(var(--focus)); }
+@media (forced-colors: active) {
+  .journal-search-field:focus-within { outline: 1px solid Highlight; }
+}

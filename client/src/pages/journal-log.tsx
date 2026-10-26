@@ -135,7 +135,7 @@ export function JournalLog() {
         role="search"
         aria-label="Search journal"
       >
-        <div className="relative flex items-center gap-2 rounded-full bg-surface border border-control px-4 flex-1 min-w-0 shadow-sm">
+        <div className="journal-search-field relative flex items-center gap-2 rounded-full bg-surface border border-control px-4 flex-1 min-w-0 shadow-sm">
           <Search
             aria-hidden="true"
             className="w-4 h-4 shrink-0 text-muted-foreground"
