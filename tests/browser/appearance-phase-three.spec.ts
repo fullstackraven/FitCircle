@@ -133,14 +133,14 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
       .getByRole("button", { name: "Close", exact: true })
       .click();
     await page.goto("fitness-calculator");
-    await expect(page.getByRole("tab", { name: "Calorie Tracker", exact: true })).toHaveAttribute("aria-selected", "true");
-    await page.getByRole("tab", { name: "BMI Calculator", exact: true }).click();
-    await expect(page.getByText("Weight: 190 lbs", { exact: true })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Calories", exact: true })).toHaveAttribute("aria-selected", "true");
+    await page.getByRole("tab", { name: "BMI", exact: true }).click();
+    await expect(page.getByLabel("Weight", { exact: true })).toHaveValue("190");
     // Routed calculator screenshots live in calculator-route.spec.ts.
     await page.goto("food-tracker");
     await page.getByTestId("button-calculator").click();
     await expect(page.getByRole("dialog")).toHaveCount(0);
-    await expect(page.getByRole("tab", { name: "Calorie Tracker", exact: true })).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("tab", { name: "Calories", exact: true })).toHaveAttribute("aria-selected", "true");
     await page.getByRole("button", { name: "Back", exact: true }).click();
     await page.goto("measurements");
     await expect(page.getByLabel("Weight", { exact: true })).toHaveValue("190");
@@ -419,9 +419,9 @@ for (const mode of ["dark", "light"]) {
         .getByText("calories per day", { exact: true })
         .locator("..")
         .innerText();
-    await page.getByRole("tab", { name: "BMI Calculator", exact: true }).click();
-    await expect(page.getByText("Weight: 190 lbs", { exact: true })).toBeVisible();
-    await page.getByRole("tab", { name: "Calorie Tracker", exact: true }).click();
+    await page.getByRole("tab", { name: "BMI", exact: true }).click();
+    await expect(page.getByLabel("Weight", { exact: true })).toHaveValue("190");
+    await page.getByRole("tab", { name: "Calories", exact: true }).click();
     const standalone = await readCalories();
     for (const label of ["Lose Weight", "Gain Weight", "Maintain"]) {
       const goal = page.getByRole("button", { name: label, exact: true });
@@ -442,7 +442,7 @@ for (const mode of ["dark", "light"]) {
       .getByRole("option", { name: "Moderate (3-5 days/week)", exact: true })
       .click();
     expect(await readCalories()).toBe(standalone);
-    await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
+    await page.getByRole("tab", { name: "Macros", exact: true }).click();
     await page.getByLabel("Carbs %", { exact: true }).fill("200");
     await expect(page.getByRole("alert")).toContainText("total 100%");
     await page.getByLabel("Carbs %", { exact: true }).fill("40");
@@ -452,7 +452,7 @@ for (const mode of ["dark", "light"]) {
     await expect(page.getByTestId("fitness-calculator-page")).toContainText(
       standalone.split("\n")[0],
     );
-    await page.getByRole("tab", { name: "Macro Calculator", exact: true }).click();
+    await page.getByRole("tab", { name: "Macros", exact: true }).click();
     const input = page.getByLabel("Fat %", { exact: true });
     await input.scrollIntoViewIfNeeded();
     await input.focus();

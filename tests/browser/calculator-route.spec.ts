@@ -34,7 +34,8 @@ test("calculator icon navigates, tabs preserve draft and saved values, Back retu
   await page.getByTestId("button-calculator").click();
   await expect(page).toHaveURL(/\/fitness-calculator$/);
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await expect(tab(page, "Calorie Tracker")).toHaveAttribute(
+  await expect(page.getByRole("navigation", { name: "Bottom navigation" })).toHaveCount(0);
+  await expect(tab(page, "Calories")).toHaveAttribute(
     "aria-selected",
     "true",
   );
@@ -43,23 +44,21 @@ test("calculator icon navigates, tabs preserve draft and saved values, Back retu
   const calories = await page.evaluate(() =>
     localStorage.getItem("fitness_calc_target_calories"),
   );
-  await tab(page, "Goal Weight").click();
+  await tab(page, "Goal").click();
   await page.getByLabel("Goal weight (lbs)", { exact: true }).fill("205.5");
-  await tab(page, "Macro Calculator").click();
+  await tab(page, "Macros").click();
   await page.getByLabel("Carbs %", { exact: true }).fill("50");
   await page.getByLabel("Protein %", { exact: true }).fill("25");
   await page.getByLabel("Fat %", { exact: true }).fill("25");
-  await tab(page, "BMI Calculator").click();
-  await expect(
-    page.getByText("Weight: 190 lbs", { exact: true }),
-  ).toBeVisible();
-  await tab(page, "Goal Weight").click();
+  await tab(page, "BMI").click();
+  await expect(page.getByLabel("Weight", { exact: true })).toHaveValue("190");
+  await tab(page, "Goal").click();
   await expect(
     page.getByLabel("Goal weight (lbs)", { exact: true }),
   ).toHaveValue("205.5");
-  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await page.getByRole("button", { name: "Save Goal Weight", exact: true }).click();
   await expect(page.getByText("Goal saved", { exact: true })).toBeVisible();
-  await tab(page, "Macro Calculator").click();
+  await tab(page, "Macros").click();
   await expect(page.getByLabel("Carbs %", { exact: true })).toHaveValue("50");
   expect(
     await page.evaluate(() =>
@@ -69,14 +68,14 @@ test("calculator icon navigates, tabs preserve draft and saved values, Back retu
   await page.getByRole("button", { name: "Back", exact: true }).click();
   await expect(page).toHaveURL(/\/food-tracker$/);
   await page.getByTestId("button-calculator").click();
-  await expect(tab(page, "Calorie Tracker")).toHaveAttribute(
+  await expect(tab(page, "Calories")).toHaveAttribute(
     "aria-selected",
     "true",
   );
   await page.goBack();
   await expect(page).toHaveURL(/\/food-tracker$/);
   await page.goForward();
-  await tab(page, "Macro Calculator").click();
+  await tab(page, "Macros").click();
   await expect(page.getByLabel("Carbs %", { exact: true })).toHaveValue("50");
   expect(
     await page.evaluate(() => ({
@@ -94,11 +93,11 @@ for (const mode of ["light", "dark"]) {
     await seed(page, mode);
     await page.getByTestId("button-calculator").click();
     await expect(page.locator("html")).toHaveAttribute("data-appearance", mode);
-    const first = tab(page, "Calorie Tracker");
+    const first = tab(page, "Calories");
     await first.focus();
     await page.keyboard.press("End");
-    await expect(tab(page, "Macro Calculator")).toBeFocused();
-    await expect(tab(page, "Macro Calculator")).toHaveAttribute(
+    await expect(tab(page, "Macros")).toBeFocused();
+    await expect(tab(page, "Macros")).toHaveAttribute(
       "aria-selected",
       "true",
     );
@@ -114,12 +113,12 @@ for (const mode of ["light", "dark"]) {
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth),
     ).toBe(320);
-    await tab(page, "Goal Weight").click();
+    await tab(page, "Goal").click();
     await page
-      .getByRole("button", { name: "Save", exact: true })
+      .getByRole("button", { name: "Save Goal Weight", exact: true })
       .scrollIntoViewIfNeeded();
     await expect(
-      page.getByRole("button", { name: "Save", exact: true }),
+      page.getByRole("button", { name: "Save Goal Weight", exact: true }),
     ).toBeInViewport();
   });
 }
@@ -127,12 +126,15 @@ for (const mode of ["light", "dark"]) {
 test("direct route defaults to Calories and has a safe in-app Back fallback", async ({
   page,
 }) => {
+  await page.goto("wellness");
+  await expect(page.getByRole("navigation", { name: "Bottom navigation" })).toBeVisible();
   await page.goto("fitness-calculator");
-  await expect(tab(page, "Calorie Tracker")).toHaveAttribute(
+  await expect(page.getByRole("navigation", { name: "Bottom navigation" })).toHaveCount(0);
+  await expect(tab(page, "Calories")).toHaveAttribute(
     "aria-selected",
     "true",
   );
-  await tab(page, "BMI Calculator").click();
+  await tab(page, "BMI").click();
   await page
     .getByRole("button", { name: "Go to Measurements", exact: true })
     .click();
@@ -149,18 +151,21 @@ test("routed calculator Dark visual references", async ({ page }) => {
   await page.goto("fitness-calculator");
   await expect(page.locator("#fitcircle-startup")).toHaveCount(0);
   await page.evaluate(() => document.fonts.ready);
-  await expect(page).toHaveScreenshot("calculator-routed-calories.png", {
+  await expect(page).toHaveScreenshot("calculator-reference-calories.png", {
     animations: "disabled",
     maxDiffPixels: 0,
     threshold: 0,
   });
-  await tab(page, "BMI Calculator").click();
-  await expect(
-    page.getByText("Weight: 190 lbs", { exact: true }),
-  ).toBeVisible();
-  await expect(page).toHaveScreenshot("calculator-routed-bmi.png", {
+  await tab(page, "BMI").click();
+  await expect(page.getByLabel("Weight", { exact: true })).toHaveValue("190");
+  await expect(page).toHaveScreenshot("calculator-reference-bmi.png", {
     animations: "disabled",
     maxDiffPixels: 0,
     threshold: 0,
   });
+  await tab(page, "Goal").click();
+  await expect(page).toHaveScreenshot("calculator-reference-goal.png", { animations: "disabled", maxDiffPixels: 0, threshold: 0 });
+  await tab(page, "Macros").click();
+  await expect(page).toHaveScreenshot("calculator-reference-macros.png", { animations: "disabled", maxDiffPixels: 0, threshold: 0 });
+
 });

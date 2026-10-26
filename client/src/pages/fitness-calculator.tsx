@@ -2,7 +2,7 @@ import { applyRestore, prepareRestore } from "@/lib/backup";
 import { CALCULATOR_TARGETS_CHANGED } from "@/lib/nutrition";
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
-import { Calculator, Target, Activity, ArrowLeft, Flame } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,10 +37,10 @@ export default function FitnessCalculator() {
   const [, navigate] = useLocation();
   const [tab, setTab] = useState("calories");
   const tabs = [
-    { id: "calories", label: "Calorie Tracker", icon: Flame },
-    { id: "weight", label: "Goal Weight", icon: Target },
-    { id: "bmi", label: "BMI Calculator", icon: Activity },
-    { id: "macros", label: "Macro Calculator", icon: Calculator },
+    { id: "calories", label: "Calories" },
+    { id: "weight", label: "Goal" },
+    { id: "bmi", label: "BMI" },
+    { id: "macros", label: "Macros" },
   ];
   const goBack = () => {
     if (window.history.state?.calculatorFrom) window.history.back();
@@ -317,7 +317,7 @@ export default function FitnessCalculator() {
       data-testid="fitness-calculator-page"
     >
       <div className="fitcircle-container">
-        <div className="flex items-center justify-between gap-2 mb-6">
+        <div className="calculator-header">
           <Button
             variant="ghost"
             size="icon"
@@ -334,9 +334,9 @@ export default function FitnessCalculator() {
         <div
           role="tablist"
           aria-label="Fitness calculators"
-          className="grid grid-cols-4 gap-1 mb-6"
+          className="calculator-tabs"
         >
-          {tabs.map(({ id, label, icon: Icon }, index) => (
+          {tabs.map(({ id, label }, index) => (
             <button
               key={id}
               id={`calculator-tab-${id}`}
@@ -367,9 +367,8 @@ export default function FitnessCalculator() {
                   .getElementById(`calculator-tab-${tabs[next].id}`)
                   ?.focus();
               }}
-              className={`min-w-0 min-h-16 rounded-xl border px-1 py-2 text-xs font-medium flex flex-col items-center justify-center gap-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${tab === id ? "bg-accent/10 border-accent text-accent-text" : "bg-surface-secondary border-control text-supporting"}`}
+              className="calculator-tab"
             >
-              <Icon className="w-5 h-5 shrink-0" aria-hidden="true" />
               <span>{label}</span>
             </button>
           ))}
@@ -407,29 +406,21 @@ export default function FitnessCalculator() {
             hidden={tab !== "calories"}
           >
             {/* Calorie Tracker Section */}
-            <div className="fitcircle-card-lg">
-              <div className="flex items-center space-x-3 mb-6">
-                <Target className="w-6 h-6 text-accent-text" />
-                <h2 className="text-xl font-semibold text-strong">
-                  Calorie Tracker
-                </h2>
+            <div className="calculator-panel">
+              <h2 className="calculator-eyebrow">Daily Calorie Target</h2>
+              <div className="calculator-large-value text-accent-text">
+                {!calorieTarget ? "—" : calorieTarget.toLocaleString()}
               </div>
-
+              <p className="calculator-description">
+                <span>calories per day</span> ·{" "}
+                {goalType === "lose"
+                  ? `Lose ${goalRate} lb/week`
+                  : goalType === "gain"
+                    ? `Gain ${goalRate} lb/week`
+                    : "Maintain current weight"}
+              </p>
+              <hr className="calculator-divider" />
               <div className="space-y-4">
-                <div className="text-center">
-                  <div className="type-metric text-3xl font-bold text-accent-text mb-2">
-                    {!calorieTarget ? "—" : calorieTarget.toLocaleString()}
-                  </div>
-                  <div className="text-supporting">calories per day</div>
-                  <div className="text-sm text-muted-foreground mt-2">
-                    {goalType === "lose"
-                      ? `To lose ${goalRate} lb${goalRate !== "1" ? "s" : ""} per week`
-                      : goalType === "gain"
-                        ? `To gain ${goalRate} lb${goalRate !== "1" ? "s" : ""} per week`
-                        : "To maintain current weight"}
-                  </div>
-                </div>
-
                 {/* Activity Level Selection */}
                 <div className="space-y-2">
                   <Label className="text-supporting">Activity Level</Label>
@@ -439,7 +430,7 @@ export default function FitnessCalculator() {
                       changeSetting("activity", value, setActivityLevel)
                     }
                   >
-                    <SelectTrigger className="bg-surface-secondary border-control text-strong">
+                    <SelectTrigger className="calculator-field">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-surface-secondary border-control">
@@ -486,19 +477,20 @@ export default function FitnessCalculator() {
                   ].map((goal) => (
                     <button
                       key={goal.value}
+                      aria-label={goal.label}
                       aria-pressed={goalType === goal.value}
                       data-selected={goalType === goal.value}
                       data-goal-color={goal.color}
                       onClick={() =>
                         changeSetting("objective", goal.value, setGoalType)
                       }
-                      className={`calculator-goal-option glass-control p-3 rounded-xl border-2 transition-colors text-sm flex items-center justify-center ${
-                        goalType === goal.value
-                          ? `border-${goal.color}-500 bg-${goal.color}-500/20 ${goal.color === "green" ? "text-accent-text" : goal.color === "blue" ? "text-feature-blue" : "text-feature-red"}`
-                          : "border-control bg-surface-secondary text-supporting hover:border-control-muted-border"
-                      }`}
+                      className="calculator-direction"
                     >
-                      {goal.label}
+                      {goal.value === "lose"
+                        ? "Lose"
+                        : goal.value === "gain"
+                          ? "Gain"
+                          : "Maintain"}
                     </button>
                   ))}
                 </div>
@@ -514,7 +506,7 @@ export default function FitnessCalculator() {
                         changeSetting("rate", value, setGoalRate)
                       }
                     >
-                      <SelectTrigger className="bg-surface-secondary border-control text-strong">
+                      <SelectTrigger className="calculator-field">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-surface-secondary border-control">
@@ -555,26 +547,65 @@ export default function FitnessCalculator() {
             aria-labelledby="calculator-tab-weight"
             hidden={tab !== "weight"}
           >
-            <section className="fitcircle-card-lg">
-              <h2 className="text-xl font-semibold text-strong mb-4">
-                Goal Weight
-              </h2>
-              <Label htmlFor="calculator-goal-weight">Goal weight (lbs)</Label>
-              <div className="flex gap-3 mt-2">
-                <Input
-                  id="calculator-goal-weight"
-                  type="number"
-                  min="1"
-                  max="1500"
-                  step="0.1"
-                  value={weightGoal}
-                  onChange={(event) => {
-                    setWeightGoal(event.target.value);
-                    setGoalSaved(false);
-                  }}
-                  className="bg-surface-secondary border-control text-strong"
-                />
-                <Button onClick={saveGoal}>Save</Button>
+            <section className="calculator-panel">
+              <h2 className="calculator-eyebrow">Goal Weight</h2>
+              <div className="calculator-large-value">
+                {savedWeightGoal ?? "—"}{" "}
+                <span className="calculator-unit">lbs</span>
+              </div>
+              <p className="calculator-description">
+                Your saved target for tracking weight progress.
+              </p>
+              <hr className="calculator-divider" />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="calculator-current-weight">
+                    Current Weight
+                  </Label>
+                  <div className="calculator-input-unit">
+                    <Input
+                      id="calculator-current-weight"
+                      readOnly
+                      value={userData.weight || ""}
+                      placeholder="—"
+                      className="calculator-field"
+                    />
+                    <span>lbs</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="calculator-goal-weight">Target Weight</Label>
+                  <div className="calculator-input-unit">
+                    <Input
+                      id="calculator-goal-weight"
+                      aria-label="Goal weight (lbs)"
+                      type="number"
+                      min="1"
+                      max="1500"
+                      step="0.1"
+                      value={weightGoal}
+                      onChange={(event) => {
+                        setWeightGoal(event.target.value);
+                        setGoalSaved(false);
+                      }}
+                      className="calculator-field"
+                    />
+                    <span>lbs</span>
+                  </div>
+                </div>
+                <Button className="calculator-save" onClick={saveGoal}>
+                  Save Goal Weight
+                </Button>
+                <p className="text-sm text-supporting">
+                  Your goal tracks weight progress. Update current weight in{" "}
+                  <button
+                    className="underline"
+                    onClick={() => navigate("/measurements")}
+                  >
+                    Measurements
+                  </button>
+                  .
+                </p>
               </div>
               {goalError && (
                 <p role="alert" className="text-sm text-feature-red mt-2">
@@ -615,75 +646,113 @@ export default function FitnessCalculator() {
             aria-labelledby="calculator-tab-bmi"
             hidden={tab !== "bmi"}
           >
-            {/* BMI Calculator Section */}
-            <div className="fitcircle-card-lg">
-              <div className="flex items-center space-x-3 mb-6">
-                <Activity className="w-6 h-6 text-feature-blue" />
-                <h2 className="text-xl font-semibold text-strong">
-                  BMI Calculator
-                </h2>
-              </div>
-
+            <section className="calculator-panel">
+              <h2 className="calculator-eyebrow">BMI Calculator</h2>
               {userData.height > 0 && userData.weight > 0 ? (
-                <div className="text-center space-y-4">
-                  {/* BMI Circle Display */}
-                  <div className="relative inline-block">
-                    <svg
-                      width="160"
-                      height="160"
-                      className="transform -rotate-90"
-                    >
-                      <circle
-                        cx="80"
-                        cy="80"
-                        r="70"
-                        stroke="var(--bmi-track)"
-                        strokeWidth="12"
-                        fill="none"
-                      />
-                      <circle
-                        cx="80"
-                        cy="80"
-                        r="70"
-                        stroke={bmiInfo.color}
-                        strokeWidth="12"
-                        fill="none"
-                        strokeDasharray={`${Math.min(100, (bmi / 40) * 100) * 4.4} 440`}
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <div className="type-metric text-2xl font-bold text-strong">
-                        {bmi}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {bmiInfo.category}
+                <>
+                  <div className="calculator-bmi-layout">
+                    <div className="calculator-gauge">
+                      <svg
+                        viewBox="0 0 180 180"
+                        aria-label={`BMI ${bmi}`}
+                        role="img"
+                      >
+                        <circle
+                          cx="90"
+                          cy="90"
+                          r="78"
+                          stroke="hsl(var(--progress-track))"
+                          strokeWidth="14"
+                          fill="none"
+                        />
+                        <circle
+                          cx="90"
+                          cy="90"
+                          r="78"
+                          stroke="var(--bmi-amber)"
+                          strokeWidth="14"
+                          fill="none"
+                          strokeDasharray={`${(Math.min(100, (bmi / 40) * 100) * 4.4 * 78) / 70} ${(440 * 78) / 70}`}
+                          strokeLinecap="round"
+                          transform="rotate(-90 90 90)"
+                        />
+                      </svg>
+                      <div className="calculator-gauge-label">
+                        <strong>{bmi}</strong>
+                        <span>{bmiInfo.category}</span>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="text-sm text-supporting space-y-1">
-                    <div>
-                      Height: {Math.floor(userData.height / 12)}'
-                      {userData.height % 12}"
+                    <div className="space-y-4 min-w-0">
+                      <div className="space-y-2">
+                        <Label>Height</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Input
+                            aria-label="Height feet"
+                            readOnly
+                            value={`${Math.floor(userData.height / 12)} ft`}
+                            className="calculator-field"
+                          />
+                          <Input
+                            aria-label="Height inches"
+                            readOnly
+                            value={`${userData.height % 12} in`}
+                            className="calculator-field"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="calculator-bmi-weight">Weight</Label>
+                        <div className="calculator-input-unit">
+                          <Input
+                            id="calculator-bmi-weight"
+                            readOnly
+                            value={userData.weight}
+                            className="calculator-field"
+                          />
+                          <span>lbs</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => navigate("/measurements")}
+                        className="text-sm text-supporting underline"
+                      >
+                        Edit measurements
+                      </button>
                     </div>
-                    <div>Weight: {userData.weight} lbs</div>
                   </div>
-                </div>
+                  <div className="calculator-bmi-category">
+                    <p className="text-supporting mb-1">BMI Category</p>
+                    <p className="font-semibold text-feature-orange">
+                      {bmiInfo.category} (
+                      {bmi < 18.5
+                        ? "below 18.5"
+                        : bmi < 25
+                          ? "18.5–24.9"
+                          : bmi < 30
+                            ? "25.0–29.9"
+                            : "30.0 and above"}
+                      )
+                    </p>
+                    <p className="text-sm text-supporting mt-2">
+                      BMI is a screening measure and not a direct measure of
+                      body fat.
+                    </p>
+                  </div>
+                </>
               ) : (
-                <div className="text-center py-8">
-                  <div className="text-muted-foreground mb-4">
+                <div className="space-y-4">
+                  <p className="text-supporting">
                     Add height and weight in Measurements to see your BMI
-                  </div>
+                  </p>
                   <Button
                     onClick={() => navigate("/measurements")}
-                    className="bg-blue-600 hover:bg-blue-700 text-on-action"
+                    className="calculator-save"
                   >
                     Go to Measurements
                   </Button>
                 </div>
               )}
-            </div>
+            </section>
           </div>
           <div
             role="tabpanel"
@@ -691,138 +760,118 @@ export default function FitnessCalculator() {
             aria-labelledby="calculator-tab-macros"
             hidden={tab !== "macros"}
           >
-            {/* Macro Calculator Section */}
-            <div className="fitcircle-card-lg">
-              <div className="flex items-center space-x-3 mb-6">
-                <Calculator className="w-6 h-6 text-feature-purple" />
-                <h2 className="text-xl font-semibold text-strong">
-                  Macro Calculator
-                </h2>
+            <section className="calculator-panel">
+              <h2 className="calculator-eyebrow">Macro Calculator</h2>
+              <p className="text-supporting mb-4">
+                Based on {!calorieTarget ? "—" : calorieTarget.toLocaleString()}{" "}
+                daily calories
+              </p>
+              <div className="calculator-macro-grid">
+                {[
+                  { name: "Carbs", value: macros.carbs, color: "orange" },
+                  { name: "Protein", value: macros.protein, color: "red" },
+                  { name: "Fat", value: macros.fat, color: "blue" },
+                ].map(({ name, value, color }) => (
+                  <div
+                    key={name}
+                    className="calculator-macro-card"
+                    data-color={color}
+                  >
+                    <h3>{name}</h3>
+                    <strong>
+                      {!calorieTarget || !macroPercentagesValid
+                        ? "—"
+                        : value.grams}
+                      <span> g</span>
+                    </strong>
+                    <p>{value.percent}%</p>
+                    <div
+                      className="calculator-macro-track"
+                      role="progressbar"
+                      aria-label={`${name} allocation`}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={
+                        Number.isFinite(value.percent)
+                          ? Math.max(0, Math.min(100, value.percent))
+                          : 0
+                      }
+                    >
+                      <div
+                        style={{
+                          width: `${Number.isFinite(value.percent) ? Math.max(0, Math.min(100, value.percent)) : 0}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
-
-              {/* Personal macro percentages */}
-              <div className="grid grid-cols-3 gap-2 mb-6">
-                <div>
-                  <Label
-                    htmlFor="macro-carbs"
-                    className="text-supporting text-sm"
-                  >
-                    Carbs %
-                  </Label>
+              <hr className="calculator-divider" />
+              <div className="calculator-macro-controls">
+                <Label htmlFor="macro-calories">Total Calories</Label>
+                <div className="calculator-input-unit">
                   <Input
-                    type="number"
-                    step="any"
-                    id="macro-carbs"
-                    value={customCarbs}
-                    onChange={(e) =>
-                      changeSetting("carbs", e.target.value, setCustomCarbs)
-                    }
-                    className="bg-surface-secondary border-control text-strong mt-1"
-                    min="0"
-                    max="100"
+                    id="macro-calories"
+                    readOnly
+                    value={calorieTarget || ""}
+                    placeholder="—"
+                    className="calculator-field"
                   />
+                  <span>cal/day</span>
                 </div>
-                <div>
-                  <Label
-                    htmlFor="macro-protein"
-                    className="text-supporting text-sm"
-                  >
-                    Protein %
-                  </Label>
-                  <Input
-                    type="number"
-                    step="any"
-                    id="macro-protein"
-                    value={customProtein}
-                    onChange={(e) =>
-                      changeSetting("protein", e.target.value, setCustomProtein)
-                    }
-                    className="bg-surface-secondary border-control text-strong mt-1"
-                    min="0"
-                    max="100"
-                  />
-                </div>
-                <div>
-                  <Label
-                    htmlFor="macro-fat"
-                    className="text-supporting text-sm"
-                  >
-                    Fat %
-                  </Label>
-                  <Input
-                    type="number"
-                    step="any"
-                    id="macro-fat"
-                    value={customFat}
-                    onChange={(e) =>
-                      changeSetting("fat", e.target.value, setCustomFat)
-                    }
-                    className="bg-surface-secondary border-control text-strong mt-1"
-                    min="0"
-                    max="100"
-                  />
-                </div>
+                {[
+                  {
+                    id: "macro-carbs",
+                    label: "Carbs %",
+                    value: customCarbs,
+                    key: "carbs" as const,
+                    update: setCustomCarbs,
+                  },
+                  {
+                    id: "macro-protein",
+                    label: "Protein %",
+                    value: customProtein,
+                    key: "protein" as const,
+                    update: setCustomProtein,
+                  },
+                  {
+                    id: "macro-fat",
+                    label: "Fat %",
+                    value: customFat,
+                    key: "fat" as const,
+                    update: setCustomFat,
+                  },
+                ].map(({ id, label, value, key, update }) => (
+                  <React.Fragment key={id}>
+                    <Label htmlFor={id}>{label}</Label>
+                    <div className="calculator-input-unit">
+                      <Input
+                        id={id}
+                        type="number"
+                        step="any"
+                        min="0"
+                        max="100"
+                        value={value}
+                        onChange={(event) =>
+                          changeSetting(key, event.target.value, update)
+                        }
+                        className="calculator-field"
+                      />
+                      <span>%</span>
+                    </div>
+                  </React.Fragment>
+                ))}
               </div>
+              <p className="text-sm text-supporting mt-4">
+                Macro percentages should total 100%.
+              </p>
               {!macroPercentagesValid && (
-                <p role="alert" className="text-sm text-warning mb-4">
+                <p role="alert" className="text-sm text-warning mt-3">
                   Enter percentages from 0 to 100 that total 100%. Saved targets
                   stay unchanged until the split is valid.
                 </p>
               )}
-
-              {/* Macro Breakdown */}
-              <div className="space-y-4">
-                <div className="text-center mb-4">
-                  <div className="text-lg font-semibold text-strong">
-                    {!calorieTarget ? "—" : calorieTarget.toLocaleString()}{" "}
-                    calories/day
-                  </div>
-                </div>
-
-                {/* Macro Cards */}
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="glass-card bg-surface-secondary rounded-xl p-2 sm:p-6 flex flex-col items-center justify-center">
-                    <div className="text-feature-orange font-semibold mb-2">
-                      Carbs
-                    </div>
-                    <div className="type-metric text-2xl font-bold text-strong">
-                      {!calorieTarget || !macroPercentagesValid
-                        ? "—"
-                        : macros.carbs.grams + "g"}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {macros.carbs.percent}%
-                    </div>
-                  </div>
-                  <div className="glass-card bg-surface-secondary rounded-xl p-2 sm:p-6 flex flex-col items-center justify-center">
-                    <div className="text-feature-red font-semibold mb-2">
-                      Protein
-                    </div>
-                    <div className="type-metric text-2xl font-bold text-strong">
-                      {!calorieTarget || !macroPercentagesValid
-                        ? "—"
-                        : macros.protein.grams + "g"}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {macros.protein.percent}%
-                    </div>
-                  </div>
-                  <div className="glass-card bg-surface-secondary rounded-xl p-2 sm:p-6 flex flex-col items-center justify-center">
-                    <div className="text-feature-yellow font-semibold mb-2">
-                      Fat
-                    </div>
-                    <div className="type-metric text-2xl font-bold text-strong">
-                      {!calorieTarget || !macroPercentagesValid
-                        ? "—"
-                        : macros.fat.grams + "g"}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {macros.fat.percent}%
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </section>
           </div>
         </div>
       </div>
