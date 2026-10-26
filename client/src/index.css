@@ -700,3 +700,14 @@
 }
 @media (prefers-reduced-motion: reduce) { .overview-energy-gauge circle:last-child, .overview-progress > div, .overview-tabs button { transition: none; } }
 .overview-supplement-actions .overview-action { font-size: 11px; padding-inline: 8px; white-space: nowrap; }
+
+/* Focus belongs to the rounded search surface, not the rectangular input. */
+#journal-search:is(:focus, :focus-visible) {
+  outline: none;
+  box-shadow: none;
+  caret-color: hsl(var(--focus));
+}
+.journal-search-field:focus-within { border-color: hsl(var(--focus)); }
+@media (forced-colors: active) {
+  .journal-search-field:focus-within { outline: 1px solid Highlight; }
+}
