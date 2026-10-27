@@ -1,3 +1,4 @@
+import {assertAppendOnly} from './model';
 import {execFileSync} from 'node:child_process';
 const repo='fullstackraven/FitCircle';
 export function api<T=any>(path:string,method='GET',body?:unknown):T {
@@ -17,11 +18,13 @@ export function readRegistry():{sha:string;registry:import('./model').Registry}{
  return {sha:ref.object.sha,registry:JSON.parse(Buffer.from(file.content,'base64').toString())};
 }
 /** Parent pinned to the observed ref; non-fast-forward update rejects a competing writer. */
-export function writeRegistry(previousSha:string,registry:import('./model').Registry,receipt?:import('./model').RecordEntry){
- const parent=api(`git/commits/${previousSha}`);
+export function writeRegistry(previousSha:string,registry:import('./model').Registry,receipt?:import('./model').RecordEntry, request:typeof api=api){
+ const old=request(`contents/registry.json?ref=${previousSha}`);
+ assertAppendOnly(JSON.parse(Buffer.from(old.content,'base64').toString()),registry);
+ const parent=request(`git/commits/${previousSha}`);
  const entries=[{path:'registry.json',mode:'100644',type:'blob',content:JSON.stringify(registry,null,2)+'\n'}];
  if(receipt?.buildId)entries.push({path:`receipts/${receipt.buildId}.json`,mode:'100644',type:'blob',content:JSON.stringify(receipt)+'\n'});
- const tree=api('git/trees','POST',{base_tree:parent.tree.sha,tree:entries});
- const commit=api('git/commits','POST',{message:receipt?`Record ${receipt.version} / ${receipt.buildId}`:'Reserve or reconcile production release',tree:tree.sha,parents:[previousSha]});
- api('git/refs/heads/release-ledger','PATCH',{sha:commit.sha,force:false});
+ const tree=request('git/trees','POST',{base_tree:parent.tree.sha,tree:entries});
+ const commit=request('git/commits','POST',{message:receipt?`Record ${receipt.version} / ${receipt.buildId}`:'Reserve or reconcile production release',tree:tree.sha,parents:[previousSha]});
+ request('git/refs/heads/release-ledger','PATCH',{sha:commit.sha,force:false});
 }

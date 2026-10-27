@@ -6,7 +6,7 @@ on:
         description: Initialize approved history or reconcile a blocked deployment
         required: true
         type: choice
-        options: [initialize, reconcile, dry-run]
+        options: [initialize, reconcile]
 permissions:
   contents: read
 concurrency:

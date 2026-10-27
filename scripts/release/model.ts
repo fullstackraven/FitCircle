@@ -26,7 +26,11 @@ export function plan(registry:Registry,commit:string,changes:Change[],runId:stri
 export function reserve(registry:Registry,pending:Pending):Registry {
  validateRegistry(registry);
  if(registry.pending){if(JSON.stringify(registry.pending)===JSON.stringify(pending))return registry;throw Error('Conflicting pending release');}
- if(registry.records.at(-1)!.id!==pending.previousId)throw Error('Stale publication base');
+ const last=registry.records.at(-1)!;
+ if(last.id!==pending.previousId)throw Error('Stale publication base');
+ validateCommit(pending.commit);
+ if(pending.impact==='none'||classifyChanges(pending.changes)!==pending.impact||pending.version!==incrementVersion(last.version,pending.impact,true))throw Error('Invalid reserved release classification/version');
+ if(!pending.buildId.startsWith(`${pending.commit}-${pending.runId}-`))throw Error('Invalid reserved build identity');
  if(!pending.artifactDigest||!/^[a-f0-9]{64}$/.test(pending.artifactDigest))throw Error('Tested payload digest required');
  return {...registry,pending};
 }
@@ -39,8 +43,12 @@ export function reconcile(registry:Registry,receipt:Receipt):Registry {
  const p=registry.pending;
  if(receipt.commit!==p.commit||receipt.runId!==p.runId||receipt.environment!=='github-pages')throw Error('Receipt does not match reserved deployment');
  if(receipt.state!=='success')return {...registry,pending:null};
- if(!receipt.deploymentId||!Number.isFinite(Date.parse(receipt.releasedAt)))throw Error('Verified timestamp/identity required');
+ if(!receipt.deploymentId||!Number.isFinite(Date.parse(receipt.releasedAt))||Date.parse(receipt.releasedAt)<Date.parse(registry.records.at(-1)!.releasedAt))throw Error('Verified timestamp/identity required');
  if(registry.records.at(-1)!.id!==p.previousId)throw Error('Registry changed during deployment');
  const record:RecordEntry={id:`deployment-${receipt.deploymentId}`,version:p.version,commit:p.commit,buildId:p.buildId,artifactDigest:p.artifactDigest,runId:p.runId,deploymentId:receipt.deploymentId,releasedAt:receipt.releasedAt,changes:p.changes,previousId:p.previousId,historical:false};
  return validateRegistry({...registry,pending:null,records:[...registry.records,record]});
+}
+export function assertAppendOnly(before:Registry,after:Registry){
+ validateRegistry(before);validateRegistry(after);
+ if(after.records.length<before.records.length||before.records.some((r,i)=>JSON.stringify(r)!==JSON.stringify(after.records[i])))throw Error('Release history is append-only');
 }

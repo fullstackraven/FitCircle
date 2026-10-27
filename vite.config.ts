@@ -6,10 +6,11 @@ import { generateBuildInfo } from "./scripts/release/build";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 import { licenseInventory, packageRoot, productionRoots } from "./scripts/third-party-licenses";
-const build = generateBuildInfo();
 
 
-export default defineConfig({
+export default defineConfig(({command}) => {
+ const build = generateBuildInfo(command === "serve");
+ return {
   base: "/FitCircle/",
   define: { __FITCIRCLE_BUILD__: JSON.stringify(build) },
   plugins: [react(), {
@@ -39,4 +40,5 @@ export default defineConfig({
   } },
   root: path.resolve(import.meta.dirname, "client"),
   build: { outDir: path.resolve(import.meta.dirname, "dist"), emptyOutDir: true },
+ };
 });

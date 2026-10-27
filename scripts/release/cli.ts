@@ -24,8 +24,8 @@ function changesBetween(from:string,to:string,exceptions=false):Change[]{
   return {id:`PR-${p.number}`,pr:p.number,summary:p.title,labels:labels.filter((l:string)=>l.startsWith('release:'))};
  });
 }
-function successfulDeployments(){
- return pages<any>('deployments?environment=github-pages').flatMap(d=>pages<any>(`deployments/${d.id}/statuses`).filter(s=>s.state==='success').map(s=>({d,s}))).sort((a,b)=>a.s.created_at.localeCompare(b.s.created_at));
+function successfulDeployments(knownIds:string[]){
+ return pages<any>('deployments?environment=github-pages').filter(d=>!knownIds.includes(String(d.id))).flatMap(d=>pages<any>(`deployments/${d.id}/statuses`).filter(s=>s.state==='success').map(s=>({d,s}))).sort((a,b)=>a.s.created_at.localeCompare(b.s.created_at));
 }
 function seed():Registry{
  const history=JSON.parse(fs.readFileSync('release/history.json','utf8'));let previousId:string|null=null;
@@ -33,7 +33,7 @@ function seed():Registry{
   const entry={id:`deployment-${r.evidence.deploymentId}`,version:r.version,commit:r.commit,buildId:null,artifactDigest:null,runId:r.evidence.runUrl.match(/runs\/(\d+)/)?.[1]??'',deploymentId:String(r.evidence.deploymentId),releasedAt:r.releasedAt,changes:r.changes.map((c:any,i:number)=>({id:c.pr?`PR-${c.pr}`:`historical-${i}`,pr:c.pr??null,summary:c.summary,labels:[`release:${c.classification}`]})),previousId,historical:true};previousId=entry.id;return entry;
  });
  // Reconcile newly successful publications at initialization; never count a merge alone.
- for(const {d,s} of successfulDeployments()){
+ for(const {d,s} of successfulDeployments(records.map((r:any)=>r.deploymentId))){
   const last=records.at(-1)!;
   if(s.created_at<=last.releasedAt||records.some((r:any)=>r.commit===d.sha))continue;
   const changes=changesBetween(last.commit,d.sha,true),impact=classifyChanges(changes);
@@ -46,18 +46,24 @@ function verifiedReceipt(p:Pending):Receipt{
  if(matches.length>1)throw Error('Ambiguous successful deployment; manual investigation required');
  if(matches.length===1){const {d,s}=matches[0];return {state:'success',commit:d.sha,runId:p.runId,deploymentId:String(d.id),releasedAt:s.created_at,environment:d.environment};}
  const run=api(`actions/runs/${p.runId}`);
+ const jobs=api(`actions/runs/${p.runId}/jobs?per_page=100`).jobs;
+ if(jobs.some((job:any)=>job.name==='deploy'&&(job.conclusion==='success'||job.steps?.some((step:any)=>step.name==='Deploy'&&step.conclusion==='success'))))throw Error('Deploy succeeded but its success receipt is not yet available; keep reservation');
  if(run.status!=='completed'||!['failure','cancelled','timed_out'].includes(run.conclusion))throw Error('Deployment result not yet verified; pending reservation retained');
  return {state:run.conclusion==='cancelled'?'cancelled':'failure',commit:p.commit,runId:p.runId,deploymentId:'',releasedAt:'',environment:'github-pages'};
 }
 function assertNoUnrecordedPublication(r:Registry){
  const last=r.records.at(-1)!;
- for(const {d,s} of successfulDeployments())if(s.created_at>last.releasedAt&&!r.records.some(e=>e.deploymentId===String(d.id)))throw Error(`Unrecorded publication ${d.id}: reconcile before planning`);
+ for(const {d,s} of successfulDeployments(r.records.map(e=>e.deploymentId)))if(s.created_at>last.releasedAt&&!r.records.some(e=>e.deploymentId===String(d.id)))throw Error(`Unrecorded publication ${d.id}: reconcile before planning`);
 }
 function writePlan(p:Pending|null,r:Registry){
  fs.writeFileSync(file,JSON.stringify(p,null,2));
  fs.writeFileSync('.release-history.json',JSON.stringify(r.records));
  output('publish',String(!!p));output('major',String(p?.impact==='major'));
  console.log(JSON.stringify({latest:r.records.at(-1),candidate:p},null,2));
+}
+function requireReviewerEnvironment(name:string){
+ const environment=api(`environments/${name}`);
+ if(!environment.protection_rules?.some((rule:any)=>rule.type==='required_reviewers'&&rule.reviewers?.length))throw Error(`${name} must have required owner reviewers before use`);
 }
 async function main(){
  const command=process.argv[2];
@@ -76,6 +82,7 @@ async function main(){
  }
  if(command==='initialize'){
   if(process.env.RELEASE_ADMIN_APPROVED!=='true')throw Error('Protected release-admin approval required');
+  requireReviewerEnvironment('release-admin');
   // Ref creation fails if already present: never overwrite an existing registry.
   const r=seed();const tree=api('git/trees','POST',{tree:[{path:'registry.json',mode:'100644',type:'blob',content:JSON.stringify(r,null,2)+'\n'}]});
   const c=api('git/commits','POST',{message:'Initialize approved FitCircle release history',tree:tree.sha,parents:[]});
@@ -89,6 +96,7 @@ async function main(){
   if(ancestor(target,last.commit)){writePlan(null,r);return;}
   const changes=changesBetween(last.commit,target,true);
   const p=plan(r,target,changes,process.env.GITHUB_RUN_ID!,process.env.GITHUB_RUN_ATTEMPT!,true);
+  if(p?.impact==='major')requireReviewerEnvironment('release-major-approval');
   // Major candidate is unprivileged; protected major approval gates reserve/deploy.
   writePlan(p,r);return;
  }
@@ -108,6 +116,7 @@ async function main(){
   if(command==='reconcile'&&process.env.RELEASE_ADMIN_APPROVED!=='true')throw Error('Protected release-admin approval required');
   if(!r.pending){console.log('No pending publication');return;}
   if(command==='record'&&r.pending.runId!==process.env.GITHUB_RUN_ID)throw Error('Different run pending');
+  if(command==='reconcile')requireReviewerEnvironment('release-admin');
   const receipt=verifiedReceipt(r.pending);const next=reconcile(r,receipt);
   writeRegistry(sha,next,receipt.state==='success'?next.records.at(-1):undefined);return;
  }
