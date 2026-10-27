@@ -10,7 +10,7 @@ import { getColorClass } from '@/lib/color-utils';
 interface WorkoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], setsGoal?: number) => void;
+  onSave: (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], setsGoal?: number) => boolean | undefined;
   onDelete?: (workoutId: string) => void;
   availableColors: string[];
   editingWorkout?: { id: string; name: string; color: string; dailyGoal: number; setsGoal?: number; weightLbs?: number; scheduledDays?: number[] } | null;
@@ -19,6 +19,7 @@ interface WorkoutModalProps {
 
 
 export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColors, editingWorkout, preSelectedDays }: WorkoutModalProps) {
+  const [saveError, setSaveError] = useState('');
   const [workoutName, setWorkoutName] = useState('');
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || 'green');
   const [dailyGoal, setDailyGoal] = useState<number | string>(10);
@@ -48,13 +49,15 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
     const finalGoal = typeof dailyGoal === 'string' ? parseInt(dailyGoal) || 1 : dailyGoal;
     const finalWeight = typeof weightLbs === 'string' ? (weightLbs === '' ? undefined : parseInt(weightLbs) || undefined) : weightLbs;
     if (workoutName.trim() && validTargets) {
-      onSave(workoutName.trim(), selectedColor, finalGoal, finalWeight, scheduledDays, Number(setsGoal));
+      if (!onSave(workoutName.trim(), selectedColor, finalGoal, finalWeight, scheduledDays, Number(setsGoal))) { setSaveError('Changes were not saved. You can retry or cancel.'); return; }
+      setSaveError('');
       resetForm();
       onClose();
     }
   };
 
   const resetForm = () => {
+    setSaveError('');
     setWorkoutName('');
     setSelectedColor(availableColors[0] || 'green');
     setDailyGoal(10);
@@ -184,6 +187,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
 
         </div>
 
+        {saveError && <p role="alert" className="text-xs text-feature-red">{saveError}</p>}
         {/* Fixed Bottom Actions */}
         <DialogFooter className={`grid ${editingWorkout && onDelete ? "grid-cols-3" : "grid-cols-2"} gap-2 border-t border-separator pt-2 sm:space-x-0`}>
           <Button

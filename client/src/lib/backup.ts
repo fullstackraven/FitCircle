@@ -15,12 +15,12 @@ export { food as foodDataSchema };
 const foods = z.array(food);
 const session = shaped({ id: text, time: text, duration: number });
 const workout = shaped({ id: text, name: text, color: text, count: number, dailyGoal: number, setsGoal: number.int().positive().optional(), scheduledDays: z.array(number.int().min(0).max(6)).optional(), goalHistory: z.array(shaped({ goal: number, timestamp: text })).optional() }).refine(w => w.setsGoal === undefined || (Number.isInteger(w.dailyGoal) && w.setsGoal <= w.dailyGoal), 'Sets must not exceed total reps');
-const setAwareLog = shaped({ count:number, goalAtTime:number, completedSets:number.int().nonnegative().optional(), setsGoalAtTime:number.int().positive().optional() }).refine(log => {
+const setAwareLog = shaped({ count:number, goalAtTime:number, carriedReps:number.int().nonnegative().optional(), completedSets:number.int().nonnegative().optional(), setsGoalAtTime:number.int().positive().optional() }).refine(log => {
   if (log.completedSets === undefined && log.setsGoalAtTime === undefined) return true;
   return log.completedSets !== undefined && log.setsGoalAtTime !== undefined
     && Number.isInteger(log.goalAtTime) && log.setsGoalAtTime <= log.goalAtTime
     && log.completedSets <= log.setsGoalAtTime
-    && log.count === Math.floor(log.completedSets * log.goalAtTime / log.setsGoalAtTime);
+    && log.count === (log.carriedReps ?? 0) + Math.floor(log.completedSets * log.goalAtTime / log.setsGoalAtTime);
 }, 'Invalid set progress or credited reps');
 const dailyLog = record(z.union([number, setAwareLog]));
 // Shared validation only; backup acceptance and stored representations are unchanged.

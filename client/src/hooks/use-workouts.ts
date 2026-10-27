@@ -1,3 +1,4 @@
+import { useWorkoutStore, commitWorkouts } from '@/lib/workout-store';
 import { validWorkoutTargets, workoutProgress, workoutLogComplete, stepWorkout, isSetLog, repsForSets } from '@/lib/workout-progress';
 import { getTotalWorkoutStats } from '@/lib/workout-statistics';
 import { useState, useEffect, useRef } from 'react';
@@ -25,6 +26,7 @@ export interface Workout {
 
 export interface WorkoutLogEntry {
   count: number;
+  carriedReps?: number;
   completedSets?: number;
   setsGoalAtTime?: number;
   goalAtTime: number; // Store the goal that was in effect when this workout was logged
@@ -54,17 +56,8 @@ const WORKOUT_COLORS = [
 ];
 
 export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
-  const initialPersistence = useRef(true);
-  const [data, setData] = useState<WorkoutData>(() => {
-    let raw: string | null;
-    try {
-      raw = localStorage.getItem(STORAGE_KEYS.WORKOUTS);
-    } catch {
-      throw new StoredWorkoutDataError(null, 'unavailable');
-    }
-    // Failed reads/validation throw before any state or effects can commit.
-    return parseStoredWorkouts(raw, getTodayString());
-  });
+  const data = useWorkoutStore();
+  const setData = (update: WorkoutData | ((previous: WorkoutData) => WorkoutData)) => commitWorkouts(previous => typeof update === 'function' ? update(previous) : update);
 
   // Helper function to extract count from log entry
   const getCountFromLogEntry = (logEntry: number | WorkoutLogEntry | undefined): number => {
@@ -72,25 +65,12 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
     return typeof logEntry === 'object' ? logEntry.count : logEntry;
   };
 
-  // Save to localStorage whenever data changes
-  useEffect(() => {
-    if (initialPersistence.current) {
-      initialPersistence.current = false;
-      if (options?.skipInitialWrite) return;
-    }
-    try {
-      localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(data));
-    } catch (error) {
-      console.error('Failed to save workouts data:', error);
-    }
-  }, [data]);
-
   // Reset daily data if date has changed
   useEffect(() => {
     const checkDateChange = () => {
       const today = getTodayString();
       if (data.lastDate && data.lastDate !== today) {
-        setData(prev => ({
+        setData(prev => prev.lastDate === today ? prev : ({
           ...prev,
           lastDate: today,
           routines: prev.routines || {},
@@ -109,12 +89,15 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
       checkDateChange();
     }
     
-    const interval = setInterval(checkDateChange, 5 * 60 * 1000);
-    return () => clearInterval(interval);
+    const interval = setInterval(checkDateChange, 60 * 1000);
+    const nextMidnight = new Date(); nextMidnight.setHours(24,0,0,0);
+    const midnight = setTimeout(checkDateChange, nextMidnight.getTime() - Date.now());
+    window.addEventListener('focus', checkDateChange);
+    return () => { clearInterval(interval); clearTimeout(midnight); window.removeEventListener('focus',checkDateChange); };
   }, [data.lastDate]);
 
   const addWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], routineId?: string, setsGoal = 1) => {
-    if (!validWorkoutTargets(dailyGoal, setsGoal)) return;
+    if (!name.trim() || !validWorkoutTargets(dailyGoal, setsGoal)) return false;
     const id = Date.now().toString();
     const newWorkout: Workout = {
       id,
@@ -132,7 +115,7 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
       ...(weightLbs && weightLbs > 0 ? { weightLbs } : {})
     };
 
-    setData(prev => ({
+    return setData(prev => ({
       ...prev,
       routines: prev.routines || {},
       workouts: {
@@ -144,7 +127,7 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
 
   const changeWorkout = (workoutId: string, direction: 1 | -1) => {
     const today = getTodayString();
-    setData(prev => {
+    return setData(prev => {
       const workout = prev.workouts[workoutId];
       if (!workout) return prev;
       const entry = prev.dailyLogs[today]?.[workoutId];
@@ -252,12 +235,19 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
   };
 
   const updateWorkout = (workoutId: string, name?: string, newGoal?: number, weightLbs?: number, scheduledDays?: number[], color?: string, setsGoal?: number) => {
-    setData(prev => {
+    return setData(prev => {
       const currentWorkout = prev.workouts[workoutId];
       if (!currentWorkout) return prev;
       const reps = newGoal ?? currentWorkout.dailyGoal;
       const sets = setsGoal ?? currentWorkout.setsGoal ?? 1;
       if (!validWorkoutTargets(reps, sets)) return prev;
+      if (name !== undefined && !name.trim()) return prev;
+      const today = getTodayString();
+      const currentLog = prev.dailyLogs[today]?.[workoutId];
+      const targetsChanged = reps !== currentWorkout.dailyGoal || sets !== (currentWorkout.setsGoal ?? 1);
+      const credited = getCountFromLogEntry(currentLog);
+      if (targetsChanged && credited > 0 && !window.confirm(`Keep today's ${credited} recorded reps and restart tracking ${sets} sets at the new target? New sets add reps; prior reps remain recorded. Undo applies to new sets.`)) return prev;
+      const resetLog = targetsChanged && currentLog !== undefined ? { ...(typeof currentLog === 'object' ? currentLog : {}), count:credited, goalAtTime:reps, completedSets:0, setsGoalAtTime:sets, carriedReps:credited } : undefined;
       const isGoalChanged = newGoal !== undefined && newGoal !== currentWorkout?.dailyGoal;
       
       // If goal is being changed, add to goal history
@@ -276,10 +266,10 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
         ...prev,
         // On an explicit goal edit only, freeze numeric legacy logs under the
         // previous rep goal. Counts and completion remain exactly unchanged.
-        dailyLogs: isGoalChanged ? Object.fromEntries(Object.entries(prev.dailyLogs).map(([date, log]) => [date,
+        dailyLogs: { ...(isGoalChanged ? Object.fromEntries(Object.entries(prev.dailyLogs).map(([date, log]) => [date,
           typeof log[workoutId] === 'number' && log[workoutId] > 0
             ? { ...log, [workoutId]: { count:log[workoutId], goalAtTime:currentWorkout.dailyGoal } } : log
-        ])) : prev.dailyLogs,
+        ])) : prev.dailyLogs), ...(resetLog ? {[today]:{...prev.dailyLogs[today],[workoutId]:resetLog}} : {}) },
         routines: prev.routines || {},
         workouts: {
           ...prev.workouts,
@@ -334,7 +324,7 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
       const goal = typeof entry === 'object' ? entry.goalAtTime : getGoalForDate(workoutId, dateString);
       if (!Number.isInteger(newCount) || newCount < 0 || (isSetLog(entry) && newCount > entry.setsGoalAtTime)) return prev;
       const next = isSetLog(entry)
-        ? { ...entry, completedSets:newCount, count:repsForSets(newCount,entry.goalAtTime,entry.setsGoalAtTime) }
+        ? { ...entry, completedSets:newCount, count:(entry.carriedReps ?? 0) + repsForSets(newCount,entry.goalAtTime,entry.setsGoalAtTime) }
         : { ...(typeof entry === 'object' ? entry : {}), count:newCount, goalAtTime:goal };
       return { ...prev,
         workouts: dateString === getTodayString() ? { ...prev.workouts, [workoutId]: { ...prev.workouts[workoutId], count:next.count } } : prev.workouts,
@@ -356,21 +346,7 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
   };
 
   // Journal actions report durable success before the editor leaves its draft.
-  const persistJournal = (update: (previous: WorkoutData) => WorkoutData) => {
-    // Other feature callers retain their existing deferred persistence behavior.
-    if (!options?.skipInitialWrite) {
-      setData(update);
-      return true;
-    }
-    const next = update(data);
-    try {
-      localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(next));
-    } catch {
-      return false;
-    }
-    setData(next);
-    return true;
-  };
+  const persistJournal = (update: (previous: WorkoutData) => WorkoutData) => commitWorkouts(update);
   const addJournalEntry = (date: string, entry: string) => {
     const timestamp = new Date().toISOString();
     return persistJournal(previous => ({
@@ -658,6 +634,7 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
 
 
   return {
+    workoutData: data,
     workouts: data.workouts,
     routines: data.routines,
     addWorkout,

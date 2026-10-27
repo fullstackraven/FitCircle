@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "workout-shared-state.test.ts",
+    "browser/workout-correctness.spec.ts",
     "workout-sets.test.ts",
     "browser/workout-sets.spec.ts",
     "monthly-consistency.test.ts",

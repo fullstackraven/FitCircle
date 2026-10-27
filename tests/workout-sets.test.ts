@@ -96,3 +96,7 @@ test('current schedules never invent missing historical obligations',t=>{
  renderToString(createElement(Probe));
  } finally {if(descriptor)Object.defineProperty(globalThis,'localStorage',descriptor);else Reflect.deleteProperty(globalThis,'localStorage');t.mock.timers.reset();}
 });
+test('backup restores retained reps from a confirmed target change without normalization',async()=>{
+ const source=new MemoryStorage(),target=new MemoryStorage();const d=mixed();Object.assign(d.dailyLogs['2026-10-27'].w,{carriedReps:12,count:18});const raw=JSON.stringify(d);source.setItem('workout-tracker-data',raw);
+ const backup=await createBackup(source,new IDBFactory());applyRestore(prepareRestore(JSON.parse(JSON.stringify(backup))),target,new MemoryStorage());assert.equal(target.getItem('workout-tracker-data'),raw);
+});
