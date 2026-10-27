@@ -140,8 +140,12 @@ export function ProgressCircle({
       >
         {cardStyle ? (
           <span className="flex flex-col items-center text-strong">
-            <span className="home-set-count type-metric font-bold" data-long={`${count}/${goal}`.length > 7}>{count}/{goal}</span>
-            <span className="text-xs font-medium text-supporting">{unitLabel}</span>
+            {progress >= 1 ? (
+              <Check size={32} aria-hidden="true" data-testid="workout-complete-check" style={{ color: 'var(--workout-complete)' }} />
+            ) : (
+              <span className="home-set-count type-metric font-bold" data-long={`${count}/${goal}`.length > 7}>{count}/{goal}</span>
+            )}
+            <span className="text-xs font-medium text-supporting">{progress >= 1 ? `${count}/${goal} ${unitLabel}` : unitLabel}</span>
           </span>
         ) : progress >= 1 ? (
           <Check 

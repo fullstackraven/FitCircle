@@ -12,11 +12,16 @@ for(const theme of ['dark','light']) test(`Home workout cards ${theme}`,async({p
  await expect(card.getByText('Sets',{exact:true})).toBeVisible();
  await ring.click();await expect(card).toContainText('10 / 20 reps');await expect(ring).toContainText('1/2');
  await ring.click();await ring.click();await expect(ring).toContainText('2/2');await expect(card).toContainText('20 / 20 reps');
+ await expect(ring.getByTestId('workout-complete-check')).toBeVisible();
  await card.getByRole('heading').click();await expect(ring).toContainText('2/2');
  await card.getByTitle('Undo last set').click();await expect(ring).toContainText('1/2');
+ await expect(ring.getByTestId('workout-complete-check')).toHaveCount(0);
  await expect(page.getByTestId('home-workout-b')).toContainText('40 lbs');
  await card.scrollIntoViewIfNeeded();
  await expect(card.locator('..')).toHaveScreenshot(`home-workout-cards-${theme}.png`);
+ await ring.click();
+ await expect(card.locator('..')).toHaveScreenshot(`home-completed-check-${theme}.png`);
+ await card.getByTitle('Undo last set').click();
  await page.setViewportSize({width:320,height:844});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
  const a=await card.boundingBox(),b=await page.getByTestId('home-workout-b').boundingBox();expect(a!.height).toBe(b!.height);expect(b!.x+b!.width).toBeLessThanOrEqual(320);
