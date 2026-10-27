@@ -2,15 +2,15 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
 import fs from "node:fs";
-import { execFileSync } from "node:child_process";
+import { generateBuildInfo } from "./scripts/release/build";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 import { licenseInventory, packageRoot, productionRoots } from "./scripts/third-party-licenses";
-const metadata = JSON.parse(fs.readFileSync("package.json", "utf8"));
-const build = { version: metadata.version, commit: execFileSync("git", ["rev-parse", "--short=8", "HEAD"], { encoding: "utf8" }).trim() };
 
 
-export default defineConfig({
+export default defineConfig(({command}) => {
+ const build = generateBuildInfo(command === "serve");
+ return {
   base: "/FitCircle/",
   define: { __FITCIRCLE_BUILD__: JSON.stringify(build) },
   plugins: [react(), {
@@ -22,6 +22,7 @@ export default defineConfig({
       });
     },
     generateBundle(_options, bundle) {
+      this.emitFile({ type: "asset", fileName: "build-info.json", source: JSON.stringify(build) });
       const roots = new Set<string>();
       for (const chunk of Object.values(bundle)) if (chunk.type === "chunk") {
         for (const id of Object.keys(chunk.modules)) {
@@ -39,4 +40,5 @@ export default defineConfig({
   } },
   root: path.resolve(import.meta.dirname, "client"),
   build: { outDir: path.resolve(import.meta.dirname, "dist"), emptyOutDir: true },
+ };
 });

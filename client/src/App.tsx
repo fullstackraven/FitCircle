@@ -15,6 +15,7 @@ import FitnessCalculator from "@/pages/fitness-calculator";
 import SettingsPage from "@/pages/settings";
 import SharePage from "@/pages/share";
 import AboutPage from "@/pages/about";
+import ReleaseHistoryPage from "@/pages/release-history";
 import { LegalPage, LicensesPage } from "@/pages/legal";
 import FastingPage from "@/pages/fasting";
 import MeditationPage from "@/pages/meditation";
@@ -72,6 +73,7 @@ function Router() {
       <Route path="/about/terms"><LegalPage kind="terms" /></Route>
       <Route path="/about/privacy"><LegalPage kind="privacy" /></Route>
       <Route path="/about/licenses" component={LicensesPage} />
+      <Route path="/about/releases" component={ReleaseHistoryPage} />
       <Route path="/about" component={AboutPage} />
       <Route path="/settings"><SettingsPage /></Route>
       <Route component={NotFound} />

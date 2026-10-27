@@ -1,0 +1,36 @@
+name: Release classification
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled, unlabeled, edited]
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  release-classification:
+    runs-on: ubuntu-24.04
+    steps:
+      # Trusted base code validates labels; never execute privileged PR code.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Exactly one explicit release classification
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        # Bootstrap PR may introduce the validator itself. Inline check has the
+        # same fail-closed decision table and does not execute head code.
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > "$RUNNER_TEMP/pr.json"
+          node --input-type=module -e '
+            import fs from "node:fs";
+            const p=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+"/pr.json","utf8"));
+            const labels=p.labels.map(l=>l.name).filter(l=>l.startsWith("release:"));
+            if(labels.length!==1 || !["release:major","release:minor","release:patch","release:none"].includes(labels[0])) throw Error("Exactly one release classification is required");
+            console.log(labels[0]);'

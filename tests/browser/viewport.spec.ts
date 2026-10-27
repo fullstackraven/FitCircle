@@ -83,7 +83,7 @@ test('all navigation sheets keep close, profile, Settings, and version accessibl
     const sheet = page.getByRole('dialog', { name: 'Navigation Menu' });
     await expect(sheet).toBeVisible();
     await assertSafeClose(sheet);
-    const version = await sheet.getByRole('button', { name: /^Version \d+\./ }).boundingBox();
+    const version = await sheet.getByRole('button', { name: /^Version (?:Development|\d+\.)/ }).boundingBox();
     expect(version!.y + version!.height).toBeLessThanOrEqual(810);
     await expect(sheet.getByRole('button', { name: /My Fitness Profile/ })).toBeVisible();
     await expect(sheet.getByText('Account Data', { exact: true })).toBeVisible();

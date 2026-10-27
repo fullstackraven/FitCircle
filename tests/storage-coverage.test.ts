@@ -8,6 +8,7 @@ import { applicationProgram, discoverStorage, checkCoverage } from '../scripts/l
 import { storageBoundaries } from '../scripts/lib/storage-boundaries';
 import { storageSources, findStorageSource } from '../client/src/lib/storage-registry';
 import { completeStorage } from './fixtures/complete-storage';
+import { inventoryTable } from '../scripts/lib/storage-inventory';
 
 test('every shipped persistent source is registered, including dynamic keys and generic boundary counts', () => {
   const { program, files, root } = applicationProgram();
@@ -54,4 +55,19 @@ test('AST regression: unknown aliases, dynamic keys and IndexedDB stores fail; r
     assert.equal(findStorageSource('localStorage', 'insertAfterIndex')?.backup, false);
     assert.ok(checkCoverage(feature, [{ key: 'fitcircle_new_feature', mechanism: 'localStorage', classification: 'temporary', backup: false, reason: '', feature: 'Bad exclusion' }]).length);
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});
+
+test('release receipt inventory remains metadata-only and does not claim the PWA cache writer',()=>{
+  const source=findStorageSource('CacheStorage','fitcircle-release-receipts-v1');
+  assert.equal(source?.classification,'metadata');assert.equal(source?.backup,false);
+  assert.equal(findStorageSource('localStorage','fitcircle-release-receipts-v1'),undefined);
+  const table=inventoryTable([
+    {file:'client/src/lib/application-version.ts',line:19,owner:'receipt',mechanism:'CacheStorage',operation:'open',expression:'',keys:['fitcircle-release-receipts-v1']},
+    {file:'scripts/sw-template.js',line:8,owner:'worker',mechanism:'CacheStorage',operation:'open',expression:'',keys:['__CACHE_NAME__']},
+  ]);
+  const row=table.split('\n').find(line=>line.startsWith('| `fitcircle-release-receipts-v1`'))!;
+  assert.ok(row.includes('application-version.ts'));assert.ok(!row.includes('sw-template.js'));
+  assert.ok(row.includes('| metadata | Excluded intentionally | Excluded intentionally |'));
+  const pwa=table.split('\n').find(line=>line.startsWith('| `fitcircle-pages-*`'))!;
+  assert.ok(pwa.includes('sw-template.js'));
 });

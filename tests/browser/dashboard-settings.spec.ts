@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { textContrast } from '../fixtures/appearance-contrast';
 import { seedAppearance } from '../fixtures/appearance-pages';
 import fs from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import {appVersionLabel} from '../../client/src/lib/application-version';
 import { createRequire } from 'node:module';
 const FITCIRCLE_URL = 'https://fullstackraven.github.io/FitCircle/';
 const require = createRequire(import.meta.url);
@@ -60,7 +60,9 @@ for(const width of [390,320]) for(const mode of ['dark','light']) {
 
     }
     await page.goto('about');const built=fs.readFileSync('dist/index.html','utf8');expect(built).toContain('assets/index-');
-    await expect(page.getByTestId('about-version')).toHaveText(`${JSON.parse(fs.readFileSync('package.json','utf8')).version} (${execFileSync('git',['rev-parse','--short=8','HEAD'],{encoding:'utf8'}).trim()})`);
+    const metadata=JSON.parse(fs.readFileSync('dist/build-info.json','utf8'));
+    await expect(page.getByTestId('about-version')).toHaveText(appVersionLabel(metadata));
+    await expect(page.getByTestId('about-build')).toHaveText(metadata.commit.slice(0,8));
     expect(await fitnessBytes(page)).toEqual(before);
   });
 }

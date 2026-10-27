@@ -1,5 +1,6 @@
 import { useRef } from 'react';
-import { buildInfo } from '@/lib/build-info';
+import { useApplicationVersion } from '@/lib/build-info';
+import {appVersionLabel} from '@/lib/application-version';
 
 // Explicit developer gesture; no diagnostics import, listeners or storage in
 // ordinary usage. Close the sheet before measuring the normal app viewport.
@@ -24,6 +25,7 @@ async function openDiagnostics() {
 }
 
 export function VersionLabel({ onActivate }: { onActivate: () => void }) {
+  const build = useApplicationVersion();
   const taps = useRef({ count: 0, last: 0 });
   return <button type="button" className="text-dim text-xs text-center block w-full py-4 -my-4" onClick={() => {
     const now = performance.now();
@@ -34,5 +36,5 @@ export function VersionLabel({ onActivate }: { onActivate: () => void }) {
       onActivate();
       void openDiagnostics().catch(() => window.alert('Diagnostics could not open. Reconnect, close other dialogs and try again. Your data has not changed.'));
     }
-  }}>Version {buildInfo.version}</button>;
+  }}>Version {appVersionLabel(build)}</button>;
 }

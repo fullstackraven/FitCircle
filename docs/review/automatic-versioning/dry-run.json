@@ -1,0 +1,37 @@
+{
+  "mode": "read-only-proposal",
+  "base": {
+    "id": "deployment-7362901786",
+    "version": "2.10.3",
+    "commit": "8ba8a8f9670f72dea25ec6ae8a8b212ead9ac8b4",
+    "buildId": null,
+    "artifactDigest": null,
+    "runId": "40531878315",
+    "deploymentId": "7362901786",
+    "releasedAt": "2026-10-27T15:36:13Z",
+    "changes": [
+      {
+        "id": "PR-95",
+        "pr": 95,
+        "summary": "Propose FitCircle 2.x release history and versioning foundation",
+        "labels": [
+          "release:none"
+        ]
+      }
+    ],
+    "previousId": "deployment-7357442225",
+    "historical": true
+  },
+  "changes": [
+    {
+      "id": "activation-proposal",
+      "pr": null,
+      "summary": "Automatic release registry, build identity and release history",
+      "labels": [
+        "release:minor"
+      ]
+    }
+  ],
+  "proposedVersion": "2.11.0",
+  "source": "8ba8a8f9670f72dea25ec6ae8a8b212ead9ac8b4"
+}

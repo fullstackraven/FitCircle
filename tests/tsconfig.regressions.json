@@ -1,6 +1,9 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "release-receipts.test.ts",
+    "browser/release-versioning.spec.ts",
+    "automatic-release.test.ts",
     "release-versioning.test.ts",
     "workout-shared-state.test.ts",
     "browser/workout-correctness.spec.ts",

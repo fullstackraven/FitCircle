@@ -9,3 +9,6 @@ vite.config.ts.*
 # bug-reports/*.json
 playwright-report/
 test-results/
+
+.release-candidate.json
+.release-history.json

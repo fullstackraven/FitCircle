@@ -5,7 +5,7 @@ test('five Version taps open phone diagnostics after closing the sheet without s
   await page.goto('wellness');
   await page.getByRole('button',{name:'Open Menu'}).click();
   const sheet=page.getByRole('dialog',{name:'Navigation Menu'});
-  const version=sheet.getByRole('button',{name:/^Version \d+\./});
+  const version=sheet.getByRole('button',{name:/^Version (?:Development|\d+\.)/});
   expect((await version.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   const before=await page.evaluate(()=>JSON.stringify(localStorage));
   await version.click();
@@ -31,7 +31,7 @@ test('all sidebar entry points support controlled activation and complete dismis
   for(const route of ['./','calendar','routines','reminders']) {
     await page.goto(route);
     await page.getByRole('button',{name:'Open Menu'}).click();
-    const version=page.getByRole('dialog').getByRole('button',{name:/^Version \d+\./});
+    const version=page.getByRole('dialog').getByRole('button',{name:/^Version (?:Development|\d+\.)/});
     for(let i=0;i<5;i++) await version.click();
     const panel=page.locator('[data-viewport-diagnostics]');
     await expect(panel).toBeVisible();
