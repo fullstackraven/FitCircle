@@ -22,3 +22,6 @@ export function stepWorkout(workout: Workout, entry: number | WorkoutLogEntry | 
   if (p.mode === 'reps') return { ...(typeof entry === 'object' ? entry : {}), count: direction < 0 ? Math.max(0,p.count - 1) : Math.max(p.count,count), goalAtTime:p.repGoal };
   return { ...(typeof entry === 'object' ? entry : {}), count:repsForSets(count,p.repGoal,p.goal), goalAtTime:p.repGoal, completedSets:count, setsGoalAtTime:p.goal };
 }
+
+// Mutation validation only: existing stored historical goals are never normalized.
+export const validWorkoutTargets = (reps: number, sets: number) => Number.isInteger(reps) && reps >= 1 && reps <= 9999 && Number.isInteger(sets) && sets >= 1 && sets <= reps;

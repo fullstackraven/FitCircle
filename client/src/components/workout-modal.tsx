@@ -1,3 +1,4 @@
+import { validWorkoutTargets } from '@/lib/workout-progress';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -22,7 +23,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || 'green');
   const [dailyGoal, setDailyGoal] = useState<number | string>(10);
   const [setsGoal, setSetsGoal] = useState<number | string>(1);
-  const validTargets = Number.isInteger(Number(dailyGoal)) && Number(dailyGoal) > 0 && Number.isInteger(Number(setsGoal)) && Number(setsGoal) > 0 && Number(setsGoal) <= Number(dailyGoal);
+  const validTargets = validWorkoutTargets(Number(dailyGoal), Number(setsGoal));
   const [weightLbs, setWeightLbs] = useState<number | string>('');
   const [scheduledDays, setScheduledDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]); // Default to all days
 
@@ -172,7 +173,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
                 value={setsGoal} onChange={e => setSetsGoal(e.target.value)} className="h-9 text-base" />
             </div>
           </div>
-          {!validTargets && <p role="alert" className="text-xs text-feature-red">Reps and sets must be positive whole numbers; sets cannot exceed reps.</p>}
+          {!validTargets && <p role="alert" className="text-xs text-feature-red">Reps: 1–9,999. Sets: 1–Total Reps. Use whole numbers.</p>}
           {/* Days of Week Selection */}
           <DaySelector compact
             selectedDays={scheduledDays}

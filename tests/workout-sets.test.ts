@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import React, { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { IDBFactory } from 'fake-indexeddb';
-import { stepWorkout, workoutProgress, workoutLogComplete } from '../client/src/lib/workout-progress';
+import { validWorkoutTargets, stepWorkout, workoutProgress, workoutLogComplete } from '../client/src/lib/workout-progress';
 import { useWorkouts, type Workout, type WorkoutLogEntry } from '../client/src/hooks/use-workouts';
 import { WorkoutWidget } from '../client/src/components/dashboard-widgets/WorkoutWidget';
 import { parseStoredWorkouts } from '../client/src/lib/workout-initialization';
@@ -78,4 +78,21 @@ test('recovery fallback recognizes completed set logs without altering legacy co
  function Probe(){assert.equal(useRecovery().getRecoveryStats().totalWorkoutDays,2);return null;}
  renderToString(createElement(Probe));
  } finally {if(descriptor)Object.defineProperty(globalThis,'localStorage',descriptor);else Reflect.deleteProperty(globalThis,'localStorage');}
+});
+
+test('mutation targets retain the supported rep range without altering stored records',()=>{
+ assert.equal(validWorkoutTargets(9999,9999),true);
+ for(const reps of [10000,20.5,0,-1,NaN]) assert.equal(validWorkoutTargets(reps,1),false);
+ for(const sets of [21,2.5,0,-1,NaN]) assert.equal(validWorkoutTargets(20,sets),false);
+});
+test('current schedules never invent missing historical obligations',t=>{
+ t.mock.timers.enable({apis:['Date'],now:new Date('2026-10-27T12:00:00').getTime()});
+ const descriptor=Object.getOwnPropertyDescriptor(globalThis,'localStorage');
+ const data={...mixed(),workouts:{...mixed().workouts,b:{...workout,id:'b',scheduledDays:[0,1,2,3,4,5,6]},c:{...workout,id:'c',scheduledDays:[0,1,2,3,4,5,6]}}};
+ const raw=JSON.stringify(data);
+ try {
+ Object.defineProperty(globalThis,'localStorage',{configurable:true,value:{getItem:(k:string)=>k==='workout-tracker-data'?raw:null,setItem:()=>assert.fail('history must not be rewritten')}});
+ function Probe(){const api=useWorkouts();assert.equal(api.getMonthlyStats(2026,9).monthlyCompletedDays,2);assert.equal(api.getTotalStats().totalCompletedDays,2);assert.equal(api.getTotalStats().totalReps,46);return null;}
+ renderToString(createElement(Probe));
+ } finally {if(descriptor)Object.defineProperty(globalThis,'localStorage',descriptor);else Reflect.deleteProperty(globalThis,'localStorage');t.mock.timers.reset();}
 });

@@ -36,6 +36,10 @@ test('legacy partial day stays rep-based; following day adopts one set without r
 test('workout form validates positive whole rep/set goals and preserves compact controls',async({page})=>{
  await seed(page);await page.getByRole('button',{name:'Edit Push-ups',exact:true}).click();const save=page.getByRole('button',{name:'Update Workout',exact:true});
  await page.getByLabel('Number of Sets').fill('21');await expect(save).toBeDisabled();await page.getByLabel('Number of Sets').fill('0');await expect(save).toBeDisabled();await page.getByLabel('Number of Sets').fill('2.5');await expect(save).toBeDisabled();await page.getByLabel('Number of Sets').fill('4');await page.getByLabel('Total Reps',{exact:true}).fill('20.5');await expect(save).toBeDisabled();await page.getByLabel('Total Reps',{exact:true}).fill('20');await expect(save).toBeEnabled();
+ const reps=page.getByLabel('Total Reps',{exact:true});
+ for(const value of ['10000','0','-1','','20.5']) {await reps.fill(value);await expect(reps).toHaveValue(value);await expect(save).toBeDisabled();await expect(page.getByRole('alert')).toBeVisible();}
+ await reps.fill('9999');await expect(save).toBeEnabled();
+ await page.getByLabel('Number of Sets').fill('');await expect(save).toBeDisabled();await page.getByLabel('Number of Sets').fill('-1');await expect(save).toBeDisabled();await page.getByLabel('Number of Sets').fill('4');await reps.fill('20');
  await page.setViewportSize({width:320,height:568});await expect(save).toBeInViewport();await save.click();expect((await data(page)).workouts.w.setsGoal).toBe(4);
 });
 test('Calendar waits for every scheduled set workout, including untouched circles',async({page})=>{

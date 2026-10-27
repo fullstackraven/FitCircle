@@ -1,4 +1,4 @@
-import { workoutProgress, workoutLogComplete, stepWorkout, isSetLog, repsForSets } from '@/lib/workout-progress';
+import { validWorkoutTargets, workoutProgress, workoutLogComplete, stepWorkout, isSetLog, repsForSets } from '@/lib/workout-progress';
 import { getTotalWorkoutStats } from '@/lib/workout-statistics';
 import { useState, useEffect, useRef } from 'react';
 import { getTodayString, getDateString } from '@/lib/date-utils';
@@ -114,7 +114,7 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
   }, [data.lastDate]);
 
   const addWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], routineId?: string, setsGoal = 1) => {
-    if (!Number.isInteger(dailyGoal) || dailyGoal < 1 || !Number.isInteger(setsGoal) || setsGoal < 1 || setsGoal > dailyGoal) return;
+    if (!validWorkoutTargets(dailyGoal, setsGoal)) return;
     const id = Date.now().toString();
     const newWorkout: Workout = {
       id,
@@ -257,7 +257,7 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
       if (!currentWorkout) return prev;
       const reps = newGoal ?? currentWorkout.dailyGoal;
       const sets = setsGoal ?? currentWorkout.setsGoal ?? 1;
-      if (!Number.isInteger(reps) || reps < 1 || !Number.isInteger(sets) || sets < 1 || sets > reps) return prev;
+      if (!validWorkoutTargets(reps, sets)) return prev;
       const isGoalChanged = newGoal !== undefined && newGoal !== currentWorkout?.dailyGoal;
       
       // If goal is being changed, add to goal history
