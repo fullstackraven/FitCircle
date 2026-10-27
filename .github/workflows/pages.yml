@@ -8,26 +8,50 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  pull-requests: read
+  actions: read
+  deployments: read
 concurrency:
-  group: github-pages-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'fitcircle-production-release' || format('github-pages-{0}-{1}', github.event_name, github.event.pull_request.number || github.ref) }}
+  cancel-in-progress: ${{ github.event_name != 'push' }}
 jobs:
   prepare:
     runs-on: ubuntu-24.04
+    outputs:
+      publish: ${{ steps.plan.outputs.publish }}
+      major: ${{ steps.plan.outputs.major }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Plan exact production candidate
+        id: plan
+        if: github.event_name == 'push' && vars.FITCIRCLE_RELEASES_ENABLED == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: npx tsx scripts/release/cli.ts plan
       - run: npm run check
       - run: npx tsc --noEmit -p tests/tsconfig.regressions.json
       - run: npm test
       - run: npm run audit:storage
       - run: npm run build
+      - name: Digest tested release payload
+        if: steps.plan.outputs.publish == 'true'
+        run: npx tsx scripts/release/cli.ts digest
+      - uses: actions/upload-artifact@v4
+        if: steps.plan.outputs.publish == 'true'
+        with:
+          name: release-candidate
+          path: .release-candidate.json
+          include-hidden-files: true
+          retention-days: 90
       # Build exactly once. All browser shards and Pages consume this same
       # immutable artifact from this run, never an artifact from a PR run.
       - uses: actions/upload-artifact@v4
@@ -104,9 +128,48 @@ jobs:
             exit 1
           fi
 
-  deploy:
+  approve_major:
     needs: [prepare, build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.build.result == 'success'
+    if: vars.FITCIRCLE_RELEASES_ENABLED == 'true' && needs.prepare.outputs.major == 'true'
+    runs-on: ubuntu-latest
+    environment: release-major-approval
+    permissions: {}
+    steps:
+      - run: echo "Major release approved through protected environment."
+
+  reserve_release:
+    needs: [prepare, build, approve_major]
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.FITCIRCLE_RELEASES_ENABLED == 'true' && needs.prepare.outputs.publish == 'true' && needs.build.result == 'success' && (needs.approve_major.result == 'success' || needs.approve_major.result == 'skipped')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: tested-site
+          path: dist/
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-candidate
+          path: .
+      - name: Reserve tested build with compare-and-swap
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MAJOR_APPROVED: ${{ needs.approve_major.result == 'success' }}
+        run: npx tsx scripts/release/cli.ts reserve
+
+  deploy:
+    needs: [prepare, build, reserve_release]
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.build.result == 'success' && (vars.FITCIRCLE_RELEASES_ENABLED != 'true' || (needs.prepare.outputs.publish == 'true' && needs.reserve_release.result == 'success'))
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -125,3 +188,26 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+
+  record_release:
+    needs: [deploy, reserve_release]
+    if: always() && vars.FITCIRCLE_RELEASES_ENABLED == 'true' && needs.deploy.result == 'success' && needs.reserve_release.result == 'success'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      deployments: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Verify Pages success and append release receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: npx tsx scripts/release/cli.ts record
