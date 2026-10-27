@@ -106,12 +106,10 @@ export function ProgressCircle({
     <button
       aria-label={ariaLabel}
       onClick={handleClick}
-      onMouseDown={startHold}
-      onMouseUp={endHold}
-      onMouseLeave={endHold}
-      onTouchStart={startHold}
-      onTouchEnd={endHold}
-      onTouchCancel={endHold}
+      onPointerDown={startHold}
+      onPointerUp={endHold}
+      onPointerLeave={endHold}
+      onPointerCancel={endHold}
       className={`${cardStyle ? "home-set-ring" : ""} relative transform transition-transform duration-150 hover:scale-105 active:scale-95 ${
         isAnimating ? 'bounce-animation' : ''
       }`}

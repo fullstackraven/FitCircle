@@ -30,8 +30,29 @@ test('holding the ring does not add a release click',async({page})=>{
  await page.evaluate(()=>localStorage.setItem('workout-tracker-data',JSON.stringify({workouts:{a:{id:'a',name:'Push-ups',color:'green',dailyGoal:100,setsGoal:10,count:0}},dailyLogs:{},routines:{},journalEntries:{},lastDate:'2026-10-27'})));
  await page.goto('./');const ring=page.getByRole('button',{name:/Record a set for Push-ups/});
  await page.clock.pauseAt(new Date('2026-10-27T12:01:00-04:00'));
- await ring.dispatchEvent('mousedown');await page.clock.runFor(650);
+ await ring.hover();await page.mouse.down();await page.clock.runFor(650);
  const before=await ring.getAttribute('aria-label');expect(before).toContain('1 of 10');
- await ring.dispatchEvent('mouseup');await ring.dispatchEvent('click');await expect(ring).toHaveAttribute('aria-label',before!);
+ await page.mouse.up();await expect(ring).toHaveAttribute('aria-label',before!);
  await ring.click();await expect(ring).toHaveAttribute('aria-label',/2 of 10/);
+});
+
+test.describe('touch workout ring',()=>{
+ test.use({hasTouch:true,isMobile:true});
+ test('touch hold release credits no extra set and a subsequent tap still works',async({page,context})=>{
+  await page.clock.install({time:new Date('2026-10-27T12:00:00-04:00')});await page.goto('profile');
+  await page.evaluate(()=>localStorage.setItem('workout-tracker-data',JSON.stringify({workouts:{a:{id:'a',name:'Push-ups',color:'green',dailyGoal:100,setsGoal:10,count:0}},dailyLogs:{},routines:{},journalEntries:{},lastDate:'2026-10-27'})));
+  await page.goto('./');const ring=page.getByRole('button',{name:/Record a set for Push-ups/});await ring.scrollIntoViewIfNeeded();
+  await page.clock.pauseAt(new Date('2026-10-27T12:01:00-04:00'));
+  const bounds=(await ring.boundingBox())!;
+  // Browser-level touch input generates the compatibility mouse/click sequence too.
+  // Chromium mobile emulation is not a claim of physical iOS validation.
+  const input=await context.newCDPSession(page);
+  await input.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:bounds.x+bounds.width/2,y:bounds.y+bounds.height/2}]});
+  await page.clock.runFor(650);await expect(ring).toHaveAttribute('aria-label',/1 of 10/);
+  await input.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await page.clock.runFor(1000);await expect(ring).toHaveAttribute('aria-label',/1 of 10/);
+  await ring.tap();await expect(ring).toHaveAttribute('aria-label',/2 of 10/);
+  const log=await page.evaluate(()=>JSON.parse(localStorage.getItem('workout-tracker-data')!).dailyLogs['2026-10-27'].a);
+  expect(log.completedSets).toBe(2);expect(log.count).toBe(20);
+ });
 });
