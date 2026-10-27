@@ -6,6 +6,11 @@ export const versionLabel=appVersionLabel(buildInfo);
 let receiptPromise:Promise<ApplicationBuild>|undefined;
 export function useApplicationVersion(){
  const [build,setBuild]=useState(buildInfo);
- useEffect(()=>{let active=true;receiptPromise??=loadReleaseReceipt(buildInfo);void receiptPromise.then(value=>{if(active)setBuild(value);});return()=>{active=false;};},[]);
+ useEffect(()=>{
+  let active=true;
+  const refresh=()=>{receiptPromise??=loadReleaseReceipt(buildInfo);void receiptPromise.then(value=>{if(active)setBuild(value);if(value.stage!=='published')receiptPromise=undefined;});};
+  refresh();window.addEventListener('online',refresh);
+  return()=>{active=false;window.removeEventListener('online',refresh);};
+ },[]);
  return build;
 }
