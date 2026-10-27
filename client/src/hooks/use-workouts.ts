@@ -1,3 +1,4 @@
+import { workoutProgress, workoutLogComplete, stepWorkout, isSetLog, repsForSets } from '@/lib/workout-progress';
 import { getTotalWorkoutStats } from '@/lib/workout-statistics';
 import { useState, useEffect, useRef } from 'react';
 import { getTodayString, getDateString } from '@/lib/date-utils';
@@ -15,6 +16,7 @@ export interface Workout {
   color: string;
   count: number;
   dailyGoal: number;
+  setsGoal?: number;
   weightLbs?: number; // Optional weight in pounds
   goalHistory?: GoalHistoryEntry[]; // Track all goal changes over time
   scheduledDays?: number[]; // 0-6 (Sun-Sat), empty array means every day
@@ -23,6 +25,8 @@ export interface Workout {
 
 export interface WorkoutLogEntry {
   count: number;
+  completedSets?: number;
+  setsGoalAtTime?: number;
   goalAtTime: number; // Store the goal that was in effect when this workout was logged
 }
 
@@ -109,7 +113,8 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
     return () => clearInterval(interval);
   }, [data.lastDate]);
 
-  const addWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], routineId?: string) => {
+  const addWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], routineId?: string, setsGoal = 1) => {
+    if (!Number.isInteger(dailyGoal) || dailyGoal < 1 || !Number.isInteger(setsGoal) || setsGoal < 1 || setsGoal > dailyGoal) return;
     const id = Date.now().toString();
     const newWorkout: Workout = {
       id,
@@ -117,6 +122,7 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
       color,
       count: 0,
       dailyGoal,
+      setsGoal,
       scheduledDays: scheduledDays || [],
       routineId,
       goalHistory: [{
@@ -136,73 +142,22 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
     }));
   };
 
-  const incrementWorkout = (workoutId: string) => {
+  const changeWorkout = (workoutId: string, direction: 1 | -1) => {
     const today = getTodayString();
-
     setData(prev => {
-      const currentCount = prev.workouts[workoutId]?.count || 0;
-      const currentDailyLog = prev.dailyLogs[today]?.[workoutId];
-      const currentDailyCount = typeof currentDailyLog === 'object' ? currentDailyLog.count : (currentDailyLog || 0);
-      const currentGoal = prev.workouts[workoutId]?.dailyGoal || 1;
-
-      return {
-        ...prev,
-        workouts: {
-          ...prev.workouts,
-          [workoutId]: {
-            ...prev.workouts[workoutId],
-            count: currentCount + 1
-          }
-        },
-        dailyLogs: {
-          ...prev.dailyLogs,
-          [today]: {
-            ...prev.dailyLogs[today],
-            [workoutId]: {
-              count: currentDailyCount + 1,
-              goalAtTime: getGoalForDate(workoutId, today)
-            }
-          }
-        }
+      const workout = prev.workouts[workoutId];
+      if (!workout) return prev;
+      const entry = prev.dailyLogs[today]?.[workoutId];
+      const next = stepWorkout(workout, entry, direction);
+      if (direction < 0 && !entry) return prev;
+      return { ...prev, lastDate: today,
+        workouts: { ...prev.workouts, [workoutId]: { ...workout, count: next.count } },
+        dailyLogs: { ...prev.dailyLogs, [today]: { ...prev.dailyLogs[today], [workoutId]: next } }
       };
     });
   };
-
-  const decrementWorkout = (workoutId: string) => {
-    const today = getTodayString();
-
-    setData(prev => {
-      const currentCount = prev.workouts[workoutId]?.count || 0;
-      const currentDailyLog = prev.dailyLogs[today]?.[workoutId];
-      const currentDailyCount = typeof currentDailyLog === 'object' ? currentDailyLog.count : (currentDailyLog || 0);
-      const currentGoal = prev.workouts[workoutId]?.dailyGoal || 1;
-
-      if (currentCount <= 0 || currentDailyCount <= 0) return prev;
-
-      const newCount = Math.max(0, currentDailyCount - 1);
-
-      return {
-        ...prev,
-        workouts: {
-          ...prev.workouts,
-          [workoutId]: {
-            ...prev.workouts[workoutId],
-            count: currentCount - 1
-          }
-        },
-        dailyLogs: {
-          ...prev.dailyLogs,
-          [today]: {
-            ...prev.dailyLogs[today],
-            [workoutId]: newCount > 0 ? {
-              count: newCount,
-              goalAtTime: getGoalForDate(workoutId, today)
-            } : 0 // Keep old format for zero values to save space
-          }
-        }
-      };
-    });
-  };
+  const incrementWorkout = (id: string) => changeWorkout(id, 1);
+  const decrementWorkout = (id: string) => changeWorkout(id, -1);
 
   const getTodaysTotals = () => {
     const today = getTodayString();
@@ -213,7 +168,8 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
       const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
       return {
         ...workout,
-        count
+        count,
+        progress: workoutProgress(workout, logEntry)
       };
     });
   };
@@ -255,7 +211,8 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
         totalReps,
         workouts: Object.values(data.workouts || {}).map(workout => ({
           ...workout,
-          count: getCountFromLogEntry(dayLog[workout.id])
+          count: getCountFromLogEntry(dayLog[workout.id]),
+          progress: workoutProgress(workout, dayLog[workout.id])
         }))
       };
     }).filter(day => (typeof day.totalReps === 'number' ? day.totalReps : 0) > 0);
@@ -294,9 +251,13 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
     return applicableGoal;
   };
 
-  const updateWorkout = (workoutId: string, name?: string, newGoal?: number, weightLbs?: number, scheduledDays?: number[], color?: string) => {
+  const updateWorkout = (workoutId: string, name?: string, newGoal?: number, weightLbs?: number, scheduledDays?: number[], color?: string, setsGoal?: number) => {
     setData(prev => {
       const currentWorkout = prev.workouts[workoutId];
+      if (!currentWorkout) return prev;
+      const reps = newGoal ?? currentWorkout.dailyGoal;
+      const sets = setsGoal ?? currentWorkout.setsGoal ?? 1;
+      if (!Number.isInteger(reps) || reps < 1 || !Number.isInteger(sets) || sets < 1 || sets > reps) return prev;
       const isGoalChanged = newGoal !== undefined && newGoal !== currentWorkout?.dailyGoal;
       
       // If goal is being changed, add to goal history
@@ -313,6 +274,12 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
       
       return {
         ...prev,
+        // On an explicit goal edit only, freeze numeric legacy logs under the
+        // previous rep goal. Counts and completion remain exactly unchanged.
+        dailyLogs: isGoalChanged ? Object.fromEntries(Object.entries(prev.dailyLogs).map(([date, log]) => [date,
+          typeof log[workoutId] === 'number' && log[workoutId] > 0
+            ? { ...log, [workoutId]: { count:log[workoutId], goalAtTime:currentWorkout.dailyGoal } } : log
+        ])) : prev.dailyLogs,
         routines: prev.routines || {},
         workouts: {
           ...prev.workouts,
@@ -320,6 +287,7 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
             ...currentWorkout,
             ...(name !== undefined ? { name } : {}),
             ...(newGoal !== undefined ? { dailyGoal: newGoal } : {}),
+            ...(setsGoal !== undefined ? { setsGoal } : {}),
             ...(weightLbs !== undefined ? { weightLbs: weightLbs > 0 ? weightLbs : undefined } : {}),
             ...(scheduledDays !== undefined ? { scheduledDays } : {}),
             ...(color !== undefined ? { color } : {}),
@@ -361,20 +329,19 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
   };
 
   const editWorkoutForDate = (workoutId: string, dateString: string, newCount: number) => {
-    setData(prev => ({
-      ...prev,
-      dailyLogs: {
-        ...prev.dailyLogs,
-        [dateString]: {
-          ...prev.dailyLogs[dateString],
-          [workoutId]: newCount > 0 ? {
-            count: newCount,
-            goalAtTime: getGoalForDate(workoutId, dateString)
-          } : 0
-        }
-      }
-    }));
-    
+    setData(prev => {
+      const entry = prev.dailyLogs[dateString]?.[workoutId];
+      const goal = typeof entry === 'object' ? entry.goalAtTime : getGoalForDate(workoutId, dateString);
+      if (!Number.isInteger(newCount) || newCount < 0 || (isSetLog(entry) && newCount > entry.setsGoalAtTime)) return prev;
+      const next = isSetLog(entry)
+        ? { ...entry, completedSets:newCount, count:repsForSets(newCount,entry.goalAtTime,entry.setsGoalAtTime) }
+        : { ...(typeof entry === 'object' ? entry : {}), count:newCount, goalAtTime:goal };
+      return { ...prev,
+        workouts: dateString === getTodayString() ? { ...prev.workouts, [workoutId]: { ...prev.workouts[workoutId], count:next.count } } : prev.workouts,
+        dailyLogs: { ...prev.dailyLogs, [dateString]: { ...prev.dailyLogs[dateString], [workoutId]:next } }
+      };
+    });
+
     // Trigger re-render for any components listening to workout changes
     window.dispatchEvent(new CustomEvent('workoutDataChanged'));
   };
@@ -383,7 +350,8 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
     const dayLog = data.dailyLogs[dateString] || {};
     return Object.values(data.workouts || {}).map(workout => ({
       ...workout,
-      count: getCountFromLogEntry(dayLog[workout.id])
+      count: getCountFromLogEntry(dayLog[workout.id]),
+      progress: workoutProgress(workout, dayLog[workout.id])
     }));
   };
 
@@ -534,7 +502,7 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
         todaysScheduledWorkouts.forEach(workout => {
           const count = getCountFromLogEntry(dayLog[workout.id]);
           monthlyReps += count;
-          if (count < workout.dailyGoal) {
+          if (!workoutLogComplete(dayLog[workout.id], typeof dayLog[workout.id] === 'object' ? (dayLog[workout.id] as WorkoutLogEntry).goalAtTime : workout.dailyGoal)) {
             allGoalsMet = false;
           }
         });
@@ -551,7 +519,7 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
             const count = getCountFromLogEntry(logEntry);
             const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : workout.dailyGoal;
             monthlyReps += count;
-            if (count < goalAtTime) {
+            if (!workoutLogComplete(logEntry, goalAtTime)) {
               allGoalsMet = false;
             }
           });

@@ -9,10 +9,10 @@ import { getColorClass } from '@/lib/color-utils';
 interface WorkoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[]) => void;
+  onSave: (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], setsGoal?: number) => void;
   onDelete?: (workoutId: string) => void;
   availableColors: string[];
-  editingWorkout?: { id: string; name: string; color: string; dailyGoal: number; weightLbs?: number; scheduledDays?: number[] } | null;
+  editingWorkout?: { id: string; name: string; color: string; dailyGoal: number; setsGoal?: number; weightLbs?: number; scheduledDays?: number[] } | null;
   preSelectedDays?: number[];
 }
 
@@ -21,6 +21,8 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
   const [workoutName, setWorkoutName] = useState('');
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || 'green');
   const [dailyGoal, setDailyGoal] = useState<number | string>(10);
+  const [setsGoal, setSetsGoal] = useState<number | string>(1);
+  const validTargets = Number.isInteger(Number(dailyGoal)) && Number(dailyGoal) > 0 && Number.isInteger(Number(setsGoal)) && Number(setsGoal) > 0 && Number(setsGoal) <= Number(dailyGoal);
   const [weightLbs, setWeightLbs] = useState<number | string>('');
   const [scheduledDays, setScheduledDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]); // Default to all days
 
@@ -30,6 +32,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
       setWorkoutName(editingWorkout.name);
       setSelectedColor(editingWorkout.color);
       setDailyGoal(editingWorkout.dailyGoal);
+      setSetsGoal(editingWorkout.setsGoal ?? 1);
       setWeightLbs(editingWorkout.weightLbs || '');
       setScheduledDays(editingWorkout.scheduledDays || [0, 1, 2, 3, 4, 5, 6]);
     } else if (isOpen && preSelectedDays) {
@@ -43,8 +46,8 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
   const handleSave = () => {
     const finalGoal = typeof dailyGoal === 'string' ? parseInt(dailyGoal) || 1 : dailyGoal;
     const finalWeight = typeof weightLbs === 'string' ? (weightLbs === '' ? undefined : parseInt(weightLbs) || undefined) : weightLbs;
-    if (workoutName.trim() && finalGoal > 0) {
-      onSave(workoutName.trim(), selectedColor, finalGoal, finalWeight, scheduledDays);
+    if (workoutName.trim() && validTargets) {
+      onSave(workoutName.trim(), selectedColor, finalGoal, finalWeight, scheduledDays, Number(setsGoal));
       resetForm();
       onClose();
     }
@@ -54,6 +57,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
     setWorkoutName('');
     setSelectedColor(availableColors[0] || 'green');
     setDailyGoal(10);
+    setSetsGoal(1);
     setWeightLbs('');
     setScheduledDays([0, 1, 2, 3, 4, 5, 6]); // Reset to all days
   };
@@ -104,7 +108,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-2">
             {/* Weight Input */}
             <div className="space-y-1">
               <Label htmlFor="weight-lbs" className="block text-xs leading-4 font-medium text-strong">
@@ -144,7 +148,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
             {/* Daily Goal Input */}
             <div className="space-y-1">
               <Label htmlFor="daily-goal" className="block text-xs leading-4 font-medium text-strong">
-                Daily Goal
+                Total Reps
               </Label>
               <Input
                 id="daily-goal"
@@ -152,19 +156,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
                 inputMode="numeric"
                 pattern="[0-9]*"
                 value={dailyGoal.toString()}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, ''); // Only allow digits
-                
-                  if (value === '') {
-                    setDailyGoal('');
-                    return;
-                  }
-                
-                  const numValue = parseInt(value);
-                  if (numValue >= 1 && numValue <= 9999) {
-                    setDailyGoal(numValue);
-                  }
-                }}
+                onChange={e => setDailyGoal(e.target.value)}
                 onFocus={(e) => {
 
                   e.target.select(); // Select all text when focused
@@ -174,7 +166,13 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
               />
             </div>
 
+            <div className="space-y-1">
+              <Label htmlFor="sets-goal" className="block text-xs leading-4 font-medium text-strong">Sets</Label>
+              <Input id="sets-goal" aria-label="Number of Sets" type="number" inputMode="numeric" min="1" max={Number(dailyGoal)} step="1"
+                value={setsGoal} onChange={e => setSetsGoal(e.target.value)} className="h-9 text-base" />
+            </div>
           </div>
+          {!validTargets && <p role="alert" className="text-xs text-feature-red">Reps and sets must be positive whole numbers; sets cannot exceed reps.</p>}
           {/* Days of Week Selection */}
           <DaySelector compact
             selectedDays={scheduledDays}
@@ -210,7 +208,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
           )}
           <Button
             onClick={handleSave}
-            disabled={!workoutName.trim() || !dailyGoal || (typeof dailyGoal === 'number' && dailyGoal <= 0)}
+            disabled={!workoutName.trim() || !validTargets}
             aria-label={editingWorkout ? "Update Workout" : "Add Workout"}
             className="px-2 bg-action-selected hover:bg-action text-on-action"
           >

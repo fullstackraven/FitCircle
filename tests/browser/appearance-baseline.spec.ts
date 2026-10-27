@@ -89,7 +89,7 @@ test("current Dark appearance remains unchanged across representative routes and
   await seed(page);
   const capture = async (name: string) => {
     await page.evaluate(() => document.fonts.ready);
-    await expect(page).toHaveScreenshot(`${name}.png`, {
+    await expect(page).toHaveScreenshot(`${["home-and-dock", "workout-editor", "routines-expanded"].includes(name) ? `${name}-sets` : name}.png`, {
       animations: "disabled",
       maxDiffPixels: 0,
       threshold: 0,

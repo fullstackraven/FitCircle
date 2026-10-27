@@ -1,3 +1,4 @@
+import { isSetLog, workoutLogComplete } from '@/lib/workout-progress';
 import { useState, useCallback } from 'react';
 import { safeParseJSON, STORAGE_KEYS } from '@/lib/storage-utils';
 import { getTodayString } from '@/lib/date-utils';
@@ -62,13 +63,16 @@ export const useRecovery = () => {
       
       if (workoutArray.length > 0) {
         Object.entries(workouts.dailyLogs || {}).forEach(([dateStr, dayLog]) => {
-          const workoutsWithReps = workoutArray.filter((w: any) => dayLog && (dayLog as any)[w.id] && (dayLog as any)[w.id] > 0);
+          const workoutsWithReps = workoutArray.filter((w: any) => {
+            const entry = (dayLog as any)?.[w.id];
+            return isSetLog(entry) ? entry.count > 0 : entry > 0;
+          });
           if (workoutsWithReps.length > 0) {
             let allGoalsMet = true;
             
             workoutsWithReps.forEach((workout: any) => {
               const count = (dayLog as any)[workout.id] || 0;
-              if (count < workout.dailyGoal) {
+              if (!workoutLogComplete(count, workout.dailyGoal)) {
                 allGoalsMet = false;
               }
             });

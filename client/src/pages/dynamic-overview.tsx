@@ -1,3 +1,4 @@
+import { repsForSets } from '@/lib/workout-progress';
 import React, { useState, useEffect } from "react";
 import {
   ArrowLeft,
@@ -136,14 +137,20 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
 
   const handleSaveWorkoutEdit = () => {
     if (editingWorkoutId && editingWorkoutCount !== "") {
-      const newCount = parseInt(editingWorkoutCount) || 0;
+      const newCount = Number(editingWorkoutCount);
+      const edited = workouts.find(w => w.id === editingWorkoutId);
+      if (!Number.isInteger(newCount) || newCount < 0 || (edited?.progress.mode === 'sets' && newCount > edited.progress.goal)) {
+        setFeedback({kind:'error',text:'Enter a valid completed count within the daily set target.'});
+        return;
+      }
       editWorkoutForDate(editingWorkoutId, selectedDate, newCount);
 
       // Update local state
       setWorkouts((prev) =>
         prev.map((workout) =>
           workout.id === editingWorkoutId
-            ? { ...workout, count: newCount }
+            ? { ...workout, count: workout.progress.mode === 'sets' ? repsForSets(newCount, workout.progress.repGoal, workout.progress.goal) : newCount,
+                progress: {...workout.progress, count:newCount} }
             : workout,
         ),
       );
@@ -542,6 +549,8 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                             setEditingWorkoutCount(e.target.value)
                           }
                           className="w-16 px-2 py-1 text-sm bg-surface text-strong rounded border border-control-muted-border focus:outline-none focus:border-blue-400"
+                          aria-label={workout.progress.mode === "sets" ? "Completed sets" : "Recorded reps"}
+                          max={workout.progress.mode === "sets" ? workout.progress.goal : undefined}
                           min="0"
                           autoFocus
                         />
@@ -563,11 +572,11 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                     ) : (
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-bold text-strong">
-                          {workout.count}
+                          {workout.count}{workout.progress.mode === "sets" && ` reps · ${workout.progress.count}/${workout.progress.goal} sets`}
                         </span>
                         <button
                           onClick={() =>
-                            handleEditWorkout(workout.id, workout.count)
+                            handleEditWorkout(workout.id, workout.progress.mode === "sets" ? workout.progress.count : workout.count)
                           }
                           className="p-1 text-muted-foreground hover:text-subtle transition-colors"
                           title="Edit count"

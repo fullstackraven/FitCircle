@@ -58,7 +58,7 @@ export default function Home() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
-  const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number; weightLbs?: number; scheduledDays?: number[] } | null>(null);
+  const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number; setsGoal?: number; weightLbs?: number; scheduledDays?: number[] } | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
   const [isTimerOpen, setIsTimerOpen] = useState(false);
@@ -128,10 +128,8 @@ export default function Home() {
 
   const handleWorkoutClick = (workoutId: string) => {
     const todayTotal = todaysTotals.find(t => t.id === workoutId);
-    const currentCount = todayTotal?.count || 0;
-    const workout = getWorkoutById(workoutId);
 
-    if (workout && currentCount >= workout.dailyGoal) return;
+    if (todayTotal && todayTotal.progress.count >= todayTotal.progress.goal) return;
 
     incrementWorkout(workoutId);
     setClickingWorkout(workoutId);
@@ -140,10 +138,8 @@ export default function Home() {
 
   const handleWorkoutHoldIncrement = (workoutId: string) => {
     const todayTotal = todaysTotals.find(t => t.id === workoutId);
-    const currentCount = todayTotal?.count || 0;
-    const workout = getWorkoutById(workoutId);
 
-    if (workout && currentCount >= workout.dailyGoal) return;
+    if (todayTotal && todayTotal.progress.count >= todayTotal.progress.goal) return;
 
     // Increment by 1 for hold functionality
     incrementWorkout(workoutId);
@@ -161,12 +157,12 @@ export default function Home() {
     }
   };
 
-  const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[]) => {
+  const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], setsGoal = 1) => {
     if (editingWorkout) {
-      updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs, scheduledDays, color);
+      updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs, scheduledDays, color, setsGoal);
       setEditingWorkout(null);
     } else {
-      addWorkout(name, color, dailyGoal, weightLbs, scheduledDays);
+      addWorkout(name, color, dailyGoal, weightLbs, scheduledDays, undefined, setsGoal);
     }
   };
 
@@ -176,6 +172,7 @@ export default function Home() {
       name: workout.name,
       color: workout.color,
       dailyGoal: workout.dailyGoal,
+      setsGoal: workout.setsGoal,
       weightLbs: workout.weightLbs,
       scheduledDays: workout.scheduledDays
     });
@@ -315,13 +312,15 @@ export default function Home() {
               {todaysWorkouts.map((workout) => {
                 const todayTotal = todaysTotals.find(t => t.id === workout.id);
                 const currentCount = todayTotal?.count || 0;
+                const progress = todayTotal!.progress;
 
                 return (
                   <div key={workout.id} className="flex min-w-0 w-full flex-col items-center space-y-2 py-2" data-testid={`home-workout-${workout.id}`}>
                     <ProgressCircle
-                      ariaLabel={`Record a rep for ${workout.name}: ${currentCount} of ${workout.dailyGoal}`}
-                      count={currentCount}
-                      goal={workout.dailyGoal}
+                      ariaLabel={`Record a ${progress.mode === "sets" ? "set" : "rep"} for ${workout.name}: ${progress.count} of ${progress.goal}`}
+                      displayRatio={progress.mode === "sets"}
+                      count={progress.count}
+                      goal={progress.goal}
                       color={workout.color}
                       size={82}
                       strokeWidth={8}
@@ -338,7 +337,7 @@ export default function Home() {
                         <span className="entity-name block px-6 text-sm font-semibold">{workout.name}</span>
                         <Edit size={14} className="absolute right-1 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
                       </button>
-                      <p className="text-xs text-muted-foreground mt-1">Goal: <span className="type-metric">{workout.dailyGoal}</span> reps</p>
+                      <p className="text-xs text-muted-foreground mt-1"><span className="type-metric">{currentCount} / {progress.repGoal}</span> reps{progress.mode === "reps" && <span className="block">Rep tracking today</span>}</p>
                       {workout.weightLbs && (
                         <div className="text-xs text-muted-foreground">
                           Weight: {workout.weightLbs}lbs
@@ -349,7 +348,7 @@ export default function Home() {
                       <button
                         onClick={() => handleUndo(workout.id)}
                         className="text-muted-foreground hover:text-subtle transition-colors min-h-11 min-w-11 flex items-center justify-center"
-                        title="Undo last rep"
+                        title={progress.mode === "sets" ? "Undo last set" : "Undo last rep"}
                       >
                         <Undo2 size={14} />
                       </button>

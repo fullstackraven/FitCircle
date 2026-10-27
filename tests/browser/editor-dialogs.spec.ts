@@ -63,7 +63,7 @@ for (const size of [{ name: 'phone', width: 390, height: 600 }, { name: 'small p
     dialog = page.getByRole('dialog', { name: 'Add New Workout' });
     await expect(dialog).toBeFocused();
     await dialog.getByLabel('Workout Name').fill('New test exercise');
-    await dialog.getByLabel('Daily Goal', { exact: true }).fill('12');
+    await dialog.getByLabel('Total Reps', { exact: true }).fill('12');
     await dialog.getByLabel('Weight (lbs) - Optional', { exact: true }).fill('25');
     await dialog.getByLabel('Workout color').selectOption('blue');
     await assertContained(page, dialog);
@@ -73,7 +73,7 @@ for (const size of [{ name: 'phone', width: 390, height: 600 }, { name: 'small p
     await page.getByRole('button', { name: 'Edit workout New test exercise', exact: true }).click();
     dialog = page.getByRole('dialog', { name: 'Edit Workout' });
     await dialog.getByLabel('Workout Name').fill('Updated test exercise');
-    await dialog.getByLabel('Daily Goal', { exact: true }).fill('15');
+    await dialog.getByLabel('Total Reps', { exact: true }).fill('15');
     if (size.name === 'phone') {
       await page.setViewportSize({ width: 390, height: 430 });
       await expect.poll(() => page.locator('.overlay-frame').evaluate(el => el.getBoundingClientRect().height)).toBe(430);

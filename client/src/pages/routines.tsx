@@ -111,17 +111,18 @@ export default function RoutinesPage() {
       name: workout.name,
       color: workout.color,
       dailyGoal: workout.dailyGoal,
+      setsGoal: workout.setsGoal,
       weightLbs: workout.weightLbs,
       scheduledDays: workout.scheduledDays
     });
     setIsModalOpen(true);
   };
 
-  const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[]) => {
+  const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], setsGoal = 1) => {
     if (editingWorkout) {
-      updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs, scheduledDays, color);
+      updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs, scheduledDays, color, setsGoal);
     } else {
-      addWorkout(name, color, dailyGoal, weightLbs, scheduledDays);
+      addWorkout(name, color, dailyGoal, weightLbs, scheduledDays, undefined, setsGoal);
     }
     setIsModalOpen(false);
     setEditingWorkout(null);
@@ -219,7 +220,7 @@ export default function RoutinesPage() {
                               <span aria-hidden="true" className={`h-2.5 w-2.5 shrink-0 rounded-full ${getColorClass(workout.color)}`} />
                               <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                                 <span className="entity-name min-w-0 text-sm font-medium text-strong">{workout.name}</span>
-                                <span className="entity-name text-xs text-muted-foreground tabular-nums">{workout.dailyGoal} reps{workout.weightLbs ? ` · ${workout.weightLbs} lb` : ''}</span>
+                                <span className="entity-name text-xs text-muted-foreground tabular-nums">{workout.dailyGoal} reps · {workout.setsGoal ?? 1} {(workout.setsGoal ?? 1) === 1 ? "set" : "sets"}{workout.weightLbs ? ` · ${workout.weightLbs} lb` : ''}</span>
                               </div>
                             </div>
                           ))}
@@ -309,7 +310,7 @@ export default function RoutinesPage() {
                             <div className="min-w-0">
                               <div className="entity-name text-sm font-medium text-strong">{workout.name}</div>
                               <div className="entity-name mt-1 text-xs text-muted-foreground tabular-nums">
-                                {scheduledDaysText} · {workout.dailyGoal} reps
+                                {scheduledDaysText} · {workout.dailyGoal} reps · {workout.setsGoal ?? 1} {(workout.setsGoal ?? 1) === 1 ? "set" : "sets"}
                                 {workout.weightLbs && ` · ${workout.weightLbs} lb`}
                               </div>
                             </div>

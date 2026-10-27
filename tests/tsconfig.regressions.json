@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "workout-sets.test.ts",
+    "browser/workout-sets.spec.ts",
     "monthly-consistency.test.ts",
     "browser/calendar-completed-style.spec.ts",
     "browser/dynamic-overview.spec.ts",

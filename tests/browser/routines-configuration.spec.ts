@@ -107,7 +107,7 @@ test("inline expansion is keyboard accessible, independently retained, read-only
   await expect(page.getByTestId("routine-exercise-r0-w1")).toHaveCount(0);
   await page.getByTestId("routine-header-r1").click();
   await expect(page.getByTestId("routine-exercise-r1-w1")).toContainText(
-    "25 reps · 40 lb",
+    "25 reps · 1 set · 40 lb",
   );
   await expect(first).toHaveAttribute("aria-expanded", "true");
   await first.focus();
@@ -119,7 +119,7 @@ test("inline expansion is keyboard accessible, independently retained, read-only
   );
   await expect(
     page.getByRole("button", {
-      name: /Start Routine|Start Workout Session|Record a rep|Open Timer/,
+      name: /Start Routine|Start Workout Session|Record a rep|Record a set|Open Timer/,
     }),
   ).toHaveCount(0);
   await expect(page.getByRole("checkbox")).toHaveCount(0);
@@ -142,13 +142,13 @@ test("editing existing exercise schedules adds/removes shared routine membership
     .click();
   await dialog.getByRole("button", { name: "Mon", exact: true }).click();
   await dialog.getByLabel("Workout Name").fill("Shared weighted carry");
-  await dialog.getByLabel("Daily Goal", { exact: true }).fill("30");
+  await dialog.getByLabel("Total Reps", { exact: true }).fill("30");
   await dialog.getByLabel("Workout color").selectOption("red");
   await dialog
     .getByRole("button", { name: "Update Workout", exact: true })
     .click();
   await expect(page.getByTestId("routine-exercise-r0-w1")).toContainText(
-    "30 reps · 40 lb",
+    "30 reps · 1 set · 40 lb",
   );
   const edited = await data(page);
   expect(Object.keys(edited.workouts)).toEqual(Object.keys(before.workouts));
@@ -225,7 +225,7 @@ test("complete backup restores routine IDs, definitions, schedules, weights, col
   await page.goto("routines");
   await page.getByTestId("routine-header-r1").click();
   await expect(page.getByTestId("routine-exercise-r1-w1")).toContainText(
-    "25 reps · 40 lb",
+    "25 reps · 1 set · 40 lb",
   );
 });
 
