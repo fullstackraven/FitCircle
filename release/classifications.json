@@ -1,0 +1,469 @@
+{
+  "approval": "proposed-owner-review-required",
+  "pullRequests": {
+    "94": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Restore Home workout completion checkmark"
+    },
+    "93": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Refine Home workouts into compact set-progress cards"
+    },
+    "92": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix shared workout state and confirmed current-day target changes"
+    },
+    "91": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix update regression race blocking post-merge deployment"
+    },
+    "90": {
+      "classification": "minor",
+      "rationale": "Introduces prescribed set tracking while preserving rep volumes.",
+      "summary": "Track workouts by completed sets while preserving rep statistics"
+    },
+    "89": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix Calendar completed-day styling and monthly consistency"
+    },
+    "88": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Redesign Dynamic Overview with compact daily and supplement panels"
+    },
+    "87": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Remove white rectangle from focused Journal search"
+    },
+    "86": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Reduce and center the BMI gauge category label"
+    },
+    "85": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Redesign Fitness Calculator to match the four reference views"
+    },
+    "84": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Move Fitness Calculator into a full page with four tabs"
+    },
+    "83": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix CI Chromium download transport failure blocking deployment"
+    },
+    "82": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix fasting ring to show today\u2019s completed fast"
+    },
+    "81": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Use full-page Journal entries and green checkmark saves"
+    },
+    "80": {
+      "classification": "minor",
+      "rationale": "Adds journal chronological grouping and local text/date search.",
+      "summary": "Revamp Journal with grouped library, search and Notes-inspired reading"
+    },
+    "79": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Shorten Pages validation with four native regression shards"
+    },
+    "78": {
+      "classification": "minor",
+      "rationale": "Adds Share/QR and About/legal destinations while splitting settings.",
+      "summary": "Revamp dashboard navigation with Account Data, Display, Share and About"
+    },
+    "77": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix Pages deployment blocked by screenshot rendering mismatch"
+    },
+    "76": {
+      "classification": "minor",
+      "rationale": "Publicly enables Light/Dark/System preferences and startup integration.",
+      "summary": "Appearance Phase 5: public modes, startup integration and release validation"
+    },
+    "75": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Appearance Phase 4: theme wellness, Calendar and remaining screens"
+    },
+    "74": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Appearance Phase 3: theme nutrition, calculator and measurements"
+    },
+    "73": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Appearance Phase 2: theme core navigation and pages"
+    },
+    "72": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Phase 1: appearance foundation with Dark visual preservation"
+    },
+    "71": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Simplify Nutrition Details into an inline expandable section"
+    },
+    "70": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix text-field focus frames and keyboard clipping across app modals"
+    },
+    "69": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Show blank reminder draft only after tapping and remove input box"
+    },
+    "68": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Modernize Routines configuration cards and compact exercise rows"
+    },
+    "67": {
+      "classification": "minor",
+      "rationale": "Adds automatic calorie-derived sugar reference behavior.",
+      "summary": "Calculate Sugar reference automatically from confirmed calories"
+    },
+    "66": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Refine cholesterol reference bar and compact nutrient labels"
+    },
+    "65": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Refine Weekly Nutrition rows and calendar-week logging"
+    },
+    "64": {
+      "classification": "minor",
+      "rationale": "Adds nutrient reference/progress reporting beyond the previous totals.",
+      "summary": "Refine Nutrition Details with nutrient references and compact progress bars"
+    },
+    "63": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix reminder entry, Home menu alignment and offline test startup"
+    },
+    "62": {
+      "classification": "minor",
+      "rationale": "Adds selectable activity windows, hydration shortcuts and wellness summaries (PR description and Wellness 2.0 review).",
+      "summary": "Implement Wellness 2.0 page design"
+    },
+    "61": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Align wellness goal progress with current calendar periods"
+    },
+    "60": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Compare calculator weight goals with current weight"
+    },
+    "59": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Make weight goal progress follow Lose, Maintain, or Gain"
+    },
+    "58": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Simplify Measurements and move goal weight into Fitness Calculator"
+    },
+    "57": {
+      "classification": "minor",
+      "rationale": "Adds measurement-driven calculator recommendations and confirmed nutrition-target integration.",
+      "summary": "Integrate measurements with calculator recommendations and confirmed nutrition targets"
+    },
+    "56": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Remove excess explanations from Food Tracker dialogs"
+    },
+    "55": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Restore calculator-driven nutrition targets and simplify macro controls"
+    },
+    "54": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix barcode servings and streamline Add Food"
+    },
+    "53": {
+      "classification": "minor",
+      "rationale": "Adds nutrition-goal and barcode-entry capabilities to Food Tracker.",
+      "summary": "Food Tracker 2.0: nutrition goals, diary safety and barcode entry"
+    },
+    "52": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Remove legacy age note from Profile"
+    },
+    "51": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix My Fitness Profile card across all dock sidebars"
+    },
+    "50": {
+      "classification": "minor",
+      "rationale": "Introduces the integrated My Fitness Profile overview.",
+      "summary": "My Fitness Profile overview and dashboard integration"
+    },
+    "49": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Modernize Workout Statistics and add expandable exercise totals"
+    },
+    "48": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Simplify Home timer popup to a compact three-wheel picker"
+    },
+    "47": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix diagnostic test race that intermittently blocks Pages deployment"
+    },
+    "46": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Align the Home Timer and Add Workout circles"
+    },
+    "45": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Match the Routines title layout to Reminders"
+    },
+    "44": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Add reminders inline and move new reminders to the top"
+    },
+    "43": {
+      "classification": "none",
+      "rationale": "Removes an inactive catalog backup; PR reports identical production output.",
+      "summary": "Remove inactive catalog backup with identical production output verified"
+    },
+    "42": {
+      "classification": "none",
+      "rationale": "Removes unused attached assets, no distributed behavior change.",
+      "summary": "Remove unused attached assets and list remaining cleanup candidates"
+    },
+    "41": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Revamp Reminders with completed items below and a floating add button"
+    },
+    "40": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Make dock icons and labels at least twenty percent smaller"
+    },
+    "39": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Add internal padding around the dock icons and labels"
+    },
+    "38": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix validation failures blocking the compact Logs deployment"
+    },
+    "37": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Refine Logs tiles with compact spacing and consistent icons"
+    },
+    "36": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Highlight today's calendar number with the dock green"
+    },
+    "35": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Compact Home workout details beneath progress circles"
+    },
+    "34": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Move the compact quote card to the top of Home"
+    },
+    "33": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Focus Home on today's workout and preserve FitCircle's circles"
+    },
+    "32": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Refine floating dock to the compact rounded reference style"
+    },
+    "31": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Modernize typography with system sans-serif and tabular metrics"
+    },
+    "30": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Finish data-safety fixes and remove verified codebase clutter"
+    },
+    "27": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "FC-003: preserve malformed workout data and block unsafe initialization"
+    },
+    "26": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Preserve historical workout goals and journal timestamps on startup"
+    },
+    "24": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Audit FitCircle and add initial regression safeguards"
+    },
+    "23": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Audit persistent storage and enforce backup completeness"
+    },
+    "22": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Compact static editors, routine deletion confirmation, and placeholder removal"
+    },
+    "21": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Integrate approved PWA dock with glassier material and green selected icons"
+    },
+    "20": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Center test dock icons and labels within the approved capsule"
+    },
+    "19": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Round and slim the standalone test dock with visible bottom clearance"
+    },
+    "18": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Validate standard PWA presentation with FitCircle's real dock"
+    },
+    "17": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Add separate iPhone PWA status-bar workaround experiment"
+    },
+    "15": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Compact dock height without moving its bottom edge"
+    },
+    "14": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Align iOS presentation, test viewport strategies and enable phone-only gap checks"
+    },
+    "13": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Diagnose physical iPhone viewport cutoff before changing layout"
+    },
+    "12": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Place navigation dock flush at the screen bottom"
+    },
+    "11": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Restore Calendar to its pre-modernization appearance"
+    },
+    "10": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Remove calendar title box and add vertical spacing"
+    },
+    "9": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Stage 3: apply shared glass materials across FitCircle pages and controls"
+    },
+    "8": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Stage 2: shared navy glass tokens, primitives and accessible navigation"
+    },
+    "7": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Stage 1: compact dock and evidence-based iOS viewport audit"
+    },
+    "6": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Lower dock to an 8px bottom gap with safe clearance inside the panel"
+    },
+    "5": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Restore viewport-edge scrolling behind the unchanged floating dock"
+    },
+    "4": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Move rounded navigation dock down to an opaque footer boundary"
+    },
+    "3": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Separate iOS header and safe area from the full-height scroll surface"
+    },
+    "2": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix iOS sticky header coverage and full-height scrolling beneath floating dock"
+    },
+    "1": {
+      "classification": "patch",
+      "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+      "summary": "Fix iOS viewport, dock clearance, and overlay layouts together"
+    }
+  },
+  "directCommits": {
+    "7ca21d9": {
+      "classification": "patch",
+      "rationale": "Accept existing legacy structured goals during backup validation."
+    },
+    "94510a3": {
+      "classification": "patch",
+      "rationale": "Fix safe PWA refresh across deployments."
+    },
+    "6fc73a0": {
+      "classification": "none",
+      "rationale": "README-only feature/getting-started documentation."
+    }
+  }
+}
