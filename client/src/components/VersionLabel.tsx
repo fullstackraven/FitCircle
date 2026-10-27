@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { buildInfo } from '@/lib/build-info';
+import { versionLabel } from '@/lib/build-info';
 
 // Explicit developer gesture; no diagnostics import, listeners or storage in
 // ordinary usage. Close the sheet before measuring the normal app viewport.
@@ -34,5 +34,5 @@ export function VersionLabel({ onActivate }: { onActivate: () => void }) {
       onActivate();
       void openDiagnostics().catch(() => window.alert('Diagnostics could not open. Reconnect, close other dialogs and try again. Your data has not changed.'));
     }
-  }}>Version {buildInfo.version}</button>;
+  }}>{versionLabel}</button>;
 }
