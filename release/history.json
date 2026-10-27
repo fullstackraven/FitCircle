@@ -1,0 +1,2424 @@
+{
+  "schemaVersion": 1,
+  "status": "proposal-not-activated",
+  "baseline": "dbb0d2ccf3c0f6e7685b32d52b67e32022eb05f4",
+  "proposedCurrentVersion": "2.10.3",
+  "evidenceCutoffCommit": "e8c45654832e06bbfee3d24da14a5921330f4650",
+  "releases": [
+    {
+      "version": "2.0.0",
+      "releasedAt": "2026-10-15T04:06:14Z",
+      "commit": "dbb0d2ccf3c0f6e7685b32d52b67e32022eb05f4",
+      "prs": [],
+      "classification": "baseline",
+      "summary": "Static GitHub Pages PWA migration with safe backups",
+      "rationale": "Owner-requested 2.x platform baseline",
+      "changes": [],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7083569120,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7083569120/statuses/19808095523",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38679582470/job/116241129944"
+      },
+      "sourceCommits": []
+    },
+    {
+      "version": "2.0.1",
+      "releasedAt": "2026-10-15T04:16:32Z",
+      "commit": "7ca21d917f740fc531f7ebbdff4c16411b7a6c27",
+      "prs": [],
+      "classification": "patch",
+      "summary": "Accept legacy structured cardio and weight goals in backups",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "commit": "7ca21d917f740fc531f7ebbdff4c16411b7a6c27",
+          "summary": "Accept legacy structured cardio and weight goals in backups",
+          "classification": "patch",
+          "rationale": "Accept existing legacy structured goals during backup validation."
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7083708591,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7083708591/statuses/19808424931",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38680495999/job/116243996054"
+      },
+      "sourceCommits": [
+        "7ca21d917f740fc531f7ebbdff4c16411b7a6c27"
+      ]
+    },
+    {
+      "version": "2.0.2",
+      "releasedAt": "2026-10-15T04:24:36Z",
+      "commit": "94510a3ceb1b0a25b3cd43c90101f89cb5ca02fd",
+      "prs": [],
+      "classification": "patch",
+      "summary": "Make PWA refresh recover safely across deployments",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "commit": "94510a3ceb1b0a25b3cd43c90101f89cb5ca02fd",
+          "summary": "Make PWA refresh recover safely across deployments",
+          "classification": "patch",
+          "rationale": "Fix safe PWA refresh across deployments."
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7083817016,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7083817016/statuses/19808686208",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38681179994/job/116246187643"
+      },
+      "sourceCommits": [
+        "94510a3ceb1b0a25b3cd43c90101f89cb5ca02fd"
+      ]
+    },
+    {
+      "version": "2.0.2",
+      "releasedAt": "2026-10-15T12:37:37Z",
+      "commit": "6fc73a07795d4574a740114f948653e4a5fd3562",
+      "prs": [],
+      "classification": "none",
+      "summary": "Refresh README with FitCircle features and getting started guide",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "commit": "6fc73a07795d4574a740114f948653e4a5fd3562",
+          "summary": "Refresh README with FitCircle features and getting started guide",
+          "classification": "none",
+          "rationale": "README-only feature/getting-started documentation."
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7092732380,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7092732380/statuses/19830151928",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38735923385/job/116425496688"
+      },
+      "sourceCommits": [
+        "6fc73a07795d4574a740114f948653e4a5fd3562"
+      ]
+    },
+    {
+      "version": "2.0.3",
+      "releasedAt": "2026-10-15T13:38:48Z",
+      "commit": "fae37a7ead48af41645b1b90f75417cd9e949b70",
+      "prs": [
+        1
+      ],
+      "classification": "patch",
+      "summary": "Fix iOS viewport, dock clearance, and overlay layouts together",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 1,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix iOS viewport, dock clearance, and overlay layouts together"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7094145700,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7094145700/statuses/19833557626",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38744240309/job/116454213263"
+      },
+      "sourceCommits": [
+        "fae37a7ead48af41645b1b90f75417cd9e949b70"
+      ]
+    },
+    {
+      "version": "2.0.4",
+      "releasedAt": "2026-10-15T14:09:50Z",
+      "commit": "7ad4d765319d364ac0d2e512c99bf5bbe4b24dda",
+      "prs": [
+        2
+      ],
+      "classification": "patch",
+      "summary": "Fix iOS sticky header coverage and full-height scrolling beneath floating dock",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 2,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix iOS sticky header coverage and full-height scrolling beneath floating dock"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7094858995,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7094858995/statuses/19835348271",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38748471083/job/116468952473"
+      },
+      "sourceCommits": [
+        "7ad4d765319d364ac0d2e512c99bf5bbe4b24dda"
+      ]
+    },
+    {
+      "version": "2.0.5",
+      "releasedAt": "2026-10-15T14:30:18Z",
+      "commit": "0778b556224de6b47fc496bc30ee1ba17c6fa6ba",
+      "prs": [
+        3
+      ],
+      "classification": "patch",
+      "summary": "Separate iOS header and safe area from the full-height scroll surface",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 3,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Separate iOS header and safe area from the full-height scroll surface"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7095397223,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7095397223/statuses/19836565300",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38751662828/job/116480103586"
+      },
+      "sourceCommits": [
+        "0778b556224de6b47fc496bc30ee1ba17c6fa6ba"
+      ]
+    },
+    {
+      "version": "2.0.6",
+      "releasedAt": "2026-10-15T14:53:01Z",
+      "commit": "b135297acbe482837489e8f8924f8cac3669f1b0",
+      "prs": [
+        4
+      ],
+      "classification": "patch",
+      "summary": "Move rounded navigation dock down to an opaque footer boundary",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 4,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Move rounded navigation dock down to an opaque footer boundary"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7095984344,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7095984344/statuses/19837928470",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38755149202/job/116492127243"
+      },
+      "sourceCommits": [
+        "b135297acbe482837489e8f8924f8cac3669f1b0"
+      ]
+    },
+    {
+      "version": "2.0.7",
+      "releasedAt": "2026-10-15T15:06:35Z",
+      "commit": "c735aed8375c59f50329ab11289aa27f983fdf6c",
+      "prs": [
+        5
+      ],
+      "classification": "patch",
+      "summary": "Restore viewport-edge scrolling behind the unchanged floating dock",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 5,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Restore viewport-edge scrolling behind the unchanged floating dock"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7096291878,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7096291878/statuses/19838732152",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38756918060/job/116498426646"
+      },
+      "sourceCommits": [
+        "c735aed8375c59f50329ab11289aa27f983fdf6c"
+      ]
+    },
+    {
+      "version": "2.0.8",
+      "releasedAt": "2026-10-15T15:11:24Z",
+      "commit": "fd5ad373fb952fcaa25aef9b3c9052f19f5b0959",
+      "prs": [
+        6
+      ],
+      "classification": "patch",
+      "summary": "Lower dock to an 8px bottom gap with safe clearance inside the panel",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 6,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Lower dock to an 8px bottom gap with safe clearance inside the panel"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7096410769,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7096410769/statuses/19839012972",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38757696238/job/116500939351"
+      },
+      "sourceCommits": [
+        "fd5ad373fb952fcaa25aef9b3c9052f19f5b0959"
+      ]
+    },
+    {
+      "version": "2.0.9",
+      "releasedAt": "2026-10-15T19:06:05Z",
+      "commit": "dc5fee37a8fb89a57bd58b28736210fef1120757",
+      "prs": [
+        7,
+        8,
+        9
+      ],
+      "classification": "patch",
+      "summary": "Stage 1: compact dock and evidence-based iOS viewport audit; Stage 2: shared navy glass tokens, primitives and accessible navigation; Stage 3: apply shared glass materials across FitCircle pages and controls",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 7,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Stage 1: compact dock and evidence-based iOS viewport audit"
+        },
+        {
+          "pr": 8,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Stage 2: shared navy glass tokens, primitives and accessible navigation"
+        },
+        {
+          "pr": 9,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Stage 3: apply shared glass materials across FitCircle pages and controls"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7101777367,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7101777367/statuses/19851712490",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38790655523/job/116615466755"
+      },
+      "sourceCommits": [
+        "df60c2fe5fcebc567362a64adb4ef3beb137f9c2",
+        "0c4c11e149729a69002fae6af285990af3303cfe",
+        "dc5fee37a8fb89a57bd58b28736210fef1120757"
+      ]
+    },
+    {
+      "version": "2.0.10",
+      "releasedAt": "2026-10-15T20:07:03Z",
+      "commit": "85cc1f079a078573f24599c4848f07328e63cf4c",
+      "prs": [
+        10
+      ],
+      "classification": "patch",
+      "summary": "Remove calendar title box and add vertical spacing",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 10,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Remove calendar title box and add vertical spacing"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7103106615,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7103106615/statuses/19854837911",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38799141389/job/116643902892"
+      },
+      "sourceCommits": [
+        "85cc1f079a078573f24599c4848f07328e63cf4c"
+      ]
+    },
+    {
+      "version": "2.0.11",
+      "releasedAt": "2026-10-15T20:14:50Z",
+      "commit": "60f18f0a2b2ddeef1025f735e815be0366f09283",
+      "prs": [
+        11
+      ],
+      "classification": "patch",
+      "summary": "Restore Calendar to its pre-modernization appearance",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 11,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Restore Calendar to its pre-modernization appearance"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7103270623,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7103270623/statuses/19855222243",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38800178806/job/116647372312"
+      },
+      "sourceCommits": [
+        "60f18f0a2b2ddeef1025f735e815be0366f09283"
+      ]
+    },
+    {
+      "version": "2.0.12",
+      "releasedAt": "2026-10-15T20:23:48Z",
+      "commit": "8751a6c361a701491469f01498ce15f980f5b46f",
+      "prs": [
+        12
+      ],
+      "classification": "patch",
+      "summary": "Place navigation dock flush at the screen bottom",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 12,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Place navigation dock flush at the screen bottom"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7103471763,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7103471763/statuses/19855681745",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38801351005/job/116651585793"
+      },
+      "sourceCommits": [
+        "8751a6c361a701491469f01498ce15f980f5b46f"
+      ]
+    },
+    {
+      "version": "2.0.13",
+      "releasedAt": "2026-10-15T20:57:59Z",
+      "commit": "8e56b6da50a4927dba4f5a22847215d548695d77",
+      "prs": [
+        13
+      ],
+      "classification": "patch",
+      "summary": "Diagnose physical iPhone viewport cutoff before changing layout",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 13,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Diagnose physical iPhone viewport cutoff before changing layout"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7104185542,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7104185542/statuses/19857367013",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38805967087/job/116667380071"
+      },
+      "sourceCommits": [
+        "8e56b6da50a4927dba4f5a22847215d548695d77"
+      ]
+    },
+    {
+      "version": "2.0.14",
+      "releasedAt": "2026-10-15T22:08:34Z",
+      "commit": "ee2c877f793768e818af2dcd22428ca96555c0cc",
+      "prs": [
+        14
+      ],
+      "classification": "patch",
+      "summary": "Align iOS presentation, test viewport strategies and enable phone-only gap checks",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 14,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Align iOS presentation, test viewport strategies and enable phone-only gap checks"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7105562925,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7105562925/statuses/19860622497",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38814837218/job/116697375478"
+      },
+      "sourceCommits": [
+        "ee2c877f793768e818af2dcd22428ca96555c0cc"
+      ]
+    },
+    {
+      "version": "2.0.15",
+      "releasedAt": "2026-10-15T22:26:21Z",
+      "commit": "abe5227e1e240e406a43c7de453abdbdcc4e1495",
+      "prs": [
+        15
+      ],
+      "classification": "patch",
+      "summary": "Compact dock height without moving its bottom edge",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 15,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Compact dock height without moving its bottom edge"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7105886475,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7105886475/statuses/19861382486",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38816906144/job/116704317087"
+      },
+      "sourceCommits": [
+        "abe5227e1e240e406a43c7de453abdbdcc4e1495"
+      ]
+    },
+    {
+      "version": "2.0.16",
+      "releasedAt": "2026-10-15T22:55:08Z",
+      "commit": "4e118e8ca7a66d9e3cf76de5799f3bc81384f84f",
+      "prs": [
+        17
+      ],
+      "classification": "patch",
+      "summary": "Add separate iPhone PWA status-bar workaround experiment",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 17,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Add separate iPhone PWA status-bar workaround experiment"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7106366351,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7106366351/statuses/19862531341",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38820126549/job/116714897911"
+      },
+      "sourceCommits": [
+        "4e118e8ca7a66d9e3cf76de5799f3bc81384f84f"
+      ]
+    },
+    {
+      "version": "2.0.17",
+      "releasedAt": "2026-10-15T23:11:46Z",
+      "commit": "8b8795f612fbba3ac259fe447cd2396a6e252a4d",
+      "prs": [
+        18
+      ],
+      "classification": "patch",
+      "summary": "Validate standard PWA presentation with FitCircle's real dock",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 18,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Validate standard PWA presentation with FitCircle's real dock"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7106633692,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7106633692/statuses/19863162305",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38821886936/job/116720702764"
+      },
+      "sourceCommits": [
+        "8b8795f612fbba3ac259fe447cd2396a6e252a4d"
+      ]
+    },
+    {
+      "version": "2.0.18",
+      "releasedAt": "2026-10-15T23:29:28Z",
+      "commit": "c1c90658308498fb32a1374d066b80b8c9365696",
+      "prs": [
+        19
+      ],
+      "classification": "patch",
+      "summary": "Round and slim the standalone test dock with visible bottom clearance",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 19,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Round and slim the standalone test dock with visible bottom clearance"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7106901644,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7106901644/statuses/19863810100",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38823696929/job/116726570467"
+      },
+      "sourceCommits": [
+        "c1c90658308498fb32a1374d066b80b8c9365696"
+      ]
+    },
+    {
+      "version": "2.0.19",
+      "releasedAt": "2026-10-15T23:59:20Z",
+      "commit": "b7fdfbc30993f6bce3fac54deb5a520b2f97f8b3",
+      "prs": [
+        20
+      ],
+      "classification": "patch",
+      "summary": "Center test dock icons and labels within the approved capsule",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 20,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Center test dock icons and labels within the approved capsule"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7107329497,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7107329497/statuses/19864841308",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38826680663/job/116736078481"
+      },
+      "sourceCommits": [
+        "b7fdfbc30993f6bce3fac54deb5a520b2f97f8b3"
+      ]
+    },
+    {
+      "version": "2.0.20",
+      "releasedAt": "2026-10-16T00:11:50Z",
+      "commit": "3704095e83cc7f9a35b1d746dee6f15828b1ca4e",
+      "prs": [
+        21
+      ],
+      "classification": "patch",
+      "summary": "Integrate approved PWA dock with glassier material and green selected icons",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 21,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Integrate approved PWA dock with glassier material and green selected icons"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7107507139,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7107507139/statuses/19865279998",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38827948616/job/116740098845"
+      },
+      "sourceCommits": [
+        "3704095e83cc7f9a35b1d746dee6f15828b1ca4e"
+      ]
+    },
+    {
+      "version": "2.0.21",
+      "releasedAt": "2026-10-16T03:00:36Z",
+      "commit": "ca35fd1832fc2217e7902d31580ff067b38b8a53",
+      "prs": [
+        22
+      ],
+      "classification": "patch",
+      "summary": "Compact static editors, routine deletion confirmation, and placeholder removal",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 22,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Compact static editors, routine deletion confirmation, and placeholder removal"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7109753485,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7109753485/statuses/19870754697",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38842907764/job/116788100573"
+      },
+      "sourceCommits": [
+        "ca35fd1832fc2217e7902d31580ff067b38b8a53"
+      ]
+    },
+    {
+      "version": "2.0.22",
+      "releasedAt": "2026-10-16T03:44:59Z",
+      "commit": "0ab26bf20e7c47e9e8068d22a36a1a9070cece63",
+      "prs": [
+        23
+      ],
+      "classification": "patch",
+      "summary": "Audit persistent storage and enforce backup completeness",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 23,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Audit persistent storage and enforce backup completeness"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7110336912,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7110336912/statuses/19872132024",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38846868772/job/116799818849"
+      },
+      "sourceCommits": [
+        "0ab26bf20e7c47e9e8068d22a36a1a9070cece63"
+      ]
+    },
+    {
+      "version": "2.0.23",
+      "releasedAt": "2026-10-16T14:19:32Z",
+      "commit": "15dffdebc99ff5d4cfdab3caf73c878255f1cd20",
+      "prs": [
+        24
+      ],
+      "classification": "patch",
+      "summary": "Audit FitCircle and add initial regression safeguards",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 24,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Audit FitCircle and add initial regression safeguards"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7121299406,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7121299406/statuses/19898633594",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38914578694/job/117019414387"
+      },
+      "sourceCommits": [
+        "15dffdebc99ff5d4cfdab3caf73c878255f1cd20"
+      ]
+    },
+    {
+      "version": "2.0.24",
+      "releasedAt": "2026-10-16T14:32:18Z",
+      "commit": "453e6fa3196a4e0700996275c0e9e32729468b25",
+      "prs": [
+        26
+      ],
+      "classification": "patch",
+      "summary": "Preserve historical workout goals and journal timestamps on startup",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 26,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Preserve historical workout goals and journal timestamps on startup"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7121567842,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7121567842/statuses/19899332164",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38916129073/job/117024820509"
+      },
+      "sourceCommits": [
+        "453e6fa3196a4e0700996275c0e9e32729468b25"
+      ]
+    },
+    {
+      "version": "2.0.25",
+      "releasedAt": "2026-10-16T15:04:53Z",
+      "commit": "fc09b8adb2bf368e42f44bb6ba7b64b62890c0d5",
+      "prs": [
+        27
+      ],
+      "classification": "patch",
+      "summary": "FC-003: preserve malformed workout data and block unsafe initialization",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 27,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "FC-003: preserve malformed workout data and block unsafe initialization"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7122330830,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7122330830/statuses/19901087027",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38920621719/job/117040474854"
+      },
+      "sourceCommits": [
+        "fc09b8adb2bf368e42f44bb6ba7b64b62890c0d5"
+      ]
+    },
+    {
+      "version": "2.0.26",
+      "releasedAt": "2026-10-16T20:03:35Z",
+      "commit": "fa019ec91fbd1286bfcca04ac366849390132cf2",
+      "prs": [
+        30
+      ],
+      "classification": "patch",
+      "summary": "Finish data-safety fixes and remove verified codebase clutter",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 30,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Finish data-safety fixes and remove verified codebase clutter"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7128341823,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7128341823/statuses/19915477197",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38959155386/job/117170315535"
+      },
+      "sourceCommits": [
+        "fa019ec91fbd1286bfcca04ac366849390132cf2"
+      ]
+    },
+    {
+      "version": "2.0.27",
+      "releasedAt": "2026-10-17T01:32:10Z",
+      "commit": "31d1b9e614946979829833bcd24b233fe3aa5e41",
+      "prs": [
+        31
+      ],
+      "classification": "patch",
+      "summary": "Modernize typography with system sans-serif and tabular metrics",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 31,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Modernize typography with system sans-serif and tabular metrics"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7133066389,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7133066389/statuses/19926902411",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38991112053/job/117273955117"
+      },
+      "sourceCommits": [
+        "31d1b9e614946979829833bcd24b233fe3aa5e41"
+      ]
+    },
+    {
+      "version": "2.0.28",
+      "releasedAt": "2026-10-17T01:46:30Z",
+      "commit": "347ff8d0233932131cdfc7b04441407f462ff33b",
+      "prs": [
+        32
+      ],
+      "classification": "patch",
+      "summary": "Refine floating dock to the compact rounded reference style",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 32,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Refine floating dock to the compact rounded reference style"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7133204787,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7133204787/statuses/19927249341",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38992075671/job/117276956574"
+      },
+      "sourceCommits": [
+        "347ff8d0233932131cdfc7b04441407f462ff33b"
+      ]
+    },
+    {
+      "version": "2.0.29",
+      "releasedAt": "2026-10-17T02:20:43Z",
+      "commit": "a387784af02c4f28f830d3abbfeb7d2e64b10b86",
+      "prs": [
+        33
+      ],
+      "classification": "patch",
+      "summary": "Focus Home on today's workout and preserve FitCircle's circles",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 33,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Focus Home on today's workout and preserve FitCircle's circles"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7133547285,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7133547285/statuses/19928066907",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38994360753/job/117284051389"
+      },
+      "sourceCommits": [
+        "a387784af02c4f28f830d3abbfeb7d2e64b10b86"
+      ]
+    },
+    {
+      "version": "2.0.30",
+      "releasedAt": "2026-10-17T02:30:12Z",
+      "commit": "7ebc3d8ab86656d5b4230410be634dbcbd385d46",
+      "prs": [
+        34
+      ],
+      "classification": "patch",
+      "summary": "Move the compact quote card to the top of Home",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 34,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Move the compact quote card to the top of Home"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7133638732,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7133638732/statuses/19928294221",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38994985944/job/117285954035"
+      },
+      "sourceCommits": [
+        "7ebc3d8ab86656d5b4230410be634dbcbd385d46"
+      ]
+    },
+    {
+      "version": "2.0.31",
+      "releasedAt": "2026-10-17T02:36:05Z",
+      "commit": "23b42f3943a0d55ec878598d4f721de32c5153f2",
+      "prs": [
+        35
+      ],
+      "classification": "patch",
+      "summary": "Compact Home workout details beneath progress circles",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 35,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Compact Home workout details beneath progress circles"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7133698233,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7133698233/statuses/19928442648",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38995401815/job/117287186146"
+      },
+      "sourceCommits": [
+        "23b42f3943a0d55ec878598d4f721de32c5153f2"
+      ]
+    },
+    {
+      "version": "2.0.32",
+      "releasedAt": "2026-10-17T02:53:22Z",
+      "commit": "4c84e5eda6a7c367e5ec790a88fe2aa0ecab4ad8",
+      "prs": [
+        36
+      ],
+      "classification": "patch",
+      "summary": "Highlight today's calendar number with the dock green",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 36,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Highlight today's calendar number with the dock green"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7133862181,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7133862181/statuses/19928852066",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38996485179/job/117290583077"
+      },
+      "sourceCommits": [
+        "4c84e5eda6a7c367e5ec790a88fe2aa0ecab4ad8"
+      ]
+    },
+    {
+      "version": "2.0.33",
+      "releasedAt": "2026-10-17T03:19:55Z",
+      "commit": "5cfeff590d7b3e004d54a1ad37974c75369da9c3",
+      "prs": [
+        37,
+        38
+      ],
+      "classification": "patch",
+      "summary": "Refine Logs tiles with compact spacing and consistent icons; Fix validation failures blocking the compact Logs deployment",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 37,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Refine Logs tiles with compact spacing and consistent icons"
+        },
+        {
+          "pr": 38,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix validation failures blocking the compact Logs deployment"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7134117670,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7134117670/statuses/19929487657",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/38998161019/job/117295784398"
+      },
+      "sourceCommits": [
+        "e89e111194e57727497c3cb26952a1ce5608fa4c",
+        "5cfeff590d7b3e004d54a1ad37974c75369da9c3"
+      ]
+    },
+    {
+      "version": "2.0.34",
+      "releasedAt": "2026-10-17T13:07:45Z",
+      "commit": "90fab883797335c1fa4c35922c697c52571181b5",
+      "prs": [
+        39
+      ],
+      "classification": "patch",
+      "summary": "Add internal padding around the dock icons and labels",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 39,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Add internal padding around the dock icons and labels"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7139991964,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7139991964/statuses/19943749818",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39035106869/job/117403703614"
+      },
+      "sourceCommits": [
+        "90fab883797335c1fa4c35922c697c52571181b5"
+      ]
+    },
+    {
+      "version": "2.0.35",
+      "releasedAt": "2026-10-17T13:20:25Z",
+      "commit": "21b9106f7810b35d83d86ee92a5a02b2a860c002",
+      "prs": [
+        40
+      ],
+      "classification": "patch",
+      "summary": "Make dock icons and labels at least twenty percent smaller",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 40,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Make dock icons and labels at least twenty percent smaller"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7140131295,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7140131295/statuses/19944100781",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39035973911/job/117406151381"
+      },
+      "sourceCommits": [
+        "21b9106f7810b35d83d86ee92a5a02b2a860c002"
+      ]
+    },
+    {
+      "version": "2.0.36",
+      "releasedAt": "2026-10-17T18:33:09Z",
+      "commit": "97b5bd8a45dcb3d4a94ac587e463471acca70aff",
+      "prs": [
+        41
+      ],
+      "classification": "patch",
+      "summary": "Revamp Reminders with completed items below and a floating add button",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 41,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Revamp Reminders with completed items below and a floating add button"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7143928567,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7143928567/statuses/19953348453",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39058366090/job/117471479981"
+      },
+      "sourceCommits": [
+        "97b5bd8a45dcb3d4a94ac587e463471acca70aff"
+      ]
+    },
+    {
+      "version": "2.0.36",
+      "releasedAt": "2026-10-17T18:47:33Z",
+      "commit": "5b04fcf8c9e54f22ceed33f0fea503b5f8ad5c91",
+      "prs": [
+        42,
+        43
+      ],
+      "classification": "none",
+      "summary": "Remove unused attached assets and list remaining cleanup candidates; Remove inactive catalog backup with identical production output verified",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 42,
+          "classification": "none",
+          "rationale": "Removes unused attached assets, no distributed behavior change.",
+          "summary": "Remove unused attached assets and list remaining cleanup candidates"
+        },
+        {
+          "pr": 43,
+          "classification": "none",
+          "rationale": "Removes an inactive catalog backup; PR reports identical production output.",
+          "summary": "Remove inactive catalog backup with identical production output verified"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7144188327,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7144188327/statuses/19953785166",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39059439658/job/117474734561"
+      },
+      "sourceCommits": [
+        "f6f6a8ffa49142b801ab3373db90f73e4fe2ce45",
+        "5b04fcf8c9e54f22ceed33f0fea503b5f8ad5c91"
+      ]
+    },
+    {
+      "version": "2.0.37",
+      "releasedAt": "2026-10-17T19:07:54Z",
+      "commit": "4a7844c4f768718b3c09ed84badee75d0cddf721",
+      "prs": [
+        44,
+        45
+      ],
+      "classification": "patch",
+      "summary": "Add reminders inline and move new reminders to the top; Match the Routines title layout to Reminders",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 44,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Add reminders inline and move new reminders to the top"
+        },
+        {
+          "pr": 45,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Match the Routines title layout to Reminders"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7144418927,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7144418927/statuses/19954379864",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39060914565/job/117479054444"
+      },
+      "sourceCommits": [
+        "93e5483af66bd6d290b41929c3b3bb624ec29268",
+        "4a7844c4f768718b3c09ed84badee75d0cddf721"
+      ]
+    },
+    {
+      "version": "2.0.38",
+      "releasedAt": "2026-10-18T00:04:16Z",
+      "commit": "307c71e836474ffd9151ad150fed4274eb8d0389",
+      "prs": [
+        46
+      ],
+      "classification": "patch",
+      "summary": "Align the Home Timer and Add Workout circles",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 46,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Align the Home Timer and Add Workout circles"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7147586361,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7147586361/statuses/19962234453",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39080686902/job/117538845334"
+      },
+      "sourceCommits": [
+        "307c71e836474ffd9151ad150fed4274eb8d0389"
+      ]
+    },
+    {
+      "version": "2.0.39",
+      "releasedAt": "2026-10-18T00:09:19Z",
+      "commit": "52c716b125e35cb555208eb4355b174e1c5f7da6",
+      "prs": [
+        47
+      ],
+      "classification": "patch",
+      "summary": "Fix diagnostic test race that intermittently blocks Pages deployment",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 47,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix diagnostic test race that intermittently blocks Pages deployment"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7147632622,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7147632622/statuses/19962349350",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39081565623/job/117539782780"
+      },
+      "sourceCommits": [
+        "52c716b125e35cb555208eb4355b174e1c5f7da6"
+      ]
+    },
+    {
+      "version": "2.0.40",
+      "releasedAt": "2026-10-18T00:22:10Z",
+      "commit": "81f619e427e38d9e92f49e699b09b2655be1a6a9",
+      "prs": [
+        48
+      ],
+      "classification": "patch",
+      "summary": "Simplify Home timer popup to a compact three-wheel picker",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 48,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Simplify Home timer popup to a compact three-wheel picker"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7147748185,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7147748185/statuses/19962639381",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39082338560/job/117542146762"
+      },
+      "sourceCommits": [
+        "81f619e427e38d9e92f49e699b09b2655be1a6a9"
+      ]
+    },
+    {
+      "version": "2.0.41",
+      "releasedAt": "2026-10-18T02:36:13Z",
+      "commit": "13feb5a2995e1ea78e4c3b7f648364a9e096e5d9",
+      "prs": [
+        49
+      ],
+      "classification": "patch",
+      "summary": "Modernize Workout Statistics and add expandable exercise totals",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 49,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Modernize Workout Statistics and add expandable exercise totals"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7148944303,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7148944303/statuses/19965645003",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39090509218/job/117566528043"
+      },
+      "sourceCommits": [
+        "13feb5a2995e1ea78e4c3b7f648364a9e096e5d9"
+      ]
+    },
+    {
+      "version": "2.1.0",
+      "releasedAt": "2026-10-18T03:13:45Z",
+      "commit": "0f67eedd1b132fbdcc7fe073d12bdfe6a2eca9d3",
+      "prs": [
+        50
+      ],
+      "classification": "minor",
+      "summary": "My Fitness Profile overview and dashboard integration",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 50,
+          "classification": "minor",
+          "rationale": "Introduces the integrated My Fitness Profile overview.",
+          "summary": "My Fitness Profile overview and dashboard integration"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7149267685,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7149267685/statuses/19966445860",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39092726636/job/117573084626"
+      },
+      "sourceCommits": [
+        "0f67eedd1b132fbdcc7fe073d12bdfe6a2eca9d3"
+      ]
+    },
+    {
+      "version": "2.1.1",
+      "releasedAt": "2026-10-18T03:29:04Z",
+      "commit": "f1f7f29152b60ed5b17503ef64430f05dfd4debd",
+      "prs": [
+        51
+      ],
+      "classification": "patch",
+      "summary": "Fix My Fitness Profile card across all dock sidebars",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 51,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix My Fitness Profile card across all dock sidebars"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7149401722,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7149401722/statuses/19966774882",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39093604605/job/117575796282"
+      },
+      "sourceCommits": [
+        "f1f7f29152b60ed5b17503ef64430f05dfd4debd"
+      ]
+    },
+    {
+      "version": "2.1.2",
+      "releasedAt": "2026-10-18T03:35:56Z",
+      "commit": "99c77789714c214527b8c9abc021d4c3e5b11595",
+      "prs": [
+        52
+      ],
+      "classification": "patch",
+      "summary": "Remove legacy age note from Profile",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 52,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Remove legacy age note from Profile"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7149461065,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7149461065/statuses/19966928066",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39094017329/job/117577025179"
+      },
+      "sourceCommits": [
+        "99c77789714c214527b8c9abc021d4c3e5b11595"
+      ]
+    },
+    {
+      "version": "2.2.0",
+      "releasedAt": "2026-10-20T16:36:24Z",
+      "commit": "6bc123fb0ccdb3b8e4c5733313177d9bcb597918",
+      "prs": [
+        53
+      ],
+      "classification": "minor",
+      "summary": "Food Tracker 2.0: nutrition goals, diary safety and barcode entry",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 53,
+          "classification": "minor",
+          "rationale": "Adds nutrition-goal and barcode-entry capabilities to Food Tracker.",
+          "summary": "Food Tracker 2.0: nutrition goals, diary safety and barcode entry"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7205453779,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7205453779/statuses/20103538216",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39458476561/job/118752835463"
+      },
+      "sourceCommits": [
+        "6bc123fb0ccdb3b8e4c5733313177d9bcb597918"
+      ]
+    },
+    {
+      "version": "2.2.1",
+      "releasedAt": "2026-10-20T17:54:28Z",
+      "commit": "282ad546c37a9724009eb477dc58512e35f888e7",
+      "prs": [
+        54
+      ],
+      "classification": "patch",
+      "summary": "Fix barcode servings and streamline Add Food",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 54,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix barcode servings and streamline Add Food"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7207103884,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7207103884/statuses/20107465342",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39469775724/job/118791557377"
+      },
+      "sourceCommits": [
+        "282ad546c37a9724009eb477dc58512e35f888e7"
+      ]
+    },
+    {
+      "version": "2.2.2",
+      "releasedAt": "2026-10-20T18:36:34Z",
+      "commit": "503f72e5d860c4dcc3791bad011351a395444985",
+      "prs": [
+        55
+      ],
+      "classification": "patch",
+      "summary": "Restore calculator-driven nutrition targets and simplify macro controls",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 55,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Restore calculator-driven nutrition targets and simplify macro controls"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7207991176,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7207991176/statuses/20109544550",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39475882106/job/118812702108"
+      },
+      "sourceCommits": [
+        "503f72e5d860c4dcc3791bad011351a395444985"
+      ]
+    },
+    {
+      "version": "2.2.3",
+      "releasedAt": "2026-10-20T19:05:59Z",
+      "commit": "3113d29976bc1884d2eccdbdb6b32537201c77da",
+      "prs": [
+        56
+      ],
+      "classification": "patch",
+      "summary": "Remove excess explanations from Food Tracker dialogs",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 56,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Remove excess explanations from Food Tracker dialogs"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7208600544,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7208600544/statuses/20110977608",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39480093303/job/118827453766"
+      },
+      "sourceCommits": [
+        "3113d29976bc1884d2eccdbdb6b32537201c77da"
+      ]
+    },
+    {
+      "version": "2.3.0",
+      "releasedAt": "2026-10-20T22:20:02Z",
+      "commit": "04cefde58433436ddc2e906990d8ec536026e3db",
+      "prs": [
+        57
+      ],
+      "classification": "minor",
+      "summary": "Integrate measurements with calculator recommendations and confirmed nutrition targets",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 57,
+          "classification": "minor",
+          "rationale": "Adds measurement-driven calculator recommendations and confirmed nutrition-target integration.",
+          "summary": "Integrate measurements with calculator recommendations and confirmed nutrition targets"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7212466212,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7212466212/statuses/20120138003",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39507019105/job/118919314090"
+      },
+      "sourceCommits": [
+        "04cefde58433436ddc2e906990d8ec536026e3db"
+      ]
+    },
+    {
+      "version": "2.3.1",
+      "releasedAt": "2026-10-20T23:57:54Z",
+      "commit": "eee228a905ebacc347cdcc44dce4c1ea90d2a67b",
+      "prs": [
+        58
+      ],
+      "classification": "patch",
+      "summary": "Simplify Measurements and move goal weight into Fitness Calculator",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 58,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Simplify Measurements and move goal weight into Fitness Calculator"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7213995585,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7213995585/statuses/20123900042",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39518005674/job/118955797341"
+      },
+      "sourceCommits": [
+        "eee228a905ebacc347cdcc44dce4c1ea90d2a67b"
+      ]
+    },
+    {
+      "version": "2.3.2",
+      "releasedAt": "2026-10-21T00:23:10Z",
+      "commit": "746cf74bd8d172123202b831add88f3b9117b4c7",
+      "prs": [
+        59
+      ],
+      "classification": "patch",
+      "summary": "Make weight goal progress follow Lose, Maintain, or Gain",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 59,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Make weight goal progress follow Lose, Maintain, or Gain"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7214374646,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7214374646/statuses/20124819904",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39520655527/job/118964390984"
+      },
+      "sourceCommits": [
+        "746cf74bd8d172123202b831add88f3b9117b4c7"
+      ]
+    },
+    {
+      "version": "2.3.3",
+      "releasedAt": "2026-10-21T00:43:51Z",
+      "commit": "29f35a385c484d0617e86da889ce60ae8ce37410",
+      "prs": [
+        60
+      ],
+      "classification": "patch",
+      "summary": "Compare calculator weight goals with current weight",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 60,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Compare calculator weight goals with current weight"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7214661997,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7214661997/statuses/20125541136",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39522744067/job/118971204219"
+      },
+      "sourceCommits": [
+        "29f35a385c484d0617e86da889ce60ae8ce37410"
+      ]
+    },
+    {
+      "version": "2.3.4",
+      "releasedAt": "2026-10-21T04:02:09Z",
+      "commit": "a53a05626290b3d69d82c9422b78dfb6a392c3d3",
+      "prs": [
+        61
+      ],
+      "classification": "patch",
+      "summary": "Align wellness goal progress with current calendar periods",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 61,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Align wellness goal progress with current calendar periods"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7217350268,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7217350268/statuses/20132208116",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39541481417/job/119030877748"
+      },
+      "sourceCommits": [
+        "a53a05626290b3d69d82c9422b78dfb6a392c3d3"
+      ]
+    },
+    {
+      "version": "2.4.0",
+      "releasedAt": "2026-10-21T04:52:54Z",
+      "commit": "f7b39c550c8fc6aa4b67f70564b2ae59fe50c042",
+      "prs": [
+        62,
+        63
+      ],
+      "classification": "minor",
+      "summary": "Implement Wellness 2.0 page design; Fix reminder entry, Home menu alignment and offline test startup",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 62,
+          "classification": "minor",
+          "rationale": "Adds selectable activity windows, hydration shortcuts and wellness summaries (PR description and Wellness 2.0 review).",
+          "summary": "Implement Wellness 2.0 page design"
+        },
+        {
+          "pr": 63,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix reminder entry, Home menu alignment and offline test startup"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7218029443,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7218029443/statuses/20133911994",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39546140062/job/119045436603"
+      },
+      "sourceCommits": [
+        "ae391878cb0de8daa34bd27219ceb78d6279333c",
+        "f7b39c550c8fc6aa4b67f70564b2ae59fe50c042"
+      ]
+    },
+    {
+      "version": "2.5.0",
+      "releasedAt": "2026-10-21T17:28:32Z",
+      "commit": "27ea54b4ea44bc8ce645e83b89f3b76ec0d5dc85",
+      "prs": [
+        64
+      ],
+      "classification": "minor",
+      "summary": "Refine Nutrition Details with nutrient references and compact progress bars",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 64,
+          "classification": "minor",
+          "rationale": "Adds nutrient reference/progress reporting beyond the previous totals.",
+          "summary": "Refine Nutrition Details with nutrient references and compact progress bars"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7232727180,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7232727180/statuses/20198625533",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39643555090/job/119374898864"
+      },
+      "sourceCommits": [
+        "27ea54b4ea44bc8ce645e83b89f3b76ec0d5dc85"
+      ]
+    },
+    {
+      "version": "2.5.1",
+      "releasedAt": "2026-10-21T17:53:05Z",
+      "commit": "6a3152719bfd088c6b9282509bfc3f317758dae3",
+      "prs": [
+        65,
+        66
+      ],
+      "classification": "patch",
+      "summary": "Refine Weekly Nutrition rows and calendar-week logging; Refine cholesterol reference bar and compact nutrient labels",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 65,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Refine Weekly Nutrition rows and calendar-week logging"
+        },
+        {
+          "pr": 66,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Refine cholesterol reference bar and compact nutrient labels"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7233251881,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7233251881/statuses/20199878493",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39647272222/job/119387543695"
+      },
+      "sourceCommits": [
+        "41301a88974d8f50b571319342ea9a9bd194c4fc",
+        "6a3152719bfd088c6b9282509bfc3f317758dae3"
+      ]
+    },
+    {
+      "version": "2.6.0",
+      "releasedAt": "2026-10-21T18:14:41Z",
+      "commit": "905903be83ff5294b22a2f77595782d576fd647b",
+      "prs": [
+        67
+      ],
+      "classification": "minor",
+      "summary": "Calculate Sugar reference automatically from confirmed calories",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 67,
+          "classification": "minor",
+          "rationale": "Adds automatic calorie-derived sugar reference behavior.",
+          "summary": "Calculate Sugar reference automatically from confirmed calories"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7233710949,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7233710949/statuses/20200966060",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39650385959/job/119398449880"
+      },
+      "sourceCommits": [
+        "905903be83ff5294b22a2f77595782d576fd647b"
+      ]
+    },
+    {
+      "version": "2.6.1",
+      "releasedAt": "2026-10-21T20:54:02Z",
+      "commit": "f51c8866e7983b822ad888ed156cefd7d616b04c",
+      "prs": [
+        68
+      ],
+      "classification": "patch",
+      "summary": "Modernize Routines configuration cards and compact exercise rows",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 68,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Modernize Routines configuration cards and compact exercise rows"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7237063317,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7237063317/statuses/20208871247",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39673752344/job/119479818737"
+      },
+      "sourceCommits": [
+        "f51c8866e7983b822ad888ed156cefd7d616b04c"
+      ]
+    },
+    {
+      "version": "2.6.2",
+      "releasedAt": "2026-10-21T23:46:30Z",
+      "commit": "a12a4ffb13e051aad44b0ffa6ea2339c5f0695c8",
+      "prs": [
+        69
+      ],
+      "classification": "patch",
+      "summary": "Show blank reminder draft only after tapping and remove input box",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 69,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Show blank reminder draft only after tapping and remove input box"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7240000386,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7240000386/statuses/20215941030",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39695174866/job/119551782149"
+      },
+      "sourceCommits": [
+        "a12a4ffb13e051aad44b0ffa6ea2339c5f0695c8"
+      ]
+    },
+    {
+      "version": "2.6.3",
+      "releasedAt": "2026-10-22T00:29:21Z",
+      "commit": "4707677177f59a1856685bce8143f563d28def59",
+      "prs": [
+        70
+      ],
+      "classification": "patch",
+      "summary": "Fix text-field focus frames and keyboard clipping across app modals",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 70,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix text-field focus frames and keyboard clipping across app modals"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7240592964,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7240592964/statuses/20217391368",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39699583224/job/119566513353"
+      },
+      "sourceCommits": [
+        "4707677177f59a1856685bce8143f563d28def59"
+      ]
+    },
+    {
+      "version": "2.6.4",
+      "releasedAt": "2026-10-22T23:26:46Z",
+      "commit": "67235ffedd55a9b8ec014b33d4cf03864fb1212b",
+      "prs": [
+        71
+      ],
+      "classification": "patch",
+      "summary": "Simplify Nutrition Details into an inline expandable section",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 71,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Simplify Nutrition Details into an inline expandable section"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7266180855,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7266180855/statuses/20325896091",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/39871454349/job/120147728170"
+      },
+      "sourceCommits": [
+        "67235ffedd55a9b8ec014b33d4cf03864fb1212b"
+      ]
+    },
+    {
+      "version": "2.7.0",
+      "releasedAt": "2026-10-23T23:03:36Z",
+      "commit": "8d2022e38a593e352b02c727fe73e90bc28ce0b9",
+      "prs": [
+        72,
+        73,
+        74,
+        75,
+        76,
+        77
+      ],
+      "classification": "minor",
+      "summary": "Phase 1: appearance foundation with Dark visual preservation; Appearance Phase 2: theme core navigation and pages; Appearance Phase 3: theme nutrition, calculator and measurements; Appearance Phase 4: theme wellness, Calendar and remaining screens; Appearance Phase 5: public modes, startup integration and release validation; Fix Pages deployment blocked by screenshot rendering mismatch",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 72,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Phase 1: appearance foundation with Dark visual preservation"
+        },
+        {
+          "pr": 73,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Appearance Phase 2: theme core navigation and pages"
+        },
+        {
+          "pr": 74,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Appearance Phase 3: theme nutrition, calculator and measurements"
+        },
+        {
+          "pr": 75,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Appearance Phase 4: theme wellness, Calendar and remaining screens"
+        },
+        {
+          "pr": 76,
+          "classification": "minor",
+          "rationale": "Publicly enables Light/Dark/System preferences and startup integration.",
+          "summary": "Appearance Phase 5: public modes, startup integration and release validation"
+        },
+        {
+          "pr": 77,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix Pages deployment blocked by screenshot rendering mismatch"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7290609112,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7290609112/statuses/20448049525",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40036758108/job/120700182644"
+      },
+      "sourceCommits": [
+        "6344a35d45677f23e14c625444f5e53d7f0fbaa6",
+        "173aadc5bb08ea3cc579d8b06de2a1b19e2b6760",
+        "770815c27e6b316756921b34c36792e088faafb4",
+        "862789ab1ed7afbdaa328989450a790e9d2a54c5",
+        "da350a01f0095adfb8ef066585f21682ca596889",
+        "8d2022e38a593e352b02c727fe73e90bc28ce0b9"
+      ]
+    },
+    {
+      "version": "2.8.0",
+      "releasedAt": "2026-10-24T02:19:31Z",
+      "commit": "409f1cff18072df367af0280c687dcbdf57bf688",
+      "prs": [
+        78
+      ],
+      "classification": "minor",
+      "summary": "Revamp dashboard navigation with Account Data, Display, Share and About",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 78,
+          "classification": "minor",
+          "rationale": "Adds Share/QR and About/legal destinations while splitting settings.",
+          "summary": "Revamp dashboard navigation with Account Data, Display, Share and About"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7292785622,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7292785622/statuses/20458182447",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40053068504/job/120751753086"
+      },
+      "sourceCommits": [
+        "409f1cff18072df367af0280c687dcbdf57bf688"
+      ]
+    },
+    {
+      "version": "2.8.1",
+      "releasedAt": "2026-10-24T03:28:41Z",
+      "commit": "ecce7b0326c6522b90c7d33b5c07f00491878882",
+      "prs": [
+        79
+      ],
+      "classification": "patch",
+      "summary": "Shorten Pages validation with four native regression shards",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 79,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Shorten Pages validation with four native regression shards"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7293451222,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7293451222/statuses/20461321361",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40058131328/job/120766485359"
+      },
+      "sourceCommits": [
+        "ecce7b0326c6522b90c7d33b5c07f00491878882"
+      ]
+    },
+    {
+      "version": "2.9.0",
+      "releasedAt": "2026-10-24T14:47:35Z",
+      "commit": "ff4ac6442dcf454be1d2f30fb4d78b17c0364e18",
+      "prs": [
+        80
+      ],
+      "classification": "minor",
+      "summary": "Revamp Journal with grouped library, search and Notes-inspired reading",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 80,
+          "classification": "minor",
+          "rationale": "Adds journal chronological grouping and local text/date search.",
+          "summary": "Revamp Journal with grouped library, search and Notes-inspired reading"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7300129268,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7300129268/statuses/20490674003",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40103757446/job/120901866068"
+      },
+      "sourceCommits": [
+        "ff4ac6442dcf454be1d2f30fb4d78b17c0364e18"
+      ]
+    },
+    {
+      "version": "2.9.1",
+      "releasedAt": "2026-10-24T17:05:29Z",
+      "commit": "b8b5c858181178eb86020ca3c62b3a6847af4b4e",
+      "prs": [
+        81
+      ],
+      "classification": "patch",
+      "summary": "Use full-page Journal entries and green checkmark saves",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 81,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Use full-page Journal entries and green checkmark saves"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7301726366,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7301726366/statuses/20497122779",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40114229684/job/120932926031"
+      },
+      "sourceCommits": [
+        "b8b5c858181178eb86020ca3c62b3a6847af4b4e"
+      ]
+    },
+    {
+      "version": "2.9.2",
+      "releasedAt": "2026-10-25T17:10:50Z",
+      "commit": "af52da4b22dec89bcbf76a3f79cd513f7be32280",
+      "prs": [
+        82,
+        83
+      ],
+      "classification": "patch",
+      "summary": "Fix fasting ring to show today\u2019s completed fast; Fix CI Chromium download transport failure blocking deployment",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 82,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix fasting ring to show today\u2019s completed fast"
+        },
+        {
+          "pr": 83,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix CI Chromium download transport failure blocking deployment"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7316385632,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7316385632/statuses/20557890971",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40214792406/job/121234662599"
+      },
+      "sourceCommits": [
+        "80ff5cfda2454173a67abab7764a5a546619da93",
+        "af52da4b22dec89bcbf76a3f79cd513f7be32280"
+      ]
+    },
+    {
+      "version": "2.9.3",
+      "releasedAt": "2026-10-26T00:55:54Z",
+      "commit": "0d86a1a43b5566acd058efa7c7363265c9a0727a",
+      "prs": [
+        84
+      ],
+      "classification": "patch",
+      "summary": "Move Fitness Calculator into a full page with four tabs",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 84,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Move Fitness Calculator into a full page with four tabs"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7321695553,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7321695553/statuses/20578594889",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40251324558/job/121344768956"
+      },
+      "sourceCommits": [
+        "0d86a1a43b5566acd058efa7c7363265c9a0727a"
+      ]
+    },
+    {
+      "version": "2.9.4",
+      "releasedAt": "2026-10-26T03:28:27Z",
+      "commit": "e185bd0e49c002005066e8531d8a43f00a78106c",
+      "prs": [
+        85
+      ],
+      "classification": "patch",
+      "summary": "Redesign Fitness Calculator to match the four reference views",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 85,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Redesign Fitness Calculator to match the four reference views"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7323395079,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7323395079/statuses/20585638754",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40263859710/job/121382952899"
+      },
+      "sourceCommits": [
+        "e185bd0e49c002005066e8531d8a43f00a78106c"
+      ]
+    },
+    {
+      "version": "2.9.5",
+      "releasedAt": "2026-10-26T14:02:27Z",
+      "commit": "dad6c881c139de1596a4a8dbcf66442dad5cbdae",
+      "prs": [
+        86
+      ],
+      "classification": "patch",
+      "summary": "Reduce and center the BMI gauge category label",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 86,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Reduce and center the BMI gauge category label"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7333837461,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7333837461/statuses/20629461184",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40335272436/job/121617186969"
+      },
+      "sourceCommits": [
+        "dad6c881c139de1596a4a8dbcf66442dad5cbdae"
+      ]
+    },
+    {
+      "version": "2.9.6",
+      "releasedAt": "2026-10-26T17:40:34Z",
+      "commit": "34e2e1b1e6b877d866f8b739d3130f65b7c5150d",
+      "prs": [
+        87
+      ],
+      "classification": "patch",
+      "summary": "Remove white rectangle from focused Journal search",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 87,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Remove white rectangle from focused Journal search"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7339137656,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7339137656/statuses/20649633103",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40370049025/job/121740535453"
+      },
+      "sourceCommits": [
+        "34e2e1b1e6b877d866f8b739d3130f65b7c5150d"
+      ]
+    },
+    {
+      "version": "2.9.7",
+      "releasedAt": "2026-10-26T17:51:32Z",
+      "commit": "b2cb47758d61c2438ce44c3b42d1956e6a883fea",
+      "prs": [
+        88
+      ],
+      "classification": "patch",
+      "summary": "Redesign Dynamic Overview with compact daily and supplement panels",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 88,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Redesign Dynamic Overview with compact daily and supplement panels"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7339375816,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7339375816/statuses/20650557447",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40371592067/job/121746312488"
+      },
+      "sourceCommits": [
+        "b2cb47758d61c2438ce44c3b42d1956e6a883fea"
+      ]
+    },
+    {
+      "version": "2.9.8",
+      "releasedAt": "2026-10-26T21:26:53Z",
+      "commit": "b7d4a757975cae95730c0a0e80dab5f05cc66749",
+      "prs": [
+        89
+      ],
+      "classification": "patch",
+      "summary": "Fix Calendar completed-day styling and monthly consistency",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 89,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix Calendar completed-day styling and monthly consistency"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7343995288,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7343995288/statuses/20667787956",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40403872106/job/121858207517"
+      },
+      "sourceCommits": [
+        "b7d4a757975cae95730c0a0e80dab5f05cc66749"
+      ]
+    },
+    {
+      "version": "2.10.0",
+      "releasedAt": "2026-10-27T01:30:04Z",
+      "commit": "9f7b217bf8ae912e9af44ee8fd402a6eb894753c",
+      "prs": [
+        90,
+        91
+      ],
+      "classification": "minor",
+      "summary": "Track workouts by completed sets while preserving rep statistics; Fix update regression race blocking post-merge deployment",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 90,
+          "classification": "minor",
+          "rationale": "Introduces prescribed set tracking while preserving rep volumes.",
+          "summary": "Track workouts by completed sets while preserving rep statistics"
+        },
+        {
+          "pr": 91,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix update regression race blocking post-merge deployment"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7347943868,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7347943868/statuses/20682674656",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40432434909/job/121954598071"
+      },
+      "sourceCommits": [
+        "287e32db9b7afdd58fe6bfdbd5531301efb474e3",
+        "9f7b217bf8ae912e9af44ee8fd402a6eb894753c"
+      ]
+    },
+    {
+      "version": "2.10.1",
+      "releasedAt": "2026-10-27T02:00:46Z",
+      "commit": "57ae0a74991ca9f5aea2b668effefa3415717ab9",
+      "prs": [
+        92
+      ],
+      "classification": "patch",
+      "summary": "Fix shared workout state and confirmed current-day target changes",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 92,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Fix shared workout state and confirmed current-day target changes"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7348360919,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7348360919/statuses/20684309765",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40435429539/job/121964344066"
+      },
+      "sourceCommits": [
+        "57ae0a74991ca9f5aea2b668effefa3415717ab9"
+      ]
+    },
+    {
+      "version": "2.10.2",
+      "releasedAt": "2026-10-27T02:42:30Z",
+      "commit": "43d6052f9254ffaaaabeacbc315b4f8f40221fb9",
+      "prs": [
+        93
+      ],
+      "classification": "patch",
+      "summary": "Refine Home workouts into compact set-progress cards",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 93,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Refine Home workouts into compact set-progress cards"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7348935548,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7348935548/statuses/20686506320",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40439481267/job/121977629376"
+      },
+      "sourceCommits": [
+        "43d6052f9254ffaaaabeacbc315b4f8f40221fb9"
+      ]
+    },
+    {
+      "version": "2.10.3",
+      "releasedAt": "2026-10-27T11:39:54Z",
+      "commit": "e8c45654832e06bbfee3d24da14a5921330f4650",
+      "prs": [
+        94
+      ],
+      "classification": "patch",
+      "summary": "Restore Home workout completion checkmark",
+      "rationale": "Highest reviewed classification of changes since previous verified publication.",
+      "changes": [
+        {
+          "pr": 94,
+          "classification": "patch",
+          "rationale": "Correction, presentation refinement or maintenance of existing functionality; no new public capability or breaking contract identified.",
+          "summary": "Restore Home workout completion checkmark"
+        }
+      ],
+      "verification": "deployment-success-verified",
+      "versionApproval": "proposed",
+      "evidence": {
+        "deploymentId": 7357442225,
+        "statusUrl": "https://api.github.com/repos/fullstackraven/FitCircle/deployments/7357442225/statuses/20718522310",
+        "runUrl": "https://github.com/fullstackraven/FitCircle/actions/runs/40497215994/job/122167574895"
+      },
+      "sourceCommits": [
+        "e8c45654832e06bbfee3d24da14a5921330f4650"
+      ]
+    }
+  ]
+}
