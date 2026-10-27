@@ -69,7 +69,21 @@ test('an older installed shell recovers after a new deployment and retains old-t
     site.set(version(files, 'recovered'));
     await page.evaluate(async () => {
       const reg = await navigator.serviceWorker.getRegistration();
+      const previous = navigator.serviceWorker.controller;
+      // An activated registration/cache does not yet prove clients.claim()
+      // has transferred this page away from the legacy cache-first worker.
+      const claimed = new Promise<void>(resolve => {
+        const onChange = () => {
+          if (navigator.serviceWorker.controller !== previous) {
+            navigator.serviceWorker.removeEventListener('controllerchange', onChange);
+            resolve();
+          }
+        };
+        navigator.serviceWorker.addEventListener('controllerchange', onChange);
+        onChange();
+      });
       await reg!.update();
+      await claimed;
     });
     await expect.poll(() => page.evaluate(async () => (await navigator.serviceWorker.getRegistration())?.active?.state)).toBe('activated');
     await expect.poll(() => page.evaluate(async () => (await caches.keys()).includes('fitcircle-pages-test-recovered'))).toBe(true);
