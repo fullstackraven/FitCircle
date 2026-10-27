@@ -73,5 +73,5 @@ for r in reversed(releases):
               r['rationale'], '']
     lines += [f"- {c.get('pr', c.get('commit', '')[:8])}: {c['classification']} — {c['rationale']}" for c in r['changes']]
     lines += ['']
-Path('release/CHANGELOG.md').write_text('\n'.join(lines)+'\n')
+Path('release/CHANGELOG.md').write_text('\n'.join(lines).rstrip()+'\n')
 print(f"{len(releases)} verified publication boundaries; proposed {releases[-1]['version']}")

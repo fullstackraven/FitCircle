@@ -818,5 +818,3 @@ Static GitHub Pages PWA migration with safe backups
 Commit: [`dbb0d2cc`](https://github.com/fullstackraven/FitCircle/commit/dbb0d2ccf3c0f6e7685b32d52b67e32022eb05f4). PRs: direct commit. [Deployment evidence](https://api.github.com/repos/fullstackraven/FitCircle/deployments/7083569120/statuses/19808095523) · [Run](https://github.com/fullstackraven/FitCircle/actions/runs/38679582470/job/116241129944).
 
 Owner-requested 2.x platform baseline
-
-
