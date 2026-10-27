@@ -3,7 +3,8 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {api,pages,git,ancestor,readRegistry,writeRegistry} from './github';
-import {plan,reserve,reconcile,validateRegistry,type Registry,type Pending,type Change,type Receipt} from './model';
+import {verifiedReceipt} from './receipts';
+import {plan,reserve,reconcile,validateRegistry,type Registry,type Pending,type Change} from './model';
 import {classifyChanges,incrementVersion} from '../../client/src/lib/release-metadata';
 const config=JSON.parse(fs.readFileSync('release/activation.json','utf8'));
 const file='.release-candidate.json';
@@ -40,16 +41,6 @@ function seed():Registry{
   records.push({id:`deployment-${d.id}`,version:incrementVersion(last.version,impact),commit:d.sha,buildId:null,artifactDigest:null,runId:s.log_url?.match(/runs\/(\d+)/)?.[1]??'',deploymentId:String(d.id),releasedAt:s.created_at,changes,previousId:last.id,historical:true});
  }
  return validateRegistry({schemaVersion:1,records,pending:null});
-}
-function verifiedReceipt(p:Pending):Receipt{
- const matches=pages<any>(`deployments?environment=github-pages&sha=${p.commit}`).flatMap(d=>pages<any>(`deployments/${d.id}/statuses`).filter(s=>s.state==='success'&&s.log_url?.includes(`/runs/${p.runId}/`)).map(s=>({d,s})));
- if(matches.length>1)throw Error('Ambiguous successful deployment; manual investigation required');
- if(matches.length===1){const {d,s}=matches[0];return {state:'success',commit:d.sha,runId:p.runId,deploymentId:String(d.id),releasedAt:s.created_at,environment:d.environment};}
- const run=api(`actions/runs/${p.runId}`);
- const jobs=api(`actions/runs/${p.runId}/jobs?per_page=100`).jobs;
- if(jobs.some((job:any)=>job.name==='deploy'&&(job.conclusion==='success'||job.steps?.some((step:any)=>step.name==='Deploy'&&step.conclusion==='success'))))throw Error('Deploy succeeded but its success receipt is not yet available; keep reservation');
- if(run.status!=='completed'||!['failure','cancelled','timed_out'].includes(run.conclusion))throw Error('Deployment result not yet verified; pending reservation retained');
- return {state:run.conclusion==='cancelled'?'cancelled':'failure',commit:p.commit,runId:p.runId,deploymentId:'',releasedAt:'',environment:'github-pages'};
 }
 function assertNoUnrecordedPublication(r:Registry){
  const last=r.records.at(-1)!;

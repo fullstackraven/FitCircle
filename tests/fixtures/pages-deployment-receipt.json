@@ -1,0 +1,7 @@
+{
+  "source": "Read-only GitHub REST audit of deployment 7362901786 and run 40531878315, attempt 1; selected fields only",
+  "run": {"id":40531878315,"run_attempt":1,"head_sha":"8ba8a8f9670f72dea25ec6ae8a8b212ead9ac8b4","event":"push","head_branch":"main","path":".github/workflows/pages.yml","status":"completed","conclusion":"success","run_started_at":"2026-10-27T15:31:48Z"},
+  "deployment": {"id":7362901786,"sha":"8ba8a8f9670f72dea25ec6ae8a8b212ead9ac8b4","environment":"github-pages","created_at":"2026-10-27T15:35:56Z"},
+  "job": {"id":122289023711,"run_id":40531878315,"run_attempt":1,"name":"deploy","status":"completed","conclusion":"success","started_at":"2026-10-27T15:36:00Z","completed_at":"2026-10-27T15:36:12Z","steps":[{"name":"Deploy","conclusion":"success"}]},
+  "status": {"id":20737710239,"state":"success","created_at":"2026-10-27T15:36:13Z","log_url":"https://github.com/fullstackraven/FitCircle/actions/runs/40531878315/job/122289023711","target_url":"https://github.com/fullstackraven/FitCircle/actions/runs/40531878315/job/122289023711","environment_url":"https://fullstackraven.github.io/FitCircle/"}
+}

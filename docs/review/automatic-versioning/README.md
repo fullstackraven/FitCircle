@@ -115,3 +115,11 @@ Manual iPhone checklist: Safari and installed PWA; online/offline launch; older 
 ## Completion boundary
 
 Phase 2 implementation, Phase 3 focused validation, and Phase 4 PR/review deliverables are complete together. The goal of a reviewable, automatically versioned release pipeline and build-bound version/history UI is implemented. **Operational activation and live end-to-end deployment verification remain owner-gated and have not been performed.** Owner settings above and successful GitHub CI must be confirmed before activation/merge; this is not a claim that production currently uses the new system.
+
+### PR #96 audit corrections
+
+The receipt cache was correctly registered as application metadata with `backup: false`, but the generated persistent-storage Markdown inventory omitted it. The comprehensive coverage test requires both registration and that inventory entry. Regenerated the inventory and restricted service-worker cache-placeholder attribution to the service-worker cache; receipt metadata remains excluded from personal fitness backups.
+
+Read-only inspection of production deployment 7362901786 confirmed that GitHub returns a success status with a job-suffixed `log_url`: `https://github.com/fullstackraven/FitCircle/actions/runs/40531878315/job/122289023711`. The original matcher accepted this observed format. Recovery now validates the repository, exact run and reserved attempt, source SHA, production workflow, and deployment job. It deduplicates repeated success statuses for one deployment, paginates attempt jobs, and retains the reservation when publication may have succeeded. Tests cover root-run URL compatibility, mismatches, retries, duplicate statuses, terminal failures, and pagination.
+
+Validation: focused storage/backup/release tests passed (59/59); `npm test` passed (365/365); `npx tsc --noEmit -p tests/tsconfig.regressions.json` passed. A read-only call through the corrected matcher verified the real deployment above and its publication timestamp. Full browser CI is left to GitHub Actions. No live release transaction was performed. Owner-gated activation and the proposed 2.11.0 classification remain unchanged.
