@@ -309,56 +309,52 @@ export default function Home() {
 
           {/* Workout Circles Grid */}
           {todaysWorkouts.length > 0 && (
-            <div className="grid grid-cols-2 gap-x-6 gap-y-6 justify-items-center">
+            <div className="grid grid-cols-2 gap-3">
               {todaysWorkouts.map((workout) => {
                 const todayTotal = todaysTotals.find(t => t.id === workout.id);
                 const currentCount = todayTotal?.count || 0;
                 const progress = todayTotal!.progress;
 
                 return (
-                  <div key={workout.id} className="flex min-w-0 w-full flex-col items-center space-y-2 py-2" data-testid={`home-workout-${workout.id}`}>
+                  <div key={workout.id} className="home-workout-card flex min-w-0 w-full flex-col items-center rounded-[18px] bg-surface p-3" data-testid={`home-workout-${workout.id}`}>
                     <ProgressCircle
                       ariaLabel={`Record a ${progress.mode === "sets" ? "set" : "rep"} for ${workout.name}: ${progress.count} of ${progress.goal}`}
+                      cardStyle
+                      unitLabel={progress.mode === "sets" ? "Sets" : "Reps"}
                       displayRatio={progress.mode === "sets"}
                       count={progress.count}
                       goal={progress.goal}
                       color={workout.color}
-                      size={82}
-                      strokeWidth={8}
+                      size={112}
+                      strokeWidth={7}
                       onClick={() => handleWorkoutClick(workout.id)}
                       onHoldIncrement={() => handleWorkoutHoldIncrement(workout.id)}
                       isAnimating={clickingWorkout === workout.id}
                     />
                     <div className="min-w-0 w-full text-center">
-                      <button
-                        onClick={() => handleEditWorkout(workout)}
-                        className="relative w-full min-h-11 text-center text-strong hover:text-subtle transition-colors"
-                        aria-label={`Edit ${workout.name}`}
-                      >
-                        <span className="entity-name block px-6 text-sm font-semibold">{workout.name}</span>
-                        <Edit size={14} className="absolute right-1 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-                      </button>
+                      <h3 className="home-workout-name mt-2 text-sm font-semibold text-strong">{workout.name}</h3>
                       <p className="text-xs text-muted-foreground mt-1"><span className="type-metric">{currentCount} / {progress.repGoal}</span> reps{progress.mode === "reps" && <span className="block">Rep tracking today</span>}</p>
                       {workout.weightLbs && (
                         <div className="text-xs text-muted-foreground">
-                          Weight: {workout.weightLbs}lbs
+                          {workout.weightLbs} lbs
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="mt-auto flex items-center gap-1 pt-1">
                       <button
                         onClick={() => handleUndo(workout.id)}
                         className="text-muted-foreground hover:text-subtle transition-colors min-h-11 min-w-11 flex items-center justify-center"
+                        aria-label={`Undo last ${progress.mode === "sets" ? "set" : "rep"} for ${workout.name}`}
                         title={progress.mode === "sets" ? "Undo last set" : "Undo last rep"}
                       >
-                        <Undo2 size={14} />
+                        <Undo2 size={18} />
                       </button>
                       <button
-                        onClick={() => handleDeleteWorkout(workout.id)}
+                        onClick={() => handleEditWorkout(workout)}
                         className="text-muted-foreground hover:text-feature-red transition-colors min-h-11 min-w-11 flex items-center justify-center"
-                        title="Delete workout"
+                        aria-label={`Edit ${workout.name}`}
                       >
-                        <Trash2 size={14} />
+                        <Edit size={18} />
                       </button>
                     </div>
                   </div>
@@ -368,9 +364,9 @@ export default function Home() {
           )}
 
           {/* Timer and Add Workout - Secondary tools */}
-          <div className="grid grid-cols-2 gap-x-6 gap-y-6 justify-items-center">
+          <div className="grid grid-cols-2 gap-3">
             {/* Timer Circle */}
-            <div className="flex flex-col items-center space-y-3">
+            <div className="home-workout-utility flex flex-col items-center space-y-2 rounded-[18px] border border-separator p-3">
               <button
                 onClick={() => {
                   if (timerState.isCompleted) {
@@ -511,7 +507,7 @@ export default function Home() {
 
             {/* Add Workout Button */}
             {canAddMoreWorkouts() && (
-              <div className="flex flex-col items-center space-y-3">
+              <div className="home-workout-utility flex flex-col items-center space-y-2 rounded-[18px] border border-separator p-3">
                 <div className="w-24 h-24 flex items-center justify-center">
                 <button
                   onClick={() => setIsModalOpen(true)}

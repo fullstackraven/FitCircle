@@ -711,3 +711,15 @@
 @media (forced-colors: active) {
   .journal-search-field:focus-within { outline: 1px solid Highlight; }
 }
+
+/* Home workout cards: retain compact geometry without affecting other rings. */
+.home-workout-name { overflow-wrap: anywhere; }
+.home-set-count { font-size: clamp(18px, 6vw, 28px); line-height: 1.2; }
+.home-set-ring { max-width: 100%; touch-action: manipulation; }
+.home-set-ring:focus-visible,
+.home-workout-card button:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; border-radius: 12px; }
+@media (prefers-reduced-motion: reduce) {
+  .home-workout-card button, .home-workout-card svg circle { animation: none !important; transition: none !important; transform: none !important; }
+}
+
+.home-set-count[data-long="true"] { font-size: 16px; }

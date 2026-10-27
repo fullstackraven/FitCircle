@@ -26,7 +26,7 @@ test('mobile Home prioritizes routine/session and preserves colored circular set
   const ringBounds = (await circle.boundingBox())!;
   const nameBounds = (await card.getByText(names[0],{exact:true}).boundingBox())!;
   expect(nameBounds.x+nameBounds.width/2).toBeCloseTo(ringBounds.x+ringBounds.width/2,0);
-  expect((await circle.boundingBox())!.width).toBe(114); // Previously 136px, ~16% smaller.
+  expect((await circle.boundingBox())!.width).toBe(112); // Compact card ring diameter.
   const primary = await card.locator('svg circle').last().getAttribute('stroke');
   expect(await second.locator('svg circle').last().getAttribute('stroke')).not.toBe(primary);
   const quoteBounds = (await quote.boundingBox())!;
