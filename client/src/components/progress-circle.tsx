@@ -4,6 +4,7 @@ import { getColorClass, getStrokeColor, getLightStrokeColor } from '@/lib/color-
 
 interface ProgressCircleProps {
   ariaLabel?: string;
+  displayRatio?: boolean;
   count: number;
   goal: number;
   color: string;
@@ -17,6 +18,7 @@ interface ProgressCircleProps {
 
 export function ProgressCircle({ 
   ariaLabel,
+  displayRatio = false,
   count, 
   goal, 
   color, 
@@ -148,7 +150,7 @@ export function ProgressCircle({
               fontWeight: 900
             }}
           >
-            {count}
+            {displayRatio ? `${count}/${goal}` : count}
           </span>
         )}
       </div>

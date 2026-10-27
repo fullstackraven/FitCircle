@@ -1,3 +1,4 @@
+import { workoutLogComplete } from './workout-progress';
 import type { WorkoutData, WorkoutLogEntry, Workout } from '@/hooks/use-workouts';
 import { getTodayString, getDateString } from './date-utils';
 
@@ -78,7 +79,7 @@ export function getTotalWorkoutStats(data: WorkoutData, readRecovery: () => stri
       todaysScheduledWorkouts.forEach(workout => {
         const count = getCountFromLogEntry(dayLog[workout.id]);
         totalReps += count;
-        if (count < workout.dailyGoal) {
+        if (!workoutLogComplete(dayLog[workout.id], typeof dayLog[workout.id] === 'object' ? (dayLog[workout.id] as WorkoutLogEntry).goalAtTime : workout.dailyGoal)) {
           allGoalsMet = false;
         }
       });
@@ -95,7 +96,7 @@ export function getTotalWorkoutStats(data: WorkoutData, readRecovery: () => stri
           const count = getCountFromLogEntry(logEntry);
           const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : workout.dailyGoal;
           totalReps += count;
-          if (count < goalAtTime) {
+          if (!workoutLogComplete(logEntry, goalAtTime)) {
             allGoalsMet = false;
           }
         });

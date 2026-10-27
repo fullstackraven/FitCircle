@@ -1,3 +1,5 @@
+import { getTodayString } from '@/lib/date-utils';
+import { workoutLogComplete, isSetLog } from '@/lib/workout-progress';
 import { DashboardMenu } from '@/components/DashboardMenu';
 import { VersionLabel } from "@/components/VersionLabel";
 import { AppHeader } from "@/components/AppHeader";
@@ -141,6 +143,12 @@ export default function CalendarPage() {
     
     const dateLog = logs[dateStr];
     if (!dateLog) return false;
+    // New set days include scheduled workouts with no sets yet, matching Home.
+    if (dateStr === getTodayString() && Object.values(dateLog).some(isSetLog)) {
+      const scheduled = workouts.filter(w => !w.scheduledDays?.length || w.scheduledDays.includes(date.getDay()));
+      return scheduled.length > 0 && scheduled.every(w => workoutLogComplete(dateLog[w.id], typeof dateLog[w.id] === 'object' ? (dateLog[w.id] as { goalAtTime:number }).goalAtTime : w.dailyGoal));
+    }
+
     
     // Get workouts that had any activity on this date
     const workoutsWithActivity = Object.keys(dateLog).filter(workoutId => {
@@ -159,10 +167,10 @@ export default function CalendarPage() {
       
       // If we have a stored goal from that time, use it. Otherwise fall back to current goal
       if (goalAtTime !== null) {
-        return count >= goalAtTime;
+        return workoutLogComplete(logEntry, goalAtTime);
       } else {
         const workout = workouts.find(w => w.id === workoutId);
-        return workout ? count >= workout.dailyGoal : false;
+        return workout ? workoutLogComplete(logEntry, workout.dailyGoal) : false;
       }
     });
   };

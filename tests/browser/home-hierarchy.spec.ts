@@ -5,19 +5,19 @@ async function seed(page: import('@playwright/test').Page, many = false) {
   await page.evaluate(({names,many}) => {
     const today = new Date();
     const date = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-    localStorage.setItem('workout-tracker-data', JSON.stringify({ workouts:Object.fromEntries(names.slice(0,many?3:2).map((name,i)=>[String(i),{id:String(i),name,color:['green','blue','purple'][i],count:0,dailyGoal:20}])),
+    localStorage.setItem('workout-tracker-data', JSON.stringify({ workouts:Object.fromEntries(names.slice(0,many?3:2).map((name,i)=>[String(i),{id:String(i),name,color:['green','blue','purple'][i],count:0,dailyGoal:20,setsGoal:4}])),
       routines:{r:{id:'r',name:'Synthetic legs routine',selectedDays:[0,1,2,3,4,5,6],createdAt:date}}, dailyLogs:{},journalEntries:{} }));
     localStorage.setItem('fitcircle_daily_quote', JSON.stringify({text:'Synthetic quiet quote for regression testing',author:'Synthetic author'}));
     localStorage.setItem('fitcircle_quote_date', date);
   },{names,many});
   await page.goto('./');
 }
-test('mobile Home prioritizes routine/session and preserves colored circular rep tracking, undo, hold and editing', async ({page}) => {
+test('mobile Home prioritizes routine/session and preserves colored circular set tracking, undo, hold and editing', async ({page}) => {
   await page.setViewportSize({width:390,height:844}); await seed(page);
   const heading = page.getByRole('heading',{name:"Today's Workout",exact:true});
   const start = page.getByRole('button',{name:'Start Workout Session',exact:true});
   const card = page.getByTestId('home-workout-0');
-  const circle = card.getByRole('button',{name:/Record a rep/});
+  const circle = card.getByRole('button',{name:/Record a set/});
   const second = page.getByTestId('home-workout-1');
   const quote = page.getByRole('complementary',{name:'Quote of the Day'});
   await expect(quote).toContainText('Synthetic quiet quote');
@@ -31,10 +31,10 @@ test('mobile Home prioritizes routine/session and preserves colored circular rep
   expect(await second.locator('svg circle').last().getAttribute('stroke')).not.toBe(primary);
   const quoteBounds = (await quote.boundingBox())!;
   expect(quoteBounds.y + quoteBounds.height).toBeLessThanOrEqual((await heading.boundingBox())!.y);
-  await expect(card).toContainText('Goal: 20 reps');
+  await expect(card).toContainText('0 / 20 reps');
   await circle.click();
-  await expect(circle).toHaveAttribute('aria-label',/1 of 20/);
-  await card.getByTitle('Undo last rep').click(); await expect(circle).toHaveAttribute('aria-label',/0 of 20/);
+  await expect(circle).toHaveAttribute('aria-label',/1 of 4/);
+  await card.getByTitle('Undo last set').click(); await expect(circle).toHaveAttribute('aria-label',/0 of 4/);
   await circle.hover(); await page.mouse.down(); await page.waitForTimeout(750); await page.mouse.up();
   await expect.poll(async()=>Number((await circle.getAttribute('aria-label'))!.match(/: (\d+) of/)![1])).toBeGreaterThan(1);
   await page.getByRole('button',{name:`Edit ${names[0]}`,exact:true}).click();

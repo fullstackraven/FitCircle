@@ -20,7 +20,7 @@ export function WorkoutWidget({ widget, onWorkoutClick }: WorkoutWidgetProps) {
     // Show summary for small widget
     const totalProgress = todaysWorkouts.reduce((sum, workout) => {
       const total = todaysTotals.find(t => t.id === workout.id);
-      const progress = total ? (total.count / workout.dailyGoal) * 100 : 0;
+      const progress = total ? (total.progress.count / total.progress.goal) * 100 : 0;
       return sum + Math.min(progress, 100);
     }, 0);
     const averageProgress = todaysWorkouts.length > 0 ? totalProgress / todaysWorkouts.length : 0;
@@ -65,8 +65,8 @@ export function WorkoutWidget({ widget, onWorkoutClick }: WorkoutWidgetProps) {
           {todaysWorkouts.map(workout => {
             const todayTotal = todaysTotals.find(t => t.id === workout.id);
             const currentCount = todayTotal?.count || 0;
-            const progress = (currentCount / workout.dailyGoal) * 100;
-            const isCompleted = currentCount >= workout.dailyGoal;
+            const progress = (todayTotal!.progress.count / todayTotal!.progress.goal) * 100;
+            const isCompleted = todayTotal!.progress.count >= todayTotal!.progress.goal;
 
             return (
               <div
@@ -90,7 +90,7 @@ export function WorkoutWidget({ widget, onWorkoutClick }: WorkoutWidgetProps) {
                   </div>
                   <h4 className="text-strong font-medium text-sm mb-1">{workout.name}</h4>
                   <div className="text-muted-foreground text-xs">
-                    {currentCount} / {workout.dailyGoal}
+                    {currentCount} / {todayTotal!.progress.repGoal} reps
                   </div>
                 </div>
               </div>
