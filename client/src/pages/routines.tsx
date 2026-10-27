@@ -119,13 +119,12 @@ export default function RoutinesPage() {
   };
 
   const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], setsGoal = 1) => {
-    if (editingWorkout) {
-      updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs, scheduledDays, color, setsGoal);
-    } else {
-      addWorkout(name, color, dailyGoal, weightLbs, scheduledDays, undefined, setsGoal);
-    }
-    setIsModalOpen(false);
-    setEditingWorkout(null);
+    const saved = editingWorkout
+      ? updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs, scheduledDays, color, setsGoal)
+      : addWorkout(name, color, dailyGoal, weightLbs, scheduledDays, undefined, setsGoal);
+    if (saved) setEditingWorkout(null);
+    return saved;
+
   };
 
   const handleDeleteWorkout = (workoutId: string) => {

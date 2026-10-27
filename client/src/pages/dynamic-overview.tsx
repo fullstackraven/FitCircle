@@ -52,6 +52,7 @@ interface DynamicOverviewProps {
 export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
   const [, navigate] = useLocation();
   const {
+    workoutData,
     getWorkoutLogsForDate,
     editWorkoutForDate,
     getJournalEntry,
@@ -129,6 +130,10 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     setSupplementLogs(supplementLogs);
     setIsRecovery(recoveryData);
   }, [selectedDate]);
+
+  useEffect(() => {
+    setWorkouts(getWorkoutLogsForDate(selectedDate).filter(w => w.count > 0));
+  }, [selectedDate, workoutData]);
 
   const handleEditWorkout = (workoutId: string, currentCount: number) => {
     setEditingWorkoutId(workoutId);

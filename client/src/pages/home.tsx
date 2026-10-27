@@ -131,7 +131,7 @@ export default function Home() {
 
     if (todayTotal && todayTotal.progress.count >= todayTotal.progress.goal) return;
 
-    incrementWorkout(workoutId);
+    if (!incrementWorkout(workoutId)) { toast({title:'Workout was not saved',description:'Please retry. Your recorded progress has been kept.',variant:'destructive'}); return; }
     setClickingWorkout(workoutId);
     setTimeout(() => setClickingWorkout(null), 200);
   };
@@ -142,13 +142,14 @@ export default function Home() {
     if (todayTotal && todayTotal.progress.count >= todayTotal.progress.goal) return;
 
     // Increment by 1 for hold functionality
-    incrementWorkout(workoutId);
+    if (!incrementWorkout(workoutId)) { toast({title:'Workout was not saved',description:'Please retry. Your recorded progress has been kept.',variant:'destructive'}); return; }
     setClickingWorkout(workoutId);
     setTimeout(() => setClickingWorkout(null), 200);
   };
 
   const handleUndo = (workoutId: string) => {
-    decrementWorkout(workoutId);
+    if (!(todaysTotals.find(t => t.id === workoutId)?.progress.count)) return;
+    if (!decrementWorkout(workoutId)) toast({title:'Undo was not saved',description:'Please retry.',variant:'destructive'});
   };
 
   const handleDeleteWorkout = (workoutId: string) => {
@@ -158,12 +159,12 @@ export default function Home() {
   };
 
   const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], setsGoal = 1) => {
-    if (editingWorkout) {
-      updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs, scheduledDays, color, setsGoal);
-      setEditingWorkout(null);
-    } else {
-      addWorkout(name, color, dailyGoal, weightLbs, scheduledDays, undefined, setsGoal);
-    }
+    const saved = editingWorkout
+      ? updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs, scheduledDays, color, setsGoal)
+      : addWorkout(name, color, dailyGoal, weightLbs, scheduledDays, undefined, setsGoal);
+    if (saved) setEditingWorkout(null);
+    return saved;
+
   };
 
   const handleEditWorkout = (workout: any) => {

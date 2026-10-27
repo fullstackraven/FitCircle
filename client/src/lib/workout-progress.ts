@@ -20,7 +20,7 @@ export function stepWorkout(workout: Workout, entry: number | WorkoutLogEntry | 
   const p = workoutProgress(workout, entry);
   const count = Math.max(0, Math.min(p.goal, p.count + direction));
   if (p.mode === 'reps') return { ...(typeof entry === 'object' ? entry : {}), count: direction < 0 ? Math.max(0,p.count - 1) : Math.max(p.count,count), goalAtTime:p.repGoal };
-  return { ...(typeof entry === 'object' ? entry : {}), count:repsForSets(count,p.repGoal,p.goal), goalAtTime:p.repGoal, completedSets:count, setsGoalAtTime:p.goal };
+  return { ...(typeof entry === 'object' ? entry : {}), count:(isSetLog(entry) ? entry.carriedReps ?? 0 : 0) + repsForSets(count,p.repGoal,p.goal), goalAtTime:p.repGoal, completedSets:count, setsGoalAtTime:p.goal };
 }
 
 // Mutation validation only: existing stored historical goals are never normalized.
