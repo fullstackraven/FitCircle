@@ -24,6 +24,8 @@
     "browser/appearance-phase-two.spec.ts",
     "browser/appearance-phase-three.spec.ts",
     "browser/appearance-phase-four.spec.ts",
+    "browser/recovery-modernization.spec.ts",
+    "recovery-history.test.ts",
     "browser/appearance-phase-five.spec.ts",
     "fixtures/appearance-wellness.ts",
     "fixtures/appearance-nutrition.ts",
