@@ -12,3 +12,4 @@ test-results/
 
 .release-candidate.json
 .release-history.json
+.release-notes.txt

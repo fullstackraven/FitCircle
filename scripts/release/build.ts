@@ -7,7 +7,7 @@ export function generateBuildInfo(development=false):ApplicationBuild{
  const candidate=!development&&fs.existsSync('.release-candidate.json')?JSON.parse(fs.readFileSync('.release-candidate.json','utf8')):null;
  if(candidate&&(candidate.commit!==commit||!candidate.buildId))throw Error('Release candidate does not match checked-out build');
  if(candidate)stableVersion(candidate.version);
- const records=fs.existsSync('.release-history.json')?JSON.parse(fs.readFileSync('.release-history.json','utf8')):JSON.parse(fs.readFileSync('release/history.json','utf8')).releases;
+ const records=candidate?.history??[...JSON.parse(fs.readFileSync('release/history.json','utf8')).releases,JSON.parse(fs.readFileSync('release/baseline.json','utf8'))];
  const history:HistoryEntry[]=records.map((r:any)=>({version:r.version,commit:r.commit,releasedAt:r.releasedAt,summary:r.summary??r.changes.map((c:any)=>c.summary).join('; '),prs:r.prs??r.changes.flatMap((c:any)=>c.pr?[c.pr]:[])}));
  return {version:candidate?.version??'0.0.0-dev',commit,buildId:candidate?.buildId??null,stage:candidate?'candidate':'development',releasedAt:null,history};
 }

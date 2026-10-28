@@ -1,0 +1,10 @@
+{
+  "version": "2.11.0",
+  "commit": "b5767380eca4b6b295bae43065eeaecb3048b459",
+  "releasedAt": "2026-10-27T22:40:49Z",
+  "summary": "Automatic version information and release history",
+  "prs": [
+    95,
+    96
+  ]
+}

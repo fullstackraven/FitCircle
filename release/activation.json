@@ -1,8 +1,0 @@
-{
-  "repository": "fullstackraven/FitCircle",
-  "branch": "release-ledger",
-  "historicalApproval": "User approved 2.0.0 migration and historical 2.10.3 through PR94",
-  "historicalExceptions": {
-    "95": { "classification": "none", "reason": "Inactive foundation, history documentation and tests; no runtime imports or distributed feature change." }
-  }
-}
