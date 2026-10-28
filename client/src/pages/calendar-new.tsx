@@ -1,3 +1,4 @@
+import { focusDashboardOnOpen, returnDashboardFocus } from '@/lib/dashboard-navigation';
 import { getTodayString } from '@/lib/date-utils';
 import { workoutLogComplete, isSetLog } from '@/lib/workout-progress';
 import { DashboardMenu } from '@/components/DashboardMenu';
@@ -714,7 +715,7 @@ export default function CalendarPage() {
 
       {/* Sidebar Dashboard */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetContent side="left" className="w-80 bg-canvas border-separator">
+        <SheetContent side="left" onOpenAutoFocus={focusDashboardOnOpen} onCloseAutoFocus={returnDashboardFocus} className="w-80 bg-canvas border-separator outline-none">
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation Menu</SheetTitle>
           </SheetHeader>

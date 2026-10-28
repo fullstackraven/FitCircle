@@ -47,9 +47,17 @@ export function startAppearanceController({
     const applied = resolved;
     if (root.dataset.appearance !== applied) root.dataset.appearance = applied;
     root.style.colorScheme = applied;
-    browser.document
-      .querySelector('meta[name="theme-color"]')
-      ?.setAttribute("content", APPEARANCE_COLORS[applied]);
+    // Synchronize the document paint surface as well as browser chrome. Some
+    // WebKit versions retain the launch tint when only meta.content is mutated.
+    root.style.backgroundColor = APPEARANCE_COLORS[applied];
+    const themeColor = browser.document.querySelector('meta[name="theme-color"]');
+    if (themeColor?.getAttribute("content") !== APPEARANCE_COLORS[applied]) {
+      const replacement = browser.document.createElement("meta");
+      replacement.name = "theme-color";
+      replacement.content = APPEARANCE_COLORS[applied];
+      if (themeColor) themeColor.replaceWith(replacement);
+      else browser.document.head.appendChild(replacement);
+    }
     const next = { preference, resolved, applied, error };
     if (JSON.stringify(next) !== JSON.stringify(snapshot)) {
       snapshot = next;

@@ -48,6 +48,8 @@ function browser(preference?: string, systemDark = false) {
   const storage = new Store();
   if (preference !== undefined) storage.data.set(APPEARANCE_KEY, preference);
   const media = Object.assign(new EventTarget(), { matches: systemDark });
+  let theme: any = null;
+  const createMeta = () => ({ name: '', content: '', getAttribute(name: string) { return name === 'content' ? this.content : this.name; }, replaceWith(next: unknown) { theme = next; } });
   const host = Object.assign(new EventTarget(), {
     localStorage: storage,
     matchMedia: () => media,
@@ -56,7 +58,9 @@ function browser(preference?: string, systemDark = false) {
         dataset: {} as Record<string, string>,
         style: { colorScheme: "" },
       },
-      querySelector: () => null,
+      querySelector: () => theme,
+      createElement: () => createMeta(),
+      head: { appendChild: (element: unknown) => { theme = element; } },
       visibilityState: "visible",
     }),
   });
