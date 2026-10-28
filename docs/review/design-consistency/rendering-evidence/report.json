@@ -1,0 +1,484 @@
+{
+  "browser": "/usr/bin/chromium",
+  "args": [
+    "--disable-gpu",
+    "--disable-gpu-rasterization",
+    "--force-color-profile=srgb"
+  ],
+  "buildHtmlSha256": "79a8ceb0fbd0e14a1d8411476f8d8aa2186afae5d6515b007f21b35e8c82770c",
+  "captures": [
+    {
+      "route": "energy-level",
+      "run": 0,
+      "capture": 0,
+      "path": "energy-level-0-0.png",
+      "rgbaSha256": "851cf9bf3028338974395fb87c9c2fdb862d9003bea7085f2e06369442a44e23"
+    },
+    {
+      "route": "energy-level",
+      "run": 0,
+      "capture": 1,
+      "path": "energy-level-0-1.png",
+      "rgbaSha256": "a9353563fe1c0ebcbc6906f70c13b199d1a8113784ec26c2871c57dc8810855b"
+    },
+    {
+      "route": "energy-level",
+      "run": 0,
+      "capture": 2,
+      "path": "energy-level-0-2.png",
+      "rgbaSha256": "a9353563fe1c0ebcbc6906f70c13b199d1a8113784ec26c2871c57dc8810855b"
+    },
+    {
+      "route": "supplements-page",
+      "run": 0,
+      "capture": 0,
+      "path": "supplements-page-0-0.png",
+      "rgbaSha256": "467924e79d8712d31586d96739a9ffd51e8911786fbfba98e0a66f5f204be080"
+    },
+    {
+      "route": "supplements-page",
+      "run": 0,
+      "capture": 1,
+      "path": "supplements-page-0-1.png",
+      "rgbaSha256": "fd0464f54ea9fc301a3222cb2ac4253d3aaa6e2bd9eb642bb6d81b2f11e05dd2"
+    },
+    {
+      "route": "supplements-page",
+      "run": 0,
+      "capture": 2,
+      "path": "supplements-page-0-2.png",
+      "rgbaSha256": "fd0464f54ea9fc301a3222cb2ac4253d3aaa6e2bd9eb642bb6d81b2f11e05dd2"
+    },
+    {
+      "route": "energy-level",
+      "run": 1,
+      "capture": 0,
+      "path": "energy-level-1-0.png",
+      "rgbaSha256": "a9353563fe1c0ebcbc6906f70c13b199d1a8113784ec26c2871c57dc8810855b"
+    },
+    {
+      "route": "energy-level",
+      "run": 1,
+      "capture": 1,
+      "path": "energy-level-1-1.png",
+      "rgbaSha256": "a9353563fe1c0ebcbc6906f70c13b199d1a8113784ec26c2871c57dc8810855b"
+    },
+    {
+      "route": "energy-level",
+      "run": 1,
+      "capture": 2,
+      "path": "energy-level-1-2.png",
+      "rgbaSha256": "a9353563fe1c0ebcbc6906f70c13b199d1a8113784ec26c2871c57dc8810855b"
+    },
+    {
+      "route": "supplements-page",
+      "run": 1,
+      "capture": 0,
+      "path": "supplements-page-1-0.png",
+      "rgbaSha256": "da34d0b2bbd1246fbbcaa12c9946455382076ec33db6b2caa509a286dc3fa9b1"
+    },
+    {
+      "route": "supplements-page",
+      "run": 1,
+      "capture": 1,
+      "path": "supplements-page-1-1.png",
+      "rgbaSha256": "d032e790d2e521a3727f24c45da7e7835b674dccd0760e59c08638ce9bde8f9c"
+    },
+    {
+      "route": "supplements-page",
+      "run": 1,
+      "capture": 2,
+      "path": "supplements-page-1-2.png",
+      "rgbaSha256": "d032e790d2e521a3727f24c45da7e7835b674dccd0760e59c08638ce9bde8f9c"
+    },
+    {
+      "route": "energy-level",
+      "run": 2,
+      "capture": 0,
+      "path": "energy-level-2-0.png",
+      "rgbaSha256": "a9353563fe1c0ebcbc6906f70c13b199d1a8113784ec26c2871c57dc8810855b"
+    },
+    {
+      "route": "energy-level",
+      "run": 2,
+      "capture": 1,
+      "path": "energy-level-2-1.png",
+      "rgbaSha256": "a9353563fe1c0ebcbc6906f70c13b199d1a8113784ec26c2871c57dc8810855b"
+    },
+    {
+      "route": "energy-level",
+      "run": 2,
+      "capture": 2,
+      "path": "energy-level-2-2.png",
+      "rgbaSha256": "a9353563fe1c0ebcbc6906f70c13b199d1a8113784ec26c2871c57dc8810855b"
+    },
+    {
+      "route": "supplements-page",
+      "run": 2,
+      "capture": 0,
+      "path": "supplements-page-2-0.png",
+      "rgbaSha256": "da34d0b2bbd1246fbbcaa12c9946455382076ec33db6b2caa509a286dc3fa9b1"
+    },
+    {
+      "route": "supplements-page",
+      "run": 2,
+      "capture": 1,
+      "path": "supplements-page-2-1.png",
+      "rgbaSha256": "d032e790d2e521a3727f24c45da7e7835b674dccd0760e59c08638ce9bde8f9c"
+    },
+    {
+      "route": "supplements-page",
+      "run": 2,
+      "capture": 2,
+      "path": "supplements-page-2-2.png",
+      "rgbaSha256": "d032e790d2e521a3727f24c45da7e7835b674dccd0760e59c08638ce9bde8f9c"
+    }
+  ],
+  "uniqueRgbaRenders": {
+    "energy-level": 2,
+    "supplements-page": 4
+  },
+  "comparisons": [
+    {
+      "route": "energy-level",
+      "run": 0,
+      "capture": 0,
+      "differingRgbaPixels": 0,
+      "maxChannelDelta": 0,
+      "bounds": null
+    },
+    {
+      "route": "energy-level",
+      "run": 0,
+      "capture": 1,
+      "differingRgbaPixels": 14362,
+      "maxChannelDelta": 234,
+      "bounds": {
+        "minX": 33,
+        "minY": 117,
+        "maxX": 356,
+        "maxY": 496
+      }
+    },
+    {
+      "route": "energy-level",
+      "run": 0,
+      "capture": 2,
+      "differingRgbaPixels": 14362,
+      "maxChannelDelta": 234,
+      "bounds": {
+        "minX": 33,
+        "minY": 117,
+        "maxX": 356,
+        "maxY": 496
+      }
+    },
+    {
+      "route": "energy-level",
+      "run": 1,
+      "capture": 0,
+      "differingRgbaPixels": 14362,
+      "maxChannelDelta": 234,
+      "bounds": {
+        "minX": 33,
+        "minY": 117,
+        "maxX": 356,
+        "maxY": 496
+      }
+    },
+    {
+      "route": "energy-level",
+      "run": 1,
+      "capture": 1,
+      "differingRgbaPixels": 14362,
+      "maxChannelDelta": 234,
+      "bounds": {
+        "minX": 33,
+        "minY": 117,
+        "maxX": 356,
+        "maxY": 496
+      }
+    },
+    {
+      "route": "energy-level",
+      "run": 1,
+      "capture": 2,
+      "differingRgbaPixels": 14362,
+      "maxChannelDelta": 234,
+      "bounds": {
+        "minX": 33,
+        "minY": 117,
+        "maxX": 356,
+        "maxY": 496
+      }
+    },
+    {
+      "route": "energy-level",
+      "run": 2,
+      "capture": 0,
+      "differingRgbaPixels": 14362,
+      "maxChannelDelta": 234,
+      "bounds": {
+        "minX": 33,
+        "minY": 117,
+        "maxX": 356,
+        "maxY": 496
+      }
+    },
+    {
+      "route": "energy-level",
+      "run": 2,
+      "capture": 1,
+      "differingRgbaPixels": 14362,
+      "maxChannelDelta": 234,
+      "bounds": {
+        "minX": 33,
+        "minY": 117,
+        "maxX": 356,
+        "maxY": 496
+      }
+    },
+    {
+      "route": "energy-level",
+      "run": 2,
+      "capture": 2,
+      "differingRgbaPixels": 14362,
+      "maxChannelDelta": 234,
+      "bounds": {
+        "minX": 33,
+        "minY": 117,
+        "maxX": 356,
+        "maxY": 496
+      }
+    },
+    {
+      "route": "supplements-page",
+      "run": 0,
+      "capture": 0,
+      "differingRgbaPixels": 0,
+      "maxChannelDelta": 0,
+      "bounds": null
+    },
+    {
+      "route": "supplements-page",
+      "run": 0,
+      "capture": 1,
+      "differingRgbaPixels": 61508,
+      "maxChannelDelta": 240,
+      "bounds": {
+        "minX": 16,
+        "minY": 104,
+        "maxX": 373,
+        "maxY": 465
+      }
+    },
+    {
+      "route": "supplements-page",
+      "run": 0,
+      "capture": 2,
+      "differingRgbaPixels": 61508,
+      "maxChannelDelta": 240,
+      "bounds": {
+        "minX": 16,
+        "minY": 104,
+        "maxX": 373,
+        "maxY": 465
+      }
+    },
+    {
+      "route": "supplements-page",
+      "run": 1,
+      "capture": 0,
+      "differingRgbaPixels": 59868,
+      "maxChannelDelta": 240,
+      "bounds": {
+        "minX": 16,
+        "minY": 116,
+        "maxX": 373,
+        "maxY": 465
+      }
+    },
+    {
+      "route": "supplements-page",
+      "run": 1,
+      "capture": 1,
+      "differingRgbaPixels": 61498,
+      "maxChannelDelta": 240,
+      "bounds": {
+        "minX": 16,
+        "minY": 105,
+        "maxX": 373,
+        "maxY": 465
+      }
+    },
+    {
+      "route": "supplements-page",
+      "run": 1,
+      "capture": 2,
+      "differingRgbaPixels": 61498,
+      "maxChannelDelta": 240,
+      "bounds": {
+        "minX": 16,
+        "minY": 105,
+        "maxX": 373,
+        "maxY": 465
+      }
+    },
+    {
+      "route": "supplements-page",
+      "run": 2,
+      "capture": 0,
+      "differingRgbaPixels": 59868,
+      "maxChannelDelta": 240,
+      "bounds": {
+        "minX": 16,
+        "minY": 116,
+        "maxX": 373,
+        "maxY": 465
+      }
+    },
+    {
+      "route": "supplements-page",
+      "run": 2,
+      "capture": 1,
+      "differingRgbaPixels": 61498,
+      "maxChannelDelta": 240,
+      "bounds": {
+        "minX": 16,
+        "minY": 105,
+        "maxX": 373,
+        "maxY": 465
+      }
+    },
+    {
+      "route": "supplements-page",
+      "run": 2,
+      "capture": 2,
+      "differingRgbaPixels": 61498,
+      "maxChannelDelta": 240,
+      "bounds": {
+        "minX": 16,
+        "minY": 105,
+        "maxX": 373,
+        "maxY": 465
+      }
+    }
+  ],
+  "sourceCommit": "5bc24955030c001f4ec078dbf55cf6c7c1347dae",
+  "browserVersion": "Chromium 154.0.8037.57, Debian 13",
+  "fontConfiguration": "tests/fixtures/screenshot-fonts.conf",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "deviceScaleFactor": 1
+  },
+  "environment": {
+    "locale": "en-US",
+    "timezoneId": "America/New_York",
+    "clock": "2026-10-19T12:00:00-04:00",
+    "appearance": "dark"
+  },
+  "captureNotes": "Initial captures can precede existing hook hydration. Assess rendering repeatability using capture 2 from each independent launch, where the recorded seeded values are visible; do not classify expected loading transitions as raster instability.",
+  "settledCaptures": [
+    {
+      "route": "energy-level",
+      "run": 0,
+      "capture": 2,
+      "path": "energy-level-0-2.png",
+      "rgbaSha256": "a9353563fe1c0ebcbc6906f70c13b199d1a8113784ec26c2871c57dc8810855b"
+    },
+    {
+      "route": "supplements-page",
+      "run": 0,
+      "capture": 2,
+      "path": "supplements-page-0-2.png",
+      "rgbaSha256": "fd0464f54ea9fc301a3222cb2ac4253d3aaa6e2bd9eb642bb6d81b2f11e05dd2"
+    },
+    {
+      "route": "energy-level",
+      "run": 1,
+      "capture": 2,
+      "path": "energy-level-1-2.png",
+      "rgbaSha256": "a9353563fe1c0ebcbc6906f70c13b199d1a8113784ec26c2871c57dc8810855b"
+    },
+    {
+      "route": "supplements-page",
+      "run": 1,
+      "capture": 2,
+      "path": "supplements-page-1-2.png",
+      "rgbaSha256": "d032e790d2e521a3727f24c45da7e7835b674dccd0760e59c08638ce9bde8f9c"
+    },
+    {
+      "route": "energy-level",
+      "run": 2,
+      "capture": 2,
+      "path": "energy-level-2-2.png",
+      "rgbaSha256": "a9353563fe1c0ebcbc6906f70c13b199d1a8113784ec26c2871c57dc8810855b"
+    },
+    {
+      "route": "supplements-page",
+      "run": 2,
+      "capture": 2,
+      "path": "supplements-page-2-2.png",
+      "rgbaSha256": "d032e790d2e521a3727f24c45da7e7835b674dccd0760e59c08638ce9bde8f9c"
+    }
+  ],
+  "settledComparisons": [
+    {
+      "route": "energy-level",
+      "run": 0,
+      "differingRgbaPixels": 0,
+      "maxChannelDelta": 0,
+      "bounds": null
+    },
+    {
+      "route": "energy-level",
+      "run": 1,
+      "differingRgbaPixels": 0,
+      "maxChannelDelta": 0,
+      "bounds": null
+    },
+    {
+      "route": "energy-level",
+      "run": 2,
+      "differingRgbaPixels": 0,
+      "maxChannelDelta": 0,
+      "bounds": null
+    },
+    {
+      "route": "supplements-page",
+      "run": 0,
+      "differingRgbaPixels": 0,
+      "maxChannelDelta": 0,
+      "bounds": null
+    },
+    {
+      "route": "supplements-page",
+      "run": 1,
+      "differingRgbaPixels": 10,
+      "maxChannelDelta": 1,
+      "bounds": {
+        "minX": 16,
+        "minY": 104,
+        "maxX": 18,
+        "maxY": 111
+      }
+    },
+    {
+      "route": "supplements-page",
+      "run": 2,
+      "differingRgbaPixels": 10,
+      "maxChannelDelta": 1,
+      "bounds": {
+        "minX": 16,
+        "minY": 104,
+        "maxX": 18,
+        "maxY": 111
+      }
+    }
+  ],
+  "settledUniqueRgbaRenders": {
+    "energy-level": 1,
+    "supplements-page": 2
+  }
+}

@@ -3,6 +3,8 @@
 - [Approved presentation standard](../../DESIGN_SYSTEM.md)
 - [Application-wide audit and exceptions](AUDIT.md)
 - [Imported presentation-source inventory](source-inventory.json)
+- [Regression results](VALIDATION.md)
+- [Unresolved strict-screenshot blocker and bounded evidence](RENDERING_BLOCKER.md)
 - Baseline: main `2350d60` (v2.15.1); no version is hardcoded by this change.
 
 ## Representative comparisons
@@ -32,4 +34,4 @@ The initial main-branch matrix found no document/scroll-surface horizontal overf
 
 The first full browser run identified an unintended landscape scrollbar in the compact workout editor after increasing default action heights. The correction explicitly retains its established short-viewport title/action geometry; the original containment assertions remain unchanged.
 
-Final command results and CI status are recorded in the PR. Validation uses Linux Chromium, simulated iPhone viewport/safe-area/keyboard conditions, and the repository's font configuration. Physical iPhone/PWA testing is unavailable; no real-device testing is claimed. Workspace networking blocks the CI Chrome-for-Testing download; local screenshot rendering uses installed Chromium 154.0.8037.57. CI remains responsible for exact comparison with its reference browser.
+Final command results and CI status are recorded in VALIDATION.md and the PR. A strict screenshot blocker remains; all-green validation is not claimed. Validation uses Linux Chromium, simulated iPhone viewport/safe-area/keyboard conditions, and the repository's font configuration. Physical iPhone/PWA testing is unavailable; no real-device testing is claimed. Workspace networking blocks the CI Chrome-for-Testing download; local screenshot rendering uses installed Chromium 154.0.8037.57. CI remains responsible for exact comparison with its reference browser.
