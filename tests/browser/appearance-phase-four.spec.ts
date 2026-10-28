@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import fs from "node:fs";
-import { PNG } from "pngjs";
+import { createRequire } from "node:module";
+const { PNG } = createRequire(import.meta.url)("../../node_modules/playwright-core/lib/utilsBundle.js");
 import { deflateSync } from "node:zlib";
 import {
   seedWellnessAppearance,
