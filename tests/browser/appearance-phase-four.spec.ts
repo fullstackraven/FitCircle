@@ -1,8 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
 import fs from "node:fs";
-import { createRequire } from "node:module";
-const { PNG } = createRequire(import.meta.url)("../../node_modules/playwright-core/lib/utilsBundle.js");
-import { deflateSync } from "node:zlib";
 import {
   seedWellnessAppearance,
   wellnessBytes,
@@ -35,21 +32,6 @@ for (const mode of modes)
           animations: "disabled",
           threshold: 0,
           maxDiffPixels: 0,
-        }).catch(async error => {
-          // Temporary transport diagnostic: artifact downloads are unavailable
-          // in this workspace. Keep the assertion failing and report this one
-          // synthetic image through the existing GitHub annotation reporter.
-          if (name === "energy-level") {
-            const actual = PNG.sync.read(await page.screenshot({ animations: "disabled", caret: "hide" }));
-            const expected = PNG.sync.read(fs.readFileSync("tests/browser/appearance-phase-four.spec.ts-snapshots/energy-level-linux.png"));
-            const differences: number[][] = [];
-            for (let i = 0; i < actual.data.length; i += 4) {
-              if (actual.data.subarray(i,i+4).equals(expected.data.subarray(i,i+4))) continue;
-              differences.push([i / 4 % actual.width, Math.floor(i / 4 / actual.width), ...actual.data.subarray(i,i+4)]);
-            }
-            throw new Error(`ENERGY_PIXEL_DIFFS:${deflateSync(JSON.stringify(differences)).toString("base64")};TOTAL:${differences.length}`);
-          }
-          throw error;
         });
       await page.screenshot({
         path: `${process.env.APPEARANCE_PRODUCTION_REVIEW ? "docs/review/appearance-phase-five/production" : "docs/review/appearance-phase-four"}/${process.env.APPEARANCE_CAPTURE_BEFORE ? "before" : mode}/${name}.png`,

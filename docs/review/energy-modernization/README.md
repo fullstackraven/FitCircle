@@ -38,3 +38,7 @@ Only `energy-level-linux.png` was updated for the intentional redesign. The exis
 Verified latest release at implementation: **v2.13.0**, commit `6ada8177da5362d02e256d9c0074428d4176c144`, published 2026-10-28T11:46:21Z. This PR uses exactly `release:minor`. **2.14.0** is provisional if no release intervenes; the existing workflow calculates the actual version after approval, merge and successful publication. No version is hardcoded or release created.
 
 Manual iPhone checks: installed PWA/Safari safe areas, native slider dragging and VoiceOver adjustment, keyboard arrows/Home/End, daily-card/trends scrolling, Save/Undo state feedback, historical editing through Calendar, and appearance changes while running/backgrounded. Rollback is a normal code revert; no data migration or storage clearing is needed.
+
+## CI reference correction
+
+The hosted pinned Chrome renderer differed from the local Debian Chromium build at the slider endpoints and Undo-button edge. CI's strict comparator reported three differing pixels (25 raw RGBA edge differences including antialiasing). The Energy reference was synchronized with those exact CI-rendered pixels; no application layout, calculations, unrelated baselines, thresholds or assertions changed. Temporary image/pixel transport diagnostics were removed. Full hosted validation is checked after the final correction.
