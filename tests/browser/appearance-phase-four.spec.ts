@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import fs from "node:fs";
 import { PNG } from "pngjs";
+import { deflateSync } from "node:zlib";
 import {
   seedWellnessAppearance,
   wellnessBytes,
@@ -45,7 +46,7 @@ for (const mode of modes)
               if (actual.data.subarray(i,i+4).equals(expected.data.subarray(i,i+4))) continue;
               differences.push([i / 4 % actual.width, Math.floor(i / 4 / actual.width), ...actual.data.subarray(i,i+4)]);
             }
-            throw new Error(`ENERGY_PIXEL_DIFFS:${JSON.stringify(differences.slice(0,30))};TOTAL:${differences.length}`);
+            throw new Error(`ENERGY_PIXEL_DIFFS:${deflateSync(JSON.stringify(differences)).toString("base64")};TOTAL:${differences.length}`);
           }
           throw error;
         });
