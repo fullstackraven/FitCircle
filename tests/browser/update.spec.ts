@@ -89,7 +89,7 @@ test('an older installed shell recovers after a new deployment and retains old-t
     await expect.poll(() => page.evaluate(async () => (await caches.keys()).includes('fitcircle-pages-test-recovered'))).toBe(true);
     await expect.poll(() => page.evaluate(async () => (await (await fetch('/FitCircle/index.html')).text()).includes('data-build="recovered"'))).toBe(true);
     await page.goto(site.url + 'settings');
-    await expect(page.getByRole('button', { name: 'Force Refresh App', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Refresh FitCircle', exact: true })).toBeVisible();
     await expect(page.locator('html')).toHaveAttribute('data-build', 'recovered');
     const retained = await page.evaluate(async () => ({
       profile: localStorage.getItem('fitcircle_username'), other: localStorage.getItem('other-app-data'),
@@ -105,12 +105,12 @@ test('Force Refresh applies a real new service worker before navigating to the e
   const site = await host(version(files, 'before'));
   try {
     await page.goto(site.url + 'settings');
-    await page.getByRole('button', { name: 'Force Refresh App', exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Refresh FitCircle', exact: true }).waitFor();
     await page.evaluate(() => navigator.serviceWorker.ready);
     await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
     await page.evaluate(() => localStorage.setItem('fitcircle_username', 'Keep during update'));
     site.set(version(files, 'after'));
-    await page.getByRole('button', { name: 'Force Refresh App', exact: true }).click();
+    await page.getByRole('button', { name: 'Refresh FitCircle', exact: true }).click();
     await page.waitForURL(/\/FitCircle\/\?refresh=/);
     await expect(page.locator('html')).toHaveAttribute('data-build', 'after');
     await expect(page.getByRole('button', { name: 'Home', exact: true })).toBeVisible();
@@ -120,12 +120,12 @@ test('Force Refresh applies a real new service worker before navigating to the e
 
 test('failed offline update stays on a usable settings page', async ({ page, context }) => {
   await page.goto('settings');
-  await page.getByRole('button', { name: 'Force Refresh App', exact: true }).waitFor();
+  await page.getByRole('button', { name: 'Refresh FitCircle', exact: true }).waitFor();
   await page.evaluate(() => navigator.serviceWorker.ready);
   await context.setOffline(true);
-  await page.getByRole('button', { name: 'Force Refresh App', exact: true }).click();
+  await page.getByRole('button', { name: 'Refresh FitCircle', exact: true }).click();
   await expect(page.getByText('You are offline. Reconnect before checking for app updates.')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Force Refresh App', exact: true })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Refresh FitCircle', exact: true })).toBeEnabled();
   expect(new URL(page.url()).pathname).toBe('/FitCircle/settings');
 });
 
@@ -155,15 +155,15 @@ test('incomplete new deployment keeps the installed app and profile usable', asy
   const site = await host(version(files, 'complete'));
   try {
     await page.goto(site.url + 'settings');
-    await page.getByRole('button', { name: 'Force Refresh App', exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Refresh FitCircle', exact: true }).waitFor();
     await page.evaluate(() => navigator.serviceWorker.ready);
     await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
     await page.evaluate(() => localStorage.setItem('fitcircle_username', 'Keep failed update data'));
     const incomplete = version(files, 'incomplete');
     incomplete.set('/FitCircle/sw.js', Buffer.from(incomplete.get('/FitCircle/sw.js')!.toString().replace('const PRECACHE = [', 'const PRECACHE = ["/FitCircle/missing-new-asset.js",')));
     site.set(incomplete);
-    await page.getByRole('button', { name: 'Force Refresh App', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Force Refresh App', exact: true })).toBeEnabled({ timeout: 20000 });
+    await page.getByRole('button', { name: 'Refresh FitCircle', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Refresh FitCircle', exact: true })).toBeEnabled({ timeout: 20000 });
     await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible();
     await expect(page.locator('html')).toHaveAttribute('data-build', 'complete');
     expect(await page.evaluate(() => localStorage.getItem('fitcircle_username'))).toBe('Keep failed update data');
@@ -175,18 +175,18 @@ test('incomplete new deployment keeps the installed app and profile usable', asy
 
 test('unresponsive update checks time out without leaving settings or deleting data', async ({ page }) => {
   await page.goto('settings');
-  await page.getByRole('button', { name: 'Force Refresh App', exact: true }).waitFor();
+  await page.getByRole('button', { name: 'Refresh FitCircle', exact: true }).waitFor();
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.clock.install();
   await page.evaluate(() => {
     ServiceWorkerRegistration.prototype.update = () => new Promise(() => {});
     localStorage.setItem('fitcircle_username', 'Keep timeout data');
   });
-  await page.getByRole('button', { name: 'Force Refresh App', exact: true }).click();
+  await page.getByRole('button', { name: 'Refresh FitCircle', exact: true }).click();
   await expect(page.getByText('Checking for updates...')).toBeVisible();
   await page.clock.fastForward(16000);
   await expect(page.getByText('The update check timed out. Please try again when the connection is stable.')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Force Refresh App', exact: true })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Refresh FitCircle', exact: true })).toBeEnabled();
   expect(new URL(page.url()).pathname).toBe('/FitCircle/settings');
   expect(await page.evaluate(() => localStorage.getItem('fitcircle_username'))).toBe('Keep timeout data');
 });
