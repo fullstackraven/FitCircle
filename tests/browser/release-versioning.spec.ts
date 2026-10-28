@@ -23,7 +23,7 @@ test('offline About and bundled history retain loaded metadata and Force Refresh
  await page.goto('about');await page.evaluate(()=>navigator.serviceWorker.ready);await page.reload();await expect.poll(()=>page.evaluate(()=>!!navigator.serviceWorker.controller)).toBe(true);
  await context.setOffline(true);await page.reload();await expect(page.getByTestId('about-version')).toHaveText(appVersionLabel(metadata()));
  await page.getByRole('button',{name:'View Release History'}).click();await expect(page.getByRole('heading',{name:'FitCircle 2.0.0',exact:true})).toBeAttached();
- await page.goto('display');await page.getByRole('button',{name:'Force Refresh App',exact:true}).click();await expect(page.getByRole('status')).toContainText('You are offline');
+ await page.goto('display');await page.getByRole('button',{name:'Refresh FitCircle',exact:true}).click();await expect(page.getByRole('status')).toContainText('You are offline');
 });
 test('development preview identifies itself without claiming publication',async({page})=>{
  await page.goto('http://127.0.0.1:4184/FitCircle/about');await expect(page.getByTestId('about-version')).toHaveText('Development');await expect(page.getByTestId('about-released')).toHaveText('Not published');

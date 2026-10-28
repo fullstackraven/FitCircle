@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "browser/settings-modernization.spec.ts",
     "simple-release.test.ts",
     "simple-release-workflow.test.ts",
     "browser/release-versioning.spec.ts",
