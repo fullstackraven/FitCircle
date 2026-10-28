@@ -473,7 +473,7 @@ export default function CardioPage() {
               .map((session: CardioSession, index: number) => (
                 <div
                   key={session.id}
-                  className="wellness-record-row flex justify-between items-center text-sm relative"
+                  className="wellness-record-row flex flex-wrap gap-2 justify-between items-center text-sm relative"
                 >
                   <div className="flex items-center space-x-3">
                     <span className="text-muted-foreground">
@@ -508,7 +508,8 @@ export default function CardioPage() {
                           });
                           setIsEditDialogOpen(true);
                         }}
-                        className="text-muted-foreground hover:text-strong p-1 h-auto"
+                        className="fc-icon-action text-muted-foreground hover:text-strong p-1 h-auto"
+                        aria-label={`Edit ${session.type} session`}
                         data-testid={`button-edit-session-${session.id}`}
                       >
                         <Edit2 className="w-3 h-3" />
@@ -530,7 +531,8 @@ export default function CardioPage() {
                             deleteCardioSession(entryToDelete.date, session.id);
                           }
                         }}
-                        className="text-muted-foreground hover:text-feature-red-soft p-1 h-auto"
+                        className="fc-icon-action text-muted-foreground hover:text-feature-red-soft p-1 h-auto"
+                        aria-label={`Delete ${session.type} session`}
                         data-testid={`button-delete-session-${session.id}`}
                       >
                         <Trash2 className="w-3 h-3" />
@@ -684,7 +686,7 @@ export default function CardioPage() {
               ))
             ) : (
               <Card className="fitcircle-card">
-                <CardContent className="p-8 text-center">
+                <CardContent className="fc-empty">
                   <div className="text-muted-foreground">
                     <Activity className="w-12 h-12 mx-auto mb-2" />
                     <p>No cardio activity yet</p>

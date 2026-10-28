@@ -1,3 +1,4 @@
+import { PageHeader } from '@/components/ui/presentation';
 import React from "react";
 import { ArrowLeft, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { useLocation } from "wouter";
@@ -71,16 +72,7 @@ export function WorkoutStatistics() {
 
   return (
     <div className="w-full max-w-3xl mx-auto">
-      <div className="flex items-center gap-2 mb-5">
-        <button
-          onClick={() => navigate("/calendar")}
-          className="min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
-          title="Back to Calendar"
-        >
-          <ArrowLeft className="w-5 h-5" aria-hidden="true" />
-        </button>
-        <h1 className="min-w-0 text-2xl sm:text-3xl font-bold text-strong tracking-tight">Workout Statistics</h1>
-      </div>
+      <PageHeader title="Workout Statistics" onBack={() => navigate("/calendar")} backLabel="Back to Calendar" align="start" />
 
       <div className="space-y-4">
         <section aria-labelledby="all-time-statistics-heading" className="glass-panel bg-surface rounded-2xl p-4 sm:p-5">

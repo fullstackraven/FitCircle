@@ -1,3 +1,4 @@
+import { PageHeader } from '@/components/ui/presentation';
 import { readFoodDay, assertLoggableFood } from '@/lib/food-diary';
 import { DailyNutritionSummary } from '@/components/nutrition/DailyNutritionSummary';
 import { NutritionDetails } from '@/components/nutrition/NutritionDetails';
@@ -517,41 +518,17 @@ export default function FoodTrackerPage() {
     <div className="fitcircle-page">
       <div className="fitcircle-container">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={handleBack}
-            className="text-muted-foreground hover:text-strong transition-colors min-h-11 min-w-11 flex items-center justify-center"
-            aria-label="Back to Logs"
-            data-testid="button-back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="fitcircle-page-title">Food Tracker</h1>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('/food-database')}
-              className="text-muted-foreground hover:text-strong transition-colors min-h-11 min-w-11 flex items-center justify-center"
-              aria-label="Food Database"
-              data-testid="button-database"
-            >
-              <Database className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => navigate("/fitness-calculator", { state: { calculatorFrom: window.location.pathname + window.location.search } })}
-              className="text-muted-foreground hover:text-strong transition-colors min-h-11 min-w-11 flex items-center justify-center"
-              aria-label="Fitness Calculator"
-              data-testid="button-calculator"
-            >
-              <Calculator className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
+        <PageHeader title="Food Tracker" onBack={handleBack} backLabel="Back to Logs" backProps={{'data-testid':'button-back'}} sideWidth={88} actions={<>
+          <button onClick={() => navigate('/food-database')} className="fc-icon-action" aria-label="Food Database" data-testid="button-database"><Database size={20}/></button>
+          <button onClick={() => navigate("/fitness-calculator", { state: { calculatorFrom: window.location.pathname + window.location.search } })} className="fc-icon-action" aria-label="Fitness Calculator" data-testid="button-calculator"><Calculator size={20}/></button>
+        </>} />
 
         {/* Date Navigation */}
         <div className="flex items-center justify-center gap-4 mb-6">
           <button
             onClick={goToPreviousDay}
-            className="text-muted-foreground hover:text-strong transition-colors p-2 rounded-xl hover:bg-surface"
+            className="fc-icon-action"
+            aria-label="Previous day"
             data-testid="button-previous-day"
           >
             <ChevronLeft className="w-6 h-6" />
@@ -570,11 +547,12 @@ export default function FoodTrackerPage() {
           <button
             onClick={goToNextDay}
             disabled={isToday(selectedDate)}
-            className={`transition-colors p-2 rounded-xl ${
+            className={`fc-icon-action transition-colors ${
               isToday(selectedDate) 
                 ? 'text-dim-strong cursor-not-allowed'
                 : 'text-muted-foreground hover:text-strong hover:bg-surface'
             }`}
+            aria-label="Next day"
             data-testid="button-next-day"
           >
             <ChevronRight className="w-6 h-6" />

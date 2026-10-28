@@ -118,7 +118,7 @@ export function JournalLog() {
         </section>
       ))}
       {!results.length && (
-        <div className="py-16 text-center text-muted-foreground">
+        <div className="fc-empty">
           <FileText className="w-9 h-9 mx-auto mb-3" />
           <h2 className="font-semibold">
             {query.trim() ? "No matching entries" : "No Journal Entries Yet"}

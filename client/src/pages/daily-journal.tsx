@@ -1,3 +1,4 @@
+import { PageHeader } from '@/components/ui/presentation';
 import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, BookOpen, Calendar, FileText, Check } from "lucide-react";
 import { useLocation } from "wouter";
@@ -134,30 +135,11 @@ export function DailyJournal() {
       style={{ backgroundColor: "var(--page-background)" }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 mb-2">
-        <button
-          onClick={handleBack}
-          className="text-muted-foreground hover:text-strong transition-colors"
-          title="Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-
-        <h1 className="text-xl font-bold text-strong">Daily Journal</h1>
-        <button
-          onClick={() => {
-            if (
-              journalText === originalText.current ||
-              confirm("Discard unsaved journal changes?")
-            )
-              navigate(`/journal-log${fromWellness ? "?from=wellness" : ""}`);
-          }}
-          className="text-dim hover:text-strong transition-colors"
-          title="View all journal entries"
-        >
-          <FileText className="w-5 h-5" />
-        </button>
-      </div>
+      <PageHeader title="Daily Journal" onBack={handleBack} className="mb-4" actions={<button
+        onClick={() => {
+          if (journalText === originalText.current || confirm("Discard unsaved journal changes?"))
+            navigate(`/journal-log${fromWellness ? "?from=wellness" : ""}`);
+        }} className="fc-icon-action" title="View all journal entries" aria-label="View all journal entries"><FileText size={20}/></button>} />
 
       {/* Date indicator */}
       <div className="px-4 mb-4">

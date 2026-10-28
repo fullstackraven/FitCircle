@@ -1,3 +1,4 @@
+import { PageHeader } from '@/components/ui/presentation';
 import { applyRestore, prepareRestore } from "@/lib/backup";
 import { CALCULATOR_TARGETS_CHANGED } from "@/lib/nutrition";
 import React, { useState, useEffect, useRef } from "react";
@@ -317,20 +318,7 @@ export default function FitnessCalculator() {
       data-testid="fitness-calculator-page"
     >
       <div className="fitcircle-container">
-        <div className="calculator-header">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={goBack}
-            aria-label="Back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="fitcircle-page-title text-center">
-            Fitness Calculator
-          </h1>
-          <span className="w-10 shrink-0" aria-hidden="true" />
-        </div>
+        <PageHeader title="Fitness Calculator" onBack={goBack} />
         <div
           role="tablist"
           aria-label="Fitness calculators"

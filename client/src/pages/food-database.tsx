@@ -1,3 +1,4 @@
+import { PageHeader } from '@/components/ui/presentation';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { ArrowLeft, Search, Trash2, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLocation } from 'wouter';
@@ -184,17 +185,7 @@ export default function FoodDatabasePage() {
     <div className="fitcircle-page">
       <div className="fitcircle-container">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={handleBack}
-            className="text-muted-foreground hover:text-strong transition-colors"
-            data-testid="button-back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="fitcircle-page-title">Food Database</h1>
-          <div className="w-5" /> {/* Spacer for alignment */}
-        </div>
+        <PageHeader title="Food Database" onBack={handleBack} backProps={{'data-testid':'button-back'}} />
 
         {/* Search Bar */}
         <div className="mb-6">
@@ -291,7 +282,8 @@ export default function FoodDatabasePage() {
                           onClick={() => handleEdit(food)}
                           variant="ghost"
                           size="sm"
-                          className="text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint"
+                          className="min-w-11 text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint"
+                          aria-label={`Edit ${food.name}`}
                           data-testid={`button-edit-${food.id}`}
                         >
                           <Pencil className="w-4 h-4" />
@@ -300,7 +292,8 @@ export default function FoodDatabasePage() {
                           onClick={() => handleDelete(food.id, food.name)}
                           variant="ghost"
                           size="sm"
-                          className="text-feature-red hover:text-feature-red-soft hover:bg-feature-red-tint"
+                          className="min-w-11 text-feature-red hover:text-feature-red-soft hover:bg-feature-red-tint"
+                          aria-label={`Delete ${food.name}`}
                           data-testid={`button-delete-${food.id}`}
                         >
                           <Trash2 className="w-4 h-4" />

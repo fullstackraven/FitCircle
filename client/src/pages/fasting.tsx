@@ -346,7 +346,7 @@ export default function FastingPage() {
           <h3 className="text-lg font-semibold">History</h3>
           <div className="space-y-3">
             {Object.keys(monthlyLogs).length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="fc-empty">
                 <p>No fasting logs yet.</p>
                 <p className="text-sm mt-2">
                   Start tracking your intermittent fasting journey!
