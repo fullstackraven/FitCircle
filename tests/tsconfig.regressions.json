@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "pwa-update-detection.test.ts",
+    "browser/pwa-update-notice.spec.ts",
     "browser/energy-modernization.spec.ts",
     "energy-trends.test.ts",
     "browser/supplements-modernization.spec.ts",

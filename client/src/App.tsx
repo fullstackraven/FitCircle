@@ -1,3 +1,4 @@
+import { PWAUpdateNotice } from '@/components/PWAUpdateNotice';
 import { FoodNotifications } from "@/components/FoodNotifications";
 import { HeaderHostContext } from "@/components/AppHeader";
 import { Switch, Route, useLocation } from "wouter";
@@ -113,6 +114,7 @@ function App() {
           <div ref={setHeaderHost} className="app-header" />
           <main ref={scrollRef} className="app-content">
             <div className="app-page">
+              <PWAUpdateNotice />
               <Router />
             </div>
           </main>
