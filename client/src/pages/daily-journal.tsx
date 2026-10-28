@@ -1,5 +1,6 @@
+import { PageHeader } from '@/components/ui/presentation';
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, BookOpen, Calendar, FileText, Check } from "lucide-react";
+import { BookOpen, Calendar, FileText, Check } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { useJournalReaderHistory } from "@/hooks/use-journal-reader-history";
@@ -134,41 +135,22 @@ export function DailyJournal() {
       style={{ backgroundColor: "var(--page-background)" }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 mb-2">
-        <button
-          onClick={handleBack}
-          className="text-muted-foreground hover:text-strong transition-colors"
-          title="Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-
-        <h1 className="text-xl font-bold text-strong">Daily Journal</h1>
-        <button
-          onClick={() => {
-            if (
-              journalText === originalText.current ||
-              confirm("Discard unsaved journal changes?")
-            )
-              navigate(`/journal-log${fromWellness ? "?from=wellness" : ""}`);
-          }}
-          className="text-dim hover:text-strong transition-colors"
-          title="View all journal entries"
-        >
-          <FileText className="w-5 h-5" />
-        </button>
-      </div>
+      <PageHeader title="Daily Journal" onBack={handleBack} className="mb-4" actions={<button
+        onClick={() => {
+          if (journalText === originalText.current || confirm("Discard unsaved journal changes?"))
+            navigate(`/journal-log${fromWellness ? "?from=wellness" : ""}`);
+        }} className="fc-icon-action" title="View all journal entries" aria-label="View all journal entries"><FileText size={20}/></button>} />
 
       {/* Date indicator */}
       <div className="px-4 mb-4">
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">{getDisplayDate()}</p>
-          <p className="text-xs text-dim" data-testid="text-word-count">
+          <p className="text-xs text-muted-foreground" data-testid="text-word-count">
             {getWordCount()} {getWordCount() === 1 ? "word" : "words"}
           </p>
         </div>
         {lastSaved && Number.isFinite(new Date(lastSaved).getTime()) && (
-          <p className="text-xs text-dim mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Last saved: {format(new Date(lastSaved), "MMM d, yyyy 'at' h:mm a")}
           </p>
         )}

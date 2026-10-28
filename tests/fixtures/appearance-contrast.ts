@@ -8,13 +8,19 @@ export async function textContrast(page: Page) {
     };
     const blend = (f: Color, b: Color): Color =>
       [0, 1, 2].map((i) => f[i] * f[3] + b[i] * (1 - f[3])).concat(1);
-    const background = (el: Element | null): Color =>
-      el
-        ? blend(
-            parse(getComputedStyle(el).backgroundColor),
-            background(el.parentElement),
-          )
-        : [248, 250, 252, 1];
+    const backgrounds = (el: Element | null): Color[] => {
+      if (!el) return [[248, 250, 252, 1]];
+      const css = getComputedStyle(el);
+      const base = backgrounds(el.parentElement).map(parent => blend(parse(css.backgroundColor), parent));
+      if (!css.backgroundImage.startsWith('linear-gradient(')) return base;
+      const stops = (css.backgroundImage.match(/rgba?\([^)]*\)/g) ?? []).map(parse);
+      if (!stops.length) return base;
+      // Interpolation can have a lower luminance than either endpoint.
+      const samples = stops.flatMap((stop, index) => index ? Array.from({length:17}, (_, step) =>
+        stop.map((value, channel) => stops[index-1][channel] + (value - stops[index-1][channel]) * step / 16)
+      ) : [stop]);
+      return samples.flatMap(stop => base.map(parent => blend(stop, parent)));
+    };
     const luminance = (c: Color) =>
       c
         .slice(0, 3)
@@ -45,10 +51,11 @@ export async function textContrast(page: Page) {
         css.display === "none"
       )
         continue;
-      const bg = background(el),
-        fg = blend(parse(css.color), bg);
-      const l = [luminance(fg), luminance(bg)].sort((a, b) => a - b);
-      const ratio = (l[1] + 0.05) / (l[0] + 0.05);
+      const ratio = Math.min(...backgrounds(el).map(bg => {
+        const fg = blend(parse(css.color), bg);
+        const l = [luminance(fg), luminance(bg)].sort((a, b) => a - b);
+        return (l[1] + 0.05) / (l[0] + 0.05);
+      }));
       const size = parseFloat(css.fontSize);
       const required =
         size >= 24 || (size >= 18.66 && Number(css.fontWeight) >= 700)

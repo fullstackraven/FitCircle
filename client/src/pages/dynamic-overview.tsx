@@ -1,3 +1,4 @@
+import { PageHeader } from '@/components/ui/presentation';
 import { repsForSets } from '@/lib/workout-progress';
 import React, { useState, useEffect } from "react";
 import {
@@ -307,13 +308,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
 
   return (
     <div className="dynamic-overview-page">
-      <header className="overview-header">
-        <button onClick={back} aria-label="Back" title="Back to Calendar">
-          <ArrowLeft size={20} />
-        </button>
-        <h1>Dynamic Overview</h1>
-        <span />
-      </header>
+      <PageHeader title="Dynamic Overview" onBack={back} className="mb-0" />
       <div className="overview-date">
         <p>{format(selectedDateObj, "EEEE")}</p>
         <h2>{format(selectedDateObj, "MMMM d, yyyy")}</h2>

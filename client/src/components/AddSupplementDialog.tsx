@@ -94,7 +94,7 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
               Measurement Type
             </Label>
             <Select value={measurementType} onValueChange={setMeasurementType} required>
-              <SelectTrigger className="bg-surface-secondary border-control text-strong">
+              <SelectTrigger id="measurement-type" className="bg-surface-secondary border-control text-strong">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-surface-secondary border-control">

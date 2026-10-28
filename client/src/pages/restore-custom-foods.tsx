@@ -1,8 +1,8 @@
+import { PageHeader } from '@/components/ui/presentation';
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { localFoodService } from '@/lib/local-food-service';
-import { ArrowLeft } from 'lucide-react';
 
 export default function RestoreCustomFoodsPage() {
   const [, navigate] = useLocation();
@@ -197,21 +197,11 @@ export default function RestoreCustomFoodsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-canvas-deep text-strong p-6">
+    <div className="fitcircle-page">
       <div className="max-w-2xl mx-auto">
-        <div className="flex items-center gap-4 mb-6">
-          <Button
-            onClick={() => navigate('/food-tracker')}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-strong"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-2xl font-bold">Restore Custom Foods</h1>
-        </div>
+        <PageHeader title="Restore Custom Foods" onBack={() => navigate('/food-tracker')} align="start" />
 
-        <div className="bg-canvas rounded-xl p-6 mb-6">
+        <div className="fc-section mb-6">
           <p className="text-supporting mb-4">
             This will restore {customFoods.length} custom foods to your database.
           </p>

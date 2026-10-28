@@ -49,7 +49,7 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent fixedFooter staticBody className="max-w-md text-strong p-4 gap-2">
+      <DialogContent fixedFooter staticBody className="compact-editor max-w-md text-strong p-4 gap-2">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-strong">
             {editingRoutine ? 'Edit Routine' : 'Add New Routine'}

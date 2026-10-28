@@ -160,7 +160,7 @@
   }
   
   .fitcircle-container {
-    @apply container mx-auto px-4 py-6 max-w-md;
+    @apply container mx-auto max-w-md;
   }
   
   /* Header Styles */
@@ -182,7 +182,8 @@
   }
   
   .fitcircle-card-lg {
-    @apply bg-surface rounded-xl p-6 border-separator;
+    @apply bg-surface p-4 border border-separator;
+    border-radius: var(--radius-section);
   }
   
   /* Form Elements */
@@ -552,23 +553,17 @@
 
 /* Wellness 2.0: page-local presentation; existing shell owns dock/safe-area clearance. */
 .wellness-stack { display: flex; flex-direction: column; gap: 16px; }
-.wellness-header { display: grid; grid-template-columns: 70px minmax(0,1fr) 70px; align-items: center; gap: 4px; margin-bottom: 4px; }
-.wellness-header h1 { text-align: center; font-size: clamp(1.2rem,5vw,1.5rem); overflow-wrap: anywhere; }
-.wellness-header button { min-height: 44px; min-width: 44px; display: flex; align-items: center; gap: 5px; color: hsl(var(--muted-foreground)); }
-.wellness-header button:last-child { justify-content: flex-end; }
 .wellness-surface { background: hsl(var(--surface)); border: 1px solid var(--wellness-border); border-radius: 20px; padding: 18px; min-width: 0; }
 .wellness-hero { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .wellness-eyebrow { color: hsl(var(--muted-foreground)); font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
 .wellness-value { font-family: var(--font-metric); margin-top: 14px; font-size: clamp(1.5rem,7vw,2rem); line-height: 1.2; font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .wellness-target { font-size: .65em; font-weight: 500; color: hsl(var(--muted-foreground)); }
-.wellness-accent { color: var(--wellness-accent); }
+.wellness-accent { color: var(--wellness-text-accent, var(--wellness-accent)); }
 .wellness-ring { width: 100px; height: 100px; flex: 0 0 100px; position: relative; }
 .wellness-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); fill: none; stroke-width: 8; }
 .wellness-ring-track { stroke: hsl(var(--nutrition-track)); }
 .wellness-ring-value { stroke: var(--wellness-accent); stroke-linecap: round; transition: stroke-dashoffset .3s ease; }
 .wellness-ring span { position: absolute; inset: 0; display: grid; place-content: center; font-size: 1rem; color: hsl(var(--text-strong)); }
-.wellness-window { min-width: 44px; min-height: 44px; border-radius: 12px; font-size: .75rem; color: hsl(var(--muted-foreground)); }
-.wellness-window[aria-pressed=true] { background: hsl(var(--nutrition-track)); color: hsl(var(--text-strong)); }
 .wellness-bars { height: 48px; display: grid; gap: 3px; align-items: end; }
 .wellness-bar-column { display: flex; align-items: end; justify-content: center; height: 100%; min-width: 0; }
 .wellness-bar { width: 100%; max-width: 18px; background: var(--wellness-accent); border-radius: 4px 4px 1px 1px; }
@@ -626,9 +621,6 @@
 
 /* Dynamic Overview keeps the application shell as its only page scroller. */
 .dynamic-overview-page { max-width: 620px; margin-inline: auto; padding: 16px 16px calc(var(--safe-bottom) + 24px); color: hsl(var(--text-strong)); }
-.overview-header { display: grid; grid-template-columns: 40px minmax(0,1fr) 40px; align-items: center; margin-bottom: 12px; }
-.overview-header button { min-height: 44px; color: hsl(var(--text-secondary)); }
-.overview-header h1 { font-size: 20px; font-weight: 700; text-align: center; }
 .overview-date { text-align: center; margin-bottom: 18px; }
 .overview-date p { font-size: 11px; text-transform: uppercase; color: hsl(var(--muted-foreground)); margin-bottom: 3px; }
 .overview-date h2 { font-size: 21px; font-weight: 700; }
@@ -692,7 +684,6 @@
 @media (max-width: 359px) {
  .dynamic-overview-page { padding-inline: 12px; }
  .overview-card { padding: 12px; }
- .overview-header h1 { font-size: 18px; }
  .overview-card-heading { gap: 7px; }
  .overview-recovery-actions { flex-wrap: wrap; }
  .overview-supplement-actions { gap: 6px; }
@@ -723,3 +714,59 @@
 }
 
 .home-set-count[data-long="true"] { font-size: 16px; }
+
+/* Presentation standards: geometry stays separate from feature colors/state. */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --radius-control: 12px;
+  --radius-row: 14px;
+  --radius-section: 20px;
+  --touch-target: 44px;
+}
+@layer components {
+  .fc-page-header { display:grid; grid-template-columns:var(--header-side,44px) minmax(0,1fr) var(--header-side,44px); align-items:center; gap:var(--space-2); margin-bottom:var(--space-5); min-width:0; min-height:56px; }
+  .fc-page-header > .fc-icon-action { justify-self:start; }
+  .fc-page-title { min-width:0; font-size:20px; line-height:1.25; font-weight:600; text-align:center; color:hsl(var(--text-strong)); overflow-wrap:anywhere; }
+  .fc-page-header-start { grid-template-columns:44px minmax(0,1fr); }
+  .fc-page-header-start .fc-page-title { text-align:left; }
+  .fc-page-header-start > span:last-child { display:none; }
+  .fc-header-actions { display:flex; align-items:center; justify-content:flex-end; min-width:0; }
+  .fc-icon-action { display:inline-flex; align-items:center; justify-content:center; min-width:var(--touch-target); min-height:var(--touch-target); flex-shrink:0; border-radius:var(--radius-control); color:hsl(var(--muted-foreground)); }
+  .fc-icon-action:hover:not(:disabled) { background:hsl(var(--surface-secondary) / .5); color:hsl(var(--text-strong)); }
+  .fc-section { min-width:0; padding:var(--space-4); border:1px solid hsl(var(--separator)); border-radius:var(--radius-section); background:hsl(var(--surface)); }
+  .fc-period { display:flex; min-width:0; gap:var(--space-1); padding:var(--space-1); border-radius:var(--radius-control); background:hsl(var(--surface-secondary)); }
+  .fc-period > button { flex:1; min-width:0; min-height:var(--touch-target); padding:0 var(--space-1); border-radius:9px; color:hsl(var(--text-secondary)); font-size:12px; }
+  .fc-period > button[aria-pressed=true] { background:hsl(var(--control-strong)); color:hsl(var(--foreground)); font-weight:600; }
+  .fc-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-2); }
+  .fc-metric { min-width:0; padding:var(--space-3) var(--space-1); border-radius:var(--radius-control); background:hsl(var(--surface-secondary) / .55); text-align:center; }
+  .fc-metric :is(strong,dd) { display:block; font-size:clamp(16px,5vw,22px); line-height:1.2; overflow-wrap:anywhere; }
+  .fc-metric > :is(span,dt) { display:block; margin-top:var(--space-1); font-size:11px; line-height:1.4; color:hsl(var(--text-secondary)); overflow-wrap:anywhere; }
+  .fc-empty { padding:var(--space-5) var(--space-2); border-radius:var(--radius-control); background:hsl(var(--surface-secondary)); color:hsl(var(--text-secondary)); font-size:13px; line-height:1.5; text-align:center; }
+  .fc-action { display:inline-flex; justify-content:center; align-items:center; gap:var(--space-2); min-height:var(--touch-target); border-radius:24px; padding:10px 12px; font-size:13px; font-weight:600; }
+  .fc-action-primary { background:hsl(var(--action)); color:hsl(var(--on-action)); }
+  .fc-action-secondary { border:1px solid hsl(var(--control-border)); color:hsl(var(--muted-foreground)); }
+  :is(.fc-icon-action,.fc-period > button,.fc-action):focus-visible { outline:2px solid hsl(var(--ring)); outline-offset:3px; }
+  .fc-action:disabled { opacity:.5; cursor:not-allowed; }
+}
+@media(max-width:350px) { .fc-section { padding:var(--space-3); } }
+
+@layer components {
+  .fc-history-row { width:100%; min-width:0; min-height:58px; display:flex; align-items:center; gap:10px; padding:10px; border:1px solid hsl(var(--separator)); border-radius:var(--radius-row); text-align:left; }
+}
+
+@layer components {
+  .fc-period-inline { padding:0; background:transparent; }
+  .fc-period-inline > button { min-width:44px; }
+}
+
+/* Compact schedule editors deliberately retain their pre-existing short-screen
+   dimensions. Larger default controls must not add a landscape body scroller. */
+@media(max-height:450px) {
+  .compact-editor .dialog-header h2 { line-height:1; }
+  .compact-editor .dialog-footer button { height:40px; min-height:40px; }
+}

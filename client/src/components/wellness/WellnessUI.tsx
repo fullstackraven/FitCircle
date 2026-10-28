@@ -1,3 +1,4 @@
+import { PageHeader, PeriodSelector } from '@/components/ui/presentation';
 import {
   forwardRef,
   useState,
@@ -5,7 +6,6 @@ import {
   type ReactNode,
 } from "react";
 import {
-  ArrowLeft,
   ChevronRight,
   Plus,
   Target,
@@ -25,11 +25,13 @@ import { useWellnessClock } from "@/hooks/use-preserved-wellness";
 export function WellnessPageShell({
   title,
   accent,
+  textAccent,
   onGoal,
   children,
 }: {
   title: string;
   accent: string;
+  textAccent?: string;
   onGoal: () => void;
   children: ReactNode;
 }) {
@@ -37,22 +39,10 @@ export function WellnessPageShell({
   return (
     <div
       className="fitcircle-page wellness-page"
-      style={{ "--wellness-accent": accent } as CSSProperties}
+      style={{ "--wellness-accent": accent, "--wellness-text-accent": textAccent ?? accent } as CSSProperties}
     >
       <div className="fitcircle-container wellness-stack">
-        <header className="wellness-header">
-          <button
-            aria-label="Back to Wellness"
-            onClick={() => navigate("/wellness")}
-          >
-            <ArrowLeft size={20} />
-          </button>
-          <h1 className="fitcircle-page-title">{title}</h1>
-          <button onClick={onGoal}>
-            <Target size={18} />
-            <span>Goal</span>
-          </button>
-        </header>
+        <PageHeader title={title} onBack={() => navigate('/wellness')} backLabel="Back to Wellness" sideWidth={70} className="mb-0" actions={<button className="fc-icon-action gap-1" onClick={onGoal}><Target size={18}/><span>Goal</span></button>} />
         {children}
       </div>
     </div>
@@ -147,18 +137,7 @@ export function WellnessRecentActivity({
     <section className="wellness-surface" aria-label="Recent activity">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
         <h2 className="wellness-eyebrow">Last {days} days</h2>
-        <div className="flex" role="group" aria-label="Activity window">
-          {([7, 30, 90] as const).map((window) => (
-            <button
-              key={window}
-              aria-pressed={days === window}
-              className="wellness-window"
-              onClick={() => setDays(window)}
-            >
-              {window}D
-            </button>
-          ))}
-        </div>
+        <PeriodSelector<ActivityWindow> label="Activity window" className="fc-period-inline" value={days} onChange={setDays} options={[{value:7,label:'7D'},{value:30,label:'30D'},{value:90,label:'90D'}]} />
       </div>
       <div
         className="wellness-bars"

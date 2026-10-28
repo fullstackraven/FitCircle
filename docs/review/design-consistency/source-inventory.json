@@ -1,0 +1,1149 @@
+{
+  "purpose": "Static imported-TSX inventory and literal geometry patterns, including conditional overlays and error boundaries. Dynamic styles, CSS rules and runtime route/theme/viewport findings are assessed in the audit and tests.",
+  "sourceCount": 73,
+  "sources": [
+    {
+      "source": "client/src/App.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/AddSupplementDialog.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 3,
+      "sharedHeaders": 0,
+      "overlayOwners": [
+        "DialogContent"
+      ],
+      "literalGeometryUtilities": [
+        "p-0",
+        "pt-4",
+        "rounded-2xl",
+        "rounded-full",
+        "space-x-2",
+        "space-y-2",
+        "space-y-4"
+      ]
+    },
+    {
+      "source": "client/src/components/AppHeader.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/BottomNavigation.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/CardioDataRecovery.tsx",
+      "headings": 1,
+      "nativeButtons": 2,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "px-4",
+        "px-6",
+        "py-3",
+        "py-8",
+        "rounded-xl",
+        "space-y-5"
+      ]
+    },
+    {
+      "source": "client/src/components/DashboardMenu.tsx",
+      "headings": 0,
+      "nativeButtons": 1,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-3",
+        "px-2",
+        "py-4",
+        "rounded-lg"
+      ]
+    },
+    {
+      "source": "client/src/components/DashboardPage.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 1,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "pt-4",
+        "px-4",
+        "space-y-6"
+      ]
+    },
+    {
+      "source": "client/src/components/DaySelector.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 6,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "px-1",
+        "py-0"
+      ]
+    },
+    {
+      "source": "client/src/components/DockNavigation.tsx",
+      "headings": 0,
+      "nativeButtons": 1,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/FoodNotifications.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-1"
+      ]
+    },
+    {
+      "source": "client/src/components/GoalCircle.tsx",
+      "headings": 1,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/PWAUpdateNotice.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "px-4",
+        "py-3",
+        "rounded-xl"
+      ]
+    },
+    {
+      "source": "client/src/components/QuoteOfTheDay.tsx",
+      "headings": 0,
+      "nativeButtons": 2,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-3",
+        "p-1",
+        "p-3",
+        "p-4",
+        "rounded-xl",
+        "space-x-2"
+      ]
+    },
+    {
+      "source": "client/src/components/SidebarProfileCard.tsx",
+      "headings": 0,
+      "nativeButtons": 1,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-3",
+        "p-3",
+        "pt-3",
+        "rounded-full",
+        "rounded-xl"
+      ]
+    },
+    {
+      "source": "client/src/components/TimerWheel.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/VersionLabel.tsx",
+      "headings": 0,
+      "nativeButtons": 1,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "py-4"
+      ]
+    },
+    {
+      "source": "client/src/components/WellnessHistory.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/WorkoutDataRecovery.tsx",
+      "headings": 1,
+      "nativeButtons": 2,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "px-4",
+        "px-6",
+        "py-3",
+        "py-8",
+        "rounded-xl",
+        "space-y-5"
+      ]
+    },
+    {
+      "source": "client/src/components/dashboard-widgets/RecentActivityWidget.tsx",
+      "headings": 2,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "py-4",
+        "space-x-2",
+        "space-y-3"
+      ]
+    },
+    {
+      "source": "client/src/components/nutrition/BarcodeEntry.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 2,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "space-y-3",
+        "space-y-4"
+      ]
+    },
+    {
+      "source": "client/src/components/nutrition/BarcodeScanner.tsx",
+      "headings": 0,
+      "nativeButtons": 1,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "rounded-xl",
+        "space-y-2"
+      ]
+    },
+    {
+      "source": "client/src/components/nutrition/DailyNutritionSummary.tsx",
+      "headings": 2,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-3",
+        "p-3",
+        "p-4",
+        "rounded-2xl",
+        "rounded-full",
+        "rounded-xl",
+        "space-y-3"
+      ]
+    },
+    {
+      "source": "client/src/components/nutrition/FoodEntryForm.tsx",
+      "headings": 1,
+      "nativeButtons": 0,
+      "sharedButtons": 2,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-3",
+        "p-3",
+        "p-4",
+        "px-2",
+        "rounded-lg",
+        "rounded-xl",
+        "space-y-3"
+      ]
+    },
+    {
+      "source": "client/src/components/nutrition/MealDiary.tsx",
+      "headings": 0,
+      "nativeButtons": 4,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "p-3",
+        "py-2",
+        "py-3",
+        "rounded-2xl",
+        "space-y-3"
+      ]
+    },
+    {
+      "source": "client/src/components/nutrition/NutritionDetails.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "py-3",
+        "rounded-full"
+      ]
+    },
+    {
+      "source": "client/src/components/nutrition/NutritionProgressBar.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "rounded-full"
+      ]
+    },
+    {
+      "source": "client/src/components/progress-circle.tsx",
+      "headings": 0,
+      "nativeButtons": 1,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/routine-modal.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 2,
+      "sharedHeaders": 0,
+      "overlayOwners": [
+        "DialogContent"
+      ],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-3",
+        "p-4",
+        "pt-2",
+        "rounded-xl",
+        "space-y-1",
+        "space-y-2",
+        "space-y-4"
+      ]
+    },
+    {
+      "source": "client/src/components/ui/button.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/ui/card.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/ui/collapsible.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/ui/dialog.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "rounded-sm"
+      ]
+    },
+    {
+      "source": "client/src/components/ui/input.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/ui/label.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/ui/presentation.tsx",
+      "headings": 1,
+      "nativeButtons": 2,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/ui/select.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/ui/sheet.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "rounded-sm"
+      ]
+    },
+    {
+      "source": "client/src/components/ui/textarea.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/ui/toast.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/ui/viewport-overlay.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/components/wellness/WellnessUI.tsx",
+      "headings": 3,
+      "nativeButtons": 5,
+      "sharedButtons": 0,
+      "sharedHeaders": 1,
+      "overlayOwners": [
+        "ViewportOverlay"
+      ],
+      "literalGeometryUtilities": [
+        "gap-1",
+        "gap-2"
+      ]
+    },
+    {
+      "source": "client/src/components/workout-modal.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 3,
+      "sharedHeaders": 0,
+      "overlayOwners": [
+        "DialogContent"
+      ],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-3",
+        "p-4",
+        "pl-8",
+        "pr-2",
+        "px-2",
+        "rounded-xl",
+        "space-y-1"
+      ]
+    },
+    {
+      "source": "client/src/contexts/ScrollLockContext.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/main.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": []
+    },
+    {
+      "source": "client/src/pages/about.tsx",
+      "headings": 0,
+      "nativeButtons": 2,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-3",
+        "py-4"
+      ]
+    },
+    {
+      "source": "client/src/pages/calendar-new.tsx",
+      "headings": 7,
+      "nativeButtons": 8,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [
+        "SheetContent"
+      ],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "p-4",
+        "pb-4",
+        "pr-8",
+        "px-2",
+        "px-4",
+        "rounded-full",
+        "rounded-t-2xl",
+        "rounded-xl",
+        "space-x-1",
+        "space-x-2",
+        "space-x-3",
+        "space-y-1",
+        "space-y-3",
+        "space-y-6"
+      ]
+    },
+    {
+      "source": "client/src/pages/cardio.tsx",
+      "headings": 2,
+      "nativeButtons": 2,
+      "sharedButtons": 14,
+      "sharedHeaders": 0,
+      "overlayOwners": [
+        "DialogContent"
+      ],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-4",
+        "p-1",
+        "p-2",
+        "p-6",
+        "pt-4",
+        "px-3",
+        "rounded-2xl",
+        "rounded-lg",
+        "rounded-xl",
+        "space-x-1",
+        "space-x-2",
+        "space-x-3",
+        "space-y-1",
+        "space-y-2",
+        "space-y-3",
+        "space-y-4"
+      ]
+    },
+    {
+      "source": "client/src/pages/daily-journal.tsx",
+      "headings": 0,
+      "nativeButtons": 2,
+      "sharedButtons": 0,
+      "sharedHeaders": 1,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "p-0",
+        "pb-4",
+        "pb-6",
+        "px-4",
+        "py-3",
+        "rounded-full",
+        "rounded-xl",
+        "space-x-2"
+      ]
+    },
+    {
+      "source": "client/src/pages/dynamic-overview.tsx",
+      "headings": 7,
+      "nativeButtons": 17,
+      "sharedButtons": 0,
+      "sharedHeaders": 1,
+      "overlayOwners": [
+        "DialogContent"
+      ],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-4",
+        "p-1",
+        "p-3",
+        "px-2",
+        "px-3",
+        "px-4",
+        "py-1",
+        "py-2",
+        "py-4",
+        "rounded-lg",
+        "rounded-xl",
+        "space-x-2",
+        "space-x-3",
+        "space-y-3",
+        "space-y-4"
+      ]
+    },
+    {
+      "source": "client/src/pages/energy-level.tsx",
+      "headings": 2,
+      "nativeButtons": 2,
+      "sharedButtons": 0,
+      "sharedHeaders": 1,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-3",
+        "px-1",
+        "px-3"
+      ]
+    },
+    {
+      "source": "client/src/pages/fasting.tsx",
+      "headings": 2,
+      "nativeButtons": 3,
+      "sharedButtons": 4,
+      "sharedHeaders": 0,
+      "overlayOwners": [
+        "DialogContent"
+      ],
+      "literalGeometryUtilities": [
+        "p-2",
+        "p-3",
+        "p-4",
+        "p-6",
+        "pt-2",
+        "pt-4",
+        "py-4",
+        "rounded-2xl",
+        "rounded-full",
+        "rounded-lg",
+        "rounded-xl",
+        "space-x-2",
+        "space-x-3",
+        "space-y-2",
+        "space-y-3",
+        "space-y-4"
+      ]
+    },
+    {
+      "source": "client/src/pages/fitness-calculator.tsx",
+      "headings": 5,
+      "nativeButtons": 4,
+      "sharedButtons": 3,
+      "sharedHeaders": 1,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "p-3",
+        "rounded-xl",
+        "space-y-2",
+        "space-y-4",
+        "space-y-8"
+      ]
+    },
+    {
+      "source": "client/src/pages/food-database.tsx",
+      "headings": 1,
+      "nativeButtons": 0,
+      "sharedButtons": 6,
+      "sharedHeaders": 1,
+      "overlayOwners": [
+        "DialogContent"
+      ],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-3",
+        "gap-4",
+        "p-4",
+        "pl-10",
+        "pr-16",
+        "pt-4",
+        "px-2",
+        "py-0.5",
+        "py-1",
+        "py-12",
+        "rounded-xl",
+        "space-y-2",
+        "space-y-4"
+      ]
+    },
+    {
+      "source": "client/src/pages/food-tracker.tsx",
+      "headings": 9,
+      "nativeButtons": 7,
+      "sharedButtons": 12,
+      "sharedHeaders": 1,
+      "overlayOwners": [
+        "DialogContent"
+      ],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-3",
+        "gap-4",
+        "p-1",
+        "p-3",
+        "p-4",
+        "pb-4",
+        "pl-10",
+        "pr-10",
+        "pr-2",
+        "pt-2",
+        "pt-4",
+        "px-2",
+        "px-4",
+        "py-1",
+        "py-3",
+        "py-8",
+        "rounded-2xl",
+        "rounded-3xl",
+        "rounded-xl",
+        "space-x-3",
+        "space-y-2",
+        "space-y-4",
+        "space-y-6"
+      ]
+    },
+    {
+      "source": "client/src/pages/home.tsx",
+      "headings": 5,
+      "nativeButtons": 11,
+      "sharedButtons": 2,
+      "sharedHeaders": 0,
+      "overlayOwners": [
+        "DialogContent",
+        "SheetContent"
+      ],
+      "literalGeometryUtilities": [
+        "gap-1",
+        "gap-3",
+        "gap-4",
+        "p-0",
+        "p-1",
+        "p-3",
+        "p-4",
+        "p-6",
+        "pl-0",
+        "pr-10",
+        "pt-1",
+        "px-4",
+        "px-6",
+        "py-3",
+        "py-4",
+        "rounded-2xl",
+        "rounded-[18px]",
+        "rounded-full",
+        "rounded-xl",
+        "space-x-3",
+        "space-x-4",
+        "space-y-2",
+        "space-y-3",
+        "space-y-4",
+        "space-y-5"
+      ]
+    },
+    {
+      "source": "client/src/pages/hydration.tsx",
+      "headings": 2,
+      "nativeButtons": 7,
+      "sharedButtons": 8,
+      "sharedHeaders": 0,
+      "overlayOwners": [
+        "DialogContent"
+      ],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "p-1",
+        "p-2",
+        "p-6",
+        "pt-4",
+        "rounded-2xl",
+        "rounded-lg",
+        "rounded-xl",
+        "space-x-1",
+        "space-x-2",
+        "space-x-3",
+        "space-y-1",
+        "space-y-2",
+        "space-y-3",
+        "space-y-4"
+      ]
+    },
+    {
+      "source": "client/src/pages/journal-entry.tsx",
+      "headings": 1,
+      "nativeButtons": 4,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "rounded-full"
+      ]
+    },
+    {
+      "source": "client/src/pages/journal-log.tsx",
+      "headings": 3,
+      "nativeButtons": 4,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-3",
+        "px-4",
+        "py-4",
+        "rounded-2xl",
+        "rounded-full"
+      ]
+    },
+    {
+      "source": "client/src/pages/legal.tsx",
+      "headings": 3,
+      "nativeButtons": 1,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "space-y-2",
+        "space-y-3",
+        "space-y-6"
+      ]
+    },
+    {
+      "source": "client/src/pages/measurements.tsx",
+      "headings": 4,
+      "nativeButtons": 0,
+      "sharedButtons": 2,
+      "sharedHeaders": 1,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-4",
+        "p-4",
+        "p-6",
+        "pb-4",
+        "py-3",
+        "py-8",
+        "rounded-xl",
+        "space-x-2",
+        "space-x-4",
+        "space-y-6"
+      ]
+    },
+    {
+      "source": "client/src/pages/meditation.tsx",
+      "headings": 3,
+      "nativeButtons": 2,
+      "sharedButtons": 8,
+      "sharedHeaders": 0,
+      "overlayOwners": [
+        "DialogContent",
+        "ViewportOverlay"
+      ],
+      "literalGeometryUtilities": [
+        "p-2",
+        "p-6",
+        "p-8",
+        "pt-4",
+        "py-4",
+        "rounded-2xl",
+        "rounded-lg",
+        "rounded-xl",
+        "space-x-1",
+        "space-x-2",
+        "space-x-3",
+        "space-x-4",
+        "space-y-1",
+        "space-y-2",
+        "space-y-3",
+        "space-y-4"
+      ]
+    },
+    {
+      "source": "client/src/pages/not-found.tsx",
+      "headings": 1,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "pt-6"
+      ]
+    },
+    {
+      "source": "client/src/pages/profile.tsx",
+      "headings": 4,
+      "nativeButtons": 8,
+      "sharedButtons": 2,
+      "sharedHeaders": 1,
+      "overlayOwners": [
+        "DialogContent"
+      ],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-3",
+        "p-3",
+        "p-4",
+        "px-2",
+        "px-4",
+        "rounded-2xl",
+        "rounded-full",
+        "rounded-lg",
+        "rounded-xl",
+        "space-y-3",
+        "space-y-5"
+      ]
+    },
+    {
+      "source": "client/src/pages/recovery.tsx",
+      "headings": 2,
+      "nativeButtons": 3,
+      "sharedButtons": 0,
+      "sharedHeaders": 1,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2"
+      ]
+    },
+    {
+      "source": "client/src/pages/release-history.tsx",
+      "headings": 1,
+      "nativeButtons": 0,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-3",
+        "py-2",
+        "space-y-2",
+        "space-y-3"
+      ]
+    },
+    {
+      "source": "client/src/pages/reminders.tsx",
+      "headings": 2,
+      "nativeButtons": 14,
+      "sharedButtons": 2,
+      "sharedHeaders": 0,
+      "overlayOwners": [
+        "DialogContent",
+        "SheetContent"
+      ],
+      "literalGeometryUtilities": [
+        "gap-1",
+        "gap-2",
+        "gap-3",
+        "p-1",
+        "p-3",
+        "p-4",
+        "pb-3",
+        "px-1",
+        "px-2",
+        "px-3",
+        "px-4",
+        "py-2",
+        "rounded-full",
+        "rounded-lg",
+        "rounded-xl"
+      ]
+    },
+    {
+      "source": "client/src/pages/restore-custom-foods.tsx",
+      "headings": 0,
+      "nativeButtons": 0,
+      "sharedButtons": 1,
+      "sharedHeaders": 1,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "space-y-1"
+      ]
+    },
+    {
+      "source": "client/src/pages/routines.tsx",
+      "headings": 4,
+      "nativeButtons": 8,
+      "sharedButtons": 5,
+      "sharedHeaders": 0,
+      "overlayOwners": [
+        "DialogContent",
+        "SheetContent"
+      ],
+      "literalGeometryUtilities": [
+        "gap-1",
+        "gap-2",
+        "gap-3",
+        "p-3",
+        "p-4",
+        "pb-3",
+        "pb-6",
+        "pt-2",
+        "pt-3",
+        "pt-4",
+        "px-3",
+        "px-4",
+        "py-1",
+        "py-2",
+        "py-2.5",
+        "py-3",
+        "py-4",
+        "rounded-2xl",
+        "rounded-xl",
+        "space-x-3",
+        "space-y-2",
+        "space-y-3"
+      ]
+    },
+    {
+      "source": "client/src/pages/settings.tsx",
+      "headings": 16,
+      "nativeButtons": 16,
+      "sharedButtons": 0,
+      "sharedHeaders": 2,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-1",
+        "gap-2",
+        "gap-3",
+        "p-6",
+        "px-2",
+        "px-4",
+        "py-3",
+        "rounded-xl",
+        "space-x-3",
+        "space-y-4"
+      ]
+    },
+    {
+      "source": "client/src/pages/share.tsx",
+      "headings": 1,
+      "nativeButtons": 2,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-3",
+        "px-4",
+        "py-3",
+        "rounded-xl",
+        "space-y-5"
+      ]
+    },
+    {
+      "source": "client/src/pages/supplements.tsx",
+      "headings": 2,
+      "nativeButtons": 7,
+      "sharedButtons": 0,
+      "sharedHeaders": 1,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-2",
+        "gap-3",
+        "p-4",
+        "px-3",
+        "px-4",
+        "py-2",
+        "rounded-lg"
+      ]
+    },
+    {
+      "source": "client/src/pages/wellness.tsx",
+      "headings": 1,
+      "nativeButtons": 7,
+      "sharedButtons": 0,
+      "sharedHeaders": 0,
+      "overlayOwners": [
+        "SheetContent"
+      ],
+      "literalGeometryUtilities": [
+        "gap-4",
+        "p-4",
+        "pt-4",
+        "px-4",
+        "space-x-1"
+      ]
+    },
+    {
+      "source": "client/src/pages/workout-statistics.tsx",
+      "headings": 3,
+      "nativeButtons": 2,
+      "sharedButtons": 0,
+      "sharedHeaders": 1,
+      "overlayOwners": [],
+      "literalGeometryUtilities": [
+        "gap-1",
+        "gap-2",
+        "gap-3",
+        "p-4",
+        "pb-2",
+        "pb-4",
+        "pt-3",
+        "px-4",
+        "py-2",
+        "rounded-2xl",
+        "rounded-lg",
+        "space-y-4"
+      ]
+    }
+  ]
+}

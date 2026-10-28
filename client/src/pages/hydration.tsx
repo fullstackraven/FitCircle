@@ -159,6 +159,7 @@ export default function HydrationPage() {
       <WellnessPageShell
         title="Hydration"
         accent="var(--wellness-blue)"
+        textAccent="hsl(var(--feature-blue))"
         onGoal={() => setIsGoalModalOpen(true)}
       >
         {error && (
@@ -377,7 +378,7 @@ export default function HydrationPage() {
                   </Collapsible>
                 ))
               ) : (
-                <div className="text-center text-dim py-4">
+                <div className="fc-empty">
                   No hydration history yet
                 </div>
               )}
@@ -480,12 +481,12 @@ export default function HydrationPage() {
               <Label className="text-sm font-medium text-supporting">
                 Liquid Type
               </Label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 min-[375px]:grid-cols-4 gap-2">
                 {liquidTypes.map((type) => (
                   <button
                     key={type}
                     onClick={() => setSelectedLiquidType(type)}
-                    className={`py-2 px-3 rounded-xl text-sm font-medium transition-colors ${
+                    className={`min-h-11 py-2 px-2 rounded-xl text-sm font-medium transition-colors ${
                       selectedLiquidType === type
                         ? "bg-blue-600 text-on-action"
                         : "bg-surface-secondary hover:bg-control-strong text-supporting"
@@ -554,7 +555,7 @@ export default function HydrationPage() {
             </details>
             {/* Custom Amount */}
             <div className="flex space-x-2">
-              <div className="flex-1">
+              <div className="min-w-0 flex-1">
                 <Input
                   type="number"
                   value={addAmount}
@@ -594,12 +595,12 @@ export default function HydrationPage() {
               <Label className="text-sm font-medium text-supporting">
                 Liquid Type
               </Label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 min-[375px]:grid-cols-4 gap-2">
                 {liquidTypes.map((type) => (
                   <button
                     key={type}
                     onClick={() => setEditLiquidType(type)}
-                    className={`py-2 px-3 rounded-xl text-sm font-medium transition-colors ${
+                    className={`min-h-11 py-2 px-2 rounded-xl text-sm font-medium transition-colors ${
                       editLiquidType === type
                         ? "bg-blue-600 text-on-action"
                         : "bg-surface-secondary hover:bg-control-strong text-supporting"

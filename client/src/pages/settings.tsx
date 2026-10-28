@@ -1,6 +1,7 @@
+import { PageHeader } from '@/components/ui/presentation';
 import '@/styles/dashboard-settings.css';
 import { useState, useRef, useSyncExternalStore, Fragment } from 'react';
-import { ArrowLeft, Upload, Download, Trash2, RotateCcw, Palette, CheckCircle2, Quote, ChartNoAxesColumnIncreasing, History, ShieldCheck, HardDrive, Info, LockKeyhole } from 'lucide-react';
+import { Upload, Download, Trash2, RotateCcw, Palette, CheckCircle2, Quote, ChartNoAxesColumnIncreasing, History, ShieldCheck, HardDrive, Info, LockKeyhole } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { AppHeader } from '@/components/AppHeader';
 import { dashboardContext, reopenDashboard } from '@/lib/dashboard-navigation';
@@ -134,21 +135,12 @@ export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy
   };
 
   const Header = section === 'legacy' ? Fragment : AppHeader;
-  // Keep the compatibility route visually unchanged; only the two dashboard destinations are redesigned.
+  // Preserve compatibility-route controls while sharing the presentation standard.
   return (section as string) === 'legacy' ? (
     <div className="fitcircle-page">
       <div className={`fitcircle-container ${section === 'legacy' ? '' : 'pt-4'}`}>
         {/* Header */}
-        <Header><div className={section === 'legacy' ? "flex items-center justify-between mb-8" : "w-full max-w-md mx-auto px-4 min-h-14 flex items-center justify-between gap-2"}>
-          <button
-            aria-label="Back" onClick={handleBack}
-            className={`${section === 'legacy' ? '' : 'min-h-11 min-w-11 inline-flex items-center justify-center rounded-xl'} text-muted-foreground hover:text-strong transition-colors`}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="fitcircle-page-title">{section === 'account' ? 'Account Data' : section === 'display' ? 'Display' : 'Settings'}</h1>
-          <div className="w-5"></div>
-        </div></Header>
+        <Header><PageHeader title={section === 'account' ? 'Account Data' : section === 'display' ? 'Display' : 'Settings'} onBack={handleBack} className={section === 'legacy' ? '' : 'w-full max-w-md mx-auto px-4 min-h-14 mb-0'} /></Header>
 
         {section !== 'display' && <>
         {/* Backup & Restore Section */}
@@ -364,21 +356,12 @@ export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy
     <div className="fitcircle-page dashboard-settings">
       <div className={`fitcircle-container ${section === 'legacy' ? '' : 'pt-4'}`}>
         {/* Header */}
-        <Header><div className={section === 'legacy' ? "flex items-center justify-between mb-8" : "w-full max-w-md mx-auto px-4 min-h-14 flex items-center justify-between gap-2"}>
-          <button
-            aria-label="Back" onClick={handleBack}
-            className={`${section === 'legacy' ? '' : 'min-h-11 min-w-11 inline-flex items-center justify-center rounded-xl'} text-muted-foreground hover:text-strong transition-colors`}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="fitcircle-page-title">{section === 'account' ? 'Account Data' : section === 'display' ? 'Display' : 'Settings'}</h1>
-          <div className="w-5"></div>
-        </div></Header>
+        <Header><PageHeader title={section === 'account' ? 'Account Data' : section === 'display' ? 'Display' : 'Settings'} onBack={handleBack} className={section === 'legacy' ? '' : 'w-full max-w-md mx-auto px-4 min-h-14 mb-0'} /></Header>
 
         <p className="settings-intro">{section === 'account' ? 'Keep your fitness records safe and under your control.' : 'Customize your FitCircle experience.'}</p>
         {section !== 'account' && <>
           <h2 className="settings-section-title" id="appearance-heading">Appearance</h2>
-          <section className="settings-card" aria-labelledby="appearance-heading">
+          <section className="fc-section settings-card" aria-labelledby="appearance-heading">
             <div className="settings-row-heading"><span className="settings-icon text-feature-purple"><Palette size={23}/></span><div><h3>App Theme</h3><p>Choose how FitCircle looks</p></div></div>
             <fieldset aria-describedby="appearance-description" className="min-w-0 mt-4">
               <legend className="sr-only">Appearance</legend>
@@ -396,7 +379,7 @@ export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy
             {appearance.error && <p role="alert" className="text-sm text-feature-red mt-3">{appearance.error}</p>}
           </section>
           <h2 className="settings-section-title">Home Screen</h2>
-          <section className="settings-card settings-home" aria-label="Home Screen">
+          <section className="fc-section settings-card settings-home" aria-label="Home Screen">
             {([
               {key:'hideQuoteOfTheDay',label:'Quote of the Day',description:'Show daily motivation',Icon:Quote},
               {key:'hideTodaysTotals',label:"Today's Totals",description:'Show daily activity summary',Icon:ChartNoAxesColumnIncreasing},
@@ -409,29 +392,29 @@ export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy
           </section>
           <p className="settings-note mt-3">Switches indicate whether each section is visible on Home.</p>
           <h2 className="settings-section-title">App Updates</h2>
-          <section className="settings-card" aria-label="App Updates">
-            <div className="flex items-center gap-3"><span className="settings-icon text-feature-purple bg-feature-purple-tint"><RotateCcw size={22}/></span><div className="min-w-0 flex-1"><h3 className="font-semibold text-sm">Refresh FitCircle</h3><p className="settings-note">Reload the current app</p></div><button onClick={forceRefresh} disabled={isRefreshing} data-testid="button-force-refresh" aria-label="Refresh FitCircle" className="settings-refresh">{isRefreshing ? 'Updating…' : 'Refresh'}</button></div>
+          <section className="fc-section settings-card" aria-label="App Updates">
+            <div className="flex items-center gap-3"><span className="settings-icon text-feature-purple bg-feature-purple-tint"><RotateCcw size={22}/></span><div className="min-w-0 flex-1"><h3 className="font-semibold text-sm">Refresh FitCircle</h3><p className="settings-note">Reload the current app</p></div><button onClick={forceRefresh} disabled={isRefreshing} data-testid="button-force-refresh" aria-label="Refresh FitCircle" className="fc-action fc-action-secondary shrink-0 settings-refresh">{isRefreshing ? 'Updating…' : 'Refresh'}</button></div>
             <p className="settings-note mt-4 flex items-start gap-2"><ShieldCheck size={17} className="shrink-0 mt-0.5"/>Your locally saved fitness data is not intentionally cleared by refreshing.</p>
             {section === 'display' && status && <p role="status" aria-live="polite" className="mt-3 text-sm text-supporting">{status}</p>}
           </section>
         </>}
         {section !== 'display' && <>
-          <section className="settings-card settings-local" aria-label="Local data information"><div className="flex items-center gap-2 mb-2"><HardDrive size={22} className="text-accent-text"/><h2 className="font-semibold">Stored on this device</h2></div><p className="settings-note">FitCircle saves your records locally. Export a backup regularly to protect against device or browser data loss. There is no automatic cloud backup.</p></section>
+          <section className="fc-section settings-card settings-local" aria-label="Local data information"><div className="flex items-center gap-2 mb-2"><HardDrive size={22} className="text-accent-text"/><h2 className="font-semibold">Stored on this device</h2></div><p className="settings-note">FitCircle saves your records locally. Export a backup regularly to protect against device or browser data loss. There is no automatic cloud backup.</p></section>
           <h2 className="settings-section-title">Backup &amp; Restore</h2>
-          <section className="settings-card" aria-label="Backup and Restore">
+          <section className="fc-section settings-card" aria-label="Backup and Restore">
             <div className="settings-row-heading"><span className="settings-icon bg-feature-green-tint text-accent-text"><Download size={23}/></span><div><h3>Export Backup</h3><p>Save all FitCircle records as JSON</p></div></div>
-            <button onClick={exportSnapshot} disabled={isExporting} className="settings-wide-button bg-action hover:bg-action-hover text-on-action mt-4"><Download size={18}/>{isExporting ? 'Creating Backup...' : 'Download Complete Backup'}</button>
+            <button onClick={exportSnapshot} disabled={isExporting} className="fc-action w-full settings-wide-button bg-action hover:bg-action-hover text-on-action mt-4"><Download size={18}/>{isExporting ? 'Creating Backup...' : 'Download Complete Backup'}</button>
             <div className="border-t border-separator my-5"/>
             <div className="settings-row-heading"><span className="settings-icon bg-feature-blue-tint text-feature-blue"><Upload size={23}/></span><div><h3>Restore Backup</h3><p>Import a previously saved backup</p></div></div>
             <input ref={fileInputRef} type="file" accept=".json" onChange={handleFileChange} className="hidden" aria-label="Backup file"/>
-            <button onClick={()=>fileInputRef.current?.click()} disabled={isImporting} className="settings-wide-button border border-control-border text-supporting hover:bg-surface-secondary mt-4"><Upload size={18}/>{isImporting ? 'Restoring...' : 'Choose Backup File'}</button>
+            <button onClick={()=>fileInputRef.current?.click()} disabled={isImporting} className="fc-action w-full settings-wide-button border border-control-border text-supporting hover:bg-surface-secondary mt-4"><Upload size={18}/>{isImporting ? 'Restoring...' : 'Choose Backup File'}</button>
             <p className="settings-note mt-3 flex items-start gap-2"><Info size={17} className="shrink-0 mt-0.5"/><span>Restore validates the backup, replaces matching FitCircle records, and preserves unrelated browser data. Close other FitCircle tabs before restoring.</span></p>
             {status && <p role="status" aria-live="polite" className="mt-3 text-sm text-supporting">{status}</p>}
           </section>
           <h2 className="settings-section-title">Data Management</h2>
-          <section className="settings-card" aria-label="Data Management">
+          <section className="fc-section settings-card" aria-label="Data Management">
             <div className="settings-row-heading"><span className="settings-icon bg-feature-red-deep-tint/40 text-feature-red"><Trash2 size={22}/></span><div><h3>Erase All Data</h3><p>Permanently remove locally saved records</p></div></div>
-            {!showEraseConfirm ? <button onClick={()=>setShowEraseConfirm(true)} className="settings-wide-button border border-feature-red text-feature-red hover:bg-feature-red-deep-tint/20 mt-4">Erase FitCircle Data</button> : <div className="mt-4"><p className="text-error-soft text-sm font-medium mb-3">⚠️ Are you absolutely sure? This action cannot be undone!</p><div className="flex flex-wrap gap-2"><button onClick={eraseAllData} className="settings-wide-button flex-1 bg-red-600 text-white">Yes, Erase Everything</button><button onClick={()=>setShowEraseConfirm(false)} className="settings-wide-button flex-1 border border-control-border text-strong">Cancel</button></div></div>}
+            {!showEraseConfirm ? <button onClick={()=>setShowEraseConfirm(true)} className="fc-action w-full settings-wide-button border border-feature-red text-feature-red hover:bg-feature-red-deep-tint/20 mt-4">Erase FitCircle Data</button> : <div className="mt-4"><p className="text-error-soft text-sm font-medium mb-3">⚠️ Are you absolutely sure? This action cannot be undone!</p><div className="flex flex-wrap gap-2"><button onClick={eraseAllData} className="fc-action w-full settings-wide-button flex-1 bg-red-600 text-white">Yes, Erase Everything</button><button onClick={()=>setShowEraseConfirm(false)} className="fc-action w-full settings-wide-button flex-1 border border-control-border text-strong">Cancel</button></div></div>}
           </section>
           <p className="settings-note mt-5 flex justify-center items-center gap-2"><LockKeyhole size={15}/>Local-first data management</p>
         </>}

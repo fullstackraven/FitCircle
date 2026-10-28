@@ -301,6 +301,7 @@ export default function MeditationPage() {
       <WellnessPageShell
         title="Meditation"
         accent="var(--wellness-purple)"
+        textAccent="hsl(var(--feature-purple))"
         onGoal={() => setIsGoalModalOpen(true)}
       >
         {error && (
@@ -496,9 +497,9 @@ export default function MeditationPage() {
           <h3 className="text-lg font-semibold">History</h3>
           <div className="space-y-3">
             {Object.keys(dailyLogs).length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="fc-empty">
                 <p>No meditation sessions yet.</p>
-                <p className="text-sm mt-2">
+                <p className="text-xs mt-2">
                   Complete a meditation session to see your log here.
                 </p>
               </div>

@@ -188,7 +188,7 @@ export default function WellnessPage() {
       
       {/* Main content; header spacing is handled by normal flow */}
       <div>
-        <div className="fitcircle-container">
+        <div className="fitcircle-container pt-4">
 
         {/* Edit/Done Button */}
         <div className="flex justify-end mb-3">

@@ -1,6 +1,7 @@
+import { PageHeader, EmptyState } from '@/components/ui/presentation';
 import '@/styles/supplements.css';
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Pill, Plus, Edit2, Trash2, Calendar, ChevronDown, ChevronUp, Check, SlidersHorizontal } from "lucide-react";
+import { Pill, Plus, Edit2, Trash2, Calendar, ChevronDown, ChevronUp, Check, SlidersHorizontal } from "lucide-react";
 import { useLocation } from "wouter";
 import { useSupplements } from "@/hooks/use-supplements";
 import { AddSupplementDialog } from "@/components/AddSupplementDialog";
@@ -103,12 +104,8 @@ export function SupplementsPage() {
   return (
     <div className="fitcircle-page supplements-page">
       <div className="fitcircle-container">
-        <div className="flex items-center justify-between gap-2 mb-5">
-          <button onClick={handleBack} className="min-h-11 min-w-11 inline-flex items-center justify-center text-muted-foreground hover:text-strong" title="Back" aria-label="Back"><ArrowLeft size={20}/></button>
-          <h1 className="fitcircle-page-title">Supplements</h1>
-          <div ref={addTriggerRef} className="supplement-add-trigger"><AddSupplementDialog onSupplementAdded={() => window.location.reload()}/></div>
-        </div>
-        <section className="supplements-card" aria-labelledby="daily-supplements-heading">
+        <PageHeader title="Supplements" onBack={handleBack} actions={<div ref={addTriggerRef} className="supplement-add-trigger"><AddSupplementDialog onSupplementAdded={() => window.location.reload()}/></div>} />
+        <section className="fc-section supplements-card" aria-labelledby="daily-supplements-heading">
           <div className="flex items-center gap-3 mb-4">
             <span className="supplement-heading-icon"><Pill size={25}/></span>
             <div className="min-w-0 flex-1"><h2 id="daily-supplements-heading" className="font-bold text-base text-strong">Today's Supplements</h2><p className="text-xs text-muted-foreground mt-1">{format(new Date(), "EEEE, MMMM d")}</p></div>
@@ -124,11 +121,11 @@ export function SupplementsPage() {
                 <span className={log.taken ? 'text-accent-text' : 'text-muted-foreground'}>{log.taken ? 'Taken' : 'Not taken'}</span>
               </button>;
             })}
-            {!tempSupplementLogs.length && <p className="text-center text-sm text-muted-foreground py-5">No supplements added yet</p>}
+            {!tempSupplementLogs.length && <EmptyState>No supplements added yet</EmptyState>}
           </div>
-          {!!tempSupplementLogs.length && <button onClick={handleSaveSupplements} className="supplement-save"><Check size={19}/>Save Today's Log</button>}
+          {!!tempSupplementLogs.length && <button onClick={handleSaveSupplements} className="fc-action fc-action-primary w-full supplement-save"><Check size={19}/>Save Today's Log</button>}
         </section>
-        <Collapsible open={isManageOpen} onOpenChange={setIsManageOpen} className="supplements-card mt-4 !p-0">
+        <Collapsible open={isManageOpen} onOpenChange={setIsManageOpen} className="fc-section supplements-card mt-4 !p-0">
           <CollapsibleTrigger className="supplement-manage-trigger"><SlidersHorizontal size={20} className="text-muted-foreground shrink-0"/><h2 className="flex-1 text-left font-semibold text-base text-strong">Manage Supplements</h2>{isManageOpen ? <ChevronUp size={19}/> : <ChevronDown size={19}/>}</CollapsibleTrigger>
           <CollapsibleContent className="border-t border-separator p-4">
             <p className="text-xs text-muted-foreground mb-3">View saved quantities and edit your supplement list.</p>
@@ -144,8 +141,8 @@ export function SupplementsPage() {
                 <button onClick={()=>handleDeleteSupplement(supplement.id)} title="Delete supplement" aria-label={`Delete ${supplement.name}`} className="supplement-delete"><Trash2 size={18}/></button>
               </>}
             </div>)}
-            {!allSupplements.length && <p className="text-center text-sm text-muted-foreground py-4">No supplements added yet</p>}
-            <button onClick={()=>addTriggerRef.current?.querySelector('button')?.click()} className="supplement-add-secondary"><Plus size={18}/>Add Supplement</button>
+            {!allSupplements.length && <EmptyState>No supplements added yet</EmptyState>}
+            <button onClick={()=>addTriggerRef.current?.querySelector('button')?.click()} className="fc-action fc-action-secondary w-full mt-3 supplement-add-secondary"><Plus size={18}/>Add Supplement</button>
           </CollapsibleContent>
         </Collapsible>
         <p className="flex items-start gap-2 mt-5 text-xs text-muted-foreground leading-relaxed"><Calendar size={17} className="shrink-0 mt-0.5"/>Tip: Tap any day on the calendar to view or edit past supplement logs</p>

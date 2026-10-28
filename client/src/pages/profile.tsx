@@ -1,5 +1,6 @@
+import { PageHeader } from '@/components/ui/presentation';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, User, CalendarDays, Ruler, Target, Pencil, ChevronRight, SlidersHorizontal } from 'lucide-react';
+import { User, CalendarDays, Ruler, Target, Pencil, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { dashboardQuery } from '@/lib/dashboard-navigation';
 import { Button } from '@/components/ui/button';
@@ -52,10 +53,7 @@ export default function ProfilePage() {
   const compactReps = training ? new Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 }).format(training.totalReps) : '—';
   return (
     <div className="w-full max-w-md mx-auto space-y-5">
-      <div className="flex items-center gap-2">
-        <button onClick={back} className="min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong" aria-label="Back"><ArrowLeft size={20} /></button>
-        <h1 className="text-2xl font-bold tracking-tight text-strong">My Fitness Profile</h1>
-      </div>
+      <PageHeader title="My Fitness Profile" onBack={back} align="start" className="mb-0" />
       {profile.error && <div role="alert" className="rounded-xl border border-amber-500/40 p-3 text-sm text-warning">{profile.error}<div className="flex gap-3 mt-2"><button className="min-h-11" onClick={refresh}>Retry</button><button className="min-h-11" onClick={() => navigate('/account-data' + (fromDashboard ? dashboardQuery(returnTo) : ''))}>Open Account Data</button></div></div>}
       <header className="flex items-center gap-3">
         <div className="w-14 h-14 shrink-0 rounded-full bg-accent-bright/10 flex items-center justify-center"><User size={28} className="text-accent-text" aria-hidden="true" /></div>
@@ -69,12 +67,12 @@ export default function ProfilePage() {
       </section>
       <section aria-labelledby="profile-training">
         <h2 id="profile-training" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Your Training</h2>
-        {training ? <dl className="grid grid-cols-3 gap-2">
-          {[['Active Days', String(training.totalCompletedDays), String(training.totalCompletedDays)], ['Consistency', `${training.totalConsistency.toFixed(1)}%`, `${training.totalConsistency.toFixed(1)}%`], ['Total Reps', compactReps, fullReps]].map(([label, value, full]) => <div key={label} className="rounded-xl bg-surface/90 p-2 text-center flex flex-col justify-center min-h-20"><dt className="order-2 text-xs text-muted-foreground mt-1">{label}</dt><dd title={full} className="order-1 type-metric text-xl font-bold text-strong break-all">{value}</dd></div>)}
+        {training ? <dl className="fc-metrics">
+          {[['Active Days', String(training.totalCompletedDays), String(training.totalCompletedDays)], ['Consistency', `${training.totalConsistency.toFixed(1)}%`, `${training.totalConsistency.toFixed(1)}%`], ['Total Reps', compactReps, fullReps]].map(([label, value, full]) => <div key={label} className="fc-metric flex flex-col justify-center min-h-20"><dt className="order-2">{label}</dt><dd title={full} className="order-1 type-metric text-strong">{value}</dd></div>)}
         </dl> : <p className="text-sm text-warning">Training history is unavailable. Existing records have not been changed.</p>}
         {training && training.totalReps === 0 && training.totalCompletedDays === 0 && <p className="text-sm text-muted-foreground mt-2">No workouts recorded yet</p>}
         <button onClick={() => navigate('/workout-statistics')} className="min-h-11 text-sm text-accent-text hover:text-accent-soft">View Workout Statistics</button>
-        <p className="text-xs text-dim">Active days and consistency use the same completed-day definitions as Workout Statistics.</p>
+        <p className="text-xs text-muted-foreground">Active days and consistency use the same completed-day definitions as Workout Statistics.</p>
       </section>
       <section aria-labelledby="profile-details">
         <h2 id="profile-details" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Personal Details</h2>

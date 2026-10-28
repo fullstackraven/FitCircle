@@ -517,21 +517,23 @@ export default function CalendarPage() {
       {/* Main content; header spacing is handled by normal flow */}
       <div>
         {/* Calendar Controls - below universal header */}
-        <div className="px-4 pb-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+        <div className="px-4 pb-4 grid grid-cols-[minmax(0,1fr)_44px] items-center gap-2">
+        <div className="grid grid-cols-[44px_minmax(0,1fr)_44px] items-center">
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(subMonths(currentMonth, 1)) : setCurrentWeek(subWeeks(currentWeek, 1))}
-            className="text-muted-foreground hover:text-strong transition"
+            className="fc-icon-action"
+            aria-label="Previous period"
             data-testid="button-prev-period"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <h2 className="text-lg font-semibold text-strong">
+          <h2 className="min-w-0 text-center text-base font-semibold text-strong">
             {viewMode === 'monthly' ? format(currentMonth, "MMMM yyyy") : getWeekRangeString()}
           </h2>
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(addMonths(currentMonth, 1)) : setCurrentWeek(addWeeks(currentWeek, 1))}
-            className="text-muted-foreground hover:text-strong transition"
+            className="fc-icon-action"
+            aria-label="Next period"
             data-testid="button-next-period"
           >
             <ChevronRight className="w-5 h-5" />
@@ -551,7 +553,8 @@ export default function CalendarPage() {
               setViewMode('monthly');
             }
           }}
-          className="text-muted-foreground hover:text-strong transition-colors"
+          className="fc-icon-action"
+          aria-label={viewMode === 'monthly' ? 'Show weekly view' : 'Show monthly view'}
           data-testid="button-toggle-view"
         >
           {viewMode === 'monthly' ? <BarChart3 className="w-5 h-5" /> : <CalendarIcon className="w-5 h-5" />}
@@ -588,7 +591,7 @@ export default function CalendarPage() {
                   key={date.toISOString()}
                   onClick={() => handleDateClick(date)}
                   className={`aspect-square rounded-xl flex items-center justify-center relative text-sm font-medium cursor-pointer transition-all hover:opacity-80
-                    ${isCurrent ? "bg-surface text-strong" : "bg-surface-secondary text-dim"}
+                    ${isCurrent ? "bg-surface text-strong" : "bg-surface-secondary text-supporting"}
                     ${complete && !isRecovery ? "bg-action-selected text-on-action shadow-lg shadow-green-500/50" : ""}
                     ${isRecovery ? "bg-orange-500 text-strong shadow-lg shadow-orange-500/50" : ""}`}
                   style={complete && !isRecovery ? {

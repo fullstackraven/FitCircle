@@ -1,5 +1,6 @@
+import { PageHeader } from '@/components/ui/presentation';
 import { useState, useEffect } from "react";
-import { ArrowLeft, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -112,16 +113,7 @@ export default function MeasurementsPage() {
     <div className="fitcircle-page">
       <div className="fitcircle-container">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={handleBack}
-            className="text-muted-foreground hover:text-strong transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="fitcircle-page-title">Measurements</h1>
-          <span className="w-5" />
-        </div>
+        <PageHeader title="Measurements" onBack={handleBack} />
 
         {(measurementError || saveError) && (
           <p role="alert" className="text-sm text-warning-soft mb-4">

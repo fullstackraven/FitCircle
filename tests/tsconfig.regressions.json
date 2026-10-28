@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "browser/design-consistency.spec.ts",
+    "visual-route-inventory.test.ts",
     "pwa-update-detection.test.ts",
     "browser/pwa-update-notice.spec.ts",
     "browser/energy-modernization.spec.ts",

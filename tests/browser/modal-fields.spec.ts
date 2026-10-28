@@ -312,11 +312,13 @@ async function inspectFields(page: Page, dialog: Locator) {
     dialog.getByRole("button", { name: "Close", exact: true }),
   ).toBeVisible();
 }
-for (const example of cases)
-  test(`${example.name}: contained focus and fields stay reachable through keyboard shrink`, async ({
+for (const mode of ["dark", "light"]) for (const width of [320, 390]) for (const example of cases)
+  test(`${mode} ${width}: ${example.name}: contained focus and fields stay reachable through keyboard shrink`, async ({
     page,
   }) => {
+    await page.setViewportSize({width, height:844});
     await seed(page);
+    await page.evaluate(mode => localStorage.setItem('fitcircle_appearance', mode), mode);
     await page.goto(example.route);
     await page.addStyleTag({
       content: ":root { --safe-top: 59px; --safe-bottom: 34px; }",

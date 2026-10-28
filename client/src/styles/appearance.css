@@ -41,10 +41,11 @@
   --control-border-muted: 215.38461538461539 16.31799163179916%
     46.86274509803921%;
   --accent-soft: 141.71428571428572 76.64233576642336% 73.13725490196079%;
-  --action: 142.12765957446808 76.21621621621621% 36.27450980392157%;
+  --action: var(--action-solid);
   --action-hover: 142.42990654205607 71.81208053691275% 29.21568627450981%;
   --action-selected: 142.08588957055215 70.56277056277057% 45.29411764705883%;
   --on-action: 0 0% 100%;
+  --on-selected-action: var(--on-bright);
   --on-bright: 228.57142857142856 84% 4.90196078431373%;
   --accent-bright: 141.8918918918919 69.1588785046729% 58.03921568627452%;
   --accent-bright-hover: 141.71428571428572 76.64233576642336%
@@ -92,6 +93,7 @@
 }
 
 :root[data-appearance="light"] {
+  --on-selected-action: var(--on-action);
   --background: 210 40% 98%;
   --app-background: #f8fafc;
   --foreground: 222 47% 11%;
@@ -437,3 +439,8 @@
 :root[data-appearance="dark"] input::-webkit-outer-spin-button {
   color-scheme: light;
 }
+
+/* Existing bright selected fills need a separate foreground from solid actions. */
+.bg-action-selected.text-on-action { color:hsl(var(--on-selected-action)); }
+.bg-action-selected.text-on-action:hover:not(:disabled) { color:hsl(var(--on-action)); }
+.action-quiet-danger { color:hsl(var(--feature-red)); }
