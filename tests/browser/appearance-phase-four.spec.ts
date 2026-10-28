@@ -32,6 +32,15 @@ for (const mode of modes)
           animations: "disabled",
           threshold: 0,
           maxDiffPixels: 0,
+        }).catch(async error => {
+          // Temporary transport diagnostic: artifact downloads are unavailable
+          // in this workspace. Keep the assertion failing and report this one
+          // synthetic image through the existing GitHub annotation reporter.
+          if (name === "energy-level") {
+            const actual = await page.screenshot({ animations: "disabled", caret: "hide" });
+            throw new Error(`ENERGY_ACTUAL_PNG_BASE64:${actual.toString("base64")}`);
+          }
+          throw error;
         });
       await page.screenshot({
         path: `${process.env.APPEARANCE_PRODUCTION_REVIEW ? "docs/review/appearance-phase-five/production" : "docs/review/appearance-phase-four"}/${process.env.APPEARANCE_CAPTURE_BEFORE ? "before" : mode}/${name}.png`,
