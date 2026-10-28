@@ -98,11 +98,47 @@ jobs:
           unzip -q "$RUNNER_TEMP/chrome.zip" -d "$RUNNER_TEMP/fitcircle-browser"
           echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$RUNNER_TEMP/fitcircle-browser/chrome-linux64/chrome" >> "$GITHUB_ENV"
       - run: npm run test:e2e -- --workers=2 --shard=${{ matrix.shard }}/4
+      # Always retain captures, even when all functional assertions pass.
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: always()
         with:
           name: browser-test-results-${{ matrix.shard }}
           path: test-results/
+          retention-days: 7
+
+  # Image comparisons are advisory. This job only reads captured PNGs; all
+  # functional, accessibility, layout and data-integrity assertions stay above.
+  visual-review:
+    name: Advisory screenshot review
+    needs: browser
+    if: always()
+    continue-on-error: true
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: browser-test-results-*
+          merge-multiple: true
+          path: test-results/
+      - name: Compare screenshots (advisory only)
+        run: npm run test:visual
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: advisory-visual-review
+          path: |
+            visual-test-results/
+            visual-review-report/
           retention-days: 7
 
   # Keep the existing required-check name. Always evaluate failed/skipped

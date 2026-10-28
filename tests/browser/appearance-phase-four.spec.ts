@@ -1,3 +1,4 @@
+import { captureVisual } from "../fixtures/visual-review";
 import { test, expect, type Page } from "@playwright/test";
 import fs from "node:fs";
 import {
@@ -27,8 +28,18 @@ for (const mode of modes)
       await expect(page.locator("#fitcircle-startup")).toHaveCount(0);
       await page.locator("h1").first().waitFor();
       await page.evaluate(() => document.fonts.ready);
+      if (name === "energy-level") {
+        // The heading may precede the mount effect loading the seeded record.
+        await expect(page.getByTestId("selected-energy")).toHaveText("7");
+        await expect(page.getByTestId("energy-save-state")).toHaveText("Saved");
+        await expect(page.getByRole("slider", { name: "Energy level", exact: true })).toHaveValue("7");
+        await expect(page.getByTestId("energy-average")).toHaveText("5.0");
+        await expect(page.getByTestId("energy-days")).toHaveText("3");
+        await expect(page.getByTestId("energy-today")).toHaveText("7");
+        await expect(page.locator(".energy-chart circle[data-energy]")).toHaveCount(3);
+      }
       if (mode === "dark" && name !== "synthetic-not-found")
-        await expect(page).toHaveScreenshot(`${name === "fasting" || name.startsWith("fasting-") ? `${name}-completed` : name === "journal-editor" ? "journal-editor-full-page" : name === "daily-journal" ? "daily-journal-checkmark" : name === "journal-log" ? `${name}-notes` : ["cardio-recovery", "workout-recovery"].includes(name) ? `${name}-account-data` : name}.png`, {
+        await captureVisual(page, `${name === "fasting" || name.startsWith("fasting-") ? `${name}-completed` : name === "journal-editor" ? "journal-editor-full-page" : name === "daily-journal" ? "daily-journal-checkmark" : name === "journal-log" ? `${name}-notes` : ["cardio-recovery", "workout-recovery"].includes(name) ? `${name}-account-data` : name}.png`, {
           animations: "disabled",
           threshold: 0,
           maxDiffPixels: 0,
