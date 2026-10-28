@@ -1,405 +1,66 @@
-import React, { useState, useEffect } from "react";
-import { ArrowLeft, Zap, Undo2, Calendar, Repeat } from "lucide-react";
-import { useLocation } from "wouter";
-import { useEnergyLevel } from "../hooks/use-energy-level";
-import { getDateString } from '@/lib/date-utils';
-import { format } from 'date-fns';
+import '@/styles/energy-level.css';
+import React, {useEffect,useState} from 'react';
+import {ArrowLeft,Zap,Undo2,Calendar,ChartNoAxesColumnIncreasing,Check} from 'lucide-react';
+import {useLocation} from 'wouter';
+import {useEnergyLevel} from '../hooks/use-energy-level';
+import {energyTrend,type EnergyRange} from '@/lib/energy-trends';
+import {format} from 'date-fns';
 
-// Enhanced Energy Level Trend Visualization Component
-const EnergyTrendVisualization = ({ showAllTime }: { showAllTime: boolean }) => {
-  const { getEnergyLevelData } = useEnergyLevel();
-  const energyData = getEnergyLevelData();
-  
-  // Get data based on view mode
-  const trendData: Array<{ date: string; energy: number; dateStr: string }> = [];
-  const today = new Date();
-  
-  if (showAllTime) {
-    // Get all-time data
-    const allDates = Object.keys(energyData).sort();
-    if (allDates.length > 0) {
-      allDates.forEach(dateStr => {
-        const date = new Date(dateStr + 'T00:00:00');
-        trendData.push({
-          date: date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }),
-          energy: (energyData as any)[dateStr] || 0,
-          dateStr: dateStr
-        });
-      });
-    }
-  } else {
-    // Get last 14 days of data
-    for (let i = 13; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      const dateStr = getDateString(date);
-      const energy = (energyData as any)[dateStr] || 0;
-      trendData.push({
-        date: date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }),
-        energy: energy,
-        dateStr: dateStr
-      });
-    }
-  }
-  
-  const last14Days = trendData;
+const energyDescription=(level:number)=>level===0?'Not set':level<=2?'Very Low':level<=4?'Low':level<=6?'Moderate':level<=8?'High':'Very High';
+const energyColor=(level:number)=>level===0?'text-muted-foreground':level<=3?'text-feature-red':level<=6?'text-feature-yellow':'text-accent-text';
 
-  // Calculate statistics
-  const nonZeroEnergies = last14Days.filter(day => day.energy > 0);
-  const avgEnergy = nonZeroEnergies.length > 0
-    ? (nonZeroEnergies.reduce((sum, day) => sum + day.energy, 0) / nonZeroEnergies.length).toFixed(1)
-    : '0';
-  const daysLogged = nonZeroEnergies.length;
-  const todayEnergy = (energyData as any)[getDateString(today)] || 0;
-
-  // Create SVG path for the trend line
-  const createPath = (data: Array<{ date: string; energy: number; dateStr: string }>) => {
-    const width = 300;
-    const height = 140;
-    const padding = 20;
-    
-    const validData = data.filter(d => d.energy > 0);
-    if (validData.length < 2) return '';
-    
-    const xStep = (width - padding * 2) / (data.length - 1);
-    const yScale = (height - padding * 2) / 10; // Max energy is 10
-    
-    let path = '';
-    validData.forEach((point, index) => {
-      const dataIndex = data.findIndex(d => d.dateStr === point.dateStr);
-      const x = padding + (dataIndex * xStep);
-      const y = height - padding - (point.energy * yScale);
-      
-      if (index === 0) {
-        path += `M ${x} ${y}`;
-      } else {
-        path += ` L ${x} ${y}`;
-      }
-    });
-    
-    return path;
-  };
-
-  const pathData = createPath(last14Days);
-
-  return (
-    <div className="bg-gradient-to-br from-feature-purple-tint/30 to-feature-blue-deep-tint/30 rounded-xl p-6 border border-purple-500/20">
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="text-center">
-          <div className="type-metric text-2xl font-bold text-feature-purple">{avgEnergy}</div>
-          <div className="text-xs text-muted-foreground">Avg Energy</div>
-        </div>
-        <div className="text-center">
-          <div className="type-metric text-2xl font-bold text-feature-blue">{daysLogged}</div>
-          <div className="text-xs text-muted-foreground">Days Logged</div>
-        </div>
-        <div className="text-center">
-          <div className="type-metric text-2xl font-bold text-accent-text">{todayEnergy}</div>
-          <div className="text-xs text-muted-foreground">Today</div>
-        </div>
-      </div>
-
-      {/* Trend Line Chart */}
-      <div className="relative mb-4">
-        <svg width="100%" height="180" viewBox="0 0 320 180" className="overflow-visible">
-          {/* Grid lines */}
-          {[...Array(6)].map((_, i) => (
-            <line
-              key={i}
-              x1="20"
-              y1={20 + (i * 24)}
-              x2="280"
-              y2={20 + (i * 24)}
-              stroke="var(--energy-track)"
-              strokeWidth="1"
-            />
-          ))}
-          
-          {/* Y-axis labels */}
-          {[10, 8, 6, 4, 2, 0].map((value, i) => (
-            <text
-              key={value}
-              x="290"
-              y={20 + (i * 24) + 4}
-              fill="var(--energy-empty-dot)"
-              fontSize="10"
-              textAnchor="start"
-            >
-              {value}
-            </text>
-          ))}
-          
-          {/* Trend line */}
-          {pathData && (
-            <path
-              d={pathData}
-              stroke="url(#energyGradient)"
-              strokeWidth="3"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          )}
-          
-          {/* Data points - only show in 14-day view */}
-          {!showAllTime && last14Days.filter(d => d.energy > 0).map((point, index) => {
-            const dataIndex = last14Days.findIndex(d => d.dateStr === point.dateStr);
-            const x = 20 + (dataIndex * (260 / (last14Days.length - 1)));
-            const y = 160 - (point.energy * 12);
-            
-            return (
-              <circle
-                key={point.dateStr}
-                cx={x}
-                cy={y}
-                r="4"
-                fill="url(#energyGradient)"
-                stroke="var(--energy-point-border)"
-                strokeWidth="2"
-              />
-            );
-          })}
-          
-          {/* Gradient definition */}
-          <defs>
-            <linearGradient id="energyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="var(--energy-gradient-purple)" />
-              <stop offset="50%" stopColor="var(--energy-gradient-blue)" />
-              <stop offset="100%" stopColor="var(--energy-gradient-cyan)" />
-            </linearGradient>
-          </defs>
-        </svg>
-        
-        {/* Date labels */}
-        <div className="flex justify-between mt-2 px-5">
-          <span className="text-xs text-muted-foreground">{last14Days[0]?.date}</span>
-          <span className="text-xs text-muted-foreground">{last14Days[Math.floor(last14Days.length / 2)]?.date}</span>
-          <span className="text-xs text-muted-foreground">{last14Days[last14Days.length - 1]?.date}</span>
-        </div>
-      </div>
-
-      {/* Status indicator */}
-      <div className="flex items-center justify-center">
-        <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-yellow-400 rounded-full text-on-action-soft"></div>
-          <span className="text-sm text-feature-yellow">Energy stable</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export function EnergyLevelPage() {
-  const [, navigate] = useLocation();
-  const { getEnergyLevel, setEnergyLevelForDate } = useEnergyLevel();
-  const [energyLevel, setEnergyLevel] = useState(0);
-  const [showAllTime, setShowAllTime] = useState(false);
-  
-  // Check if we came from wellness page
-  const urlParams = new URLSearchParams(window.location.search);
-  const fromWellness = urlParams.get('from') === 'wellness';
-  
-  const handleBack = () => {
-    if (fromWellness) {
-      navigate('/wellness');
-    } else {
-      navigate('/calendar');
-    }
-  };
-
-  useEffect(() => {
-    // Load today's energy level
-    const today = new Date();
-    const energy = getEnergyLevel(today);
-    setEnergyLevel(energy);
-  }, []);
-
-  const handleEnergyTap = () => {
-    const newLevel = energyLevel >= 10 ? 1 : energyLevel + 1;
-    setEnergyLevel(newLevel);
-  };
-
-  const handleEnergyUndo = () => {
-    const newLevel = energyLevel <= 1 ? 0 : energyLevel - 1;
-    setEnergyLevel(newLevel);
-  };
-
-  const handleEnergySave = () => {
-    if (energyLevel > 0) {
-      const today = new Date();
-      setEnergyLevelForDate(today, energyLevel);
-      alert('Energy level saved successfully!');
-    }
-  };
-
-  const getEnergyColor = (level: number) => {
-    if (level === 0) return 'text-dim';
-    if (level <= 3) return 'text-feature-red';
-    if (level <= 6) return 'text-feature-yellow';
-    return 'text-accent-text';
-  };
-
-  const getEnergyDescription = (level: number) => {
-    if (level === 0) return 'Not set';
-    if (level <= 2) return 'Very Low';
-    if (level <= 4) return 'Low';
-    if (level <= 6) return 'Moderate';
-    if (level <= 8) return 'High';
-    return 'Very High';
-  };
-
-  return (
-    <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'var(--page-background)', paddingBottom: 'var(--bottom-nav-padding)' }}>
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={handleBack}
-          className="text-muted-foreground hover:text-strong transition-colors"
-          title="Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-
-        <h1 className="text-xl font-bold text-strong">Energy Level</h1>
-        <div className="w-5" />
-      </div>
-
-      <div className="space-y-6">
-        {/* Energy Level Trend */}
-        <div className="glass-panel bg-surface rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <Zap className="w-6 h-6 text-feature-yellow" />
-              <h2 className="text-lg font-semibold text-strong">Energy Trends</h2>
-            </div>
-            <button
-              onClick={() => setShowAllTime(!showAllTime)}
-              className="p-2 text-muted-foreground hover:text-strong transition-colors rounded-lg hover:bg-surface-secondary focus:outline-none"
-              title={showAllTime ? "Show 14 Days" : "Show All Time"}
-            >
-              <Repeat className="w-5 h-5" />
-            </button>
-          </div>
-          <EnergyTrendVisualization showAllTime={showAllTime} />
-        </div>
-
-        {/* Today's Energy Level */}
-        <div className="glass-panel bg-surface rounded-xl p-6">
-          <div className="text-center space-y-6">
-            <div>
-              <h2 className="text-lg font-semibold text-strong mb-2">Today's Energy Level</h2>
-              <p className="text-sm text-muted-foreground">{format(new Date(), "MMMM d, yyyy")}</p>
-            </div>
-
-            {/* Energy Level Circle with Progress Ring */}
-            <div className="flex justify-center">
-              <div className="relative w-40 h-40">
-                {(() => {
-                  // Larger circle with more spacing
-                  const size = 120;
-                  const strokeWidth = 8;
-                  const progress = energyLevel / 10;
-                  const padding = strokeWidth + 4;
-                  const svgSize = size + padding * 2;
-                  const radius = (size / 2) + (strokeWidth / 2) + 2;
-                  const circumference = radius * 2 * Math.PI;
-                  const strokeDasharray = circumference;
-                  const strokeDashoffset = isNaN(progress) ? circumference : circumference - (progress * circumference);
-                  
-                  return (
-                    <>
-                      {/* SVG Progress Ring - Exact workout logic */}
-                      <svg
-                        className="absolute transform -rotate-90"
-                        width={svgSize}
-                        height={svgSize}
-                        style={{ top: 0, left: 0 }}
-                      >
-                        {/* Background ring - darker and thicker */}
-                        <circle
-                          cx={svgSize / 2}
-                          cy={svgSize / 2}
-                          r={radius}
-                          stroke="var(--energy-track)"
-                          strokeWidth={strokeWidth + 2}
-                          fill="none"
-                        />
-                        {/* Progress ring - Apple fitness style */}
-                        <circle
-                          cx={svgSize / 2}
-                          cy={svgSize / 2}
-                          r={radius}
-                          stroke={energyLevel <= 3 ? 'var(--bmi-red)' : energyLevel <= 6 ? 'var(--energy-amber)' : 'var(--bmi-green)'}
-                          strokeWidth={strokeWidth + 2}
-                          fill="none"
-                          strokeDasharray={strokeDasharray}
-                          strokeDashoffset={strokeDashoffset}
-                          strokeLinecap="round"
-                          className="transition-all duration-500 ease-out"
-                          style={{
-                            filter: energyLevel >= 8 ? 'var(--workout-glow-complete)' : 'var(--workout-glow)',
-                            opacity: 0.9
-                          }}
-                        />
-                      </svg>
-                      {/* Clickable button */}
-                      <button
-                        onClick={handleEnergyTap}
-                        className="absolute rounded-full bg-surface-secondary flex items-center justify-center transition-all hover:scale-105 active:scale-95 border-4 border-control"
-                        style={{
-                          width: size,
-                          height: size,
-                          top: padding,
-                          left: padding
-                        }}
-                      >
-                        <div className="text-center">
-                          <div className={`type-metric text-3xl font-bold ${getEnergyColor(energyLevel)}`}>
-                            {energyLevel}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {getEnergyDescription(energyLevel)}
-                          </div>
-                        </div>
-                      </button>
-                    </>
-                  );
-                })()}
-              </div>
-            </div>
-
-            <div className="text-sm text-supporting">
-              Tap the circle to increase your energy level (1-10 scale)
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex space-x-3 justify-center">
-              <button
-                onClick={handleEnergyUndo}
-                className="flex items-center space-x-2 px-4 py-2 bg-surface-secondary hover:bg-control-strong text-strong rounded-xl transition-colors"
-                disabled={energyLevel === 0}
-              >
-                <Undo2 className="w-4 h-4" />
-                <span>Undo</span>
-              </button>
-              
-              <button
-                onClick={handleEnergySave}
-                className="px-6 py-2 bg-yellow-600 hover:bg-yellow-700 text-on-action rounded-xl transition-colors font-medium"
-              >
-                Save Level
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-surface-secondary rounded-xl p-4">
-          <p className="text-sm text-supporting">
-            <Calendar className="w-4 h-4 inline mr-2" />
-            Tip: Tap any day on the calendar to view or edit past energy levels
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+export function EnergyLevelPage(){
+ const [,navigate]=useLocation();
+ const {getEnergyLevel,setEnergyLevelForDate,getEnergyLevelData}=useEnergyLevel();
+ const [energyLevel,setEnergyLevel]=useState(0),[savedLevel,setSavedLevel]=useState(0);
+ const [range,setRange]=useState<EnergyRange>(30),[feedback,setFeedback]=useState('');
+ const fromWellness=new URLSearchParams(window.location.search).get('from')==='wellness';
+ useEffect(()=>{const value=getEnergyLevel(new Date());setEnergyLevel(value);setSavedLevel(value);},[]);
+ const selectLevel=(value:number)=>{setEnergyLevel(value);setFeedback('');};
+ const undo=()=>selectLevel(energyLevel<=1?0:energyLevel-1);
+ const save=()=>{
+  if(energyLevel<1||energyLevel>10)return;
+  const today=new Date();setEnergyLevelForDate(today,energyLevel);
+  // The existing storage service catches write errors; verify before claiming success.
+  if(getEnergyLevel(today)===energyLevel){setSavedLevel(energyLevel);setFeedback('Energy level saved successfully!');}
+  else setFeedback('Energy level could not be saved. Please try again.');
+ };
+ const trend=energyTrend(getEnergyLevelData(),range);
+ const saved=savedLevel>0&&energyLevel===savedLevel;
+ const state=saved?'Saved':energyLevel===savedLevel?'Not saved':'Unsaved changes';
+ const radius=61,circumference=2*Math.PI*radius;
+ const x=(index:number)=>trend.dates.length<2?145:20+index*250/(trend.dates.length-1);
+ const y=(value:number)=>128-(value-1)*108/9;
+ const points=trend.records.map(r=>`${x(r.index)},${y(r.energy)}`).join(' ');
+ return <div className="fitcircle-page energy-level-page"><div className="fitcircle-container">
+  <div className="flex items-center justify-between mb-5"><button onClick={()=>navigate(fromWellness?'/wellness':'/calendar')} className="min-h-11 min-w-11 flex items-center justify-center text-muted-foreground" aria-label="Back" title="Back"><ArrowLeft size={20}/></button><h1 className="fitcircle-page-title">Energy Level</h1><span className="w-11"/></div>
+  <section className="energy-card" aria-labelledby="today-energy-heading">
+   <div className="flex items-center gap-3"><span className="energy-icon"><Zap size={24}/></span><div className="min-w-0 flex-1"><h2 id="today-energy-heading" className="font-bold text-base text-strong">Today's Energy</h2><p className="text-xs text-muted-foreground mt-1">{format(new Date(),'EEEE, MMMM d')}</p></div><div className="text-right text-xs"><span data-testid="energy-save-state" className={saved?'text-accent-text':'text-muted-foreground'}>{state}</span><p className="text-[10px] text-muted-foreground mt-1">1–10 SCALE</p></div></div>
+   <div className={`energy-gauge ${energyColor(energyLevel)}`} role="img" aria-label={`${energyLevel || 'No selection'} of 10, ${energyDescription(energyLevel)}`}>
+    <svg viewBox="0 0 140 140" aria-hidden="true"><circle cx="70" cy="70" r={radius} stroke="var(--energy-track)" strokeWidth="8" fill="none"/><circle cx="70" cy="70" r={radius} stroke="currentColor" strokeWidth="8" fill="none" strokeDasharray={circumference} strokeDashoffset={circumference*(1-energyLevel/10)} strokeLinecap="round" transform="rotate(-90 70 70)"/></svg>
+    <div><strong data-testid="selected-energy">{energyLevel || '—'}</strong><span>{energyDescription(energyLevel)}</span></div>
+   </div>
+   <label htmlFor="energy-selection" className="block text-center text-xs text-muted-foreground mb-2">How energized do you feel today?</label>
+   <div className="flex justify-between text-xs text-muted-foreground"><span>Very low</span><span>Very high</span></div>
+   <input id="energy-selection" type="range" min="1" max="10" step="1" value={energyLevel || 1} aria-label="Energy level" aria-valuetext={energyLevel?`${energyLevel} of 10, ${energyDescription(energyLevel)}`:'Not set. Choose an energy level from 1 to 10.'} onChange={e=>selectLevel(Number(e.target.value))} onPointerDown={()=>{if(energyLevel===0)selectLevel(1);}} onKeyDown={e=>{if(energyLevel===0&&['Home','ArrowLeft','ArrowDown'].includes(e.key))selectLevel(1);}} style={{'--energy-selection':`${(Math.max(energyLevel,1)-1)/9*100}%`} as React.CSSProperties} className="energy-slider"/>
+   <div className="flex justify-between text-[10px] text-muted-foreground px-1 mb-4" aria-hidden="true"><span>1</span><span>5</span><span>10</span></div>
+   <div className="energy-actions"><button onClick={undo} disabled={energyLevel===0} title="Decrease the draft level by one; saved data is unchanged" className="energy-undo"><Undo2 size={17}/>Undo</button><button onClick={save} disabled={energyLevel===0} className="energy-save"><Check size={18}/>Save Energy</button></div>
+   {feedback&&<p role="status" aria-live="polite" className={`text-xs mt-3 ${feedback.includes('could not')?'text-feature-red':'text-accent-text'}`}>{feedback}</p>}
+  </section>
+  <section className="energy-card mt-4" aria-labelledby="energy-trends-heading">
+   <div className="flex items-center gap-3 mb-4"><span className="energy-icon"><ChartNoAxesColumnIncreasing size={22}/></span><div><h2 id="energy-trends-heading" className="font-bold text-base text-strong">Energy Trends</h2><p className="text-xs text-muted-foreground mt-1">Your saved energy over time</p></div></div>
+   <div className="energy-period" role="group" aria-label="Energy date range">{([7,30,'all'] as EnergyRange[]).map(value=><button key={value} aria-pressed={range===value} onClick={()=>setRange(value)}>{value==='all'?'All time':`${value} days`}</button>)}</div>
+   <div className="energy-metrics"><div><strong className="text-feature-purple" data-testid="energy-average">{trend.average??'—'}</strong><span>Avg Energy</span></div><div><strong className="text-feature-blue" data-testid="energy-days">{trend.daysLogged}</strong><span>Days Logged</span></div><div><strong className="text-accent-text" data-testid="energy-today">{trend.todayEnergy??'—'}</strong><span>Today</span></div></div>
+   {!trend.records.length?<p className="energy-empty">No energy entries yet. Save today's energy level to begin tracking your trends.</p>:<>
+    <svg className="energy-chart" viewBox="0 0 310 155" role="img" aria-label={`Energy trend, ${trend.daysLogged} saved entries, average ${trend.average} out of 10`}>
+     {[1,3,5,7,10].map(value=><g key={value}><line x1="20" x2="270" y1={y(value)} y2={y(value)} stroke="var(--energy-track)"/><text x="283" y={y(value)+3} fill="currentColor" fontSize="9">{value}</text></g>)}
+     {trend.records.length>1&&<polyline points={points} fill="none" stroke="var(--energy-gradient-blue)" strokeWidth="2.5" strokeLinejoin="round"/>}
+     {trend.records.map(record=><circle key={record.date} data-energy={record.energy} data-date={record.date} cx={x(record.index)} cy={y(record.energy)} r="3.5" fill="var(--energy-gradient-blue)"><title>{record.date}: {record.energy} of 10</title></circle>)}
+    </svg>
+    <div className="flex justify-between text-[10px] text-muted-foreground px-3"><span>{format(new Date(trend.dates[0]+'T00:00:00'),'MMM d')}</span><span>{format(new Date(trend.dates[trend.dates.length-1]+'T00:00:00'),'MMM d')}</span></div>
+    <p className="text-center text-[11px] text-muted-foreground mt-3">Saved entries only · Missing days are not scored</p>
+   </>}
+  </section>
+  <p className="flex items-start gap-2 mt-5 text-xs text-muted-foreground leading-relaxed"><Calendar size={17} className="shrink-0 mt-0.5"/>Tip: Tap any day on the calendar to view or edit past energy levels</p>
+ </div></div>;
 }
