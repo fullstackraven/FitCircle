@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import fs from "node:fs";
+import { PNG } from "pngjs";
 import {
   seedWellnessAppearance,
   wellnessBytes,
@@ -37,8 +38,14 @@ for (const mode of modes)
           // in this workspace. Keep the assertion failing and report this one
           // synthetic image through the existing GitHub annotation reporter.
           if (name === "energy-level") {
-            const actual = await page.screenshot({ animations: "disabled", caret: "hide" });
-            throw new Error(`ENERGY_ACTUAL_PNG_BASE64:${actual.toString("base64")}`);
+            const actual = PNG.sync.read(await page.screenshot({ animations: "disabled", caret: "hide" }));
+            const expected = PNG.sync.read(fs.readFileSync("tests/browser/appearance-phase-four.spec.ts-snapshots/energy-level-linux.png"));
+            const differences: number[][] = [];
+            for (let i = 0; i < actual.data.length; i += 4) {
+              if (actual.data.subarray(i,i+4).equals(expected.data.subarray(i,i+4))) continue;
+              differences.push([i / 4 % actual.width, Math.floor(i / 4 / actual.width), ...actual.data.subarray(i,i+4)]);
+            }
+            throw new Error(`ENERGY_PIXEL_DIFFS:${JSON.stringify(differences.slice(0,30))};TOTAL:${differences.length}`);
           }
           throw error;
         });
