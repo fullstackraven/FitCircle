@@ -18,10 +18,7 @@ for(const theme of ['dark','light']) test(`Home workout cards ${theme}`,async({p
  await expect(ring.getByTestId('workout-complete-check')).toHaveCount(0);
  await expect(page.getByTestId('home-workout-b')).toContainText('40 lbs');
  await card.scrollIntoViewIfNeeded();
- await expect(card.locator('..')).toHaveScreenshot(`home-workout-cards-${theme}.png`).catch(async error=>{
-  if(theme==='light')throw new Error(`HOME_ACTUAL_PNG_BASE64:${(await card.locator('..').screenshot({animations:'disabled',caret:'hide'})).toString('base64')}`);
-  throw error;
- });
+ await expect(card.locator('..')).toHaveScreenshot(`home-workout-cards-${theme}.png`);
  await ring.click();
  await expect(card.locator('..')).toHaveScreenshot(`home-completed-check-${theme}.png`);
  await card.getByTitle('Undo last set').click();
