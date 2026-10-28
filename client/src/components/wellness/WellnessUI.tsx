@@ -6,7 +6,6 @@ import {
   type ReactNode,
 } from "react";
 import {
-  ArrowLeft,
   ChevronRight,
   Plus,
   Target,
@@ -26,11 +25,13 @@ import { useWellnessClock } from "@/hooks/use-preserved-wellness";
 export function WellnessPageShell({
   title,
   accent,
+  textAccent,
   onGoal,
   children,
 }: {
   title: string;
   accent: string;
+  textAccent?: string;
   onGoal: () => void;
   children: ReactNode;
 }) {
@@ -38,7 +39,7 @@ export function WellnessPageShell({
   return (
     <div
       className="fitcircle-page wellness-page"
-      style={{ "--wellness-accent": accent } as CSSProperties}
+      style={{ "--wellness-accent": accent, "--wellness-text-accent": textAccent ?? accent } as CSSProperties}
     >
       <div className="fitcircle-container wellness-stack">
         <PageHeader title={title} onBack={() => navigate('/wellness')} backLabel="Back to Wellness" sideWidth={70} className="mb-0" actions={<button className="fc-icon-action gap-1" onClick={onGoal}><Target size={18}/><span>Goal</span></button>} />

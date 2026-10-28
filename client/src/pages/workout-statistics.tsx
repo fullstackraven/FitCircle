@@ -1,6 +1,6 @@
 import { PageHeader } from '@/components/ui/presentation';
 import React from "react";
-import { ArrowLeft, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { useLocation } from "wouter";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useWorkouts } from "@/hooks/use-workouts";

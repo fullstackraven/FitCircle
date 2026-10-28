@@ -591,7 +591,7 @@ export default function CalendarPage() {
                   key={date.toISOString()}
                   onClick={() => handleDateClick(date)}
                   className={`aspect-square rounded-xl flex items-center justify-center relative text-sm font-medium cursor-pointer transition-all hover:opacity-80
-                    ${isCurrent ? "bg-surface text-strong" : "bg-surface-secondary text-dim"}
+                    ${isCurrent ? "bg-surface text-strong" : "bg-surface-secondary text-supporting"}
                     ${complete && !isRecovery ? "bg-action-selected text-on-action shadow-lg shadow-green-500/50" : ""}
                     ${isRecovery ? "bg-orange-500 text-strong shadow-lg shadow-orange-500/50" : ""}`}
                   style={complete && !isRecovery ? {

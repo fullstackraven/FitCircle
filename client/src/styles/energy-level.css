@@ -9,7 +9,6 @@
 .energy-level-page .energy-actions { display:flex; gap:8px; }
 .energy-level-page .energy-undo { flex:1; }
 .energy-level-page .energy-save { flex:2; }
-.energy-level-page button:disabled { opacity:.45; cursor:not-allowed; }
 .energy-level-page button:focus-visible,.energy-level-page input:focus-visible { outline:2px solid hsl(var(--ring)); outline-offset:3px; }
 .energy-level-page .energy-chart { width:100%; height:auto; max-height:170px; color:hsl(var(--muted-foreground)); margin-top:12px; }
 @media(max-width:350px) { .energy-level-page .energy-icon { width:30px; height:34px; } }

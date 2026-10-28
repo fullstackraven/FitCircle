@@ -39,7 +39,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Card, CardContent } from "@/components/ui/card";
 import { getTodayString, groupLogsByMonth } from "@/lib/date-utils";
 
 export default function CardioPage() {
@@ -685,15 +684,13 @@ export default function CardioPage() {
                 </Collapsible>
               ))
             ) : (
-              <Card className="fitcircle-card">
-                <CardContent className="fc-empty">
-                  <div className="text-muted-foreground">
+              <div className="fc-empty">
+                  <div>
                     <Activity className="w-12 h-12 mx-auto mb-2" />
                     <p>No cardio activity yet</p>
-                    <p className="text-sm">Tap "Log Cardio" to get started!</p>
+                    <p className="text-xs mt-2">Tap "Log Cardio" to get started!</p>
                   </div>
-                </CardContent>
-              </Card>
+              </div>
             )}
           </div>
         </div>

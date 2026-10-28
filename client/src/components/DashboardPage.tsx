@@ -1,7 +1,6 @@
 import { PageHeader } from '@/components/ui/presentation';
 import { AppHeader } from './AppHeader';
 import type { ReactNode } from 'react';
-import { ArrowLeft } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { dashboardContext, dashboardQuery, reopenDashboard } from '@/lib/dashboard-navigation';
 

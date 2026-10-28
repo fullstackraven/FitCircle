@@ -1,6 +1,6 @@
 import { PageHeader } from '@/components/ui/presentation';
 import { useState, useEffect } from "react";
-import { ArrowLeft, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

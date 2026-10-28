@@ -231,7 +231,7 @@ export default function RemindersPage() {
         )}
 
         {reminders.length === 0 && !showAddForm ? (
-          <button type="button" aria-label="Write a reminder" onClick={openDraft} className="min-h-[50dvh] w-full flex items-center justify-center text-dim text-lg">No Reminders</button>
+          <button type="button" aria-label="Write a reminder" onClick={openDraft} className="min-h-[50dvh] w-full flex items-center justify-center text-muted-foreground text-lg">No Reminders</button>
         ) : (
           <ul aria-label="Reminders" className="divide-y divide-separator/30">
             {[...activeReminders, ...completedReminders].map(reminder => (
@@ -262,12 +262,12 @@ export default function RemindersPage() {
                   <button
                     onClick={() => !selectMode && startEditing(reminder)}
                     aria-label={`Edit ${reminder.text}`}
-                    className={`min-w-0 flex-1 text-left min-h-11 break-words whitespace-pre-wrap text-base ${reminder.completed ? 'text-dim' : 'text-strong'}`}
+                    className={`min-w-0 flex-1 text-left min-h-11 break-words whitespace-pre-wrap text-base ${reminder.completed ? 'text-muted-foreground' : 'text-strong'}`}
                   >{reminder.text}</button>
                 )}
                 {!selectMode && editingId !== reminder.id && (
                   <div className="relative shrink-0">
-                    <button aria-label={`Options for ${reminder.text}`} aria-expanded={showMenuId === reminder.id} onClick={() => toggleMenu(reminder.id)} className="min-h-11 min-w-11 flex items-center justify-center text-dim hover:text-strong">
+                    <button aria-label={`Options for ${reminder.text}`} aria-expanded={showMenuId === reminder.id} onClick={() => toggleMenu(reminder.id)} className="min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong">
                       <MoreHorizontal size={18} />
                     </button>
                     {showMenuId === reminder.id && (

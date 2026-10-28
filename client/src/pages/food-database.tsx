@@ -1,6 +1,6 @@
 import { PageHeader } from '@/components/ui/presentation';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { ArrowLeft, Search, Trash2, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Trash2, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -257,21 +257,21 @@ export default function FoodDatabasePage() {
                         {/* Macros */}
                         <div className="flex flex-wrap gap-2 text-xs">
                           <div className="px-2 py-1 bg-surface-secondary rounded-xl" data-testid={`text-calories-${food.id}`}>
-                            <span className="text-muted-foreground">Cal:</span> <span className="text-strong font-medium">{food.calories}</span>
+                            <span className="text-supporting">Cal:</span> <span className="text-strong font-medium">{food.calories}</span>
                           </div>
                           <div className="px-2 py-1 bg-surface-secondary rounded-xl" data-testid={`text-carbs-${food.id}`}>
-                            <span className="text-muted-foreground">C:</span> <span className="text-strong font-medium">{food.carbs}g</span>
+                            <span className="text-supporting">C:</span> <span className="text-strong font-medium">{food.carbs}g</span>
                           </div>
                           <div className="px-2 py-1 bg-surface-secondary rounded-xl" data-testid={`text-protein-${food.id}`}>
-                            <span className="text-muted-foreground">P:</span> <span className="text-strong font-medium">{food.protein}g</span>
+                            <span className="text-supporting">P:</span> <span className="text-strong font-medium">{food.protein}g</span>
                           </div>
                           <div className="px-2 py-1 bg-surface-secondary rounded-xl" data-testid={`text-fat-${food.id}`}>
-                            <span className="text-muted-foreground">F:</span> <span className="text-strong font-medium">{food.fat}g</span>
+                            <span className="text-supporting">F:</span> <span className="text-strong font-medium">{food.fat}g</span>
                           </div>
                         </div>
                         
                         {/* Serving Size */}
-                        <div className="text-xs text-dim mt-2">
+                        <div className="text-xs text-muted-foreground mt-2">
                           Per {food.quantity}{food.unit}
                         </div>
                       </div>

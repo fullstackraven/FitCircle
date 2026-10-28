@@ -1,7 +1,7 @@
 import { PageHeader, EmptyState } from '@/components/ui/presentation';
 import '@/styles/supplements.css';
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Pill, Plus, Edit2, Trash2, Calendar, ChevronDown, ChevronUp, Check, SlidersHorizontal } from "lucide-react";
+import { Pill, Plus, Edit2, Trash2, Calendar, ChevronDown, ChevronUp, Check, SlidersHorizontal } from "lucide-react";
 import { useLocation } from "wouter";
 import { useSupplements } from "@/hooks/use-supplements";
 import { AddSupplementDialog } from "@/components/AddSupplementDialog";

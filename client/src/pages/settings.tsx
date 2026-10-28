@@ -1,7 +1,7 @@
 import { PageHeader } from '@/components/ui/presentation';
 import '@/styles/dashboard-settings.css';
 import { useState, useRef, useSyncExternalStore, Fragment } from 'react';
-import { ArrowLeft, Upload, Download, Trash2, RotateCcw, Palette, CheckCircle2, Quote, ChartNoAxesColumnIncreasing, History, ShieldCheck, HardDrive, Info, LockKeyhole } from 'lucide-react';
+import { Upload, Download, Trash2, RotateCcw, Palette, CheckCircle2, Quote, ChartNoAxesColumnIncreasing, History, ShieldCheck, HardDrive, Info, LockKeyhole } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { AppHeader } from '@/components/AppHeader';
 import { dashboardContext, reopenDashboard } from '@/lib/dashboard-navigation';

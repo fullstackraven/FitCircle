@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { localFoodService } from '@/lib/local-food-service';
-import { ArrowLeft } from 'lucide-react';
 
 export default function RestoreCustomFoodsPage() {
   const [, navigate] = useLocation();

@@ -1,6 +1,6 @@
 import { PageHeader } from '@/components/ui/presentation';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, User, CalendarDays, Ruler, Target, Pencil, ChevronRight, SlidersHorizontal } from 'lucide-react';
+import { User, CalendarDays, Ruler, Target, Pencil, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { dashboardQuery } from '@/lib/dashboard-navigation';
 import { Button } from '@/components/ui/button';
@@ -72,7 +72,7 @@ export default function ProfilePage() {
         </dl> : <p className="text-sm text-warning">Training history is unavailable. Existing records have not been changed.</p>}
         {training && training.totalReps === 0 && training.totalCompletedDays === 0 && <p className="text-sm text-muted-foreground mt-2">No workouts recorded yet</p>}
         <button onClick={() => navigate('/workout-statistics')} className="min-h-11 text-sm text-accent-text hover:text-accent-soft">View Workout Statistics</button>
-        <p className="text-xs text-dim">Active days and consistency use the same completed-day definitions as Workout Statistics.</p>
+        <p className="text-xs text-muted-foreground">Active days and consistency use the same completed-day definitions as Workout Statistics.</p>
       </section>
       <section aria-labelledby="profile-details">
         <h2 id="profile-details" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Personal Details</h2>

@@ -1,6 +1,6 @@
 import { PageHeader } from '@/components/ui/presentation';
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, BookOpen, Calendar, FileText, Check } from "lucide-react";
+import { BookOpen, Calendar, FileText, Check } from "lucide-react";
 import { useLocation } from "wouter";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { useJournalReaderHistory } from "@/hooks/use-journal-reader-history";
@@ -145,12 +145,12 @@ export function DailyJournal() {
       <div className="px-4 mb-4">
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">{getDisplayDate()}</p>
-          <p className="text-xs text-dim" data-testid="text-word-count">
+          <p className="text-xs text-muted-foreground" data-testid="text-word-count">
             {getWordCount()} {getWordCount() === 1 ? "word" : "words"}
           </p>
         </div>
         {lastSaved && Number.isFinite(new Date(lastSaved).getTime()) && (
-          <p className="text-xs text-dim mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Last saved: {format(new Date(lastSaved), "MMM d, yyyy 'at' h:mm a")}
           </p>
         )}

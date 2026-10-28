@@ -558,7 +558,7 @@
 .wellness-eyebrow { color: hsl(var(--muted-foreground)); font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
 .wellness-value { font-family: var(--font-metric); margin-top: 14px; font-size: clamp(1.5rem,7vw,2rem); line-height: 1.2; font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .wellness-target { font-size: .65em; font-weight: 500; color: hsl(var(--muted-foreground)); }
-.wellness-accent { color: var(--wellness-accent); }
+.wellness-accent { color: var(--wellness-text-accent, var(--wellness-accent)); }
 .wellness-ring { width: 100px; height: 100px; flex: 0 0 100px; position: relative; }
 .wellness-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); fill: none; stroke-width: 8; }
 .wellness-ring-track { stroke: hsl(var(--nutrition-track)); }
@@ -730,22 +730,23 @@
 }
 @layer components {
   .fc-page-header { display:grid; grid-template-columns:var(--header-side,44px) minmax(0,1fr) var(--header-side,44px); align-items:center; gap:var(--space-2); margin-bottom:var(--space-5); min-width:0; min-height:56px; }
+  .fc-page-header > .fc-icon-action { justify-self:start; }
   .fc-page-title { min-width:0; font-size:20px; line-height:1.25; font-weight:600; text-align:center; color:hsl(var(--text-strong)); overflow-wrap:anywhere; }
   .fc-page-header-start { grid-template-columns:44px minmax(0,1fr); }
   .fc-page-header-start .fc-page-title { text-align:left; }
   .fc-page-header-start > span:last-child { display:none; }
   .fc-header-actions { display:flex; align-items:center; justify-content:flex-end; min-width:0; }
   .fc-icon-action { display:inline-flex; align-items:center; justify-content:center; min-width:var(--touch-target); min-height:var(--touch-target); flex-shrink:0; border-radius:var(--radius-control); color:hsl(var(--muted-foreground)); }
-  .fc-icon-action:hover { background:hsl(var(--surface-secondary) / .5); color:hsl(var(--text-strong)); }
+  .fc-icon-action:hover:not(:disabled) { background:hsl(var(--surface-secondary) / .5); color:hsl(var(--text-strong)); }
   .fc-section { min-width:0; padding:var(--space-4); border:1px solid hsl(var(--separator)); border-radius:var(--radius-section); background:hsl(var(--surface)); }
   .fc-period { display:flex; min-width:0; gap:var(--space-1); padding:var(--space-1); border-radius:var(--radius-control); background:hsl(var(--surface-secondary)); }
-  .fc-period > button { flex:1; min-width:0; min-height:var(--touch-target); padding:0 var(--space-1); border-radius:9px; color:hsl(var(--muted-foreground)); font-size:12px; }
+  .fc-period > button { flex:1; min-width:0; min-height:var(--touch-target); padding:0 var(--space-1); border-radius:9px; color:hsl(var(--text-secondary)); font-size:12px; }
   .fc-period > button[aria-pressed=true] { background:hsl(var(--control-strong)); color:hsl(var(--foreground)); font-weight:600; }
   .fc-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-2); }
-  .fc-metric { min-width:0; padding:var(--space-3) var(--space-1); border-radius:var(--radius-control); background:hsl(var(--surface-secondary)); text-align:center; }
+  .fc-metric { min-width:0; padding:var(--space-3) var(--space-1); border-radius:var(--radius-control); background:hsl(var(--surface-secondary) / .55); text-align:center; }
   .fc-metric :is(strong,dd) { display:block; font-size:clamp(16px,5vw,22px); line-height:1.2; overflow-wrap:anywhere; }
-  .fc-metric > :is(span,dt) { display:block; margin-top:var(--space-1); font-size:11px; line-height:1.4; color:hsl(var(--muted-foreground)); overflow-wrap:anywhere; }
-  .fc-empty { padding:var(--space-5) var(--space-2); border-radius:var(--radius-control); background:hsl(var(--surface-secondary)); color:hsl(var(--muted-foreground)); font-size:13px; line-height:1.5; text-align:center; }
+  .fc-metric > :is(span,dt) { display:block; margin-top:var(--space-1); font-size:11px; line-height:1.4; color:hsl(var(--text-secondary)); overflow-wrap:anywhere; }
+  .fc-empty { padding:var(--space-5) var(--space-2); border-radius:var(--radius-control); background:hsl(var(--surface-secondary)); color:hsl(var(--text-secondary)); font-size:13px; line-height:1.5; text-align:center; }
   .fc-action { display:inline-flex; justify-content:center; align-items:center; gap:var(--space-2); min-height:var(--touch-target); border-radius:24px; padding:10px 12px; font-size:13px; font-weight:600; }
   .fc-action-primary { background:hsl(var(--action)); color:hsl(var(--on-action)); }
   .fc-action-secondary { border:1px solid hsl(var(--control-border)); color:hsl(var(--muted-foreground)); }

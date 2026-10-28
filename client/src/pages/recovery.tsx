@@ -2,7 +2,7 @@ import { PageHeader, PeriodSelector, MetricTile, EmptyState } from '@/components
 import '@/styles/recovery.css';
 import React,{useState} from 'react';
 import {useLocation} from 'wouter';
-import {ArrowLeft,Heart,Calendar,Info,ChevronDown,ChevronRight,CheckCircle2} from 'lucide-react';
+import {Heart,Calendar,Info,ChevronDown,ChevronRight,CheckCircle2} from 'lucide-react';
 import {useRecovery} from '@/hooks/use-recovery';
 import {useWorkouts} from '@/hooks/use-workouts';
 import {recoveryHistory,recoveryFill,isRecoveryDate,type RecoveryRange} from '@/lib/recovery-history';
@@ -25,7 +25,7 @@ export default function RecoveryPage(){
   <section className="fc-section recovery-card" aria-labelledby="recovery-overview-heading">
    <div className="recovery-heading"><span className="recovery-icon"><Heart size={24}/></span><div><h2 id="recovery-overview-heading">Recovery Overview</h2><p>Your rest and consistency</p></div></div>
    <div className="fc-metrics my-4"><MetricTile value={stats.totalRecoveryDays} label="Recovery Days" valueClassName="text-feature-orange" valueTestId="recovery-days"/><MetricTile value={stats.totalWorkoutDays} label="Workout Days" valueClassName="text-strong" valueTestId="workout-days"/><MetricTile value={`${percentage}%`} label="Recovery Rate" valueClassName="text-feature-orange" valueTestId="recovery-rate"/></div>
-   <div className="recovery-balance"><div className="flex justify-between items-center gap-2 text-xs font-semibold mb-2"><span>Recovery balance</span><span className="text-feature-orange">{percentage}%</span></div><div className="recovery-track" role="progressbar" aria-label="Recovery balance" aria-valuemin={0} aria-valuemax={100} aria-valuenow={fill} aria-valuetext={`${percentage}% recovery rate${stats.recoveryPercentage>100?'; visual fill capped at 100%':''}`}><div style={{width:`${fill}%`}}/></div><p className="text-xs text-muted-foreground mt-2">Recovery days relative to logged workout days.</p></div>
+   <div className="recovery-balance"><div className="flex justify-between items-center gap-2 text-xs font-semibold mb-2"><span>Recovery balance</span><span className="text-feature-orange">{percentage}%</span></div><div className="recovery-track" role="progressbar" aria-label="Recovery balance" aria-valuemin={0} aria-valuemax={100} aria-valuenow={fill} aria-valuetext={`${percentage}% recovery rate${stats.recoveryPercentage>100?'; visual fill capped at 100%':''}`}><div style={{width:`${fill}%`}}/></div><p className="text-xs text-supporting mt-2">Recovery days relative to logged workout days.</p></div>
    <p className="recovery-note mt-4"><Info size={16}/>Recovery days support consistency without requiring a completed workout.</p>
   </section>
   <section className="fc-section recovery-card mt-4" aria-labelledby="recovery-history-heading">

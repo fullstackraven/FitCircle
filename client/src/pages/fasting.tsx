@@ -348,7 +348,7 @@ export default function FastingPage() {
             {Object.keys(monthlyLogs).length === 0 ? (
               <div className="fc-empty">
                 <p>No fasting logs yet.</p>
-                <p className="text-sm mt-2">
+                <p className="text-xs mt-2">
                   Start tracking your intermittent fasting journey!
                 </p>
               </div>

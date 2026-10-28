@@ -159,6 +159,7 @@ export default function HydrationPage() {
       <WellnessPageShell
         title="Hydration"
         accent="var(--wellness-blue)"
+        textAccent="hsl(var(--feature-blue))"
         onGoal={() => setIsGoalModalOpen(true)}
       >
         {error && (

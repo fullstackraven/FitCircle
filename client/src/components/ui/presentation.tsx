@@ -13,11 +13,11 @@ export function PageHeader({ title, onBack, backLabel = 'Back', backProps, actio
   align?: 'center' | 'start';
   className?: string;
 }) {
-  return <header className={cn('fc-page-header', align === 'start' && 'fc-page-header-start', className)} style={{ '--header-side': `${sideWidth}px` } as CSSProperties}>
+  return <div className={cn('fc-page-header', align === 'start' && 'fc-page-header-start', className)} style={{ '--header-side': `${sideWidth}px` } as CSSProperties}>
     <button type="button" title={backLabel} {...backProps} onClick={onBack} aria-label={backLabel} className={cn('fc-icon-action', backProps?.className)}><ArrowLeft size={20} aria-hidden="true" /></button>
     <h1 className="fc-page-title">{title}</h1>
     {actions ? <div className="fc-header-actions">{actions}</div> : <span aria-hidden="true" />}
-  </header>;
+  </div>;
 }
 
 /** Controlled selection: deliberately no date calculations or persistence. */
