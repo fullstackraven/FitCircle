@@ -4,7 +4,7 @@ import type {Page} from '@playwright/test';
 export async function pillGeometry(page: Page) {
   return page.evaluate(() => {
     const failures: unknown[] = [];
-    for (const el of document.querySelectorAll<HTMLElement>('button, select, [role="combobox"]')) {
+    for (const el of document.querySelectorAll<HTMLElement>('button, select, [role="combobox"], input[type="search"], input[aria-label*="search" i], input[placeholder*="search" i], .fc-search-group')) {
       if (!el.checkVisibility() || el.closest('[aria-hidden="true"]')) continue;
       if (el.matches('.dock-tab, .food-scan-action, [data-testid="button-create-custom-food"], [role="checkbox"], [role="switch"], .settings-toggle, [data-control-geometry]')) continue;
       const css = getComputedStyle(el), rect = el.getBoundingClientRect();

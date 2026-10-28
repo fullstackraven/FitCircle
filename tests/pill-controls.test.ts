@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 import {auditPillControls} from '../scripts/lib/pill-controls-audit';
 
 test('every reachable native action and shared-button usage is pill-based or explicitly classified',()=>{
- const result=auditPillControls();assert.deepEqual(result.errors,[]);assert.ok(result.controls.length>250);
+ const result=auditPillControls();assert.deepEqual(result.errors,[]);assert.ok(result.controls.length>250);assert.equal(result.searches.length,3);
  assert.equal(result.controls.filter(c=>c.geometry==='protected food action').length,2);
  for(const file of ['button','select','collapsible'])assert.ok(fs.readFileSync(`client/src/components/ui/${file}.tsx`,'utf8').includes('fc-pill'));
 });

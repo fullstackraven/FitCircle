@@ -14,6 +14,7 @@ export function auditPillControls() {
   const visited = new Set<string>();
   const controls: ControlDeclaration[] = [];
   const errors: string[] = [];
+  const searches: Array<{file:string;line:number}> = [];
   function visit(file: string) {
     if (visited.has(file) || !fs.existsSync(file)) return;
     visited.add(file);
@@ -28,6 +29,14 @@ export function auditPillControls() {
       if (ts.isCallExpression(node) && node.expression.kind===ts.SyntaxKind.ImportKeyword && node.arguments[0] && ts.isStringLiteral(node.arguments[0])) resolve(node.arguments[0].text);
       if (ts.isJsxOpeningElement(node)||ts.isJsxSelfClosingElement(node)) {
         const tag=node.tagName.getText(source);
+        if (['input','Input'].includes(tag)) {
+          const attr=(name:string)=>{const prop=node.attributes.properties.find(p=>ts.isJsxAttribute(p)&&p.name.getText(source)===name) as ts.JsxAttribute|undefined;return prop?.initializer?.getText(source)||'';};
+          if ([attr('type'),attr('aria-label'),attr('placeholder'),attr('id'),attr('data-testid')].some(value=>/search/i.test(value))) {
+            const line=source.getLineAndCharacterOfPosition(node.getStart(source)).line+1;
+            searches.push({file:relative,line});
+            if (tag==='Input' ? attr('variant')!=='"search"' : !attr('className').includes('fc-search')) errors.push(`${relative}:${line}: search field missing shared capsule variant`);
+          }
+        }
         if (['button','select','Button','SelectTrigger','CollapsibleTrigger'].includes(tag)) {
           const attr=(name:string)=>{const prop=node.attributes.properties.find(p=>ts.isJsxAttribute(p)&&p.name.getText(source)===name) as ts.JsxAttribute|undefined;return prop?.initializer?.getText(source)||'';};
           const cls=attr('className');
@@ -52,5 +61,5 @@ export function auditPillControls() {
     const text=fs.readFileSync(file,'utf8');
     if (!text.includes(`${selector} {`) || !text.includes('var(--radius-pill,9999px)')) errors.push(`${file}: static recovery/diagnostic action missing pill fallback`);
   }
-  return {controls,errors,sourceCount:visited.size};
+  return {controls,searches,errors,sourceCount:visited.size};
 }
