@@ -34,3 +34,7 @@ Previous review images are preserved: [Display before](../dashboard-settings-rev
 PR97 was merged; the verified published baseline on main is **2.11.1** (`257f0ba`, GitHub Release published 2026-10-28T00:30:41Z). This PR uses exactly `release:minor`; **2.12.0** is the expected next version if no release intervenes, not an already published version. No application version is hardcoded here. The existing workflow embeds the calculated version and records the release only after successful Pages deployment.
 
 Physical iPhone checks remain: Safari and installed-PWA safe areas; scrolling to Refresh and Erase; VoiceOver radios/switches; file selection and backup download to Files; restore/cancel; existing confirmations; refresh with real device connectivity. No physical-device test is claimed.
+
+## CI correction
+
+PR CI exposed two integration issues: legacy `/settings` had also received the redesign despite having preserved screenshot baselines, and the isolated appearance fixture loaded the first alphabetically listed CSS asset rather than the production document's stylesheets. The compatibility route now retains its original presentation and original refresh-label tests. Only Display and Account Data use the new layout. The fixture loads the exact CSS links from built `index.html`; all token and portal assertions remain unchanged. No screenshot baselines or tolerances were modified. Targeted appearance/mobile tests passed (16); TypeScript and build passed. Complete hosted CI is checked after pushing the correction.

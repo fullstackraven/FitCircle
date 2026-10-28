@@ -17,10 +17,12 @@ const controllerSource = ts.transpileModule(
 // Exercise the real controller and built stylesheet on an isolated test document.
 // No preview route or test harness is included in the shipped app.
 async function fixture(page: Page, preference?: string) {
-  const asset = fs
-    .readdirSync(path.join(root, "dist/assets"))
-    .find((name) => name.endsWith(".css"))!;
-  const css = fs.readFileSync(path.join(root, "dist/assets", asset), "utf8");
+  // Load the stylesheets linked by the production document, not an arbitrary
+  // first asset: page-scoped CSS can sort before the semantic theme bundle.
+  const html = fs.readFileSync(path.join(root, "dist/index.html"), "utf8");
+  const assets = [...html.matchAll(/href="([^"]+\.css)"/g)].map(match => path.basename(match[1]));
+  expect(assets.length).toBeGreaterThan(0);
+  const css = assets.map(asset => fs.readFileSync(path.join(root, "dist/assets", asset), "utf8")).join("\n");
   await page.route("**/appearance-fixture", (route) =>
     route.fulfill({
       contentType: "text/html",
