@@ -104,7 +104,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
               <div className="relative">
                 <span aria-hidden="true" className={`absolute left-3 top-3 h-3 w-3 rounded-full ${getColorClass(selectedColor)}`} />
                 <select id="workout-color" value={selectedColor} onChange={event => setSelectedColor(event.target.value)}
-                  className="glass-input block h-9 w-full rounded-xl border pl-8 pr-2 text-sm text-strong" aria-label="Workout color">
+                  className="fc-pill glass-input block h-9 w-full border pl-8 pr-2 text-sm text-strong" aria-label="Workout color">
                   {Array.from(new Set([...availableColors, selectedColor])).map(color => (
                     <option key={color} value={color} className="bg-canvas text-strong">{color.charAt(0).toUpperCase() + color.slice(1)}</option>
                   ))}

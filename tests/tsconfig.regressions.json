@@ -1,6 +1,9 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "browser/pill-controls.spec.ts",
+    "pill-controls.test.ts",
+    "fixtures/pill-geometry.ts",
     "visual-review-policy.test.ts",
     "visual/screenshots.spec.ts",
     "fixtures/visual-review.ts",

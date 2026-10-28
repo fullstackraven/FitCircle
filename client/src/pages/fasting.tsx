@@ -411,14 +411,14 @@ export default function FastingPage() {
                                 <button
                                   aria-label="Edit fast"
                                   onClick={() => handleEditLog(log)}
-                                  className="text-muted-foreground hover:text-feature-blue transition-colors"
+                                  className="fc-pill fc-icon-button text-muted-foreground hover:text-feature-blue transition-colors"
                                 >
                                   <Edit className="w-4 h-4" />
                                 </button>
                                 <button
                                   aria-label="Delete fast"
                                   onClick={() => handleDeleteLog(log.id)}
-                                  className="text-muted-foreground hover:text-feature-red transition-colors"
+                                  className="fc-pill fc-icon-button text-muted-foreground hover:text-feature-red transition-colors"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
@@ -475,7 +475,7 @@ export default function FastingPage() {
               <button
                 aria-label="Close"
                 onClick={() => setIsGoalModalOpen(false)}
-                className="p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary rounded-lg"
+                className="fc-pill fc-icon-button p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary"
               >
                 <X className="w-5 h-5" />
               </button>

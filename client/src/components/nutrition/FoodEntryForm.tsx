@@ -149,7 +149,7 @@ export function FoodEntryForm({
           Base serving unit
           <select
             aria-label="Product serving unit"
-            className="nutrition-unit-select w-full min-h-10 bg-surface rounded-lg px-2"
+            className="fc-pill nutrition-unit-select w-full min-h-11 bg-surface px-2"
             value={unit}
             onChange={(e) => {
               setUnit(e.target.value as FoodUnit);

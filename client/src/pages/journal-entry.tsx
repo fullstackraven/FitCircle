@@ -114,7 +114,7 @@ export function JournalEntryPage() {
         <button
           aria-label="Back to journal library"
           onClick={() => leave()}
-          className="h-11 w-11 flex items-center justify-center text-supporting"
+          className="fc-pill fc-icon-button h-11 w-11 flex items-center justify-center text-supporting"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
@@ -128,7 +128,7 @@ export function JournalEntryPage() {
               data-testid="button-save-journal"
               disabled={!text.trim()}
               onClick={save}
-              className="h-11 w-11 flex items-center justify-center rounded-full bg-action text-on-action disabled:opacity-50"
+              className="fc-pill fc-icon-button h-11 w-11 flex items-center justify-center bg-action text-on-action disabled:opacity-50"
             >
               <Check aria-hidden="true" className="h-6 w-6" />
             </button>
@@ -137,7 +137,7 @@ export function JournalEntryPage() {
               aria-label="Edit"
               title="Edit"
               onClick={() => setEditing(true)}
-              className="h-11 w-11 flex items-center justify-center text-accent-text"
+              className="fc-pill fc-icon-button h-11 w-11 flex items-center justify-center text-accent-text"
             >
               <SquarePen aria-hidden="true" className="h-5 w-5" />
             </button>
@@ -146,7 +146,7 @@ export function JournalEntryPage() {
           <button
             aria-label="Delete journal entry"
             data-testid="button-delete-journal"
-            className="h-11 w-11 flex items-center justify-center text-danger-text"
+            className="fc-pill fc-icon-button h-11 w-11 flex items-center justify-center text-danger-text"
             onClick={() => {
               if (
                 !confirm(

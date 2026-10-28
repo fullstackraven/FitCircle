@@ -42,7 +42,7 @@ export function WellnessPageShell({
       style={{ "--wellness-accent": accent, "--wellness-text-accent": textAccent ?? accent } as CSSProperties}
     >
       <div className="fitcircle-container wellness-stack">
-        <PageHeader title={title} onBack={() => navigate('/wellness')} backLabel="Back to Wellness" sideWidth={70} className="mb-0" actions={<button className="fc-icon-action gap-1" onClick={onGoal}><Target size={18}/><span>Goal</span></button>} />
+        <PageHeader title={title} onBack={() => navigate('/wellness')} backLabel="Back to Wellness" sideWidth={70} className="mb-0" actions={<button className="fc-pill fc-icon-action gap-1" onClick={onGoal}><Target size={18}/><span>Goal</span></button>} />
         {children}
       </div>
     </div>
@@ -236,7 +236,7 @@ export const WellnessPrimaryAction = forwardRef<
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(function WellnessPrimaryAction({ children, className = "", ...props }, ref) {
   return (
-    <button ref={ref} {...props} className={`wellness-primary ${className}`}>
+    <button ref={ref} {...props} className={`fc-pill wellness-primary ${className}`}>
       <Plus size={18} />
       {children}
     </button>
@@ -251,7 +251,7 @@ export const WellnessHistoryRow = forwardRef<
   }
 >(function WellnessHistoryRow({ month, count, unit, ...props }, ref) {
   return (
-    <button {...props} ref={ref} className="wellness-history-row">
+    <button {...props} ref={ref} className="fc-pill wellness-history-row">
       <span>{month}</span>
       <span className="text-sm text-muted-foreground">
         {count} {count === 1 ? unit.replace(/s$/, "") : unit}
@@ -288,14 +288,14 @@ export function WellnessEntryActions({
   return (
     <span className="flex shrink-0">
       <button
-        className="min-h-11 min-w-11 grid place-content-center text-muted-foreground"
+        className="fc-pill min-h-11 min-w-11 grid place-content-center text-muted-foreground"
         aria-label={`Edit ${label}`}
         onClick={onEdit}
       >
         <Pencil size={15} />
       </button>
       <button
-        className="min-h-11 min-w-11 grid place-content-center text-muted-foreground"
+        className="fc-pill min-h-11 min-w-11 grid place-content-center text-muted-foreground"
         aria-label={`Delete ${label}`}
         onClick={onDelete}
       >

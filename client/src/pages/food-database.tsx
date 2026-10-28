@@ -191,12 +191,12 @@ export default function FoodDatabasePage() {
         <div className="mb-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <Input
+            <Input variant="search"
               type="text"
               aria-label="Search foods"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-surface border-separator text-strong placeholder-muted-foreground rounded-xl"
+              className="pl-10 bg-surface border-separator text-strong placeholder-muted-foreground"
               data-testid="input-search"
             />
           </div>

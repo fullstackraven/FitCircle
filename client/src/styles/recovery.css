@@ -8,7 +8,7 @@
 .recovery-page .recovery-note { display:flex; align-items:flex-start; gap:8px; font-size:12px; line-height:1.5; color:hsl(var(--muted-foreground)); }
 .recovery-page .recovery-note svg { flex-shrink:0; margin-top:2px; }
 .recovery-page .recovery-history-list { display:grid; gap:8px; }
-.recovery-page .recovery-expand { display:flex; align-items:center; justify-content:center; gap:7px; width:100%; min-height:44px; margin-top:12px; border:1px solid hsl(var(--control-border)); border-radius:24px; color:hsl(var(--muted-foreground)); font-size:12px; font-weight:600; }
+.recovery-page .recovery-expand { display:flex; align-items:center; justify-content:center; gap:7px; width:100%; min-height:44px; margin-top:12px; border:1px solid hsl(var(--control-border)); border-radius:var(--radius-pill); color:hsl(var(--muted-foreground)); font-size:12px; font-weight:600; }
 .recovery-page .recovery-instructions { padding:0; }
 .recovery-page .recovery-instructions summary { display:flex; align-items:center; gap:10px; padding:16px; cursor:pointer; list-style:none; }
 .recovery-page .recovery-instructions summary::-webkit-details-marker { display:none; }

@@ -355,7 +355,7 @@ export default function FitnessCalculator() {
                   .getElementById(`calculator-tab-${tabs[next].id}`)
                   ?.focus();
               }}
-              className="calculator-tab"
+              className="fc-pill calculator-tab"
             >
               <span>{label}</span>
             </button>
@@ -472,7 +472,7 @@ export default function FitnessCalculator() {
                       onClick={() =>
                         changeSetting("objective", goal.value, setGoalType)
                       }
-                      className="calculator-direction"
+                      className="fc-pill calculator-direction"
                     >
                       {goal.value === "lose"
                         ? "Lose"
@@ -586,7 +586,7 @@ export default function FitnessCalculator() {
                 </Button>
                 <p className="text-sm text-supporting">
                   Your goal tracks weight progress. Update current weight in{" "}
-                  <button
+                  <button data-control-geometry="text"
                     className="underline"
                     onClick={() => navigate("/measurements")}
                   >
@@ -700,7 +700,7 @@ export default function FitnessCalculator() {
                           <span>lbs</span>
                         </div>
                       </div>
-                      <button
+                      <button data-control-geometry="text"
                         onClick={() => navigate("/measurements")}
                         className="text-sm text-supporting underline"
                       >

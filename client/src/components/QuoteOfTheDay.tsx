@@ -36,7 +36,7 @@ export default function QuoteOfTheDay({ compact = false }: { compact?: boolean }
           <cite className="block text-xs text-muted-foreground not-italic mt-1">— {quote.author}</cite>
           {error && <span className="text-xs text-feature-amber" title="Using offline quote">Offline</span>}
         </div>
-        <button onClick={refresh} className="min-h-11 min-w-11 -my-1.5 -mr-1.5 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors" title="Refresh quote" aria-label="Refresh quote">
+        <button onClick={refresh} className="fc-pill fc-icon-button min-h-11 min-w-11 -my-1.5 -mr-1.5 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors" title="Refresh quote" aria-label="Refresh quote">
           <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
         </button>
       </aside>
@@ -52,7 +52,7 @@ export default function QuoteOfTheDay({ compact = false }: { compact?: boolean }
         </div>
         <button
           onClick={refresh}
-          className="text-muted-foreground hover:text-strong transition-colors p-1"
+          className="fc-pill fc-icon-button text-muted-foreground hover:text-strong transition-colors p-1"
           title="Refresh quote"
         >
           <RefreshCw className="w-4 h-4" />

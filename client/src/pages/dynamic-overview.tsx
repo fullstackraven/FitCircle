@@ -322,7 +322,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
           { id: "daily", label: "Daily Overview" },
           { id: "supplements", label: "Supplements" },
         ].map(({ id, label }) => (
-          <button
+          <button className="fc-pill"
             key={id}
             id={`overview-tab-${id}`}
             role="tab"
@@ -386,7 +386,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                   : "Designate this day as a recovery day"}
               </p>
               <button
-                className="overview-action"
+                className="fc-pill overview-action"
                 aria-pressed={isRecovery}
                 onClick={handleRecoveryToggle}
               >
@@ -466,7 +466,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
               </div>
             </div>
             <button
-              className="overview-action overview-wide"
+              className="fc-pill overview-action overview-wide"
               onClick={handleEnergySave}
             >
               Save Energy Level
@@ -493,13 +493,13 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
               data-testid="textarea-journal-entry"
             />
             <div className="overview-journal-actions">
-              <button className="overview-action" onClick={handleJournalSave}>
+              <button className="fc-pill overview-action" onClick={handleJournalSave}>
                 Save Entry
               </button>
             </div>
           </section>
           <button
-            className="overview-card overview-supplements overview-summary"
+            className="fc-pill overview-card overview-supplements overview-summary"
             onClick={() => setSegment("supplements")}
             aria-label="View and log supplements"
           >
@@ -556,14 +556,14 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                         />
                         <button
                           onClick={handleSaveWorkoutEdit}
-                          className="p-1 text-accent-text hover:text-accent-soft transition-colors"
+                          className="fc-pill p-1 text-accent-text hover:text-accent-soft transition-colors"
                           title="Save"
                         >
                           <Save size={14} />
                         </button>
                         <button
                           onClick={handleCancelWorkoutEdit}
-                          className="p-1 text-feature-red hover:text-feature-red-soft transition-colors"
+                          className="fc-pill p-1 text-feature-red hover:text-feature-red-soft transition-colors"
                           title="Cancel"
                         >
                           <X size={14} />
@@ -578,7 +578,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                           onClick={() =>
                             handleEditWorkout(workout.id, workout.progress.mode === "sets" ? workout.progress.count : workout.count)
                           }
-                          className="p-1 text-muted-foreground hover:text-subtle transition-colors"
+                          className="fc-pill p-1 text-muted-foreground hover:text-subtle transition-colors"
                           title="Edit count"
                         >
                           <Edit2 size={14} />
@@ -595,7 +595,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                 return workoutDuration > 0 ? (
                   <button
                     onClick={handleOpenDurationModal}
-                    className="mt-4 p-3 bg-surface-secondary rounded-xl w-full hover:bg-control-strong transition-colors"
+                    className="fc-pill mt-4 p-3 bg-surface-secondary w-full hover:bg-control-strong transition-colors"
                     data-testid="button-edit-workout-duration"
                   >
                     <div className="flex items-center justify-between">
@@ -684,11 +684,11 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                 onChange={(event) => setNewSupplementName(event.target.value)}
                 autoFocus
               />
-              <button className="overview-action" onClick={handleAddSupplement}>
+              <button className="fc-pill overview-action" onClick={handleAddSupplement}>
                 Add
               </button>
               <button
-                className="overview-action"
+                className="fc-pill overview-action"
                 onClick={() => {
                   setIsAddingSupplement(false);
                   setNewSupplementName("");
@@ -700,7 +700,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
           )}
           <div className="overview-supplement-actions">
             <button
-              className="overview-action overview-add"
+              className="fc-pill overview-action overview-add"
               onClick={() => setIsAddingSupplement(true)}
               title="Add supplement"
             >
@@ -708,7 +708,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
               Add Supplement
             </button>
             <button
-              className="overview-action"
+              className="fc-pill overview-action"
               onClick={handleSupplementsSave}
               disabled={!supplementLogs.length}
             >
@@ -716,7 +716,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
             </button>
           </div>
           <button
-            className="overview-manage"
+            className="fc-pill overview-manage"
             onClick={() => navigate("/supplements-page")}
           >
             Manage supplement definitions
@@ -787,7 +787,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setIsDurationModalOpen(false)}
-                className="px-4 py-2 bg-surface-secondary hover:bg-control-strong text-strong rounded-lg transition-colors"
+                className="fc-pill px-4 py-2 bg-surface-secondary hover:bg-control-strong text-strong transition-colors"
                 data-testid="button-cancel-duration"
               >
                 Cancel
@@ -795,7 +795,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
               <button
                 onClick={handleSaveDuration}
                 disabled={getEditDurationTotal() === 0}
-                className="px-4 py-2 bg-action hover:bg-action-hover text-on-action rounded-lg transition-colors disabled:bg-control-strong disabled:cursor-not-allowed disabled:opacity-50"
+                className="fc-pill px-4 py-2 bg-action hover:bg-action-hover text-on-action transition-colors disabled:bg-control-strong disabled:cursor-not-allowed disabled:opacity-50"
                 data-testid="button-save-duration"
               >
                 Save Duration

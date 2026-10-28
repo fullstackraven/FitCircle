@@ -110,7 +110,7 @@ export function ProgressCircle({
       onPointerUp={endHold}
       onPointerLeave={endHold}
       onPointerCancel={endHold}
-      className={`${cardStyle ? "home-set-ring" : ""} relative transform transition-transform duration-150 hover:scale-105 active:scale-95 ${
+      className={`fc-pill ${cardStyle ? "home-set-ring" : ""} relative transform transition-transform duration-150 hover:scale-105 active:scale-95 ${
         isAnimating ? 'bounce-animation' : ''
       }`}
       style={{ width: svgSize, height: cardStyle ? 'auto' : svgSize, aspectRatio: cardStyle ? '1' : undefined, userSelect: 'none', WebkitUserSelect: 'none' }}

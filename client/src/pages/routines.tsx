@@ -141,7 +141,7 @@ export default function RoutinesPage() {
         <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
+            className="fc-pill absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />
@@ -159,7 +159,7 @@ export default function RoutinesPage() {
           <section className="mb-8">
             <button
               onClick={handleAddRoutine}
-              className="w-full rounded-2xl border border-dashed border-control bg-surface/80 p-4 transition-colors hover:border-control-muted-border hover:bg-surface"
+              className="fc-pill w-full border border-dashed border-control bg-surface/80 p-4 transition-colors hover:border-control-muted-border hover:bg-surface"
               data-testid="button-add-routine"
             >
               <div className="flex flex-col items-center space-y-3">
@@ -184,7 +184,7 @@ export default function RoutinesPage() {
                 <div key={routine.id} className="rounded-2xl border border-separator/70 bg-surface/80" data-testid={`routine-card-${routine.id}`}>
                   <div className="flex items-center gap-1 px-3 py-2">
                     <button type="button"
-                      className="flex min-h-14 min-w-0 flex-1 items-center gap-2 rounded-xl py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                      className="fc-pill flex min-h-14 min-w-0 flex-1 items-center gap-2 py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                       onClick={() => toggleRoutineExpansion(routine.id)}
                       aria-expanded={isExpanded}
                       aria-controls={`routine-content-${routine.id}`}
@@ -199,12 +199,12 @@ export default function RoutinesPage() {
                     <button
                       onClick={() => handleEditRoutine(routine)}
                       aria-label={`Edit routine ${routine.name}`}
-                      className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:text-strong focus-visible:ring-2 focus-visible:ring-focus"
+                      className="fc-pill inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-muted-foreground hover:text-strong focus-visible:ring-2 focus-visible:ring-focus"
                       data-testid={`button-edit-routine-${routine.id}`}
                     ><Edit size={18} aria-hidden="true" /></button>
                     <button
                       onClick={(event) => { deletionTriggerRef.current = event.currentTarget; setPendingRoutineDeletion({ id: routine.id, name: routine.name }); }}
-                      className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:text-feature-red focus-visible:ring-2 focus-visible:ring-focus"
+                      className="fc-pill inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-muted-foreground hover:text-feature-red focus-visible:ring-2 focus-visible:ring-focus"
                       aria-label={`Delete routine ${routine.name}`}
                       data-testid={`button-delete-routine-${routine.id}`}
                     ><Trash2 size={18} aria-hidden="true" /></button>
@@ -239,7 +239,7 @@ export default function RoutinesPage() {
                           setEditingWorkout(null);
                           setIsModalOpen(true);
                         }}
-                        className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-surface-secondary/60 px-3 py-2 text-supporting transition-colors hover:bg-surface-secondary hover:text-strong"
+                        className="fc-pill mt-3 flex min-h-11 w-full items-center justify-center gap-2 bg-surface-secondary/60 px-3 py-2 text-supporting transition-colors hover:bg-surface-secondary hover:text-strong"
                         data-testid={`button-add-workout-${routine.id}`}
                       >
                         <Plus className="w-4 h-4" />
@@ -257,7 +257,7 @@ export default function RoutinesPage() {
         {routines.length > 0 && (
           <button
             onClick={handleAddRoutine}
-            className="mb-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-action px-4 py-3 transition-colors hover:bg-action-hover"
+            className="fc-pill mb-4 flex min-h-12 w-full items-center justify-center gap-2 bg-action px-4 py-3 transition-colors hover:bg-action-hover"
             data-testid="button-create-routine"
           >
             <Plus className="h-4 w-4 text-on-action" aria-hidden="true" />
@@ -272,7 +272,7 @@ export default function RoutinesPage() {
               <CollapsibleTrigger asChild>
                 <Button
                   variant="outline"
-                  className="h-auto min-h-14 w-full justify-between rounded-2xl border-separator/70 bg-surface/80 px-3 py-3 text-strong hover:bg-surface"
+                  className="h-auto min-h-14 w-full justify-between border-separator/70 bg-surface/80 px-3 py-3 text-strong hover:bg-surface"
                 >
                   <span className="flex items-center gap-3 text-base font-semibold"><Dumbbell className="h-4 w-4 text-accent-text" aria-hidden="true" />Edit Workouts</span>
                   {isEditWorkoutsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -318,7 +318,7 @@ export default function RoutinesPage() {
                           <button
                             onClick={() => handleEditWorkout(workout)}
                             aria-label={`Edit workout ${workout.name}`}
-                            className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:text-strong focus-visible:ring-2 focus-visible:ring-focus"
+                            className="fc-pill inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-strong focus-visible:ring-2 focus-visible:ring-focus"
                           >
                             <Edit size={16} />
                           </button>

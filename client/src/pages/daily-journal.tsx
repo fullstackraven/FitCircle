@@ -139,7 +139,7 @@ export function DailyJournal() {
         onClick={() => {
           if (journalText === originalText.current || confirm("Discard unsaved journal changes?"))
             navigate(`/journal-log${fromWellness ? "?from=wellness" : ""}`);
-        }} className="fc-icon-action" title="View all journal entries" aria-label="View all journal entries"><FileText size={20}/></button>} />
+        }} className="fc-pill fc-icon-action" title="View all journal entries" aria-label="View all journal entries"><FileText size={20}/></button>} />
 
       {/* Date indicator */}
       <div className="px-4 mb-4">
@@ -206,7 +206,7 @@ export function DailyJournal() {
           onClick={handleJournalSubmit}
           aria-label="Save Entry"
           title="Save Entry"
-          className="ml-auto flex h-11 w-11 items-center justify-center bg-action hover:bg-action-hover text-on-action rounded-full transition-colors"
+          className="fc-pill fc-icon-button ml-auto flex h-11 w-11 items-center justify-center bg-action hover:bg-action-hover text-on-action transition-colors"
           data-testid="button-save-journal"
         >
           <Check className="h-6 w-6" aria-hidden="true" />

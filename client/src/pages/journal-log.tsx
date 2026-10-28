@@ -78,7 +78,7 @@ export function JournalLog() {
       <button
         aria-label="Back to Logs"
         data-testid="button-back"
-        className="h-11 w-11 flex items-center justify-center rounded-full bg-surface text-supporting"
+        className="fc-pill fc-icon-button h-11 w-11 flex items-center justify-center bg-surface text-supporting"
         onClick={() => navigate("/wellness")}
       >
         <ArrowLeft className="w-5 h-5" />
@@ -94,7 +94,7 @@ export function JournalLog() {
           <h2 className="text-lg font-bold mb-2">{group.label}</h2>
           <div className="rounded-2xl bg-surface overflow-hidden divide-y divide-border">
             {group.entries.map((item) => (
-              <button
+              <button data-control-geometry="record"
                 key={item.id}
                 className="group w-full text-left px-4 py-4 flex items-center gap-3 hover:bg-surface-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px]"
                 onClick={() => open(item)}
@@ -135,7 +135,7 @@ export function JournalLog() {
         role="search"
         aria-label="Search journal"
       >
-        <div className="journal-search-field relative flex items-center gap-2 rounded-full bg-surface border border-control px-4 flex-1 min-w-0 shadow-sm">
+        <div className="fc-search-group journal-search-field relative flex items-center gap-2 rounded-full bg-surface border border-control px-4 flex-1 min-w-0 shadow-sm">
           <Search
             aria-hidden="true"
             className="w-4 h-4 shrink-0 text-muted-foreground"
@@ -146,7 +146,7 @@ export function JournalLog() {
             id="journal-search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full min-w-0 h-12 bg-transparent border-0 text-strong placeholder:text-muted-foreground outline-none"
+            className="fc-search rounded-full w-full min-w-0 h-12 bg-transparent border-0 text-strong placeholder:text-muted-foreground outline-none"
           />
           {!query && (
             <label
@@ -159,7 +159,7 @@ export function JournalLog() {
           {query && (
             <button
               aria-label="Clear search"
-              className="h-10 w-8 shrink-0"
+              className="fc-pill fc-icon-button h-10 w-8 shrink-0"
               onClick={() => setQuery("")}
             >
               <X className="w-4 h-4" />
@@ -170,7 +170,7 @@ export function JournalLog() {
           aria-label="Write new journal entry"
           title="Write new journal entry"
           onClick={create}
-          className="rounded-full h-12 w-12 shrink-0 bg-action text-on-action flex items-center justify-center shadow-sm"
+          className="fc-pill fc-icon-button h-12 w-12 shrink-0 bg-action text-on-action flex items-center justify-center shadow-sm"
         >
           <SquarePen className="w-5 h-5" />
         </button>

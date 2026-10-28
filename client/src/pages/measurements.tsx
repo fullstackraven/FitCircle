@@ -169,7 +169,7 @@ export default function MeasurementsPage() {
           <Button
             disabled={!!measurementError}
             onClick={handleSave}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-on-action py-3 rounded-xl font-medium"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-on-action py-3 font-medium"
           >
             Save Measurements
           </Button>

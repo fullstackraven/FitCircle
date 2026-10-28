@@ -9,7 +9,7 @@ export default function AboutPage() {
   const [, navigate] = useLocation(); const context = dashboardContext();
   return <DashboardPage title="About">
     <section className="fitcircle-card-lg divide-y divide-separator/60">
-      {[{label:'Terms of Service', path:'terms', Icon:FileText}, {label:'Privacy Policy', path:'privacy', Icon:Shield}, {label:'Licenses', path:'licenses', Icon:Code2}].map(({label,path,Icon}) => <button key={path} onClick={()=>navigate(`/about/${path}`+(context.fromDashboard ? dashboardQuery(context.returnTo) : ''))} className="w-full min-h-14 flex items-center gap-3 py-4 text-left hover:text-accent-text"><Icon size={20} className="text-muted-foreground shrink-0" aria-hidden="true"/><span className="flex-1">{label}</span><ChevronRight size={18} className="text-muted-foreground" aria-hidden="true"/></button>)}
+      {[{label:'Terms of Service', path:'terms', Icon:FileText}, {label:'Privacy Policy', path:'privacy', Icon:Shield}, {label:'Licenses', path:'licenses', Icon:Code2}].map(({label,path,Icon}) => <button key={path} onClick={()=>navigate(`/about/${path}`+(context.fromDashboard ? dashboardQuery(context.returnTo) : ''))} className="fc-pill w-full min-h-14 flex items-center gap-3 py-4 text-left hover:text-accent-text"><Icon size={20} className="text-muted-foreground shrink-0" aria-hidden="true"/><span className="flex-1">{label}</span><ChevronRight size={18} className="text-muted-foreground" aria-hidden="true"/></button>)}
       <div className="flex items-start justify-between gap-3 py-4">
         <span className="font-semibold">Version</span>
         <div className="min-w-0 text-right text-muted-foreground">
@@ -18,6 +18,6 @@ export default function AboutPage() {
         </div>
       </div>
     </section>
-    <button onClick={()=>navigate('/about/releases'+(context.fromDashboard?dashboardQuery(context.returnTo):''))} className="w-full min-h-11 flex items-center justify-between text-accent-text text-sm font-medium focus-visible:outline focus-visible:outline-ring">View Release History<ChevronRight size={18} aria-hidden="true"/></button>
+    <button onClick={()=>navigate('/about/releases'+(context.fromDashboard?dashboardQuery(context.returnTo):''))} className="fc-pill w-full min-h-11 flex items-center justify-between text-accent-text text-sm font-medium focus-visible:outline focus-visible:outline-ring">View Release History<ChevronRight size={18} aria-hidden="true"/></button>
   </DashboardPage>;
 }

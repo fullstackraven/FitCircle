@@ -181,7 +181,7 @@ export default function RemindersPage() {
         <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
+            className="fc-pill absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />
@@ -201,15 +201,15 @@ export default function RemindersPage() {
           <button
             onClick={() => setConfirmClear(true)}
             disabled={completedReminders.length === 0}
-            className="min-h-11 px-1 text-accent-text hover:text-accent-soft disabled:text-dim-strong disabled:cursor-not-allowed"
+            className="fc-pill min-h-11 px-1 text-accent-text hover:text-accent-soft disabled:text-dim-strong disabled:cursor-not-allowed"
           >Clear</button>
         </div>
 
         {selectMode && (
           <div className="flex flex-wrap items-center gap-3 py-2">
-            <button onClick={selectAllCompleted} className="min-h-11 text-sm text-accent-text">Select All</button>
-            <button onClick={deleteSelectedCompleted} disabled={selectedCompleted.size === 0} className="min-h-11 text-sm text-feature-red disabled:text-dim-strong">Delete Selected ({selectedCompleted.size})</button>
-            <button onClick={() => { setSelectMode(false); setSelectedCompleted(new Set()); }} className="min-h-11 text-sm text-supporting">Done</button>
+            <button onClick={selectAllCompleted} className="fc-pill min-h-11 text-sm text-accent-text">Select All</button>
+            <button onClick={deleteSelectedCompleted} disabled={selectedCompleted.size === 0} className="fc-pill min-h-11 text-sm text-feature-red disabled:text-dim-strong">Delete Selected ({selectedCompleted.size})</button>
+            <button onClick={() => { setSelectMode(false); setSelectedCompleted(new Set()); }} className="fc-pill min-h-11 text-sm text-supporting">Done</button>
           </div>
         )}
 
@@ -231,7 +231,7 @@ export default function RemindersPage() {
         )}
 
         {reminders.length === 0 && !showAddForm ? (
-          <button type="button" aria-label="Write a reminder" onClick={openDraft} className="min-h-[50dvh] w-full flex items-center justify-center text-muted-foreground text-lg">No Reminders</button>
+          <button data-control-geometry="record" type="button" aria-label="Write a reminder" onClick={openDraft} className="min-h-[50dvh] w-full flex items-center justify-center text-muted-foreground text-lg">No Reminders</button>
         ) : (
           <ul aria-label="Reminders" className="divide-y divide-separator/30">
             {[...activeReminders, ...completedReminders].map(reminder => (
@@ -240,7 +240,7 @@ export default function RemindersPage() {
                   aria-label={selectMode && reminder.completed ? `Select ${reminder.text}` : `${reminder.completed ? 'Mark incomplete' : 'Mark complete'}: ${reminder.text}`}
                   aria-pressed={selectMode && reminder.completed ? selectedCompleted.has(reminder.id) : reminder.completed}
                   onClick={() => selectMode && reminder.completed ? toggleSelectCompleted(reminder.id) : toggleReminder(reminder.id)}
-                  className="min-h-11 min-w-11 shrink-0 flex items-center justify-center"
+                  className="fc-pill min-h-11 min-w-11 shrink-0 flex items-center justify-center"
                 >
                   <span className={`w-6 h-6 border-2 flex items-center justify-center ${selectMode && reminder.completed ? 'rounded-md' : 'rounded-full'} ${
                     (selectMode && reminder.completed ? selectedCompleted.has(reminder.id) : reminder.completed) ? 'border-accent-text bg-accent-bright text-on-bright' : 'border-control-muted-border'
@@ -259,7 +259,7 @@ export default function RemindersPage() {
                     autoFocus
                   />
                 ) : (
-                  <button
+                  <button data-control-geometry="record"
                     onClick={() => !selectMode && startEditing(reminder)}
                     aria-label={`Edit ${reminder.text}`}
                     className={`min-w-0 flex-1 text-left min-h-11 break-words whitespace-pre-wrap text-base ${reminder.completed ? 'text-muted-foreground' : 'text-strong'}`}
@@ -267,13 +267,13 @@ export default function RemindersPage() {
                 )}
                 {!selectMode && editingId !== reminder.id && (
                   <div className="relative shrink-0">
-                    <button aria-label={`Options for ${reminder.text}`} aria-expanded={showMenuId === reminder.id} onClick={() => toggleMenu(reminder.id)} className="min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong">
+                    <button aria-label={`Options for ${reminder.text}`} aria-expanded={showMenuId === reminder.id} onClick={() => toggleMenu(reminder.id)} className="fc-pill min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong">
                       <MoreHorizontal size={18} />
                     </button>
                     {showMenuId === reminder.id && (
                       <div className="glass-panel absolute right-0 top-full rounded-xl border border-control p-1 z-10 min-w-[120px]">
-                        <button onClick={() => startEditing(reminder)} className="w-full min-h-11 px-3 text-left text-strong flex items-center gap-2 text-sm"><Edit3 size={14} />Edit</button>
-                        <button onClick={() => handleDeleteReminder(reminder.id)} className="w-full min-h-11 px-3 text-left text-feature-red flex items-center gap-2 text-sm"><Trash2 size={14} />Delete</button>
+                        <button onClick={() => startEditing(reminder)} className="fc-pill w-full min-h-11 px-3 text-left text-strong flex items-center gap-2 text-sm"><Edit3 size={14} />Edit</button>
+                        <button onClick={() => handleDeleteReminder(reminder.id)} className="fc-pill w-full min-h-11 px-3 text-left text-feature-red flex items-center gap-2 text-sm"><Trash2 size={14} />Delete</button>
                       </div>
                     )}
                   </div>
@@ -284,13 +284,13 @@ export default function RemindersPage() {
         )}
 
         {completedReminders.length > 0 && !selectMode && (
-          <button onClick={() => setSelectMode(true)} className="min-h-11 text-sm text-muted-foreground hover:text-accent-text mt-2">Select completed</button>
+          <button onClick={() => setSelectMode(true)} className="fc-pill min-h-11 text-sm text-muted-foreground hover:text-accent-text mt-2">Select completed</button>
         )}
-        {!showAddForm && reminders.length > 0 && <button type="button" aria-label="Write a reminder" onClick={openDraft} className="block min-h-[20dvh] w-full" />}
+        {!showAddForm && reminders.length > 0 && <button data-control-geometry="record" type="button" aria-label="Write a reminder" onClick={openDraft} className="block min-h-[20dvh] w-full" />}
       </div>
 
       {createPortal(
-        <button onClick={openDraft} aria-label="New Reminder" className="reminders-add-button rounded-full bg-accent-bright text-on-bright shadow-lg shadow-black/30 hover:bg-accent-bright-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus">
+        <button onClick={openDraft} aria-label="New Reminder" className="fc-pill reminders-add-button bg-accent-bright text-on-bright shadow-lg shadow-black/30 hover:bg-accent-bright-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus">
           <Plus size={28} aria-hidden="true" />
         </button>, document.body
       )}

@@ -670,7 +670,7 @@ export default function CardioPage() {
                                   }
                                   setExpandedDays(newExpanded);
                                 }}
-                                className="text-xs text-dim hover:text-supporting text-center mt-1 w-full transition-colors"
+                                className="fc-pill text-xs text-dim hover:text-supporting text-center mt-1 w-full transition-colors"
                               >
                                 {expandedDays.has(log.date)
                                   ? "Show less"
@@ -810,7 +810,7 @@ export default function CardioPage() {
               <button
                 aria-label="Close"
                 onClick={() => setIsGoalDialogOpen(false)}
-                className="p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary rounded-lg"
+                className="fc-pill fc-icon-button p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary"
               >
                 <X className="w-5 h-5" />
               </button>
