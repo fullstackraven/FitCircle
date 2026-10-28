@@ -22,6 +22,6 @@ for (const file of captures) {
   test(`${capture.title} › ${path.basename(capture.expected)}`, async ({}, info) => {
     const image = path.join(path.dirname(file), capture.image);
     await info.attach("captured screenshot", { path: image, contentType: "image/png" });
-    expect(fs.readFileSync(image)).toMatchSnapshot(capture.expected, capture.comparison);
+    expect(fs.readFileSync(image)).toMatchSnapshot(capture.expected.split(/[\\/]/), capture.comparison);
   });
 }

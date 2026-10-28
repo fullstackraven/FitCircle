@@ -131,7 +131,15 @@ jobs:
           merge-multiple: true
           path: test-results/
       - name: Compare screenshots (advisory only)
+        id: compare
         run: npm run test:visual
+      - name: Summarize advisory review
+        if: always()
+        env:
+          REVIEW_OUTCOME: ${{ steps.compare.outcome }}
+        run: |
+          echo "## Advisory screenshot review: $REVIEW_OUTCOME" >> "$GITHUB_STEP_SUMMARY"
+          echo "Pixel comparisons do not gate publication. Download advisory-visual-review for the HTML report and image diffs; browser-test-results-N contains the current captures." >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
