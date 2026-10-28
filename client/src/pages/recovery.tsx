@@ -1,123 +1,45 @@
-import React from "react";
-import { useLocation } from "wouter";
-import { ArrowLeft, Heart, Calendar } from "lucide-react";
-import { useRecovery } from "@/hooks/use-recovery";
-import { useWorkouts } from "@/hooks/use-workouts";
-import { format } from "date-fns";
+import '@/styles/recovery.css';
+import React,{useState} from 'react';
+import {useLocation} from 'wouter';
+import {ArrowLeft,Heart,Calendar,Info,ChevronDown,ChevronRight,CheckCircle2} from 'lucide-react';
+import {useRecovery} from '@/hooks/use-recovery';
+import {useWorkouts} from '@/hooks/use-workouts';
+import {recoveryHistory,recoveryFill,isRecoveryDate,type RecoveryRange} from '@/lib/recovery-history';
+import {format} from 'date-fns';
 
-export default function RecoveryPage() {
-  const [, navigate] = useLocation();
-  const { getRecoveryStats, data } = useRecovery();
-  const { getTotalStats } = useWorkouts();
-  
-  // Check if we came from wellness page
-  const urlParams = new URLSearchParams(window.location.search);
-  const fromWellness = urlParams.get('from') === 'wellness';
-  
-  const handleBack = () => {
-    if (fromWellness) {
-      navigate('/wellness');
-    } else {
-      navigate('/calendar');
-    }
-  };
-  
-  // Get the same total stats as the statistics page
-  const totalStats = getTotalStats();
-  const recoveryStats = getRecoveryStats(totalStats?.totalCompletedDays);
-
-  return (
-    <div className="p-4 max-w-3xl mx-auto min-h-dvh" style={{ backgroundColor: 'var(--page-background)', paddingBottom: 'var(--bottom-nav-padding)' }}>
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={handleBack}
-          className="text-muted-foreground hover:text-strong transition-colors"
-          title="Back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-
-        <h1 className="text-xl font-bold text-strong">Recovery</h1>
-        <div className="w-5" />
-      </div>
-
-      <div className="space-y-6">
-        {/* Recovery Stats */}
-        <div className="glass-panel bg-surface rounded-xl p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <Heart className="w-6 h-6 text-feature-orange" />
-            <h2 className="text-xl font-semibold text-strong">Recovery Statistics</h2>
-          </div>
-          
-          <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="text-center p-3 bg-surface-secondary rounded-xl">
-              <div className="text-lg font-bold text-feature-orange">{recoveryStats.totalRecoveryDays}</div>
-              <div className="text-xs text-muted-foreground">Recovery Days</div>
-            </div>
-            <div className="text-center p-3 bg-surface-secondary rounded-xl">
-              <div className="text-lg font-bold text-strong">{recoveryStats.totalWorkoutDays}</div>
-              <div className="text-xs text-muted-foreground">Workout Days</div>
-            </div>
-            <div className="text-center p-3 bg-surface-secondary rounded-xl">
-              <div className="text-lg font-bold text-feature-orange">{recoveryStats.recoveryPercentage.toFixed(1)}%</div>
-              <div className="text-xs text-muted-foreground">Recovery Rate</div>
-            </div>
-          </div>
-
-          <div className="text-center">
-            <p className="text-sm text-supporting mb-4">
-              Mark days as recovery days to maintain consistency without requiring workout completion.
-            </p>
-          </div>
-        </div>
-
-        {/* Recent Recovery Days */}
-        <div className="glass-panel bg-surface rounded-xl p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <Calendar className="w-5 h-5 text-feature-orange" />
-            <h3 className="text-lg font-semibold text-strong">Recent Recovery Days</h3>
-          </div>
-          
-          {data.recoveryDays.length > 0 ? (
-            <div className="space-y-2">
-              {data.recoveryDays
-                .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
-                .slice(0, 10)
-                .map((date) => (
-                  <div key={date} className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl">
-                    <span className="text-strong font-medium">
-                      {format(new Date(date + 'T00:00:00'), "MMMM d, yyyy")}
-                    </span>
-                    <span className="text-feature-orange text-sm">Recovery Day</span>
-                  </div>
-                ))}
-              {data.recoveryDays.length > 10 && (
-                <p className="text-center text-muted-foreground text-sm mt-3">
-                  And {data.recoveryDays.length - 10} more recovery days...
-                </p>
-              )}
-            </div>
-          ) : (
-            <div className="text-center py-6">
-              <p className="text-muted-foreground">No recovery days marked yet</p>
-              <p className="text-sm text-dim mt-2">
-                Tap any calendar day to mark it as a recovery day
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Instructions */}
-        <div className="glass-panel bg-surface rounded-xl p-4">
-          <h3 className="text-lg font-semibold text-strong mb-3">How to Mark Recovery Days</h3>
-          <div className="space-y-2 text-sm text-supporting">
-            <p>• Go back to the Calendar page</p>
-            <p>• Tap any day to open the Dynamic Overview</p>
-            <p>• Use the Recovery toggle to mark/unmark days</p>
-            <p>• Recovery days count toward consistency without requiring workouts</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+export default function RecoveryPage(){
+ const [,navigate]=useLocation();
+ const {getRecoveryStats,data}=useRecovery();
+ const {getTotalStats}=useWorkouts();
+ const [range,setRange]=useState<RecoveryRange>(30),[visibleCount,setVisibleCount]=useState(5);
+ const fromWellness=new URLSearchParams(window.location.search).get('from')==='wellness';
+ // Preserve the original statistics source and denominator exactly.
+ const totalStats=getTotalStats();
+ const stats=getRecoveryStats(totalStats?.totalCompletedDays);
+ const percentage=stats.recoveryPercentage.toFixed(1);
+ const fill=recoveryFill(stats.recoveryPercentage);
+ const history=recoveryHistory(data.recoveryDays,range);
+ return <div className="fitcircle-page recovery-page"><div className="fitcircle-container">
+  <div className="flex items-center justify-between mb-5"><button onClick={()=>navigate(fromWellness?'/wellness':'/calendar')} className="min-h-11 min-w-11 flex items-center justify-center text-muted-foreground" title="Back" aria-label="Back"><ArrowLeft size={20}/></button><h1 className="fitcircle-page-title">Recovery</h1><span className="w-11"/></div>
+  <section className="recovery-card" aria-labelledby="recovery-overview-heading">
+   <div className="recovery-heading"><span className="recovery-icon"><Heart size={24}/></span><div><h2 id="recovery-overview-heading">Recovery Overview</h2><p>Your rest and consistency</p></div></div>
+   <div className="recovery-metrics"><div><strong className="text-feature-orange" data-testid="recovery-days">{stats.totalRecoveryDays}</strong><span>Recovery Days</span></div><div><strong className="text-strong" data-testid="workout-days">{stats.totalWorkoutDays}</strong><span>Workout Days</span></div><div><strong className="text-feature-orange" data-testid="recovery-rate">{percentage}%</strong><span>Recovery Rate</span></div></div>
+   <div className="recovery-balance"><div className="flex justify-between items-center gap-2 text-xs font-semibold mb-2"><span>Recovery balance</span><span className="text-feature-orange">{percentage}%</span></div><div className="recovery-track" role="progressbar" aria-label="Recovery balance" aria-valuemin={0} aria-valuemax={100} aria-valuenow={fill} aria-valuetext={`${percentage}% recovery rate${stats.recoveryPercentage>100?'; visual fill capped at 100%':''}`}><div style={{width:`${fill}%`}}/></div><p className="text-xs text-muted-foreground mt-2">Recovery days relative to logged workout days.</p></div>
+   <p className="recovery-note mt-4"><Info size={16}/>Recovery days support consistency without requiring a completed workout.</p>
+  </section>
+  <section className="recovery-card mt-4" aria-labelledby="recovery-history-heading">
+   <div className="recovery-heading"><span className="recovery-icon"><Calendar size={23}/></span><div className="min-w-0 flex-1"><h2 id="recovery-history-heading">Recovery History</h2><p>Previously marked recovery days</p></div><strong className="text-feature-orange text-xs shrink-0">{data.recoveryDays.length} total</strong></div>
+   <div className="recovery-period" role="group" aria-label="Recovery history period">{([7,30,'all'] as RecoveryRange[]).map(value=><button key={value} aria-pressed={range===value} onClick={()=>{setRange(value);setVisibleCount(5);}}>{value==='all'?'All':`${value} days`}</button>)}</div>
+   {history.length?<>
+    <ul className="recovery-history-list" aria-label="Recovery dates">{history.slice(0,visibleCount).map((date,index)=><li key={`${date}-${index}`}>
+     {isRecoveryDate(date)?<button onClick={()=>navigate(`/dynamic-overview/${date}`,{state:{overviewFrom:'/calendar'}})} className="recovery-history-row" aria-label={`View recovery day ${format(new Date(date+'T00:00:00'),'MMMM d, yyyy')}`}><Calendar size={19} className="text-feature-orange shrink-0"/><span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{format(new Date(date+'T00:00:00'),'MMMM d, yyyy')}</span><span className="block text-xs text-muted-foreground mt-0.5">Recovery day</span></span><ChevronRight size={18} className="text-muted-foreground"/></button>:<div className="recovery-history-row"><Info size={18} className="text-muted-foreground"/><span className="text-xs text-muted-foreground break-all">Unrecognized recovery date: {date}</span></div>}
+    </li>)}</ul>
+    {history.length>visibleCount&&<button className="recovery-expand" onClick={()=>setVisibleCount(count=>count+20)}>Show More Recovery Days<ChevronDown size={17}/></button>}
+    {visibleCount>5&&<button className="recovery-expand" onClick={()=>setVisibleCount(5)}>Show Less<ChevronDown size={17} className="rotate-180"/></button>}
+    <p className="text-center text-xs text-muted-foreground mt-3" aria-live="polite">Showing {Math.min(visibleCount,history.length)} of {history.length} recovery days in this period</p>
+   </>:<p className="recovery-empty">No recovery days recorded in this period.</p>}
+  </section>
+  <details className="recovery-card recovery-instructions mt-4"><summary><span className="recovery-icon recovery-info-icon"><Info size={22}/></span><span className="min-w-0 flex-1"><span className="block text-sm font-semibold">How Recovery Days Work</span><span className="block text-xs text-muted-foreground mt-1">Mark and manage recovery days</span></span><ChevronDown size={18} className="instructions-chevron text-muted-foreground"/></summary><ol className="recovery-instructions-list"><li><Calendar size={17}/>Open Calendar and select a date.</li><li><Heart size={17}/>In Dynamic Overview, use Recovery to mark or unmark the day.</li><li><CheckCircle2 size={17}/>Recovery days count toward consistency without requiring a workout.</li></ol></details>
+  <p className="recovery-note mt-5"><Calendar size={17}/>Use your Calendar to mark or update recovery days.</p>
+ </div></div>;
 }

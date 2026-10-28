@@ -1,0 +1,31 @@
+.recovery-page .recovery-card { background:hsl(var(--surface)); border:1px solid hsl(var(--separator)); border-radius:20px; padding:16px; }
+.recovery-page .recovery-heading { display:flex; align-items:center; gap:10px; }
+.recovery-page .recovery-heading h2 { font-size:16px; line-height:1.3; font-weight:700; }
+.recovery-page .recovery-heading p { font-size:11px; line-height:1.5; margin-top:3px; color:hsl(var(--muted-foreground)); }
+.recovery-page .recovery-icon { display:flex; align-items:center; justify-content:center; flex-shrink:0; width:36px; height:38px; border-radius:12px; color:hsl(var(--feature-orange)); background:hsl(var(--feature-orange)/.12); }
+.recovery-page .recovery-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin:16px 0; }
+.recovery-page .recovery-metrics > div { padding:14px 3px; border-radius:12px; background:hsl(var(--surface-secondary)); text-align:center; }
+.recovery-page .recovery-metrics strong { display:block; font-size:clamp(16px,5vw,22px); line-height:1.2; overflow-wrap:anywhere; }
+.recovery-page .recovery-metrics span { display:block; margin-top:5px; font-size:10px; color:hsl(var(--muted-foreground)); }
+.recovery-page .recovery-balance { padding:12px; background:hsl(var(--surface-secondary)); border-radius:12px; }
+.recovery-page .recovery-track { height:5px; border-radius:8px; overflow:hidden; background:hsl(var(--progress-track)); }
+.recovery-page .recovery-track > div { height:100%; border-radius:inherit; background:hsl(var(--feature-orange)); }
+.recovery-page .recovery-note { display:flex; align-items:flex-start; gap:8px; font-size:12px; line-height:1.5; color:hsl(var(--muted-foreground)); }
+.recovery-page .recovery-note svg { flex-shrink:0; margin-top:2px; }
+.recovery-page .recovery-period { display:flex; background:hsl(var(--surface-secondary)); border-radius:12px; gap:3px; padding:4px; margin:16px 0; }
+.recovery-page .recovery-period button { flex:1; min-height:40px; border-radius:9px; color:hsl(var(--muted-foreground)); font-size:12px; }
+.recovery-page .recovery-period button[aria-pressed=true] { background:hsl(var(--control-strong)); color:hsl(var(--foreground)); font-weight:600; }
+.recovery-page .recovery-history-list { display:grid; gap:8px; }
+.recovery-page .recovery-history-row { width:100%; min-height:58px; display:flex; align-items:center; gap:10px; padding:10px; border:1px solid hsl(var(--separator)); border-radius:14px; text-align:left; }
+.recovery-page .recovery-expand { display:flex; align-items:center; justify-content:center; gap:7px; width:100%; min-height:44px; margin-top:12px; border:1px solid hsl(var(--control-border)); border-radius:24px; color:hsl(var(--muted-foreground)); font-size:12px; font-weight:600; }
+.recovery-page .recovery-empty { padding:22px 8px; text-align:center; font-size:13px; color:hsl(var(--muted-foreground)); background:hsl(var(--surface-secondary)); border-radius:12px; }
+.recovery-page .recovery-instructions { padding:0; }
+.recovery-page .recovery-instructions summary { display:flex; align-items:center; gap:10px; padding:16px; cursor:pointer; list-style:none; }
+.recovery-page .recovery-instructions summary::-webkit-details-marker { display:none; }
+.recovery-page .recovery-info-icon { background:hsl(var(--surface-secondary)); color:hsl(var(--muted-foreground)); }
+.recovery-page .recovery-instructions[open] .instructions-chevron { transform:rotate(180deg); }
+.recovery-page .recovery-instructions-list { border-top:1px solid hsl(var(--separator)); padding:16px; display:grid; gap:12px; }
+.recovery-page .recovery-instructions-list li { display:flex; align-items:flex-start; gap:9px; font-size:12px; line-height:1.5; color:hsl(var(--muted-foreground)); }
+.recovery-page .recovery-instructions-list svg { flex-shrink:0; margin-top:2px; color:hsl(var(--feature-orange)); }
+.recovery-page button:focus-visible,.recovery-page summary:focus-visible { outline:2px solid hsl(var(--ring)); outline-offset:3px; }
+@media(max-width:350px) { .recovery-page .recovery-card { padding:12px; } .recovery-page .recovery-instructions { padding:0; } .recovery-page .recovery-icon { width:30px; height:34px; } .recovery-page .recovery-heading { gap:8px; } }
