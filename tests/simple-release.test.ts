@@ -44,3 +44,8 @@ test('workflow records only successful main deployments and preserves the tested
  assert.doesNotMatch(workflow,/FITCIRCLE_RELEASES_ENABLED|reserve_release|approve_major/);
  assert.equal(workflow.match(/run: npm run build/g)?.length,1);
 });
+test('bundled and repeatedly fetched history never duplicate the current release',()=>{
+ const once=applyReleaseReceipt(build,release);
+ assert.equal(applyReleaseReceipt(once,release).history.length,1);
+ assert.equal(applyReleaseReceipt({...build,history:once.history},release).history.length,1);
+});

@@ -2,6 +2,7 @@
   "extends": "../tsconfig.json",
   "include": [
     "simple-release.test.ts",
+    "simple-release-workflow.test.ts",
     "browser/release-versioning.spec.ts",
     "release-versioning.test.ts",
     "workout-shared-state.test.ts",

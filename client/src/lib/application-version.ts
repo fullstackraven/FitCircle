@@ -8,7 +8,7 @@ export function applyReleaseReceipt(build:ApplicationBuild,unknown:unknown):Appl
  try{stableVersion(build.version);validateCommit(r.target_commitish);}catch{return build;}
  if(r.draft||r.prerelease||r.tag_name!==`v${build.version}`||r.target_commitish!==build.commit||!r.published_at||!Number.isFinite(Date.parse(r.published_at)))return build;
  const current={version:build.version,commit:build.commit,releasedAt:r.published_at,summary:r.body||'FitCircle update',prs:[...String(r.body).matchAll(/\/pull\/(\d+)/g)].map(m=>Number(m[1]))};
- return {...build,stage:'published',releasedAt:r.published_at,history:build.history.some(e=>e.commit===r.commit)?build.history:[...build.history,current]};
+ return {...build,stage:'published',releasedAt:r.published_at,history:build.history.some(e=>e.commit===r.target_commitish||e.version===current.version)?build.history:[...build.history,current]};
 }
 /** One immutable receipt for the loaded build, never an online 'latest version'. */
 export async function loadReleaseReceipt(build:ApplicationBuild):Promise<ApplicationBuild>{
