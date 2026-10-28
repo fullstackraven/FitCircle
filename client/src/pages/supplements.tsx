@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { ArrowLeft, Pill, Plus, Edit2, Trash2, Calendar, ChevronDown, ChevronUp } from "lucide-react";
+import '@/styles/supplements.css';
+import React, { useState, useEffect, useRef } from "react";
+import { ArrowLeft, Pill, Plus, Edit2, Trash2, Calendar, ChevronDown, ChevronUp, Check, SlidersHorizontal } from "lucide-react";
 import { useLocation } from "wouter";
 import { useSupplements } from "@/hooks/use-supplements";
 import { AddSupplementDialog } from "@/components/AddSupplementDialog";
@@ -29,7 +30,7 @@ export function SupplementsPage() {
   };
   
   const [tempSupplementLogs, setTempSupplementLogs] = useState<{id: number, name: string, taken: boolean}[]>([]);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const addTriggerRef = useRef<HTMLDivElement>(null);
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingName, setEditingName] = useState("");
@@ -97,166 +98,57 @@ export function SupplementsPage() {
     }
   };
 
+  const takenCount = tempSupplementLogs.filter(log => log.taken).length;
+  const supplementById = new Map(allSupplements.map(supplement => [supplement.id, supplement]));
   return (
-    <div className="fitcircle-page">
+    <div className="fitcircle-page supplements-page">
       <div className="fitcircle-container">
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={handleBack}
-            className="text-muted-foreground hover:text-strong transition-colors"
-            title="Back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-
+        <div className="flex items-center justify-between gap-2 mb-5">
+          <button onClick={handleBack} className="min-h-11 min-w-11 inline-flex items-center justify-center text-muted-foreground hover:text-strong" title="Back" aria-label="Back"><ArrowLeft size={20}/></button>
           <h1 className="fitcircle-page-title">Supplements</h1>
-        
-        <AddSupplementDialog
-          onSupplementAdded={() => window.location.reload()}
-        />
-      </div>
-
-      <div className="space-y-6">
-          {/* Today's Supplements */}
-          <div className="fitcircle-card-lg">
-              <div className="flex items-center space-x-3 mb-4">
-                <Pill className="w-6 h-6 text-accent-text" />
-                <div>
-                  <h2 className="text-lg font-semibold text-strong">Today's Supplements</h2>
-                  <p className="text-sm text-muted-foreground">{format(new Date(), "MMMM d, yyyy")}</p>
-                </div>
-              </div>
-
-              {tempSupplementLogs.length > 0 ? (
-                <div className="space-y-3">
-              {tempSupplementLogs.map(log => (
-                <div key={log.id} className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl">
-                  <div className="flex items-center space-x-3">
-                    <button
-                      onClick={() => handleSupplementToggle(log.id)}
-                      className={`w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center ${
-                        log.taken
-                          ? 'bg-action-selected border-green-500'
-                          : 'border-control-muted hover:border-supporting'
-                      }`}
-                    >
-                      {log.taken && (
-                        <svg className="w-3 h-3 text-on-action" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                        </svg>
-                      )}
-                    </button>
-                    <span className={`font-medium ${log.taken ? 'text-accent-text' : 'text-strong'}`}>
-                      {log.name}
-                    </span>
-                  </div>
-                  <span className={`text-sm ${log.taken ? 'text-accent-text' : 'text-muted-foreground'}`}>
-                    {log.taken ? 'Taken' : 'Not taken'}
-                  </span>
-                </div>
-              ))}
-              
-              <button
-                onClick={handleSaveSupplements}
-                className="w-full mt-4 px-4 py-3 bg-action hover:bg-action-hover text-on-action rounded-xl transition-colors font-medium"
-              >
-                  Save Today's Log
-                </button>
-              </div>
-              ) : (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">No supplements added yet</p>
-              </div>
-            )}
-          </div>
-
-          {/* Manage Supplements - Collapsible */}
-          <Collapsible open={isManageOpen} onOpenChange={setIsManageOpen}>
-          <CollapsibleTrigger className="glass-panel flex items-center justify-between w-full p-4 bg-surface rounded-xl hover:bg-surface-secondary transition-colors">
-            <h2 className="text-lg font-semibold text-strong">Manage Supplements</h2>
-            {isManageOpen ? (
-              <ChevronUp className="w-5 h-5 text-muted-foreground" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-muted-foreground" />
-            )}
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="glass-panel mt-4 bg-surface rounded-xl p-6">
-              {allSupplements.length > 0 ? (
-                <div className="space-y-3">
-                  {allSupplements.map(supplement => (
-                    <div key={supplement.id} className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl">
-                      {editingId === supplement.id ? (
-                        <div className="flex items-center space-x-2 flex-1">
-                          <input
-                            type="text"
-                            value={editingName}
-                            onChange={(e) => setEditingName(e.target.value)}
-                            className="flex-1 px-3 py-2 bg-surface text-strong rounded border border-control-muted-border focus:outline-none focus:border-blue-400"
-                            autoFocus
-                          />
-                          <button
-                            onClick={handleSaveEdit}
-                            className="px-3 py-2 bg-action hover:bg-action-hover text-on-action rounded text-sm"
-                          >
-                            Save
-                          </button>
-                          <button
-                            onClick={() => {
-                              setEditingId(null);
-                              setEditingName("");
-                            }}
-                            className="px-3 py-2 bg-control-strong hover:bg-control-muted text-strong rounded text-sm"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex items-center space-x-3">
-                            <Pill className="w-4 h-4 text-accent-text" />
-                            <span className="text-strong font-medium">{supplement.name}</span>
-                            <span className="text-xs text-muted-foreground">
-                              {supplement.amount} {supplement.measurementType}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => handleEditSupplement(supplement.id, supplement.name)}
-                              className="p-2 text-muted-foreground hover:text-subtle transition-colors"
-                              title="Edit supplement"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteSupplement(supplement.id)}
-                              className="p-2 text-feature-red hover:text-feature-red-soft transition-colors"
-                              title="Delete supplement"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">No supplements added yet</p>
-                </div>
-              )}
-            </div>
-          </CollapsibleContent>
-          </Collapsible>
-
-          <div className="bg-surface-secondary rounded-xl p-4">
-            <p className="text-sm text-supporting">
-              <Calendar className="w-4 h-4 inline mr-2" />
-              Tip: Tap any day on the calendar to view or edit past supplement logs
-            </p>
-          </div>
+          <div ref={addTriggerRef} className="supplement-add-trigger"><AddSupplementDialog onSupplementAdded={() => window.location.reload()}/></div>
         </div>
+        <section className="supplements-card" aria-labelledby="daily-supplements-heading">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="supplement-heading-icon"><Pill size={25}/></span>
+            <div className="min-w-0 flex-1"><h2 id="daily-supplements-heading" className="font-bold text-base text-strong">Today's Supplements</h2><p className="text-xs text-muted-foreground mt-1">{format(new Date(), "EEEE, MMMM d")}</p></div>
+            <div className="text-right shrink-0"><strong className="block text-xl text-accent-text" data-testid="supplement-completion">{takenCount}/{tempSupplementLogs.length}</strong><span className="text-[9px] uppercase tracking-wide text-muted-foreground">Completed</span></div>
+          </div>
+          <div className="overview-progress" role="progressbar" aria-label="Supplements taken" aria-valuemin={0} aria-valuemax={tempSupplementLogs.length || 1} aria-valuenow={takenCount} aria-valuetext={`${takenCount} of ${tempSupplementLogs.length} supplements taken`}><div style={{width:`${tempSupplementLogs.length ? takenCount / tempSupplementLogs.length * 100 : 0}%`}}/></div>
+          <div className="overview-supplement-list">
+            {tempSupplementLogs.map(log => {
+              const supplement = supplementById.get(log.id);
+              return <button key={log.id} type="button" role="checkbox" aria-label={log.name} aria-checked={log.taken} onClick={()=>handleSupplementToggle(log.id)} className={`overview-supplement-row ${log.taken ? 'supplement-taken' : ''}`}>
+                <span className={`overview-check ${log.taken ? 'is-taken' : ''}`} aria-hidden="true">{log.taken && <Check size={16}/>}</span>
+                <span className="overview-supplement-name"><span className="block font-semibold text-strong">{log.name}</span>{supplement && <span className="block text-xs text-muted-foreground mt-0.5">{supplement.amount} {supplement.measurementType}</span>}</span>
+                <span className={log.taken ? 'text-accent-text' : 'text-muted-foreground'}>{log.taken ? 'Taken' : 'Not taken'}</span>
+              </button>;
+            })}
+            {!tempSupplementLogs.length && <p className="text-center text-sm text-muted-foreground py-5">No supplements added yet</p>}
+          </div>
+          {!!tempSupplementLogs.length && <button onClick={handleSaveSupplements} className="supplement-save"><Check size={19}/>Save Today's Log</button>}
+        </section>
+        <Collapsible open={isManageOpen} onOpenChange={setIsManageOpen} className="supplements-card mt-4 !p-0">
+          <CollapsibleTrigger className="supplement-manage-trigger"><SlidersHorizontal size={20} className="text-muted-foreground shrink-0"/><h2 className="flex-1 text-left font-semibold text-base text-strong">Manage Supplements</h2>{isManageOpen ? <ChevronUp size={19}/> : <ChevronDown size={19}/>}</CollapsibleTrigger>
+          <CollapsibleContent className="border-t border-separator p-4">
+            <p className="text-xs text-muted-foreground mb-3">View saved quantities and edit your supplement list.</p>
+            {allSupplements.map(supplement => <div key={supplement.id} className="supplement-management-row">
+              {editingId === supplement.id ? <div className="flex flex-wrap items-center gap-2 w-full">
+                <input type="text" aria-label="Supplement name" value={editingName} onChange={e=>setEditingName(e.target.value)} className="min-w-0 w-full rounded-lg border border-control-muted-border bg-input-background text-strong px-3 py-2" autoFocus/>
+                <button onClick={handleSaveEdit} className="min-h-11 px-4 rounded-lg bg-action text-on-action text-sm">Save</button>
+                <button onClick={()=>{setEditingId(null);setEditingName('');}} className="min-h-11 px-4 rounded-lg border border-control-border text-supporting text-sm">Cancel</button>
+              </div> : <>
+                <Pill size={17} className="text-accent-text shrink-0"/>
+                <div className="min-w-0 flex-1"><span className="block text-sm font-semibold text-strong break-words">{supplement.name}</span><span className="block text-xs text-muted-foreground mt-0.5">{supplement.amount} {supplement.measurementType}</span></div>
+                <button onClick={()=>handleEditSupplement(supplement.id,supplement.name)} title="Edit supplement" aria-label={`Edit ${supplement.name}`} className="supplement-edit"><Edit2 size={17}/></button>
+                <button onClick={()=>handleDeleteSupplement(supplement.id)} title="Delete supplement" aria-label={`Delete ${supplement.name}`} className="supplement-delete"><Trash2 size={18}/></button>
+              </>}
+            </div>)}
+            {!allSupplements.length && <p className="text-center text-sm text-muted-foreground py-4">No supplements added yet</p>}
+            <button onClick={()=>addTriggerRef.current?.querySelector('button')?.click()} className="supplement-add-secondary"><Plus size={18}/>Add Supplement</button>
+          </CollapsibleContent>
+        </Collapsible>
+        <p className="flex items-start gap-2 mt-5 text-xs text-muted-foreground leading-relaxed"><Calendar size={17} className="shrink-0 mt-0.5"/>Tip: Tap any day on the calendar to view or edit past supplement logs</p>
       </div>
     </div>
   );
