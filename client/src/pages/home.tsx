@@ -1,3 +1,4 @@
+import { focusDashboardOnOpen, returnDashboardFocus } from '@/lib/dashboard-navigation';
 import { DashboardMenu } from '@/components/DashboardMenu';
 import { VersionLabel } from "@/components/VersionLabel";
 import { AppHeader } from "@/components/AppHeader";
@@ -567,7 +568,7 @@ export default function Home() {
 
       {/* Sidebar Dashboard */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetContent side="left" className="w-80 bg-canvas border-separator">
+        <SheetContent side="left" onOpenAutoFocus={focusDashboardOnOpen} onCloseAutoFocus={returnDashboardFocus} className="w-80 bg-canvas border-separator outline-none">
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation Menu</SheetTitle>
           </SheetHeader>

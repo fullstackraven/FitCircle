@@ -20,7 +20,7 @@ export function SidebarProfileCard({ open, returnTo, onNavigate }: {
     navigate(`/profile?from=dashboard&returnTo=${encodeURIComponent(returnTo)}`);
   };
   return (
-    <button className="w-full rounded-xl bg-surface/60 border border-separator/40 p-3 text-left hover:bg-surface transition-colors" onClick={openProfile}>
+    <button className="w-full rounded-xl bg-surface/60 border border-separator/40 p-3 text-left hover:bg-surface transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background" onClick={openProfile}>
       <span className="flex items-center gap-3">
         <span className="w-11 h-11 shrink-0 rounded-full bg-accent-bright/10 flex items-center justify-center"><User size={24} className="text-accent-text" aria-hidden="true" /></span>
         <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-strong">My Fitness Profile</span><span className="block text-xs text-muted-foreground mt-1">Training overview &amp; goals</span></span>
