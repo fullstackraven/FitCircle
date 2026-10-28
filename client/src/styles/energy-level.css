@@ -1,0 +1,31 @@
+.energy-level-page .energy-card { background:hsl(var(--surface)); border:1px solid hsl(var(--separator)); border-radius:20px; padding:16px; }
+.energy-level-page .energy-icon { display:flex; align-items:center; justify-content:center; width:36px; height:38px; flex-shrink:0; border-radius:12px; color:hsl(var(--feature-yellow)); background:hsl(var(--feature-yellow)/.25); }
+.energy-level-page .energy-gauge { position:relative; width:144px; height:144px; margin:20px auto 14px; }
+.energy-level-page .energy-gauge svg { display:block; width:100%; height:100%; }
+.energy-level-page .energy-gauge svg circle:last-child { transition:stroke-dashoffset .2s,stroke .2s; }
+.energy-level-page .energy-gauge > div { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
+.energy-level-page .energy-gauge strong { font-size:38px; line-height:1; }
+.energy-level-page .energy-gauge span { font-size:12px; color:hsl(var(--muted-foreground)); }
+.energy-level-page .energy-slider { width:100%; min-height:44px; appearance:none; background:transparent; cursor:pointer; }
+.energy-level-page .energy-actions { display:flex; gap:8px; }
+.energy-level-page .energy-actions button { display:flex; align-items:center; justify-content:center; gap:7px; min-height:44px; border-radius:24px; font-size:13px; font-weight:600; }
+.energy-level-page .energy-undo { flex:1; border:1px solid hsl(var(--control-border)); color:hsl(var(--muted-foreground)); }
+.energy-level-page .energy-save { flex:2; background:hsl(var(--action)); color:hsl(var(--on-action)); }
+.energy-level-page button:disabled { opacity:.45; cursor:not-allowed; }
+.energy-level-page button:focus-visible,.energy-level-page input:focus-visible { outline:2px solid hsl(var(--ring)); outline-offset:3px; }
+.energy-level-page .energy-period { display:flex; background:hsl(var(--surface-secondary)); border-radius:12px; padding:4px; gap:3px; margin-bottom:12px; }
+.energy-level-page .energy-period button { flex:1; min-height:40px; font-size:12px; color:hsl(var(--muted-foreground)); border-radius:9px; }
+.energy-level-page .energy-period button[aria-pressed=true] { background:hsl(var(--control-strong)); color:hsl(var(--foreground)); font-weight:600; }
+.energy-level-page .energy-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+.energy-level-page .energy-metrics > div { background:hsl(var(--surface-secondary)); border-radius:12px; padding:12px 3px; text-align:center; }
+.energy-level-page .energy-metrics strong { display:block; font-size:22px; line-height:1.2; }
+.energy-level-page .energy-metrics span { font-size:10px; color:hsl(var(--muted-foreground)); }
+.energy-level-page .energy-chart { width:100%; height:auto; max-height:170px; color:hsl(var(--muted-foreground)); margin-top:12px; }
+.energy-level-page .energy-empty { padding:18px 0 4px; text-align:center; font-size:12px; line-height:1.5; color:hsl(var(--muted-foreground)); }
+@media(max-width:350px) { .energy-level-page .energy-card { padding:12px; } .energy-level-page .energy-icon { width:30px; height:34px; } }
+@media(prefers-reduced-motion:reduce) { .energy-level-page .energy-gauge svg circle:last-child { transition:none; } }
+
+.energy-level-page .energy-slider::-webkit-slider-runnable-track { height:5px; border-radius:8px; background:linear-gradient(to right,hsl(var(--feature-yellow)) var(--energy-selection),hsl(var(--progress-track)) var(--energy-selection)); }
+.energy-level-page .energy-slider::-webkit-slider-thumb { appearance:none; width:22px; height:22px; margin-top:-8.5px; border-radius:50%; background:white; border:1px solid hsl(var(--control-border)); }
+.energy-level-page .energy-slider::-moz-range-track { height:5px; border-radius:8px; background:linear-gradient(to right,hsl(var(--feature-yellow)) var(--energy-selection),hsl(var(--progress-track)) var(--energy-selection)); }
+.energy-level-page .energy-slider::-moz-range-thumb { width:22px; height:22px; border-radius:50%; background:white; border:1px solid hsl(var(--control-border)); }

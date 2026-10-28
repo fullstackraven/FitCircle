@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "browser/energy-modernization.spec.ts",
+    "energy-trends.test.ts",
     "browser/supplements-modernization.spec.ts",
     "browser/appearance-chrome-focus.spec.ts",
     "browser/settings-modernization.spec.ts",
