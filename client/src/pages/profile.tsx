@@ -58,10 +58,10 @@ export default function ProfilePage() {
       <header className="flex items-center gap-3">
         <div className="w-14 h-14 shrink-0 rounded-full bg-accent-bright/10 flex items-center justify-center"><User size={28} className="text-accent-text" aria-hidden="true" /></div>
         <div className="min-w-0 flex-1"><h2 className="entity-name text-xl font-semibold text-strong">{profile.name || 'Your fitness journey'}</h2><p className="text-sm text-muted-foreground mt-1">Your personal training overview</p></div>
-        <button onClick={() => openEditor('profile')} disabled={!!profile.error} className="fc-pill min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-accent-text disabled:opacity-40" aria-label="Edit Profile"><SlidersHorizontal size={20} /></button>
+        <button onClick={() => openEditor('profile')} disabled={!!profile.error} className="fc-pill fc-icon-button min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-accent-text disabled:opacity-40" aria-label="Edit Profile"><SlidersHorizontal size={20} /></button>
       </header>
       <section aria-labelledby="profile-focus" className="rounded-2xl bg-surface/90 border border-separator/40 p-4">
-        <div className="flex items-center justify-between gap-2 mb-2"><h2 id="profile-focus" className="font-semibold text-strong">Current Focus</h2><button aria-label="Edit Fitness Goals" disabled={!!profile.error} onClick={() => openEditor('goals')} className="fc-pill min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-accent-text disabled:opacity-40"><Pencil size={18} /></button></div>
+        <div className="flex items-center justify-between gap-2 mb-2"><h2 id="profile-focus" className="font-semibold text-strong">Current Focus</h2><button aria-label="Edit Fitness Goals" disabled={!!profile.error} onClick={() => openEditor('goals')} className="fc-pill fc-icon-button min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-accent-text disabled:opacity-40"><Pencil size={18} /></button></div>
         <p className="entity-name text-lg font-semibold text-strong whitespace-pre-wrap">{profile.objective || profile.goal || 'Set a personal fitness objective'}</p>
         {profile.objective && profile.goal && <p className="entity-name text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap mt-2">{profile.goal}</p>}
       </section>

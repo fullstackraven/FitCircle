@@ -519,8 +519,8 @@ export default function FoodTrackerPage() {
       <div className="fitcircle-container">
         {/* Header */}
         <PageHeader title="Food Tracker" onBack={handleBack} backLabel="Back to Logs" backProps={{'data-testid':'button-back'}} sideWidth={88} actions={<>
-          <button onClick={() => navigate('/food-database')} className="fc-pill fc-icon-action" aria-label="Food Database" data-testid="button-database"><Database size={20}/></button>
-          <button onClick={() => navigate("/fitness-calculator", { state: { calculatorFrom: window.location.pathname + window.location.search } })} className="fc-pill fc-icon-action" aria-label="Fitness Calculator" data-testid="button-calculator"><Calculator size={20}/></button>
+          <button onClick={() => navigate('/food-database')} className="fc-pill fc-icon-button fc-icon-action" aria-label="Food Database" data-testid="button-database"><Database size={20}/></button>
+          <button onClick={() => navigate("/fitness-calculator", { state: { calculatorFrom: window.location.pathname + window.location.search } })} className="fc-pill fc-icon-button fc-icon-action" aria-label="Fitness Calculator" data-testid="button-calculator"><Calculator size={20}/></button>
         </>} />
 
         {/* Date Navigation */}
@@ -607,7 +607,7 @@ export default function FoodTrackerPage() {
                 {searchQuery && (
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     onClick={() => setSearchQuery('')}
                     className="absolute right-1 top-1/2 transform -translate-y-1/2 text-neutral-muted hover:text-strong h-11 w-11 p-0"
                     aria-label="Clear food search"
@@ -640,7 +640,7 @@ export default function FoodTrackerPage() {
                     <div className="space-y-2">
                       {searchResults.map((food) => (
                         <div key={food.id} className="glass-panel bg-surface border border-separator rounded-xl p-4 transition-colors" data-testid={`row-food-${food.id}`}>
-                          <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start justify-between gap-1">
                             <div className="flex-1 min-w-0">
                               <h3 className="font-medium text-strong mb-1">
                                 {food.name}
@@ -678,7 +678,7 @@ export default function FoodTrackerPage() {
                             <div className="flex gap-2 flex-shrink-0">
                               <Button
                                 variant="ghost"
-                                size="sm"
+                                size="icon"
                                 onClick={() => handleEditFoodFromSearch(food)}
                                 className="text-muted-foreground hover:text-subtle hover:bg-control-strong"
                                 data-testid={`button-edit-${food.id}`}
@@ -688,7 +688,7 @@ export default function FoodTrackerPage() {
                               </Button>
                               <Button
                                 variant="ghost"
-                                size="sm"
+                                size="icon"
                                 onClick={() => handleAddFromSearch(food)}
                                 className="text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint"
                                 data-testid={`button-add-${food.id}`}
@@ -698,7 +698,7 @@ export default function FoodTrackerPage() {
                               </Button>
                               <Button
                                 variant="ghost"
-                                size="sm"
+                                size="icon"
                                 onClick={() => handleDeleteFoodFromDatabase(food)}
                                 className="text-feature-red hover:text-feature-red-soft hover:bg-feature-red-tint"
                                 data-testid={`button-delete-db-${food.id}`}
@@ -722,7 +722,7 @@ export default function FoodTrackerPage() {
                     <div className="space-y-2">
                       {filteredFoodHistory.slice(0, showAllRecent ? undefined : 10).map((food) => (
                         <div key={food.id} className="glass-panel bg-surface border border-separator rounded-xl p-4 transition-colors" data-testid={`row-food-${food.id}`}>
-                          <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <h3 className="font-medium text-strong mb-1">
                                 {food.name}
@@ -759,7 +759,7 @@ export default function FoodTrackerPage() {
                             <div className="flex gap-2 flex-shrink-0">
                               <Button
                                 variant="ghost"
-                                size="sm"
+                                size="icon"
                                 onClick={() => handleAddFromSearch(food)}
                                 className="text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint"
                                 data-testid={`button-add-${food.id}`}

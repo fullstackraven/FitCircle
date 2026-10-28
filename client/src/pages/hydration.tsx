@@ -245,7 +245,7 @@ export default function HydrationPage() {
                       <div className="flex items-center space-x-1 ml-2">
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           aria-label="Edit intake"
                           onClick={() => handleEditEntry(entry)}
                           className="text-muted-foreground hover:text-strong p-1 h-auto"
@@ -255,7 +255,7 @@ export default function HydrationPage() {
                         </Button>
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           aria-label="Delete intake"
                           onClick={() => handleDeleteEntry(entry)}
                           className="text-muted-foreground hover:text-feature-red-soft p-1 h-auto"
@@ -338,13 +338,13 @@ export default function HydrationPage() {
                                   <span className="text-supporting">
                                     {entry.amount}oz
                                   </span>
-                                  <button className="fc-pill"
+                                  <button className="fc-pill fc-icon-button"
                                     aria-label="Edit historical intake"
                                     onClick={() => handleEditEntry(entry)}
                                   >
                                     <Edit2 size={16} />
                                   </button>
-                                  <button className="fc-pill"
+                                  <button className="fc-pill fc-icon-button"
                                     aria-label="Delete historical intake"
                                     onClick={() => handleDeleteEntry(entry)}
                                   >

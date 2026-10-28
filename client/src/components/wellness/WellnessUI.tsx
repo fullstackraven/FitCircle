@@ -288,14 +288,14 @@ export function WellnessEntryActions({
   return (
     <span className="flex shrink-0">
       <button
-        className="fc-pill min-h-11 min-w-11 grid place-content-center text-muted-foreground"
+        className="fc-pill fc-icon-button min-h-11 min-w-11 grid place-content-center text-muted-foreground"
         aria-label={`Edit ${label}`}
         onClick={onEdit}
       >
         <Pencil size={15} />
       </button>
       <button
-        className="fc-pill min-h-11 min-w-11 grid place-content-center text-muted-foreground"
+        className="fc-pill fc-icon-button min-h-11 min-w-11 grid place-content-center text-muted-foreground"
         aria-label={`Delete ${label}`}
         onClick={onDelete}
       >

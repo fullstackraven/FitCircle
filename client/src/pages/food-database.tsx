@@ -281,7 +281,7 @@ export default function FoodDatabasePage() {
                         <Button
                           onClick={() => handleEdit(food)}
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           className="min-w-11 text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint"
                           aria-label={`Edit ${food.name}`}
                           data-testid={`button-edit-${food.id}`}
@@ -291,7 +291,7 @@ export default function FoodDatabasePage() {
                         <Button
                           onClick={() => handleDelete(food.id, food.name)}
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           className="min-w-11 text-feature-red hover:text-feature-red-soft hover:bg-feature-red-tint"
                           aria-label={`Delete ${food.name}`}
                           data-testid={`button-delete-${food.id}`}
@@ -312,7 +312,7 @@ export default function FoodDatabasePage() {
                     onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                     disabled={currentPage === 1}
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     className="text-muted-foreground hover:text-strong disabled:opacity-30"
                     data-testid="button-prev-page"
                   >
@@ -329,7 +329,7 @@ export default function FoodDatabasePage() {
                     onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                     disabled={currentPage === totalPages}
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     className="text-muted-foreground hover:text-strong disabled:opacity-30"
                     data-testid="button-next-page"
                   >

@@ -15,7 +15,7 @@ Every declaration below records its prior styling, new owner/variant, update sta
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
 | DialogTrigger · 59 | Implicit or owner-class geometry; see literal classes in JSON | Child-owned geometry | Via child | Radix asChild delegates its surface to the already audited child |
-| Add Supplement · 60 | rounded-full | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
+| Add Supplement · 60 | rounded-full | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | SelectTrigger · 97 | Shared trigger: 12px; usage sizing/colors | Shared/native trigger / fc-pill | Yes | Capsule trigger; options and native keyboard behavior unchanged |
 | Button · 128 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 135 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
@@ -60,8 +60,8 @@ Every declaration below records its prior styling, new owner/variant, update sta
 
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
-| Refresh quote · 39 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| Refresh quote · 53 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
+| Refresh quote · 39 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Refresh quote · 53 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 
 ### `client/src/components/SidebarProfileCard.tsx`
 
@@ -109,9 +109,9 @@ Every declaration below records its prior styling, new owner/variant, update sta
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
 | button · 30 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| button · 57 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| button · 57 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 79 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| button · 112 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| button · 112 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 
 ### `client/src/components/progress-circle.tsx`
 
@@ -142,7 +142,7 @@ Every declaration below records its prior styling, new owner/variant, update sta
 
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
-| button · 17 | 12px; 44px minimum | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| button · 17 | 12px; 44px minimum | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 32 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 
 ### `client/src/components/ui/select.tsx`
@@ -175,8 +175,8 @@ Every declaration below records its prior styling, new owner/variant, update sta
 | button · 45 | 12px; 44px minimum | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 239 | 14px; 48px minimum | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 254 | 14px; 52px minimum | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| button · 290 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| button · 297 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| button · 290 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| button · 297 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 
 ### `client/src/components/workout-modal.tsx`
 
@@ -198,13 +198,13 @@ Every declaration below records its prior styling, new owner/variant, update sta
 
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
-| Open Menu · 505 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Previous period · 522 | 12px; 44px minimum | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| Next period · 533 | 12px; 44px minimum | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| button · 544 | 12px; 44px minimum | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| button-prev-page · 646 | rounded-lg | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
+| Open Menu · 505 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Previous period · 522 | 12px; 44px minimum | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Next period · 533 | 12px; 44px minimum | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| button · 544 | 12px; 44px minimum | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| button-prev-page · 646 | rounded-lg | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 662 | rounded-full | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| button-next-page · 673 | rounded-lg | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
+| button-next-page · 673 | rounded-lg | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 692 | rounded-xl | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 
 ### `client/src/pages/cardio.tsx`
@@ -215,19 +215,19 @@ Every declaration below records its prior styling, new owner/variant, update sta
 | WellnessPrimaryAction · 310 | Implicit or owner-class geometry; see literal classes in JSON | Shared action / fc-pill | Yes | Overlay/toast/action primitive retains handlers and focus behavior |
 | SelectTrigger · 333 | Shared trigger: 12px; usage sizing/colors | Shared/native trigger / fc-pill | Yes | Capsule trigger; options and native keyboard behavior unchanged |
 | DialogTrigger · 348 | Implicit or owner-class geometry; see literal classes in JSON | Child-owned geometry | Via child | Radix asChild delegates its surface to the already audited child |
-| Button · 349 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
+| Button · 349 | Shared Button: 12px; usage sizing/colors | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | Button · 375 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 381 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 442 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 449 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
-| Button · 497 | 12px; 44px minimum | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
-| Button · 516 | 12px; 44px minimum | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
+| Button · 497 | 12px; 44px minimum | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Button · 516 | 12px; 44px minimum | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | CollapsibleTrigger · 567 | Implicit or owner-class geometry; see literal classes in JSON | Child-owned geometry | Via child | Radix asChild delegates its surface to the already audited child |
 | button · 663 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | SelectTrigger · 720 | Shared trigger: 12px; usage sizing/colors | Shared/native trigger / fc-pill | Yes | Capsule trigger; options and native keyboard behavior unchanged |
 | Button · 778 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 785 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
-| Close · 810 | rounded-lg | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
+| Close · 810 | rounded-lg | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | Button · 838 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 844 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 871 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
@@ -238,8 +238,8 @@ Every declaration below records its prior styling, new owner/variant, update sta
 
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
-| View all journal entries · 138 | 12px; 44px minimum | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Save Entry · 205 | rounded-full | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
+| View all journal entries · 138 | 12px; 44px minimum | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Save Entry · 205 | rounded-full | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 
 ### `client/src/pages/dynamic-overview.tsx`
 
@@ -250,9 +250,9 @@ Every declaration below records its prior styling, new owner/variant, update sta
 | button · 468 | 10px; expanded 44px hit area | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 496 | 10px; expanded 44px hit area | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | View and log supplements · 501 | 14px card surface | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Save · 557 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Cancel · 564 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Edit count · 577 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| Save · 557 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Cancel · 564 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Edit count · 577 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button-edit-workout-duration · 596 | rounded-xl | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 650 | Implicit or owner-class geometry; see literal classes in JSON | Original native-selection surface | No | Checkbox/switch interaction; not a pill action |
 | button · 687 | 10px; expanded 44px hit area | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
@@ -276,9 +276,9 @@ Every declaration below records its prior styling, new owner/variant, update sta
 | --- | --- | --- | --- | --- |
 | WellnessPrimaryAction · 280 | Implicit or owner-class geometry; see literal classes in JSON | Shared action / fc-pill | Yes | Overlay/toast/action primitive retains handlers and focus behavior |
 | CollapsibleTrigger · 370 | Implicit or owner-class geometry; see literal classes in JSON | Child-owned geometry | Via child | Radix asChild delegates its surface to the already audited child |
-| Edit fast · 411 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| Delete fast · 418 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| Close · 475 | rounded-lg | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
+| Edit fast · 411 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Delete fast · 418 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Close · 475 | rounded-lg | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | Button · 542 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 549 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 648 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
@@ -303,10 +303,10 @@ Every declaration below records its prior styling, new owner/variant, update sta
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
 | Search foods · 194 | rounded-xl | Shared search capsule | Yes | Journal 48px; Food Database 44px; Food Tracker 56px preserves protected tile positions |
-| Button · 281 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
-| Button · 291 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
-| button-prev-page · 311 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
-| button-next-page · 328 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
+| Button · 281 | Shared Button: 12px; usage sizing/colors | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Button · 291 | Shared Button: 12px; usage sizing/colors | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| button-prev-page · 311 | Shared Button: 12px; usage sizing/colors | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| button-next-page · 328 | Shared Button: 12px; usage sizing/colors | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | select-edit-unit · 397 | Shared trigger: 12px; usage sizing/colors | Shared/native trigger / fc-pill | Yes | Capsule trigger; options and native keyboard behavior unchanged |
 | button-cancel-edit · 511 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | button-save-edit · 522 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
@@ -315,22 +315,22 @@ Every declaration below records its prior styling, new owner/variant, update sta
 
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
-| Food Database · 522 | 12px; 44px minimum | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Fitness Calculator · 523 | 12px; 44px minimum | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Previous day · 528 | 12px; 44px minimum | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| Next day · 547 | 12px; 44px minimum | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
+| Food Database · 522 | 12px; 44px minimum | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Fitness Calculator · 523 | 12px; 44px minimum | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Previous day · 528 | 12px; 44px minimum | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Next day · 547 | 12px; 44px minimum | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | Button · 563 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 564 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | button · 567 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | Search foods · 599 | rounded-2xl | Shared search capsule | Yes | Journal 48px; Food Database 44px; Food Tracker 56px preserves protected tile positions |
-| Clear food search · 608 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
+| Clear food search · 608 | Shared Button: 12px; usage sizing/colors | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | Scan Barcode · 627 | rounded-3xl | Protected original choice tile | No | Explicit owner-protected exception; complete JSX and geometry/style regressions |
 | Create Custom Food · 630 | rounded-3xl | Protected original choice tile | No | Explicit owner-protected exception; complete JSX and geometry/style regressions |
 | Button · 634 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
-| Edit food · 679 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
-| Add to meal · 689 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
-| Delete from database · 699 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
-| Add to meal · 760 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
+| Edit food · 679 | Shared Button: 12px; usage sizing/colors | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Add to meal · 689 | Shared Button: 12px; usage sizing/colors | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Delete from database · 699 | Shared Button: 12px; usage sizing/colors | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Add to meal · 760 | Shared Button: 12px; usage sizing/colors | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | select-custom-unit · 846 | Shared trigger: 12px; usage sizing/colors | Shared/native trigger / fc-pill | Yes | Capsule trigger; options and native keyboard behavior unchanged |
 | button-cancel-custom · 1068 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | button-save-custom · 1079 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
@@ -342,16 +342,16 @@ Every declaration below records its prior styling, new owner/variant, update sta
 
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
-| Open Menu · 214 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| Open Menu · 214 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 247 | rounded-xl | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Stop workout · 269 | rounded-full | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| button · 276 | rounded-full | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| Reset without saving · 283 | rounded-full | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| button · 345 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| button · 353 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| Stop workout · 269 | rounded-full | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| button · 276 | rounded-full | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Reset without saving · 283 | rounded-full | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| button · 345 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| button · 353 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 371 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Restart timer from beginning · 481 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Stop timer · 492 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| Restart timer from beginning · 481 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Stop timer · 492 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | Add new workout · 513 | rounded-full | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | Button · 600 | rounded-full | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 601 | rounded-full | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
@@ -362,13 +362,13 @@ Every declaration below records its prior styling, new owner/variant, update sta
 | --- | --- | --- | --- | --- |
 | button · 195 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | WellnessPrimaryAction · 213 | Implicit or owner-class geometry; see literal classes in JSON | Shared action / fc-pill | Yes | Overlay/toast/action primitive retains handlers and focus behavior |
-| Edit intake · 246 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
-| Delete intake · 256 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
+| Edit intake · 246 | Shared Button: 12px; usage sizing/colors | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Delete intake · 256 | Shared Button: 12px; usage sizing/colors | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | CollapsibleTrigger · 292 | Implicit or owner-class geometry; see literal classes in JSON | Child-owned geometry | Via child | Radix asChild delegates its surface to the already audited child |
-| Edit historical intake · 341 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Delete historical intake · 347 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| Edit historical intake · 341 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Delete historical intake · 347 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 357 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Close · 402 | rounded-lg | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
+| Close · 402 | rounded-lg | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | Button · 442 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 449 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | button · 486 | rounded-xl | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
@@ -382,20 +382,20 @@ Every declaration below records its prior styling, new owner/variant, update sta
 
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
-| Back to journal library · 114 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| Save Entry · 125 | rounded-full | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| Edit · 136 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| Delete journal entry · 146 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
+| Back to journal library · 114 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Save Entry · 125 | rounded-full | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Edit · 136 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Delete journal entry · 146 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 
 ### `client/src/pages/journal-log.tsx`
 
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
-| Back to Logs · 78 | rounded-full | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
+| Back to Logs · 78 | rounded-full | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 97 | Implicit or owner-class geometry; see literal classes in JSON | Original record surface | Metadata only | Not an action surface; reading/editing/navigation/text geometry preserved |
 | Search journal · 143 | Implicit or owner-class geometry; see literal classes in JSON | Shared search capsule | Yes | Journal 48px; Food Database 44px; Food Tracker 56px preserves protected tile positions |
-| Clear search · 160 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| Write new journal entry · 169 | rounded-full | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
+| Clear search · 160 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Write new journal entry · 169 | rounded-full | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 
 ### `client/src/pages/legal.tsx`
 
@@ -420,7 +420,7 @@ Every declaration below records its prior styling, new owner/variant, update sta
 | Button · 438 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | CollapsibleTrigger · 522 | Implicit or owner-class geometry; see literal classes in JSON | Child-owned geometry | Via child | Radix asChild delegates its surface to the already audited child |
 | button · 622 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Close · 663 | rounded-lg | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
+| Close · 663 | rounded-lg | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | Button · 706 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 713 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 753 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
@@ -433,8 +433,8 @@ Every declaration below records its prior styling, new owner/variant, update sta
 | --- | --- | --- | --- | --- |
 | button · 57 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 57 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Edit Profile · 61 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Edit Fitness Goals · 64 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| Edit Profile · 61 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Edit Fitness Goals · 64 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 74 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 80 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 81 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
@@ -455,7 +455,7 @@ Every declaration below records its prior styling, new owner/variant, update sta
 
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
-| Open Menu · 182 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| Open Menu · 182 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 201 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 210 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 211 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
@@ -463,7 +463,7 @@ Every declaration below records its prior styling, new owner/variant, update sta
 | Write a reminder · 234 | Implicit or owner-class geometry; see literal classes in JSON | Original record surface | Metadata only | Not an action surface; reading/editing/navigation/text geometry preserved |
 | button · 239 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 262 | Implicit or owner-class geometry; see literal classes in JSON | Original record surface | Metadata only | Not an action surface; reading/editing/navigation/text geometry preserved |
-| button · 270 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| button · 270 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 275 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 276 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 287 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
@@ -482,17 +482,17 @@ Every declaration below records its prior styling, new owner/variant, update sta
 
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
-| Open Menu · 142 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| Open Menu · 142 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button-add-routine · 160 | rounded-2xl | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 186 | rounded-xl | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| button · 199 | rounded-xl | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| button · 205 | rounded-xl | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| button · 199 | rounded-xl | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| button · 205 | rounded-xl | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 236 | rounded-xl | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button-create-routine · 258 | rounded-2xl | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | CollapsibleTrigger · 272 | Implicit or owner-class geometry; see literal classes in JSON | Child-owned geometry | Via child | Radix asChild delegates its surface to the already audited child |
 | Button · 273 | rounded-2xl | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 289 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
-| button · 318 | rounded-xl | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| button · 318 | rounded-xl | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | Button · 329 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Button · 388 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
 | Delete routine · 389 | Shared Button: 12px; usage sizing/colors | Button / fc-pill | Yes | Existing variant colors, sizing, typography and behavior retained |
@@ -534,28 +534,28 @@ Every declaration below records its prior styling, new owner/variant, update sta
 | CollapsibleTrigger · 129 | Implicit or owner-class geometry; see literal classes in JSON | Shared/native trigger / fc-pill | Yes | Capsule trigger; options and native keyboard behavior unchanged |
 | button · 135 | rounded-lg | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 | button · 136 | rounded-lg | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| button · 140 | 24px; 36px visible height | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| button · 141 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| button · 140 | 24px; 36px visible height | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| button · 141 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 145 | 24px; 44px minimum; 10px/12px padding | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
 
 ### `client/src/pages/wellness.tsx`
 
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
-| Open Menu · 178 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| Open Menu · 178 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 195 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| button · 222 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| button · 234 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| button · 246 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
-| button · 258 | Implicit or owner-class geometry; see literal classes in JSON | fc-pill + fc-icon-button | Yes | Circular target; existing larger circular tools retained |
+| button · 222 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| button · 234 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| button · 246 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| button · 258 | Implicit or owner-class geometry; see literal classes in JSON | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | button · 271 | rounded-2xl | Original card surface | Metadata only | Not an action surface; reading/editing/navigation/text geometry preserved |
 
 ### `client/src/pages/workout-statistics.tsx`
 
 | Control / line | Previous styling | New styling | Updated | Exception / rationale |
 | --- | --- | --- | --- | --- |
-| Previous month · 93 | rounded-lg | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
-| Next month · 97 | rounded-lg | fc-pill / --radius-pill | Yes | Existing dimensions/colors/hierarchy retained; icon targets improved where needed |
+| Previous month · 93 | rounded-lg | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
+| Next month · 97 | rounded-lg | 44px circular icon action / fc-pill | Yes | Icon geometry and touch size standardized; existing larger circular tools retained |
 | CollapsibleTrigger · 113 | Implicit or owner-class geometry; see literal classes in JSON | Shared/native trigger / fc-pill | Yes | Capsule trigger; options and native keyboard behavior unchanged |
 
 ### `client/index.html`

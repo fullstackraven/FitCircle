@@ -556,14 +556,14 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                         />
                         <button
                           onClick={handleSaveWorkoutEdit}
-                          className="fc-pill p-1 text-accent-text hover:text-accent-soft transition-colors"
+                          className="fc-pill fc-icon-button p-1 text-accent-text hover:text-accent-soft transition-colors"
                           title="Save"
                         >
                           <Save size={14} />
                         </button>
                         <button
                           onClick={handleCancelWorkoutEdit}
-                          className="fc-pill p-1 text-feature-red hover:text-feature-red-soft transition-colors"
+                          className="fc-pill fc-icon-button p-1 text-feature-red hover:text-feature-red-soft transition-colors"
                           title="Cancel"
                         >
                           <X size={14} />
@@ -578,7 +578,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                           onClick={() =>
                             handleEditWorkout(workout.id, workout.progress.mode === "sets" ? workout.progress.count : workout.count)
                           }
-                          className="fc-pill p-1 text-muted-foreground hover:text-subtle transition-colors"
+                          className="fc-pill fc-icon-button p-1 text-muted-foreground hover:text-subtle transition-colors"
                           title="Edit count"
                         >
                           <Edit2 size={14} />

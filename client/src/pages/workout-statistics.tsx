@@ -90,11 +90,11 @@ export function WorkoutStatistics() {
         <section aria-labelledby="monthly-statistics-heading" className="glass-panel bg-surface rounded-2xl p-4 sm:p-5">
           <h2 id="monthly-statistics-heading" className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">Monthly Statistics</h2>
           <div className="grid grid-cols-[44px_minmax(0,1fr)_44px] items-center gap-2 mb-4">
-            <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} aria-label="Previous month" className="fc-pill min-h-11 flex items-center justify-center text-muted-foreground hover:text-strong hover:bg-surface-secondary/40 transition-colors">
+            <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} aria-label="Previous month" className="fc-pill fc-icon-button min-h-11 flex items-center justify-center text-muted-foreground hover:text-strong hover:bg-surface-secondary/40 transition-colors">
               <ChevronLeft size={20} aria-hidden="true" />
             </button>
             <span className="text-center text-base sm:text-lg font-semibold text-strong" aria-live="polite">{format(currentMonth, "MMMM yyyy")}</span>
-            <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} aria-label="Next month" className="fc-pill min-h-11 flex items-center justify-center text-muted-foreground hover:text-strong hover:bg-surface-secondary/40 transition-colors">
+            <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} aria-label="Next month" className="fc-pill fc-icon-button min-h-11 flex items-center justify-center text-muted-foreground hover:text-strong hover:bg-surface-secondary/40 transition-colors">
               <ChevronRight size={20} aria-hidden="true" />
             </button>
           </div>

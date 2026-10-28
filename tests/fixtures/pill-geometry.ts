@@ -11,7 +11,10 @@ export async function pillGeometry(page: Page) {
       const radius = css.borderTopLeftRadius.includes('%') ? Math.min(rect.width,rect.height)*parseFloat(css.borderTopLeftRadius)/100 : parseFloat(css.borderTopLeftRadius);
       const name = el.getAttribute('aria-label') || el.title || el.textContent?.trim().slice(0,70);
       if (radius < Math.min(rect.width,rect.height)/2 - .5) failures.push({name,kind:'not-pill',radius,width:rect.width,height:rect.height,className:el.className});
-      if (el.classList.contains('fc-icon-button') && Math.abs(rect.width-rect.height) > 1) failures.push({name,kind:'not-circle',width:rect.width,height:rect.height});
+      const content = el.cloneNode(true) as HTMLElement;
+      content.querySelectorAll('svg, .sr-only, [aria-hidden="true"]').forEach(child=>child.remove());
+      const iconOnly = el.matches('button') && el.querySelector('svg') && !content.textContent?.trim();
+      if (iconOnly && Math.abs(rect.width-rect.height) > 1) failures.push({name,kind:'not-circle',width:rect.width,height:rect.height});
     }
     return failures;
   });

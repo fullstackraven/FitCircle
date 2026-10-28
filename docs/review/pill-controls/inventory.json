@@ -15,7 +15,8 @@
       "newStyle": "Child-owned geometry",
       "newClassName": "",
       "updated": "Via child",
-      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child"
+      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child",
+      "newSize": ""
     },
     {
       "file": "client/src/components/AddSupplementDialog.tsx",
@@ -25,10 +26,11 @@
       "reachable": true,
       "previousStyle": "rounded-full",
       "previousClassName": "\"bg-action-selected hover:bg-action text-on-action rounded-full w-8 h-8 p-0\"",
-      "newStyle": "Button / fc-pill",
-      "newClassName": "\"bg-action-selected hover:bg-action text-on-action w-8 h-8 p-0\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"bg-action-selected hover:bg-action text-on-action p-0\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/components/AddSupplementDialog.tsx",
@@ -41,7 +43,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"bg-surface-secondary border-control text-strong\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/components/AddSupplementDialog.tsx",
@@ -54,7 +57,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 bg-action-selected hover:bg-action text-on-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/AddSupplementDialog.tsx",
@@ -67,7 +71,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 border-control text-supporting hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/CardioDataRecovery.tsx",
@@ -80,7 +85,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill block bg-surface-secondary px-4 py-3 disabled:opacity-50\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/components/CardioDataRecovery.tsx",
@@ -93,7 +99,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill block bg-surface-secondary px-4 py-3\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/components/DashboardMenu.tsx",
@@ -106,7 +113,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill w-full min-h-14 flex items-center gap-3 py-4 px-2 text-left hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/components/DaySelector.tsx",
@@ -119,7 +127,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"h-5 px-1 py-0 text-xs text-muted-foreground\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/DaySelector.tsx",
@@ -132,7 +141,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "{`${compact ? \"h-8 min-w-0 px-0\" : \"h-10\"} text-xs font-medium transition-all ${\n              selectedDays.includes(day.index)\n                ? 'bg-action-selected hover:bg-action text-on-action border-action-selected'\n                : 'bg-surface-secondary hover:bg-control-strong text-supporting border-control'\n            }`}",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": "\"sm\""
     },
     {
       "file": "client/src/components/DaySelector.tsx",
@@ -145,7 +155,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "{`${compact ? \"h-7 px-2\" : \"\"} flex-1 text-xs bg-surface-secondary hover:bg-control-strong text-supporting border-control`}",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": "\"sm\""
     },
     {
       "file": "client/src/components/DaySelector.tsx",
@@ -158,7 +169,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "{`${compact ? \"h-7 px-2\" : \"\"} flex-1 text-xs bg-surface-secondary hover:bg-control-strong text-supporting border-control`}",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": "\"sm\""
     },
     {
       "file": "client/src/components/DaySelector.tsx",
@@ -171,7 +183,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "{`${compact ? \"h-7 px-2\" : \"\"} flex-1 text-xs bg-surface-secondary hover:bg-control-strong text-supporting border-control`}",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": "\"sm\""
     },
     {
       "file": "client/src/components/DaySelector.tsx",
@@ -184,7 +197,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"w-full mt-2 text-xs text-muted-foreground hover:text-strong hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": "\"sm\""
     },
     {
       "file": "client/src/components/DockNavigation.tsx",
@@ -197,7 +211,8 @@
       "newStyle": "Approved dock tab",
       "newClassName": "\"dock-tab\"",
       "updated": "No",
-      "exceptionOrRationale": "Dock geometry and behavior explicitly preserved"
+      "exceptionOrRationale": "Dock geometry and behavior explicitly preserved",
+      "newSize": ""
     },
     {
       "file": "client/src/components/FoodNotifications.tsx",
@@ -210,7 +225,8 @@
       "newStyle": "Shared action / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior"
+      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior",
+      "newSize": ""
     },
     {
       "file": "client/src/components/QuoteOfTheDay.tsx",
@@ -220,10 +236,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"min-h-11 min-w-11 -my-1.5 -mr-1.5 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button min-h-11 min-w-11 -my-1.5 -mr-1.5 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/QuoteOfTheDay.tsx",
@@ -233,10 +250,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"text-muted-foreground hover:text-strong transition-colors p-1\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button text-muted-foreground hover:text-strong transition-colors p-1\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/SidebarProfileCard.tsx",
@@ -249,7 +267,8 @@
       "newStyle": "Original card surface",
       "newClassName": "\"w-full rounded-xl bg-surface/60 border border-separator/40 p-3 text-left hover:bg-surface transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background\"",
       "updated": "Metadata only",
-      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved"
+      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved",
+      "newSize": ""
     },
     {
       "file": "client/src/components/VersionLabel.tsx",
@@ -262,7 +281,8 @@
       "newStyle": "Original text surface",
       "newClassName": "\"text-muted-foreground text-xs text-center block w-full py-4 -my-4\"",
       "updated": "Metadata only",
-      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved"
+      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved",
+      "newSize": ""
     },
     {
       "file": "client/src/components/WorkoutDataRecovery.tsx",
@@ -275,7 +295,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill block bg-surface-secondary px-4 py-3 disabled:opacity-50\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/components/WorkoutDataRecovery.tsx",
@@ -288,7 +309,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill block bg-surface-secondary px-4 py-3\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/TimerWidget.tsx",
@@ -301,7 +323,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"p-1 rounded bg-surface-secondary hover:bg-control-strong transition-colors\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/TimerWidget.tsx",
@@ -314,7 +337,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"p-1 rounded bg-surface-secondary hover:bg-control-strong transition-colors\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/TimerWidget.tsx",
@@ -327,7 +351,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"text-muted-foreground hover:text-strong transition-colors text-sm\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/TimerWidget.tsx",
@@ -340,7 +365,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors text-on-action-soft\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/TimerWidget.tsx",
@@ -353,7 +379,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-xl transition-colors text-on-action-soft\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/TimerWidget.tsx",
@@ -366,7 +393,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"flex items-center space-x-2 mx-auto px-4 py-2 bg-action hover:bg-action-hover rounded-xl transition-colors text-on-action-soft\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/WidgetSettings.tsx",
@@ -379,7 +407,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"flex items-center space-x-2\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": "\"sm\""
     },
     {
       "file": "client/src/components/dashboard-widgets/WidgetSettings.tsx",
@@ -392,7 +421,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"flex items-center space-x-2\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": "\"sm\""
     },
     {
       "file": "client/src/components/dashboard-widgets/WidgetSettings.tsx",
@@ -405,7 +435,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"p-1 hover:bg-surface-secondary rounded disabled:opacity-50 disabled:cursor-not-allowed\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/WidgetSettings.tsx",
@@ -418,7 +449,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"p-1 hover:bg-surface-secondary rounded disabled:opacity-50 disabled:cursor-not-allowed\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
@@ -431,7 +463,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"p-1 rounded bg-surface-secondary hover:bg-control-strong transition-colors\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
@@ -444,7 +477,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"p-1 rounded bg-surface-secondary hover:bg-control-strong transition-colors\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
@@ -457,7 +491,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"text-accent-text hover:text-accent-soft transition-colors text-sm font-medium\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
@@ -470,7 +505,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"w-full flex items-center justify-center space-x-3 py-4 px-6 rounded-xl font-medium text-black transition-all duration-300 hover:scale-105 active:scale-95\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
@@ -483,7 +519,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"w-10 h-10 bg-red-500 hover:bg-red-600 text-on-action rounded-full flex items-center justify-center transition-colors\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
@@ -496,7 +533,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"w-10 h-10 bg-blue-500 hover:bg-blue-600 text-on-action rounded-full flex items-center justify-center transition-colors\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/dashboard-widgets/WorkoutSessionWidget.tsx",
@@ -509,7 +547,8 @@
       "newStyle": "Not shipped",
       "newClassName": "\"w-10 h-10 bg-control-strong hover:bg-surface-secondary text-strong rounded-full flex items-center justify-center transition-colors\"",
       "updated": "Unchanged",
-      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface"
+      "exceptionOrRationale": "Legacy/unimported component; no reachable application surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/nutrition/BarcodeEntry.tsx",
@@ -522,7 +561,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"w-full\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/nutrition/BarcodeEntry.tsx",
@@ -535,7 +575,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"w-full bg-green-400 text-on-bright\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/nutrition/BarcodeScanner.tsx",
@@ -548,7 +589,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill min-h-11 text-accent-text\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/components/nutrition/FoodEntryForm.tsx",
@@ -561,7 +603,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"fc-pill nutrition-unit-select w-full min-h-11 bg-surface px-2\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/components/nutrition/FoodEntryForm.tsx",
@@ -574,7 +617,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"bg-surface\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/components/nutrition/FoodEntryForm.tsx",
@@ -587,7 +631,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/nutrition/FoodEntryForm.tsx",
@@ -600,7 +645,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"bg-green-400 text-on-bright\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/nutrition/MealDiary.tsx",
@@ -613,7 +659,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill flex-1 flex items-center justify-between text-left min-h-14 gap-2\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/components/nutrition/MealDiary.tsx",
@@ -623,10 +670,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"min-w-11 min-h-11 flex items-center justify-center text-accent-text disabled:opacity-40\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill min-w-11 min-h-11 flex items-center justify-center text-accent-text disabled:opacity-40\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button min-w-11 min-h-11 flex items-center justify-center text-accent-text disabled:opacity-40\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/nutrition/MealDiary.tsx",
@@ -639,7 +687,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill flex-1 text-left min-w-0\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/components/nutrition/MealDiary.tsx",
@@ -649,10 +698,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"min-w-11 min-h-11 self-center flex items-center justify-center text-muted-foreground hover:text-feature-red\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill min-w-11 min-h-11 self-center flex items-center justify-center text-muted-foreground hover:text-feature-red\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button min-w-11 min-h-11 self-center flex items-center justify-center text-muted-foreground hover:text-feature-red\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/progress-circle.tsx",
@@ -665,7 +715,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "{`fc-pill ${cardStyle ? \"home-set-ring\" : \"\"} relative transform transition-transform duration-150 hover:scale-105 active:scale-95 ${\n        isAnimating ? 'bounce-animation' : ''\n      }`}",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/components/routine-modal.tsx",
@@ -678,7 +729,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"min-h-11 [@media(max-height:450px)]:min-h-10 text-strong\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/routine-modal.tsx",
@@ -691,7 +743,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"min-h-11 [@media(max-height:450px)]:min-h-10 flex-1 bg-action hover:bg-action-hover text-on-action disabled:bg-surface-secondary disabled:text-muted-foreground\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/ui/collapsible.tsx",
@@ -704,7 +757,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "{cn(\"fc-pill\", className)}",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/components/ui/dialog.tsx",
@@ -717,7 +771,8 @@
       "newStyle": "Shared action / fc-pill",
       "newClassName": "\"overlay-close fc-pill opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior"
+      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior",
+      "newSize": ""
     },
     {
       "file": "client/src/components/ui/presentation.tsx",
@@ -727,10 +782,11 @@
       "reachable": true,
       "previousStyle": "12px; 44px minimum",
       "previousClassName": "{cn('fc-icon-action', backProps?.className)}",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "{cn('fc-pill', 'fc-icon-action', backProps?.className)}",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "{cn('fc-pill fc-icon-button', 'fc-icon-action', backProps?.className)}",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/ui/presentation.tsx",
@@ -743,7 +799,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/components/ui/select.tsx",
@@ -756,7 +813,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "{cn(\n      \"glass-input flex h-11 w-full items-center justify-between fc-pill border border-input bg-background px-3 py-2 text-sm ring-offset-background data-[placeholder]:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1\",\n      className\n    )}",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/components/ui/select.tsx",
@@ -769,7 +827,8 @@
       "newStyle": "Native menu scrolling",
       "newClassName": "{cn(\n      \"flex cursor-default items-center justify-center py-1\",\n      className\n    )}",
       "updated": "No",
-      "exceptionOrRationale": "Radix menu scroll affordance; not an action-button surface"
+      "exceptionOrRationale": "Radix menu scroll affordance; not an action-button surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/ui/select.tsx",
@@ -782,7 +841,8 @@
       "newStyle": "Native menu scrolling",
       "newClassName": "{cn(\n      \"flex cursor-default items-center justify-center py-1\",\n      className\n    )}",
       "updated": "No",
-      "exceptionOrRationale": "Radix menu scroll affordance; not an action-button surface"
+      "exceptionOrRationale": "Radix menu scroll affordance; not an action-button surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/ui/select.tsx",
@@ -795,7 +855,8 @@
       "newStyle": "Native menu scrolling",
       "newClassName": "",
       "updated": "No",
-      "exceptionOrRationale": "Radix menu scroll affordance; not an action-button surface"
+      "exceptionOrRationale": "Radix menu scroll affordance; not an action-button surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/ui/select.tsx",
@@ -808,7 +869,8 @@
       "newStyle": "Native menu scrolling",
       "newClassName": "",
       "updated": "No",
-      "exceptionOrRationale": "Radix menu scroll affordance; not an action-button surface"
+      "exceptionOrRationale": "Radix menu scroll affordance; not an action-button surface",
+      "newSize": ""
     },
     {
       "file": "client/src/components/ui/sheet.tsx",
@@ -821,7 +883,8 @@
       "newStyle": "Shared action / fc-pill",
       "newClassName": "\"overlay-close fc-pill opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior"
+      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior",
+      "newSize": ""
     },
     {
       "file": "client/src/components/ui/toast.tsx",
@@ -834,7 +897,8 @@
       "newStyle": "Shared action / fc-pill",
       "newClassName": "{cn(\n      \"inline-flex h-11 shrink-0 items-center justify-center fc-pill border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive\",\n      className\n    )}",
       "updated": "Yes",
-      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior"
+      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior",
+      "newSize": ""
     },
     {
       "file": "client/src/components/ui/toast.tsx",
@@ -847,7 +911,8 @@
       "newStyle": "Shared action / fc-pill",
       "newClassName": "{cn(\n      \"toast-close-control absolute right-2 top-2 inline-flex h-11 w-11 items-center justify-center fc-pill p-1 text-foreground/50 opacity-100 transition-opacity hover:text-foreground focus:opacity-100 focus-visible:outline-none focus-visible:ring-2 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600\",\n      className\n    )}",
       "updated": "Yes",
-      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior"
+      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior",
+      "newSize": ""
     },
     {
       "file": "client/src/components/wellness/WellnessUI.tsx",
@@ -860,7 +925,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill fc-icon-action gap-1\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/components/wellness/WellnessUI.tsx",
@@ -873,7 +939,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "{`fc-pill wellness-primary ${className}`}",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/components/wellness/WellnessUI.tsx",
@@ -886,7 +953,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill wellness-history-row\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/components/wellness/WellnessUI.tsx",
@@ -896,10 +964,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"min-h-11 min-w-11 grid place-content-center text-muted-foreground\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill min-h-11 min-w-11 grid place-content-center text-muted-foreground\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button min-h-11 min-w-11 grid place-content-center text-muted-foreground\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/wellness/WellnessUI.tsx",
@@ -909,10 +978,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"min-h-11 min-w-11 grid place-content-center text-muted-foreground\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill min-h-11 min-w-11 grid place-content-center text-muted-foreground\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button min-h-11 min-w-11 grid place-content-center text-muted-foreground\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/workout-modal.tsx",
@@ -925,7 +995,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"fc-pill glass-input block h-9 w-full border pl-8 pr-2 text-sm text-strong\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/components/workout-modal.tsx",
@@ -938,7 +1009,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"px-2 text-strong\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/workout-modal.tsx",
@@ -951,7 +1023,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"action-quiet-danger px-2 bg-red-500 hover:bg-red-600 text-on-action border-red-600\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/components/workout-modal.tsx",
@@ -964,7 +1037,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"px-2 bg-action-selected hover:bg-action text-on-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/about.tsx",
@@ -977,7 +1051,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill w-full min-h-14 flex items-center gap-3 py-4 text-left hover:text-accent-text\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/about.tsx",
@@ -990,7 +1065,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill w-full min-h-11 flex items-center justify-between text-accent-text text-sm font-medium focus-visible:outline focus-visible:outline-ring\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/calendar-new.tsx",
@@ -1000,10 +1076,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/calendar-new.tsx",
@@ -1013,10 +1090,11 @@
       "reachable": true,
       "previousStyle": "12px; 44px minimum",
       "previousClassName": "\"fc-icon-action\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button fc-icon-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/calendar-new.tsx",
@@ -1026,10 +1104,11 @@
       "reachable": true,
       "previousStyle": "12px; 44px minimum",
       "previousClassName": "\"fc-icon-action\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button fc-icon-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/calendar-new.tsx",
@@ -1039,10 +1118,11 @@
       "reachable": true,
       "previousStyle": "12px; 44px minimum",
       "previousClassName": "\"fc-icon-action\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button fc-icon-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/calendar-new.tsx",
@@ -1052,10 +1132,11 @@
       "reachable": true,
       "previousStyle": "rounded-lg",
       "previousClassName": "{`p-2 rounded-lg transition-colors ${\n                currentPageIndex === 0\n                  ? 'text-dim-strong cursor-not-allowed'\n                  : 'text-muted-foreground hover:text-strong hover:bg-surface'\n              }`}",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "{`fc-pill fc-icon-button p-2 transition-colors ${\n                currentPageIndex === 0\n                  ? 'text-dim-strong cursor-not-allowed'\n                  : 'text-muted-foreground hover:text-strong hover:bg-surface'\n              }`}",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/calendar-new.tsx",
@@ -1068,7 +1149,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill flex h-11 w-6 shrink-0 items-center justify-center\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/calendar-new.tsx",
@@ -1078,10 +1160,11 @@
       "reachable": true,
       "previousStyle": "rounded-lg",
       "previousClassName": "{`p-2 rounded-lg transition-colors ${\n                currentPageIndex === pages.length - 1\n                  ? 'text-dim-strong cursor-not-allowed'\n                  : 'text-muted-foreground hover:text-strong hover:bg-surface'\n              }`}",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "{`fc-pill fc-icon-button p-2 transition-colors ${\n                currentPageIndex === pages.length - 1\n                  ? 'text-dim-strong cursor-not-allowed'\n                  : 'text-muted-foreground hover:text-strong hover:bg-surface'\n              }`}",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/calendar-new.tsx",
@@ -1094,7 +1177,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill flex items-center justify-between w-full p-4 bg-surface hover:bg-surface-secondary transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1107,7 +1191,8 @@
       "newStyle": "Child-owned geometry",
       "newClassName": "",
       "updated": "Via child",
-      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child"
+      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1120,7 +1205,8 @@
       "newStyle": "Shared action / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior"
+      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1133,7 +1219,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"flex-1 bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1146,7 +1233,8 @@
       "newStyle": "Child-owned geometry",
       "newClassName": "",
       "updated": "Via child",
-      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child"
+      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1156,10 +1244,11 @@
       "reachable": true,
       "previousStyle": "Shared Button: 12px; usage sizing/colors",
       "previousClassName": "\"px-3\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"px-3\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1172,7 +1261,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1185,7 +1275,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"border-control text-supporting hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1198,7 +1289,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 bg-action-selected hover:bg-action text-on-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1211,7 +1303,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1221,10 +1314,11 @@
       "reachable": true,
       "previousStyle": "12px; 44px minimum",
       "previousClassName": "\"fc-icon-action text-muted-foreground hover:text-strong p-1 h-auto\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-icon-action text-muted-foreground hover:text-strong p-1 h-auto\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1234,10 +1328,11 @@
       "reachable": true,
       "previousStyle": "12px; 44px minimum",
       "previousClassName": "\"fc-icon-action text-muted-foreground hover:text-feature-red-soft p-1 h-auto\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-icon-action text-muted-foreground hover:text-feature-red-soft p-1 h-auto\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1250,7 +1345,8 @@
       "newStyle": "Child-owned geometry",
       "newClassName": "",
       "updated": "Via child",
-      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child"
+      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1263,7 +1359,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill text-xs text-dim hover:text-supporting text-center mt-1 w-full transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1276,7 +1373,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1289,7 +1387,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 bg-action-selected hover:bg-action text-on-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1302,7 +1401,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1312,10 +1412,11 @@
       "reachable": true,
       "previousStyle": "rounded-lg",
       "previousClassName": "\"p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary rounded-lg\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1328,7 +1429,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1341,7 +1443,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1354,7 +1457,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 border-control text-supporting hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1367,7 +1471,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 border-control text-supporting hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/cardio.tsx",
@@ -1380,7 +1485,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 bg-blue-600 hover:bg-blue-700 text-on-action-soft\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/daily-journal.tsx",
@@ -1390,10 +1496,11 @@
       "reachable": true,
       "previousStyle": "12px; 44px minimum",
       "previousClassName": "\"fc-icon-action\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill fc-icon-action\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button fc-icon-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/daily-journal.tsx",
@@ -1403,10 +1510,11 @@
       "reachable": true,
       "previousStyle": "rounded-full",
       "previousClassName": "\"ml-auto flex h-11 w-11 items-center justify-center bg-action hover:bg-action-hover text-on-action rounded-full transition-colors\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button ml-auto flex h-11 w-11 items-center justify-center bg-action hover:bg-action-hover text-on-action transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1419,7 +1527,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1432,7 +1541,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill overview-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1445,7 +1555,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill overview-action overview-wide\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1458,7 +1569,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill overview-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1471,7 +1583,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill overview-card overview-supplements overview-summary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1481,10 +1594,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"p-1 text-accent-text hover:text-accent-soft transition-colors\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill p-1 text-accent-text hover:text-accent-soft transition-colors\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button p-1 text-accent-text hover:text-accent-soft transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1494,10 +1608,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"p-1 text-feature-red hover:text-feature-red-soft transition-colors\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill p-1 text-feature-red hover:text-feature-red-soft transition-colors\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button p-1 text-feature-red hover:text-feature-red-soft transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1507,10 +1622,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"p-1 text-muted-foreground hover:text-subtle transition-colors\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill p-1 text-muted-foreground hover:text-subtle transition-colors\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button p-1 text-muted-foreground hover:text-subtle transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1523,7 +1639,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill mt-4 p-3 bg-surface-secondary w-full hover:bg-control-strong transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1536,7 +1653,8 @@
       "newStyle": "Original native-selection surface",
       "newClassName": "\"overview-supplement-row\"",
       "updated": "No",
-      "exceptionOrRationale": "Checkbox/switch interaction; not a pill action"
+      "exceptionOrRationale": "Checkbox/switch interaction; not a pill action",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1549,7 +1667,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill overview-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1562,7 +1681,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill overview-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1575,7 +1695,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill overview-action overview-add\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1588,7 +1709,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill overview-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1601,7 +1723,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill overview-manage\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1614,7 +1737,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill px-4 py-2 bg-surface-secondary hover:bg-control-strong text-strong transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/dynamic-overview.tsx",
@@ -1627,7 +1751,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill px-4 py-2 bg-action hover:bg-action-hover text-on-action transition-colors disabled:bg-control-strong disabled:cursor-not-allowed disabled:opacity-50\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/energy-level.tsx",
@@ -1640,7 +1765,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill fc-action fc-action-secondary energy-undo\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/energy-level.tsx",
@@ -1653,7 +1779,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill fc-action fc-action-primary energy-save\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fasting.tsx",
@@ -1666,7 +1793,8 @@
       "newStyle": "Shared action / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior"
+      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fasting.tsx",
@@ -1679,7 +1807,8 @@
       "newStyle": "Child-owned geometry",
       "newClassName": "",
       "updated": "Via child",
-      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child"
+      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fasting.tsx",
@@ -1689,10 +1818,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"text-muted-foreground hover:text-feature-blue transition-colors\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button text-muted-foreground hover:text-feature-blue transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fasting.tsx",
@@ -1702,10 +1832,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"text-muted-foreground hover:text-feature-red transition-colors\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button text-muted-foreground hover:text-feature-red transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fasting.tsx",
@@ -1715,10 +1846,11 @@
       "reachable": true,
       "previousStyle": "rounded-lg",
       "previousClassName": "\"p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary rounded-lg\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fasting.tsx",
@@ -1731,7 +1863,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 border-control text-supporting hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fasting.tsx",
@@ -1744,7 +1877,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 bg-blue-600 hover:bg-blue-700 text-on-action-soft\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fasting.tsx",
@@ -1757,7 +1891,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 border-control text-supporting hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fasting.tsx",
@@ -1770,7 +1905,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 bg-action hover:bg-action-hover text-on-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fitness-calculator.tsx",
@@ -1783,7 +1919,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill calculator-tab\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fitness-calculator.tsx",
@@ -1796,7 +1933,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fitness-calculator.tsx",
@@ -1809,7 +1947,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"calculator-field\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fitness-calculator.tsx",
@@ -1822,7 +1961,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill calculator-direction\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fitness-calculator.tsx",
@@ -1835,7 +1975,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"calculator-field\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fitness-calculator.tsx",
@@ -1848,7 +1989,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"calculator-save\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fitness-calculator.tsx",
@@ -1861,7 +2003,8 @@
       "newStyle": "Original text surface",
       "newClassName": "\"underline\"",
       "updated": "Metadata only",
-      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved"
+      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fitness-calculator.tsx",
@@ -1874,7 +2017,8 @@
       "newStyle": "Original text surface",
       "newClassName": "\"text-sm text-supporting underline\"",
       "updated": "Metadata only",
-      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved"
+      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/fitness-calculator.tsx",
@@ -1887,7 +2031,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"calculator-save\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-database.tsx",
@@ -1900,7 +2045,8 @@
       "newStyle": "Shared search capsule",
       "newClassName": "\"pl-10 bg-surface border-separator text-strong placeholder-muted-foreground\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Journal 48px; Food Database 44px; Food Tracker 56px preserves protected tile positions"
+      "exceptionOrRationale": "Journal 48px; Food Database 44px; Food Tracker 56px preserves protected tile positions",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-database.tsx",
@@ -1910,10 +2056,11 @@
       "reachable": true,
       "previousStyle": "Shared Button: 12px; usage sizing/colors",
       "previousClassName": "\"min-w-11 text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"min-w-11 text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/food-database.tsx",
@@ -1923,10 +2070,11 @@
       "reachable": true,
       "previousStyle": "Shared Button: 12px; usage sizing/colors",
       "previousClassName": "\"min-w-11 text-feature-red hover:text-feature-red-soft hover:bg-feature-red-tint\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"min-w-11 text-feature-red hover:text-feature-red-soft hover:bg-feature-red-tint\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/food-database.tsx",
@@ -1936,10 +2084,11 @@
       "reachable": true,
       "previousStyle": "Shared Button: 12px; usage sizing/colors",
       "previousClassName": "\"text-muted-foreground hover:text-strong disabled:opacity-30\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"text-muted-foreground hover:text-strong disabled:opacity-30\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/food-database.tsx",
@@ -1949,10 +2098,11 @@
       "reachable": true,
       "previousStyle": "Shared Button: 12px; usage sizing/colors",
       "previousClassName": "\"text-muted-foreground hover:text-strong disabled:opacity-30\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"text-muted-foreground hover:text-strong disabled:opacity-30\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/food-database.tsx",
@@ -1965,7 +2115,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"bg-surface border-separator text-strong\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-database.tsx",
@@ -1978,7 +2129,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 border-separator text-supporting hover:bg-surface\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-database.tsx",
@@ -1991,7 +2143,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 bg-blue-600 hover:bg-blue-700 text-on-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2001,10 +2154,11 @@
       "reachable": true,
       "previousStyle": "12px; 44px minimum",
       "previousClassName": "\"fc-icon-action\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill fc-icon-action\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button fc-icon-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2014,10 +2168,11 @@
       "reachable": true,
       "previousStyle": "12px; 44px minimum",
       "previousClassName": "\"fc-icon-action\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill fc-icon-action\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button fc-icon-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2027,10 +2182,11 @@
       "reachable": true,
       "previousStyle": "12px; 44px minimum",
       "previousClassName": "\"fc-icon-action\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button fc-icon-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2040,10 +2196,11 @@
       "reachable": true,
       "previousStyle": "12px; 44px minimum",
       "previousClassName": "{`fc-icon-action transition-colors ${\n              isToday(selectedDate) \n                ? 'text-dim-strong cursor-not-allowed'\n                : 'text-muted-foreground hover:text-strong hover:bg-surface'\n            }`}",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "{`fc-pill fc-icon-button fc-icon-action transition-colors ${\n              isToday(selectedDate) \n                ? 'text-dim-strong cursor-not-allowed'\n                : 'text-muted-foreground hover:text-strong hover:bg-surface'\n            }`}",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2056,7 +2213,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2069,7 +2227,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2082,7 +2241,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill flex min-h-12 w-full items-center justify-between gap-3 px-4 py-3 text-left font-semibold text-soft\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2095,7 +2255,8 @@
       "newStyle": "Shared search capsule",
       "newClassName": "\"h-14 bg-surface border-separator text-strong pl-10 pr-14\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Journal 48px; Food Database 44px; Food Tracker 56px preserves protected tile positions"
+      "exceptionOrRationale": "Journal 48px; Food Database 44px; Food Tracker 56px preserves protected tile positions",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2105,10 +2266,11 @@
       "reachable": true,
       "previousStyle": "Shared Button: 12px; usage sizing/colors",
       "previousClassName": "\"absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-muted hover:text-strong p-1\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"absolute right-1 top-1/2 transform -translate-y-1/2 text-neutral-muted hover:text-strong h-11 w-11 p-0\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2121,7 +2283,8 @@
       "newStyle": "Protected original choice tile",
       "newClassName": "\"food-scan-action flex min-h-32 flex-col items-center justify-center gap-2 rounded-3xl border border-green-400/30 bg-green-400/15 p-4 text-center hover:bg-green-400/20\"",
       "updated": "No",
-      "exceptionOrRationale": "Explicit owner-protected exception; complete JSX and geometry/style regressions"
+      "exceptionOrRationale": "Explicit owner-protected exception; complete JSX and geometry/style regressions",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2134,7 +2297,8 @@
       "newStyle": "Protected original choice tile",
       "newClassName": "\"flex min-h-32 flex-col items-center justify-center gap-2 rounded-3xl border border-separator bg-surface p-4 text-center hover:bg-surface-secondary\"",
       "updated": "No",
-      "exceptionOrRationale": "Explicit owner-protected exception; complete JSX and geometry/style regressions"
+      "exceptionOrRationale": "Explicit owner-protected exception; complete JSX and geometry/style regressions",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2147,7 +2311,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"text-accent-text\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2157,10 +2322,11 @@
       "reachable": true,
       "previousStyle": "Shared Button: 12px; usage sizing/colors",
       "previousClassName": "\"text-muted-foreground hover:text-subtle hover:bg-control-strong\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"text-muted-foreground hover:text-subtle hover:bg-control-strong\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2170,10 +2336,11 @@
       "reachable": true,
       "previousStyle": "Shared Button: 12px; usage sizing/colors",
       "previousClassName": "\"text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2183,10 +2350,11 @@
       "reachable": true,
       "previousStyle": "Shared Button: 12px; usage sizing/colors",
       "previousClassName": "\"text-feature-red hover:text-feature-red-soft hover:bg-feature-red-tint\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"text-feature-red hover:text-feature-red-soft hover:bg-feature-red-tint\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2196,10 +2364,11 @@
       "reachable": true,
       "previousStyle": "Shared Button: 12px; usage sizing/colors",
       "previousClassName": "\"text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2212,7 +2381,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"bg-neutral-control border-neutral-control-border text-strong\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2225,7 +2395,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 border-neutral-control-border text-neutral-supporting hover:bg-neutral-control\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2238,7 +2409,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 bg-action hover:bg-action-hover text-on-action disabled:opacity-50 disabled:cursor-not-allowed\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2251,7 +2423,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"bg-neutral-control border-neutral-control-border text-strong \"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2264,7 +2437,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 border-neutral-control-border text-neutral-supporting hover:bg-neutral-control \"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/food-tracker.tsx",
@@ -2277,7 +2451,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 bg-blue-600 hover:bg-blue-700 text-on-action \"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/home.tsx",
@@ -2287,10 +2462,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/home.tsx",
@@ -2303,7 +2479,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill text-black font-semibold py-3 px-4 flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 w-full\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/home.tsx",
@@ -2313,10 +2490,11 @@
       "reachable": true,
       "previousStyle": "rounded-full",
       "previousClassName": "\"w-10 h-10 bg-red-500 hover:bg-red-600 text-on-action rounded-full flex items-center justify-center transition-colors\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button w-10 h-10 bg-red-500 hover:bg-red-600 text-on-action flex items-center justify-center transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/home.tsx",
@@ -2326,10 +2504,11 @@
       "reachable": true,
       "previousStyle": "rounded-full",
       "previousClassName": "\"w-10 h-10 bg-blue-500 hover:bg-blue-600 text-on-action rounded-full flex items-center justify-center transition-colors\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button w-10 h-10 bg-blue-500 hover:bg-blue-600 text-on-action flex items-center justify-center transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/home.tsx",
@@ -2339,10 +2518,11 @@
       "reachable": true,
       "previousStyle": "rounded-full",
       "previousClassName": "\"w-10 h-10 bg-control-strong hover:bg-surface-secondary text-strong rounded-full flex items-center justify-center transition-colors\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button w-10 h-10 bg-control-strong hover:bg-surface-secondary text-strong flex items-center justify-center transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/home.tsx",
@@ -2352,10 +2532,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"text-muted-foreground hover:text-subtle transition-colors min-h-11 min-w-11 flex items-center justify-center\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill text-muted-foreground hover:text-subtle transition-colors min-h-11 min-w-11 flex items-center justify-center\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button text-muted-foreground hover:text-subtle transition-colors min-h-11 min-w-11 flex items-center justify-center\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/home.tsx",
@@ -2365,10 +2546,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"text-muted-foreground hover:text-feature-red transition-colors min-h-11 min-w-11 flex items-center justify-center\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill text-muted-foreground hover:text-feature-red transition-colors min-h-11 min-w-11 flex items-center justify-center\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button text-muted-foreground hover:text-feature-red transition-colors min-h-11 min-w-11 flex items-center justify-center\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/home.tsx",
@@ -2381,7 +2563,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill relative\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/home.tsx",
@@ -2391,10 +2574,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"text-muted-foreground hover:text-subtle transition-colors p-1\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill text-muted-foreground hover:text-subtle transition-colors p-1\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button text-muted-foreground hover:text-subtle transition-colors p-1\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/home.tsx",
@@ -2404,10 +2588,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"text-muted-foreground hover:text-feature-red transition-colors p-1\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill text-muted-foreground hover:text-feature-red transition-colors p-1\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button text-muted-foreground hover:text-feature-red transition-colors p-1\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/home.tsx",
@@ -2420,7 +2605,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill home-utility-circle w-20 h-20 bg-surface flex items-center justify-center border-4 border-dashed border-separator hover:border-control transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/home.tsx",
@@ -2433,7 +2619,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"w-16 h-16 bg-surface text-supporting hover:bg-surface-secondary p-0\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/home.tsx",
@@ -2446,7 +2633,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"w-16 h-16 bg-accent-bright/15 text-accent-text hover:bg-accent-bright/25 disabled:opacity-40 p-0\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2459,7 +2647,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2472,7 +2661,8 @@
       "newStyle": "Shared action / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior"
+      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2482,10 +2672,11 @@
       "reachable": true,
       "previousStyle": "Shared Button: 12px; usage sizing/colors",
       "previousClassName": "\"text-muted-foreground hover:text-strong p-1 h-auto\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"text-muted-foreground hover:text-strong p-1 h-auto\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2495,10 +2686,11 @@
       "reachable": true,
       "previousStyle": "Shared Button: 12px; usage sizing/colors",
       "previousClassName": "\"text-muted-foreground hover:text-feature-red-soft p-1 h-auto\"",
-      "newStyle": "Button / fc-pill",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"text-muted-foreground hover:text-feature-red-soft p-1 h-auto\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": "\"icon\""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2511,7 +2703,8 @@
       "newStyle": "Child-owned geometry",
       "newClassName": "",
       "updated": "Via child",
-      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child"
+      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2521,10 +2714,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2534,10 +2728,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2550,7 +2745,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill text-xs text-dim hover:text-supporting text-center mt-1 w-full transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2560,10 +2756,11 @@
       "reachable": true,
       "previousStyle": "rounded-lg",
       "previousClassName": "\"p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary rounded-lg\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2576,7 +2773,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 border-control text-supporting hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2589,7 +2787,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 bg-blue-600 hover:bg-blue-700 text-on-action-soft\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2602,7 +2801,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "{`fc-pill min-h-11 py-2 px-2 text-sm font-medium transition-colors ${\n selectedLiquidType === type\n ? \"bg-blue-600 text-on-action\"\n : \"bg-surface-secondary hover:bg-control-strong text-supporting\"\n }`}",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2615,7 +2815,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"border-control text-supporting hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": "\"sm\""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2628,7 +2829,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"bg-blue-600 hover:bg-blue-700 text-on-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2641,7 +2843,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "{`fc-pill min-h-11 py-2 px-2 text-sm font-medium transition-colors ${\n editLiquidType === type\n ? \"bg-blue-600 text-on-action\"\n : \"bg-surface-secondary hover:bg-control-strong text-supporting\"\n }`}",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2654,7 +2857,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 border-control text-supporting hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/hydration.tsx",
@@ -2667,7 +2871,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 bg-blue-600 hover:bg-blue-700 text-on-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/journal-entry.tsx",
@@ -2677,10 +2882,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"h-11 w-11 flex items-center justify-center text-supporting\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button h-11 w-11 flex items-center justify-center text-supporting\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/journal-entry.tsx",
@@ -2690,10 +2896,11 @@
       "reachable": true,
       "previousStyle": "rounded-full",
       "previousClassName": "\"h-11 w-11 flex items-center justify-center rounded-full bg-action text-on-action disabled:opacity-50\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button h-11 w-11 flex items-center justify-center bg-action text-on-action disabled:opacity-50\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/journal-entry.tsx",
@@ -2703,10 +2910,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"h-11 w-11 flex items-center justify-center text-accent-text\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button h-11 w-11 flex items-center justify-center text-accent-text\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/journal-entry.tsx",
@@ -2716,10 +2924,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"h-11 w-11 flex items-center justify-center text-danger-text\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button h-11 w-11 flex items-center justify-center text-danger-text\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/journal-log.tsx",
@@ -2729,10 +2938,11 @@
       "reachable": true,
       "previousStyle": "rounded-full",
       "previousClassName": "\"h-11 w-11 flex items-center justify-center rounded-full bg-surface text-supporting\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button h-11 w-11 flex items-center justify-center bg-surface text-supporting\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/journal-log.tsx",
@@ -2745,7 +2955,8 @@
       "newStyle": "Original record surface",
       "newClassName": "\"group w-full text-left px-4 py-4 flex items-center gap-3 hover:bg-surface-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px]\"",
       "updated": "Metadata only",
-      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved"
+      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/journal-log.tsx",
@@ -2758,7 +2969,8 @@
       "newStyle": "Shared search capsule",
       "newClassName": "\"fc-search rounded-full w-full min-w-0 h-12 bg-transparent border-0 text-strong placeholder:text-muted-foreground outline-none\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Journal 48px; Food Database 44px; Food Tracker 56px preserves protected tile positions"
+      "exceptionOrRationale": "Journal 48px; Food Database 44px; Food Tracker 56px preserves protected tile positions",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/journal-log.tsx",
@@ -2768,10 +2980,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"h-10 w-8 shrink-0\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button h-10 w-8 shrink-0\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/journal-log.tsx",
@@ -2781,10 +2994,11 @@
       "reachable": true,
       "previousStyle": "rounded-full",
       "previousClassName": "\"rounded-full h-12 w-12 shrink-0 bg-action text-on-action flex items-center justify-center shadow-sm\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button h-12 w-12 shrink-0 bg-action text-on-action flex items-center justify-center shadow-sm\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/legal.tsx",
@@ -2797,7 +3011,8 @@
       "newStyle": "Original text surface",
       "newClassName": "\"ml-3 underline min-h-11\"",
       "updated": "Metadata only",
-      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved"
+      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/measurements.tsx",
@@ -2810,7 +3025,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/measurements.tsx",
@@ -2823,7 +3039,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"w-full bg-blue-600 hover:bg-blue-700 text-on-action py-3 font-medium\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/meditation.tsx",
@@ -2836,7 +3053,8 @@
       "newStyle": "Shared action / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior"
+      "exceptionOrRationale": "Overlay/toast/action primitive retains handlers and focus behavior",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/meditation.tsx",
@@ -2849,7 +3067,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"border-control text-supporting hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/meditation.tsx",
@@ -2862,7 +3081,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"bg-action hover:bg-action-hover text-on-action-soft\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/meditation.tsx",
@@ -2875,7 +3095,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"border-red-600 text-feature-red hover:bg-feature-red-deep-tint/20\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/meditation.tsx",
@@ -2888,7 +3109,8 @@
       "newStyle": "Child-owned geometry",
       "newClassName": "",
       "updated": "Via child",
-      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child"
+      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/meditation.tsx",
@@ -2901,7 +3123,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill text-xs text-dim hover:text-supporting text-center mt-1 w-full transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/meditation.tsx",
@@ -2911,10 +3134,11 @@
       "reachable": true,
       "previousStyle": "rounded-lg",
       "previousClassName": "\"p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary rounded-lg\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/meditation.tsx",
@@ -2927,7 +3151,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 border-control text-supporting hover:bg-surface-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/meditation.tsx",
@@ -2940,7 +3165,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"flex-1 bg-purple-600 hover:bg-purple-700 text-on-action-soft\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/meditation.tsx",
@@ -2953,7 +3179,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/meditation.tsx",
@@ -2966,7 +3193,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"w-full min-h-11\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/meditation.tsx",
@@ -2979,7 +3207,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"w-full bg-purple-600 hover:bg-purple-700 text-on-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/profile.tsx",
@@ -2992,7 +3221,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill min-h-11\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/profile.tsx",
@@ -3005,7 +3235,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill min-h-11\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/profile.tsx",
@@ -3015,10 +3246,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-accent-text disabled:opacity-40\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-accent-text disabled:opacity-40\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-accent-text disabled:opacity-40\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/profile.tsx",
@@ -3028,10 +3260,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-accent-text disabled:opacity-40\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-accent-text disabled:opacity-40\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-accent-text disabled:opacity-40\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/profile.tsx",
@@ -3044,7 +3277,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill min-h-11 text-sm text-accent-text hover:text-accent-soft\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/profile.tsx",
@@ -3057,7 +3291,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill w-full min-h-16 flex items-center gap-3 text-left disabled:opacity-40\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/profile.tsx",
@@ -3070,7 +3305,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill w-full min-h-16 flex items-center gap-3 text-left\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/profile.tsx",
@@ -3083,7 +3319,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill w-full min-h-16 flex items-center gap-3 text-left disabled:opacity-40\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/profile.tsx",
@@ -3096,7 +3333,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"fc-pill glass-input block w-full min-h-11 px-2 mt-1 text-base bg-surface\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/profile.tsx",
@@ -3109,7 +3347,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/profile.tsx",
@@ -3122,7 +3361,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"bg-accent-bright text-on-bright hover:bg-accent-bright-hover\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/recovery.tsx",
@@ -3135,7 +3375,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill fc-history-row recovery-history-row\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/recovery.tsx",
@@ -3148,7 +3389,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill recovery-expand\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/recovery.tsx",
@@ -3161,7 +3403,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill recovery-expand\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3171,10 +3414,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3187,7 +3431,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill min-h-11 px-1 text-accent-text hover:text-accent-soft disabled:text-dim-strong disabled:cursor-not-allowed\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3200,7 +3445,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill min-h-11 text-sm text-accent-text\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3213,7 +3459,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill min-h-11 text-sm text-feature-red disabled:text-dim-strong\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3226,7 +3473,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill min-h-11 text-sm text-supporting\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3239,7 +3487,8 @@
       "newStyle": "Original record surface",
       "newClassName": "\"min-h-[50dvh] w-full flex items-center justify-center text-muted-foreground text-lg\"",
       "updated": "Metadata only",
-      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved"
+      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3252,7 +3501,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill min-h-11 min-w-11 shrink-0 flex items-center justify-center\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3265,7 +3515,8 @@
       "newStyle": "Original record surface",
       "newClassName": "{`min-w-0 flex-1 text-left min-h-11 break-words whitespace-pre-wrap text-base ${reminder.completed ? 'text-muted-foreground' : 'text-strong'}`}",
       "updated": "Metadata only",
-      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved"
+      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3275,10 +3526,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3291,7 +3543,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill w-full min-h-11 px-3 text-left text-strong flex items-center gap-2 text-sm\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3304,7 +3557,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill w-full min-h-11 px-3 text-left text-feature-red flex items-center gap-2 text-sm\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3317,7 +3571,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill min-h-11 text-sm text-muted-foreground hover:text-accent-text mt-2\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3330,7 +3585,8 @@
       "newStyle": "Original record surface",
       "newClassName": "\"block min-h-[20dvh] w-full\"",
       "updated": "Metadata only",
-      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved"
+      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3343,7 +3599,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill reminders-add-button bg-accent-bright text-on-bright shadow-lg shadow-black/30 hover:bg-accent-bright-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3356,7 +3613,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/reminders.tsx",
@@ -3369,7 +3627,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/restore-custom-foods.tsx",
@@ -3382,7 +3641,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"w-full bg-action hover:bg-action-hover text-on-action-soft\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3392,10 +3652,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3408,7 +3669,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill w-full border border-dashed border-control bg-surface/80 p-4 transition-colors hover:border-control-muted-border hover:bg-surface\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3421,7 +3683,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill flex min-h-14 min-w-0 flex-1 items-center gap-2 py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3431,10 +3694,11 @@
       "reachable": true,
       "previousStyle": "rounded-xl",
       "previousClassName": "\"inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:text-strong focus-visible:ring-2 focus-visible:ring-focus\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-muted-foreground hover:text-strong focus-visible:ring-2 focus-visible:ring-focus\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-muted-foreground hover:text-strong focus-visible:ring-2 focus-visible:ring-focus\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3444,10 +3708,11 @@
       "reachable": true,
       "previousStyle": "rounded-xl",
       "previousClassName": "\"inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:text-feature-red focus-visible:ring-2 focus-visible:ring-focus\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-muted-foreground hover:text-feature-red focus-visible:ring-2 focus-visible:ring-focus\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-muted-foreground hover:text-feature-red focus-visible:ring-2 focus-visible:ring-focus\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3460,7 +3725,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill mt-3 flex min-h-11 w-full items-center justify-center gap-2 bg-surface-secondary/60 px-3 py-2 text-supporting transition-colors hover:bg-surface-secondary hover:text-strong\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3473,7 +3739,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill mb-4 flex min-h-12 w-full items-center justify-center gap-2 bg-action px-4 py-3 transition-colors hover:bg-action-hover\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3486,7 +3753,8 @@
       "newStyle": "Child-owned geometry",
       "newClassName": "",
       "updated": "Via child",
-      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child"
+      "exceptionOrRationale": "Radix asChild delegates its surface to the already audited child",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3499,7 +3767,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"h-auto min-h-14 w-full justify-between border-separator/70 bg-surface/80 px-3 py-3 text-strong hover:bg-surface\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3512,7 +3781,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"bg-action hover:bg-action-hover text-on-action\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3522,10 +3792,11 @@
       "reachable": true,
       "previousStyle": "rounded-xl",
       "previousClassName": "\"inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:text-strong focus-visible:ring-2 focus-visible:ring-focus\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-strong focus-visible:ring-2 focus-visible:ring-focus\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-strong focus-visible:ring-2 focus-visible:ring-focus\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3538,7 +3809,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"min-h-11 w-full bg-surface-secondary border-control text-strong hover:bg-control-strong\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3551,7 +3823,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"min-h-11\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/routines.tsx",
@@ -3564,7 +3837,8 @@
       "newStyle": "Button / fc-pill",
       "newClassName": "\"min-h-11 bg-red-600 text-on-action hover:bg-red-700\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained"
+      "exceptionOrRationale": "Existing variant colors, sizing, typography and behavior retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3577,7 +3851,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill w-full bg-action hover:bg-action-hover disabled:opacity-50 text-on-action py-3 px-4 flex items-center justify-center gap-2\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3590,7 +3865,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-on-action py-3 px-4 flex items-center justify-center gap-2\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3603,7 +3879,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-on-action py-3 px-4 flex items-center justify-center gap-2\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3616,7 +3893,8 @@
       "newStyle": "Original native-selection surface",
       "newClassName": "{`settings-toggle relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${\n                  settings.hideQuoteOfTheDay ? 'bg-green-400' : 'bg-control-strong'\n                }`}",
       "updated": "No",
-      "exceptionOrRationale": "Checkbox/switch interaction; not a pill action"
+      "exceptionOrRationale": "Checkbox/switch interaction; not a pill action",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3629,7 +3907,8 @@
       "newStyle": "Original native-selection surface",
       "newClassName": "{`settings-toggle relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${\n                  settings.hideTodaysTotals ? 'bg-green-400' : 'bg-control-strong'\n                }`}",
       "updated": "No",
-      "exceptionOrRationale": "Checkbox/switch interaction; not a pill action"
+      "exceptionOrRationale": "Checkbox/switch interaction; not a pill action",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3642,7 +3921,8 @@
       "newStyle": "Original native-selection surface",
       "newClassName": "{`settings-toggle relative inline-flex w-12 h-6 items-center rounded-full transition-colors ${\n                  settings.hideRecentActivity ? 'bg-green-400' : 'bg-control-strong'\n                }`}",
       "updated": "No",
-      "exceptionOrRationale": "Checkbox/switch interaction; not a pill action"
+      "exceptionOrRationale": "Checkbox/switch interaction; not a pill action",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3655,7 +3935,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill w-full bg-red-600 hover:bg-red-700 text-on-action py-3 px-4 flex items-center justify-center gap-2\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3668,7 +3949,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill flex-1 bg-red-600 hover:bg-red-700 text-on-action py-3 px-4 flex items-center justify-center gap-2\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3681,7 +3963,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill flex-1 bg-control-strong hover:bg-surface-secondary text-strong py-3 px-4\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3694,7 +3977,8 @@
       "newStyle": "Original native-selection surface",
       "newClassName": "{`settings-visibility ${!settings[key] ? 'bg-action' : 'bg-control-strong'}`}",
       "updated": "No",
-      "exceptionOrRationale": "Checkbox/switch interaction; not a pill action"
+      "exceptionOrRationale": "Checkbox/switch interaction; not a pill action",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3707,7 +3991,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill fc-action fc-action-secondary shrink-0 settings-refresh\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3720,7 +4005,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill fc-action w-full settings-wide-button bg-action hover:bg-action-hover text-on-action mt-4\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3733,7 +4019,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill fc-action w-full settings-wide-button border border-control-border text-supporting hover:bg-surface-secondary mt-4\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3746,7 +4033,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill fc-action w-full settings-wide-button border border-feature-red text-feature-red hover:bg-feature-red-deep-tint/20 mt-4\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3759,7 +4047,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill fc-action w-full settings-wide-button flex-1 bg-red-600 text-white\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/settings.tsx",
@@ -3772,7 +4061,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill fc-action w-full settings-wide-button flex-1 border border-control-border text-strong\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/share.tsx",
@@ -3785,7 +4075,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill flex-1 min-h-11 inline-flex items-center justify-center gap-2 bg-action text-on-action px-4 py-3 font-medium\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/share.tsx",
@@ -3798,7 +4089,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill flex-1 min-h-11 inline-flex items-center justify-center gap-2 bg-control text-strong border border-control-border px-4 py-3\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/supplements.tsx",
@@ -3811,7 +4103,8 @@
       "newStyle": "Original native-selection surface",
       "newClassName": "{`overview-supplement-row ${log.taken ? 'supplement-taken' : ''}`}",
       "updated": "No",
-      "exceptionOrRationale": "Checkbox/switch interaction; not a pill action"
+      "exceptionOrRationale": "Checkbox/switch interaction; not a pill action",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/supplements.tsx",
@@ -3824,7 +4117,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill fc-action fc-action-primary w-full supplement-save\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/supplements.tsx",
@@ -3837,7 +4131,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"supplement-manage-trigger\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/supplements.tsx",
@@ -3850,7 +4145,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill min-h-11 px-4 bg-action text-on-action text-sm\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/supplements.tsx",
@@ -3863,7 +4159,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill min-h-11 px-4 border border-control-border text-supporting text-sm\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/supplements.tsx",
@@ -3873,10 +4170,11 @@
       "reachable": true,
       "previousStyle": "24px; 36px visible height",
       "previousClassName": "\"supplement-edit\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill supplement-edit\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button supplement-edit\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/supplements.tsx",
@@ -3886,10 +4184,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"supplement-delete\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill supplement-delete\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button supplement-delete\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/supplements.tsx",
@@ -3902,7 +4201,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill fc-action fc-action-secondary w-full mt-3 supplement-add-secondary\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/wellness.tsx",
@@ -3912,10 +4212,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/wellness.tsx",
@@ -3928,7 +4229,8 @@
       "newStyle": "fc-pill / --radius-pill",
       "newClassName": "\"fc-pill text-muted-foreground hover:text-strong transition-colors min-h-11 min-w-11 justify-center flex items-center space-x-1\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/wellness.tsx",
@@ -3938,10 +4240,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"absolute top-2 left-1/2 -translate-x-1/2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button absolute top-2 left-1/2 -translate-x-1/2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/wellness.tsx",
@@ -3951,10 +4254,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"absolute bottom-2 left-1/2 -translate-x-1/2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button absolute bottom-2 left-1/2 -translate-x-1/2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/wellness.tsx",
@@ -3964,10 +4268,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"absolute top-1/2 -translate-y-1/2 left-2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/wellness.tsx",
@@ -3977,10 +4282,11 @@
       "reachable": true,
       "previousStyle": "Implicit or owner-class geometry; see literal classes in JSON",
       "previousClassName": "\"absolute top-1/2 -translate-y-1/2 right-2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70\"",
-      "newStyle": "fc-pill + fc-icon-button",
+      "newStyle": "44px circular icon action / fc-pill",
       "newClassName": "\"fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 right-2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Circular target; existing larger circular tools retained"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/wellness.tsx",
@@ -3993,7 +4299,8 @@
       "newStyle": "Original card surface",
       "newClassName": "{`glass-tile min-h-32 h-full px-3 py-4 ${feature.bgColor} ${!isEditMode && feature.hoverBg} rounded-2xl transition-all duration-200 ${!isEditMode && 'hover:scale-105 active:scale-95'} flex flex-col items-center justify-center gap-2 w-full ${isEditMode ? 'opacity-75' : ''}`}",
       "updated": "Metadata only",
-      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved"
+      "exceptionOrRationale": "Not an action surface; reading/editing/navigation/text geometry preserved",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/workout-statistics.tsx",
@@ -4003,10 +4310,11 @@
       "reachable": true,
       "previousStyle": "rounded-lg",
       "previousClassName": "\"min-h-11 flex items-center justify-center rounded-lg text-muted-foreground hover:text-strong hover:bg-surface-secondary/40 transition-colors\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill min-h-11 flex items-center justify-center text-muted-foreground hover:text-strong hover:bg-surface-secondary/40 transition-colors\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button min-h-11 flex items-center justify-center text-muted-foreground hover:text-strong hover:bg-surface-secondary/40 transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/workout-statistics.tsx",
@@ -4016,10 +4324,11 @@
       "reachable": true,
       "previousStyle": "rounded-lg",
       "previousClassName": "\"min-h-11 flex items-center justify-center rounded-lg text-muted-foreground hover:text-strong hover:bg-surface-secondary/40 transition-colors\"",
-      "newStyle": "fc-pill / --radius-pill",
-      "newClassName": "\"fc-pill min-h-11 flex items-center justify-center text-muted-foreground hover:text-strong hover:bg-surface-secondary/40 transition-colors\"",
+      "newStyle": "44px circular icon action / fc-pill",
+      "newClassName": "\"fc-pill fc-icon-button min-h-11 flex items-center justify-center text-muted-foreground hover:text-strong hover:bg-surface-secondary/40 transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Existing dimensions/colors/hierarchy retained; icon targets improved where needed"
+      "exceptionOrRationale": "Icon geometry and touch size standardized; existing larger circular tools retained",
+      "newSize": ""
     },
     {
       "file": "client/src/pages/workout-statistics.tsx",
@@ -4032,7 +4341,8 @@
       "newStyle": "Shared/native trigger / fc-pill",
       "newClassName": "\"flex items-center justify-between gap-3 w-full min-h-16 p-4 sm:px-5 text-left text-base font-semibold text-strong hover:bg-surface-secondary/30 transition-colors\"",
       "updated": "Yes",
-      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged"
+      "exceptionOrRationale": "Capsule trigger; options and native keyboard behavior unchanged",
+      "newSize": ""
     },
     {
       "file": "client/index.html",

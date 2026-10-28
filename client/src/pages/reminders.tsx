@@ -181,7 +181,7 @@ export default function RemindersPage() {
         <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="fc-pill absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
+            className="fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />
@@ -267,7 +267,7 @@ export default function RemindersPage() {
                 )}
                 {!selectMode && editingId !== reminder.id && (
                   <div className="relative shrink-0">
-                    <button aria-label={`Options for ${reminder.text}`} aria-expanded={showMenuId === reminder.id} onClick={() => toggleMenu(reminder.id)} className="fc-pill min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong">
+                    <button aria-label={`Options for ${reminder.text}`} aria-expanded={showMenuId === reminder.id} onClick={() => toggleMenu(reminder.id)} className="fc-pill fc-icon-button min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong">
                       <MoreHorizontal size={18} />
                     </button>
                     {showMenuId === reminder.id && (

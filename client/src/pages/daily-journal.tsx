@@ -139,7 +139,7 @@ export function DailyJournal() {
         onClick={() => {
           if (journalText === originalText.current || confirm("Discard unsaved journal changes?"))
             navigate(`/journal-log${fromWellness ? "?from=wellness" : ""}`);
-        }} className="fc-pill fc-icon-action" title="View all journal entries" aria-label="View all journal entries"><FileText size={20}/></button>} />
+        }} className="fc-pill fc-icon-button fc-icon-action" title="View all journal entries" aria-label="View all journal entries"><FileText size={20}/></button>} />
 
       {/* Date indicator */}
       <div className="px-4 mb-4">

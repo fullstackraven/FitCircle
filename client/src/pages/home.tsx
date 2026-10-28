@@ -213,7 +213,7 @@ export default function Home() {
           {/* Hamburger Menu Icon */}
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="fc-pill absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
+            className="fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />
@@ -344,7 +344,7 @@ export default function Home() {
                     <div className="mt-auto flex items-center gap-1 pt-1">
                       <button
                         onClick={() => handleUndo(workout.id)}
-                        className="fc-pill text-muted-foreground hover:text-subtle transition-colors min-h-11 min-w-11 flex items-center justify-center"
+                        className="fc-pill fc-icon-button text-muted-foreground hover:text-subtle transition-colors min-h-11 min-w-11 flex items-center justify-center"
                         aria-label={`Undo last ${progress.mode === "sets" ? "set" : "rep"} for ${workout.name}`}
                         title={progress.mode === "sets" ? "Undo last set" : "Undo last rep"}
                       >
@@ -352,7 +352,7 @@ export default function Home() {
                       </button>
                       <button
                         onClick={() => handleEditWorkout(workout)}
-                        className="fc-pill text-muted-foreground hover:text-feature-red transition-colors min-h-11 min-w-11 flex items-center justify-center"
+                        className="fc-pill fc-icon-button text-muted-foreground hover:text-feature-red transition-colors min-h-11 min-w-11 flex items-center justify-center"
                         aria-label={`Edit ${workout.name}`}
                       >
                         <Edit size={18} />
@@ -484,7 +484,7 @@ export default function Home() {
                       // Restart timer with the original total time
                       startTimerFromSeconds(timerState.totalTime);
                     }}
-                    className="fc-pill text-muted-foreground hover:text-subtle transition-colors p-1"
+                    className="fc-pill fc-icon-button text-muted-foreground hover:text-subtle transition-colors p-1"
                     title="Restart timer from beginning"
                   >
                     <RotateCcw size={14} />
@@ -497,7 +497,7 @@ export default function Home() {
                       setTimerMinutes('0');
                       setTimerSeconds('0');
                     }}
-                    className="fc-pill text-muted-foreground hover:text-feature-red transition-colors p-1"
+                    className="fc-pill fc-icon-button text-muted-foreground hover:text-feature-red transition-colors p-1"
                     title="Stop timer"
                   >
                     <Square size={14} />

@@ -137,8 +137,8 @@ export function SupplementsPage() {
               </div> : <>
                 <Pill size={17} className="text-accent-text shrink-0"/>
                 <div className="min-w-0 flex-1"><span className="block text-sm font-semibold text-strong break-words">{supplement.name}</span><span className="block text-xs text-muted-foreground mt-0.5">{supplement.amount} {supplement.measurementType}</span></div>
-                <button onClick={()=>handleEditSupplement(supplement.id,supplement.name)} title="Edit supplement" aria-label={`Edit ${supplement.name}`} className="fc-pill supplement-edit"><Edit2 size={17}/></button>
-                <button onClick={()=>handleDeleteSupplement(supplement.id)} title="Delete supplement" aria-label={`Delete ${supplement.name}`} className="fc-pill supplement-delete"><Trash2 size={18}/></button>
+                <button onClick={()=>handleEditSupplement(supplement.id,supplement.name)} title="Edit supplement" aria-label={`Edit ${supplement.name}`} className="fc-pill fc-icon-button supplement-edit"><Edit2 size={17}/></button>
+                <button onClick={()=>handleDeleteSupplement(supplement.id)} title="Delete supplement" aria-label={`Delete ${supplement.name}`} className="fc-pill fc-icon-button supplement-delete"><Trash2 size={18}/></button>
               </>}
             </div>)}
             {!allSupplements.length && <EmptyState>No supplements added yet</EmptyState>}

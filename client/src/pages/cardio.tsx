@@ -346,7 +346,7 @@ export default function CardioPage() {
                     onOpenChange={setIsAddCustomTypeOpen}
                   >
                     <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="px-3">
+                      <Button variant="outline" size="icon" className="px-3">
                         <Plus className="w-4 h-4" />
                       </Button>
                     </DialogTrigger>
@@ -496,7 +496,7 @@ export default function CardioPage() {
                     <div className="flex items-center space-x-1 ml-2">
                       <Button
                         variant="ghost"
-                        size="sm"
+                        size="icon"
                         onClick={() => {
                           setEditingEntry(session);
                           setNewEntry({
@@ -515,7 +515,7 @@ export default function CardioPage() {
                       </Button>
                       <Button
                         variant="ghost"
-                        size="sm"
+                        size="icon"
                         onClick={() => {
                           // Find which date this entry belongs to
                           const entryToDelete = allSessions.find(
