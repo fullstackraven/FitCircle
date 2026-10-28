@@ -30,8 +30,8 @@ test('development preview identifies itself without claiming publication',async(
 });
 test('matching publication receipt resolves only the running candidate and persists offline',async({page,context})=>{
  const build=metadata();
- const record={id:'deployment-123',version:build.version,commit:build.commit,buildId:build.buildId,artifactDigest:'c'.repeat(64),runId:'123',deploymentId:'123',releasedAt:'2026-10-27T16:00:00Z',changes:[{id:'test',pr:null,summary:'Synthetic verified publication for UI review',labels:['release:minor']}],previousId:'historical',historical:false};
- await page.route('https://raw.githubusercontent.com/fullstackraven/FitCircle/release-ledger/receipts/**',route=>route.fulfill({json:record}));
+ const record={tag_name:`v${build.version}`,target_commitish:build.commit,published_at:'2026-10-27T16:00:00Z',body:'Synthetic verified publication for UI review',id:'deployment-123',version:build.version,commit:build.commit,buildId:build.buildId,artifactDigest:'c'.repeat(64),runId:'123',deploymentId:'123',releasedAt:'2026-10-27T16:00:00Z',changes:[{id:'test',pr:null,summary:'Synthetic verified publication for UI review',labels:['release:minor']}],previousId:'historical',historical:false};
+ await page.route('https://api.github.com/repos/fullstackraven/FitCircle/releases/tags/**',route=>route.fulfill({json:record}));
  await page.goto('about');
  if(build.buildId){
   await expect(page.getByTestId('about-version')).toHaveText(build.version);await expect(page.getByTestId('about-released')).toHaveText('Oct 27, 2026');
