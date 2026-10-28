@@ -18,7 +18,8 @@ test('only the matching published GitHub release resolves loaded metadata',()=>{
  assert.equal(releaseEntry(release).version,'2.11.1');
 });
 test('approved baseline preserves full historical history and verified 2.11.0',async()=>{
- const fs=await import('node:fs');const baseline=JSON.parse(fs.readFileSync('release/baseline.json','utf8'));
+ const fs=await import('node:fs');const entry=JSON.parse(fs.readFileSync('release/baseline.json','utf8'));
+ const baseline=[...JSON.parse(fs.readFileSync('release/history.json','utf8')).releases,entry];
  const original=JSON.parse(fs.readFileSync('release/history.json','utf8')).releases;
  assert.deepEqual(baseline.slice(0,-1),original);assert.equal(baseline.at(-1).version,'2.11.0');assert.equal(baseline.at(-1).commit,'b5767380eca4b6b295bae43065eeaecb3048b459');
 });

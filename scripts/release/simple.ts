@@ -13,7 +13,7 @@ export function releaseEntry(r:any){return {version:r.tag_name.slice(1),commit:r
 async function main(){
  const command=process.argv[2];
  if(command==='plan'){
-  const history=JSON.parse(fs.readFileSync('release/baseline.json','utf8'));
+  const history=[...JSON.parse(fs.readFileSync('release/history.json','utf8')).releases,JSON.parse(fs.readFileSync('release/baseline.json','utf8'))];
   const releases=all('releases').filter(r=>!r.draft&&!r.prerelease&&/^v\d+\.\d+\.\d+$/.test(r.tag_name)).map(releaseEntry).sort((a,b)=>compareVersions(a.version,b.version));
   for(const r of releases)if(!history.some((e:any)=>e.version===r.version))history.push(r);
   const last=history.at(-1),commit=git('rev-parse','HEAD');
