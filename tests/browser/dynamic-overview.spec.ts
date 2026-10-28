@@ -1,3 +1,4 @@
+import { captureVisual } from "../fixtures/visual-review";
 import { test, expect, type Page } from '@playwright/test';
 test.use({ viewport: {width:390,height:844}, timezoneId:'America/New_York' });
 const day='2026-10-26';
@@ -88,8 +89,8 @@ for(const mode of ['dark','light']) test(`${mode}: narrow layout, keyboard, date
 
 test('Daily Overview and Supplements reference views',async({page})=>{
  await seed(page);await page.evaluate(day=>{localStorage.setItem('fitcircle_energy_levels',JSON.stringify({[day]:7}));localStorage.setItem('fitcircle_supplement_logs',JSON.stringify({[day]:{'1':true,'6':true}}));},day);await page.reload();await page.addStyleTag({content:'.overview-tabs button { transition: none !important; }'});await page.evaluate(()=>document.fonts.ready);
- await expect(page).toHaveScreenshot('dynamic-overview-compact.png',{animations:'disabled',maxDiffPixels:0,threshold:0});
- await supplements(page).click();await page.evaluate(() => Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))));await expect(page).toHaveScreenshot('dynamic-overview-supplements.png',{animations:'disabled',maxDiffPixels:0,threshold:0});
+ await captureVisual(page, 'dynamic-overview-compact.png',{animations:'disabled',maxDiffPixels:0,threshold:0});
+ await supplements(page).click();await page.evaluate(() => Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))));await captureVisual(page, 'dynamic-overview-supplements.png',{animations:'disabled',maxDiffPixels:0,threshold:0});
 });
 
 test('Calendar entry preserves native Back and Forward history',async({page})=>{

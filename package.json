@@ -10,6 +10,7 @@
     "check": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
     "test:e2e": "playwright test",
+    "test:visual": "playwright test --config playwright.visual.config.ts",
     "audit:storage": "tsx scripts/audit-storage.ts"
   },
   "dependencies": {

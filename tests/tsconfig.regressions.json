@@ -1,6 +1,10 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "visual-review-policy.test.ts",
+    "visual/screenshots.spec.ts",
+    "fixtures/visual-review.ts",
+    "browser/home-workout-cards.spec.ts",
     "browser/design-consistency.spec.ts",
     "visual-route-inventory.test.ts",
     "pwa-update-detection.test.ts",

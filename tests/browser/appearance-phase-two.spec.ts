@@ -1,3 +1,4 @@
+import { captureVisual } from "../fixtures/visual-review";
 import { test, expect, type Page } from "@playwright/test";
 import fs from "node:fs";
 import { seedAppearance } from "../fixtures/appearance-pages";
@@ -42,7 +43,7 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
       await page.locator(".app-shell").waitFor();
       await page.evaluate(() => document.fonts.ready);
       if (mode === "dark")
-        await expect(page).toHaveScreenshot(`${["home", "workout-editor", "routines-expanded", "routine-editor", "sidebar"].includes(name) ? `${name}-sets` : name}.png`, {
+        await captureVisual(page, `${["home", "workout-editor", "routines-expanded", "routine-editor", "sidebar"].includes(name) ? `${name}-sets` : name}.png`, {
           animations: "disabled",
           maxDiffPixels: 0,
           threshold: 0,

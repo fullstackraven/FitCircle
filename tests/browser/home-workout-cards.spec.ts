@@ -1,3 +1,4 @@
+import { captureVisual } from "../fixtures/visual-review";
 import {test,expect} from '@playwright/test';
 test.use({reducedMotion:'reduce',viewport:{width:390,height:844},timezoneId:'America/New_York'});
 for(const theme of ['dark','light']) test(`Home workout cards ${theme}`,async({page})=>{
@@ -18,9 +19,9 @@ for(const theme of ['dark','light']) test(`Home workout cards ${theme}`,async({p
  await expect(ring.getByTestId('workout-complete-check')).toHaveCount(0);
  await expect(page.getByTestId('home-workout-b')).toContainText('40 lbs');
  await card.scrollIntoViewIfNeeded();
- await expect(card.locator('..')).toHaveScreenshot(`home-workout-cards-${theme}.png`);
+ await captureVisual(card.locator('..'), `home-workout-cards-${theme}.png`);
  await ring.click();
- await expect(card.locator('..')).toHaveScreenshot(`home-completed-check-${theme}.png`);
+ await captureVisual(card.locator('..'), `home-completed-check-${theme}.png`);
  await card.getByTitle('Undo last set').click();
  await page.setViewportSize({width:320,height:844});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);

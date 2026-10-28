@@ -1,3 +1,4 @@
+import { captureVisual } from "../fixtures/visual-review";
 import { test, expect, type Page } from "@playwright/test";
 import fs from "node:fs";
 import { textContrast } from "../fixtures/appearance-contrast";
@@ -41,7 +42,7 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
       await expect(page.locator("#fitcircle-startup")).toHaveCount(0);
       await page.evaluate(() => document.fonts.ready);
       if (mode === "dark")
-        await expect(page).toHaveScreenshot(`${name}.png`, {
+        await captureVisual(page, `${name}.png`, {
           animations: "disabled",
           maxDiffPixels: 0,
           threshold: 0,

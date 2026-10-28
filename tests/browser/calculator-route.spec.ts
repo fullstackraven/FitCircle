@@ -1,3 +1,4 @@
+import { captureVisual } from "../fixtures/visual-review";
 import { seedNutritionAppearance } from "../fixtures/appearance-nutrition";
 import { test, expect, type Page } from "@playwright/test";
 
@@ -151,21 +152,21 @@ test("routed calculator Dark visual references", async ({ page }) => {
   await page.goto("fitness-calculator");
   await expect(page.locator("#fitcircle-startup")).toHaveCount(0);
   await page.evaluate(() => document.fonts.ready);
-  await expect(page).toHaveScreenshot("calculator-reference-calories.png", {
+  await captureVisual(page, "calculator-reference-calories.png", {
     animations: "disabled",
     maxDiffPixels: 0,
     threshold: 0,
   });
   await tab(page, "BMI").click();
   await expect(page.getByLabel("Weight", { exact: true })).toHaveValue("190");
-  await expect(page).toHaveScreenshot("calculator-reference-bmi.png", {
+  await captureVisual(page, "calculator-reference-bmi.png", {
     animations: "disabled",
     maxDiffPixels: 0,
     threshold: 0,
   });
   await tab(page, "Goal").click();
-  await expect(page).toHaveScreenshot("calculator-reference-goal.png", { animations: "disabled", maxDiffPixels: 0, threshold: 0 });
+  await captureVisual(page, "calculator-reference-goal.png", { animations: "disabled", maxDiffPixels: 0, threshold: 0 });
   await tab(page, "Macros").click();
-  await expect(page).toHaveScreenshot("calculator-reference-macros.png", { animations: "disabled", maxDiffPixels: 0, threshold: 0 });
+  await captureVisual(page, "calculator-reference-macros.png", { animations: "disabled", maxDiffPixels: 0, threshold: 0 });
 
 });
