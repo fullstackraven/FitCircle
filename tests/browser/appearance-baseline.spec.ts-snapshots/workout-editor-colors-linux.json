@@ -37,18 +37,18 @@
   ".fitcircle-card": null,
   ".glass-card": null,
   ".glass-dialog": {
-    "background": "rgba(15, 23, 42, 0.96)",
+    "background": "rgb(15, 23, 41)",
     "color": "rgb(255, 255, 255)",
-    "border": "rgba(203, 213, 225, 0.2)",
+    "border": "rgb(51, 65, 85)",
     "shadow": "rgba(0, 0, 0, 0.28) 0px 12px 32px 0px, rgba(255, 255, 255, 0.1) 0px 1px 0px 0px inset",
     "backdrop": "blur(16px) saturate(1.15)"
   },
   ".wellness-surface": null,
   "input": {
-    "background": "rgba(30, 41, 59, 0.88)",
+    "background": "rgb(30, 41, 59)",
     "color": "rgb(255, 255, 255)",
-    "border": "rgba(203, 213, 225, 0.2)",
-    "shadow": "rgba(255, 255, 255, 0.04) 0px 1px 0px 0px inset",
+    "border": "rgb(255, 255, 255)",
+    "shadow": "none",
     "backdrop": "none"
   },
   "button": {

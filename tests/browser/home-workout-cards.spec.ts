@@ -28,8 +28,8 @@ for(const theme of ['dark','light']) test(`Home workout cards ${theme}`,async({p
  const a=await card.boundingBox(),b=await page.getByTestId('home-workout-b').boundingBox();expect(a!.height).toBe(b!.height);expect(b!.x+b!.width).toBeLessThanOrEqual(320);
  await page.getByTitle('Add new workout').scrollIntoViewIfNeeded();await expect(page.getByTitle('Add new workout')).toBeInViewport();
  await card.getByRole('button',{name:'Edit Push-ups',exact:true}).click();await expect(page.getByLabel('Number of Sets')).toHaveValue('2');
- page.once('dialog',d=>d.dismiss());await page.getByRole('button',{name:'Delete',exact:true}).click();await expect(card).toBeVisible();
- await card.getByRole('button',{name:'Edit Push-ups',exact:true}).click();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Delete',exact:true}).click();await expect(card).toHaveCount(0);
+ page.once('dialog',d=>d.dismiss());await page.getByRole('button',{name:'Delete Workout',exact:true}).click();await expect(card).toBeVisible();
+ await card.getByRole('button',{name:'Edit Push-ups',exact:true}).click();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Delete Workout',exact:true}).click();await expect(card).toHaveCount(0);
 });
 test('holding the ring does not add a release click',async({page})=>{
  await page.clock.install({time:new Date('2026-10-27T12:00:00-04:00')});await page.goto('profile');

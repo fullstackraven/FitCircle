@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "browser/training-editors.spec.ts",
     "browser/pill-controls.spec.ts",
     "pill-controls.test.ts",
     "fixtures/pill-geometry.ts",

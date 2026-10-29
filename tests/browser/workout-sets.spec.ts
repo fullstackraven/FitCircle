@@ -13,7 +13,7 @@ test('sets credit exact reps, undo, persist targets across edits and agree with 
  await circle.click();expect((await entry(page)).count).toBe(13);
  await card.getByTitle('Undo last set').click();expect((await entry(page)).count).toBe(6);
  await page.getByRole('button',{name:'Edit Push-ups',exact:true}).click();
- await page.getByLabel('Total Reps',{exact:true}).fill('100');await page.getByLabel('Number of Sets').fill('4');page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Update Workout',exact:true}).click();
+ await page.getByLabel('Total Reps',{exact:true}).fill('100');await page.getByLabel('Number of Sets').fill('4');page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Save Changes',exact:true}).click();
  await expect(circle).toHaveAttribute('aria-label',/0 of 4/);await circle.click();await circle.click();await circle.click();await circle.click();
  expect(await entry(page)).toEqual({count:106,goalAtTime:100,completedSets:4,setsGoalAtTime:4,carriedReps:6});
  expect((await data(page)).dailyLogs['2025-01-01'].w).toEqual({count:20,goalAtTime:20});
@@ -34,7 +34,7 @@ test('legacy partial day stays rep-based; following day adopts one set without r
  const after=await data(page);expect(after.dailyLogs['2026-10-28'].w).toEqual({count:20,goalAtTime:20,completedSets:1,setsGoalAtTime:1});expect(after.dailyLogs['2025-01-01']).toEqual(before.dailyLogs['2025-01-01']);expect(after.workouts.w.setsGoal).toBeUndefined();
 });
 test('workout form validates positive whole rep/set goals and preserves compact controls',async({page})=>{
- await seed(page);await page.getByRole('button',{name:'Edit Push-ups',exact:true}).click();const save=page.getByRole('button',{name:'Update Workout',exact:true});
+ await seed(page);await page.getByRole('button',{name:'Edit Push-ups',exact:true}).click();const save=page.getByRole('button',{name:'Save Changes',exact:true});
  await page.getByLabel('Number of Sets').fill('21');await expect(save).toBeDisabled();await page.getByLabel('Number of Sets').fill('0');await expect(save).toBeDisabled();await page.getByLabel('Number of Sets').fill('2.5');await expect(save).toBeDisabled();await page.getByLabel('Number of Sets').fill('4');await page.getByLabel('Total Reps',{exact:true}).fill('20.5');await expect(save).toBeDisabled();await page.getByLabel('Total Reps',{exact:true}).fill('20');await expect(save).toBeEnabled();
  const reps=page.getByLabel('Total Reps',{exact:true});
  for(const value of ['10000','0','-1','','20.5']) {await reps.fill(value);await expect(reps).toHaveValue(value);await expect(save).toBeDisabled();await expect(page.getByRole('alert')).toBeVisible();}

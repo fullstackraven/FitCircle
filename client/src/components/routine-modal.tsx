@@ -1,3 +1,4 @@
+import '@/styles/training-editors.css';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -49,62 +50,24 @@ export function RoutineModal({ isOpen, onClose, onSave, editingRoutine }: Routin
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent fixedFooter staticBody className="compact-editor max-w-md text-strong p-4 gap-2">
+      <DialogContent fixedFooter staticBody className="training-editor max-w-md text-strong">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-strong">
-            {editingRoutine ? 'Edit Routine' : 'Add New Routine'}
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            Create a routine by giving it a name and selecting the days it applies to.
-          </DialogDescription>
+          <DialogTitle>{editingRoutine ? 'Edit Routine' : 'New Routine'}</DialogTitle>
+          <DialogDescription>{editingRoutine ? 'Update your training schedule' : 'Build your weekly training schedule'}</DialogDescription>
         </DialogHeader>
-
-        <div className="space-y-4 [@media(max-height:450px)]:space-y-3">
-          {/* Routine Name */}
-          <div className="space-y-1">
-            <Label htmlFor="routine-name" className="block text-xs leading-4 font-medium text-supporting">
-              Routine Name
-            </Label>
-            <Input
-              id="routine-name"
-              type="text"
-              value={routineName}
-              onChange={(e) => setRoutineName(e.target.value)}
-
-              className="h-11 [@media(max-height:450px)]:h-9 rounded-xl bg-surface text-base text-strong placeholder-muted-foreground focus:border-action-selected"
-              data-testid="input-routine-name"
-            />
-          </div>
-
-          {/* Day Selection */}
-          <DaySelector compact
-            selectedDays={selectedDays}
-            onSelectionChange={setSelectedDays}
-            className="space-y-2 [@media(max-height:450px)]:space-y-1"
-          />
-          <p className={`text-xs text-muted-foreground mt-2 ${selectedDays.length ? "invisible" : ""}`} aria-hidden={selectedDays.length > 0}>
-              Please select at least one day for this routine.
-          </p>
+        <div className="editor-sections">
+          <section>
+            <Label htmlFor="routine-name" className="editor-section-title">Routine name</Label>
+            <Input id="routine-name" type="text" value={routineName} onChange={(e) => setRoutineName(e.target.value)} className="editor-name" placeholder="e.g. Push Day" data-testid="input-routine-name" />
+          </section>
+          <DaySelector variant="sheet" heading="Training days" selectedDays={selectedDays} onSelectionChange={setSelectedDays} />
+          <p className="editor-day-summary">{selectedDays.length ? `${selectedDays.length} training day${selectedDays.length === 1 ? '' : 's'} selected` : 'Please select at least one day for this routine.'}</p>
         </div>
-
-        {/* Action Buttons */}
-        <DialogFooter className="grid grid-cols-2 gap-3 border-t border-separator pt-2 sm:space-x-0">
-          <Button
-            variant="outline"
-            onClick={handleClose}
-            className="min-h-11 [@media(max-height:450px)]:min-h-10 text-strong"
-            data-testid="button-cancel-routine"
-          >
-            Cancel
+        <DialogFooter className="editor-footer">
+          <Button onClick={handleSave} disabled={!routineName.trim() || selectedDays.length === 0} className="editor-primary bg-action-selected text-on-action hover:bg-action" data-testid="button-save-routine">
+            {editingRoutine ? 'Save Changes' : 'Create Routine'}
           </Button>
-          <Button
-            onClick={handleSave}
-            disabled={!routineName.trim() || selectedDays.length === 0}
-            className="min-h-11 [@media(max-height:450px)]:min-h-10 flex-1 bg-action hover:bg-action-hover text-on-action disabled:bg-surface-secondary disabled:text-muted-foreground"
-            data-testid="button-save-routine"
-          >
-            {editingRoutine ? 'Update' : 'Save'}
-          </Button>
+          <div className="editor-secondary"><Button variant="ghost" onClick={handleClose} className="editor-cancel" data-testid="button-cancel-routine">Cancel</Button></div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
