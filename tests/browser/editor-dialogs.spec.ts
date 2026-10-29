@@ -18,20 +18,25 @@ const readData = (page: Page) => page.evaluate(() => JSON.parse(localStorage.get
 
 async function assertContained(page: Page, dialog: Locator) {
   await expect(dialog).toHaveClass(/glass-dialog/);
-  await expect(dialog.locator('input[placeholder], textarea[placeholder]')).toHaveCount(0);
+  await expect(dialog.getByLabel(/Routine Name|Workout Name/).first()).toHaveAttribute('placeholder', /e\.g\. Push Day|Workout name/);
   const body = dialog.locator('.dialog-body');
-  expect(await body.evaluate(el => el.scrollHeight <= el.clientHeight && el.scrollWidth <= el.clientWidth)).toBe(true);
+  expect(await body.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
   expect(await dialog.evaluate(el => el.scrollHeight <= el.clientHeight)).toBe(true);
   const header = dialog.locator('.dialog-header');
   const footer = dialog.locator('.dialog-footer');
   const before = { header: await header.boundingBox(), footer: await footer.boundingBox(), panel: await dialog.boundingBox() };
   await dialog.locator('.dialog-body').evaluate(el => { el.scrollTop = el.scrollHeight; });
-  expect(await body.evaluate(el => el.scrollTop)).toBe(0);
+  expect(await body.evaluate(el => Math.abs(el.scrollTop - Math.max(0, el.scrollHeight - el.clientHeight)))).toBeLessThanOrEqual(1);
   expect(await header.boundingBox()).toEqual(before.header);
   expect(await footer.boundingBox()).toEqual(before.footer);
   expect(await dialog.boundingBox()).toEqual(before.panel);
   expect(before.footer!.y + before.footer!.height).toBeLessThanOrEqual(before.panel!.y + before.panel!.height);
   expect(before.footer!.y).toBeGreaterThanOrEqual(before.header!.y + before.header!.height);
+  const lastField=dialog.locator('input').last();
+  await lastField.scrollIntoViewIfNeeded();
+  const field=await lastField.boundingBox(), frame=await body.boundingBox();
+  expect(field!.y).toBeGreaterThanOrEqual(frame!.y-1);
+  expect(field!.y+field!.height).toBeLessThanOrEqual(frame!.y+frame!.height+1);
   expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('hidden');
 }
@@ -43,7 +48,7 @@ for (const size of [{ name: 'phone', width: 390, height: 600 }, { name: 'small p
     await page.goto('routines');
     await page.addStyleTag({ content: `:root { --safe-top: 0px; --safe-bottom: ${size.name === 'landscape' ? 21 : size.name === 'desktop' ? 0 : 34}px; }` });
     await page.getByTestId('button-create-routine').click();
-    let dialog = page.getByRole('dialog', { name: 'Add New Routine' });
+    let dialog = page.getByRole('dialog', { name: 'New Routine' });
     await expect(dialog).toBeFocused();
     await dialog.getByLabel('Routine Name').fill('New test routine');
     await dialog.getByRole('button', { name: 'Weekdays', exact: true }).click();
@@ -60,7 +65,7 @@ for (const size of [{ name: 'phone', width: 390, height: 600 }, { name: 'small p
     await expect(dialog).toBeHidden();
     await page.getByRole('heading', { name: 'Strength', exact: true }).click();
     await page.getByTestId('button-add-workout-r1').click();
-    dialog = page.getByRole('dialog', { name: 'Add New Workout' });
+    dialog = page.getByRole('dialog', { name: 'New Workout' });
     await expect(dialog).toBeFocused();
     await dialog.getByLabel('Workout Name').fill('New test exercise');
     await dialog.getByLabel('Total Reps', { exact: true }).fill('12');
@@ -81,7 +86,7 @@ for (const size of [{ name: 'phone', width: 390, height: 600 }, { name: 'small p
       await expect(dialog.getByLabel('Weight (lbs) - Optional', { exact: true })).toHaveValue('25');
     }
     await assertContained(page, dialog);
-    await dialog.getByRole('button', { name: 'Update Workout' }).click();
+    await dialog.getByRole('button', { name: 'Save Changes' }).click();
     await expect(dialog).toBeHidden();
     await page.reload();
     const data = await readData(page);

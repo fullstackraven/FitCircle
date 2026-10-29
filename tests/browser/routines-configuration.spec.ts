@@ -140,12 +140,12 @@ test("editing existing exercise schedules adds/removes shared routine membership
   await dialog
     .getByRole("button", { name: "Clear Selection", exact: true })
     .click();
-  await dialog.getByRole("button", { name: "Mon", exact: true }).click();
+  await dialog.getByRole("button", { name: "Monday", exact: true }).click();
   await dialog.getByLabel("Workout Name").fill("Shared weighted carry");
   await dialog.getByLabel("Total Reps", { exact: true }).fill("30");
   await dialog.getByLabel("Workout color").selectOption("red");
   await dialog
-    .getByRole("button", { name: "Update Workout", exact: true })
+    .getByRole("button", { name: "Save Changes", exact: true })
     .click();
   await expect(page.getByTestId("routine-exercise-r0-w1")).toContainText(
     "30 reps · 1 set · 40 lb",
@@ -168,7 +168,7 @@ test("editing existing exercise schedules adds/removes shared routine membership
   await dialog
     .getByRole("button", { name: "Clear Selection", exact: true })
     .click();
-  await dialog.getByRole("button", { name: "Tue", exact: true }).click();
+  await dialog.getByRole("button", { name: "Tuesday", exact: true }).click();
   await dialog.getByTestId("button-save-routine").click();
   await page.getByTestId("routine-header-r0").click();
   await expect(page.getByTestId("routine-exercise-r0-w1")).toHaveCount(0);

@@ -6,6 +6,8 @@ interface DaySelectorProps {
   onSelectionChange: (selectedDays: number[]) => void;
   className?: string;
   compact?: boolean;
+  variant?: "default" | "sheet";
+  heading?: string;
 }
 
 const DAYS = [
@@ -18,7 +20,9 @@ const DAYS = [
   { index: 6, short: 'Sat', full: 'Saturday' },
 ];
 
-export function DaySelector({ selectedDays, onSelectionChange, className, compact = false }: DaySelectorProps) {
+export function DaySelector({ selectedDays, onSelectionChange, className, compact = false, variant = "default", heading = "Schedule" }: DaySelectorProps) {
+  const editor = variant === "sheet";
+  compact = compact || editor;
   const toggleDay = (dayIndex: number) => {
     if (selectedDays.includes(dayIndex)) {
       onSelectionChange(selectedDays.filter(d => d !== dayIndex));
@@ -40,11 +44,11 @@ export function DaySelector({ selectedDays, onSelectionChange, className, compac
   const isWeekends = selectedDays.length === 2 && selectedDays.includes(0) && selectedDays.includes(6);
 
   return (
-    <div className={className}>
+    <div className={`${className || ""} ${editor ? "editor-days" : ""}`}>
       <div className={compact ? "mb-1" : "mb-3"}>
         <div className={compact ? "flex items-center justify-between" : ""}>
         <label className={compact ? "block text-xs leading-4 font-medium text-strong" : "block text-sm font-medium text-strong mb-2"}>
-          Scheduled Days
+          {editor ? heading : "Scheduled Days"}
         </label>
         {compact && <Button type="button" variant="ghost" disabled={!selectedDays.length} onClick={clearAllDays}
           aria-label="Clear Selection" className="h-5 px-1 py-0 text-xs text-muted-foreground">Clear</Button>}
@@ -72,14 +76,15 @@ export function DaySelector({ selectedDays, onSelectionChange, className, compac
             size="sm"
             onClick={() => toggleDay(day.index)}
             aria-pressed={selectedDays.includes(day.index)}
-            className={`${compact ? "h-8 min-w-0 px-0" : "h-10"} text-xs font-medium transition-all ${
+            aria-label={editor ? day.full : undefined}
+            className={`${editor ? "editor-day" : ""} ${compact ? "h-8 min-w-0 px-0" : "h-10"} text-xs font-medium transition-all ${
               selectedDays.includes(day.index)
                 ? 'bg-action-selected hover:bg-action text-on-action border-action-selected'
                 : 'bg-surface-secondary hover:bg-control-strong text-supporting border-control'
             }`}
             title={day.full}
           >
-            {day.short}
+            {editor ? day.short[0] : day.short}
           </Button>
         ))}
       </div>
@@ -93,7 +98,7 @@ export function DaySelector({ selectedDays, onSelectionChange, className, compac
           disabled={isEveryDay}
           className={`${compact ? "h-7 px-2" : ""} flex-1 text-xs bg-surface-secondary hover:bg-control-strong text-supporting border-control`}
         >
-          Every Day
+          {editor ? "Every day" : "Every Day"}
         </Button>
         <Button
           type="button"

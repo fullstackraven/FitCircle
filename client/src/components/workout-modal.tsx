@@ -1,3 +1,5 @@
+import { ChevronDown, Trash2 } from 'lucide-react';
+import '@/styles/training-editors.css';
 import { validWorkoutTargets } from '@/lib/workout-progress';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -73,52 +75,39 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent fixedFooter staticBody className="compact-editor max-w-md text-strong p-4 gap-2">
+      <DialogContent fixedFooter staticBody className="training-editor max-w-md text-strong">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-strong">
-            {editingWorkout ? 'Edit Workout' : 'Add New Workout'}
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            {editingWorkout ? 'Modify the workout details below' : 'Create a new workout to track your progress'}
-          </DialogDescription>
+          <DialogTitle>{editingWorkout ? 'Edit Workout' : 'New Workout'}</DialogTitle>
+          <DialogDescription>{editingWorkout ? 'Update exercise settings' : 'Set up an exercise for your Home dashboard'}</DialogDescription>
         </DialogHeader>
-        
-        <div className="space-y-1">
-          <div className="grid grid-cols-2 gap-3">
-            {/* Workout Name Input */}
-            <div className="space-y-1">
-              <Label htmlFor="workout-name" className="block text-xs leading-4 font-medium text-strong">
-                Workout Name
-              </Label>
-              <Input
+        <div className="editor-sections">
+          <section aria-labelledby="exercise-heading">
+            <h3 id="exercise-heading" className="editor-section-title">Exercise</h3>
+            <Label htmlFor="workout-name" className="sr-only">Workout Name</Label>
+            <Input
                 id="workout-name"
                 type="text"
                 value={workoutName}
                 onChange={(e) => setWorkoutName(e.target.value)}
-                className="h-9 text-base text-strong placeholder-muted-foreground focus:border-action-selected focus:ring-focus"
+                className="editor-name" placeholder="Workout name"
               />
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="workout-color" className="block text-xs leading-4 font-medium text-strong">Color</Label>
-              <div className="relative">
-                <span aria-hidden="true" className={`absolute left-3 top-3 h-3 w-3 rounded-full ${getColorClass(selectedColor)}`} />
+          </section>
+          <section aria-labelledby="workout-details-heading">
+            <div className="editor-section-row">
+              <h3 id="workout-details-heading" className="editor-section-title">Workout details</h3>
+              <div className="editor-color">
+                <span aria-hidden="true" className={`editor-color-dot ${getColorClass(selectedColor)}`} />
                 <select id="workout-color" value={selectedColor} onChange={event => setSelectedColor(event.target.value)}
-                  className="fc-pill glass-input block h-9 w-full border pl-8 pr-2 text-sm text-strong" aria-label="Workout color">
+                  className="fc-pill editor-color-select" aria-label="Workout color">
                   {Array.from(new Set([...availableColors, selectedColor])).map(color => (
                     <option key={color} value={color} className="bg-canvas text-strong">{color.charAt(0).toUpperCase() + color.slice(1)}</option>
                   ))}
                 </select>
+                <ChevronDown size={16} aria-hidden="true" className="editor-color-chevron" />
               </div>
             </div>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            {/* Weight Input */}
-            <div className="space-y-1">
-              <Label htmlFor="weight-lbs" className="block text-xs leading-4 font-medium text-strong">
-                Weight (lbs)
-              </Label>
-              <Input
+            <div className="editor-numbers">
+              <div className="editor-number-card"><Input
                 id="weight-lbs"
                 aria-label="Weight (lbs) - Optional"
                 type="text"
@@ -145,16 +134,9 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
                   e.target.select(); // Select all text when focused
                 }}
 
-                className="h-9 text-base text-strong placeholder-muted-foreground focus:border-action-selected focus:ring-focus"
-              />
-            </div>
-
-            {/* Daily Goal Input */}
-            <div className="space-y-1">
-              <Label htmlFor="daily-goal" className="block text-xs leading-4 font-medium text-strong">
-                Total Reps
-              </Label>
-              <Input
+                className="editor-value" placeholder="—"
+              /><Label htmlFor="weight-lbs">Weight (lbs)</Label></div>
+              <div className="editor-number-card"><Input
                 id="daily-goal"
                 type="text"
                 inputMode="numeric"
@@ -166,59 +148,29 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
                   e.target.select(); // Select all text when focused
                 }}
 
-                className="h-9 text-base text-strong placeholder-muted-foreground focus:border-action-selected focus:ring-focus"
-              />
+                className="editor-value"
+              /><Label htmlFor="daily-goal">Total Reps</Label></div>
+              <div className="editor-number-card"><Input id="sets-goal" aria-label="Number of Sets" type="number" inputMode="numeric" min="1" max={Number(dailyGoal)} step="1"
+                value={setsGoal} onChange={e => setSetsGoal(e.target.value)} className="editor-value" /><Label htmlFor="sets-goal">Sets</Label></div>
             </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="sets-goal" className="block text-xs leading-4 font-medium text-strong">Sets</Label>
-              <Input id="sets-goal" aria-label="Number of Sets" type="number" inputMode="numeric" min="1" max={Number(dailyGoal)} step="1"
-                value={setsGoal} onChange={e => setSetsGoal(e.target.value)} className="h-9 text-base" />
-            </div>
-          </div>
-          {!validTargets && <p role="alert" className="text-xs text-feature-red">Reps: 1–9,999. Sets: 1–Total Reps. Use whole numbers.</p>}
-          {/* Days of Week Selection */}
-          <DaySelector compact
-            selectedDays={scheduledDays}
-            onSelectionChange={setScheduledDays}
-            className="space-y-1"
-          />
-
-
+            {!validTargets && <p role="alert" className="text-xs text-feature-red mt-2">Reps: 1–9,999. Sets: 1–Total Reps. Use whole numbers.</p>}
+          </section>
+          <DaySelector variant="sheet" heading="Schedule" selectedDays={scheduledDays} onSelectionChange={setScheduledDays} />
         </div>
-
         {saveError && <p role="alert" className="text-xs text-feature-red">{saveError}</p>}
-        {/* Fixed Bottom Actions */}
-        <DialogFooter className={`grid ${editingWorkout && onDelete ? "grid-cols-3" : "grid-cols-2"} gap-2 border-t border-separator pt-2 sm:space-x-0`}>
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            className="px-2 text-strong"
-          >
-            Cancel
+        <DialogFooter className="editor-footer">
+          <Button onClick={handleSave} disabled={!workoutName.trim() || !validTargets} className="editor-primary bg-action-selected text-on-action hover:bg-action">
+            {editingWorkout ? 'Save Changes' : 'Add Workout'}
           </Button>
-          {editingWorkout && onDelete && (
-            <Button
-              variant="outline"
-              onClick={() => {
+          <div className={editingWorkout && onDelete ? 'editor-secondary editor-secondary-split' : 'editor-secondary'}>
+            {editingWorkout && onDelete && <Button variant="ghost" onClick={() => {
                 if (editingWorkout && onDelete) {
                   onDelete(editingWorkout.id);
                   handleCancel();
                 }
-              }}
-              className="action-quiet-danger px-2 bg-red-500 hover:bg-red-600 text-on-action border-red-600"
-            >
-              Delete
-            </Button>
-          )}
-          <Button
-            onClick={handleSave}
-            disabled={!workoutName.trim() || !validTargets}
-            aria-label={editingWorkout ? "Update Workout" : "Add Workout"}
-            className="px-2 bg-action-selected hover:bg-action text-on-action"
-          >
-            {editingWorkout ? 'Update' : 'Add'}
-          </Button>
+              }} className="editor-delete text-feature-red"><Trash2 size={16} aria-hidden="true" />Delete Workout</Button>}
+            <Button variant="ghost" onClick={handleCancel} className="editor-cancel">Cancel</Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

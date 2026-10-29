@@ -1,0 +1,46 @@
+/* Scoped to Workout/Routine only. Existing portal, scroll lock and viewport
+   variables retain ownership of keyboard and safe-area behavior. */
+.training-editor {
+  --editor-space:clamp(8px,calc(var(--overlay-height) / 32),20px);
+  align-self:flex-end; padding:var(--editor-space); gap:var(--editor-space);
+  border-radius:28px; background:hsl(var(--sheet-surface)); border-color:hsl(var(--separator));
+}
+.training-editor .dialog-header { position:relative; padding:clamp(12px,calc(var(--overlay-height) / 32),26px) 0 0; gap:8px; text-align:left; }
+.training-editor .dialog-header::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:40px; height:5px; border-radius:9999px; background:hsl(var(--control-strong)); }
+.training-editor .dialog-header > * { margin:0; }
+.training-editor .dialog-header h2 { padding-right:48px; font-size:clamp(22px,calc(var(--overlay-height) / 28),26px); line-height:1.2; font-weight:700; letter-spacing:-.025em; }
+.training-editor .dialog-header p { color:hsl(var(--muted-foreground)); font-size:14px; line-height:1.45; }
+.training-editor .overlay-close { top:calc(var(--editor-space) + 22px); right:var(--editor-space); background:hsl(var(--surface-secondary)); opacity:1; color:hsl(var(--text-secondary)); }
+.training-editor .overlay-close svg { width:22px; height:22px; }
+.training-editor .editor-sections { display:grid; gap:var(--editor-space); }
+.training-editor .editor-section-title { display:block; margin:0 0 10px; color:hsl(var(--muted-foreground)); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.025em; }
+.training-editor .editor-name { width:100%; height:clamp(40px,calc(var(--overlay-height) / 14),52px); border:0; border-radius:18px; background:hsl(var(--surface)); padding:10px 14px; font-size:16px; box-shadow:none; }
+.training-editor .editor-section-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+.training-editor .editor-section-row .editor-section-title { margin:0; }
+.training-editor .editor-color { position:relative; width:124px; flex-shrink:0; }
+.training-editor .editor-color-select { width:100%; min-height:40px; appearance:none; background:transparent; color:hsl(var(--text-secondary)); border:0; padding:6px 24px 6px 26px; font-size:14px; }
+.training-editor .editor-color-dot { position:absolute; top:50%; left:7px; transform:translateY(-50%); width:12px; height:12px; border-radius:50%; pointer-events:none; }
+.training-editor .editor-color-chevron { position:absolute; right:5px; top:50%; transform:translateY(-50%); pointer-events:none; color:hsl(var(--text-secondary)); }
+.training-editor .editor-numbers { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+/* Specific numeric-card path overrides the global mobile input-size floor. */
+.training-editor .editor-number-card { min-width:0; display:flex; flex-direction:column; align-items:center; gap:6px; padding:12px 8px; border-radius:18px; background:hsl(var(--surface)); }
+.training-editor .editor-sections .editor-numbers .editor-number-card .editor-value { width:100%; min-width:0; height:34px; padding:0; border:0; border-radius:6px; background:transparent; box-shadow:none; text-align:center; font-size:28px; line-height:1; font-weight:700; }
+.training-editor .editor-number-card label { font-size:12px; line-height:1.25; color:hsl(var(--muted-foreground)); text-align:center; }
+.training-editor .editor-days > div:first-child { margin-bottom:10px; }
+.training-editor .editor-days label { color:hsl(var(--muted-foreground)); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.025em; }
+.training-editor .editor-days > div:first-child button { height:32px; padding:0 4px; color:hsl(var(--accent-text)); font-size:13px; }
+.training-editor .editor-days > .grid { gap:4px; margin-bottom:12px; }
+.training-editor .editor-day { position:relative; width:min(100%,44px); height:auto; min-height:0; aspect-ratio:1; padding:0; justify-self:center; font-size:14px; font-weight:600; border:1px solid hsl(var(--control-border)); box-shadow:none; }
+.training-editor .editor-day::after { content:''; position:absolute; width:100%; height:44px; top:50%; left:0; transform:translateY(-50%); }
+.training-editor .editor-day[aria-pressed=true] { background:hsl(var(--action-selected)); color:hsl(var(--on-selected-action)); border-color:transparent; }
+.training-editor .editor-days > .flex > button { min-width:0; height:36px; padding:0 8px; background:transparent; font-size:12px; box-shadow:none; }
+.training-editor .editor-day-summary { margin:0; font-size:12px; color:hsl(var(--muted-foreground)); }
+.training-editor .editor-footer { display:flex; flex-direction:column; gap:4px; padding-top:var(--editor-space); border-top:1px solid hsl(var(--separator)); margin:0; }
+.training-editor .editor-footer > * { margin:0; }
+.training-editor .editor-primary { width:100%; height:clamp(40px,calc(var(--overlay-height) / 14),48px); flex-shrink:0; font-size:16px; font-weight:700; box-shadow:none; }
+.training-editor .editor-secondary { display:flex; align-items:center; justify-content:center; width:100%; }
+.training-editor .editor-secondary-split { justify-content:space-between; gap:8px; }
+.training-editor .editor-cancel,.training-editor .editor-delete { height:clamp(32px,calc(var(--overlay-height) / 16),44px); padding:0 2px; font-size:14px; background:transparent; box-shadow:none; }
+.training-editor .editor-cancel { color:hsl(var(--muted-foreground)); }
+.training-editor .editor-delete { gap:6px; }
+@media(max-width:350px) { .training-editor .editor-sections .editor-numbers .editor-number-card .editor-value { font-size:24px; } .training-editor .editor-number-card label { font-size:11px; } }
