@@ -1,3 +1,4 @@
+import '@/styles/logs-tiles.css';
 import { focusDashboardOnOpen, returnDashboardFocus } from '@/lib/dashboard-navigation';
 import { DashboardMenu } from '@/components/DashboardMenu';
 import { VersionLabel } from "@/components/VersionLabel";
@@ -12,90 +13,60 @@ const DEFAULT_FEATURES = [
     id: 'cardio',
     title: 'Cardio',
     icon: Activity,
-    color: 'text-accent-text',
-    bgColor: 'bg-accent-bright/10',
-    hoverBg: 'hover:bg-accent-bright/20',
     path: '/cardio'
   },
   {
     id: 'fasting',
     title: 'Intermittent Fasting',
     icon: Clock,
-    color: 'text-feature-orange',
-    bgColor: 'bg-orange-400/10',
-    hoverBg: 'hover:bg-orange-400/20',
     path: '/fasting'
   },
   {
     id: 'meditation',
     title: 'Meditation',
     icon: Brain,
-    color: 'text-feature-purple',
-    bgColor: 'bg-purple-400/10',
-    hoverBg: 'hover:bg-purple-400/20',
     path: '/meditation'
   },
   {
     id: 'hydration',
     title: 'Hydration',
     icon: Droplet,
-    color: 'text-feature-cyan',
-    bgColor: 'bg-cyan-400/10',
-    hoverBg: 'hover:bg-cyan-400/20',
     path: '/hydration'
   },
   {
     id: 'measurements',
     title: 'Measurements',
     icon: User,
-    color: 'text-feature-teal',
-    bgColor: 'bg-teal-400/10',
-    hoverBg: 'hover:bg-teal-400/20',
     path: '/measurements'
   },
   {
     id: 'food-tracker',
     title: 'Food Tracker',
     icon: UtensilsCrossed,
-    color: 'text-feature-amber',
-    bgColor: 'bg-amber-400/10',
-    hoverBg: 'hover:bg-amber-400/20',
     path: '/food-tracker'
   },
   {
     id: 'recovery',
     title: 'Recovery',
     icon: Heart,
-    color: 'text-feature-orange',
-    bgColor: 'bg-orange-400/10',
-    hoverBg: 'hover:bg-orange-400/20',
     path: '/recovery'
   },
   {
     id: 'journal',
     title: 'Daily Journal',
     icon: BookOpen,
-    color: 'text-feature-purple',
-    bgColor: 'bg-purple-400/10',
-    hoverBg: 'hover:bg-purple-400/20',
     path: '/journal-log'
   },
   {
     id: 'energy',
     title: 'Energy Level',
     icon: Zap,
-    color: 'text-feature-yellow',
-    bgColor: 'bg-yellow-400/10', 
-    hoverBg: 'hover:bg-yellow-400/20',
     path: '/energy-level'
   },
   {
     id: 'supplements',
     title: 'Supplements',
     icon: Pill,
-    color: 'text-feature-blue',
-    bgColor: 'bg-blue-400/10',
-    hoverBg: 'hover:bg-blue-400/20', 
     path: '/supplements-page'
   }
 ];
@@ -270,11 +241,11 @@ export default function WellnessPage() {
                 )}
                 <button data-control-geometry="card"
                   onClick={() => !isEditMode && navigate(`${feature.path}?from=wellness`)}
-                  className={`glass-tile min-h-32 h-full px-3 py-4 ${feature.bgColor} ${!isEditMode && feature.hoverBg} rounded-2xl transition-all duration-200 ${!isEditMode && 'hover:scale-105 active:scale-95'} flex flex-col items-center justify-center gap-2 w-full ${isEditMode ? 'opacity-75' : ''}`}
+                  className={`logs-tile min-h-32 h-full px-3 py-4 rounded-2xl flex flex-col items-center justify-center gap-2 w-full ${isEditMode ? 'opacity-75' : ''}`}
                   disabled={isEditMode}
                   data-testid={`card-${feature.id}`}
                 >
-                  <Icon className={`w-7 h-7 shrink-0 ${feature.color}`} aria-hidden="true" />
+                  <Icon className="logs-tile-icon w-7 h-7 shrink-0" aria-hidden="true" />
                   <span className="text-strong font-medium text-center text-sm leading-tight min-h-10 flex items-center justify-center">
                     {feature.title}
                   </span>
