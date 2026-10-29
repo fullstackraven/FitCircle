@@ -1,0 +1,26 @@
+/* Logs landing-page cards only; feature pages retain their own accents. */
+.logs-tile {
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--separator));
+  color: hsl(var(--text-strong));
+  transition: background-color 120ms, border-color 120ms;
+}
+.logs-tile-icon {
+  color: color-mix(in srgb, hsl(var(--text-secondary)) 90%, hsl(var(--surface)));
+}
+@media (hover: hover) {
+  .logs-tile:hover:not(:disabled) {
+    border-color: hsl(var(--control-border));
+  }
+}
+.logs-tile:active:not(:disabled) {
+  background: color-mix(in srgb, hsl(var(--surface)) 92%, hsl(var(--accent-text)));
+  border-color: hsl(var(--accent-text));
+}
+.logs-tile:focus-visible {
+  outline: 2px solid hsl(var(--focus));
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .logs-tile { transition: none; }
+}
