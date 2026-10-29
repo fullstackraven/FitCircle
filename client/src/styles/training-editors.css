@@ -2,6 +2,7 @@
    variables retain ownership of keyboard and safe-area behavior. */
 .training-editor {
   --editor-space:clamp(8px,calc(var(--overlay-height) / 32),20px);
+  transition-property:background-color,color,border-color,box-shadow;
   align-self:flex-end; padding:var(--editor-space); gap:var(--editor-space);
   border-radius:28px; background:hsl(var(--sheet-surface)); border-color:hsl(var(--separator));
 }
@@ -44,3 +45,12 @@
 .training-editor .editor-cancel { color:hsl(var(--muted-foreground)); }
 .training-editor .editor-delete { gap:6px; }
 @media(max-width:350px) { .training-editor .editor-sections .editor-numbers .editor-number-card .editor-value { font-size:24px; } .training-editor .editor-number-card label { font-size:11px; } }
+
+/* Keep keyboard focus visible inside the softly grouped input surfaces. */
+.training-editor .editor-sections input:focus-visible { box-shadow:inset 0 0 0 2px hsl(var(--focus)); }
+.training-editor .editor-sections .editor-numbers .editor-number-card .editor-value:focus-visible { box-shadow:inset 0 0 0 2px hsl(var(--focus)); }
+/* Leave a usable field-sized scroller when the iPhone keyboard is open. */
+.keyboard-open .training-editor .dialog-header { padding-top:8px; gap:4px; }
+.keyboard-open .training-editor .dialog-header h2 { font-size:20px; }
+.keyboard-open .training-editor .dialog-header p { font-size:12px; }
+.keyboard-open .training-editor .editor-footer { padding-top:4px; gap:0; }

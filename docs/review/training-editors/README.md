@@ -31,3 +31,9 @@ Implements the approved **New Workout**, **Edit Workout**, and **New Routine** d
 All save/update/delete handlers, input types/defaults/validation, color options and scheduling callbacks remain unchanged. Routine deletion was not supported inside the existing editor, so it remains on the routine card with its existing confirmation. Workout delete confirmation remains caller-owned. New blank forms retain their disabled primary action until the existing validation is satisfied, even where the mockup depicts an enabled action with placeholder text.
 
 The drag handle is an indicator; no new drag-to-dismiss gesture engine was added. Physical iPhone testing was unavailable; keyboard/safe-area behavior was checked in the browser. Barcode/Custom Food, other pages, storage/backup, service workers and release infrastructure are untouched. Pixel comparisons remain advisory. No merge or deployment performed.
+
+## PR check corrections
+
+CI exposed stale Save/Delete labels, a case-sensitive Routine label lookup and the old Workout editor computed-color expectation. These now follow the approved sheet UI; functional assertions and exact computed-color comparisons remain intact. Scoped input styles retain visible inset focus. Keyboard-open spacing leaves a usable field scroller, and sheet geometry no longer transitions during viewport resizing. The anchored-geometry test waits for finite transitions instead of measuring mid-transition.
+
+Validation: application and regression TypeScript and production build pass. The initial related-browser run passed 110 cases and exposed seven remaining failures; after corrections, all 16 targeted editor/color/keyboard cases pass, including those failures, Dark/Light and 320/390px coverage. Updated Save/Delete interaction cases also passed in the initial run. Screenshot comparisons remain advisory; no PNG baselines or CI gates changed. Fresh GitHub checks will run on push; not merged or deployed.

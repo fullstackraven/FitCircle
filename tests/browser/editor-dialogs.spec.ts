@@ -18,12 +18,18 @@ const readData = (page: Page) => page.evaluate(() => JSON.parse(localStorage.get
 
 async function assertContained(page: Page, dialog: Locator) {
   await expect(dialog).toHaveClass(/glass-dialog/);
-  await expect(dialog.getByLabel(/Routine Name|Workout Name/).first()).toHaveAttribute('placeholder', /e\.g\. Push Day|Workout name/);
+  await expect(dialog.getByLabel(/Routine name|Workout Name/).first()).toHaveAttribute('placeholder', /e\.g\. Push Day|Workout name/);
   const body = dialog.locator('.dialog-body');
   expect(await body.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
   expect(await dialog.evaluate(el => el.scrollHeight <= el.clientHeight)).toBe(true);
   const header = dialog.locator('.dialog-header');
   const footer = dialog.locator('.dialog-footer');
+  // Wait for finite opening/resizing transitions before comparing anchored geometry.
+  await dialog.evaluate(async el => {
+    await Promise.all(el.getAnimations({ subtree: true }).filter(animation =>
+      animation.effect?.getComputedTiming().iterations !== Infinity
+    ).map(animation => animation.finished.catch(() => {})));
+  });
   const before = { header: await header.boundingBox(), footer: await footer.boundingBox(), panel: await dialog.boundingBox() };
   await dialog.locator('.dialog-body').evaluate(el => { el.scrollTop = el.scrollHeight; });
   expect(await body.evaluate(el => Math.abs(el.scrollTop - Math.max(0, el.scrollHeight - el.clientHeight)))).toBeLessThanOrEqual(1);
