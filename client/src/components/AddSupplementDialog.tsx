@@ -58,9 +58,9 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          size="sm"
+          size="icon"
           aria-label="Add Supplement"
-          className="bg-action-selected hover:bg-action text-on-action rounded-full w-8 h-8 p-0"
+          className="bg-action-selected hover:bg-action text-on-action p-0"
         >
           <Plus className="w-4 h-4" />
         </Button>

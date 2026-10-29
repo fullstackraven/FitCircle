@@ -123,7 +123,7 @@ export function SupplementsPage() {
             })}
             {!tempSupplementLogs.length && <EmptyState>No supplements added yet</EmptyState>}
           </div>
-          {!!tempSupplementLogs.length && <button onClick={handleSaveSupplements} className="fc-action fc-action-primary w-full supplement-save"><Check size={19}/>Save Today's Log</button>}
+          {!!tempSupplementLogs.length && <button onClick={handleSaveSupplements} className="fc-pill fc-action fc-action-primary w-full supplement-save"><Check size={19}/>Save Today's Log</button>}
         </section>
         <Collapsible open={isManageOpen} onOpenChange={setIsManageOpen} className="fc-section supplements-card mt-4 !p-0">
           <CollapsibleTrigger className="supplement-manage-trigger"><SlidersHorizontal size={20} className="text-muted-foreground shrink-0"/><h2 className="flex-1 text-left font-semibold text-base text-strong">Manage Supplements</h2>{isManageOpen ? <ChevronUp size={19}/> : <ChevronDown size={19}/>}</CollapsibleTrigger>
@@ -132,17 +132,17 @@ export function SupplementsPage() {
             {allSupplements.map(supplement => <div key={supplement.id} className="supplement-management-row">
               {editingId === supplement.id ? <div className="flex flex-wrap items-center gap-2 w-full">
                 <input type="text" aria-label="Supplement name" value={editingName} onChange={e=>setEditingName(e.target.value)} className="min-w-0 w-full rounded-lg border border-control-muted-border bg-input-background text-strong px-3 py-2" autoFocus/>
-                <button onClick={handleSaveEdit} className="min-h-11 px-4 rounded-lg bg-action text-on-action text-sm">Save</button>
-                <button onClick={()=>{setEditingId(null);setEditingName('');}} className="min-h-11 px-4 rounded-lg border border-control-border text-supporting text-sm">Cancel</button>
+                <button onClick={handleSaveEdit} className="fc-pill min-h-11 px-4 bg-action text-on-action text-sm">Save</button>
+                <button onClick={()=>{setEditingId(null);setEditingName('');}} className="fc-pill min-h-11 px-4 border border-control-border text-supporting text-sm">Cancel</button>
               </div> : <>
                 <Pill size={17} className="text-accent-text shrink-0"/>
                 <div className="min-w-0 flex-1"><span className="block text-sm font-semibold text-strong break-words">{supplement.name}</span><span className="block text-xs text-muted-foreground mt-0.5">{supplement.amount} {supplement.measurementType}</span></div>
-                <button onClick={()=>handleEditSupplement(supplement.id,supplement.name)} title="Edit supplement" aria-label={`Edit ${supplement.name}`} className="supplement-edit"><Edit2 size={17}/></button>
-                <button onClick={()=>handleDeleteSupplement(supplement.id)} title="Delete supplement" aria-label={`Delete ${supplement.name}`} className="supplement-delete"><Trash2 size={18}/></button>
+                <button onClick={()=>handleEditSupplement(supplement.id,supplement.name)} title="Edit supplement" aria-label={`Edit ${supplement.name}`} className="fc-pill fc-icon-button supplement-edit"><Edit2 size={17}/></button>
+                <button onClick={()=>handleDeleteSupplement(supplement.id)} title="Delete supplement" aria-label={`Delete ${supplement.name}`} className="fc-pill fc-icon-button supplement-delete"><Trash2 size={18}/></button>
               </>}
             </div>)}
             {!allSupplements.length && <EmptyState>No supplements added yet</EmptyState>}
-            <button onClick={()=>addTriggerRef.current?.querySelector('button')?.click()} className="fc-action fc-action-secondary w-full mt-3 supplement-add-secondary"><Plus size={18}/>Add Supplement</button>
+            <button onClick={()=>addTriggerRef.current?.querySelector('button')?.click()} className="fc-pill fc-action fc-action-secondary w-full mt-3 supplement-add-secondary"><Plus size={18}/>Add Supplement</button>
           </CollapsibleContent>
         </Collapsible>
         <p className="flex items-start gap-2 mt-5 text-xs text-muted-foreground leading-relaxed"><Calendar size={17} className="shrink-0 mt-0.5"/>Tip: Tap any day on the calendar to view or edit past supplement logs</p>

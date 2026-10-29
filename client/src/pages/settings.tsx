@@ -151,7 +151,7 @@ export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy
             <button
               onClick={exportSnapshot}
               disabled={isExporting}
-              className="w-full bg-action hover:bg-action-hover disabled:opacity-50 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+              className="fc-pill w-full bg-action hover:bg-action-hover disabled:opacity-50 text-on-action py-3 px-4 flex items-center justify-center gap-2"
             >
               <Download className="w-5 h-5" />
               {isExporting ? 'Creating Backup...' : 'Download Complete Backup'}
@@ -168,7 +168,7 @@ export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isImporting}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+              className="fc-pill w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-on-action py-3 px-4 flex items-center justify-center gap-2"
             >
               <Upload className="w-5 h-5" />
               {isImporting ? 'Restoring...' : 'Restore from Backup'}
@@ -201,7 +201,7 @@ export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy
             <button
               onClick={forceRefresh}
               disabled={isRefreshing}
-              className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+              className="fc-pill w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-on-action py-3 px-4 flex items-center justify-center gap-2"
               data-testid="button-force-refresh"
             >
               <RotateCcw className="w-5 h-5" />
@@ -297,7 +297,7 @@ export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy
               <>
                 <button
                   onClick={() => setShowEraseConfirm(true)}
-                  className="w-full bg-red-600 hover:bg-red-700 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+                  className="fc-pill w-full bg-red-600 hover:bg-red-700 text-on-action py-3 px-4 flex items-center justify-center gap-2"
                 >
                   <Trash2 className="w-5 h-5" />
                   Erase All Data
@@ -311,14 +311,14 @@ export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy
                 <div className="flex space-x-3">
                   <button
                     onClick={eraseAllData}
-                    className="flex-1 bg-red-600 hover:bg-red-700 text-on-action py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+                    className="fc-pill flex-1 bg-red-600 hover:bg-red-700 text-on-action py-3 px-4 flex items-center justify-center gap-2"
                   >
                     <Trash2 className="w-5 h-5" />
                     Yes, Erase Everything
                   </button>
                   <button
                     onClick={() => setShowEraseConfirm(false)}
-                    className="flex-1 bg-control-strong hover:bg-surface-secondary text-strong py-3 px-4 rounded-xl"
+                    className="fc-pill flex-1 bg-control-strong hover:bg-surface-secondary text-strong py-3 px-4"
                   >
                     Cancel
                   </button>
@@ -393,7 +393,7 @@ export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy
           <p className="settings-note mt-3">Switches indicate whether each section is visible on Home.</p>
           <h2 className="settings-section-title">App Updates</h2>
           <section className="fc-section settings-card" aria-label="App Updates">
-            <div className="flex items-center gap-3"><span className="settings-icon text-feature-purple bg-feature-purple-tint"><RotateCcw size={22}/></span><div className="min-w-0 flex-1"><h3 className="font-semibold text-sm">Refresh FitCircle</h3><p className="settings-note">Reload the current app</p></div><button onClick={forceRefresh} disabled={isRefreshing} data-testid="button-force-refresh" aria-label="Refresh FitCircle" className="fc-action fc-action-secondary shrink-0 settings-refresh">{isRefreshing ? 'Updating…' : 'Refresh'}</button></div>
+            <div className="flex items-center gap-3"><span className="settings-icon text-feature-purple bg-feature-purple-tint"><RotateCcw size={22}/></span><div className="min-w-0 flex-1"><h3 className="font-semibold text-sm">Refresh FitCircle</h3><p className="settings-note">Reload the current app</p></div><button onClick={forceRefresh} disabled={isRefreshing} data-testid="button-force-refresh" aria-label="Refresh FitCircle" className="fc-pill fc-action fc-action-secondary shrink-0 settings-refresh">{isRefreshing ? 'Updating…' : 'Refresh'}</button></div>
             <p className="settings-note mt-4 flex items-start gap-2"><ShieldCheck size={17} className="shrink-0 mt-0.5"/>Your locally saved fitness data is not intentionally cleared by refreshing.</p>
             {section === 'display' && status && <p role="status" aria-live="polite" className="mt-3 text-sm text-supporting">{status}</p>}
           </section>
@@ -403,18 +403,18 @@ export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy
           <h2 className="settings-section-title">Backup &amp; Restore</h2>
           <section className="fc-section settings-card" aria-label="Backup and Restore">
             <div className="settings-row-heading"><span className="settings-icon bg-feature-green-tint text-accent-text"><Download size={23}/></span><div><h3>Export Backup</h3><p>Save all FitCircle records as JSON</p></div></div>
-            <button onClick={exportSnapshot} disabled={isExporting} className="fc-action w-full settings-wide-button bg-action hover:bg-action-hover text-on-action mt-4"><Download size={18}/>{isExporting ? 'Creating Backup...' : 'Download Complete Backup'}</button>
+            <button onClick={exportSnapshot} disabled={isExporting} className="fc-pill fc-action w-full settings-wide-button bg-action hover:bg-action-hover text-on-action mt-4"><Download size={18}/>{isExporting ? 'Creating Backup...' : 'Download Complete Backup'}</button>
             <div className="border-t border-separator my-5"/>
             <div className="settings-row-heading"><span className="settings-icon bg-feature-blue-tint text-feature-blue"><Upload size={23}/></span><div><h3>Restore Backup</h3><p>Import a previously saved backup</p></div></div>
             <input ref={fileInputRef} type="file" accept=".json" onChange={handleFileChange} className="hidden" aria-label="Backup file"/>
-            <button onClick={()=>fileInputRef.current?.click()} disabled={isImporting} className="fc-action w-full settings-wide-button border border-control-border text-supporting hover:bg-surface-secondary mt-4"><Upload size={18}/>{isImporting ? 'Restoring...' : 'Choose Backup File'}</button>
+            <button onClick={()=>fileInputRef.current?.click()} disabled={isImporting} className="fc-pill fc-action w-full settings-wide-button border border-control-border text-supporting hover:bg-surface-secondary mt-4"><Upload size={18}/>{isImporting ? 'Restoring...' : 'Choose Backup File'}</button>
             <p className="settings-note mt-3 flex items-start gap-2"><Info size={17} className="shrink-0 mt-0.5"/><span>Restore validates the backup, replaces matching FitCircle records, and preserves unrelated browser data. Close other FitCircle tabs before restoring.</span></p>
             {status && <p role="status" aria-live="polite" className="mt-3 text-sm text-supporting">{status}</p>}
           </section>
           <h2 className="settings-section-title">Data Management</h2>
           <section className="fc-section settings-card" aria-label="Data Management">
             <div className="settings-row-heading"><span className="settings-icon bg-feature-red-deep-tint/40 text-feature-red"><Trash2 size={22}/></span><div><h3>Erase All Data</h3><p>Permanently remove locally saved records</p></div></div>
-            {!showEraseConfirm ? <button onClick={()=>setShowEraseConfirm(true)} className="fc-action w-full settings-wide-button border border-feature-red text-feature-red hover:bg-feature-red-deep-tint/20 mt-4">Erase FitCircle Data</button> : <div className="mt-4"><p className="text-error-soft text-sm font-medium mb-3">⚠️ Are you absolutely sure? This action cannot be undone!</p><div className="flex flex-wrap gap-2"><button onClick={eraseAllData} className="fc-action w-full settings-wide-button flex-1 bg-red-600 text-white">Yes, Erase Everything</button><button onClick={()=>setShowEraseConfirm(false)} className="fc-action w-full settings-wide-button flex-1 border border-control-border text-strong">Cancel</button></div></div>}
+            {!showEraseConfirm ? <button onClick={()=>setShowEraseConfirm(true)} className="fc-pill fc-action w-full settings-wide-button border border-feature-red text-feature-red hover:bg-feature-red-deep-tint/20 mt-4">Erase FitCircle Data</button> : <div className="mt-4"><p className="text-error-soft text-sm font-medium mb-3">⚠️ Are you absolutely sure? This action cannot be undone!</p><div className="flex flex-wrap gap-2"><button onClick={eraseAllData} className="fc-pill fc-action w-full settings-wide-button flex-1 bg-red-600 text-white">Yes, Erase Everything</button><button onClick={()=>setShowEraseConfirm(false)} className="fc-pill fc-action w-full settings-wide-button flex-1 border border-control-border text-strong">Cancel</button></div></div>}
           </section>
           <p className="settings-note mt-5 flex justify-center items-center gap-2"><LockKeyhole size={15}/>Local-first data management</p>
         </>}

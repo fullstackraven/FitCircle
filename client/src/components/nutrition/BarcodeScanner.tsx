@@ -120,7 +120,7 @@ export function BarcodeScanner({
           {error}
         </p>
       )}
-      <button className="min-h-11 text-accent-text" onClick={onStop}>
+      <button className="fc-pill min-h-11 text-accent-text" onClick={onStop}>
         Stop Camera
       </button>
     </div>

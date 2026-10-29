@@ -192,7 +192,7 @@ export default function HydrationPage() {
           <WellnessTodaySection title="Quick add">
             <div className="wellness-quick-add">
               {quickAddAmounts.map((value, i) => (
-                <button
+                <button className="fc-pill"
                   key={i}
                   disabled={!amount(value)}
                   onClick={() => addHydration(value, "Water")}
@@ -245,7 +245,7 @@ export default function HydrationPage() {
                       <div className="flex items-center space-x-1 ml-2">
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           aria-label="Edit intake"
                           onClick={() => handleEditEntry(entry)}
                           className="text-muted-foreground hover:text-strong p-1 h-auto"
@@ -255,7 +255,7 @@ export default function HydrationPage() {
                         </Button>
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           aria-label="Delete intake"
                           onClick={() => handleDeleteEntry(entry)}
                           className="text-muted-foreground hover:text-feature-red-soft p-1 h-auto"
@@ -338,13 +338,13 @@ export default function HydrationPage() {
                                   <span className="text-supporting">
                                     {entry.amount}oz
                                   </span>
-                                  <button
+                                  <button className="fc-pill fc-icon-button"
                                     aria-label="Edit historical intake"
                                     onClick={() => handleEditEntry(entry)}
                                   >
                                     <Edit2 size={16} />
                                   </button>
-                                  <button
+                                  <button className="fc-pill fc-icon-button"
                                     aria-label="Delete historical intake"
                                     onClick={() => handleDeleteEntry(entry)}
                                   >
@@ -364,7 +364,7 @@ export default function HydrationPage() {
                                   }
                                   setExpandedDays(newExpanded);
                                 }}
-                                className="text-xs text-dim hover:text-supporting text-center mt-1 w-full transition-colors"
+                                className="fc-pill text-xs text-dim hover:text-supporting text-center mt-1 w-full transition-colors"
                               >
                                 {expandedDays.has(log.date)
                                   ? "Show less"
@@ -402,7 +402,7 @@ export default function HydrationPage() {
               <button
                 aria-label="Close"
                 onClick={() => setIsGoalModalOpen(false)}
-                className="p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary rounded-lg"
+                className="fc-pill fc-icon-button p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -486,11 +486,11 @@ export default function HydrationPage() {
                   <button
                     key={type}
                     onClick={() => setSelectedLiquidType(type)}
-                    className={`min-h-11 py-2 px-2 rounded-xl text-sm font-medium transition-colors ${
-                      selectedLiquidType === type
-                        ? "bg-blue-600 text-on-action"
-                        : "bg-surface-secondary hover:bg-control-strong text-supporting"
-                    }`}
+                    className={`fc-pill min-h-11 py-2 px-2 text-sm font-medium transition-colors ${
+ selectedLiquidType === type
+ ? "bg-blue-600 text-on-action"
+ : "bg-surface-secondary hover:bg-control-strong text-supporting"
+ }`}
                   >
                     {type}
                   </button>
@@ -600,11 +600,11 @@ export default function HydrationPage() {
                   <button
                     key={type}
                     onClick={() => setEditLiquidType(type)}
-                    className={`min-h-11 py-2 px-2 rounded-xl text-sm font-medium transition-colors ${
-                      editLiquidType === type
-                        ? "bg-blue-600 text-on-action"
-                        : "bg-surface-secondary hover:bg-control-strong text-supporting"
-                    }`}
+                    className={`fc-pill min-h-11 py-2 px-2 text-sm font-medium transition-colors ${
+ editLiquidType === type
+ ? "bg-blue-600 text-on-action"
+ : "bg-surface-secondary hover:bg-control-strong text-supporting"
+ }`}
                   >
                     {type}
                   </button>

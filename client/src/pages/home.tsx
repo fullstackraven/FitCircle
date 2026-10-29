@@ -213,7 +213,7 @@ export default function Home() {
           {/* Hamburger Menu Icon */}
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
+            className="fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />
@@ -247,7 +247,7 @@ export default function Home() {
                 <button
                   onClick={startWorkout}
                   aria-describedby="workout-session-help"
-                  className="text-black font-semibold py-3 px-4 rounded-xl flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 w-full"
+                  className="fc-pill text-black font-semibold py-3 px-4 flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 w-full"
                   style={{
                     background: 'var(--session-start-background)',
                     boxShadow: 'var(--session-start-shadow)'
@@ -268,21 +268,21 @@ export default function Home() {
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={stopWorkout}
-                      className="w-10 h-10 bg-red-500 hover:bg-red-600 text-on-action rounded-full flex items-center justify-center transition-colors"
+                      className="fc-pill fc-icon-button w-10 h-10 bg-red-500 hover:bg-red-600 text-on-action flex items-center justify-center transition-colors"
                       title="Stop workout"
                     >
                       <StopCircle className="w-5 h-5" />
                     </button>
                     <button
                       onClick={isWorkoutPaused ? resumeWorkout : pauseWorkout}
-                      className="w-10 h-10 bg-blue-500 hover:bg-blue-600 text-on-action rounded-full flex items-center justify-center transition-colors"
+                      className="fc-pill fc-icon-button w-10 h-10 bg-blue-500 hover:bg-blue-600 text-on-action flex items-center justify-center transition-colors"
                       title={isWorkoutPaused ? "Resume workout" : "Pause workout"}
                     >
                       {isWorkoutPaused ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
                     </button>
                     <button
                       onClick={resetWorkout}
-                      className="w-10 h-10 bg-control-strong hover:bg-surface-secondary text-strong rounded-full flex items-center justify-center transition-colors"
+                      className="fc-pill fc-icon-button w-10 h-10 bg-control-strong hover:bg-surface-secondary text-strong flex items-center justify-center transition-colors"
                       title="Reset without saving"
                     >
                       <RotateCcw className="w-5 h-5" />
@@ -344,7 +344,7 @@ export default function Home() {
                     <div className="mt-auto flex items-center gap-1 pt-1">
                       <button
                         onClick={() => handleUndo(workout.id)}
-                        className="text-muted-foreground hover:text-subtle transition-colors min-h-11 min-w-11 flex items-center justify-center"
+                        className="fc-pill fc-icon-button text-muted-foreground hover:text-subtle transition-colors min-h-11 min-w-11 flex items-center justify-center"
                         aria-label={`Undo last ${progress.mode === "sets" ? "set" : "rep"} for ${workout.name}`}
                         title={progress.mode === "sets" ? "Undo last set" : "Undo last rep"}
                       >
@@ -352,7 +352,7 @@ export default function Home() {
                       </button>
                       <button
                         onClick={() => handleEditWorkout(workout)}
-                        className="text-muted-foreground hover:text-feature-red transition-colors min-h-11 min-w-11 flex items-center justify-center"
+                        className="fc-pill fc-icon-button text-muted-foreground hover:text-feature-red transition-colors min-h-11 min-w-11 flex items-center justify-center"
                         aria-label={`Edit ${workout.name}`}
                       >
                         <Edit size={18} />
@@ -385,7 +385,7 @@ export default function Home() {
                     setIsTimerOpen(true);
                   }
                 }}
-                className="relative"
+                className="fc-pill relative"
                 title={timerState.isCompleted ? "Reset Timer" : 
                        timerState.remainingTime > 0 ? (timerState.isRunning ? "Pause Timer" : "Resume Timer") : "Open Timer"}
               >
@@ -484,7 +484,7 @@ export default function Home() {
                       // Restart timer with the original total time
                       startTimerFromSeconds(timerState.totalTime);
                     }}
-                    className="text-muted-foreground hover:text-subtle transition-colors p-1"
+                    className="fc-pill fc-icon-button text-muted-foreground hover:text-subtle transition-colors p-1"
                     title="Restart timer from beginning"
                   >
                     <RotateCcw size={14} />
@@ -497,7 +497,7 @@ export default function Home() {
                       setTimerMinutes('0');
                       setTimerSeconds('0');
                     }}
-                    className="text-muted-foreground hover:text-feature-red transition-colors p-1"
+                    className="fc-pill fc-icon-button text-muted-foreground hover:text-feature-red transition-colors p-1"
                     title="Stop timer"
                   >
                     <Square size={14} />
@@ -512,7 +512,7 @@ export default function Home() {
                 <div className="w-24 h-24 flex items-center justify-center">
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="home-utility-circle w-20 h-20 rounded-full bg-surface flex items-center justify-center border-4 border-dashed border-separator hover:border-control transition-colors"
+                  className="fc-pill home-utility-circle w-20 h-20 bg-surface flex items-center justify-center border-4 border-dashed border-separator hover:border-control transition-colors"
                   style={{ width: '80px', height: '80px' }}
                   title="Add new workout"
                 >
@@ -597,14 +597,14 @@ export default function Home() {
             <TimerWheel label="Seconds" unit="sec" max={59} value={Number(timerSeconds)} onChange={value => setTimerSeconds(String(value))} />
           </div>
           <DialogFooter className="flex-row justify-between sm:justify-between sm:space-x-0">
-            <Button onClick={() => setIsTimerOpen(false)} className="w-16 h-16 rounded-full bg-surface text-supporting hover:bg-surface-secondary p-0">Cancel</Button>
+            <Button onClick={() => setIsTimerOpen(false)} className="w-16 h-16 bg-surface text-supporting hover:bg-surface-secondary p-0">Cancel</Button>
             <Button
               disabled={Number(timerHours) * 3600 + Number(timerMinutes) * 60 + Number(timerSeconds) === 0}
               onClick={() => {
                 const totalSeconds = Number(timerHours) * 3600 + Number(timerMinutes) * 60 + Number(timerSeconds);
                 if (totalSeconds > 0) { startTimerFromSeconds(totalSeconds); setIsTimerOpen(false); }
               }}
-              className="w-16 h-16 rounded-full bg-accent-bright/15 text-accent-text hover:bg-accent-bright/25 disabled:opacity-40 p-0"
+              className="w-16 h-16 bg-accent-bright/15 text-accent-text hover:bg-accent-bright/25 disabled:opacity-40 p-0"
             >Start</Button>
           </DialogFooter>
         </DialogContent>

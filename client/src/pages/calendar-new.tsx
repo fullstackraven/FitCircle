@@ -504,7 +504,7 @@ export default function CalendarPage() {
           {/* Hamburger Menu Icon */}
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
+            className="fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />
@@ -521,7 +521,7 @@ export default function CalendarPage() {
         <div className="grid grid-cols-[44px_minmax(0,1fr)_44px] items-center">
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(subMonths(currentMonth, 1)) : setCurrentWeek(subWeeks(currentWeek, 1))}
-            className="fc-icon-action"
+            className="fc-pill fc-icon-button fc-icon-action"
             aria-label="Previous period"
             data-testid="button-prev-period"
           >
@@ -532,7 +532,7 @@ export default function CalendarPage() {
           </h2>
           <button
             onClick={() => viewMode === 'monthly' ? setCurrentMonth(addMonths(currentMonth, 1)) : setCurrentWeek(addWeeks(currentWeek, 1))}
-            className="fc-icon-action"
+            className="fc-pill fc-icon-button fc-icon-action"
             aria-label="Next period"
             data-testid="button-next-period"
           >
@@ -553,7 +553,7 @@ export default function CalendarPage() {
               setViewMode('monthly');
             }
           }}
-          className="fc-icon-action"
+          className="fc-pill fc-icon-button fc-icon-action"
           aria-label={viewMode === 'monthly' ? 'Show weekly view' : 'Show monthly view'}
           data-testid="button-toggle-view"
         >
@@ -646,7 +646,7 @@ export default function CalendarPage() {
             <button
               onClick={prevPage}
               disabled={currentPageIndex === 0}
-              className={`p-2 rounded-lg transition-colors ${
+              className={`fc-pill fc-icon-button p-2 transition-colors ${
                 currentPageIndex === 0
                   ? 'text-dim-strong cursor-not-allowed'
                   : 'text-muted-foreground hover:text-strong hover:bg-surface'
@@ -657,25 +657,23 @@ export default function CalendarPage() {
             </button>
 
             {/* Page dots */}
-            <div className="flex space-x-2">
+            <div className="flex gap-1">
               {pages.map((page, index) => (
                 <button
                   key={page.id}
                   onClick={() => setWeeklyPage(page.id)}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    index === currentPageIndex
-                      ? 'bg-page-dot w-4'
-                      : 'bg-control-strong hover:bg-control-muted'
-                  }`}
+                  className="fc-pill flex h-11 w-6 shrink-0 items-center justify-center"
+                  aria-label={`Show ${page.title.toLowerCase()} week details`}
+                  aria-pressed={index === currentPageIndex}
                   data-testid={`dot-${page.id}`}
-                />
+                ><span aria-hidden="true" className={`h-2 rounded-full transition-all ${index === currentPageIndex ? 'bg-page-dot w-4' : 'bg-control-strong w-2'}`} /></button>
               ))}
             </div>
 
             <button
               onClick={nextPage}
               disabled={currentPageIndex === pages.length - 1}
-              className={`p-2 rounded-lg transition-colors ${
+              className={`fc-pill fc-icon-button p-2 transition-colors ${
                 currentPageIndex === pages.length - 1
                   ? 'text-dim-strong cursor-not-allowed'
                   : 'text-muted-foreground hover:text-strong hover:bg-surface'
@@ -693,7 +691,7 @@ export default function CalendarPage() {
           {/* Workout Statistics Panel */}
           <button
             onClick={() => navigate("/workout-statistics")}
-            className="flex items-center justify-between w-full p-4 bg-surface rounded-xl hover:bg-surface-secondary transition-colors"
+            className="fc-pill flex items-center justify-between w-full p-4 bg-surface hover:bg-surface-secondary transition-colors"
           >
             <div className="flex items-center space-x-3">
               <BarChart3 className="w-5 h-5 text-accent-text" />

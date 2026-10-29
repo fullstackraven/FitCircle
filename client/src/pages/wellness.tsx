@@ -177,7 +177,7 @@ export default function WellnessPage() {
         <div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center">
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
+            className="fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors"
             title="Open Menu"
           >
             <Menu size={22} />
@@ -194,7 +194,7 @@ export default function WellnessPage() {
         <div className="flex justify-end mb-3">
           <button
             onClick={() => isEditMode ? handleDone() : setIsEditMode(true)}
-            className="text-muted-foreground hover:text-strong transition-colors min-h-11 min-w-11 justify-center flex items-center space-x-1"
+            className="fc-pill text-muted-foreground hover:text-strong transition-colors min-h-11 min-w-11 justify-center flex items-center space-x-1"
             title={isEditMode ? "Done editing" : "Edit layout"}
             data-testid={isEditMode ? "button-done-edit" : "button-edit-layout"}
           >
@@ -224,7 +224,7 @@ export default function WellnessPage() {
                           e.stopPropagation();
                           moveItem(index, 'up');
                         }}
-                        className="absolute top-2 left-1/2 -translate-x-1/2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
+                        className="fc-pill fc-icon-button absolute top-2 left-1/2 -translate-x-1/2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-up-${feature.id}`}
                       >
                         <ChevronUp className="w-5 h-5 text-strong" />
@@ -236,7 +236,7 @@ export default function WellnessPage() {
                           e.stopPropagation();
                           moveItem(index, 'down');
                         }}
-                        className="absolute bottom-2 left-1/2 -translate-x-1/2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
+                        className="fc-pill fc-icon-button absolute bottom-2 left-1/2 -translate-x-1/2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-down-${feature.id}`}
                       >
                         <ChevronDown className="w-5 h-5 text-strong" />
@@ -248,7 +248,7 @@ export default function WellnessPage() {
                           e.stopPropagation();
                           moveItem(index, 'left');
                         }}
-                        className="absolute top-1/2 -translate-y-1/2 left-2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
+                        className="fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-left-${feature.id}`}
                       >
                         <ChevronLeft className="w-5 h-5 text-strong" />
@@ -260,7 +260,7 @@ export default function WellnessPage() {
                           e.stopPropagation();
                           moveItem(index, 'right');
                         }}
-                        className="absolute top-1/2 -translate-y-1/2 right-2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
+                        className="fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 right-2 min-h-11 min-w-11 flex items-center justify-center pointer-events-auto transition-opacity hover:opacity-70"
                         data-testid={`button-move-right-${feature.id}`}
                       >
                         <ChevronRight className="w-5 h-5 text-strong" />
@@ -268,7 +268,7 @@ export default function WellnessPage() {
                     )}
                   </div>
                 )}
-                <button
+                <button data-control-geometry="card"
                   onClick={() => !isEditMode && navigate(`${feature.path}?from=wellness`)}
                   className={`glass-tile min-h-32 h-full px-3 py-4 ${feature.bgColor} ${!isEditMode && feature.hoverBg} rounded-2xl transition-all duration-200 ${!isEditMode && 'hover:scale-105 active:scale-95'} flex flex-col items-center justify-center gap-2 w-full ${isEditMode ? 'opacity-75' : ''}`}
                   disabled={isEditMode}

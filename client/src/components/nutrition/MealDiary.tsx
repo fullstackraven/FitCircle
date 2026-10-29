@@ -31,7 +31,7 @@ export function MealDiary({
                 aria-label={`${label} ${calories} cal`}
                 aria-expanded={!!expanded[meal]}
                 aria-controls={`meal-${meal}`}
-                className="flex-1 flex items-center justify-between text-left min-h-14 gap-2"
+                className="fc-pill flex-1 flex items-center justify-between text-left min-h-14 gap-2"
                 onClick={() =>
                   setExpanded({ ...expanded, [meal]: !expanded[meal] })
                 }
@@ -59,7 +59,7 @@ export function MealDiary({
                 onClick={() => onAdd(meal)}
                 aria-label={`Add Food to ${label}`}
                 data-testid={`button-add-${meal}`}
-                className="min-w-11 min-h-11 flex items-center justify-center text-accent-text disabled:opacity-40"
+                className="fc-pill fc-icon-button min-w-11 min-h-11 flex items-center justify-center text-accent-text disabled:opacity-40"
               >
                 <PlusCircle size={22} />
               </button>
@@ -79,7 +79,7 @@ export function MealDiary({
                       <button
                         disabled={disabled}
                         onClick={() => onEdit(entry)}
-                        className="flex-1 text-left min-w-0"
+                        className="fc-pill flex-1 text-left min-w-0"
                       >
                         <span className="block font-medium text-strong break-words">
                           {entry.name}
@@ -114,7 +114,7 @@ export function MealDiary({
                         aria-label={`Delete ${entry.name}`}
                         onClick={() => onDelete(entry.id)}
                         data-testid={`button-delete-${entry.id}`}
-                        className="min-w-11 min-h-11 self-center flex items-center justify-center text-muted-foreground hover:text-feature-red"
+                        className="fc-pill fc-icon-button min-w-11 min-h-11 self-center flex items-center justify-center text-muted-foreground hover:text-feature-red"
                       >
                         <Trash2 size={18} />
                       </button>

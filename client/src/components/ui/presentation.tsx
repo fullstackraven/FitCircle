@@ -14,7 +14,7 @@ export function PageHeader({ title, onBack, backLabel = 'Back', backProps, actio
   className?: string;
 }) {
   return <div className={cn('fc-page-header', align === 'start' && 'fc-page-header-start', className)} style={{ '--header-side': `${sideWidth}px` } as CSSProperties}>
-    <button type="button" title={backLabel} {...backProps} onClick={onBack} aria-label={backLabel} className={cn('fc-icon-action', backProps?.className)}><ArrowLeft size={20} aria-hidden="true" /></button>
+    <button type="button" title={backLabel} {...backProps} onClick={onBack} aria-label={backLabel} className={cn('fc-pill fc-icon-button', 'fc-icon-action', backProps?.className)}><ArrowLeft size={20} aria-hidden="true" /></button>
     <h1 className="fc-page-title">{title}</h1>
     {actions ? <div className="fc-header-actions">{actions}</div> : <span aria-hidden="true" />}
   </div>;
@@ -29,7 +29,7 @@ export function PeriodSelector<T extends string | number>({ label, options, valu
   className?: string;
 }) {
   return <div role="group" aria-label={label} className={cn('fc-period', className)}>
-    {options.map(option => <button type="button" key={option.value} aria-pressed={value === option.value} onClick={() => onChange(option.value)}>{option.label}</button>)}
+    {options.map(option => <button className="fc-pill" type="button" key={option.value} aria-pressed={value === option.value} onClick={() => onChange(option.value)}>{option.label}</button>)}
   </div>;
 }
 

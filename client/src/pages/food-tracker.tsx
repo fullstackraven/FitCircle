@@ -519,15 +519,15 @@ export default function FoodTrackerPage() {
       <div className="fitcircle-container">
         {/* Header */}
         <PageHeader title="Food Tracker" onBack={handleBack} backLabel="Back to Logs" backProps={{'data-testid':'button-back'}} sideWidth={88} actions={<>
-          <button onClick={() => navigate('/food-database')} className="fc-icon-action" aria-label="Food Database" data-testid="button-database"><Database size={20}/></button>
-          <button onClick={() => navigate("/fitness-calculator", { state: { calculatorFrom: window.location.pathname + window.location.search } })} className="fc-icon-action" aria-label="Fitness Calculator" data-testid="button-calculator"><Calculator size={20}/></button>
+          <button onClick={() => navigate('/food-database')} className="fc-pill fc-icon-button fc-icon-action" aria-label="Food Database" data-testid="button-database"><Database size={20}/></button>
+          <button onClick={() => navigate("/fitness-calculator", { state: { calculatorFrom: window.location.pathname + window.location.search } })} className="fc-pill fc-icon-button fc-icon-action" aria-label="Fitness Calculator" data-testid="button-calculator"><Calculator size={20}/></button>
         </>} />
 
         {/* Date Navigation */}
         <div className="flex items-center justify-center gap-4 mb-6">
           <button
             onClick={goToPreviousDay}
-            className="fc-icon-action"
+            className="fc-pill fc-icon-button fc-icon-action"
             aria-label="Previous day"
             data-testid="button-previous-day"
           >
@@ -547,7 +547,7 @@ export default function FoodTrackerPage() {
           <button
             onClick={goToNextDay}
             disabled={isToday(selectedDate)}
-            className={`fc-icon-action transition-colors ${
+            className={`fc-pill fc-icon-button fc-icon-action transition-colors ${
               isToday(selectedDate) 
                 ? 'text-dim-strong cursor-not-allowed'
                 : 'text-muted-foreground hover:text-strong hover:bg-surface'
@@ -567,7 +567,7 @@ export default function FoodTrackerPage() {
           <button id="nutrition-details-toggle" type="button" disabled={!diary.ready}
             aria-expanded={nutritionExpanded} aria-controls="nutrition-details-content"
             onClick={() => setNutritionExpanded(expanded => !expanded)}
-            className="flex min-h-12 w-full items-center justify-between gap-3 px-4 py-3 text-left font-semibold text-soft">
+            className="fc-pill flex min-h-12 w-full items-center justify-between gap-3 px-4 py-3 text-left font-semibold text-soft">
             Nutrition Details
             <ChevronRight aria-hidden="true" className={`h-5 w-5 shrink-0 transition-transform ${nutritionExpanded ? 'rotate-90' : ''}`} />
           </button>
@@ -596,20 +596,21 @@ export default function FoodTrackerPage() {
               <label htmlFor="food-search" className="block text-sm text-muted-foreground">Search your food database</label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neutral-muted" />
-                <Input
+                <Input variant="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   id="food-search"
                   aria-label="Search foods"
-                  className="h-14 bg-surface border-separator text-strong rounded-2xl pl-10 pr-10"
+                  className="h-14 bg-surface border-separator text-strong pl-10 pr-14"
                   data-testid="input-search"
                 />
                 {searchQuery && (
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-muted hover:text-strong p-1"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 text-neutral-muted hover:text-strong h-11 w-11 p-0"
+                    aria-label="Clear food search"
                     data-testid="button-clear-search"
                   >
                     <Cancel className="w-4 h-4" />
@@ -639,7 +640,7 @@ export default function FoodTrackerPage() {
                     <div className="space-y-2">
                       {searchResults.map((food) => (
                         <div key={food.id} className="glass-panel bg-surface border border-separator rounded-xl p-4 transition-colors" data-testid={`row-food-${food.id}`}>
-                          <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start justify-between gap-1">
                             <div className="flex-1 min-w-0">
                               <h3 className="font-medium text-strong mb-1">
                                 {food.name}
@@ -677,7 +678,7 @@ export default function FoodTrackerPage() {
                             <div className="flex gap-2 flex-shrink-0">
                               <Button
                                 variant="ghost"
-                                size="sm"
+                                size="icon"
                                 onClick={() => handleEditFoodFromSearch(food)}
                                 className="text-muted-foreground hover:text-subtle hover:bg-control-strong"
                                 data-testid={`button-edit-${food.id}`}
@@ -687,7 +688,7 @@ export default function FoodTrackerPage() {
                               </Button>
                               <Button
                                 variant="ghost"
-                                size="sm"
+                                size="icon"
                                 onClick={() => handleAddFromSearch(food)}
                                 className="text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint"
                                 data-testid={`button-add-${food.id}`}
@@ -697,7 +698,7 @@ export default function FoodTrackerPage() {
                               </Button>
                               <Button
                                 variant="ghost"
-                                size="sm"
+                                size="icon"
                                 onClick={() => handleDeleteFoodFromDatabase(food)}
                                 className="text-feature-red hover:text-feature-red-soft hover:bg-feature-red-tint"
                                 data-testid={`button-delete-db-${food.id}`}
@@ -721,7 +722,7 @@ export default function FoodTrackerPage() {
                     <div className="space-y-2">
                       {filteredFoodHistory.slice(0, showAllRecent ? undefined : 10).map((food) => (
                         <div key={food.id} className="glass-panel bg-surface border border-separator rounded-xl p-4 transition-colors" data-testid={`row-food-${food.id}`}>
-                          <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <h3 className="font-medium text-strong mb-1">
                                 {food.name}
@@ -758,7 +759,7 @@ export default function FoodTrackerPage() {
                             <div className="flex gap-2 flex-shrink-0">
                               <Button
                                 variant="ghost"
-                                size="sm"
+                                size="icon"
                                 onClick={() => handleAddFromSearch(food)}
                                 className="text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint"
                                 data-testid={`button-add-${food.id}`}
@@ -1149,7 +1150,7 @@ export default function FoodTrackerPage() {
                 <div className="space-y-2">
                   <Label htmlFor="edit-meal" className="text-neutral-supporting">Meal</Label>
                   <Select value={editEntryMeal} onValueChange={(value: any) => setEditEntryMeal(value)}>
-                    <SelectTrigger className="bg-neutral-control border-neutral-control-border text-strong rounded-xl" id="edit-meal">
+                    <SelectTrigger className="bg-neutral-control border-neutral-control-border text-strong " id="edit-meal">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-neutral-control border-neutral-control-border">
@@ -1197,13 +1198,13 @@ export default function FoodTrackerPage() {
                   <Button
                     onClick={() => setEditEntryOpen(false)}
                     variant="outline"
-                    className="flex-1 border-neutral-control-border text-neutral-supporting hover:bg-neutral-control rounded-xl"
+                    className="flex-1 border-neutral-control-border text-neutral-supporting hover:bg-neutral-control "
                   >
                     Cancel
                   </Button>
                   <Button
                     onClick={handleSaveEditEntry}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action rounded-xl"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action "
                     data-testid="button-save-edit-entry"
                   >
                     Save

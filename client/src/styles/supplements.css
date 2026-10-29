@@ -3,10 +3,10 @@
 .supplements-page .overview-supplement-row { width:100%; min-height:58px; border-radius:14px; padding:10px; }
 .supplements-page .overview-supplement-row.supplement-taken { border-color:hsl(var(--accent-text)/.5); background:hsl(var(--feature-green-tint)/.15); }
 .supplements-page .overview-check { width:24px; height:24px; border-width:2px; }
-.supplements-page .supplement-manage-trigger { width:100%; min-height:62px; display:flex; align-items:center; gap:10px; padding:16px; border-radius:20px; color:hsl(var(--muted-foreground)); }
+.supplements-page .supplement-manage-trigger { width:100%; min-height:62px; display:flex; align-items:center; gap:10px; padding:16px; border-radius:var(--radius-pill); color:hsl(var(--muted-foreground)); }
 .supplements-page .supplement-management-row { display:flex; align-items:center; gap:8px; padding:8px 0; min-height:62px; }
 .supplements-page .supplement-edit,.supplements-page .supplement-delete { min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:hsl(var(--muted-foreground)); }
-.supplements-page .supplement-edit { border:1px solid hsl(var(--control-border)); border-radius:24px; min-height:36px; position:relative; }
+.supplements-page .supplement-edit { border:1px solid hsl(var(--control-border)); border-radius:var(--radius-pill); min-height:44px; position:relative; }
 .supplements-page .supplement-edit::before { content:''; position:absolute; inset:-4px 0; }
 .supplements-page .supplement-delete { color:hsl(var(--feature-red)); }
 .supplements-page .supplement-add-trigger button { width:44px; height:44px; }
