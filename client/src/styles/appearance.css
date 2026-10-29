@@ -444,3 +444,25 @@
 .bg-action-selected.text-on-action { color:hsl(var(--on-selected-action)); }
 .bg-action-selected.text-on-action:hover:not(:disabled) { color:hsl(var(--on-action)); }
 .action-quiet-danger { color:hsl(var(--feature-red)); }
+
+/* Focused Light-mode surface hierarchy. Reuse Routines' separator treatment;
+   inset outlines define boundaries without changing card/grid dimensions. */
+:root[data-appearance="light"] {
+  --defined-card-border: hsl(var(--separator) / .7);
+  --defined-input-background: hsl(var(--surface-secondary));
+  --defined-input-border: hsl(var(--separator));
+}
+:root[data-appearance="light"] :is(.home-workout-card, .calendar-classic .calendar-date-cell, .calendar-classic .calendar-statistics-link:not(:focus-visible), .calendar-classic [data-testid="recent-activity-panel"] .fitcircle-card) {
+  outline: 1px solid var(--defined-card-border);
+  outline-offset: -1px;
+}
+:root[data-appearance="light"] .training-editor :is(.editor-name, .editor-number-card) {
+  background: var(--defined-input-background);
+}
+:root[data-appearance="light"] .training-editor .editor-name {
+  border: 1px solid var(--defined-input-border);
+}
+:root[data-appearance="light"] .training-editor .editor-number-card {
+  outline: 1px solid var(--defined-input-border);
+  outline-offset: -1px;
+}

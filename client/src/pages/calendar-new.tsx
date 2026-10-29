@@ -590,7 +590,7 @@ export default function CalendarPage() {
                 <div
                   key={date.toISOString()}
                   onClick={() => handleDateClick(date)}
-                  className={`aspect-square rounded-xl flex items-center justify-center relative text-sm font-medium cursor-pointer transition-all hover:opacity-80
+                  className={`calendar-date-cell aspect-square rounded-xl flex items-center justify-center relative text-sm font-medium cursor-pointer transition-all hover:opacity-80
                     ${isCurrent ? "bg-surface text-strong" : "bg-surface-secondary text-supporting"}
                     ${complete && !isRecovery ? "bg-action-selected text-on-action shadow-lg shadow-green-500/50" : ""}
                     ${isRecovery ? "bg-orange-500 text-strong shadow-lg shadow-orange-500/50" : ""}`}
@@ -691,7 +691,7 @@ export default function CalendarPage() {
           {/* Workout Statistics Panel */}
           <button
             onClick={() => navigate("/workout-statistics")}
-            className="fc-pill flex items-center justify-between w-full p-4 bg-surface hover:bg-surface-secondary transition-colors"
+            className="calendar-statistics-link fc-pill flex items-center justify-between w-full p-4 bg-surface hover:bg-surface-secondary transition-colors"
           >
             <div className="flex items-center space-x-3">
               <BarChart3 className="w-5 h-5 text-accent-text" />
