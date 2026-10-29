@@ -22,3 +22,7 @@ The former gradient/material shadow and feature tint/scale treatments are replac
 - No application-wide audit or pixel comparison run. Physical iPhone testing unavailable; broader existing checks run in CI.
 
 No feature-page styles, storage implementation, backups, routes, reorder handlers, global buttons/searches, service worker or protected Food controls changed. `release:patch`; normal release automation remains unchanged. Not merged or deployed.
+
+## PR check correction
+
+The existing material-adoption test still expected the former purple/cyan landing-tile backgrounds. Its exact expectations now match the approved neutral slate surface; two-column, edit/reorder, navigation and data assertions remain intact. Focused revalidation of material-adoption and Logs tests: **5/5 pass**. No application or workflow changes were needed. New CI results remain pending after push; screenshot differences remain advisory.

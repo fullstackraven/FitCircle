@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 
-test('wellness materials preserve category colors, two columns and editing navigation', async ({ page }) => {
+test('Logs materials preserve neutral surfaces, two columns and editing navigation', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('wellness');
   const meditation = page.getByTestId('card-meditation');
   const hydration = page.getByTestId('card-hydration');
-  expect(await meditation.evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgba(192, 132, 252, 0.1)');
-  expect(await hydration.evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgba(34, 211, 238, 0.1)');
+  expect(await meditation.evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(30, 41, 59)');
+  expect(await hydration.evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(30, 41, 59)');
   expect(await meditation.evaluate(el => getComputedStyle(el).backdropFilter)).toBe('none');
   const a = await meditation.boundingBox(), b = await hydration.boundingBox();
   expect(a!.y).toBe(b!.y);
