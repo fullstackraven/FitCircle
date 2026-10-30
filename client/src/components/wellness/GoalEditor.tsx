@@ -25,19 +25,19 @@ export function GoalEditor({ title, subtitle, onDismiss, onSave, saveLabel = 'Sa
     </div>
   </WellnessGoalSheet>;
 }
-export function GoalSummary({ percentage, label, value, detail, average = false }: {
-  percentage: number; label: string; value: ReactNode; detail: ReactNode; average?: boolean;
+export function GoalSummary({ percentage, label, value, detail, average = false, caption }: {
+  percentage: number; label: string; value: ReactNode; detail: ReactNode; average?: boolean; caption?: string;
 }) {
   // Same finite/clamped display rule as GoalCircle; caller percentages are unchanged.
   const safe = Number.isFinite(percentage) ? Math.max(0, Math.min(100, percentage)) : 0;
   const length = 2 * Math.PI * 44;
   return <section className="goal-editor-summary">
-    <div className="goal-editor-ring" role="img" aria-label={`${Math.round(safe)}% ${average ? 'average' : 'complete'}`}>
+    <div className="goal-editor-ring" role="img" aria-label={`${Math.round(safe)}% ${caption?.toLowerCase() ?? (average ? 'average' : 'complete')}`}>
       <svg viewBox="0 0 100 100" aria-hidden="true">
         <circle cx="50" cy="50" r="44" fill="none" stroke="hsl(var(--progress-track))" strokeWidth="8" />
         <circle cx="50" cy="50" r="44" fill="none" stroke="hsl(var(--action-selected))" strokeWidth="8" strokeLinecap="round" strokeDasharray={length} strokeDashoffset={length - safe / 100 * length} transform="rotate(-90 50 50)" />
       </svg>
-      <div><strong className="type-caption">{Math.round(safe)}%</strong><span>{average ? 'Average' : 'Complete'}</span></div>
+      <div><strong className="type-caption">{Math.round(safe)}%</strong><span>{caption ?? (average ? 'Average' : 'Complete')}</span></div>
     </div>
     <div className="goal-editor-summary-text"><p>{label}</p><strong>{value}</strong><span>{detail}</span></div>
   </section>;

@@ -3,6 +3,7 @@
   "include": [
     "browser/training-editors.spec.ts",
     "browser/goal-editors.spec.ts",
+    "browser/fasting-goal-summary.spec.ts",
     "browser/light-surfaces.spec.ts",
     "browser/logs-tiles.spec.ts",
     "browser/pill-controls.spec.ts",

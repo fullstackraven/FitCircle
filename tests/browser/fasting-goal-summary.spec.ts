@@ -1,0 +1,57 @@
+import { test, expect } from '@playwright/test';
+import fs from 'node:fs';
+import { seedWellnessAppearance } from '../fixtures/appearance-wellness';
+
+test.use({ viewport: { width: 390, height: 844 }, timezoneId: 'America/New_York' });
+const fast = (id: string, endDate: string, duration: number) => {
+  const end = new Date(`${endDate}T10:00:00`);
+  const start = new Date(end.getTime() - duration * 60000);
+  const startDate = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
+  const startTime = `${String(start.getHours()).padStart(2, '0')}:${String(start.getMinutes()).padStart(2, '0')}`;
+  return { id, startDate, startTime, endDate, endTime: '10:00', duration, loggedAt: `${endDate}T10:00:00` };
+};
+for (const mode of ['light', 'dark']) test(`${mode}: fasting daily progress stays separate from historical average`, async ({ page }) => {
+  await seedWellnessAppearance(page, mode);
+  const old = fast('old', '2025-01-01', 864);
+  const today = fast('today', '2026-10-19', 480), shorter = fast('shorter', '2026-10-19', 240);
+  const open = async (logs: ReturnType<typeof fast>[]) => {
+    await page.evaluate(logs => localStorage.setItem('fitcircle_fasting_logs', JSON.stringify(logs)), logs);
+    await page.goto('fasting');
+    await page.getByRole('button', { name: 'Goal', exact: true }).click();
+    return page.getByRole('dialog', { name: 'Fasting Goal', exact: true });
+  };
+  let dialog = await open([old]);
+  await expect(dialog.getByRole('img', { name: '0% today', exact: true })).toBeVisible();
+  await expect(dialog.locator('.goal-editor-summary-text')).toContainText('0 of 16 hrs');
+  const average = () => dialog.getByRole('complementary', { name: 'All-time average fast' });
+  await expect(average()).toContainText('14.4 hours');
+  await expect(dialog.locator('.goal-editor-summary-text')).toContainText('Completed today');
+  await page.evaluate(() => document.fonts.ready);
+  fs.mkdirSync('docs/review/fasting-goal-summary', { recursive: true });
+  await page.screenshot({ path: `docs/review/fasting-goal-summary/${mode}.png`, animations: 'disabled' });
+  expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+  const save = dialog.getByRole('button', { name: 'Save Settings', exact: true });
+  await save.scrollIntoViewIfNeeded(); await expect(save).toBeInViewport();
+  await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+  dialog = await open([old, today, shorter]);
+  await expect(dialog.getByRole('img', { name: '50% today', exact: true })).toBeVisible();
+  await expect(dialog.locator('.goal-editor-summary-text')).toContainText('8 of 16 hrs');
+  await expect(average()).toContainText('8.8 hours');
+  await dialog.locator('#goalHours').fill('4');
+  await expect(dialog.getByRole('img', { name: '100% today', exact: true })).toBeVisible();
+  await dialog.locator('#goalHours').fill('');
+  await expect(dialog.getByRole('img', { name: '0% today', exact: true })).toBeVisible();
+  await expect(average()).toContainText('8.8 hours');
+  await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+  dialog = await open([old, { ...today, duration: 720 }, shorter]);
+  await expect(dialog.getByRole('img', { name: '75% today', exact: true })).toBeVisible();
+  await expect(average()).toContainText('10.1 hours');
+  await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+  dialog = await open([old, shorter]);
+  await expect(dialog.getByRole('img', { name: '25% today', exact: true })).toBeVisible();
+  await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+  dialog = await open([]);
+  await expect(dialog.getByRole('img', { name: '0% today', exact: true })).toBeVisible();
+  await expect(average()).toContainText('No completed fasts yet');
+  await expect(average()).not.toContainText('0.0 hours');
+});
