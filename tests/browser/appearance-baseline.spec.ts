@@ -101,7 +101,7 @@ test("current Dark appearance remains unchanged across representative routes and
         animations: "disabled",
       });
     }
-    const colors = await page.evaluate(() => {
+    const colors = await page.evaluate((goalEditor) => {
       const selectors = [
         "body",
         ".app-shell",
@@ -110,9 +110,10 @@ test("current Dark appearance remains unchanged across representative routes and
         '.dock-tab[aria-current="page"]',
         ".fitcircle-card",
         ".glass-card",
-        ".glass-dialog",
+        // Goal sheets now paint their card and field material inside the portal shell.
+        ...(goalEditor ? [".goal-editor"] : [".glass-dialog"]),
         ".wellness-surface",
-        "input",
+        ...(goalEditor ? [".goal-editor-input-row", ".goal-editor-input"] : ["input"]),
         "button",
       ];
       return Object.fromEntries(
@@ -132,7 +133,7 @@ test("current Dark appearance remains unchanged across representative routes and
           ];
         }),
       );
-    });
+    }, name === "hydration-goal");
     expect(JSON.stringify(colors, null, 2)).toMatchSnapshot(
       `${name}-colors.json`,
     );

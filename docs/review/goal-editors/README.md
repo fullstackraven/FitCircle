@@ -16,3 +16,9 @@ Representative captures use synthetic data and are advisory only:
 - Hydration: [Light](hydration-light.png) · [Dark](hydration-dark.png)
 
 The older hydration regression uses the new visible Save Goal label; its data assertions are preserved. Broader regression checks are left to normal CI. Classification: `release:patch`. No merge or deployment.
+
+## Presentation-regression alignment
+
+The existing ring assertion now expects the new semantic progress-track token. Hydration's exact computed-material snapshot inspects the visible `.goal-editor` card, tinted `.goal-editor-input-row` and editable `.goal-editor-input`, instead of treating the intentionally transparent portal shell as the sheet material. No pixel tolerances or functional/data assertions changed.
+
+The three previously failing browser cases pass locally (Dark baseline plus Light/Dark wellness editing and historical-data cases); regression TypeScript passes. No application or CI workflow change was required. New GitHub checks run asynchronously after push.
