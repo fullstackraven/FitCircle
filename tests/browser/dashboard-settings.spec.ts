@@ -1,3 +1,4 @@
+import {selectDisplayAppearance} from '../fixtures/display-appearance';
 import { test, expect } from '@playwright/test';
 import { textContrast } from '../fixtures/appearance-contrast';
 import { seedAppearance } from '../fixtures/appearance-pages';
@@ -96,9 +97,9 @@ test('Account Data retains export, rejected/cancelled restore and erase confirma
 test('Display moves live appearance and Controls without new preference storage',async({page})=>{
   await seed(page);const before=await fitnessBytes(page);await page.goto('display');
   for(const name of ['Quote of the Day',"Today's Totals",'Recent Activity'])await page.getByRole('switch',{name,exact:true}).click();
-  await page.getByRole('group',{name:'Appearance',exact:true}).getByText('Light',{exact:true}).click();await expect(page.locator('html')).toHaveAttribute('data-appearance','light');
+  await selectDisplayAppearance(page,'Light');await expect(page.locator('html')).toHaveAttribute('data-appearance','light');
   await page.reload();await expect(page.getByRole('radio',{name:'Light',exact:true})).toBeChecked();
-  await page.getByRole('group',{name:'Appearance',exact:true}).getByText('System',{exact:true}).click();await page.emulateMedia({colorScheme:'dark'});await expect(page.locator('html')).toHaveAttribute('data-appearance','dark');await page.emulateMedia({colorScheme:'light'});await expect(page.locator('html')).toHaveAttribute('data-appearance','light');
+  await selectDisplayAppearance(page,'System');await page.emulateMedia({colorScheme:'dark'});await expect(page.locator('html')).toHaveAttribute('data-appearance','dark');await page.emulateMedia({colorScheme:'light'});await expect(page.locator('html')).toHaveAttribute('data-appearance','light');
   await page.goto('./');await expect(page.getByText('Success is not final, failure is not fatal: it is the courage to continue that counts.')).toHaveCount(0);
   await page.goto('display');for(const name of ['Quote of the Day',"Today's Totals",'Recent Activity'])await expect(page.getByRole('switch',{name,exact:true})).toHaveAttribute('aria-checked','false');
   expect(await fitnessBytes(page)).toEqual(before);
@@ -159,7 +160,7 @@ test('Display keeps Force Refresh errors visible and usable when offline',async(
 
 
 test('Display keyboard appearance selection and legacy clipboard fallback remain accessible',async({page})=>{
-  await page.goto('display');const dark=page.getByRole('radio',{name:'Dark',exact:true});await dark.focus();await dark.press('ArrowRight');await expect(page.getByRole('radio',{name:'System',exact:true})).toBeChecked();
+  await page.goto('display');const dark=page.getByRole('radio',{name:'Dark',exact:true});await dark.focus();await Promise.all([page.waitForEvent('load'),dark.press('ArrowRight')]);await expect(page.getByRole('radio',{name:'System',exact:true})).toBeChecked();
   await page.addInitScript(()=>{Object.defineProperty(navigator,'clipboard',{value:undefined});document.execCommand=()=>{(window as any).copied=document.querySelector('textarea')?.value;return true;};});
   await page.goto('share');await page.getByRole('button',{name:'Copy Link',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Link copied.');expect(await page.evaluate(()=>(window as any).copied)).toBe(FITCIRCLE_URL);await expect(page.locator('textarea')).toHaveCount(0);
 });

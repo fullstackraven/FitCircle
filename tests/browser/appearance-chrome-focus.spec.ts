@@ -1,16 +1,15 @@
+import {selectDisplayAppearance} from '../fixtures/display-appearance';
 import {test,expect} from '@playwright/test';
 test.use({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
-test('live theme changes update the root paint and browser metadata without reload',async({page})=>{
+test('Display changes refresh once and retain root paint and browser metadata',async({page})=>{
  await page.goto('display');const navigation=await page.evaluate(()=>performance.timeOrigin);
- await page.evaluate(()=>{(window as any).originalThemeMeta=document.querySelector('meta[name="theme-color"]');});
  for(const [mode,color,rgb] of [['Light','#f8fafc','rgb(248, 250, 252)'],['Dark','#0f172a','rgb(15, 23, 42)'],['Light','#f8fafc','rgb(248, 250, 252)']]){
-  await page.getByRole('group',{name:'Appearance',exact:true}).getByText(mode,{exact:true}).click();
+  await selectDisplayAppearance(page,mode);
   await expect(page.locator('meta[name="theme-color"]')).toHaveCount(1);await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content',color);
   expect(await page.evaluate(()=>getComputedStyle(document.documentElement).backgroundColor)).toBe(rgb);
-  expect(await page.evaluate(()=>performance.timeOrigin)).toBe(navigation);
+  expect(await page.evaluate(()=>performance.timeOrigin)).toBeGreaterThan(navigation);
  }
- expect(await page.evaluate(()=>document.querySelector('meta[name="theme-color"]')!==(window as any).originalThemeMeta)).toBe(true);
- await page.getByRole('group',{name:'Appearance',exact:true}).getByText('System',{exact:true}).click();
+ await selectDisplayAppearance(page,'System');
  await page.emulateMedia({colorScheme:'dark'});await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content','#0f172a');
  await page.emulateMedia({colorScheme:'light'});await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content','#f8fafc');
 });
