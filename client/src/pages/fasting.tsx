@@ -11,7 +11,7 @@ import {
 
 import { percentage, completedFasts, amount } from "@/lib/wellness-progress";
 import { useState, useEffect } from "react";
-import { Edit, Trash2, Target, X } from "lucide-react";
+import { Edit, Trash2, Target, X, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -465,7 +465,13 @@ export default function FastingPage() {
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
         <GoalEditor title="Fasting Goal" subtitle="Configure your fasting targets" onDismiss={() => setIsGoalModalOpen(false)} onSave={handleSetGoal} saveLabel="Save Settings"
-          summary={<GoalSummary percentage={percentage(stats.completedAverage, Number(goalHoursInput))} label="Average fast" value={`${stats.completedAverage} hrs`} detail="Across completed fasts" average />}>
+          summary={<div className="fasting-goal-summary">
+            <GoalSummary percentage={percentage(stats.todayHours, Number(goalHoursInput))} label="Today’s fast" value={`${amount(stats.todayHours.toFixed(1))} of ${amount(goalHoursInput)} hrs`} detail="Completed today" caption="Today" />
+            <aside className="fasting-goal-average" aria-label="All-time average fast">
+              <div><h3>All-time average fast</h3><History size={18} aria-hidden="true" /></div>
+              {completed.length ? <><strong>{(Math.round(stats.completedAverage * 10) / 10).toFixed(1)} hours</strong><p>Across completed fasts</p></> : <p>No completed fasts yet</p>}
+            </aside>
+          </div>}>
           <GoalField id="goalHours" label="Goal Hours per Fast" unit="hours" description="The duration you aim to reach for each fast."><Input
                   id="goalHours"
                   type="number"
