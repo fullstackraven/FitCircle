@@ -1,3 +1,4 @@
+import { formatNutritionDisplay } from '@/lib/nutrition-display';
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -226,13 +227,10 @@ export function FoodEntryForm({
               !Number.isFinite(Number(servings)) ||
               Number(servings) <= 0
                 ? "Unknown"
-                : Number(
-                    (Number(draft.values[key]) * Number(servings)).toPrecision(
-                      4,
-                    ),
-                  )}
+                : formatNutritionDisplay(Number(draft.values[key]) * Number(servings), key === "calories" ? "calories" : "macro")}
               {key !== "calories" &&
               draft.values[key] !== "" &&
+              Number.isFinite(Number(draft.values[key])) && Number(draft.values[key]) >= 0 &&
               !scalingError &&
               Number.isFinite(Number(servings)) &&
               Number(servings) > 0

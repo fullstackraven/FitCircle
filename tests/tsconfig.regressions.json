@@ -2,6 +2,8 @@
   "extends": "../tsconfig.json",
   "include": [
     "browser/training-editors.spec.ts",
+    "browser/nutrition-display.spec.ts",
+    "nutrition-display.test.ts",
     "browser/add-food-history.spec.ts",
     "food-history.test.ts",
     "browser/display-appearance-refresh.spec.ts",
