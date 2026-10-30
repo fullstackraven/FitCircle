@@ -24,6 +24,16 @@ export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy
   const [showEraseConfirm, setShowEraseConfirm] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const appearanceRefreshPending = useRef(false);
+  const handleDisplayAppearanceChange = (preference: AppearancePreference) => {
+    if (appearanceRefreshPending.current || appearanceController.getSnapshot().preference === preference) return;
+    const result = appearanceController.setPreference(preference);
+    if (!result.ok) return;
+    appearanceRefreshPending.current = true;
+    // The controller saves and applies synchronously. Reload this clean Display
+    // URL; the existing Pages 404 recovery preserves it on uncached navigation.
+    window.location.reload();
+  };
   const { settings, updateSetting } = useControls();
 
 
@@ -367,7 +377,7 @@ export default function SettingsPage({ section = 'legacy' }: { section?: 'legacy
               <legend className="sr-only">Appearance</legend>
               <div className="grid grid-cols-3 gap-2">
                 {(['light', 'dark', 'system'] as AppearancePreference[]).map(preference => <label key={preference} className="min-w-0 cursor-pointer">
-                  <input type="radio" name="appearance" value={preference} checked={appearance.preference === preference} onChange={() => appearanceController.setPreference(preference)} className="peer sr-only"/>
+                  <input type="radio" name="appearance" value={preference} checked={appearance.preference === preference} onChange={() => handleDisplayAppearanceChange(preference)} className="peer sr-only"/>
                   <span className="settings-theme-option peer-checked:border-feature-purple peer-checked:bg-feature-purple-tint/40 peer-checked:ring-1 peer-checked:ring-feature-purple peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring">
                     <span aria-hidden="true" className={`settings-preview settings-preview-${preference}`}><i/><i/></span>
                     <span className="inline-flex items-center justify-center gap-1"><CheckCircle2 size={13} aria-hidden="true" className={appearance.preference === preference ? 'text-feature-purple' : 'invisible'}/>{preference[0].toUpperCase() + preference.slice(1)}</span>
