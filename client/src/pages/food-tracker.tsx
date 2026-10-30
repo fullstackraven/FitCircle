@@ -1,5 +1,7 @@
+import { foodHistory, type FoodHistoryItem } from '@/lib/food-history';
+import '@/styles/add-food-history.css';
 import { PageHeader } from '@/components/ui/presentation';
-import { readFoodDay, assertLoggableFood } from '@/lib/food-diary';
+import { assertLoggableFood } from '@/lib/food-diary';
 import { DailyNutritionSummary } from '@/components/nutrition/DailyNutritionSummary';
 import { NutritionDetails } from '@/components/nutrition/NutritionDetails';
 import { MealDiary } from '@/components/nutrition/MealDiary';
@@ -8,8 +10,8 @@ import { draftFromFood, type ProductDraft } from '@/lib/barcode-lookup';
 import { BarcodeEntry } from '@/components/nutrition/BarcodeEntry';
 import { useFoodDiary } from '@/hooks/use-food-diary';
 import { displayTargets,readCalculatorEstimate,consumedServingText,CALCULATOR_TARGETS_CHANGED,type Targets } from '@/lib/nutrition';
-import { useState, useEffect } from 'react';
-import { Plus, Trash2, ChevronLeft, ChevronRight, Search, Edit2, Save, X as Cancel, Calculator, Database, ScanBarcode, CirclePlus } from 'lucide-react';
+import { useState, useEffect, type ReactNode } from 'react';
+import { Plus, Trash2, ChevronLeft, ChevronRight, Search, Edit2, Save, X as Cancel, Calculator, Database, ScanBarcode, CirclePlus, Clock, ChartNoAxesColumnIncreasing } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,6 +43,14 @@ const validateNutritionInputs = (calories: string, carbs: string, protein: strin
   };
 };
 
+function CompactFoodCard({food, count, actions}: {food: LocalFoodItem; count?: number; actions: ReactNode}) {
+  return <div className="your-food-card bg-surface border border-separator rounded-xl" data-testid={`row-food-${food.id}`}>
+    <div className="your-food-card-heading"><div className="min-w-0"><h3>{food.name}</h3>{food.brand && <p>{food.brand}</p>}</div><div className="flex gap-1 shrink-0">{actions}</div></div>
+    <div className="your-food-macros">{[['Cal', food.calories, ''], ['C', food.carbs, 'g'], ['P', food.protein, 'g'], ['F', food.fat, 'g']].map(([label, value, unit]) => <span key={label}>{label}: {value}{unit}</span>)}</div>
+    <div className="your-food-serving"><span>Per {food.quantity}{food.unit}</span>{count !== undefined && <span>Logged {count}×</span>}</div>
+  </div>;
+}
+
 export default function FoodTrackerPage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
@@ -70,7 +80,8 @@ export default function FoodTrackerPage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchMeal, setSearchMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
-  const [allFoodHistory, setAllFoodHistory] = useState<FoodEntry[]>([]);
+  const [yourFoodTab, setYourFoodTab] = useState<'recent' | 'frequent'>('recent');
+  const [history, setHistory] = useState<{recent: FoodHistoryItem[]; frequent: FoodHistoryItem[]}>({recent: [], frequent: []});
 
   // Custom food states
   const [customFoodOpen, setCustomFoodOpen] = useState(false);
@@ -153,71 +164,21 @@ export default function FoodTrackerPage() {
     });
   };
 
-  // Load all food history for search functionality
+  // Read diary history when opening and after current-day additions/edits/deletions.
   useEffect(() => {
-    const loadAllFoodHistory = () => {
-      const allFoods: FoodEntry[] = [];
-      const seenFoods = new Set<string>(); // Track unique food names to avoid duplicates
-      
-      // Get all localStorage keys that start with 'fitcircle_food_'
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && /^fitcircle_food_\d{4}-\d{2}-\d{2}$/.test(key)) {
-          let entries: FoodEntry[];
-          try {entries = readFoodDay(key.slice('fitcircle_food_'.length)).entries;} catch {continue;}
-          
-          // Ensure entries is an array before iterating
-          if (!Array.isArray(entries)) {
-            console.warn(`Invalid data format for key ${key}, skipping`);
-            continue;
-          }
-          
-          entries.forEach(entry => {
-            // Handle legacy entries that might not have the new fields
-            const enhancedEntry: FoodEntry = {
-              ...entry,
-              // For legacy entries without serving info, assume "1 serving" to avoid misleading "100g" labels
-              quantity: entry.quantity || 1,
-              unit: (entry.unit as FoodUnit) || 'serving',
-              brand: entry.brand,
-              barcode: entry.barcode,
-              fiber: entry.fiber,
-              sugar: entry.sugar,
-              sodium: entry.sodium,
-              saturatedFat: entry.saturatedFat,
-              nutritionPer100g: entry.nutritionPer100g
-            };
-            
-            // Include barcode in deduplication for API-scanned foods
-            const foodKey = `${enhancedEntry.name}-${enhancedEntry.brand || ''}-${enhancedEntry.barcode || ''}-${enhancedEntry.calories}-${enhancedEntry.carbs}-${enhancedEntry.protein}-${enhancedEntry.fat}`;
-            if (!seenFoods.has(foodKey)) {
-              seenFoods.add(foodKey);
-              // Create a new entry without meal specification for search
-              allFoods.push({
-                ...enhancedEntry,
-                id: `search-${enhancedEntry.id}`,
-                meal: 'breakfast' // Default value, will be overridden when adding
-              });
-            }
-          });
-        }
-      }
-      
-      setAllFoodHistory(allFoods);
-    };
-    
-    loadAllFoodHistory();
-  }, [foodEntries]); // Reload when food entries change
+    if (!searchOpen) return;
+    const reload = () => setHistory(foodHistory(localStorage));
+    reload();
+    window.addEventListener('storage', reload);
+    return () => window.removeEventListener('storage', reload);
+  }, [foodEntries, searchOpen]);
+  const yourFoods = history[yourFoodTab];
 
   const handleDeleteFood = (id: string) => {
     diary.commit(foodEntries.filter(entry => entry.id !== id));
   };
 
   // Search functions
-  const filteredFoodHistory = allFoodHistory.filter(food =>
-    food.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-  
   // Local search with throttling
   const performLocalSearch = async (query: string) => {
     if (!query.trim()) {
@@ -255,6 +216,8 @@ export default function FoodTrackerPage() {
     setSearchMeal(meal);
     setSearchQuery('');
     setSearchResults([]);
+    setYourFoodTab('recent');
+    setShowAllRecent(false);
     setSearchOpen(true);
   };
 
@@ -631,85 +594,27 @@ export default function FoodTrackerPage() {
                   <CirclePlus className="h-7 w-7 text-feature-blue"/><span className="font-semibold text-strong">Custom Food</span><span className="text-xs text-muted-foreground">Enter nutrition manually</span>
                 </button>
               </div>
-              <div className="flex items-center justify-between gap-3"><h3 className="text-lg font-semibold">{searchQuery ? 'Search Results' : 'Recent Foods'}</h3>{!searchQuery && filteredFoodHistory.length > 10 && <Button variant="ghost" className="text-accent-text" onClick={() => setShowAllRecent(!showAllRecent)}>{showAllRecent ? 'Show less' : 'View all'}</Button>}</div>
+              <div className="flex items-center justify-between gap-3"><h3 className="text-lg font-semibold">{searchQuery ? 'Search Results' : 'Your Foods'}</h3>{!searchQuery && yourFoods.length > 3 && <Button variant="ghost" className="text-accent-text" onClick={() => setShowAllRecent(true)}>View all</Button>}</div>
+              {!searchQuery && <>
+                <div className="your-foods-tabs" role="group" aria-label="Your Foods order">
+                  {(['recent', 'frequent'] as const).map(tab => <button key={tab} type="button" className="fc-pill" aria-pressed={yourFoodTab === tab} onClick={() => {setYourFoodTab(tab);setShowAllRecent(false);}}>
+                    {tab === 'recent' ? <Clock size={16}/> : <ChartNoAxesColumnIncreasing size={16}/>}{tab === 'recent' ? 'Recent' : 'Most Frequent'}
+                  </button>)}
+                </div>
+                <div className="your-foods-description"><span>{yourFoodTab === 'recent' ? 'Foods logged in the last 7 days' : 'Your most logged foods of all time'}</span><span>{yourFoodTab === 'recent' ? 'Newest first' : 'Most used first'}</span></div>
+              </>}
               {/* Food List */}
               <div className="min-w-0 overflow-y-auto pr-2" style={{ WebkitOverflowScrolling: 'touch' }}>
                 {searchQuery ? (
                   // Search Results
                   searchResults.length > 0 ? (
                     <div className="space-y-2">
-                      {searchResults.map((food) => (
-                        <div key={food.id} className="glass-panel bg-surface border border-separator rounded-xl p-4 transition-colors" data-testid={`row-food-${food.id}`}>
-                          <div className="flex items-start justify-between gap-1">
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-strong mb-1">
-                                {food.name}
-                              </h3>
-                              {food.brand && (
-                                <p className="text-sm text-muted-foreground mb-2">
-                                  {food.brand}
-                                </p>
-                              )}
-                              
-                              {/* Macros */}
-                              <div className="flex flex-wrap gap-2 text-xs mb-2">
-                                <div className="px-2 py-1 bg-surface-secondary rounded-xl">
-                                  <span className="text-muted-foreground">Cal:</span> <span className="text-strong font-medium">{food.calories}</span>
-                                </div>
-                                <div className="px-2 py-1 bg-surface-secondary rounded-xl">
-                                  <span className="text-muted-foreground">C:</span> <span className="text-strong font-medium">{food.carbs}g</span>
-                                </div>
-                                <div className="px-2 py-1 bg-surface-secondary rounded-xl">
-                                  <span className="text-muted-foreground">P:</span> <span className="text-strong font-medium">{food.protein}g</span>
-                                </div>
-                                <div className="px-2 py-1 bg-surface-secondary rounded-xl">
-                                  <span className="text-muted-foreground">F:</span> <span className="text-strong font-medium">{food.fat}g</span>
-                                </div>
-                              </div>
-                              
-                              {/* Serving Size */}
-                              <div className="text-xs text-dim">
-                                Per {food.quantity}{food.unit}
-                              </div>
-                            </div>
-                            
-                            {diary.saveError && <p role="alert" className="text-sm text-feature-red">{diary.saveError}</p>}
-                {/* Action Buttons */}
-                            <div className="flex gap-2 flex-shrink-0">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleEditFoodFromSearch(food)}
-                                className="text-muted-foreground hover:text-subtle hover:bg-control-strong"
-                                data-testid={`button-edit-${food.id}`}
-                                title="Edit food"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleAddFromSearch(food)}
-                                className="text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint"
-                                data-testid={`button-add-${food.id}`}
-                                title="Add to meal"
-                              >
-                                <Plus className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDeleteFoodFromDatabase(food)}
-                                className="text-feature-red hover:text-feature-red-soft hover:bg-feature-red-tint"
-                                data-testid={`button-delete-db-${food.id}`}
-                                title="Delete from database"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                      {searchResults.map((food) => <CompactFoodCard key={food.id} food={food} actions={<>
+                        {diary.saveError && <p role="alert" className="text-sm text-feature-red">{diary.saveError}</p>}
+                        <Button variant="ghost" size="icon" onClick={() => handleEditFoodFromSearch(food)} className="text-muted-foreground hover:text-subtle hover:bg-control-strong" data-testid={`button-edit-${food.id}`} title="Edit food"><Edit2 className="w-4 h-4"/></Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleAddFromSearch(food)} className="text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint" data-testid={`button-add-${food.id}`} title="Add to meal"><Plus className="w-4 h-4"/></Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleDeleteFoodFromDatabase(food)} className="text-feature-red hover:text-feature-red-soft hover:bg-feature-red-tint" data-testid={`button-delete-db-${food.id}`} title="Delete from database"><Trash2 className="w-4 h-4"/></Button>
+                      </>}/>)}
                     </div>
                   ) : !isSearching ? (
                     <div className="text-center text-neutral-dim py-8 text-sm">
@@ -717,66 +622,13 @@ export default function FoodTrackerPage() {
                     </div>
                   ) : null
                 ) : (
-                  // Recent Foods (when no search query)
-                  filteredFoodHistory.length > 0 ? (
-                    <div className="space-y-2">
-                      {filteredFoodHistory.slice(0, showAllRecent ? undefined : 10).map((food) => (
-                        <div key={food.id} className="glass-panel bg-surface border border-separator rounded-xl p-4 transition-colors" data-testid={`row-food-${food.id}`}>
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-strong mb-1">
-                                {food.name}
-                              </h3>
-                              {food.brand && (
-                                <p className="text-sm text-muted-foreground mb-2">
-                                  {food.brand}
-                                </p>
-                              )}
-                              
-                              {/* Macros */}
-                              <div className="flex flex-wrap gap-2 text-xs mb-2">
-                                <div className="px-2 py-1 bg-surface-secondary rounded-xl">
-                                  <span className="text-muted-foreground">Cal:</span> <span className="text-strong font-medium">{food.calories}</span>
-                                </div>
-                                <div className="px-2 py-1 bg-surface-secondary rounded-xl">
-                                  <span className="text-muted-foreground">C:</span> <span className="text-strong font-medium">{food.carbs}g</span>
-                                </div>
-                                <div className="px-2 py-1 bg-surface-secondary rounded-xl">
-                                  <span className="text-muted-foreground">P:</span> <span className="text-strong font-medium">{food.protein}g</span>
-                                </div>
-                                <div className="px-2 py-1 bg-surface-secondary rounded-xl">
-                                  <span className="text-muted-foreground">F:</span> <span className="text-strong font-medium">{food.fat}g</span>
-                                </div>
-                              </div>
-                              
-                              {/* Serving Size */}
-                              <div className="text-xs text-dim">
-                                Per {food.quantity}{food.unit}
-                              </div>
-                            </div>
-                            
-                            {/* Add Button */}
-                            <div className="flex gap-2 flex-shrink-0">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleAddFromSearch(food)}
-                                className="text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint"
-                                data-testid={`button-add-${food.id}`}
-                                title="Add to meal"
-                              >
-                                <Plus className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center text-neutral-dim py-8 text-sm">
-                      No recent foods
-                    </div>
-                  )
+                  // Diary-derived food snapshots remain loggable after database deletion.
+                  <div className="your-foods-list">
+                    {yourFoods.length ? yourFoods.slice(0, showAllRecent ? undefined : 3).map(({key, food, count}) => (
+                      <CompactFoodCard key={key} food={food} count={yourFoodTab === 'frequent' ? count : undefined} actions={<Button variant="ghost" size="icon" onClick={() => handleAddFromSearch(food)} className="text-feature-blue hover:text-feature-blue-soft hover:bg-feature-blue-tint" data-testid={`button-add-${food.id}`} title="Add to meal"><Plus className="w-4 h-4"/></Button>}/>
+                    )) : <p className="text-center text-sm text-muted-foreground py-4">{yourFoodTab === 'recent' ? 'No foods logged in the last 7 days' : 'No logged foods yet'}</p>}
+                    {yourFoods.length > 3 && <Button variant="outline" className="w-full" onClick={() => setShowAllRecent(!showAllRecent)}>{showAllRecent ? 'Show fewer foods' : 'Show more foods'}</Button>}
+                  </div>
                 )}
               </div>
                 </div>
