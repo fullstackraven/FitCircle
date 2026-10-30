@@ -1,3 +1,4 @@
+import { GoalEditor, GoalSummary, GoalField } from "@/components/wellness/GoalEditor";
 import {
   WellnessPageShell,
   WellnessProgressHero,
@@ -5,7 +6,6 @@ import {
   WellnessTodaySection,
   WellnessPrimaryAction,
   WellnessHistoryRow,
-  WellnessGoalSheet,
 } from "@/components/wellness/WellnessUI";
 import { dailyTotals } from "@/lib/wellness-progress";
 import { WellnessHistory } from "@/components/WellnessHistory";
@@ -31,7 +31,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { GoalCircle } from "@/components/GoalCircle";
 import { groupLogsByMonth } from "@/lib/date-utils";
 
 export default function HydrationPage() {
@@ -390,72 +389,18 @@ export default function HydrationPage() {
 
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
-        <WellnessGoalSheet
-          title="Hydration Goal"
-          onDismiss={() => setIsGoalModalOpen(false)}
-        >
-          <div className="glass-panel bg-surface rounded-xl p-6 w-full max-w-lg">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-strong">
-                Hydration Goal
-              </h3>
-              <button
-                aria-label="Close"
-                onClick={() => setIsGoalModalOpen(false)}
-                className="fc-pill fc-icon-button p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Goal Progress Circle */}
-            <div className="flex justify-center mb-8">
-              <GoalCircle
-                percentage={percentage(currentDayOz, Number(newGoal))}
-                color="var(--bmi-blue)"
-                size={120}
-                currentValue={Math.round(currentDayOz)}
-                goalValue={Number(newGoal)}
-                unit="oz"
-                title="Daily Hydration"
-                description="Today"
-              />
-            </div>
-
-            {/* Goal Input Form */}
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="goal" className="text-supporting">
-                  Daily goal (oz)
-                </Label>
-                <Input
-                  id="goal"
+        <GoalEditor title="Hydration Goal" subtitle="Set your daily water target" onDismiss={() => setIsGoalModalOpen(false)} onSave={handleSetGoal}
+          summary={<GoalSummary percentage={percentage(currentDayOz, Number(newGoal))} label="Daily target" value={`${Number(newGoal) || 0} oz`} detail={`Today · ${Math.round(currentDayOz)} oz logged`} />}>
+          <GoalField id="goal" label="Daily hydration goal" unit="oz" description="Your daily fluid intake target."><Input
+                  id="goal" aria-label="Daily goal (oz)"
                   type="number"
                   value={newGoal}
                   onChange={(e) => setNewGoal(e.target.value)}
                   onFocus={() => setGoalFocused(true)}
                   onBlur={() => setGoalFocused(false)}
-                  className="bg-surface-secondary border-control text-strong mt-1"
-                />
-              </div>
-              <div className="flex space-x-3 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsGoalModalOpen(false)}
-                  className="flex-1 border-control text-supporting hover:bg-surface-secondary"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleSetGoal}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action-soft"
-                >
-                  Set Goal
-                </Button>
-              </div>
-            </div>
-          </div>
-        </WellnessGoalSheet>
+                  className="goal-editor-input"
+                /></GoalField>
+        </GoalEditor>
       )}
 
       {/* Add Liquid Dialog */}

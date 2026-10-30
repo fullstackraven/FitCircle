@@ -2,6 +2,7 @@
   "extends": "../tsconfig.json",
   "include": [
     "browser/training-editors.spec.ts",
+    "browser/goal-editors.spec.ts",
     "browser/light-surfaces.spec.ts",
     "browser/logs-tiles.spec.ts",
     "browser/pill-controls.spec.ts",

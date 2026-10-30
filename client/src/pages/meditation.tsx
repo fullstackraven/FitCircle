@@ -1,3 +1,4 @@
+import { GoalEditor, GoalSummary, GoalField } from "@/components/wellness/GoalEditor";
 import {
   WellnessPageShell,
   WellnessProgressHero,
@@ -5,7 +6,6 @@ import {
   WellnessTodaySection,
   WellnessPrimaryAction,
   WellnessHistoryRow,
-  WellnessGoalSheet,
   WellnessEntryActions,
 } from "@/components/wellness/WellnessUI";
 import { dailyTotals } from "@/lib/wellness-progress";
@@ -28,7 +28,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { GoalCircle } from "@/components/GoalCircle";
 import { useMeditation, type MeditationSession } from "@/hooks/use-meditation";
 import { useGoals } from "@/hooks/use-goals";
 
@@ -651,75 +650,18 @@ export default function MeditationPage() {
 
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
-        <WellnessGoalSheet
-          title="Meditation Goal"
-          onDismiss={() => setIsGoalModalOpen(false)}
-        >
-          <div className="glass-panel bg-surface rounded-xl p-6 w-full max-w-lg">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-strong">
-                Meditation Goal
-              </h3>
-              <button
-                aria-label="Close"
-                onClick={() => setIsGoalModalOpen(false)}
-                className="fc-pill fc-icon-button p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Goal Progress Circle */}
-            <div className="flex justify-center mb-8">
-              <GoalCircle
-                percentage={percentage(
-                  getTodayMinutes(),
-                  Number(goalMinutesInput),
-                )}
-                color="var(--goal-purple)"
-                size={120}
-                currentValue={getTodayMinutes()}
-                goalValue={parseFloat(goalMinutesInput) || 0}
-                unit="min"
-                title="Daily Meditation"
-                description="Today"
-              />
-            </div>
-
-            {/* Goal Input Form */}
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="goalMinutes" className="text-supporting">
-                  Daily Meditation Goal (minutes)
-                </Label>
-                <Input
+        <GoalEditor title="Meditation Goal" subtitle="Build a consistent daily practice" onDismiss={() => setIsGoalModalOpen(false)} onSave={handleSetGoal}
+          summary={<GoalSummary percentage={percentage(getTodayMinutes(), Number(goalMinutesInput))} label="Daily target" value={`${parseFloat(goalMinutesInput) || 0} min`} detail={`Today · ${getTodayMinutes()} minutes logged`} />}>
+          <GoalField id="goalMinutes" label="Daily Meditation Goal (minutes)" unit="minutes" description="Your daily target for meditation sessions."><Input
                   id="goalMinutes"
                   type="number"
                   value={goalMinutesInput}
                   onChange={(e) => setGoalMinutesInput(e.target.value)}
                   onFocus={() => setGoalMinutesFocused(true)}
                   onBlur={() => setGoalMinutesFocused(false)}
-                  className="bg-surface-secondary border-control text-strong mt-1"
-                />
-              </div>
-              <div className="flex space-x-3 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsGoalModalOpen(false)}
-                  className="flex-1 border-control text-supporting hover:bg-surface-secondary"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleSetGoal}
-                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-on-action-soft"
-                >
-                  Set Goal
-                </Button>
-              </div>
-            </div>
-          </div>
-        </WellnessGoalSheet>
+                  className="goal-editor-input"
+                /></GoalField>
+        </GoalEditor>
       )}
 
       <Dialog

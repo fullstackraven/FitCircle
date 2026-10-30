@@ -172,7 +172,7 @@ for (const mode of ["dark", "light"]) {
       await page.getByRole("button", { name: "Goal", exact: true }).click();
       await expect(
         page.getByRole("dialog").locator("svg circle").first(),
-      ).toHaveAttribute("stroke", "var(--bmi-track)");
+      ).toHaveAttribute("stroke", "hsl(var(--progress-track))");
       await page.getByRole("button", { name: "Cancel", exact: true }).click();
     }
     expect(await wellnessBytes(page)).toEqual(before);

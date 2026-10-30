@@ -1,3 +1,4 @@
+import { GoalEditor, GoalSummary, GoalField } from "@/components/wellness/GoalEditor";
 import { fastingDailyHours } from "@/lib/wellness-activity";
 import {
   WellnessPageShell,
@@ -6,7 +7,6 @@ import {
   WellnessTodaySection,
   WellnessPrimaryAction,
   WellnessHistoryRow,
-  WellnessGoalSheet,
 } from "@/components/wellness/WellnessUI";
 
 import { percentage, completedFasts, amount } from "@/lib/wellness-progress";
@@ -26,7 +26,6 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { GoalCircle } from "@/components/GoalCircle";
 import { useFasting, type FastingLog } from "@/hooks/use-fasting";
 import { useGoals } from "@/hooks/use-goals";
 import {
@@ -465,60 +464,18 @@ export default function FastingPage() {
 
       {/* Goal Setting Modal */}
       {isGoalModalOpen && (
-        <WellnessGoalSheet
-          title="Fasting Goal"
-          onDismiss={() => setIsGoalModalOpen(false)}
-        >
-          <div className="glass-panel bg-surface rounded-xl p-6 w-full max-w-lg">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-strong">Fasting Goal</h3>
-              <button
-                aria-label="Close"
-                onClick={() => setIsGoalModalOpen(false)}
-                className="fc-pill fc-icon-button p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Goal Progress Circle */}
-            <div className="flex justify-center mb-8">
-              <GoalCircle
-                percentage={percentage(
-                  stats.completedAverage,
-                  Number(goalHoursInput),
-                )}
-                color="var(--bmi-amber)"
-                size={120}
-                currentValue={stats.completedAverage}
-                goalValue={parseFloat(goalHoursInput) || 0}
-                unit="hrs"
-                title="Average Fast Duration"
-                description="All-time completed-fast average"
-              />
-            </div>
-
-            {/* Goal Input Form */}
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="goalHours" className="text-supporting">
-                  Goal Hours per Fast
-                </Label>
-                <Input
+        <GoalEditor title="Fasting Goal" subtitle="Configure your fasting targets" onDismiss={() => setIsGoalModalOpen(false)} onSave={handleSetGoal} saveLabel="Save Settings"
+          summary={<GoalSummary percentage={percentage(stats.completedAverage, Number(goalHoursInput))} label="Average fast" value={`${stats.completedAverage} hrs`} detail="Across completed fasts" average />}>
+          <GoalField id="goalHours" label="Goal Hours per Fast" unit="hours" description="The duration you aim to reach for each fast."><Input
                   id="goalHours"
                   type="number"
                   value={goalHoursInput}
                   onChange={(e) => setGoalHoursInput(e.target.value)}
                   onFocus={() => setGoalHoursFocused(true)}
                   onBlur={() => setGoalHoursFocused(false)}
-                  className="bg-surface-secondary border-control text-strong mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="maxHours" className="text-supporting">
-                  Maximum Fasting Hours
-                </Label>
-                <Input
+                  className="goal-editor-input"
+                /></GoalField>
+          <GoalField id="maxHours" label="Maximum Fasting Hours" unit="hours" description="Used for the fasting heat-bar scale, not goal achievement."><Input
                   id="maxHours"
                   type="number"
                   value={maxHoursInput}
@@ -532,30 +489,9 @@ export default function FastingPage() {
                     }
                   }}
                   onBlur={() => setMaxHoursFocused(false)}
-                  className="bg-surface-secondary border-control text-strong mt-1"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Heat-bar scale only; achievement uses Goal Hours per Fast
-                </p>
-              </div>
-              <div className="flex space-x-3 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsGoalModalOpen(false)}
-                  className="flex-1 border-control text-supporting hover:bg-surface-secondary"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleSetGoal}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action-soft"
-                >
-                  Save Settings
-                </Button>
-              </div>
-            </div>
-          </div>
-        </WellnessGoalSheet>
+                  className="goal-editor-input"
+                /></GoalField>
+        </GoalEditor>
       )}
 
       {/* Log Fast Dialog */}
