@@ -1,3 +1,4 @@
+import { GoalEditor, GoalSummary, GoalField } from "@/components/wellness/GoalEditor";
 import {
   WellnessPageShell,
   WellnessProgressHero,
@@ -5,7 +6,6 @@ import {
   WellnessTodaySection,
   WellnessPrimaryAction,
   WellnessHistoryRow,
-  WellnessGoalSheet,
   WellnessEntryActions,
 } from "@/components/wellness/WellnessUI";
 import { dailyTotals, weekDates } from "@/lib/wellness-progress";
@@ -14,7 +14,6 @@ import { percentage, amount } from "@/lib/wellness-progress";
 import React, { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Save, X, Activity } from "lucide-react";
 import { useCardio, CardioEntry, CardioSession } from "@/hooks/use-cardio";
-import { GoalCircle } from "@/components/GoalCircle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -800,116 +799,29 @@ export default function CardioPage() {
 
       {/* Simple Goal Setting Modal - Fasting Style */}
       {isGoalDialogOpen && (
-        <WellnessGoalSheet
-          title="Cardio Goal"
-          onDismiss={() => setIsGoalDialogOpen(false)}
-        >
-          <div className="glass-panel bg-surface rounded-xl p-6 w-full max-w-lg">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-strong">Cardio Goal</h3>
-              <button
-                aria-label="Close"
-                onClick={() => setIsGoalDialogOpen(false)}
-                className="fc-pill fc-icon-button p-2 text-muted-foreground hover:text-strong hover:bg-surface-secondary"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Goal Progress Circle */}
-            <div className="flex justify-center mb-8">
-              <GoalCircle
-                percentage={percentage(todaysValue, Number(goalInput))}
-                color="var(--bmi-green)"
-                size={120}
-                currentValue={todaysValue}
-                goalValue={Number(goalInput)}
-                unit={data.goal.type === "duration" ? "min" : "mi"}
-                title={data.goal.period === "week" ? "This Week" : "Today"}
-                description={
-                  data.goal.period === "week"
-                    ? "Current calendar week"
-                    : "Current calendar day"
-                }
-              />
-            </div>
-
-            <div className="flex gap-2 mb-4">
-              <Button
-                variant={data.goal.period === "day" ? "default" : "outline"}
-                onClick={() => updateGoal({ ...data.goal, period: "day" })}
-              >
-                Daily
-              </Button>
-              <Button
-                variant={data.goal.period === "week" ? "default" : "outline"}
-                onClick={() => updateGoal({ ...data.goal, period: "week" })}
-              >
-                Weekly
-              </Button>
-            </div>
-            {/* Goal Input Form */}
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="goalTarget" className="text-supporting">
-                  {data.goal.period === "week" ? "Weekly" : "Daily"} Goal (
-                  {data.goal.type === "duration" ? "minutes" : "miles"})
-                </Label>
-                <Input
+        <GoalEditor title="Cardio Goal" subtitle="Set your activity target" onDismiss={() => setIsGoalDialogOpen(false)} onSave={handleSetGoal}
+          summary={<GoalSummary percentage={percentage(todaysValue, Number(goalInput))} label={data.goal.period === "week" ? "Weekly target" : "Daily target"} value={`${Number(goalInput) || 0} ${data.goal.type === "duration" ? "min" : "mi"}`} detail={`Today · ${todaysValue} ${data.goal.type === "duration" ? "minutes" : "miles"} logged`} />}>
+          <section><span className="goal-editor-section-label">Goal period</span>
+            <div className="goal-editor-segments" role="group" aria-label="Goal period">
+              <Button aria-pressed={data.goal.period === "day"} onClick={() => updateGoal({ ...data.goal, period: "day" })}>Daily</Button>
+              <Button aria-pressed={data.goal.period === "week"} onClick={() => updateGoal({ ...data.goal, period: "week" })}>Weekly</Button>
+            </div></section>
+          <section><span className="goal-editor-section-label">Target unit</span>
+            <div className="goal-editor-segments goal-editor-units" role="group" aria-label="Target unit">
+              <Button aria-pressed={data.goal.type === "duration"} onClick={() => { if (data.goal.type !== "duration") updateGoal({ type: "duration", target: data.goal.target, period: data.goal.period }); }}>Minutes</Button>
+              <Button aria-pressed={data.goal.type === "distance"} onClick={() => { if (data.goal.type !== "distance") updateGoal({ type: "distance", target: data.goal.target, period: data.goal.period }); }}>Miles</Button>
+            </div></section>
+          <GoalField id="goalTarget" label={`${data.goal.period === "week" ? "Weekly" : "Daily"} Goal (${data.goal.type === "duration" ? "minutes" : "miles"})`} unit={data.goal.type === "duration" ? "min" : "mi"}><Input
                   id="goalTarget"
                   type="number"
                   value={goalInput}
                   onChange={(e) => setGoalInput(e.target.value)}
                   onFocus={() => setGoalInputFocused(true)}
                   onBlur={() => setGoalInputFocused(false)}
-                  className="bg-surface-secondary border-control text-strong mt-1"
+                  className="goal-editor-input"
                   step="0.1"
-                />
-              </div>
-
-              <div className="flex space-x-3">
-                <Button
-                  onClick={() => {
-                    if (data.goal.type === "duration") {
-                      updateGoal({
-                        type: "distance",
-                        target: data.goal.target,
-                        period: data.goal.period,
-                      });
-                    } else {
-                      updateGoal({
-                        type: "duration",
-                        target: data.goal.target,
-                        period: data.goal.period,
-                      });
-                    }
-                  }}
-                  variant="outline"
-                  className="flex-1 border-control text-supporting hover:bg-surface-secondary"
-                >
-                  Switch to{" "}
-                  {data.goal.type === "duration" ? "Miles" : "Minutes"}
-                </Button>
-              </div>
-
-              <div className="flex space-x-3 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsGoalDialogOpen(false)}
-                  className="flex-1 border-control text-supporting hover:bg-surface-secondary"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleSetGoal}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action-soft"
-                >
-                  Save Goal
-                </Button>
-              </div>
-            </div>
-          </div>
-        </WellnessGoalSheet>
+                /></GoalField>
+        </GoalEditor>
       )}
     </>
   );

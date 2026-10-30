@@ -264,14 +264,16 @@ export function WellnessGoalSheet({
   title,
   onDismiss,
   children,
+  className = "",
 }: {
   title: string;
   onDismiss: () => void;
   children: ReactNode;
+  className?: string;
 }) {
   return (
     <ViewportOverlay title={title} onDismiss={onDismiss}>
-      <div className="wellness-goal-sheet">{children}</div>
+      <div className={`wellness-goal-sheet ${className}`}>{children}</div>
     </ViewportOverlay>
   );
 }

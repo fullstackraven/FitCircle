@@ -302,7 +302,7 @@ test("hydration goal changes update today and shared sources without rewriting t
   await page.getByLabel("Daily goal (oz)", { exact: true }).fill("");
   await expect(page.locator(".type-caption").last()).toHaveText("0%");
   await page.getByLabel("Daily goal (oz)", { exact: true }).fill("128");
-  await page.getByRole("button", { name: "Set Goal", exact: true }).click();
+  await page.getByRole("button", { name: "Save Goal", exact: true }).click();
   await expect(page.locator(".type-caption").first()).toHaveText("25%");
   expect((await bytes(page))[0]).toBe(before[0]);
   await page.reload();
