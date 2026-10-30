@@ -23,9 +23,14 @@ for(const theme of ['dark','light'])for(const width of [320,390,1280]) {
   const check=async()=>{expect(await pillGeometry(page)).toEqual([]);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);};
   await page.goto('food-tracker');await page.getByRole('button',{name:'Add Food to Breakfast',exact:true}).click();
   const search=page.getByRole('textbox',{name:'Search foods'});await search.fill('Synthetic');await expect(page.getByTestId('button-clear-search')).toBeVisible();await page.getByTestId('button-clear-search').click();await expect(search).toHaveValue('');
+  // Capture resting styles; the resized list can move a tile under the last click.
+  await page.mouse.move(0,0);
   for(const expected of protectedControls.filter(r=>r.theme===theme&&r.width===width)){
    const actual=await page.getByRole('button',{name:expected.name,exact:true}).evaluate((el,keys)=>{const c=getComputedStyle(el),r=el.getBoundingClientRect();return {rect:{x:r.x,y:r.y,width:r.width,height:r.height},style:Object.fromEntries(keys.map(k=>[k,c.getPropertyValue(k)]))};},Object.keys(expected.style));
-   expect(actual).toEqual({rect:expected.rect,style:expected.style});
+   // Lower-list content now changes the centered modal's height. Keep the
+   // protected actions anchored exactly 16px below search, with all sizes/styles intact.
+   const searchBox = await search.boundingBox();
+   expect(actual).toEqual({rect:{...(expected.rect as Record<string,number>),y:searchBox!.y+searchBox!.height+16},style:expected.style});
   }
   await check();
   await expect(search).toHaveCSS('border-top-left-radius','9999px');await search.focus();await expect(search).toBeFocused();

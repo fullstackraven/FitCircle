@@ -1,0 +1,46 @@
+import { test, expect } from '@playwright/test';
+import fs from 'node:fs';
+import { seedWellnessAppearance } from '../fixtures/appearance-wellness';
+
+test.use({ viewport: { width: 390, height: 844 }, timezoneId: 'America/New_York' });
+for (const mode of ['light', 'dark']) test(`${mode}: Your Foods tabs, compact cards and existing add flow`, async ({ page }) => {
+  await seedWellnessAppearance(page, mode);
+  await page.evaluate(() => {
+    for (const key of Object.keys(localStorage)) if (/^fitcircle_food_\d{4}-\d{2}-\d{2}$/.test(key)) localStorage.removeItem(key);
+    const food = (id: string, name: string, timestamp: string) => ({ id, name, brand: 'Test Brand', quantity: 50, unit: 'g', calories: 70, carbs: 0, protein: 6, fat: 5, meal: 'breakfast', timestamp });
+    localStorage.setItem('fitcircle_food_2026-10-19', JSON.stringify(Array.from({length: 5}, (_, i) => food(`today-${i}`, `Recent ${i}`, `2026-10-19T${10 + i}:00:00-04:00`))));
+    localStorage.setItem('fitcircle_food_2020-01-01', JSON.stringify(Array.from({length: 4}, (_, i) => food(`old-${i}`, 'Frequent old food', `2020-01-01T${10 + i}:00:00-05:00`))));
+  });
+  const before = await page.evaluate(() => Object.fromEntries(Object.entries(localStorage).filter(([key]) => /^fitcircle_food_\d/.test(key))));
+  await page.goto('food-tracker'); await page.getByRole('button', { name: 'Add Food to Breakfast', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Add Food', exact: true });
+  const cards = dialog.locator('.your-food-card');
+  await expect(dialog.getByRole('button', { name: 'Recent', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(cards).toHaveCount(3); await expect(cards.first()).toContainText('Recent 4');
+  await expect(dialog).not.toContainText('Frequent old food');
+  await dialog.getByRole('button', { name: 'Show more foods', exact: true }).click(); await expect(cards).toHaveCount(5);
+  await dialog.getByRole('button', { name: 'Show fewer foods', exact: true }).click(); await expect(cards).toHaveCount(3);
+  await dialog.getByRole('button', { name: 'View all', exact: true }).click(); await expect(cards).toHaveCount(5);
+  await dialog.getByRole('button', { name: 'Most Frequent', exact: true }).click();
+  await expect(cards).toHaveCount(3); await expect(cards.first()).toContainText('Frequent old food'); await expect(cards.first()).toContainText('Logged 4×');
+  await dialog.getByRole('button', { name: 'Recent', exact: true }).click(); await expect(cards).toHaveCount(3);
+  expect(await page.evaluate(() => Object.fromEntries(Object.entries(localStorage).filter(([key]) => /^fitcircle_food_\d/.test(key))))).toEqual(before);
+  await page.setViewportSize({ width: 320, height: 844 });
+  expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+  expect(await cards.first().evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await dialog.locator('.dialog-body').evaluate(el => {el.scrollTop = 0;});
+  await page.evaluate(() => document.fonts.ready); fs.mkdirSync('docs/review/add-food-history', { recursive: true });
+  await page.screenshot({ path: `docs/review/add-food-history/${mode}.png`, animations: 'disabled' });
+  await cards.first().getByTitle('Add to meal').click();
+  await expect(page.getByRole('dialog', { name: 'Add Entry', exact: true })).toBeVisible();
+  await page.getByRole('dialog', { name: 'Add Entry', exact: true }).getByRole('button', { name: 'Add', exact: true }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Add Food to Breakfast', exact: true }).click();
+  await expect(dialog.getByRole('button', { name: 'Recent', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await dialog.getByRole('button', { name: 'Most Frequent', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Show more foods', exact: true }).click();
+  const updated = cards.filter({ hasText: 'Recent 4' }); await expect(updated).toContainText('Logged 2×');
+  await expect(dialog.getByRole('button', { name: 'Scan Barcode', exact: true })).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Create Custom Food', exact: true })).toBeVisible();
+});
