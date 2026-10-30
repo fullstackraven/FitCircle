@@ -1,3 +1,4 @@
+import { formatNutritionDisplay } from '@/lib/nutrition-display';
 import { useState } from "react";
 import { PlusCircle, ChevronDown, Trash2 } from "lucide-react";
 import type { FoodEntry } from "@/lib/local-food-service";
@@ -96,17 +97,15 @@ export function MealDiary({
                             ),
                           )}{" "}
                           {entry.unit ?? "serving"} ·{" "}
-                          {Math.round(entry.calories * servingsOf(entry))} kcal
+                          {formatNutritionDisplay(entry.calories * servingsOf(entry), "calories")} kcal
                         </span>
                         <span className="block text-xs text-supporting mt-1 tabular-nums">
                           P{" "}
-                          {Number(
-                            (entry.protein * servingsOf(entry)).toFixed(1),
-                          )}
+                          {formatNutritionDisplay(entry.protein * servingsOf(entry))}
                           g · C{" "}
-                          {Number((entry.carbs * servingsOf(entry)).toFixed(1))}
+                          {formatNutritionDisplay(entry.carbs * servingsOf(entry))}
                           g · F{" "}
-                          {Number((entry.fat * servingsOf(entry)).toFixed(1))}g
+                          {formatNutritionDisplay(entry.fat * servingsOf(entry))}g
                         </span>
                       </button>
                       <button

@@ -1,3 +1,4 @@
+import { formatNutritionDisplay } from '@/lib/nutrition-display';
 import { foodHistory, type FoodHistoryItem } from '@/lib/food-history';
 import '@/styles/add-food-history.css';
 import { PageHeader } from '@/components/ui/presentation';
@@ -46,7 +47,7 @@ const validateNutritionInputs = (calories: string, carbs: string, protein: strin
 function CompactFoodCard({food, count, actions}: {food: LocalFoodItem; count?: number; actions: ReactNode}) {
   return <div className="your-food-card bg-surface border border-separator rounded-xl" data-testid={`row-food-${food.id}`}>
     <div className="your-food-card-heading"><div className="min-w-0"><h3>{food.name}</h3>{food.brand && <p>{food.brand}</p>}</div><div className="flex gap-1 shrink-0">{actions}</div></div>
-    <div className="your-food-macros">{[['Cal', food.calories, ''], ['C', food.carbs, 'g'], ['P', food.protein, 'g'], ['F', food.fat, 'g']].map(([label, value, unit]) => <span key={label}>{label}: {value}{unit}</span>)}</div>
+    <div className="your-food-macros">{[['Cal', food.calories, ''], ['C', food.carbs, 'g'], ['P', food.protein, 'g'], ['F', food.fat, 'g']].map(([label, value, unit]) => {const display = formatNutritionDisplay(value, label === 'Cal' ? 'calories' : 'macro'); return <span key={label}>{label}: {display}{display === 'Unknown' ? '' : unit}</span>;})}</div>
     <div className="your-food-serving"><span>Per {food.quantity}{food.unit}</span>{count !== undefined && <span>Logged {count}×</span>}</div>
   </div>;
 }
@@ -1019,25 +1020,25 @@ export default function FoodTrackerPage() {
                   <div className="grid grid-cols-4 gap-3 text-center">
                     <div>
                       <div className="type-metric text-2xl font-bold text-strong">
-                        {Math.round(editingEntry.calories * parseFloat(editEntryServings || '1'))}
+                        {formatNutritionDisplay(editingEntry.calories * parseFloat(editEntryServings || '1'), 'calories')}
                       </div>
                       <div className="text-xs text-neutral-muted">cal</div>
                     </div>
                     <div>
                       <div className="text-lg font-semibold text-feature-blue">
-                        {Math.round(editingEntry.carbs * parseFloat(editEntryServings || '1'))}g
+                        {formatNutritionDisplay(editingEntry.carbs * parseFloat(editEntryServings || '1'), 'macro')}g
                       </div>
                       <div className="text-xs text-neutral-muted">Carbs</div>
                     </div>
                     <div>
                       <div className="text-lg font-semibold text-feature-red">
-                        {Math.round(editingEntry.fat * parseFloat(editEntryServings || '1'))}g
+                        {formatNutritionDisplay(editingEntry.fat * parseFloat(editEntryServings || '1'), 'macro')}g
                       </div>
                       <div className="text-xs text-neutral-muted">Fat</div>
                     </div>
                     <div>
                       <div className="text-lg font-semibold text-accent-text">
-                        {Math.round(editingEntry.protein * parseFloat(editEntryServings || '1'))}g
+                        {formatNutritionDisplay(editingEntry.protein * parseFloat(editEntryServings || '1'), 'macro')}g
                       </div>
                       <div className="text-xs text-neutral-muted">Protein</div>
                     </div>

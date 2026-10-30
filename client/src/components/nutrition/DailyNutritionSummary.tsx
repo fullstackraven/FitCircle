@@ -1,3 +1,4 @@
+import { formatNutritionDisplay } from '@/lib/nutrition-display';
 import { calorieBalance, dailyNutrition, type Targets } from "@/lib/nutrition";
 import type { FoodEntry } from "@/lib/local-food-service";
 export function NutritionProgress({
@@ -71,7 +72,7 @@ export function DailyNutritionSummary({
         />
         <div className="flex justify-between gap-2 text-sm text-muted-foreground">
           <span>{Math.round(calories).toLocaleString()} consumed</span>
-          <span>{targets.calories.toLocaleString()} target</span>
+          <span>{formatNutritionDisplay(targets.calories, "calories")} target</span>
         </div>
         {balance.over > 0 && (
           <p className="text-xs text-supporting">
@@ -96,9 +97,9 @@ export function DailyNutritionSummary({
           <div key={key} className="rounded-xl bg-surface p-3 min-w-0">
             <h3 className="text-sm text-supporting mb-2">{label}</h3>
             <p className="tabular-nums text-sm font-semibold text-strong mb-2 break-words">
-              {totals[key].value.toFixed(1)}{" "}
+              {formatNutritionDisplay(totals[key].value)}{" "}
               <span className="text-muted-foreground font-normal">
-                / {targets[key]}g
+                / {formatNutritionDisplay(targets[key])}g
               </span>
             </p>
             <NutritionProgress
