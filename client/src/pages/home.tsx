@@ -247,14 +247,10 @@ export default function Home() {
                 <button
                   onClick={startWorkout}
                   aria-describedby="workout-session-help"
-                  className="fc-pill text-black font-semibold py-3 px-4 flex items-center justify-center space-x-3 shadow-lg transition-all duration-200 w-full"
-                  style={{
-                    background: 'var(--session-start-background)',
-                    boxShadow: 'var(--session-start-shadow)'
-                  }}
+                  className="fc-pill bg-accent-text text-[hsl(var(--on-selected-action))] font-semibold py-3 px-4 flex items-center justify-center space-x-3 transition-all duration-200 w-full"
                 >
-                  <Play className="w-5 h-5 text-black" />
-                  <span className="text-base text-black whitespace-nowrap">Start Workout Session</span>
+                  <Play className="w-5 h-5" />
+                  <span className="text-base whitespace-nowrap">Start Workout Session</span>
                 </button>
                 <p id="workout-session-help" className="sr-only">Start a Workout Session to track the duration of your workouts</p>
               </>

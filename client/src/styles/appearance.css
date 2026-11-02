@@ -87,8 +87,6 @@
   --danger-text: var(--foreground);
   --danger-hover: 0 74% 35%;
   --danger-tint: 0 0% 0% / 0;
-  --session-start-background: linear-gradient(135deg, #00ff41 0%, #00cc33 100%);
-  --session-start-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
   --action-solid: 142.12389380530973 71.97452229299363% 30.784313725490197%;
 }
 
@@ -189,8 +187,6 @@
   --danger-hover: 0 74% 35%;
   --danger-text: 0 72% 42%;
   --danger-tint: 0 86% 97%;
-  --session-start-background: #4ade80;
-  --session-start-shadow: none;
 }
 @supports (
   (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
