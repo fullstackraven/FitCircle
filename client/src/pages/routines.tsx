@@ -257,11 +257,11 @@ export default function RoutinesPage() {
         {routines.length > 0 && (
           <button
             onClick={handleAddRoutine}
-            className="fc-pill mb-4 flex min-h-12 w-full items-center justify-center gap-2 bg-action px-4 py-3 transition-colors hover:bg-action-hover"
+            className="fc-pill mb-4 flex min-h-12 w-full items-center justify-center gap-2 bg-accent-text text-[hsl(var(--on-selected-action))] px-4 py-3 transition-colors hover:bg-action-hover hover:text-on-action"
             data-testid="button-create-routine"
           >
-            <Plus className="h-4 w-4 text-on-action" aria-hidden="true" />
-            <span className="text-on-action font-semibold">Create Routine</span>
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            <span className="font-semibold">Create Routine</span>
           </button>
         )}
 
