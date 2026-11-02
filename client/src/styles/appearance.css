@@ -466,3 +466,12 @@
   outline: 1px solid var(--defined-input-border);
   outline-offset: -1px;
 }
+
+/* Inset, paint-only Today border: no grid or activity-indicator displacement.
+   text-secondary resolves to #475569 in Light and #CBD5E1 in Dark. */
+:root .calendar-classic .calendar-date-cell[data-calendar-today="true"] { outline:none; }
+.calendar-classic .calendar-date-cell[data-calendar-today="true"]::after {
+  content:""; position:absolute; inset:0; box-sizing:border-box;
+  border:2px solid hsl(var(--text-secondary)); border-radius:inherit;
+  pointer-events:none;
+}
