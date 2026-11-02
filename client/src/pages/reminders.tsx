@@ -290,7 +290,7 @@ export default function RemindersPage() {
       </div>
 
       {createPortal(
-        <button onClick={openDraft} aria-label="New Reminder" className="fc-pill reminders-add-button bg-accent-bright text-on-bright shadow-lg shadow-black/30 hover:bg-accent-bright-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus">
+        <button onClick={openDraft} aria-label="New Reminder" className="fc-pill reminders-add-button bg-accent-text text-[hsl(var(--on-selected-action))] shadow-lg shadow-black/30 hover:bg-action-hover hover:text-on-action focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus">
           <Plus size={28} aria-hidden="true" />
         </button>, document.body
       )}
