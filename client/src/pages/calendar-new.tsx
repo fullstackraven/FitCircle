@@ -1,3 +1,4 @@
+import { useWellnessClock } from '@/hooks/use-preserved-wellness';
 import { focusDashboardOnOpen, returnDashboardFocus } from '@/lib/dashboard-navigation';
 import { getTodayString } from '@/lib/date-utils';
 import { workoutLogComplete, isSetLog } from '@/lib/workout-progress';
@@ -65,6 +66,8 @@ const colorClassMap: { [key: string]: string } = {
 type WeeklyViewPage = 'workouts' | 'duration' | 'journal' | 'energy' | 'supplements';
 
 export default function CalendarPage() {
+  // Re-render at local midnight/resume even when no workout records change.
+  useWellnessClock();
   const [, navigate] = useLocation();
   const { 
     getWorkoutArray,
@@ -589,6 +592,7 @@ export default function CalendarPage() {
               return (
                 <div
                   key={date.toISOString()}
+                  data-calendar-today={isCurrent && isToday(date) ? "true" : undefined}
                   onClick={() => handleDateClick(date)}
                   className={`calendar-date-cell aspect-square rounded-xl flex items-center justify-center relative text-sm font-medium cursor-pointer transition-all hover:opacity-80
                     ${isCurrent ? "bg-surface text-strong" : "bg-surface-secondary text-supporting"}

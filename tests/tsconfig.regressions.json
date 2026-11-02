@@ -2,6 +2,7 @@
   "extends": "../tsconfig.json",
   "include": [
     "browser/training-editors.spec.ts",
+    "browser/calendar-today-border.spec.ts",
     "browser/nutrition-display.spec.ts",
     "nutrition-display.test.ts",
     "browser/add-food-history.spec.ts",
