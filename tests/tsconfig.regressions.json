@@ -2,6 +2,7 @@
   "extends": "../tsconfig.json",
   "include": [
     "browser/training-editors.spec.ts",
+    "browser/reminder-add-green.spec.ts",
     "browser/two-action-greens.spec.ts",
     "browser/calendar-today-border.spec.ts",
     "browser/nutrition-display.spec.ts",
