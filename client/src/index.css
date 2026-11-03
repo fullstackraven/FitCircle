@@ -580,9 +580,6 @@
 .wellness-goal-sheet > div { background: hsl(var(--surface)); border: 1px solid var(--wellness-goal-border); border-radius: 20px; padding: 20px; }
 .wellness-quick-add { display: flex; flex-wrap: wrap; gap: 8px; }
 .wellness-quick-add button { flex: 1; min-height: 44px; border: 1px solid hsl(var(--control-border)); border-radius: var(--radius-pill); font-variant-numeric: tabular-nums; }
-.wellness-timeline { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-left: 2px solid var(--wellness-accent); padding-left: 12px; }
-.wellness-timeline dt { font-size: .75rem; color: hsl(var(--muted-foreground)); }
-.wellness-timeline dd { margin-top: 4px; font-size: .875rem; overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) { .wellness-ring-value, .wellness-history-chevron { transition: none; } }
 @media (max-width: 350px) { .wellness-surface { padding: 14px; } .wellness-ring { width: 82px; height: 82px; flex-basis: 82px; } }
 .wellness-record-row { flex-wrap: wrap; gap: 6px; }
@@ -783,7 +780,22 @@
 
 .fc-search-group .fc-search:focus-visible { outline:none; box-shadow:none; }
 
-/* Native iOS date/time editors must shrink with the fasting form column. */
-.fasting-datetime { inline-size: 100%; min-inline-size: 0; max-inline-size: 100%; box-sizing: border-box; }
-.fasting-datetime::-webkit-date-and-time-value { min-width: 0; }
-.fasting-datetime::-webkit-datetime-edit { min-width: 0; padding: 0; }
+/* Keep Safari's intrinsic date/time width from expanding the fasting page grid.
+   Reset the native outer appearance, retaining native date/time picker behavior. */
+.form-page:is([data-form-page="fasting-add"], [data-form-page="fasting-edit"]) .form-page-content {
+  grid-template-columns: minmax(0, 1fr);
+}
+.fasting-datetime {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  inline-size: 100%;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  box-sizing: border-box;
+}
+.fasting-datetime::-webkit-date-and-time-value { min-width: 0; text-align: left; }
+.fasting-datetime::-webkit-datetime-edit { display: block; min-width: 0; padding: 0; }
