@@ -1,3 +1,4 @@
+import { FormActions } from '@/components/forms/form-page';
 import { FormScreen } from '@/components/forms/form-page';
 import { useRouteState, useRouteForm, useRecordFormState } from '@/components/forms/FormNavigation';
 import { GoalEditor, GoalSummary, GoalField } from "@/components/wellness/GoalEditor";
@@ -298,6 +299,36 @@ export default function MeditationPage() {
     alert("Meditation goal saved successfully!");
   };
 
+  const logMeditationAction=<Button
+              variant="outline"
+              className="w-full min-h-11"
+              onClick={() => {
+                const minutes = Number(inputMinutes);
+                if (
+                  Number.isFinite(minutes) &&
+                  minutes > 0 &&
+                  addSession(minutes)
+                ) {
+                  setInputMinutes("");
+                  setMeditationAddPageOpen(false);
+                }
+              }}
+            >
+              Log completed session
+            </Button>;
+  const startMeditationAction=<Button
+              onClick={() => {
+                // Keep validation failures on the editor instead of closing it.
+                const valid=parseInt(inputMinutes)>0;
+                void startMeditation();
+                if(valid)setMeditationAddPageOpen(false);
+              }}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-on-action"
+              data-testid="button-start-meditation"
+            >
+              <Play className="w-4 h-4 mr-2" />
+              Start Meditation
+            </Button>;
   return <FormScreen>{(
     <>
       <WellnessPageShell
@@ -674,12 +705,12 @@ export default function MeditationPage() {
           if (!open) setEditingSession(null);
         }}
       >
-        <FormContent className="bg-surface border-separator text-strong rounded-2xl">
+        <FormContent>
           <FormTitle>Edit Meditation</FormTitle>
           <FormDescription className="sr-only">
             Edit recorded session duration
           </FormDescription>
-          <Label htmlFor="edit-meditation-minutes">Duration (minutes)</Label>
+          <div className="form-field"><Label htmlFor="edit-meditation-minutes">Duration (minutes)</Label>
           <Input
             id="edit-meditation-minutes"
             type="number"
@@ -691,12 +722,13 @@ export default function MeditationPage() {
               )
             }
           />
+          </div>
           {error && (
             <p role="alert" className="text-warning-soft text-sm">
               {error}
             </p>
           )}
-          <Button
+<FormActions primary={<Button
             onClick={() => {
               if (!editingSession) return;
               const duration = Number(editingSession.duration);
@@ -711,7 +743,7 @@ export default function MeditationPage() {
             }}
           >
             Save Changes
-          </Button>
+          </Button>} secondary={<Button variant="ghost" onClick={()=>setEditingSession(null)}>Cancel</Button>}/>
         </FormContent>
       </FormGroup>
 
@@ -720,7 +752,7 @@ export default function MeditationPage() {
         open={isMeditationAddPageOpen}
         onOpenChange={setMeditationAddPageOpen}
       >
-        <FormContent className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl">
+        <FormContent>
           <FormTitle className="text-lg font-semibold text-center">
             Start Meditation
           </FormTitle>
@@ -743,34 +775,8 @@ export default function MeditationPage() {
                 min="1"
               />
             </div>
-            <Button
-              variant="outline"
-              className="w-full min-h-11"
-              onClick={() => {
-                const minutes = Number(inputMinutes);
-                if (
-                  Number.isFinite(minutes) &&
-                  minutes > 0 &&
-                  addSession(minutes)
-                ) {
-                  setInputMinutes("");
-                  setMeditationAddPageOpen(false);
-                }
-              }}
-            >
-              Log completed session
-            </Button>
-            <Button
-              onClick={() => {
-                startMeditation();
-                setMeditationAddPageOpen(false);
-              }}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-on-action"
-              data-testid="button-start-meditation"
-            >
-              <Play className="w-4 h-4 mr-2" />
-              Start Meditation
-            </Button>
+            {meditationIntent==='start'?logMeditationAction:startMeditationAction}
+<FormActions primary={meditationIntent==='start'?startMeditationAction:logMeditationAction} secondary={<Button variant="ghost" onClick={()=>setMeditationAddPageOpen(false)}>Cancel</Button>}/>
           </div>
         </FormContent>
       </FormGroup>

@@ -1,3 +1,4 @@
+import { FormActions } from '@/components/forms/form-page';
 import { FormScreen } from '@/components/forms/form-page';
 import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { formatNutritionDisplay } from '@/lib/nutrition-display';
@@ -51,7 +52,7 @@ function CompactFoodCard({food, count, actions}: {food: LocalFoodItem; count?: n
 export default function FoodTrackerPage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const [selectedDate, setSelectedDate] = useRouteState<string>('selectedDate', getTodayString());
+  const [selectedDate, setSelectedDate] = useRouteState<string>('selectedDate', () => {const date=new URLSearchParams(window.location.search).get('date');return date && getDateString(parseLocalDate(date))===date ? date : getTodayString();});
   const diary = useFoodDiary(selectedDate);
   const foodEntries = diary.entries;
   const [calculatorTargets, setCalculatorTargets] = useState<Targets | null>(null);
@@ -479,7 +480,7 @@ export default function FoodTrackerPage() {
       <div className="fitcircle-container">
         {/* Header */}
         <PageHeader title="Food Tracker" onBack={handleBack} backLabel="Back to Logs" backProps={{'data-testid':'button-back'}} sideWidth={88} actions={<>
-          <button onClick={() => navigate('/food-database')} className="fc-pill fc-icon-button fc-icon-action" aria-label="Food Database" data-testid="button-database"><Database size={20}/></button>
+          <button onClick={() => navigate('/food-database?returnTo='+encodeURIComponent('/food-tracker?date='+selectedDate))} className="fc-pill fc-icon-button fc-icon-action" aria-label="Food Database" data-testid="button-database"><Database size={20}/></button>
           <button onClick={() => navigate("/fitness-calculator", { state: { calculatorFrom: window.location.pathname + window.location.search } })} className="fc-pill fc-icon-button fc-icon-action" aria-label="Fitness Calculator" data-testid="button-calculator"><Calculator size={20}/></button>
         </>} />
 
@@ -536,15 +537,16 @@ export default function FoodTrackerPage() {
           </div>}
         </section>
         <FormGroup formId="food-scan" open={barcodeOpen} onOpenChange={setBarcodeOpen}>
-          <FormContent className="max-w-lg bg-canvas border-separator">
+          <FormContent>
             <FormHeader><FormTitle>Scan Barcode</FormTitle><FormDescription className="sr-only">Scan a barcode or enter it manually.</FormDescription></FormHeader>
             {barcodeOpen&&<BarcodeEntry onFound={result=>{diary.clearError();setAddingFood(result.local);setScannedDraft(result.draft);setAddEntryMeal(searchMeal);setBarcodeOpen(false);setFoodEntryPageOpen(true);}}/>}
+            <FormActions primary={null} secondary={<Button variant="ghost" onClick={()=>setBarcodeOpen(false)}>Cancel</Button>}/>
           </FormContent>
         </FormGroup>
 
         {/* Search page - triggered by meal 'Add food' buttons */}
         <FormGroup formId="food-search" open={searchOpen} onOpenChange={setSearchOpen}>
-          <FormContent className="bg-canvas border-separator text-strong rounded-3xl max-w-lg">
+          <FormContent>
             <FormHeader className="items-start">
               <FormTitle className="text-2xl font-bold text-left">
                 Add Food
@@ -601,7 +603,7 @@ export default function FoodTrackerPage() {
                 <div className="your-foods-description"><span>{yourFoodTab === 'recent' ? 'Foods logged in the last 7 days' : 'Your most logged foods of all time'}</span><span>{yourFoodTab === 'recent' ? 'Newest first' : 'Most used first'}</span></div>
               </>}
               {/* Food List */}
-              <div className="min-w-0 overflow-y-auto pr-2" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <div className="min-w-0">
                 {searchQuery ? (
                   // Search Results
                   searchResults.length > 0 ? (
@@ -629,6 +631,7 @@ export default function FoodTrackerPage() {
                 )}
               </div>
                 </div>
+                <FormActions primary={null} secondary={<Button variant="ghost" onClick={()=>setSearchOpen(false)}>Cancel</Button>}/>
               </FormContent>
         </FormGroup>
 
@@ -637,7 +640,7 @@ export default function FoodTrackerPage() {
 
         {/* Custom Food FormGroup */}
         <FormGroup formId="food-custom" open={isFoodCustomPageOpen} onOpenChange={setFoodCustomPageOpen}>
-          <FormContent className="bg-neutral-surface border-neutral-control-border text-strong rounded-2xl max-w-2xl overflow-y-auto">
+          <FormContent>
             <FormHeader>
               <FormTitle>Create Custom Food</FormTitle>
               <FormDescription className="sr-only">Enter food and serving details.</FormDescription>
@@ -913,8 +916,14 @@ export default function FoodTrackerPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex space-x-3 pt-4 border-t border-neutral-control-border">
-                <Button
+              <FormActions primary={<Button
+                  onClick={handleCustomFoodSubmit}
+                  disabled={!customFoodData.name.trim()}
+                  className="flex-1 bg-action hover:bg-action-hover text-on-action disabled:opacity-50 disabled:cursor-not-allowed"
+                  data-testid="button-save-custom"
+                >
+                  Save Food
+                </Button>} secondary={<Button
                   onClick={() => {
                     setFoodCustomPageOpen(false);
                     setEditingEntryId(null);
@@ -924,23 +933,14 @@ export default function FoodTrackerPage() {
                   data-testid="button-cancel-custom"
                 >
                   Cancel
-                </Button>
-                <Button
-                  onClick={handleCustomFoodSubmit}
-                  disabled={!customFoodData.name.trim()}
-                  className="flex-1 bg-action hover:bg-action-hover text-on-action disabled:opacity-50 disabled:cursor-not-allowed"
-                  data-testid="button-save-custom"
-                >
-                  Save Food
-                </Button>
-              </div>
+                </Button>} />
             </div>
           </FormContent>
         </FormGroup>
 
         {/* Add Entry page (When adding food from search/recent) */}
         <FormGroup formId="food-entry" open={isFoodEntryPageOpen} onOpenChange={setFoodEntryPageOpen}>
-          <FormContent className="bg-canvas border-separator text-strong rounded-2xl max-w-md">
+          <FormContent>
             <FormHeader>
               <FormTitle>Add Entry</FormTitle>
             </FormHeader>
@@ -955,7 +955,7 @@ export default function FoodTrackerPage() {
 
         {/* Edit Entry page (Page for adjusting servings and meal) */}
         <FormGroup formId="food-edit" open={isFoodEditPageOpen} onOpenChange={setFoodEditPageOpen}>
-          <FormContent className="bg-neutral-surface border-neutral-control-border text-strong rounded-2xl max-w-md">
+          <FormContent>
             <FormHeader>
               <FormTitle>Edit Entry</FormTitle>
             </FormHeader>
@@ -1043,22 +1043,19 @@ export default function FoodTrackerPage() {
 
                 {diary.saveError && <p role="alert" className="text-sm text-feature-red">{diary.saveError}</p>}
                 {/* Action Buttons */}
-                <div className="flex space-x-3 pt-2">
-                  <Button
-                    onClick={() => setFoodEditPageOpen(false)}
-                    variant="outline"
-                    className="flex-1 border-neutral-control-border text-neutral-supporting hover:bg-neutral-control "
-                  >
-                    Cancel
-                  </Button>
-                  <Button
+                <FormActions primary={<Button
                     onClick={handleSaveEditEntry}
                     className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action "
                     data-testid="button-save-edit-entry"
                   >
                     Save
-                  </Button>
-                </div>
+                  </Button>} secondary={<Button
+                    onClick={() => setFoodEditPageOpen(false)}
+                    variant="outline"
+                    className="flex-1 border-neutral-control-border text-neutral-supporting hover:bg-neutral-control "
+                  >
+                    Cancel
+                  </Button>} />
               </div>
             )}
           </FormContent>

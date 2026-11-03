@@ -1,22 +1,26 @@
-/* Normal app pages: shared shell owns status-bar spacing, scrolling and keyboard. */
-.form-page { width:100%; max-width:48rem; margin:0 auto; padding:16px; min-height:100%; }
-.form-page .form-page-content { width:100%; max-width:none; max-height:none; overflow:visible; position:static; }
-.form-page .dialog-header { padding-inline:0; text-align:left; }
-.form-page .dialog-header::before,.form-page .goal-editor-handle,.form-page .goal-editor-close { display:none; }
-.form-page .dialog-footer { position:static; margin-top:16px; }
-.form-page .training-editor { align-self:auto; border:0; border-radius:0; background:transparent; display:grid; padding:0; gap:20px; }
-.form-page .training-editor .dialog-header { padding-top:0; }
+/* Routed editors share the normal app scroller and its existing 16px margins.
+   The content is a page grid, never a raised/width-constrained dialog surface. */
+.form-page { width:100%; max-width:48rem; margin-inline:auto; padding:8px 0 24px; min-width:0; }
+.form-page-content { display:grid; gap:24px; width:100%; min-width:0; color:hsl(var(--text-strong)); }
+.form-introduction { text-align:left; }
+.form-introduction > p { margin:0; color:hsl(var(--muted-foreground)); font-size:14px; line-height:1.6; }
+.form-footer { display:grid; gap:12px; margin-top:0; }
+.form-actions { display:grid; gap:8px; margin-top:8px; }
+.form-action-primary > :is(button,a),.form-action-secondary > :is(button,a) { width:100%; min-height:48px; margin:0; }
+.form-action-primary > button { background:hsl(var(--action-selected)); color:hsl(var(--on-action)); font-size:16px; font-weight:600; }
+.form-action-primary > button:hover:not(:disabled) { background:hsl(var(--action)); }
+.form-action-secondary > button { background:transparent; border-color:transparent; box-shadow:none; color:hsl(var(--text-secondary)); }
+.form-field { display:grid; gap:8px; min-width:0; }
+.form-page .training-editor { --editor-space:20px; gap:24px; }
+.form-page .editor-sections { gap:24px; }
+.form-page .editor-footer { margin-top:0; padding-top:20px; }
 .form-page .goal-editor { border:0; border-radius:0; padding:0; background:transparent; }
 .form-page .goal-editor-header { padding:0; }
-.form-page .goal-editor-header h2 { display:none; }
 .form-page .goal-editor-header p { margin-top:0; }
 .form-page .goal-editor-summary { margin-top:8px; }
-.form-page .dialog-body { display:contents; overflow:visible; }
-.form-page-content > .dialog-header:empty { display:none; }
 .form-page input,.form-page select,.form-page textarea { scroll-margin-block:16px; }
 .form-page .form-page-content > .flex:first-child > h3 { display:none; }
-
-/* Retain the existing contained, accessible field focus after leaving the overlay. */
+/* Keep fields comfortable and their contained focus visible at narrow widths. */
 .app-content .form-page :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),textarea,select,[role="combobox"]) { min-width:0; max-width:100%; box-sizing:border-box; }
 .app-content .form-page :where(input,textarea,select,[role="combobox"]):is(:focus,:focus-visible) {
   outline:none; --tw-ring-offset-shadow:0 0 #0000; --tw-ring-shadow:0 0 #0000;
@@ -24,4 +28,9 @@
 }
 @media (forced-colors:active) {
   .app-content .form-page :is(input,textarea,select,[role="combobox"]):focus-visible {outline:1px solid Highlight;outline-offset:-2px;box-shadow:none;}
+}
+
+.form-introduction:empty {display:none;}
+@media(max-width:767px) {
+  .form-page :where(input,textarea,select,[role="combobox"]) { font-size:16px; }
 }

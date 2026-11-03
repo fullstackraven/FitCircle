@@ -51,7 +51,7 @@ export function RoutineEditor({ isOpen, onClose, onSave, editingRoutine }: Routi
 
   return (
     <FormGroup formId="routine" open={isOpen} onOpenChange={handleClose}>
-      <FormContent className="training-editor max-w-md text-strong">
+      <FormContent variant="training">
         <FormHeader>
           <FormTitle>{editingRoutine ? 'Edit Routine' : 'New Routine'}</FormTitle>
           <FormDescription>{editingRoutine ? 'Update your training schedule' : 'Build your weekly training schedule'}</FormDescription>

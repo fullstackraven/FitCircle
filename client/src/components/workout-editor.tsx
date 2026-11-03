@@ -76,7 +76,7 @@ export function WorkoutEditor({ isOpen, onClose, onSave, onDelete, availableColo
 
   return (
     <FormGroup formId="workout" open={isOpen} onOpenChange={onClose}>
-      <FormContent className="training-editor max-w-md text-strong">
+      <FormContent variant="training">
         <FormHeader>
           <FormTitle>{editingWorkout ? 'Edit Workout' : 'New Workout'}</FormTitle>
           <FormDescription>{editingWorkout ? 'Update exercise settings' : 'Set up an exercise for your Home dashboard'}</FormDescription>

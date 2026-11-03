@@ -1,3 +1,4 @@
+import { routedFormCases as routes } from '../fixtures/routed-form-cases';
 import { test, expect, type Page } from '@playwright/test';
 import { seedWellnessAppearance } from '../fixtures/appearance-wellness';
 
@@ -31,18 +32,7 @@ test('workout/routine routes retain editing, direct refresh and unsaved Back pro
  await page.getByRole('button',{name:'Create Routine',exact:true}).click();await expect(page).toHaveURL(/routines$/);
 });
 
-const routes=[
- ['/workouts/new','Add Workout'],['/workouts/edit?id=w','Edit Workout'],
- ['/routines/workouts/new?routine=r','Add Workout'],['/routines/workouts/edit?id=w','Edit Workout'],['/routines/new','Create Routine'],['/routines/edit?id=r','Edit Routine'],
- ['/dynamic-overview/2026-10-19/duration','Edit Workout Duration'],['/widgets/settings','Widget Settings'],
- ['/cardio/goal','Cardio Goal'],['/cardio/add','Add Cardio'],['/cardio/edit?id=cardio','Edit Cardio'],['/cardio/types/new','Add Custom Cardio Type'],
- ['/meditation/goal','Meditation Goal'],['/meditation/add','Add Meditation'],['/meditation/start','Start Meditation'],['/meditation/edit?id=practice','Edit Meditation'],
- ['/hydration/goal','Hydration Goal'],['/hydration/add','Add Hydration'],['/hydration/edit?id=intake','Edit Hydration'],
- ['/fasting/goal','Intermittent Fasting Goal'],['/fasting/add','Add Fast'],['/fasting/edit?id=fast','Edit Fast'],
- ['/food-tracker/add?meal=lunch&date=2026-10-19','Add Food'],['/food-tracker/scan','Scan Barcode'],['/food-tracker/custom/new','Create Custom Food'],['/food-tracker/custom/edit?id=custom-appearance','Edit Custom Food'],
- ['/food-tracker/entry/new?id=custom-appearance&meal=lunch','Add Food Entry'],['/food-tracker/entry/edit?id=logged-appearance&date=2026-10-19','Edit Food Entry'],
- ['/food-database/edit?id=custom-appearance','Edit Food'],['/supplements-page/new','Add Supplement'],['/profile/edit','Edit Profile'],['/profile/goals','Fitness Goals'],
-] as const;
+
 for(const mode of ['light','dark'])test(`${mode}: all 30 workflows and 32 origin routes are normal mobile pages`,async({page})=>{
  test.setTimeout(120000);await seedWellnessAppearance(page,mode);
  for(const [path,title]of routes){
@@ -57,7 +47,7 @@ for(const mode of ['light','dark'])test(`${mode}: all 30 workflows and 32 origin
 test('all record edits reject missing ids without writing personal records',async({page})=>{
  await seed(page);
  const before=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>key==='workout-tracker-data'||key.startsWith('fitcircle_food_')||key==='fitcircle_fasting_logs')));
- for(const path of ['workouts/edit','routines/edit','cardio/edit','hydration/edit','meditation/edit','fasting/edit','food-tracker/entry/edit','food-database/edit']){
+ for(const path of ['workouts/edit','routines/edit','cardio/edit','hydration/edit','meditation/edit','fasting/edit','food-tracker/entry/edit','food-database/edit','food-tracker/custom/edit','food-tracker/entry/new']){
   await page.goto(`${path}?id=does-not-exist`);await expect(page.getByRole('alert')).toContainText(/no longer exists|unavailable/);await expect(page.locator('[data-form-page]')).toHaveCount(0);
  }
  expect(await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>key==='workout-tracker-data'||key.startsWith('fitcircle_food_')||key==='fitcircle_fasting_logs')))).toEqual(before);
@@ -66,7 +56,7 @@ test('all record edits reject missing ids without writing personal records',asyn
 test('wellness entry pages create and edit records using the existing handlers',async({page})=>{
  await seed(page);
  await page.goto('cardio/add');const cardio=page.locator('[data-form-page]');await cardio.getByRole('combobox').click();await page.getByRole('option',{name:'Walking',exact:true}).click();await cardio.locator('input[type=number]').first().fill('12');
- await cardio.getByRole('button',{name:/Add Entry|Log Cardio|Save/i}).last().click();await expect(page).toHaveURL(/cardio$/);
+ await cardio.getByRole('button',{name:/Add Cardio|Save/i}).last().click();await expect(page).toHaveURL(/cardio$/);
  await page.goto('cardio/edit?id=cardio');await page.locator('[data-form-page] input[type=number]').first().fill('80');await page.getByRole('button',{name:/Save Changes|Update Entry/}).click();await expect(page).toHaveURL(/cardio$/);
  await page.goto('meditation/add');await page.getByLabel('Duration (minutes)',{exact:true}).fill('7');await page.getByRole('button',{name:'Log completed session',exact:true}).click();await expect(page).toHaveURL(/meditation$/);
  await page.goto('meditation/edit?id=practice');await page.locator('#edit-meditation-minutes').fill('12');await page.getByRole('button',{name:'Save Changes',exact:true}).click();await expect(page).toHaveURL(/meditation$/);
@@ -112,7 +102,7 @@ test('nested Cardio type returns to the unfinished Add Cardio page without losin
  await page.locator('[data-form-page] button').filter({has:page.locator('svg.lucide-plus')}).first().click();await expect(page).toHaveURL(/cardio\/types\/new$/);
  await page.locator('[data-form-page] input').fill('Routed activity');await page.getByRole('button',{name:'Add Type',exact:true}).click();await expect(page).toHaveURL(/cardio\/add$/);await expect(page.locator('[data-form-page] input[type=number]').first()).toHaveValue('24');
  page.once('dialog',d=>d.dismiss());await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page).toHaveURL(/cardio\/add$/);
- await page.getByRole('combobox').click();await page.getByRole('option',{name:'Routed activity',exact:true}).click();await page.getByRole('button',{name:'Add Entry',exact:true}).click();await expect(page).toHaveURL(/cardio$/);
+ await page.getByRole('combobox').click();await page.getByRole('option',{name:'Routed activity',exact:true}).click();await page.getByRole('button',{name:'Add Cardio',exact:true}).click();await expect(page).toHaveURL(/cardio$/);
 });
 
 test('browser Back protects drafts, Cancel discards explicitly, and Home Timer remains a popup',async({page})=>{

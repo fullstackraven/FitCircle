@@ -9,7 +9,7 @@ export function GoalEditor({ title, subtitle, onDismiss, onSave, saveLabel = 'Sa
   title: string; subtitle: string; onDismiss: () => void; onSave: () => void;
   formId?: string; saveLabel?: string; children: ReactNode; summary: ReactNode;
 }) {
-  return <FormContent title={title} onCancel={onDismiss} className="text-strong">
+  return <FormContent title={title} onCancel={onDismiss}>
     <div className="goal-editor">
       <header className="goal-editor-header">
         <p>{subtitle}</p>

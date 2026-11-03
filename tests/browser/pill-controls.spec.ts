@@ -27,11 +27,20 @@ for(const theme of ['dark','light'])for(const width of [320,390,1280]) {
   await page.mouse.move(0,0);
   for(const expected of protectedControls.filter(r=>r.theme===theme&&r.width===width)){
    const actual=await page.getByRole('button',{name:expected.name,exact:true}).evaluate((el,keys)=>{const c=getComputedStyle(el),r=el.getBoundingClientRect();return {rect:{x:r.x,y:r.y,width:r.width,height:r.height},style:Object.fromEntries(keys.map(k=>[k,c.getPropertyValue(k)]))};},Object.keys(expected.style));
-   // The popup's 1px shell border is gone. Preserve every control style and
-   // height, and measure its two-column width/position against the page search.
+   // Page margins give these unchanged controls more room than the old
+   // popup. Keep their styles/touch floor exact; let text determine row height.
    const searchBox = await search.boundingBox();
    const width=(searchBox!.width-12)/2;const column=expected.name==='Scan Barcode'?0:1;
-   expect(actual).toEqual({rect:{...(expected.rect as Record<string,number>),x:searchBox!.x+column*(width+12),width,y:searchBox!.y+searchBox!.height+16},style:{...expected.style,width:`${width}px`}});
+   const {height:oldHeight,...expectedStyle}=expected.style;
+   const {height:renderedHeight,...actualStyle}=actual.style;
+   expect({x:actual.rect.x,y:actual.rect.y,width:actual.rect.width}).toEqual({x:searchBox!.x+column*(width+12),width,y:searchBox!.y+searchBox!.height+16});
+   expect(actualStyle).toEqual({...expectedStyle,width:`${width}px`});
+   const control=page.getByRole('button',{name:expected.name,exact:true});
+   await expect(control).toHaveCSS('min-height','128px');
+   expect(actual.rect.height).toBeGreaterThanOrEqual(128);
+   expect(await control.evaluate(el=>el.scrollHeight<=el.clientHeight)).toBe(true);
+   const sibling=page.getByRole('button',{name:expected.name==='Scan Barcode'?'Create Custom Food':'Scan Barcode',exact:true});
+   expect(actual.rect.height).toBe((await sibling.boundingBox())!.height);
   }
   await check();
   await expect(search).toHaveCSS('border-top-left-radius','9999px');await search.focus();await expect(search).toBeFocused();

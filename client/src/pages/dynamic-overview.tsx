@@ -1,3 +1,4 @@
+import { FormActions } from '@/components/forms/form-page';
 import { FormScreen } from '@/components/forms/form-page';
 import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { PageHeader } from '@/components/ui/presentation';
@@ -728,7 +729,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
       </div>
       {/* Duration Edit Modal */}
       <FormGroup formId="duration" open={isDurationPageOpen} onOpenChange={setDurationPageOpen}>
-        <FormContent className="bg-surface text-strong border-separator">
+        <FormContent>
           <FormHeader>
             <FormTitle>Edit Workout Duration</FormTitle>
           </FormHeader>
@@ -781,29 +782,26 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
               </div>
             </div>
           </div>
-          <FormFooter className="flex flex-col sm:flex-row gap-2">
+          <FormFooter>
             {getEditDurationTotal() === 0 && (
               <p className="text-sm text-feature-red flex-1 text-center sm:text-left">
                 Duration must be greater than 0
               </p>
             )}
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => setDurationPageOpen(false)}
-                className="fc-pill px-4 py-2 bg-surface-secondary hover:bg-control-strong text-strong transition-colors"
-                data-testid="button-cancel-duration"
-              >
-                Cancel
-              </button>
-              <button
+            <FormActions primary={<button
                 onClick={handleSaveDuration}
                 disabled={getEditDurationTotal() === 0}
                 className="fc-pill px-4 py-2 bg-action hover:bg-action-hover text-on-action transition-colors disabled:bg-control-strong disabled:cursor-not-allowed disabled:opacity-50"
                 data-testid="button-save-duration"
               >
                 Save Duration
-              </button>
-            </div>
+              </button>} secondary={<button
+                onClick={() => setDurationPageOpen(false)}
+                className="fc-pill px-4 py-2 bg-surface-secondary hover:bg-control-strong text-strong transition-colors"
+                data-testid="button-cancel-duration"
+              >
+                Cancel
+              </button>} />
           </FormFooter>
         </FormContent>
       </FormGroup>

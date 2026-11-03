@@ -1,3 +1,4 @@
+import { FormActions } from '@/components/forms/form-page';
 import { formatNutritionDisplay } from '@/lib/nutrition-display';
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -315,19 +316,16 @@ export function FoodEntryForm({
             : ""}
         </p>
       )}
-      <div className="grid grid-cols-2 gap-3">
-        <Button variant="outline" disabled={busy} onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button
+      <FormActions primary={<Button
           data-testid="button-save-add-entry"
           disabled={busy}
           className="bg-green-400 text-on-bright"
           onClick={() => void add()}
         >
           {busy ? "Saving…" : "Add"}
-        </Button>
-      </div>
+        </Button>} secondary={<Button variant="outline" disabled={busy} onClick={onCancel}>
+          Cancel
+        </Button>} />
     </div>
   );
 }

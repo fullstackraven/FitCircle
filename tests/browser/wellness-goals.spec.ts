@@ -335,7 +335,7 @@ test("failed explicit hydration writes preserve original bytes and visible draft
   await page.getByRole("button", { name: "Add Liquid", exact: true }).click();
   const dialog = page.locator('[data-form-page], [role="dialog"]');
   await dialog.getByLabel("Amount (oz)", {exact: true}).fill("12");
-  await dialog.getByRole("button", { name: "Add", exact: true }).click();
+  await dialog.getByRole("button", { name: "Add Hydration", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("quota");
   expect(await bytes(page)).toEqual(before);
 });

@@ -356,7 +356,7 @@ for (const mode of ["dark", "light"]) {
     expect(await nutritionBytes(page)).toEqual(before);
   });
 }
-test("System development appearance updates charts, portals and nutrition without data writes", async ({
+test("System development appearance updates charts, routed editors and nutrition without data writes", async ({
   page,
 }) => {
   await page.emulateMedia({ colorScheme: "light" });
@@ -367,18 +367,25 @@ test("System development appearance updates charts, portals and nutrition withou
   );
   const before = await nutritionBytes(page);
   await page.getByTestId("button-add-breakfast").click();
-  const surface = await page
-    .locator('.form-page-content')
-    .evaluate((el) => getComputedStyle(el).backgroundColor);
+  // Routed editors inherit the canvas; their outer wrapper stays transparent.
+  const content = page.locator('.form-page-content');
+  await expect(content).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  const canvas = page.locator('.app-shell');
+  const search = page.getByTestId('input-search');
+  const surface = await canvas.evaluate(el => getComputedStyle(el).backgroundColor);
+  const fieldSurface = await search.evaluate(el => getComputedStyle(el).backgroundColor);
+  await search.fill('Synthetic');
   await page.emulateMedia({ colorScheme: "dark" });
   await expect(page.locator("html")).toHaveAttribute("data-appearance", "dark");
   await expect
     .poll(() =>
-      page
-        .locator('.form-page-content')
-        .evaluate((el) => getComputedStyle(el).backgroundColor),
+      canvas.evaluate((el) => getComputedStyle(el).backgroundColor),
     )
     .not.toBe(surface);
+  await expect.poll(() => search.evaluate(el => getComputedStyle(el).backgroundColor)).not.toBe(fieldSurface);
+  await expect(content).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(search).toHaveValue('Synthetic');
+  await expect(page).toHaveURL(/food-tracker\/add/);
   await page
     .getByRole("button", { name: "Back", exact: true })
     .click();

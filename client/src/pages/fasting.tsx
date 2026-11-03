@@ -1,3 +1,4 @@
+import { FormActions } from '@/components/forms/form-page';
 import { FormScreen } from '@/components/forms/form-page';
 import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { GoalEditor, GoalSummary, GoalField } from "@/components/wellness/GoalEditor";
@@ -505,7 +506,7 @@ export default function FastingPage() {
       {/* Log Fast FormGroup */}
       <FormGroup formId="fasting-entry" open={isFastingEntryPageOpen} onOpenChange={setFastingEntryPageOpen}>
         <FormContent
-          className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl"
+
         >
           <FormTitle className="text-lg font-semibold text-center">
             {editingLog ? "Edit Fast" : "Log Fast"}
@@ -520,7 +521,7 @@ export default function FastingPage() {
               <label className="block text-sm font-medium text-supporting mb-2">
                 Start Fast
               </label>
-              <div className="space-y-2 max-w-[280px] mx-auto">
+              <div className="space-y-2">
                 <Input
                   type="date"
                   value={startDate}
@@ -541,7 +542,7 @@ export default function FastingPage() {
               <label className="block text-sm font-medium text-supporting mb-2">
                 End Fast
               </label>
-              <div className="space-y-2 max-w-[280px] mx-auto">
+              <div className="space-y-2">
                 <Input
                   type="date"
                   value={endDate}
@@ -587,21 +588,18 @@ export default function FastingPage() {
             )}
 
             {/* Buttons */}
-            <div className="flex space-x-2 pt-2">
-              <Button
+            <FormActions primary={<Button
+                onClick={handleLogFast}
+                className="flex-1 bg-action hover:bg-action-hover text-on-action"
+              >
+                {editingLog ? "Update Fast" : "Log Fast"}
+              </Button>} secondary={<Button
                 onClick={handleCancelEdit}
                 variant="outline"
                 className="flex-1 border-control text-supporting hover:bg-surface-secondary"
               >
                 Cancel
-              </Button>
-              <Button
-                onClick={handleLogFast}
-                className="flex-1 bg-action hover:bg-action-hover text-on-action"
-              >
-                {editingLog ? "Update Fast" : "Log Fast"}
-              </Button>
-            </div>
+              </Button>} />
           </div>
         </FormContent>
       </FormGroup>

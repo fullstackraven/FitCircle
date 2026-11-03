@@ -1,3 +1,4 @@
+import { FormActions } from '@/components/forms/form-page';
 import { FormScreen } from '@/components/forms/form-page';
 import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { GoalEditor, GoalSummary, GoalField } from "@/components/wellness/GoalEditor";
@@ -410,7 +411,7 @@ export default function HydrationPage() {
         open={isHydrationAddPageOpen}
         onOpenChange={setHydrationAddPageOpen}
       >
-        <FormContent className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl">
+        <FormContent>
           <FormTitle className="text-lg font-semibold text-center">
             Add Liquid
           </FormTitle>
@@ -502,10 +503,9 @@ export default function HydrationPage() {
               </div>
             </details>
             {/* Custom Amount */}
-            <div className="flex space-x-2">
-              <div className="min-w-0 flex-1">
+            <div className="form-field"><Label htmlFor="hydration-amount">Amount (oz)</Label><div className="min-w-0 flex-1">
                 <Input
-                  type="number"
+                  id="hydration-amount" type="number"
                   value={addAmount}
                   onChange={(e) => setAddAmount(e.target.value)}
                   onFocus={() => setAddAmountFocused(true)}
@@ -513,24 +513,21 @@ export default function HydrationPage() {
                   aria-label="Amount (oz)"
                   className="bg-surface-secondary border-control text-strong"
                 />
-              </div>
-              <Button
+              </div></div>
+<FormActions primary={<Button
                 onClick={() => {
                   if (handleAddHydration()) setHydrationAddPageOpen(false);
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-on-action"
               >
-                <Plus className="w-4 h-4 mr-1" />
-                Add
-              </Button>
-            </div>
+                <Plus className="w-4 h-4 mr-1" />Add Hydration</Button>} secondary={<Button variant="ghost" onClick={()=>setHydrationAddPageOpen(false)}>Cancel</Button>}/>
           </div>
         </FormContent>
       </FormGroup>
 
       {/* Edit Entry FormGroup */}
       <FormGroup formId="hydration-edit" open={isHydrationEditPageOpen} onOpenChange={setHydrationEditPageOpen}>
-        <FormContent className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl">
+        <FormContent>
           <FormTitle className="text-lg font-semibold text-center">
             Edit Entry
           </FormTitle>
@@ -588,22 +585,19 @@ export default function HydrationPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex space-x-2 pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setHydrationEditPageOpen(false)}
-                className="flex-1 border-control text-supporting hover:bg-surface-secondary"
-              >
-                Cancel
-              </Button>
-              <Button
+            <FormActions primary={<Button
                 onClick={handleSaveEdit}
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action"
                 data-testid="button-save-edit"
               >
                 Save Changes
-              </Button>
-            </div>
+              </Button>} secondary={<Button
+                variant="outline"
+                onClick={() => setHydrationEditPageOpen(false)}
+                className="flex-1 border-control text-supporting hover:bg-surface-secondary"
+              >
+                Cancel
+              </Button>} />
           </div>
         </FormContent>
       </FormGroup>

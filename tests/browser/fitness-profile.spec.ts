@@ -56,7 +56,7 @@ test('Home dashboard card, profile totals and existing statistics share definiti
   await card.click();await page.getByRole('button',{name:'View Workout Statistics',exact:true}).click();
   const totals=page.getByRole('region',{name:'All-Time Statistics',exact:true});
   await expect(totals.getByText('33.3%',{exact:true})).toBeVisible();await expect(totals.getByText('15',{exact:true})).toBeVisible();
-  await page.goto('profile');await page.getByRole('button',{name:/Body Measurements/}).click();await expect(page).toHaveURL(/\/measurements$/);
+  await page.goto('profile');await page.getByRole('button',{name:/Body Measurements/}).click();await expect(page).toHaveURL(/\/measurements\?returnTo=/);
 });
 
 test('calculator uses latest dated weight, then prefers explicit DOB without changing sex or profile metadata',async({page})=>{

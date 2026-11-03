@@ -18,7 +18,7 @@ test('all 30 form workflows have unique registered routes and mobile test cases'
       }
     }ts.forEachChild(node,visit);
   }visit(app);
-  const browser=fs.readFileSync('tests/browser/routed-forms.spec.ts','utf8');
+  const browser=fs.readFileSync('tests/fixtures/routed-form-cases.ts','utf8');
   for(const [id,,path]of formDefinitions){
     const actual=id==='duration'?'/dynamic-overview/2026-10-19/duration':path;
     assert.ok(literal.has(actual)||patterns.some(pattern=>pattern.test(actual)),`${id}: missing route registration`);

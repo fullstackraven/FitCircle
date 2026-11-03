@@ -1,3 +1,4 @@
+import { FormActions } from '@/components/forms/form-page';
 import { FormScreen } from '@/components/forms/form-page';
 import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { GoalEditor, GoalSummary, GoalField } from "@/components/wellness/GoalEditor";
@@ -310,7 +311,7 @@ export default function CardioPage() {
           <FormTrigger asChild>
             <WellnessPrimaryAction>Add Cardio</WellnessPrimaryAction>
           </FormTrigger>
-          <FormContent className="sm:max-w-md bg-surface border-separator text-strong rounded-2xl">
+          <FormContent>
             <FormHeader>
               <FormTitle className="text-xl font-semibold text-center text-strong">
                 Add Cardio Entry
@@ -332,7 +333,7 @@ export default function CardioPage() {
                     }
                   >
                     <SelectTrigger className="flex-1 bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500">
-                      <SelectValue />
+                      <SelectValue placeholder="Select cardio type" />
                     </SelectTrigger>
                     <SelectContent className="bg-surface-secondary border-control">
                       {cardioTypes.map((type) => (
@@ -347,11 +348,11 @@ export default function CardioPage() {
                     onOpenChange={setCardioTypePageOpen}
                   >
                     <FormTrigger asChild>
-                      <Button variant="outline" size="icon" className="px-3">
+                      <Button variant="outline" size="icon" className="px-3" aria-label="Add custom cardio type">
                         <Plus className="w-4 h-4" />
                       </Button>
                     </FormTrigger>
-                    <FormContent className="sm:max-w-md bg-surface border-separator text-strong rounded-2xl">
+                    <FormContent>
                       <FormHeader>
                         <FormTitle className="text-lg font-semibold text-center text-strong">
                           Add Custom Type
@@ -372,21 +373,18 @@ export default function CardioPage() {
                             className="bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500"
                           />
                         </div>
-                        <div className="flex space-x-2">
-                          <Button
+                        <FormActions primary={<Button
                             onClick={handleAddCustomType}
                             className="flex-1"
                           >
                             Add Type
-                          </Button>
-                          <Button
+                          </Button>} secondary={<Button
                             variant="outline"
                             onClick={() => setCardioTypePageOpen(false)}
                             className="border-control text-supporting hover:bg-surface-secondary"
                           >
                             Cancel
-                          </Button>
-                        </div>
+                          </Button>} />
                       </div>
                     </FormContent>
                   </FormGroup>
@@ -435,25 +433,22 @@ export default function CardioPage() {
                     setNewEntry({ ...newEntry, notes: e.target.value })
                   }
                   className="bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500"
-                  rows={2}
+                  rows={4}
                 />
               </div>
 
-              <div className="flex space-x-2">
-                <Button
+              <FormActions primary={<Button
                   onClick={handleAddEntry}
                   className="flex-1 bg-action-selected hover:bg-action text-on-action"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Entry
-                </Button>
-                <Button
+                  Add Cardio
+                </Button>} secondary={<Button
                   variant="outline"
                   onClick={() => setCardioAddPageOpen(false)}
                 >
                   Cancel
-                </Button>
-              </div>
+                </Button>} />
             </div>
           </FormContent>
         </FormGroup>
@@ -698,7 +693,7 @@ export default function CardioPage() {
 
         {/* Edit Entry FormGroup */}
         <FormGroup formId="cardio-edit" open={isCardioEditPageOpen} onOpenChange={setCardioEditPageOpen}>
-          <FormContent className="sm:max-w-md bg-surface border-separator text-strong rounded-2xl">
+          <FormContent>
             <FormHeader>
               <FormTitle className="text-xl font-semibold text-center text-strong">
                 Edit Cardio Entry
@@ -719,7 +714,7 @@ export default function CardioPage() {
                   }
                 >
                   <SelectTrigger className="bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500">
-                    <SelectValue />
+                    <SelectValue placeholder="Select cardio type" />
                   </SelectTrigger>
                   <SelectContent className="bg-surface-secondary border-control">
                     {cardioTypes.map((type) => (
@@ -771,25 +766,22 @@ export default function CardioPage() {
                     setNewEntry({ ...newEntry, notes: e.target.value })
                   }
                   className="bg-surface-secondary border-control text-strong placeholder-muted-foreground focus:border-green-500 focus:ring-green-500"
-                  rows={2}
+                  rows={4}
                 />
               </div>
 
-              <div className="flex space-x-2">
-                <Button
+              <FormActions primary={<Button
                   onClick={handleUpdateEntry}
                   className="flex-1 bg-action-selected hover:bg-action text-on-action"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   Update Entry
-                </Button>
-                <Button
+                </Button>} secondary={<Button
                   variant="outline"
                   onClick={() => setCardioEditPageOpen(false)}
                 >
                   Cancel
-                </Button>
-              </div>
+                </Button>} />
             </div>
           </FormContent>
         </FormGroup>

@@ -52,6 +52,8 @@ function StatisticMetrics({ reps, completedDays, consistency, repsLabel, consist
 
 export function WorkoutStatistics() {
   const [, navigate] = useLocation();
+  const origin=new URLSearchParams(window.location.search).get("returnTo");
+  const fromProfile=origin?.split("?")[0] === "/profile";
   const { getMonthlyStats, getTotalStats, getIndividualWorkoutTotals } = useWorkouts();
   const [currentMonth, setCurrentMonth] = React.useState(new Date());
   const [totalsOpen, setTotalsOpen] = React.useState(false);
@@ -72,7 +74,7 @@ export function WorkoutStatistics() {
 
   return (
     <div className="w-full max-w-3xl mx-auto">
-      <PageHeader title="Workout Statistics" onBack={() => navigate("/calendar")} backLabel="Back to Calendar" align="start" />
+      <PageHeader title="Workout Statistics" onBack={() => navigate(fromProfile ? origin! : "/calendar")} backLabel={fromProfile ? "Back to Profile" : "Back to Calendar"} align="start" />
 
       <div className="space-y-4">
         <section aria-labelledby="all-time-statistics-heading" className="glass-panel bg-surface rounded-2xl p-4 sm:p-5">
