@@ -140,7 +140,5 @@ export async function hydrateForm(def: FormDefinition, draft: Record<string, any
         state.editEntryServings ??= String(record.servings ?? 1);
         state.editEntryMeal ??= record.meal;
     }
-    if (def.id === 'meditation-start')
-        state.meditationIntent = 'start';
     return state;
 }

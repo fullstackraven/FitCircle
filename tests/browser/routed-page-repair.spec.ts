@@ -20,7 +20,7 @@ for(const mode of ['light','dark','system'])test(`${mode}: every migrated editor
   const actions=body.locator('.form-action-primary > button');for(const action of await actions.all()){await action.scrollIntoViewIfNeeded();await expect(action,path).toBeInViewport();expect((await action.boundingBox())!.width,path).toBeCloseTo((await body.boundingBox())!.width,0);}
   await expect(page.getByRole('button',{name:'Back',exact:true})).toBeInViewport();
   if(mode==='system'){await page.emulateMedia({colorScheme:'dark'});await expect(page.locator('html')).toHaveAttribute('data-appearance','dark');await page.emulateMedia({colorScheme:'light'});await expect(page.locator('html')).toHaveAttribute('data-appearance','light');}
-  if(mode!=='system'&&['/cardio/add','/food-tracker/custom/new','/meditation/add','/hydration/add','/routines/edit?id=r'].includes(path)){
+  if(mode!=='system'&&['/cardio/add','/food-tracker/custom/new','/hydration/add','/routines/edit?id=r'].includes(path)){
    await page.locator('main').evaluate(el=>{el.scrollTop=0;});await page.evaluate(()=>document.fonts.ready);fs.mkdirSync('docs/review/routed-page-repair',{recursive:true});await page.screenshot({path:`docs/review/routed-page-repair/${path.split('/')[1]}-${mode}.png`,animations:'disabled'});
   }
  }
@@ -56,8 +56,8 @@ test('Profile recovery controls preserve unreadable data and resume editing afte
  await page.goto(url);await expect(page.getByRole('alert')).toContainText('could not be read safely');await page.evaluate(()=>localStorage.setItem('fitcircle_profile',JSON.stringify({age:31,retained:'keep'})));await page.getByRole('button',{name:'Retry',exact:true}).click();await page.getByRole('button',{name:'Edit Profile',exact:true}).click();await expect(page.getByLabel('Name',{exact:true})).toBeVisible();await page.getByRole('button',{name:'Cancel',exact:true}).click();await expect(page).toHaveURL(url);
 });
 
-test('invalid meditation start remains on the form and preserves its duration field',async({page})=>{
- await seedWellnessAppearance(page,'light');await page.goto('meditation/start');await page.getByLabel('Duration (minutes)',{exact:true}).fill('0');page.once('dialog',d=>d.accept());await page.getByTestId('button-start-meditation').click();await expect(page).toHaveURL(/meditation\/start$/);await expect(page.getByLabel('Duration (minutes)',{exact:true})).toHaveValue('0');await page.getByRole('button',{name:'Cancel',exact:true}).click();await expect(page).toHaveURL(/meditation$/);
+test('zero meditation duration cannot start a timer',async({page})=>{
+ await seedWellnessAppearance(page,'light');await page.goto('meditation');await page.getByTestId('button-start-meditation').click();await page.getByRole('listbox',{name:'Minutes',exact:true}).press('Home');await expect(page.getByRole('button',{name:'Start',exact:true})).toBeDisabled();await page.getByRole('button',{name:'Cancel',exact:true}).click();await expect(page).toHaveURL(/meditation$/);
 });
 
 test('Profile validation and Back preserve unsaved values without partial writes',async({page})=>{

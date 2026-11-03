@@ -90,8 +90,6 @@ function definition(store: Store, group: string): FormDefinition {
         return candidates.find(d => d.id === (v.editingEntryId ? 'food-custom-edit' : 'food-custom'))!;
     if (group === 'profile-edit')
         return candidates.find(d => d.id === (v.editor === 'goals' ? 'profile-goals' : 'profile-edit'))!;
-    if (group === 'meditation-add')
-        return candidates.find(d => d.id === (v.meditationIntent === 'start' ? 'meditation-start' : 'meditation-add'))!;
     return candidates[0];
 }
 export function openForm(store: Store, group: string) {

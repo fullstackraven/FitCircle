@@ -1,3 +1,5 @@
+import { QuickAddMinutes } from '@/components/wellness/QuickAddMinutes';
+import { MeditationTimer } from '@/components/wellness/MeditationTimer';
 import { FormActions } from '@/components/forms/form-page';
 import { FormScreen } from '@/components/forms/form-page';
 import { useRouteState, useRouteForm, useRecordFormState } from '@/components/forms/FormNavigation';
@@ -14,9 +16,7 @@ import {
 import { dailyTotals } from "@/lib/wellness-progress";
 import { WellnessHistory } from "@/components/WellnessHistory";
 import { percentage } from "@/lib/wellness-progress";
-import { ViewportOverlay } from "@/components/ui/viewport-overlay";
-import { useState, useEffect, useRef } from "react";
-import { Play, Pause, Square, X } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -55,20 +55,10 @@ export default function MeditationPage() {
     id: string;
     duration: string;
   } | null>('editingSession', null, 'meditation-edit');
-  const [isActive, setIsActive] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(0); // in seconds
-  const [totalDuration, setTotalDuration] = useState(0); // in seconds
-  const [meditationIntent,setMeditationIntent] = useRouteState<'add'|'start'>('meditationIntent','add');
-  const [inputMinutes, setInputMinutes] = useRouteState('inputMinutes', "");
-  const [showCompletion, setShowCompletion] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
+  const [timerOpen, setTimerOpen] = useState(false);
   // Goal state
   const [isMeditationGoalPageOpen, setMeditationGoalPageOpen] = useRouteForm('meditation-goal');
-  const [isMeditationAddPageOpen, setMeditationAddPageOpen] = useRouteForm('meditation-add');
   const [goalMinutesInput, setGoalMinutesInput] = useRouteState('goalMinutesInput', "");
-  const [inputMinutesFocused, setInputMinutesFocused] = useState(false);
   const [goalMinutesFocused, setGoalMinutesFocused] = useState(false);
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
@@ -109,183 +99,6 @@ export default function MeditationPage() {
     };
   }, [getDailyGoal()]);
 
-  useEffect(() => {
-    if (isActive && !isPaused && timeLeft > 0) {
-      intervalRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            // Session completed
-            handleSessionComplete();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    }
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [isActive, isPaused, timeLeft]);
-
-  const playGongSound = async () => {
-    try {
-      // Create audio context - iOS requires user interaction first
-      const audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
-
-      // Resume context if suspended (iOS requirement)
-      if (audioContext.state === "suspended") {
-        await audioContext.resume();
-      }
-
-      // Create multiple oscillators for richer gong sound
-      const oscillators = [
-        { freq: 196, gain: 0.3 }, // G3
-        { freq: 220, gain: 0.2 }, // A3
-        { freq: 294, gain: 0.1 }, // D4
-      ];
-
-      const masterGain = audioContext.createGain();
-      masterGain.connect(audioContext.destination);
-
-      oscillators.forEach(({ freq, gain }) => {
-        const osc = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-
-        osc.connect(gainNode);
-        gainNode.connect(masterGain);
-
-        osc.frequency.setValueAtTime(freq, audioContext.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(
-          freq * 0.8,
-          audioContext.currentTime + 0.1,
-        );
-
-        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(
-          gain,
-          audioContext.currentTime + 0.01,
-        );
-        gainNode.gain.exponentialRampToValueAtTime(
-          0.001,
-          audioContext.currentTime + 3,
-        );
-
-        osc.start(audioContext.currentTime);
-        osc.stop(audioContext.currentTime + 3);
-      });
-
-      // Set master volume
-      masterGain.gain.setValueAtTime(0.5, audioContext.currentTime);
-      masterGain.gain.exponentialRampToValueAtTime(
-        0.001,
-        audioContext.currentTime + 3,
-      );
-    } catch (error) {
-      console.log("Could not play gong sound:", error);
-      // Fallback: try system beep or vibration
-      try {
-        if (navigator.vibrate) {
-          navigator.vibrate([200, 100, 200, 100, 200]);
-        }
-      } catch (vibrateError) {
-        console.log("Vibration also not available");
-      }
-    }
-  };
-
-  const handleSessionComplete = () => {
-    setIsActive(false);
-    setIsPaused(false);
-
-    // Play completion sound
-    playGongSound();
-
-    // Show completion message
-    setShowCompletion(true);
-    setTimeout(() => setShowCompletion(false), 3000);
-
-    // Create meditation session entry
-    if (!addSession(Math.floor(totalDuration / 60))) return;
-  };
-
-  const startMeditation = async () => {
-    const minutes = parseInt(inputMinutes);
-    if (!minutes || minutes <= 0) {
-      alert("Please enter a valid duration in minutes");
-      return;
-    }
-
-    // Initialize audio context on user interaction (iOS requirement)
-    try {
-      const audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
-      if (audioContext.state === "suspended") {
-        await audioContext.resume();
-      }
-    } catch (error) {
-      console.log("Audio context initialization failed:", error);
-    }
-
-    const durationInSeconds = minutes * 60;
-    setTotalDuration(durationInSeconds);
-    setTimeLeft(durationInSeconds);
-    setIsActive(true);
-    setIsPaused(false);
-    setInputMinutes("");
-  };
-
-  const pauseMeditation = () => {
-    setIsPaused(true);
-  };
-
-  const resumeMeditation = () => {
-    setIsPaused(false);
-  };
-
-  const stopMeditation = () => {
-    // Calculate elapsed time before stopping
-    const elapsedSeconds = totalDuration - timeLeft;
-    const elapsedMinutes = Math.floor(elapsedSeconds / 60);
-
-    // Only log if there's at least 1 minute of elapsed time
-    if (elapsedMinutes >= 1) {
-      addSession(elapsedMinutes);
-    }
-
-    // Reset timer state
-    setIsActive(false);
-    setIsPaused(false);
-    setTimeLeft(0);
-    setTotalDuration(0);
-  };
-
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  const getTimerProgressPercentage = (): number => {
-    if (totalDuration === 0) return 0;
-    return ((totalDuration - timeLeft) / totalDuration) * 100;
-  };
-
-  const getProgressStroke = (): number => {
-    const radius = 120;
-    const circumference = 2 * Math.PI * radius;
-    const progress = getTimerProgressPercentage();
-    return circumference - (progress / 100) * circumference;
-  };
-
   const handleSetGoal = async () => {
     const minutesGoal = parseFloat(goalMinutesInput);
 
@@ -299,36 +112,6 @@ export default function MeditationPage() {
     alert("Meditation goal saved successfully!");
   };
 
-  const logMeditationAction=<Button
-              variant="outline"
-              className="w-full min-h-11"
-              onClick={() => {
-                const minutes = Number(inputMinutes);
-                if (
-                  Number.isFinite(minutes) &&
-                  minutes > 0 &&
-                  addSession(minutes)
-                ) {
-                  setInputMinutes("");
-                  setMeditationAddPageOpen(false);
-                }
-              }}
-            >
-              Log completed session
-            </Button>;
-  const startMeditationAction=<Button
-              onClick={() => {
-                // Keep validation failures on the editor instead of closing it.
-                const valid=parseInt(inputMinutes)>0;
-                void startMeditation();
-                if(valid)setMeditationAddPageOpen(false);
-              }}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-on-action"
-              data-testid="button-start-meditation"
-            >
-              <Play className="w-4 h-4 mr-2" />
-              Start Meditation
-            </Button>;
   return <FormScreen>{(
     <>
       <WellnessPageShell
@@ -343,90 +126,8 @@ export default function MeditationPage() {
           </p>
         )}
 
-        {/* Completion Notification */}
-        {showCompletion && (
-          <ViewportOverlay
-            title="Session Complete"
-            onDismiss={() => setShowCompletion(false)}
-          >
-            <div className="glass-panel bg-surface rounded-xl p-8 text-center max-w-sm mx-4 border border-purple-500">
-              <div className="text-6xl mb-4">🧘‍♂️</div>
-              <h2 className="text-2xl font-bold text-strong mb-2">
-                Session Complete!
-              </h2>
-              <p className="text-supporting">
-                Well done on completing your meditation
-              </p>
-            </div>
-          </ViewportOverlay>
-        )}
-
-        {/* Main Meditation Circle - transforms between progress tracker and timer */}
-        <div className="w-full">
-          {!isActive ? (
-            /* Progress Circle when not meditating */
-            <WellnessProgressHero
-              current={getTodayMinutes()}
-              target={getDailyGoal()}
-              unit="min"
-              period="Today"
-              title="Today's Meditation"
-            />
-          ) : (
-            /* Timer Circle when meditating */
-            <div className="relative mx-auto w-fit">
-              <svg width="240" height="240" className="transform -rotate-90">
-                {/* Background circle */}
-                <circle
-                  cx="120"
-                  cy="120"
-                  r="104"
-                  stroke="var(--meditation-track)"
-                  strokeWidth="16"
-                  fill="none"
-                />
-                {/* Progress circle */}
-                <circle
-                  cx="120"
-                  cy="120"
-                  r="104"
-                  stroke="var(--wellness-purple)"
-                  strokeWidth="16"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeDasharray={`${2 * Math.PI * 104}`}
-                  strokeDashoffset={
-                    2 * Math.PI * 104 -
-                    (getTimerProgressPercentage() / 100) * 2 * Math.PI * 104
-                  }
-                  className="transition-all duration-1000 ease-linear"
-                  style={{
-                    filter: "var(--meditation-glow)",
-                  }}
-                />
-              </svg>
-
-              {/* Time display */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="type-metric text-4xl font-bold text-strong mb-2">
-                    {formatTime(timeLeft)}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {isPaused ? "Paused" : "Meditating..."}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {!isActive && isGoalReached() && (
-          <div className="text-feature-purple font-medium text-center -mt-4 mb-6">
-            🧘‍♂️ Daily goal achieved!
-          </div>
-        )}
-
+        <WellnessProgressHero current={getTodayMinutes()} target={getDailyGoal()} unit="min" period="Today" title="Today's Meditation" />
+        {isGoalReached() && <div className="text-feature-purple font-medium text-center -mt-4 mb-6">🧘‍♂️ Daily goal achieved!</div>}
         <WellnessRecentActivity
           totals={dailyTotals("meditation", { dailyLogs })}
           unit="min"
@@ -435,51 +136,9 @@ export default function MeditationPage() {
           }
         />
 
-        {/* Meditation Controls */}
-        <div className="flex flex-col items-center">
-          {!isActive ? (
-            /* Add Meditation Button */
-            <div className="w-full">
-              <WellnessPrimaryAction
-                onClick={() => {setMeditationIntent('add');setMeditationAddPageOpen(true);}}
-                data-testid="button-add-meditation"
-              >
-                <span>Add Meditation</span>
-              </WellnessPrimaryAction>
-              <Button className="mt-2 w-full" variant="outline" onClick={()=>{setMeditationIntent('start');setMeditationAddPageOpen(true);}}>Start Meditation</Button>
-            </div>
-          ) : (
-            /* Active Session Controls */
-            <div className="flex space-x-4">
-              {!isPaused ? (
-                <Button
-                  onClick={pauseMeditation}
-                  variant="outline"
-                  className="border-control text-supporting hover:bg-surface-secondary"
-                >
-                  <Pause className="w-4 h-4 mr-2" />
-                  Pause
-                </Button>
-              ) : (
-                <Button
-                  onClick={resumeMeditation}
-                  className="bg-action hover:bg-action-hover text-on-action-soft"
-                >
-                  <Play className="w-4 h-4 mr-2" />
-                  Resume
-                </Button>
-              )}
-              <Button
-                onClick={stopMeditation}
-                variant="outline"
-                className="border-red-600 text-feature-red hover:bg-feature-red-deep-tint/20"
-              >
-                <Square className="w-4 h-4 mr-2" />
-                Stop
-              </Button>
-            </div>
-          )}
-        </div>
+        <QuickAddMinutes presets={[5, 10, 15]} onAdd={addSession} />
+        <WellnessPrimaryAction onClick={() => setTimerOpen(true)} data-testid="button-start-meditation">Start Meditation</WellnessPrimaryAction>
+        {timerOpen && <MeditationTimer onClose={() => setTimerOpen(false)} onComplete={addSession} />}
 
         {/* Today's Meditation */}
         <WellnessTodaySection title="Today's Meditation">
@@ -747,39 +406,6 @@ export default function MeditationPage() {
         </FormContent>
       </FormGroup>
 
-      {/* Start Meditation FormGroup */}
-      <FormGroup formId="meditation-add"
-        open={isMeditationAddPageOpen}
-        onOpenChange={setMeditationAddPageOpen}
-      >
-        <FormContent>
-          <FormTitle className="text-lg font-semibold text-center">
-            Start Meditation
-          </FormTitle>
-          <FormDescription className="sr-only">
-            Set meditation duration and start your session
-          </FormDescription>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-supporting mb-2">
-                Duration (minutes)
-              </label>
-              <Input
-                type="number"
-                value={inputMinutes}
-                onChange={(e) => setInputMinutes(e.target.value)}
-                onFocus={() => setInputMinutesFocused(true)}
-                onBlur={() => setInputMinutesFocused(false)}
-                aria-label="Duration (minutes)"
-                className="bg-surface-secondary border-control text-strong text-center"
-                min="1"
-              />
-            </div>
-            {meditationIntent==='start'?logMeditationAction:startMeditationAction}
-<FormActions primary={meditationIntent==='start'?startMeditationAction:logMeditationAction} secondary={<Button variant="ghost" onClick={()=>setMeditationAddPageOpen(false)}>Cancel</Button>}/>
-          </div>
-        </FormContent>
-      </FormGroup>
     </>
   )}</FormScreen>;
 }

@@ -3,7 +3,7 @@ export const routedFormCases=[
  ['/routines/workouts/new?routine=r','Add Workout'],['/routines/workouts/edit?id=w','Edit Workout'],['/routines/new','Create Routine'],['/routines/edit?id=r','Edit Routine'],
  ['/dynamic-overview/2026-10-19/duration','Edit Workout Duration'],['/widgets/settings','Widget Settings'],
  ['/cardio/goal','Cardio Goal'],['/cardio/add','Add Cardio'],['/cardio/edit?id=cardio','Edit Cardio'],['/cardio/types/new','Add Custom Cardio Type'],
- ['/meditation/goal','Meditation Goal'],['/meditation/add','Add Meditation'],['/meditation/start','Start Meditation'],['/meditation/edit?id=practice','Edit Meditation'],
+ ['/meditation/goal','Meditation Goal'],['/meditation/edit?id=practice','Edit Meditation'],
  ['/hydration/goal','Hydration Goal'],['/hydration/add','Add Hydration'],['/hydration/edit?id=intake','Edit Hydration'],
  ['/fasting/goal','Intermittent Fasting Goal'],['/fasting/add','Add Fast'],['/fasting/edit?id=fast','Edit Fast'],
  ['/food-tracker/add?meal=lunch&date=2026-10-19','Add Food'],['/food-tracker/scan','Scan Barcode'],['/food-tracker/custom/new','Create Custom Food'],['/food-tracker/custom/edit?id=custom-appearance','Edit Custom Food'],

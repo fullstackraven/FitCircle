@@ -155,19 +155,10 @@ test("meditation retains timer and can manually log a completed session", async 
   await expect(
     page.getByText("Practice consistency · 1 of 7 days practiced"),
   ).toBeVisible();
-  await page
-    .getByRole("button", { name: "Add Meditation", exact: true })
-    .click();
-  await page.getByLabel("Duration (minutes)", { exact: true }).fill("5");
-  await page
-    .getByRole("button", { name: "Log completed session", exact: true })
-    .click();
+  await page.getByRole('button', {name: '+5 min', exact:true}).click();
   await expect(page.locator(".wellness-hero")).toContainText("15");
-  await page
-    .getByRole("button", { name: "Add Meditation", exact: true })
-    .click();
-  await page.getByLabel("Duration (minutes)", { exact: true }).fill("5");
-  await page.getByTestId("button-start-meditation").click();
+  await page.getByTestId('button-start-meditation').click();
+  await page.getByRole('button', {name:'Start',exact:true}).click();
   await expect(
     page.getByRole("button", { name: "Pause", exact: true }),
   ).toBeVisible();

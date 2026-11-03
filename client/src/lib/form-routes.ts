@@ -13,8 +13,6 @@ export const formDefinitions = [
     ['cardio-edit', 'cardio', '/cardio/edit', 'cardio-edit', 'Edit Cardio'],
     ['cardio-type', 'cardio', '/cardio/types/new', 'cardio-type', 'Add Custom Cardio Type'],
     ['meditation-goal', 'meditation', '/meditation/goal', 'meditation-goal', 'Meditation Goal'],
-    ['meditation-add', 'meditation', '/meditation/add', 'meditation-add', 'Add Meditation'],
-    ['meditation-start', 'meditation', '/meditation/start', 'meditation-add', 'Start Meditation'],
     ['meditation-edit', 'meditation', '/meditation/edit', 'meditation-edit', 'Edit Meditation'],
     ['hydration-goal', 'hydration', '/hydration/goal', 'hydration-goal', 'Hydration Goal'],
     ['hydration-add', 'hydration', '/hydration/add', 'hydration-add', 'Add Hydration'],

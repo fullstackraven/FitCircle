@@ -4,10 +4,10 @@ import fs from 'node:fs';
 import ts from 'typescript';
 import { formDefinitions } from '../client/src/lib/form-routes';
 
-test('all 30 form workflows have unique registered routes and mobile test cases',()=>{
-  assert.equal(formDefinitions.length,32);
-  assert.equal(new Set(formDefinitions.map(([id])=>id)).size,32);
-  assert.equal(new Set(formDefinitions.map(([, ,path])=>path)).size,32);
+test('all remaining form workflows have unique registered routes and mobile test cases',()=>{
+  assert.equal(formDefinitions.length,30);
+  assert.equal(new Set(formDefinitions.map(([id])=>id)).size,30);
+  assert.equal(new Set(formDefinitions.map(([, ,path])=>path)).size,30);
   const app=ts.createSourceFile('App.tsx',fs.readFileSync('client/src/App.tsx','utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
   const patterns:RegExp[]=[], literal=new Set<string>();
   function visit(node:ts.Node){
