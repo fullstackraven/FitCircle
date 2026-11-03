@@ -135,7 +135,7 @@ test('editing a valid cardio session preserves weekly goals, legacy entries and 
   expect(saved.dailyLogs['2025-03-02'].sessions[0].duration).toBe(26);
   expect(saved.dailyLogs['2025-03-04']).toEqual(value.dailyLogs['2025-03-04']);
 });
-test('dormant dashboard widget settings do not cause hidden cardio writes', async ({ page }) => {
+test('legacy dashboard preferences do not cause hidden cardio writes', async ({ page }) => {
   await seed(page, { [cardioKey]: '{', fitcircle_dashboard_widgets: JSON.stringify([{ id: 'cardio-synthetic', type: 'cardio', title: 'Cardio', enabled: true, position: 0, size: 'small' }]) });
   await page.goto('./');
   await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();

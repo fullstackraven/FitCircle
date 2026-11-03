@@ -1,5 +1,4 @@
-import { FormOwner, useFormStore, closeForm } from '@/components/forms/FormNavigation';
-import { WidgetSettings } from '@/components/dashboard-widgets/WidgetSettings';
+import { FormOwner } from '@/components/forms/FormNavigation';
 import { PWAUpdateNotice } from '@/components/PWAUpdateNotice';
 import { FoodNotifications } from "@/components/FoodNotifications";
 import { HeaderHostContext } from "@/components/AppHeader";
@@ -41,7 +40,6 @@ import BottomNavigation from "@/components/BottomNavigation";
 import { ScrollLockProvider } from "@/contexts/ScrollLockContext";
 import { useIOSViewportGuard } from "@/hooks/useIOSViewportGuard";
 
-function WidgetsPage() { const store=useFormStore(); return <WidgetSettings formId="widgets" isOpen onClose={()=>closeForm(store)}/>; }
 function Router() {
   return (
     <Switch>
@@ -67,7 +65,6 @@ function Router() {
       <Route path={/^\/dynamic-overview\/([^/]+)(?:\/.*)?$/}>{params => <FormOwner owner="overview"><DynamicOverview selectedDate={params[0] ?? ""}/></FormOwner>}</Route>
       <Route path={/^\/routines(?:\/.*)?$/}><FormOwner owner="routines"><RoutinesPage/></FormOwner></Route>
       <Route path="/wellness" component={WellnessPage} />
-      <Route path="/widgets/settings"><FormOwner owner="widgets"><WidgetsPage/></FormOwner></Route>
       {/* REMOVED: Bug reporting route removed per user request */}
 
       <Route path="/reminders" component={RemindersPage} />

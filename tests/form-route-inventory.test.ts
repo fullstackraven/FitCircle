@@ -5,9 +5,9 @@ import ts from 'typescript';
 import { formDefinitions } from '../client/src/lib/form-routes';
 
 test('all remaining form workflows have unique registered routes and mobile test cases',()=>{
-  assert.equal(formDefinitions.length,30);
-  assert.equal(new Set(formDefinitions.map(([id])=>id)).size,30);
-  assert.equal(new Set(formDefinitions.map(([, ,path])=>path)).size,30);
+  assert.equal(formDefinitions.length,29);
+  assert.equal(new Set(formDefinitions.map(([id])=>id)).size,29);
+  assert.equal(new Set(formDefinitions.map(([, ,path])=>path)).size,29);
   const app=ts.createSourceFile('App.tsx',fs.readFileSync('client/src/App.tsx','utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
   const patterns:RegExp[]=[], literal=new Set<string>();
   function visit(node:ts.Node){

@@ -33,7 +33,7 @@ test('workout/routine routes retain editing, direct refresh and unsaved Back pro
 });
 
 
-for(const mode of ['light','dark'])test(`${mode}: all 30 workflows and 32 origin routes are normal mobile pages`,async({page})=>{
+for(const mode of ['light','dark'])test(`${mode}: all registered editor routes are normal mobile pages`,async({page})=>{
  test.setTimeout(120000);await seedWellnessAppearance(page,mode);
  for(const [path,title]of routes){
   await page.goto(path.slice(1));await expect(page.getByRole('heading',{name:title,exact:true}),path).toBeVisible();
@@ -87,10 +87,9 @@ test('food picker, scanner, custom product and diary editors retain nested conte
  entries=await page.evaluate(()=>JSON.parse(localStorage.getItem('fitcircle_food_2026-10-19')!));expect(entries.find((e:any)=>e.id==='logged-appearance').servings).toBe(3);expect(entries.some((e:any)=>e.name==='Routed food')).toBe(true);
 });
 
-test('remaining editors save duration, supplement, profile, goals and widget settings',async({page})=>{
+test('remaining editors save duration, supplement, profile and goals',async({page})=>{
  await seed(page);
  await page.goto('dynamic-overview/2026-10-19/duration');await page.getByTestId('input-duration-minutes').fill('15');await page.getByTestId('button-save-duration').click();await expect(page).toHaveURL(/dynamic-overview\/2026-10-19$/);
- await page.getByRole('button',{name:'Widget Settings',exact:true}).click();await expect(page).toHaveURL(/widgets\/settings$/);await page.getByRole('switch').first().click();await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page).toHaveURL(/dynamic-overview\/2026-10-19$/);
  await page.goto('supplements-page');await page.getByRole('button',{name:'Add Supplement',exact:true}).first().click();await expect(page).toHaveURL(/supplements-page\/new$/);await page.locator('#supplement-name').fill('Routed supplement');await page.getByRole('combobox').click();await page.getByRole('option',{name:'mg (milligrams)',exact:true}).click();await page.locator('#amount').fill('200');await Promise.all([page.waitForEvent('load'),page.getByRole('button',{name:'Add Supplement',exact:true}).click()]);await expect(page).toHaveURL(/supplements-page$/);
  await page.goto('profile/edit');await page.getByLabel('Name',{exact:true}).fill('Routed person');await page.getByRole('button',{name:'Save Profile',exact:true}).click();await expect(page).toHaveURL(/profile$/);
  await page.getByRole('button',{name:'Edit Fitness Goals',exact:true}).click();await expect(page).toHaveURL(/profile\/goals$/);await page.getByLabel('Fitness Goal',{exact:true}).fill('Routed goal');await page.getByRole('button',{name:'Save Profile',exact:true}).click();await expect(page).toHaveURL(/profile$/);

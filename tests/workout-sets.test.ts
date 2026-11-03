@@ -1,12 +1,11 @@
 import { useRecovery } from '../client/src/hooks/use-recovery';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import React, { createElement } from 'react';
+import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { IDBFactory } from 'fake-indexeddb';
 import { validWorkoutTargets, stepWorkout, workoutProgress, workoutLogComplete } from '../client/src/lib/workout-progress';
 import { useWorkouts, type Workout, type WorkoutLogEntry } from '../client/src/hooks/use-workouts';
-import { WorkoutWidget } from '../client/src/components/dashboard-widgets/WorkoutWidget';
 import { parseStoredWorkouts } from '../client/src/lib/workout-initialization';
 import { createBackup, prepareRestore, applyRestore, workoutDataSchema } from '../client/src/lib/backup';
 const workout:Workout={id:'w',name:'Push-ups',color:'green',count:0,dailyGoal:20};
@@ -44,18 +43,15 @@ test('initialization preserves mixed formats exactly; invalid set records are re
  }
  assert.equal(workoutDataSchema.safeParse({...data,workouts:{w:{...workout,setsGoal:21}}}).success,false);
 });
-test('mixed logs retain rep totals, monthly denominator, and set progress in widgets',t=>{
+test('mixed logs retain rep totals, monthly denominator, and set progress',t=>{
  t.mock.timers.enable({apis:['Date'],now:new Date('2026-10-27T12:00:00').getTime()});
  const descriptor=Object.getOwnPropertyDescriptor(globalThis,'localStorage');
  try {
  const raw=JSON.stringify(mixed());Object.defineProperty(globalThis,'localStorage',{configurable:true,value:{getItem:(key:string)=>key==='workout-tracker-data'?raw:null,setItem:()=>assert.fail('read must not write')}});
  function Probe(){const api=useWorkouts();const m=api.getMonthlyStats(2026,9),a=api.getTotalStats();assert.equal(m.monthlyReps,46);assert.equal(a.totalReps,46);assert.equal(m.monthlyCompletedDays,2);assert.equal(a.totalCompletedDays,2);assert.equal(m.monthlyConsistency,2/27*100);assert.equal(api.getRecentActivity().find(d=>d.dateString==='2026-10-27')?.totalReps,6);return null;}
  renderToString(createElement(Probe));
- const reactDescriptor=Object.getOwnPropertyDescriptor(globalThis,'React');
- Object.defineProperty(globalThis,'React',{configurable:true,value:React});
- let html:string;
- try { html=renderToString(createElement(WorkoutWidget,{widget:{id:'test',type:'workout',title:'Workouts',size:'small',enabled:true,position:0}})); } finally { if(reactDescriptor) Object.defineProperty(globalThis,'React',reactDescriptor);else Reflect.deleteProperty(globalThis,'React'); }
- assert.match(html,/33/);assert.doesNotMatch(html,/>30<!--/);
+ const fixture=mixed(),progress=workoutProgress(fixture.workouts.w,fixture.dailyLogs['2026-10-27'].w);
+ assert.equal(progress.mode,'sets');assert.equal(Math.round(progress.count/progress.goal*100),33);
  } finally {if(descriptor)Object.defineProperty(globalThis,'localStorage',descriptor);else Reflect.deleteProperty(globalThis,'localStorage');t.mock.timers.reset();}
 });
 class MemoryStorage implements Storage {

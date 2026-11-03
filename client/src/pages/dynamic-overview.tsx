@@ -312,7 +312,6 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
   return <FormScreen>{(
     <div className="dynamic-overview-page">
       <PageHeader title="Dynamic Overview" onBack={back} className="mb-0" />
-      <button className="fc-pill min-h-11 text-accent-text" onClick={()=>navigate('/widgets/settings',{state:{fitcircleFormReturn:`/dynamic-overview/${selectedDate}`,fitcircleFormRoot:`/dynamic-overview/${selectedDate}`}})}>Widget Settings</button>
       <div className="overview-date">
         <p>{format(selectedDateObj, "EEEE")}</p>
         <h2>{format(selectedDateObj, "MMMM d, yyyy")}</h2>

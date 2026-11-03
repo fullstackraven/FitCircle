@@ -235,3 +235,23 @@ test('persistent failure on the first goal write never removes unchanged origina
   assert.equal(storage.getItem('fitcircle_goal_weight'),null);
   assert.equal(storage.getItem('fitcircle_restore_journal_v2'),null);
 });
+
+test('retired dashboard preferences remain importable and round-trip exactly in backups', async () => {
+  const key = 'fitcircle_dashboard_widgets';
+  const preferences = [{ id: 'legacy-water', type: 'hydration', title: 'Water', enabled: false, position: 3, size: 'small', config: { legacyOption: 'keep' } }];
+  const raw = JSON.stringify(preferences, null, 2);
+  const source = new MemoryStorage();
+  source.setItem(key, raw);
+  source.setItem('other-app', 'untouched');
+  const backup = await createBackup(source, new IDBFactory());
+  assert.equal(backup.localStorage[key], raw);
+  const target = new MemoryStorage();
+  target.setItem('other-app', 'untouched');
+  applyRestore(prepareRestore(JSON.parse(JSON.stringify(backup))), target, new MemoryStorage());
+  assert.equal(target.getItem(key), raw);
+  assert.equal(target.getItem('other-app'), 'untouched');
+  const legacy = new MemoryStorage();
+  applyRestore(prepareRestore({ [key]: preferences }), legacy, new MemoryStorage());
+  assert.deepEqual(JSON.parse(legacy.getItem(key)!), preferences);
+  assert.equal(source.getItem(key), raw);
+});

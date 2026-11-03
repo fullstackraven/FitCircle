@@ -70,8 +70,8 @@ test('Profile validation and Back preserve unsaved values without partial writes
  await page.getByRole('button',{name:'Cancel',exact:true}).click();await expect(page).toHaveURL(origin);expect(await page.evaluate(()=>({profile:localStorage.getItem('fitcircle_profile'),name:localStorage.getItem('fitcircle_username')}))).toEqual(before);
 });
 
-test('Widget Done persists settings and nested Food Cancel returns preserve the diary date',async({page})=>{
- await seedWellnessAppearance(page,'light');await page.goto('dynamic-overview/2026-10-18');await page.getByRole('button',{name:'Widget Settings',exact:true}).click();const before=await page.evaluate(()=>localStorage.getItem('fitcircle_dashboard_widgets'));await page.getByRole('switch').first().click();await expect.poll(()=>page.evaluate(()=>localStorage.getItem('fitcircle_dashboard_widgets'))).not.toBe(before);const saved=await page.evaluate(()=>localStorage.getItem('fitcircle_dashboard_widgets'));await page.getByRole('button',{name:'Done',exact:true}).click();await expect(page).toHaveURL(/dynamic-overview\/2026-10-18$/);expect(await page.evaluate(()=>localStorage.getItem('fitcircle_dashboard_widgets'))).toBe(saved);
+test('nested Food Cancel returns preserve the diary date',async({page})=>{
+ await seedWellnessAppearance(page,'light');
  await page.goto('food-tracker?date=2026-10-18');const records=await page.evaluate(()=>localStorage.getItem('fitcircle_food_2026-10-18'));await page.getByTestId('button-add-breakfast').click();await page.getByRole('button',{name:'Scan Barcode',exact:true}).click();await page.getByRole('button',{name:'Cancel',exact:true}).click();await expect(page).toHaveURL(/food-tracker\/add/);await page.getByRole('button',{name:'Create Custom Food',exact:true}).click();await page.getByTestId('input-custom-name').fill('Cancelled food');await page.getByRole('button',{name:'Cancel',exact:true}).click();await expect(page).toHaveURL(/food-tracker\/add/);await page.getByRole('button',{name:'Cancel',exact:true}).click();await expect(page).toHaveURL(/food-tracker\?date=2026-10-18$/);expect(await page.evaluate(()=>localStorage.getItem('fitcircle_food_2026-10-18'))).toBe(records);
 });
 

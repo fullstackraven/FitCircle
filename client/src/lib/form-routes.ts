@@ -7,7 +7,6 @@ export const formDefinitions = [
     ['routine-new', 'routines', '/routines/new', 'routine', 'Create Routine'],
     ['routine-edit', 'routines', '/routines/edit', 'routine', 'Edit Routine'],
     ['duration', 'overview', '/duration', 'duration', 'Edit Workout Duration'],
-    ['widgets', 'widgets', '/widgets/settings', 'widgets', 'Widget Settings'],
     ['cardio-goal', 'cardio', '/cardio/goal', 'cardio-goal', 'Cardio Goal'],
     ['cardio-new', 'cardio', '/cardio/add', 'cardio-add', 'Add Cardio'],
     ['cardio-edit', 'cardio', '/cardio/edit', 'cardio-edit', 'Edit Cardio'],
@@ -45,7 +44,7 @@ export function formForPath(path = appPath()) {
         return definitions.find(d => d.owner === 'overview' && path.endsWith(d.path));
     return definitions.find(d => d.path === path);
 }
-export function ownerPath(owner: string) { return owner === 'widgets' ? '/wellness' : owner === 'home' ? '/' : owner === 'overview' ? appPath().split('/').slice(0, 3).join('/') : `/${owner}`; }
+export function ownerPath(owner: string) { return owner === 'home' ? '/' : owner === 'overview' ? appPath().split('/').slice(0, 3).join('/') : `/${owner}`; }
 export function baseUrl(path: string) { return import.meta.env.BASE_URL.replace(/\/$/, '') + path; }
 export const FORM_EXIT = 'fitcircle-form-exit';
 export function allowFormExit() { window.dispatchEvent(new Event(FORM_EXIT)); }
