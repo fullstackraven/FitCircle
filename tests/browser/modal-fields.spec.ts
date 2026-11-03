@@ -206,9 +206,9 @@ const cases: {
     open: (page) => button(page, "Add Liquid").click(),
   },
   {
-    name: "meditation entry",
+    name: "meditation quick add",
     route: "meditation",
-    open: (page) => button(page, "Add Meditation").click(),
+    open: (page) => page.getByLabel("Custom duration (minutes)").focus(),
   },
   {
     name: "fasting entry",
@@ -325,6 +325,29 @@ for (const mode of ["dark", "light"]) for (const width of [320, 390]) for (const
       content: ":root { --safe-top: 59px; --safe-bottom: 34px; }",
     });
     await example.open(page);
+    if (example.name === "meditation quick add") {
+      await expect(page).toHaveURL(/meditation$/);
+      await expect(page.locator('[data-form-page], [role="dialog"]')).toHaveCount(0);
+      const field = page.getByLabel('Custom duration (minutes)');
+      await field.fill('7');
+      await page.setViewportSize({ width, height: 430 });
+      await settle(page);
+      await field.scrollIntoViewIfNeeded();
+      await expect(field).toBeInViewport();
+      await expect(field).toHaveValue('7');
+      const bounds = (await field.boundingBox())!;
+      expect(bounds.x).toBeGreaterThanOrEqual(0);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+      expect(await page.locator('main').evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+      const add = button(page, 'Add');
+      await add.scrollIntoViewIfNeeded();
+      await expect(add).toBeInViewport();
+      await add.click();
+      await expect(field).toHaveValue('');
+      await expect(page.locator('.wellness-hero')).toContainText('7');
+      await expect(page).toHaveURL(/meditation$/);
+      return;
+    }
     if (example.name === "journal textarea") {
       await expect(page).toHaveURL(/journal-entry/);
       await expect(page.locator('[data-form-page], [role="dialog"]')).toHaveCount(0);
