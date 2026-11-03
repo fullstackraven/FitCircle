@@ -192,9 +192,9 @@ test("quota failures retain diary drafts and never show successful logging", asy
   await page.getByTestId("input-add-servings").fill("3");
   await page.getByTestId("button-save-add-entry").click();
   await expect(
-    page.getByRole("dialog", { name: "Add Entry", exact: true }),
+    page.getByRole('region', { name: "Add Food Entry", exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole("dialog").getByRole("alert")).toBeVisible();
+  await expect(page.locator('[data-form-page], [role="dialog"]').getByRole("alert")).toBeVisible();
   await expect(page.getByTestId("input-add-servings")).toHaveValue("3");
   expect(
     await page.evaluate(
@@ -202,7 +202,7 @@ test("quota failures retain diary drafts and never show successful logging", asy
         JSON.parse(localStorage.getItem("fitcircle_food_2026-10-20")!).length,
     ),
   ).toBe(1);
-  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
 });
 test("malformed diary cannot be replaced by empty initialization or editing", async ({
   page,
@@ -264,7 +264,7 @@ test("manual barcode uses local products offline and retains all nutrients when 
   await page.getByLabel("Manual barcode").fill(food.barcode);
   await page.getByRole("button", { name: "Find Product" }).click();
   await expect(
-    page.getByRole("heading", { name: "Add Entry", exact: true }),
+    page.getByRole("heading", { name: "Add Food Entry", exact: true }),
   ).toBeVisible();
   await page.getByText("Edit label nutrition", { exact: true }).click();
   await expect(page.getByLabel("Product Sodium", { exact: true })).toHaveValue(
@@ -365,7 +365,7 @@ test("scans open Add Entry, automatically cache label servings and remain usable
   await page.getByLabel("Manual barcode").fill("036000291452");
   await page.getByRole("button", { name: "Find Product" }).click();
   await expect(
-    page.getByRole("heading", { name: "Add Entry", exact: true }),
+    page.getByRole("heading", { name: "Add Food Entry", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByLabel("Product serving quantity", { exact: true }),
@@ -439,7 +439,7 @@ test("camera permission resolved after closing releases tracks and cannot reopen
   });
   await openBarcode(page);
   await page.getByRole("button", { name: "Start Camera" }).click();
-  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.getByRole("button", { name: "Back", exact: true }).click();
   await page.evaluate(() => {
     const state = window as typeof window & {
       resolveCamera?: (value: unknown) => void;
@@ -456,7 +456,8 @@ test("camera permission resolved after closing releases tracks and cannot reopen
       ),
     )
     .toBe(1);
-  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.locator('[data-form-page="food-scan"], [data-form-page="food-entry"], [role="dialog"]')).toHaveCount(0);
+  await expect(page.getByRole('heading',{name:'Add Food',exact:true})).toBeVisible();
 });
 test("compact nutrition layouts and secondary views stay reachable at small and desktop sizes", async ({
   page,
@@ -500,7 +501,7 @@ test("custom foods retain missing nutrient data and enter the shared serving con
       .fill(key === "calories" ? "85" : "5");
   await page.getByTestId("button-save-custom").click();
   await expect(
-    page.getByRole("dialog", { name: "Add Entry", exact: true }),
+    page.getByRole('region', { name: "Add Food Entry", exact: true }),
   ).toBeVisible();
   await page.getByTestId("button-save-add-entry").click();
   const entries = await page.evaluate(() =>
@@ -543,7 +544,7 @@ test("closing an active decoder stops the synthetic video stream", async ({
         .evaluate((video) => (video as HTMLVideoElement).srcObject !== null),
     )
     .toBe(true);
-  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.getByRole("button", { name: "Back", exact: true }).click();
   await expect
     .poll(() =>
       page.evaluate(() =>
@@ -612,7 +613,7 @@ test("base product nutrition and consumed multiplier remain distinct in review a
   await page.getByLabel("Manual barcode").fill(food.barcode);
   await page.getByRole("button", { name: "Find Product" }).click();
   await expect(
-    page.getByRole("heading", { name: "Add Entry", exact: true }),
+    page.getByRole("heading", { name: "Add Food Entry", exact: true }),
   ).toBeVisible();
   await page.getByText("Edit label nutrition", { exact: true }).click();
   await page.getByLabel("Product Calories", { exact: true }).fill("120");
@@ -833,7 +834,7 @@ test("automatic scan caching failure blocks logging; diary failure retains cache
   await page.getByLabel("Manual barcode").fill("036000291452");
   await findMockedBarcode(page, "Synthetic retry product");
   await expect(
-    page.getByRole("heading", { name: "Add Entry", exact: true }),
+    page.getByRole("heading", { name: "Add Food Entry", exact: true }),
   ).toBeVisible();
   await page.evaluate(() => {
     const original = Storage.prototype.setItem;
@@ -875,7 +876,7 @@ test("automatic scan caching failure blocks logging; diary failure retains cache
   ).toBe(2);
   await page.evaluate(() => (window as any).restoreSyntheticStorage());
   await page.getByTestId("button-save-add-entry").click();
-  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.locator('[data-form-page], [role="dialog"]')).toHaveCount(0);
   await page.reload();
   expect(
     await page.evaluate(
@@ -1088,7 +1089,7 @@ test.describe("deferred App startup", () => {
       .getByRole("button", { name: "Find Product", exact: true })
       .click();
     await expect(
-      page.getByRole("heading", { name: "Add Entry", exact: true }),
+      page.getByRole("heading", { name: "Add Food Entry", exact: true }),
     ).toBeVisible();
   });
 });

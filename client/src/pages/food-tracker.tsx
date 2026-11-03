@@ -1,3 +1,5 @@
+import { FormScreen } from '@/components/forms/form-page';
+import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { formatNutritionDisplay } from '@/lib/nutrition-display';
 import { foodHistory, type FoodHistoryItem } from '@/lib/food-history';
 import '@/styles/add-food-history.css';
@@ -18,16 +20,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { FormGroup, FormContent, FormHeader, FormTitle, FormDescription } from '@/components/forms/form-page';
 import { getTodayString, getDateString, parseLocalDate, isToday } from '@/lib/date-utils';
 import { localFoodService, LocalFoodItem, FoodEntry, FoodUnit } from '@/lib/local-food-service';
 import { useToast } from '@/hooks/use-toast';
-
-// Keep dialogs readable on opening; the user chooses when to show the keyboard.
-const focusPanelOnOpen = (event: Event) => {
-  event.preventDefault();
-  if (event.target instanceof HTMLElement) event.target.focus({preventScroll:true});
-};
 
 // Validation helper
 const validateNutritionInputs = (calories: string, carbs: string, protein: string, fat: string, quantity: string) => {
@@ -55,13 +51,13 @@ function CompactFoodCard({food, count, actions}: {food: LocalFoodItem; count?: n
 export default function FoodTrackerPage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
+  const [selectedDate, setSelectedDate] = useRouteState<string>('selectedDate', getTodayString());
   const diary = useFoodDiary(selectedDate);
   const foodEntries = diary.entries;
   const [calculatorTargets, setCalculatorTargets] = useState<Targets | null>(null);
   const [targetsError, setTargetsError] = useState('');
   const [nutritionExpanded, setNutritionExpanded] = useState(false);
-  const [barcodeOpen,setBarcodeOpen] = useState(false);
+  const [barcodeOpen,setBarcodeOpen] = useRouteForm('food-scan');
   const [showAllRecent, setShowAllRecent] = useState(false);
   const macroTargets = calculatorTargets ?? displayTargets;
   const reloadTargets = () => {
@@ -78,16 +74,16 @@ export default function FoodTrackerPage() {
     };
   }, []);
   // Search states
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchMeal, setSearchMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
+  const [searchOpen, setSearchOpen] = useRouteForm('food-search');
+  const [searchQuery, setSearchQuery] = useRouteState('searchQuery', '');
+  const [searchMeal, setSearchMeal] = useRouteState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('searchMeal', 'breakfast');
   const [yourFoodTab, setYourFoodTab] = useState<'recent' | 'frequent'>('recent');
   const [history, setHistory] = useState<{recent: FoodHistoryItem[]; frequent: FoodHistoryItem[]}>({recent: [], frequent: []});
 
   // Custom food states
-  const [customFoodOpen, setCustomFoodOpen] = useState(false);
-  const [customFoodMeal, setCustomFoodMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
-  const [customFoodData, setCustomFoodData] = useState({
+  const [isFoodCustomPageOpen, setFoodCustomPageOpen] = useRouteForm('food-custom');
+  const [customFoodMeal, setCustomFoodMeal] = useRouteState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('customFoodMeal', 'breakfast');
+  const [customFoodData, setCustomFoodData] = useRouteState('customFoodData', {
     name: '',
     brand: '',
     quantity: '100',
@@ -109,19 +105,19 @@ export default function FoodTrackerPage() {
   });
   const [searchResults, setSearchResults] = useState<LocalFoodItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [editingEntryId, setEditingEntryId] = useState<string | null>(null); // Track entry being edited
+  const [editingEntryId, setEditingEntryId] = useRouteState<string | null>('editingEntryId', null); // Track entry being edited
   
-  // Add Entry Modal states (when adding from search/recent)
-  const [addEntryOpen, setAddEntryOpen] = useState(false);
-  const [addingFood, setAddingFood] = useState<LocalFoodItem | null>(null);
-  const [scannedDraft, setScannedDraft] = useState<ProductDraft | null>(null);
-  const [addEntryMeal, setAddEntryMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
+  // Add Entry page states (when adding from search/recent)
+  const [isFoodEntryPageOpen, setFoodEntryPageOpen] = useRouteForm('food-entry');
+  const [addingFood, setAddingFood] = useRouteState<LocalFoodItem | null>('addingFood', null);
+  const [scannedDraft, setScannedDraft] = useRouteState<ProductDraft | null>('scannedDraft', null);
+  const [addEntryMeal, setAddEntryMeal] = useRouteState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('addEntryMeal', 'breakfast');
   
-  // Edit Entry Modal states (when editing logged food in meals)
-  const [editEntryOpen, setEditEntryOpen] = useState(false);
-  const [editingEntry, setEditingEntry] = useState<FoodEntry | null>(null);
-  const [editEntryServings, setEditEntryServings] = useState('1');
-  const [editEntryMeal, setEditEntryMeal] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
+  // Edit Entry page states (when editing logged food in meals)
+  const [isFoodEditPageOpen, setFoodEditPageOpen] = useRouteForm('food-edit');
+  const [editingEntry, setEditingEntry] = useRouteState<FoodEntry | null>('editingEntry', null);
+  const [editEntryServings, setEditEntryServings] = useRouteState('editEntryServings', '1');
+  const [editEntryMeal, setEditEntryMeal] = useRouteState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('editEntryMeal', 'breakfast');
   
   // Calculator modal state
 
@@ -247,7 +243,7 @@ export default function FoodTrackerPage() {
       iron: ''
     });
     setSearchOpen(false); // Close search dialog
-    setCustomFoodOpen(true);
+    setFoodCustomPageOpen(true);
   };
 
   // Function to handle custom food submission (just save to database, don't log)
@@ -317,7 +313,7 @@ export default function FoodTrackerPage() {
           setSearchResults(results);
         }
 
-        setCustomFoodOpen(false);
+        setFoodCustomPageOpen(false);
         if (!editingEntryId) {handleAddFromSearch(result.food);setAddEntryMeal(customFoodMeal);}
         setEditingEntryId(null); // Clear editing state
       } else {
@@ -359,7 +355,7 @@ export default function FoodTrackerPage() {
       description: `${addingFood.name} has been added to your ${meal}.`
     });
 
-    setAddEntryOpen(false);
+    setFoodEntryPageOpen(false);
     setAddingFood(null);
     setScannedDraft(null);
     return true;
@@ -372,7 +368,7 @@ export default function FoodTrackerPage() {
     setScannedDraft(null);
     setAddEntryMeal(searchMeal);
     setSearchOpen(false);
-    setAddEntryOpen(true);
+    setFoodEntryPageOpen(true);
   };
 
   // Function to edit a food item from search/recent (opens Custom Food modal with existing values)
@@ -399,7 +395,7 @@ export default function FoodTrackerPage() {
     });
     setEditingEntryId(food.id); // Store ID to know we're editing
     setSearchOpen(false);
-    setCustomFoodOpen(true);
+    setFoodCustomPageOpen(true);
   };
 
   // Function to delete food from database with confirmation
@@ -447,7 +443,7 @@ export default function FoodTrackerPage() {
     setEditingEntry(entry);
     setEditEntryServings((entry.servings || 1).toString()); // Show current servings value
     setEditEntryMeal(entry.meal);
-    setEditEntryOpen(true);
+    setFoodEditPageOpen(true);
   };
 
   // Function to save the edited entry (servings/meal changes)
@@ -474,11 +470,11 @@ export default function FoodTrackerPage() {
       description: `${editingEntry.name} has been updated.`
     });
 
-    setEditEntryOpen(false);
+    setFoodEditPageOpen(false);
     setEditingEntry(null);
   };
 
-  return (
+  return <FormScreen>{(
     <div className="fitcircle-page">
       <div className="fitcircle-container">
         {/* Header */}
@@ -539,21 +535,21 @@ export default function FoodTrackerPage() {
             <NutritionDetails entries={foodEntries} targets={calculatorTargets ?? undefined}/>
           </div>}
         </section>
-        <Dialog open={barcodeOpen} onOpenChange={setBarcodeOpen}>
-          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="max-w-lg bg-canvas border-separator">
-            <DialogHeader><DialogTitle>Scan Barcode</DialogTitle><DialogDescription className="sr-only">Scan a barcode or enter it manually.</DialogDescription></DialogHeader>
-            {barcodeOpen&&<BarcodeEntry onFound={result=>{diary.clearError();setAddingFood(result.local);setScannedDraft(result.draft);setAddEntryMeal(searchMeal);setBarcodeOpen(false);setAddEntryOpen(true);}}/>}
-          </DialogContent>
-        </Dialog>
+        <FormGroup formId="food-scan" open={barcodeOpen} onOpenChange={setBarcodeOpen}>
+          <FormContent className="max-w-lg bg-canvas border-separator">
+            <FormHeader><FormTitle>Scan Barcode</FormTitle><FormDescription className="sr-only">Scan a barcode or enter it manually.</FormDescription></FormHeader>
+            {barcodeOpen&&<BarcodeEntry onFound={result=>{diary.clearError();setAddingFood(result.local);setScannedDraft(result.draft);setAddEntryMeal(searchMeal);setBarcodeOpen(false);setFoodEntryPageOpen(true);}}/>}
+          </FormContent>
+        </FormGroup>
 
-        {/* Search Dialog - triggered by meal 'Add food' buttons */}
-        <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="bg-canvas border-separator text-strong rounded-3xl max-w-lg">
-            <DialogHeader className="items-start">
-              <DialogTitle className="text-2xl font-bold text-left">
+        {/* Search page - triggered by meal 'Add food' buttons */}
+        <FormGroup formId="food-search" open={searchOpen} onOpenChange={setSearchOpen}>
+          <FormContent className="bg-canvas border-separator text-strong rounded-3xl max-w-lg">
+            <FormHeader className="items-start">
+              <FormTitle className="text-2xl font-bold text-left">
                 Add Food
-              </DialogTitle>
-            </DialogHeader>
+              </FormTitle>
+            </FormHeader>
             <div className="space-y-4">
               
               {/* Search Bar */}
@@ -633,19 +629,19 @@ export default function FoodTrackerPage() {
                 )}
               </div>
                 </div>
-              </DialogContent>
-        </Dialog>
+              </FormContent>
+        </FormGroup>
 
         <div className="flex items-center justify-between mb-3"><h2 className="text-lg font-semibold text-strong">{isToday(selectedDate)?"Today's Meals":'Meals'}</h2></div>
         <MealDiary entries={foodEntries} disabled={!diary.ready} onAdd={openSearchForMeal} onEdit={handleEditFoodEntry} onDelete={handleDeleteFood}/>
 
-        {/* Custom Food Dialog */}
-        <Dialog open={customFoodOpen} onOpenChange={setCustomFoodOpen}>
-          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="bg-neutral-surface border-neutral-control-border text-strong rounded-2xl max-w-2xl overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Create Custom Food</DialogTitle>
-              <DialogDescription className="sr-only">Enter food and serving details.</DialogDescription>
-            </DialogHeader>
+        {/* Custom Food FormGroup */}
+        <FormGroup formId="food-custom" open={isFoodCustomPageOpen} onOpenChange={setFoodCustomPageOpen}>
+          <FormContent className="bg-neutral-surface border-neutral-control-border text-strong rounded-2xl max-w-2xl overflow-y-auto">
+            <FormHeader>
+              <FormTitle>Create Custom Food</FormTitle>
+              <FormDescription className="sr-only">Enter food and serving details.</FormDescription>
+            </FormHeader>
             
             <div className="space-y-6">
               {/* Basic Information */}
@@ -920,7 +916,7 @@ export default function FoodTrackerPage() {
               <div className="flex space-x-3 pt-4 border-t border-neutral-control-border">
                 <Button
                   onClick={() => {
-                    setCustomFoodOpen(false);
+                    setFoodCustomPageOpen(false);
                     setEditingEntryId(null);
                   }}
                   variant="outline"
@@ -939,30 +935,30 @@ export default function FoodTrackerPage() {
                 </Button>
               </div>
             </div>
-          </DialogContent>
-        </Dialog>
+          </FormContent>
+        </FormGroup>
 
-        {/* Add Entry Modal (When adding food from search/recent) */}
-        <Dialog open={addEntryOpen} onOpenChange={setAddEntryOpen}>
-          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="bg-canvas border-separator text-strong rounded-2xl max-w-md">
-            <DialogHeader>
-              <DialogTitle>Add Entry</DialogTitle>
-            </DialogHeader>
+        {/* Add Entry page (When adding food from search/recent) */}
+        <FormGroup formId="food-entry" open={isFoodEntryPageOpen} onOpenChange={setFoodEntryPageOpen}>
+          <FormContent className="bg-canvas border-separator text-strong rounded-2xl max-w-md">
+            <FormHeader>
+              <FormTitle>Add Entry</FormTitle>
+            </FormHeader>
             
-            {addEntryOpen && (scannedDraft || addingFood) && <FoodEntryForm
+            {isFoodEntryPageOpen && (scannedDraft || addingFood) && <FoodEntryForm
               initial={scannedDraft ?? draftFromFood(addingFood!)} local={addingFood} scanned={!!scannedDraft}
-              initialMeal={addEntryMeal} saveError={diary.saveError} onAdd={handleSubmitAddEntry} onCancel={() => setAddEntryOpen(false)}
+              initialMeal={addEntryMeal} saveError={diary.saveError} onAdd={handleSubmitAddEntry} onCancel={() => setFoodEntryPageOpen(false)}
             />}
 
-          </DialogContent>
-        </Dialog>
+          </FormContent>
+        </FormGroup>
 
-        {/* Edit Entry Modal (Simple modal for adjusting servings and meal) */}
-        <Dialog open={editEntryOpen} onOpenChange={setEditEntryOpen}>
-          <DialogContent onOpenAutoFocus={focusPanelOnOpen} className="bg-neutral-surface border-neutral-control-border text-strong rounded-2xl max-w-md">
-            <DialogHeader>
-              <DialogTitle>Edit Entry</DialogTitle>
-            </DialogHeader>
+        {/* Edit Entry page (Page for adjusting servings and meal) */}
+        <FormGroup formId="food-edit" open={isFoodEditPageOpen} onOpenChange={setFoodEditPageOpen}>
+          <FormContent className="bg-neutral-surface border-neutral-control-border text-strong rounded-2xl max-w-md">
+            <FormHeader>
+              <FormTitle>Edit Entry</FormTitle>
+            </FormHeader>
             
             {editingEntry && (
               <div className="space-y-6">
@@ -1049,7 +1045,7 @@ export default function FoodTrackerPage() {
                 {/* Action Buttons */}
                 <div className="flex space-x-3 pt-2">
                   <Button
-                    onClick={() => setEditEntryOpen(false)}
+                    onClick={() => setFoodEditPageOpen(false)}
                     variant="outline"
                     className="flex-1 border-neutral-control-border text-neutral-supporting hover:bg-neutral-control "
                   >
@@ -1065,12 +1061,12 @@ export default function FoodTrackerPage() {
                 </div>
               </div>
             )}
-          </DialogContent>
-        </Dialog>
+          </FormContent>
+        </FormGroup>
 
 
         
       </div>
     </div>
-  );
+  )}</FormScreen>;
 }

@@ -111,7 +111,7 @@ test('normal viewport changes keep full shell geometry while overlays use keyboa
   await page.goto('food-tracker');
   await page.goto('profile');
   await page.getByRole('button', { name: 'Edit Profile', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: 'Edit Profile' });
+  const dialog = page.getByRole('region', { name: 'Edit Profile' });
   await setVisualViewport(page, 710, 20);
   const input = dialog.locator('input').first();
   await input.fill('35');
@@ -120,14 +120,14 @@ test('normal viewport changes keep full shell geometry while overlays use keyboa
   await assertFullScrollViewport(page, 844);
   await setVisualViewport(page, 430, 100);
   await expect.poll(() => page.locator('.app-shell').evaluate(el => el.getBoundingClientRect().height)).toBe(430);
-  const close = await dialog.getByRole('button', { name: 'Close', exact: true }).boundingBox();
+  const close = await page.getByRole('button', { name: 'Back', exact: true }).boundingBox();
   expect(close!.y).toBeGreaterThanOrEqual(159);
   expect(close!.y + close!.height).toBeLessThanOrEqual(496);
   await expect(input).toHaveValue('35');
   await input.blur();
   await setVisualViewport(page, 710, 20);
   await assertFullScrollViewport(page, 844);
-  await dialog.getByRole('button', { name: 'Close', exact: true }).click();
+  page.once('dialog',d=>d.accept());await page.getByRole('button', { name: 'Back', exact: true }).click();
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
   await page.setViewportSize({ width: 844, height: 390 });
   await setVisualViewport(page, 300, 10);

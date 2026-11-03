@@ -84,7 +84,7 @@ async function seed(page: Page) {
 }
 
 // Captured before token correction. These remain the Phase 1 dark regression baseline.
-test("current Dark appearance remains unchanged across representative routes and overlays", async ({
+test("Dark materials remain consistent across routes and routed editors", async ({
   page,
 }) => {
   await seed(page);
@@ -101,7 +101,7 @@ test("current Dark appearance remains unchanged across representative routes and
         animations: "disabled",
       });
     }
-    const colors = await page.evaluate((goalEditor) => {
+    const colors = await page.evaluate(({goalEditor,routedWorkout}) => {
       const selectors = [
         "body",
         ".app-shell",
@@ -111,7 +111,7 @@ test("current Dark appearance remains unchanged across representative routes and
         ".fitcircle-card",
         ".glass-card",
         // Goal sheets now paint their card and field material inside the portal shell.
-        ...(goalEditor ? [".goal-editor"] : [".glass-dialog"]),
+        ...(goalEditor ? [".goal-editor"] : routedWorkout ? [".form-page-content"] : [".glass-dialog"]),
         ".wellness-surface",
         ...(goalEditor ? [".goal-editor-input-row", ".goal-editor-input"] : ["input"]),
         "button",
@@ -133,7 +133,7 @@ test("current Dark appearance remains unchanged across representative routes and
           ];
         }),
       );
-    }, name === "hydration-goal");
+    }, {goalEditor:name === "hydration-goal",routedWorkout:name === "workout-editor"});
     expect(JSON.stringify(colors, null, 2)).toMatchSnapshot(
       `${name}-colors.json`,
     );
@@ -170,7 +170,7 @@ test("current Dark appearance remains unchanged across representative routes and
     }
     if (route === "hydration") {
       await page.getByRole("button", { name: "Goal", exact: true }).click();
-      await expect(page.getByRole("dialog")).toBeVisible();
+      await expect(page.locator('[data-form-page], [role="dialog"]')).toBeVisible();
       await capture("hydration-goal");
     }
   }

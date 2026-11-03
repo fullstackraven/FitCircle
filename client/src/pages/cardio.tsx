@@ -1,3 +1,5 @@
+import { FormScreen } from '@/components/forms/form-page';
+import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { GoalEditor, GoalSummary, GoalField } from "@/components/wellness/GoalEditor";
 import {
   WellnessPageShell,
@@ -26,13 +28,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  FormGroup,
+  FormContent,
+  FormHeader,
+  FormTitle,
+  FormDescription,
+  FormTrigger,
+} from "@/components/forms/form-page";
 import {
   Collapsible,
   CollapsibleContent,
@@ -56,24 +58,24 @@ export default function CardioPage() {
   } = useCardio();
 
   // State for modals and forms
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isAddCustomTypeOpen, setIsAddCustomTypeOpen] = useState(false);
-  const [editingEntry, setEditingEntry] = useState<CardioSession | null>(null);
+  const [isCardioAddPageOpen, setCardioAddPageOpen] = useRouteForm('cardio-add');
+  const [isCardioGoalPageOpen, setCardioGoalPageOpen] = useRouteForm('cardio-goal');
+  const [isCardioEditPageOpen, setCardioEditPageOpen] = useRouteForm('cardio-edit');
+  const [isCardioTypePageOpen, setCardioTypePageOpen] = useRouteForm('cardio-type');
+  const [editingEntry, setEditingEntry] = useRouteState<CardioSession | null>('editingEntry', null);
 
   // Goal dialog state
-  const [goalInput, setGoalInput] = useState("");
+  const [goalInput, setGoalInput] = useRouteState('goalInput', "");
   const [goalInputFocused, setGoalInputFocused] = useState(false);
 
   // Form states
-  const [newEntry, setNewEntry] = useState({
+  const [newEntry, setNewEntry] = useRouteState('newEntry', {
     type: "",
     duration: "",
     distance: "",
     notes: "",
   });
-  const [newCustomType, setNewCustomType] = useState("");
+  const [newCustomType, setNewCustomType] = useRouteState('newCustomType', "");
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
 
@@ -141,7 +143,7 @@ export default function CardioPage() {
       newEntry.notes || undefined,
     );
     resetAddForm();
-    setIsAddDialogOpen(false);
+    setCardioAddPageOpen(false);
   };
 
   const handleUpdateEntry = () => {
@@ -171,7 +173,7 @@ export default function CardioPage() {
     }
     setEditingEntry(null);
     resetAddForm();
-    setIsEditDialogOpen(false);
+    setCardioEditPageOpen(false);
   };
 
   const handleDeleteEntry = (id: string) => {
@@ -189,7 +191,7 @@ export default function CardioPage() {
 
     addCustomType(newCustomType);
     setNewCustomType("");
-    setIsAddCustomTypeOpen(false);
+    setCardioTypePageOpen(false);
   };
 
   const handleSetGoal = async () => {
@@ -205,14 +207,14 @@ export default function CardioPage() {
       target: targetValue,
       period: data.goal.period,
     });
-    setIsGoalDialogOpen(false);
+    setCardioGoalPageOpen(false);
     alert("Cardio goal saved successfully!");
   };
 
   // Initialize goal input when dialog opens
   const handleOpenGoalDialog = () => {
     setGoalInput(data.goal.target?.toString() || "");
-    setIsGoalDialogOpen(true);
+    setCardioGoalPageOpen(true);
   };
 
   const formatDuration = (minutes: any) => {
@@ -263,7 +265,7 @@ export default function CardioPage() {
     return timeString; // Return as-is if format is unrecognized
   };
 
-  return (
+  return <FormScreen>{(
     <>
       <WellnessPageShell
         title="Cardio"
@@ -304,19 +306,19 @@ export default function CardioPage() {
         </WellnessTodaySection>
 
         {/* Add Entry Button */}
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <WellnessPrimaryAction>Log Cardio</WellnessPrimaryAction>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md bg-surface border-separator text-strong rounded-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-center text-strong">
+        <FormGroup formId="cardio-add" open={isCardioAddPageOpen} onOpenChange={setCardioAddPageOpen}>
+          <FormTrigger asChild>
+            <WellnessPrimaryAction>Add Cardio</WellnessPrimaryAction>
+          </FormTrigger>
+          <FormContent className="sm:max-w-md bg-surface border-separator text-strong rounded-2xl">
+            <FormHeader>
+              <FormTitle className="text-xl font-semibold text-center text-strong">
                 Add Cardio Entry
-              </DialogTitle>
-              <DialogDescription className="text-sm text-muted-foreground text-center">
+              </FormTitle>
+              <FormDescription className="text-sm text-muted-foreground text-center">
                 Log your cardio workout details
-              </DialogDescription>
-            </DialogHeader>
+              </FormDescription>
+            </FormHeader>
             <div className="space-y-4">
               <div className="space-y-3">
                 <Label className="text-sm font-medium text-strong">
@@ -340,24 +342,24 @@ export default function CardioPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <Dialog
-                    open={isAddCustomTypeOpen}
-                    onOpenChange={setIsAddCustomTypeOpen}
+                  <FormGroup formId="cardio-type"
+                    open={isCardioTypePageOpen}
+                    onOpenChange={setCardioTypePageOpen}
                   >
-                    <DialogTrigger asChild>
+                    <FormTrigger asChild>
                       <Button variant="outline" size="icon" className="px-3">
                         <Plus className="w-4 h-4" />
                       </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md bg-surface border-separator text-strong rounded-2xl">
-                      <DialogHeader>
-                        <DialogTitle className="text-lg font-semibold text-center text-strong">
+                    </FormTrigger>
+                    <FormContent className="sm:max-w-md bg-surface border-separator text-strong rounded-2xl">
+                      <FormHeader>
+                        <FormTitle className="text-lg font-semibold text-center text-strong">
                           Add Custom Type
-                        </DialogTitle>
-                        <DialogDescription className="text-sm text-muted-foreground text-center">
+                        </FormTitle>
+                        <FormDescription className="text-sm text-muted-foreground text-center">
                           Create a new cardio type
-                        </DialogDescription>
-                      </DialogHeader>
+                        </FormDescription>
+                      </FormHeader>
                       <div className="space-y-4">
                         <div>
                           <Label className="text-sm font-medium text-strong">
@@ -379,15 +381,15 @@ export default function CardioPage() {
                           </Button>
                           <Button
                             variant="outline"
-                            onClick={() => setIsAddCustomTypeOpen(false)}
+                            onClick={() => setCardioTypePageOpen(false)}
                             className="border-control text-supporting hover:bg-surface-secondary"
                           >
                             Cancel
                           </Button>
                         </div>
                       </div>
-                    </DialogContent>
-                  </Dialog>
+                    </FormContent>
+                  </FormGroup>
                 </div>
               </div>
 
@@ -447,14 +449,14 @@ export default function CardioPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => setIsAddDialogOpen(false)}
+                  onClick={() => setCardioAddPageOpen(false)}
                 >
                   Cancel
                 </Button>
               </div>
             </div>
-          </DialogContent>
-        </Dialog>
+          </FormContent>
+        </FormGroup>
 
         {/* Today's Cardio */}
 
@@ -504,7 +506,7 @@ export default function CardioPage() {
                             distance: session.distance?.toString() || "",
                             notes: session.notes || "",
                           });
-                          setIsEditDialogOpen(true);
+                          setCardioEditPageOpen(true);
                         }}
                         className="fc-icon-action text-muted-foreground hover:text-strong p-1 h-auto"
                         aria-label={`Edit ${session.type} session`}
@@ -643,7 +645,7 @@ export default function CardioPage() {
                                           session.distance?.toString() || "",
                                         notes: session.notes || "",
                                       });
-                                      setIsEditDialogOpen(true);
+                                      setCardioEditPageOpen(true);
                                     }}
                                     onDelete={() => {
                                       if (
@@ -694,17 +696,17 @@ export default function CardioPage() {
           </div>
         </div>
 
-        {/* Edit Entry Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-md bg-surface border-separator text-strong rounded-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-center text-strong">
+        {/* Edit Entry FormGroup */}
+        <FormGroup formId="cardio-edit" open={isCardioEditPageOpen} onOpenChange={setCardioEditPageOpen}>
+          <FormContent className="sm:max-w-md bg-surface border-separator text-strong rounded-2xl">
+            <FormHeader>
+              <FormTitle className="text-xl font-semibold text-center text-strong">
                 Edit Cardio Entry
-              </DialogTitle>
-              <DialogDescription className="text-sm text-muted-foreground text-center">
+              </FormTitle>
+              <FormDescription className="text-sm text-muted-foreground text-center">
                 Update your cardio workout details
-              </DialogDescription>
-            </DialogHeader>
+              </FormDescription>
+            </FormHeader>
             <div className="space-y-4">
               <div className="space-y-3">
                 <Label className="text-sm font-medium text-strong">
@@ -783,23 +785,23 @@ export default function CardioPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => setIsEditDialogOpen(false)}
+                  onClick={() => setCardioEditPageOpen(false)}
                 >
                   Cancel
                 </Button>
               </div>
             </div>
-          </DialogContent>
-        </Dialog>
+          </FormContent>
+        </FormGroup>
         <WellnessHistory
           stats={getHistoricalStats()}
           unit={data.goal.type === "duration" ? "min" : "mi"}
         />
       </WellnessPageShell>
 
-      {/* Simple Goal Setting Modal - Fasting Style */}
-      {isGoalDialogOpen && (
-        <GoalEditor title="Cardio Goal" subtitle="Set your activity target" onDismiss={() => setIsGoalDialogOpen(false)} onSave={handleSetGoal}
+      {/* Simple Goal settings page - Fasting Style */}
+      {isCardioGoalPageOpen && (
+        <GoalEditor formId="cardio-goal" title="Cardio Goal" subtitle="Set your activity target" onDismiss={() => setCardioGoalPageOpen(false)} onSave={handleSetGoal}
           summary={<GoalSummary percentage={percentage(todaysValue, Number(goalInput))} label={data.goal.period === "week" ? "Weekly target" : "Daily target"} value={`${Number(goalInput) || 0} ${data.goal.type === "duration" ? "min" : "mi"}`} detail={`Today · ${todaysValue} ${data.goal.type === "duration" ? "minutes" : "miles"} logged`} />}>
           <section><span className="goal-editor-section-label">Goal period</span>
             <div className="goal-editor-segments" role="group" aria-label="Goal period">
@@ -824,5 +826,5 @@ export default function CardioPage() {
         </GoalEditor>
       )}
     </>
-  );
+  )}</FormScreen>;
 }

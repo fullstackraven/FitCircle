@@ -1,3 +1,5 @@
+import { FormScreen } from '@/components/forms/form-page';
+import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { GoalEditor, GoalSummary, GoalField } from "@/components/wellness/GoalEditor";
 import {
   WellnessPageShell,
@@ -21,11 +23,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  FormGroup,
+  FormContent,
+  FormDescription,
+  FormTitle,
+} from "@/components/forms/form-page";
 import {
   Collapsible,
   CollapsibleContent,
@@ -47,21 +49,21 @@ export default function HydrationPage() {
     getHistoricalStats,
   } = useHydration();
 
-  const [addAmount, setAddAmount] = useState("");
-  const [selectedLiquidType, setSelectedLiquidType] = useState("Water");
-  const [customLiquidType, setCustomLiquidType] = useState("");
-  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
-  const [newGoal, setNewGoal] = useState(dailyGoalOz.toString());
-  const [isHydrationDialogOpen, setIsHydrationDialogOpen] = useState(false);
+  const [addAmount, setAddAmount] = useRouteState('addAmount', "");
+  const [selectedLiquidType, setSelectedLiquidType] = useRouteState('selectedLiquidType', "Water");
+  const [customLiquidType, setCustomLiquidType] = useRouteState('customLiquidType', "");
+  const [isHydrationGoalPageOpen, setHydrationGoalPageOpen] = useRouteForm('hydration-goal');
+  const [newGoal, setNewGoal] = useRouteState('newGoal', dailyGoalOz.toString());
+  const [isHydrationAddPageOpen, setHydrationAddPageOpen] = useRouteForm('hydration-add');
   const [customLiquidFocused, setCustomLiquidFocused] = useState(false);
   const [addAmountFocused, setAddAmountFocused] = useState(false);
   const [goalFocused, setGoalFocused] = useState(false);
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingEntry, setEditingEntry] = useState<HydrationEntry | null>(null);
-  const [editAmount, setEditAmount] = useState("");
-  const [editLiquidType, setEditLiquidType] = useState("Water");
+  const [isHydrationEditPageOpen, setHydrationEditPageOpen] = useRouteForm('hydration-edit');
+  const [editingEntry, setEditingEntry] = useRouteState<HydrationEntry | null>('editingEntry', null);
+  const [editAmount, setEditAmount] = useRouteState('editAmount', "");
+  const [editLiquidType, setEditLiquidType] = useRouteState('editLiquidType', "Water");
 
   const liquidTypes = ["Water", "Coffee", "Tea", "Custom"];
 
@@ -108,7 +110,7 @@ export default function HydrationPage() {
         alert("Goal could not be saved. Original records are unchanged.");
         return;
       }
-      setIsGoalModalOpen(false);
+      setHydrationGoalPageOpen(false);
     }
   };
 
@@ -116,7 +118,7 @@ export default function HydrationPage() {
     setEditingEntry(entry);
     setEditAmount(entry.amount.toString());
     setEditLiquidType(entry.liquidType);
-    setIsEditDialogOpen(true);
+    setHydrationEditPageOpen(true);
   };
 
   const handleSaveEdit = () => {
@@ -130,7 +132,7 @@ export default function HydrationPage() {
       )
     )
       return;
-    setIsEditDialogOpen(false);
+    setHydrationEditPageOpen(false);
     setEditingEntry(null);
     setEditAmount("");
     setEditLiquidType("Water");
@@ -153,13 +155,13 @@ export default function HydrationPage() {
     recentLogs.reduce((acc, log) => ({ ...acc, [log.date]: log }), {}),
   ) as { [monthName: string]: HydrationLog[] };
 
-  return (
+  return <FormScreen>{(
     <>
       <WellnessPageShell
         title="Hydration"
         accent="var(--wellness-blue)"
         textAccent="hsl(var(--feature-blue))"
-        onGoal={() => setIsGoalModalOpen(true)}
+        onGoal={() => setHydrationGoalPageOpen(true)}
       >
         {error && (
           <p role="alert" className="text-sm text-warning-soft">
@@ -210,7 +212,7 @@ export default function HydrationPage() {
           {/* Add Liquid Button */}
           <div>
             <WellnessPrimaryAction
-              onClick={() => setIsHydrationDialogOpen(true)}
+              onClick={() => setHydrationAddPageOpen(true)}
             >
               <span>Add Liquid</span>
             </WellnessPrimaryAction>
@@ -387,9 +389,9 @@ export default function HydrationPage() {
         <WellnessHistory stats={getHistoricalStats()} unit="oz" />
       </WellnessPageShell>
 
-      {/* Goal Setting Modal */}
-      {isGoalModalOpen && (
-        <GoalEditor title="Hydration Goal" subtitle="Set your daily water target" onDismiss={() => setIsGoalModalOpen(false)} onSave={handleSetGoal}
+      {/* Goal settings page */}
+      {isHydrationGoalPageOpen && (
+        <GoalEditor formId="hydration-goal" title="Hydration Goal" subtitle="Set your daily water target" onDismiss={() => setHydrationGoalPageOpen(false)} onSave={handleSetGoal}
           summary={<GoalSummary percentage={percentage(currentDayOz, Number(newGoal))} label="Daily target" value={`${Number(newGoal) || 0} oz`} detail={`Today · ${Math.round(currentDayOz)} oz logged`} />}>
           <GoalField id="goal" label="Daily hydration goal" unit="oz" description="Your daily fluid intake target."><Input
                   id="goal" aria-label="Daily goal (oz)"
@@ -403,23 +405,23 @@ export default function HydrationPage() {
         </GoalEditor>
       )}
 
-      {/* Add Liquid Dialog */}
-      <Dialog
-        open={isHydrationDialogOpen}
-        onOpenChange={setIsHydrationDialogOpen}
+      {/* Add Liquid FormGroup */}
+      <FormGroup formId="hydration-add"
+        open={isHydrationAddPageOpen}
+        onOpenChange={setHydrationAddPageOpen}
       >
-        <DialogContent className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl">
-          <DialogTitle className="text-lg font-semibold text-center">
+        <FormContent className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl">
+          <FormTitle className="text-lg font-semibold text-center">
             Add Liquid
-          </DialogTitle>
+          </FormTitle>
           {error && (
             <p role="alert" className="text-sm text-warning-soft">
               {error}
             </p>
           )}
-          <DialogDescription className="sr-only">
+          <FormDescription className="sr-only">
             Add liquid consumption to your hydration tracking
-          </DialogDescription>
+          </FormDescription>
           <div className="space-y-4">
             {/* Liquid Type Selection */}
             <div className="space-y-3">
@@ -430,6 +432,7 @@ export default function HydrationPage() {
                 {liquidTypes.map((type) => (
                   <button
                     key={type}
+                    aria-pressed={selectedLiquidType === type}
                     onClick={() => setSelectedLiquidType(type)}
                     className={`fc-pill min-h-11 py-2 px-2 text-sm font-medium transition-colors ${
  selectedLiquidType === type
@@ -464,7 +467,7 @@ export default function HydrationPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    if (handleQuickAdd(amount)) setIsHydrationDialogOpen(false);
+                    if (handleQuickAdd(amount)) setHydrationAddPageOpen(false);
                   }}
                   className="border-control text-supporting hover:bg-surface-secondary"
                 >
@@ -513,7 +516,7 @@ export default function HydrationPage() {
               </div>
               <Button
                 onClick={() => {
-                  if (handleAddHydration()) setIsHydrationDialogOpen(false);
+                  if (handleAddHydration()) setHydrationAddPageOpen(false);
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-on-action"
               >
@@ -522,18 +525,18 @@ export default function HydrationPage() {
               </Button>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </FormContent>
+      </FormGroup>
 
-      {/* Edit Entry Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl">
-          <DialogTitle className="text-lg font-semibold text-center">
+      {/* Edit Entry FormGroup */}
+      <FormGroup formId="hydration-edit" open={isHydrationEditPageOpen} onOpenChange={setHydrationEditPageOpen}>
+        <FormContent className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl">
+          <FormTitle className="text-lg font-semibold text-center">
             Edit Entry
-          </DialogTitle>
-          <DialogDescription className="sr-only">
+          </FormTitle>
+          <FormDescription className="sr-only">
             Edit your hydration entry
-          </DialogDescription>
+          </FormDescription>
           <div className="space-y-4">
             {/* Liquid Type Selection */}
             <div className="space-y-3">
@@ -544,6 +547,7 @@ export default function HydrationPage() {
                 {liquidTypes.map((type) => (
                   <button
                     key={type}
+                    aria-pressed={editLiquidType === type}
                     onClick={() => setEditLiquidType(type)}
                     className={`fc-pill min-h-11 py-2 px-2 text-sm font-medium transition-colors ${
  editLiquidType === type
@@ -587,7 +591,7 @@ export default function HydrationPage() {
             <div className="flex space-x-2 pt-4">
               <Button
                 variant="outline"
-                onClick={() => setIsEditDialogOpen(false)}
+                onClick={() => setHydrationEditPageOpen(false)}
                 className="flex-1 border-control text-supporting hover:bg-surface-secondary"
               >
                 Cancel
@@ -601,8 +605,8 @@ export default function HydrationPage() {
               </Button>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </FormContent>
+      </FormGroup>
     </>
-  );
+  )}</FormScreen>;
 }

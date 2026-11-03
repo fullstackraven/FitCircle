@@ -1,3 +1,5 @@
+import { FormScreen } from '@/components/forms/form-page';
+import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { focusDashboardOnOpen, returnDashboardFocus } from '@/lib/dashboard-navigation';
 import { DashboardMenu } from '@/components/DashboardMenu';
 import { VersionLabel } from "@/components/VersionLabel";
@@ -10,24 +12,24 @@ import { useWorkouts } from '@/hooks/use-workouts';
 import { getColorClass } from '@/lib/color-utils';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { WorkoutModal } from '@/components/workout-modal';
-import { RoutineModal } from '@/components/routine-modal';
+import { WorkoutEditor } from '@/components/workout-editor';
+import { RoutineEditor } from '@/components/routine-editor';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 export default function RoutinesPage() {
   const [, navigate] = useLocation();
   const [isEditWorkoutsOpen, setIsEditWorkoutsOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingWorkout, setEditingWorkout] = useState<any>(null);
-  const [isRoutineModalOpen, setIsRoutineModalOpen] = useState(false);
-  const [editingRoutine, setEditingRoutine] = useState<any>(null);
+  const [isWorkoutPageOpen, setWorkoutPageOpen] = useRouteForm('workout');
+  const [editingWorkout, setEditingWorkout] = useRouteState<any>('editingWorkout', null);
+  const [isRoutinePageOpen, setRoutinePageOpen] = useRouteForm('routine');
+  const [editingRoutine, setEditingRoutine] = useRouteState<any>('editingRoutine', null);
   const [pendingRoutineDeletion, setPendingRoutineDeletion] = useState<{ id: string; name: string } | null>(null);
   const cancelDeletionRef = useRef<HTMLButtonElement>(null);
   const deletionTriggerRef = useRef<HTMLButtonElement | null>(null);
   const [expandedRoutines, setExpandedRoutines] = useState<Set<string>>(new Set());
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
-  const [preSelectedDays, setPreSelectedDays] = useState<number[] | undefined>(undefined);
+  const [preSelectedDays, setPreSelectedDays] = useRouteState<number[] | undefined>('preSelectedDays', undefined);
 
   // Check if we should open dashboard on load
   useEffect(() => {
@@ -70,12 +72,12 @@ export default function RoutinesPage() {
 
   const handleAddRoutine = () => {
     setEditingRoutine(null);
-    setIsRoutineModalOpen(true);
+    setRoutinePageOpen(true);
   };
 
   const handleEditRoutine = (routine: any) => {
     setEditingRoutine(routine);
-    setIsRoutineModalOpen(true);
+    setRoutinePageOpen(true);
   };
 
   const handleSaveRoutine = (name: string, selectedDays: number[]) => {
@@ -84,7 +86,7 @@ export default function RoutinesPage() {
     } else {
       addRoutine(name, selectedDays);
     }
-    setIsRoutineModalOpen(false);
+    setRoutinePageOpen(false);
     setEditingRoutine(null);
   };
 
@@ -116,7 +118,7 @@ export default function RoutinesPage() {
       weightLbs: workout.weightLbs,
       scheduledDays: workout.scheduledDays
     });
-    setIsModalOpen(true);
+    setWorkoutPageOpen(true);
   };
 
   const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], setsGoal = 1) => {
@@ -130,11 +132,11 @@ export default function RoutinesPage() {
 
   const handleDeleteWorkout = (workoutId: string) => {
     deleteWorkout(workoutId);
-    setIsModalOpen(false);
+    setWorkoutPageOpen(false);
     setEditingWorkout(null);
   };
 
-  return (
+  return <FormScreen>{(
     <div className="fitcircle-page">
       {/* Header is rendered into the non-scrolling shell host */}
       <AppHeader>
@@ -237,7 +239,7 @@ export default function RoutinesPage() {
                         onClick={() => {
                           setPreSelectedDays(routine.selectedDays);
                           setEditingWorkout(null);
-                          setIsModalOpen(true);
+                          setWorkoutPageOpen(true);
                         }}
                         className="fc-pill mt-3 flex min-h-11 w-full items-center justify-center gap-2 bg-surface-secondary/60 px-3 py-2 text-supporting transition-colors hover:bg-surface-secondary hover:text-strong"
                         data-testid={`button-add-workout-${routine.id}`}
@@ -289,7 +291,7 @@ export default function RoutinesPage() {
                     <Button 
                       onClick={() => {
                         setEditingWorkout(null);
-                        setIsModalOpen(true);
+                        setWorkoutPageOpen(true);
                       }}
                       className="bg-action hover:bg-action-hover text-on-action"
                     >
@@ -329,7 +331,7 @@ export default function RoutinesPage() {
                       <Button 
                         onClick={() => {
                           setEditingWorkout(null);
-                          setIsModalOpen(true);
+                          setWorkoutPageOpen(true);
                         }}
                         variant="outline"
                         className="min-h-11 w-full bg-surface-secondary border-control text-strong hover:bg-control-strong"
@@ -346,10 +348,10 @@ export default function RoutinesPage() {
         </section>
       </div>
 
-      <WorkoutModal
-        isOpen={isModalOpen}
+      <WorkoutEditor formId="workout"
+        isOpen={isWorkoutPageOpen}
         onClose={() => {
-          setIsModalOpen(false);
+          setWorkoutPageOpen(false);
           setEditingWorkout(null);
           setPreSelectedDays(undefined);
         }}
@@ -360,10 +362,10 @@ export default function RoutinesPage() {
         preSelectedDays={preSelectedDays}
       />
 
-      <RoutineModal
-        isOpen={isRoutineModalOpen}
+      <RoutineEditor formId="routine"
+        isOpen={isRoutinePageOpen}
         onClose={() => {
-          setIsRoutineModalOpen(false);
+          setRoutinePageOpen(false);
           setEditingRoutine(null);
         }}
         onSave={handleSaveRoutine}
@@ -408,5 +410,5 @@ export default function RoutinesPage() {
       </Sheet>
       </div>
     </div>
-  );
+  )}</FormScreen>;
 }

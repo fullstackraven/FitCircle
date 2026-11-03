@@ -136,7 +136,7 @@ test("editing existing exercise schedules adds/removes shared routine membership
   await page
     .getByRole("button", { name: "Edit workout Weighted carry", exact: true })
     .click();
-  let dialog = page.getByRole("dialog", { name: "Edit Workout", exact: true });
+  let dialog = page.getByRole('region', { name: "Edit Workout", exact: true });
   await dialog
     .getByRole("button", { name: "Clear Selection", exact: true })
     .click();
@@ -163,7 +163,7 @@ test("editing existing exercise schedules adds/removes shared routine membership
   ).toContainText("PUSH");
   await page.goto("routines");
   await page.getByTestId("button-edit-routine-r0").click();
-  dialog = page.getByRole("dialog", { name: "Edit Routine", exact: true });
+  dialog = page.getByRole('region', { name: "Edit Routine", exact: true });
   await dialog.getByLabel("Routine Name").fill("PUSH Tuesday");
   await dialog
     .getByRole("button", { name: "Clear Selection", exact: true })

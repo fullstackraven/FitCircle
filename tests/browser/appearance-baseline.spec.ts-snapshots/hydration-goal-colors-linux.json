@@ -25,19 +25,13 @@
   ".fitcircle-card": null,
   ".glass-card": null,
   ".goal-editor": {
-    "background": "rgb(15, 23, 41)",
+    "background": "rgba(0, 0, 0, 0)",
     "color": "rgb(255, 255, 255)",
-    "border": "rgb(51, 65, 85)",
+    "border": "rgb(255, 255, 255)",
     "shadow": "none",
     "backdrop": "none"
   },
-  ".wellness-surface": {
-    "background": "rgb(30, 41, 59)",
-    "color": "rgb(255, 255, 255)",
-    "border": "rgba(148, 163, 184, 0.1)",
-    "shadow": "none",
-    "backdrop": "none"
-  },
+  ".wellness-surface": null,
   ".goal-editor-input-row": {
     "background": "rgb(30, 41, 59)",
     "color": "rgb(255, 255, 255)",

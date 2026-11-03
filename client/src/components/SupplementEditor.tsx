@@ -1,5 +1,6 @@
+import { useRouteForm, useRouteState, useFormStore, closeForm } from '@/components/forms/FormNavigation';
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { FormGroup, FormContent, FormHeader, FormTitle, FormDescription, FormTrigger } from '@/components/forms/form-page';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,14 +9,17 @@ import { Plus } from 'lucide-react';
 import { useSupplements } from '@/hooks/use-supplements';
 import type { InsertSupplement } from '@/hooks/use-supplements';
 
-interface AddSupplementDialogProps {
+interface SupplementEditorProps {
+  formId?: string;
   onSupplementAdded?: () => void;
 }
 
-export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogProps) {
-  const [name, setName] = useState('');
-  const [measurementType, setMeasurementType] = useState('');
-  const [amount, setAmount] = useState('');
+export function SupplementEditor({ onSupplementAdded }: SupplementEditorProps) {
+  const store=useFormStore();
+  const [open,setOpen]=useRouteForm('supplement');
+  const [name, setName] = useRouteState('name', '');
+  const [measurementType, setMeasurementType] = useRouteState('measurementType', '');
+  const [amount, setAmount] = useRouteState('amount', '');
   const [nameFocused, setNameFocused] = useState(false);
   const [amountFocused, setAmountFocused] = useState(false);
   
@@ -51,12 +55,12 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
     setName('');
     setMeasurementType('');
     setAmount('');
-    onSupplementAdded?.();
+    void closeForm(store).then(()=>onSupplementAdded?.());
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <FormGroup formId="supplement" open={open} onOpenChange={setOpen}>
+      <FormTrigger asChild>
         <Button
           size="icon"
           aria-label="Add Supplement"
@@ -64,14 +68,14 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
         >
           <Plus className="w-4 h-4" />
         </Button>
-      </DialogTrigger>
-      <DialogContent className="bg-surface border-separator text-strong max-w-md rounded-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-strong">Add New Supplement</DialogTitle>
-          <DialogDescription className="text-muted-foreground">
+      </FormTrigger>
+      <FormContent className="bg-surface border-separator text-strong max-w-md rounded-2xl">
+        <FormHeader>
+          <FormTitle className="text-strong">Add New Supplement</FormTitle>
+          <FormDescription className="text-muted-foreground">
             Add a new supplement to track your daily intake
-          </DialogDescription>
-        </DialogHeader>
+          </FormDescription>
+        </FormHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="supplement-name" className="text-sm font-medium text-supporting">
@@ -139,6 +143,7 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
                 setName('');
                 setMeasurementType('');
                 setAmount('');
+                setOpen(false);
               }}
               className="flex-1 border-control text-supporting hover:bg-surface-secondary"
             >
@@ -146,7 +151,7 @@ export function AddSupplementDialog({ onSupplementAdded }: AddSupplementDialogPr
             </Button>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </FormContent>
+    </FormGroup>
   );
 }

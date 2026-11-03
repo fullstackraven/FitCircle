@@ -31,7 +31,7 @@ test('two green actions follow Light, Dark and System without changing geometry 
     }
   }
   await page.goto('routines'); await page.getByTestId('button-create-routine').click();
-  await expect(page.getByRole('dialog', { name: 'New Routine', exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Create Routine', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Cancel', exact: true }).click();
   await page.goto('./'); await page.getByRole('button', { name: 'Start Workout Session', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Start Workout Session', exact: true })).toHaveCount(0);

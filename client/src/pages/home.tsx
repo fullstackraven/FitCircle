@@ -1,3 +1,5 @@
+import { FormScreen } from '@/components/forms/form-page';
+import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { focusDashboardOnOpen, returnDashboardFocus } from '@/lib/dashboard-navigation';
 import { DashboardMenu } from '@/components/DashboardMenu';
 import { VersionLabel } from "@/components/VersionLabel";
@@ -10,7 +12,7 @@ import { useControls } from '@/hooks/use-controls';
 import { useTimer } from '@/hooks/use-timer';
 import { useWorkoutDuration } from '@/hooks/use-workout-duration';
 import { useToast } from '@/hooks/use-toast';
-import { WorkoutModal } from '@/components/workout-modal';
+import { WorkoutEditor } from '@/components/workout-editor';
 import { ProgressCircle } from '@/components/progress-circle';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -57,9 +59,9 @@ export default function Home() {
   } = useWorkoutDuration();
 
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isWorkoutPageOpen, setWorkoutPageOpen] = useRouteForm('workout');
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
-  const [editingWorkout, setEditingWorkout] = useState<{ id: string; name: string; color: string; dailyGoal: number; setsGoal?: number; weightLbs?: number; scheduledDays?: number[] } | null>(null);
+  const [editingWorkout, setEditingWorkout] = useRouteState<{ id: string; name: string; color: string; dailyGoal: number; setsGoal?: number; weightLbs?: number; scheduledDays?: number[] } | null>('editingWorkout', null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
   const [isTimerOpen, setIsTimerOpen] = useState(false);
@@ -178,7 +180,7 @@ export default function Home() {
       weightLbs: workout.weightLbs,
       scheduledDays: workout.scheduledDays
     });
-    setIsModalOpen(true);
+    setWorkoutPageOpen(true);
   };
 
   const getScheduledDaysText = (scheduledDays: number[]): string => {
@@ -202,7 +204,7 @@ export default function Home() {
 
 
 
-  return (
+  return <FormScreen>{(
     <div 
       className="container mx-auto px-4 max-w-md min-h-screen text-strong"
       style={{ backgroundColor: 'var(--page-background)' }}
@@ -507,7 +509,7 @@ export default function Home() {
               <div className="home-workout-utility flex flex-col items-center space-y-2 rounded-[18px] border border-separator p-3">
                 <div className="w-24 h-24 flex items-center justify-center">
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => setWorkoutPageOpen(true)}
                   className="fc-pill home-utility-circle w-20 h-20 bg-surface flex items-center justify-center border-4 border-dashed border-separator hover:border-control transition-colors"
                   style={{ width: '80px', height: '80px' }}
                   title="Add new workout"
@@ -550,10 +552,10 @@ export default function Home() {
 
 
 
-      <WorkoutModal
-        isOpen={isModalOpen}
+      <WorkoutEditor formId="workout"
+        isOpen={isWorkoutPageOpen}
         onClose={() => {
-          setIsModalOpen(false);
+          setWorkoutPageOpen(false);
           setEditingWorkout(null);
         }}
         onSave={handleAddWorkout}
@@ -608,5 +610,5 @@ export default function Home() {
       </div>
 
     </div>
-  );
+  )}</FormScreen>;
 }

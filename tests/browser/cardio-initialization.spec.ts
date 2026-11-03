@@ -31,7 +31,7 @@ test('modern cardio data has no transient default write or initialization normal
   await seed(page, { [cardioKey]: raw });
   for (let i = 0; i < 2; i++) {
     await page.goto('cardio');
-    await expect(page.getByRole('button', { name: 'Log Cardio', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Add Cardio', exact: true })).toBeVisible();
     expect(await page.evaluate(key => localStorage.getItem(key), cardioKey)).toBe(raw);
     expect(await writes(page)).toEqual([]);
   }
@@ -42,7 +42,7 @@ for (const key of cardioLegacyKeys) for (const wrapper of [false, true]) {
     await seed(page, { [key]: raw });
     for (let i = 0; i < 2; i++) {
       await page.goto('cardio');
-      await expect(page.getByRole('button', { name: 'Log Cardio', exact: true })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Add Cardio', exact: true })).toBeVisible();
       expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe(raw);
       expect(await page.evaluate(key => localStorage.getItem(key), cardioKey)).toBeNull();
       expect(await writes(page)).toEqual([]);
@@ -64,7 +64,7 @@ test('failed legacy reads preserve source data, disable unavailable download and
   expect(await page.evaluate(() => (window as unknown as { readOriginalCardio(): string }).readOriginalCardio())).toBe(raw);
   await page.evaluate(() => sessionStorage.setItem('synthetic-read-enabled', 'yes'));
   await Promise.all([page.waitForEvent('load'), page.getByRole('button', { name: 'Retry loading' }).click()]);
-  await expect(page.getByRole('button', { name: 'Log Cardio', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Add Cardio', exact: true })).toBeVisible();
   expect(await writes(page)).toEqual([]);
 });
 test('raw cardio recovery download survives browser handoff and complete backup restore', async ({ page }) => {
@@ -83,7 +83,7 @@ test('raw cardio recovery download survives browser handoff and complete backup 
   await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-cardio-backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ [cardioKey]: modernCardio })) });
   await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
   await page.goto('cardio');
-  await expect(page.getByRole('button', { name: 'Log Cardio', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Add Cardio', exact: true })).toBeVisible();
   expect(await page.evaluate(key => localStorage.getItem(key), cardioKey)).toBe(JSON.stringify(modernCardio));
 });
 test('accepted incomplete cardio backup remains blocked and another verified backup can restore operation', async ({ page }) => {
@@ -102,7 +102,7 @@ test('accepted incomplete cardio backup remains blocked and another verified bac
   await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-complete.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ [cardioKey]: modernCardio })) });
   await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
   await page.goto('cardio');
-  await expect(page.getByRole('button', { name: 'Log Cardio', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Add Cardio', exact: true })).toBeVisible();
 });
 test('quota failures do not replace a valid source during initialization or an explicit edit', async ({ page }) => {
   await page.clock.install({ time: new Date('2025-03-02T12:00:00Z') });
@@ -113,13 +113,13 @@ test('quota failures do not replace a valid source during initialization or an e
     Storage.prototype.setItem = function(key, raw) { if (key === 'fitcircle_cardio_data') throw new DOMException('Synthetic quota failure', 'QuotaExceededError'); return original.call(this, key, raw); };
   });
   await page.goto('cardio');
-  await expect(page.getByRole('button', { name: 'Log Cardio', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Add Cardio', exact: true })).toBeVisible();
   await page.getByTestId('button-edit-session-synthetic-run').first().click();
-  await page.getByRole('dialog').getByRole('spinbutton').first().fill('26');
+  await page.locator('[data-form-page], [role="dialog"]').getByRole('spinbutton').first().fill('26');
   await page.getByRole('button', { name: 'Update Entry', exact: true }).click();
   expect(await page.evaluate(key => localStorage.getItem(key), cardioKey)).toBe(raw);
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Log Cardio', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Add Cardio', exact: true })).toBeVisible();
   expect(await page.evaluate(key => localStorage.getItem(key), cardioKey)).toBe(raw);
 });
 test('editing a valid cardio session preserves weekly goals, legacy entries and unrelated metadata', async ({ page }) => {
@@ -128,7 +128,7 @@ test('editing a valid cardio session preserves weekly goals, legacy entries and 
   await seed(page, { [cardioKey]: JSON.stringify(value) });
   await page.goto('cardio');
   await page.getByTestId('button-edit-session-synthetic-run').first().click();
-  await page.getByRole('dialog').getByRole('spinbutton').first().fill('26');
+  await page.locator('[data-form-page], [role="dialog"]').getByRole('spinbutton').first().fill('26');
   await page.getByRole('button', { name: 'Update Entry', exact: true }).click();
   const saved = await page.evaluate(key => JSON.parse(localStorage.getItem(key)!), cardioKey);
   expect(saved.goal).toEqual(value.goal); expect(saved.entries).toEqual(value.entries); expect(saved.extra).toEqual(value.extra);
@@ -149,7 +149,7 @@ test('editing a legacy alias keeps the source and produces an exportable canonic
   await seed(page, { cardio: raw });
   await page.goto('cardio');
   await page.getByTestId('button-edit-session-synthetic-old').first().click();
-  await page.getByRole('dialog').getByRole('spinbutton').first().fill('13');
+  await page.locator('[data-form-page], [role="dialog"]').getByRole('spinbutton').first().fill('13');
   await page.getByRole('button', { name: 'Update Entry', exact: true }).click();
   expect(await page.evaluate(() => localStorage.getItem('cardio'))).toBe(raw);
   await page.goto('settings');
@@ -164,6 +164,6 @@ test('editing a legacy alias keeps the source and produces an exportable canonic
   await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-roundtrip.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
   await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
   await page.goto('cardio');
-  await expect(page.getByRole('button', { name: 'Log Cardio', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Add Cardio', exact: true })).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('cardio'))).toBe(raw);
 });

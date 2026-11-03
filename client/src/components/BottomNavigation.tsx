@@ -1,3 +1,4 @@
+import { formForPath } from '@/lib/form-routes';
 import { DockNavigation } from './DockNavigation';
 import { useLocation } from 'wouter';
 
@@ -21,7 +22,7 @@ export default function BottomNavigation() {
   ];
 
   // Don't render navigation on wellness sub-pages
-  if (wellnessSubPages.includes(location) || location.startsWith("/dynamic-overview/")) {
+  if (formForPath(location) || wellnessSubPages.includes(location) || location.startsWith("/dynamic-overview/")) {
     return null;
   }
 

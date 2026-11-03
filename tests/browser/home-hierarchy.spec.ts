@@ -38,8 +38,8 @@ test('mobile Home prioritizes routine/session and preserves colored circular set
   await circle.hover(); await page.mouse.down(); await page.waitForTimeout(750); await page.mouse.up();
   await expect.poll(async()=>Number((await circle.getAttribute('aria-label'))!.match(/: (\d+) of/)![1])).toBeGreaterThan(1);
   await page.getByRole('button',{name:`Edit ${names[0]}`,exact:true}).click();
-  await expect(page.getByRole('dialog')).toBeVisible();
-  await page.getByRole('dialog').getByRole('button',{name:'Cancel',exact:true}).click();
+  await expect(page.locator('[data-form-page], [role="dialog"]')).toBeVisible();
+  await page.locator('[data-form-page], [role="dialog"]').getByRole('button',{name:'Cancel',exact:true}).click();
   await start.click(); await expect(page.getByTitle('Pause workout')).toBeVisible();
   await page.getByTitle('Pause workout').click(); await expect(page.getByTitle('Resume workout')).toBeVisible();
   await page.getByTitle('Resume workout').click(); await page.getByTitle('Reset without saving').click();
@@ -63,10 +63,10 @@ test('multiple exercises and long names remain reachable on narrow and desktop H
     expect(addCircle.height).toBe(timerCircle.height);
     expect((await page.getByText('Add',{exact:true}).boundingBox())!.y).toBe((await page.getByText('Timer',{exact:true}).boundingBox())!.y);
     await page.getByRole('button',{name:'Add new workout',exact:true}).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await page.getByRole('dialog').getByRole('button',{name:'Cancel',exact:true}).click();
-    await page.getByTitle('Open Timer').click(); await expect(page.getByRole('dialog')).toBeVisible();
-    await page.getByRole('dialog').getByRole('button',{name:'Close',exact:true}).click();
+    await expect(page.locator('[data-form-page], [role="dialog"]')).toBeVisible();
+    await page.locator('[data-form-page], [role="dialog"]').getByRole('button',{name:'Cancel',exact:true}).click();
+    await page.getByTitle('Open Timer').click(); await expect(page.locator('[data-form-page], [role="dialog"]')).toBeVisible();
+    await page.locator('[data-form-page], [role="dialog"]').getByRole('button',{name:'Close',exact:true}).click();
     await page.locator('.app-content').evaluate(el=>{el.scrollTop=el.scrollHeight;});
     const add = (await page.getByRole('button',{name:'Add new workout',exact:true}).boundingBox())!;
     expect(add.y+add.height).toBeLessThanOrEqual((await page.locator('.app-dock').boundingBox())!.y);

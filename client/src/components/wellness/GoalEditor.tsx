@@ -1,20 +1,18 @@
 import type { ReactNode } from 'react';
-import { Check, X } from 'lucide-react';
-import { WellnessGoalSheet } from './WellnessUI';
+import { Check } from 'lucide-react';
+import { FormContent } from '@/components/forms/form-page';
 import { Button } from '@/components/ui/button';
 import '@/styles/goal-editor.css';
 
 /** Presentation only: callers retain their existing inputs, calculations and handlers. */
-export function GoalEditor({ title, subtitle, onDismiss, onSave, saveLabel = 'Save Goal', children, summary }: {
+export function GoalEditor({ title, subtitle, onDismiss, onSave, saveLabel = 'Save Goal', children, summary, formId: _formId }: {
   title: string; subtitle: string; onDismiss: () => void; onSave: () => void;
-  saveLabel?: string; children: ReactNode; summary: ReactNode;
+  formId?: string; saveLabel?: string; children: ReactNode; summary: ReactNode;
 }) {
-  return <WellnessGoalSheet className="goal-editor-shell" title={title} onDismiss={onDismiss}>
+  return <FormContent title={title} onCancel={onDismiss} className="text-strong">
     <div className="goal-editor">
       <header className="goal-editor-header">
-        <span className="goal-editor-handle" aria-hidden="true" />
-        <h2>{title}</h2><p>{subtitle}</p>
-        <button className="fc-pill fc-icon-button goal-editor-close" aria-label="Close" onClick={onDismiss}><X size={22} /></button>
+        <p>{subtitle}</p>
       </header>
       {summary}
       <div className="goal-editor-fields">{children}</div>
@@ -23,7 +21,7 @@ export function GoalEditor({ title, subtitle, onDismiss, onSave, saveLabel = 'Sa
         <Button variant="ghost" className="goal-editor-cancel" onClick={onDismiss}>Cancel</Button>
       </footer>
     </div>
-  </WellnessGoalSheet>;
+  </FormContent>;
 }
 export function GoalSummary({ percentage, label, value, detail, average = false, caption }: {
   percentage: number; label: string; value: ReactNode; detail: ReactNode; average?: boolean; caption?: string;

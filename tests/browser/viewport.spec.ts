@@ -20,7 +20,9 @@ test.beforeEach(async ({ page }) => {
 async function assertSafeClose(dialog: Locator, top = 59, bottom = 810) {
   await expect(dialog).toBeVisible();
   await dialog.evaluate(el => Promise.all(el.getAnimations().map(a => a.finished.catch(() => {}))));
-  const box = await dialog.getByRole('button', { name: 'Close', exact: true }).boundingBox();
+  const routed = await dialog.getAttribute('data-form-page');
+  const control = routed ? dialog.page().getByRole('button',{name:'Back',exact:true}) : dialog.getByRole('button',{name:'Close',exact:true});
+  const box = await control.boundingBox();
   expect(box).not.toBeNull();
   expect(box!.y).toBeGreaterThanOrEqual(top);
   expect(box!.y + box!.height).toBeLessThanOrEqual(bottom);
@@ -96,15 +98,15 @@ test('all navigation sheets keep close, profile, Settings, and version accessibl
   }
 });
 
-test('profile editor stays bounded with an always-visible header and close during scrolling and keyboard panning', async ({ page }) => {
+test('profile page keeps its header and Back accessible during scrolling and keyboard panning', async ({ page }) => {
   await page.goto('food-tracker');
   await page.goto('profile');
   await page.getByRole('button', { name: 'Edit Profile', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: 'Edit Profile' });
+  const dialog = page.getByRole('region', { name: 'Edit Profile' });
   await expect(dialog).toBeVisible(); await assertSafeClose(dialog);
-  const title = await dialog.getByRole('heading', { name: 'Edit Profile', exact: true }).boundingBox();
-  await dialog.locator('.dialog-body').evaluate(el => { el.scrollTop = el.scrollHeight; });
-  expect((await dialog.getByRole('heading', { name: 'Edit Profile', exact: true }).boundingBox())!.y).toBeCloseTo(title!.y, 0);
+  const title = await page.getByRole('heading', { name: 'Edit Profile', exact: true }).boundingBox();
+  await page.locator('main').evaluate(el => { el.scrollTop = el.scrollHeight; });
+  expect((await page.getByRole('heading', { name: 'Edit Profile', exact: true }).boundingBox())!.y).toBeCloseTo(title!.y, 0);
   await assertSafeClose(dialog);
   const field = dialog.locator('input').first();
   await field.fill('35');
@@ -120,10 +122,11 @@ test('profile editor stays bounded with an always-visible header and close durin
   await assertSafeClose(dialog, 159, 496);
   await expect(field).toHaveValue('35');
   const active = await field.boundingBox();
-  const body = await dialog.locator('.dialog-body').boundingBox();
+  await field.scrollIntoViewIfNeeded();
+  const body = await page.locator('main').boundingBox();
   expect(active!.y).toBeGreaterThanOrEqual(body!.y);
   expect(active!.y + active!.height).toBeLessThanOrEqual(body!.y + body!.height);
-  await dialog.getByRole('button', { name: 'Close', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Edit Profile', exact: true })).toBeVisible();
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
   await page.evaluate(() => {
@@ -138,7 +141,7 @@ test('profile editor stays bounded with an always-visible header and close durin
 test('dialogs, rotation, and route changes preserve editing state and scroll recovery', async ({ page }) => {
   await page.goto('routines');
   await page.getByTestId('button-edit-routine-r0').click();
-  const dialog = page.getByRole('dialog', { name: 'Edit Routine' });
+  const dialog = page.getByRole('region', { name: 'Edit Routine' });
   const input = dialog.getByLabel('Routine Name');
   await input.fill('Unsaved viewport draft');
   await page.setViewportSize({ width: 844, height: 390 });
@@ -149,41 +152,41 @@ test('dialogs, rotation, and route changes preserve editing state and scroll rec
   });
   await assertSafeClose(dialog, 0, 369);
   await expect(input).toHaveValue('Unsaved viewport draft');
-  await dialog.getByRole('button', { name: 'Close', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
   await page.goto('hydration');
   await page.getByRole('button', { name: 'Goal', exact: true }).click();
-  await expect(page.getByRole('dialog', { name: 'Hydration Goal' })).toBeVisible();
-  await page.getByRole('dialog', { name: 'Hydration Goal' }).getByRole('button', { name: 'Close', exact: true }).click();
+  await expect(page.getByRole('region', { name: 'Hydration Goal' })).toBeVisible();
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('food-tracker');
   await page.goto('profile');
   await page.getByRole('button', { name: 'Edit Profile', exact: true }).click();
-  await assertSafeClose(page.getByRole('dialog', { name: 'Edit Profile' }), 59, 866);
+  await assertSafeClose(page.getByRole('region', { name: 'Edit Profile' }), 59, 866);
 });
 
-test('nested dialogs keep background locked until the last overlay closes', async ({ page }) => {
+test('nested form pages return to their parent and keep normal scrolling', async ({ page }) => {
   await page.goto('cardio');
-  await page.getByRole('button', { name: 'Log Cardio', exact: true }).click();
-  const outer = page.getByRole('dialog', { name: 'Add Cardio Entry' });
+  await page.getByRole('button', { name: 'Add Cardio', exact: true }).click();
+  const outer = page.getByRole('region', { name: 'Add Cardio' });
   await assertSafeClose(outer);
   await outer.getByRole('button', { name: '', exact: true }).click();
-  const inner = page.getByRole('dialog', { name: 'Add Custom Type' });
+  const inner = page.getByRole('region', { name: 'Add Custom Cardio Type' });
   await expect(inner).toBeVisible(); await assertSafeClose(inner);
-  await inner.getByRole('button', { name: 'Close', exact: true }).click();
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
   await expect(outer).toBeVisible();
-  expect(await page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('hidden');
+  expect(await page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
   await outer.getByRole('combobox').click();
   await expect(page.getByRole('listbox')).toBeVisible();
   await page.getByRole('option').first().click();
-  await outer.getByRole('button', { name: 'Close', exact: true }).click();
+  await outer.getByRole('button', { name: 'Cancel', exact: true }).click();
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
   await page.goto('journal-log');
   await page.getByRole('button', { name: 'Write new journal entry' }).click();
   const journal = page.getByRole('region', { name: 'Daily Journal' });
   await expect(page).toHaveURL(/journal-entry/);
-  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.locator('[data-form-page], [role="dialog"]')).toHaveCount(0);
   await journal.getByTestId('textarea-journal-entry').fill('Unsaved journal draft');
   await page.setViewportSize({ width: 390, height: 430 });
   const save = await journal.getByTestId('button-save-journal').boundingBox();
@@ -205,11 +208,11 @@ test('desktop layout remains bounded without mobile safe-area overrides', async 
     await bottomAboveDock(page, page.getByTestId('card-supplements'));
     await page.getByRole('button', { name: 'Open Menu' }).click();
     await assertSafeClose(page.getByRole('dialog', { name: 'Navigation Menu' }), 0, 900);
-    await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).click();
+    await page.locator('[data-form-page], [role="dialog"]').getByRole('button', { name: 'Close', exact: true }).click();
     await page.goto('http://127.0.0.1:4173/FitCircle/food-tracker');
     await page.goto('profile');
   await page.getByRole('button', { name: 'Edit Profile', exact: true }).click();
-    await assertSafeClose(page.getByRole('dialog', { name: 'Edit Profile' }), 0, 900);
+    await assertSafeClose(page.getByRole('region', { name: 'Edit Profile' }), 0, 900);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1280);
   } finally { await context.close(); }
 });
@@ -218,7 +221,7 @@ test('desktop layout remains bounded without mobile safe-area overrides', async 
 test('sidebar profile and Settings links retain the Pages path and release their locks', async ({ page }) => {
   await page.goto('./');
   await page.getByRole('button', { name: 'Open Menu' }).click();
-  await page.getByRole('dialog').getByRole('button', { name: /My Fitness Profile/ }).click();
+  await page.locator('[data-form-page], [role="dialog"]').getByRole('button', { name: /My Fitness Profile/ }).click();
   await page.waitForURL(/\/FitCircle\/profile\?from=dashboard/);
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
   await page.goto('./?dashboard=open');

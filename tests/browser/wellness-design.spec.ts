@@ -115,7 +115,7 @@ for (const route of ["cardio", "fasting", "meditation", "hydration"])
       page.getByRole("button", { name: "Goal", exact: true }),
     ).toBeVisible();
     await page.getByRole("button", { name: "Goal", exact: true }).click();
-    await expect(page.getByRole("dialog")).toBeVisible();
+    await expect(page.locator('[data-form-page], [role="dialog"]')).toBeVisible();
   });
 test("hydration shortcuts update today only, historical editing preserves current intake, high goal is not reset", async ({
   page,
@@ -128,9 +128,9 @@ test("hydration shortcuts update today only, historical editing preserves curren
   await page.getByRole("button", { name: "Add Liquid", exact: true }).click();
   await page.getByText("Customize shortcuts", { exact: true }).click();
   await page.getByLabel("Amount 1 (oz)").fill("10");
+  page.once("dialog",d=>d.accept());
   await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Close", exact: true })
+    .getByRole("button", { name: "Back", exact: true })
     .click();
   await page.getByRole("button", { name: "+10 oz", exact: true }).click();
   await expect(page.getByText("34 oz today · 158 oz remaining")).toBeVisible();
@@ -189,7 +189,7 @@ test("today’s completed fast populates the ring without becoming an active tim
   await page.getByRole("button", { name: /October 2026/ }).click();
   await page.getByRole("button", { name: "Edit fast", exact: true }).click();
   await expect(
-    page.getByRole("dialog", { name: "Edit Fast", exact: true }),
+    page.getByRole('region', { name: "Edit Fast", exact: true }),
   ).toBeVisible();
 });
 
@@ -218,7 +218,7 @@ test("legacy meditation history remains editable without changing today", async 
       exact: true,
     })
     .click();
-  await page.getByRole("dialog").getByLabel("Duration (minutes)").fill("15");
+  await page.locator('[data-form-page], [role="dialog"]').getByLabel("Duration (minutes)").fill("15");
   await page.getByRole("button", { name: "Save Changes", exact: true }).click();
   await expect(page.locator(".wellness-hero")).toContainText("10");
   const logs = await page.evaluate(() =>
@@ -280,6 +280,6 @@ test("long hydration history and custom names wrap and the final controls remain
   ).toBe(true);
   await last.click();
   await expect(
-    page.getByRole("dialog", { name: "Edit Entry", exact: true }),
+    page.getByRole('region', { name: "Edit Hydration", exact: true }),
   ).toBeVisible();
 });

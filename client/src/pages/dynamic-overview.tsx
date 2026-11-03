@@ -1,3 +1,5 @@
+import { FormScreen } from '@/components/forms/form-page';
+import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { PageHeader } from '@/components/ui/presentation';
 import { repsForSets } from '@/lib/workout-progress';
 import React, { useState, useEffect } from "react";
@@ -24,12 +26,12 @@ import { useRecovery } from "@/hooks/use-recovery";
 import { useWorkoutDuration } from "@/hooks/use-workout-duration";
 import { format } from "date-fns";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  FormGroup,
+  FormContent,
+  FormHeader,
+  FormTitle,
+  FormFooter,
+} from "@/components/forms/form-page";
 
 const colorClassMap: { [key: string]: string } = {
   green: "workout-green",
@@ -96,10 +98,10 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
   const [newSupplementName, setNewSupplementName] = useState("");
 
   // Duration edit modal state
-  const [isDurationModalOpen, setIsDurationModalOpen] = useState(false);
-  const [editHours, setEditHours] = useState("");
-  const [editMinutes, setEditMinutes] = useState("");
-  const [editSeconds, setEditSeconds] = useState("");
+  const [isDurationPageOpen, setDurationPageOpen] = useRouteForm('duration');
+  const [editHours, setEditHours] = useRouteState('editHours', "");
+  const [editMinutes, setEditMinutes] = useRouteState('editMinutes', "");
+  const [editSeconds, setEditSeconds] = useRouteState('editSeconds', "");
 
   const selectedDateObj = new Date(selectedDate + "T00:00:00");
 
@@ -278,7 +280,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     setEditHours(hours.toString());
     setEditMinutes(minutes.toString());
     setEditSeconds(seconds.toString());
-    setIsDurationModalOpen(true);
+    setDurationPageOpen(true);
   };
 
   const handleSaveDuration = () => {
@@ -290,7 +292,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
 
     if (totalSeconds > 0) {
       updateWorkoutDurationForDate(selectedDate, totalSeconds);
-      setIsDurationModalOpen(false);
+      setDurationPageOpen(false);
     }
   };
 
@@ -306,9 +308,10 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
     return journalText.trim().split(/\s+/).length;
   };
 
-  return (
+  return <FormScreen>{(
     <div className="dynamic-overview-page">
       <PageHeader title="Dynamic Overview" onBack={back} className="mb-0" />
+      <button className="fc-pill min-h-11 text-accent-text" onClick={()=>navigate('/widgets/settings',{state:{fitcircleFormReturn:`/dynamic-overview/${selectedDate}`,fitcircleFormRoot:`/dynamic-overview/${selectedDate}`}})}>Widget Settings</button>
       <div className="overview-date">
         <p>{format(selectedDateObj, "EEEE")}</p>
         <h2>{format(selectedDateObj, "MMMM d, yyyy")}</h2>
@@ -724,11 +727,11 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
         </section>
       </div>
       {/* Duration Edit Modal */}
-      <Dialog open={isDurationModalOpen} onOpenChange={setIsDurationModalOpen}>
-        <DialogContent className="bg-surface text-strong border-separator">
-          <DialogHeader>
-            <DialogTitle>Edit Workout Duration</DialogTitle>
-          </DialogHeader>
+      <FormGroup formId="duration" open={isDurationPageOpen} onOpenChange={setDurationPageOpen}>
+        <FormContent className="bg-surface text-strong border-separator">
+          <FormHeader>
+            <FormTitle>Edit Workout Duration</FormTitle>
+          </FormHeader>
           <div className="space-y-4 py-4">
             <p className="text-sm text-muted-foreground">
               Adjust the total workout duration for{" "}
@@ -778,7 +781,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
               </div>
             </div>
           </div>
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+          <FormFooter className="flex flex-col sm:flex-row gap-2">
             {getEditDurationTotal() === 0 && (
               <p className="text-sm text-feature-red flex-1 text-center sm:text-left">
                 Duration must be greater than 0
@@ -786,7 +789,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
             )}
             <div className="flex gap-2 justify-end">
               <button
-                onClick={() => setIsDurationModalOpen(false)}
+                onClick={() => setDurationPageOpen(false)}
                 className="fc-pill px-4 py-2 bg-surface-secondary hover:bg-control-strong text-strong transition-colors"
                 data-testid="button-cancel-duration"
               >
@@ -801,9 +804,9 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                 Save Duration
               </button>
             </div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </FormFooter>
+        </FormContent>
+      </FormGroup>
     </div>
-  );
+  )}</FormScreen>;
 }

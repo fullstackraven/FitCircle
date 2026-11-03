@@ -13,7 +13,7 @@ for (const mode of ['light', 'dark']) test(`${mode}: Your Foods tabs, compact ca
   });
   const before = await page.evaluate(() => Object.fromEntries(Object.entries(localStorage).filter(([key]) => /^fitcircle_food_\d/.test(key))));
   await page.goto('food-tracker'); await page.getByRole('button', { name: 'Add Food to Breakfast', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: 'Add Food', exact: true });
+  const dialog = page.getByRole('region', { name: 'Add Food', exact: true });
   const cards = dialog.locator('.your-food-card');
   await expect(dialog.getByRole('button', { name: 'Recent', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(cards).toHaveCount(3); await expect(cards.first()).toContainText('Recent 4');
@@ -29,13 +29,13 @@ for (const mode of ['light', 'dark']) test(`${mode}: Your Foods tabs, compact ca
   expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
   expect(await cards.first().evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
   await page.setViewportSize({ width: 390, height: 844 });
-  await dialog.locator('.dialog-body').evaluate(el => {el.scrollTop = 0;});
+  await page.locator('main').evaluate(el => {el.scrollTop = 0;});
   await page.evaluate(() => document.fonts.ready); fs.mkdirSync('docs/review/add-food-history', { recursive: true });
   await page.screenshot({ path: `docs/review/add-food-history/${mode}.png`, animations: 'disabled' });
   await cards.first().getByTitle('Add to meal').click();
-  await expect(page.getByRole('dialog', { name: 'Add Entry', exact: true })).toBeVisible();
-  await page.getByRole('dialog', { name: 'Add Entry', exact: true }).getByRole('button', { name: 'Add', exact: true }).click();
-  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Add Food Entry', exact: true })).toBeVisible();
+  await page.getByRole('region', { name: 'Add Food Entry', exact: true }).getByRole('button', { name: 'Add', exact: true }).click();
+  await expect(page.locator('[data-form-page], [role="dialog"]')).toHaveCount(0);
   await page.getByRole('button', { name: 'Add Food to Breakfast', exact: true }).click();
   await expect(dialog.getByRole('button', { name: 'Recent', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await dialog.getByRole('button', { name: 'Most Frequent', exact: true }).click();

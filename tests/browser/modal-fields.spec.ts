@@ -174,7 +174,7 @@ const cases: {
     route: "supplements-page",
     open: (page) =>
       page
-        .locator('button[aria-haspopup="dialog"]')
+        .getByRole('button', {name:'Add Supplement',exact:true})
         .filter({ has: page.locator("svg.lucide-plus") })
         .click(),
   },
@@ -186,18 +186,18 @@ const cases: {
   {
     name: "cardio entry",
     route: "cardio",
-    open: (page) => button(page, "Log Cardio").click(),
+    open: (page) => button(page, "Add Cardio").click(),
   },
   {
     name: "nested cardio type",
     route: "cardio",
     open: async (page) => {
-      await button(page, "Log Cardio").click();
+      await button(page, "Add Cardio").click();
       await page
-        .getByRole("dialog")
-        .locator('button[aria-haspopup="dialog"]')
+        .locator('[data-form-page], [role="dialog"]')
+        .locator('button')
         .filter({ has: page.locator("svg.lucide-plus") })
-        .click();
+        .first().click();
     },
   },
   {
@@ -242,15 +242,16 @@ async function inspectFields(page: Page, dialog: Locator) {
       await field.evaluate((el) =>
         (el as HTMLElement).focus({ preventScroll: true }),
       );
+    await field.scrollIntoViewIfNeeded();
     await settle(page);
     const result = await field.evaluate((el) => {
       const style = getComputedStyle(el);
       const bounds = el.getBoundingClientRect();
-      const owner = el.closest(
+      const owner = el.closest('[data-form-page]') ? el.closest('main')! : el.closest(
         '.dialog-body, .sheet-body, .viewport-overlay [role="dialog"]',
       )!;
       const frame = owner.getBoundingClientRect();
-      const panel = el.closest('[role="dialog"]')!.getBoundingClientRect();
+      const panel = el.closest('[data-form-page], [role="dialog"]')!.getBoundingClientRect();
       return {
         field: el.getAttribute("aria-label") || el.id || el.tagName,
         hitElement: document
@@ -309,11 +310,11 @@ async function inspectFields(page: Page, dialog: Locator) {
     );
   }
   await expect(
-    dialog.getByRole("button", { name: "Close", exact: true }),
+    page.getByRole("button", { name: "Back", exact: true }),
   ).toBeVisible();
 }
 for (const mode of ["dark", "light"]) for (const width of [320, 390]) for (const example of cases)
-  test(`${mode} ${width}: ${example.name}: contained focus and fields stay reachable through keyboard shrink`, async ({
+  test(`${mode} ${width}: ${example.name}: contained focus and fields stay reachable in a reduced keyboard-sized viewport`, async ({
     page,
   }) => {
     await page.setViewportSize({width, height:844});
@@ -326,7 +327,7 @@ for (const mode of ["dark", "light"]) for (const width of [320, 390]) for (const
     await example.open(page);
     if (example.name === "journal textarea") {
       await expect(page).toHaveURL(/journal-entry/);
-      await expect(page.getByRole("dialog")).toHaveCount(0);
+      await expect(page.locator('[data-form-page], [role="dialog"]')).toHaveCount(0);
       const field = page.getByTestId("textarea-journal-entry");
       await field.fill("Full-page journal draft");
       await page.evaluate(() => {
@@ -348,7 +349,7 @@ for (const mode of ["dark", "light"]) for (const width of [320, 390]) for (const
       await expect(page.getByRole("button", { name: "Back to journal library" })).toBeInViewport();
       return;
     }
-    const dialog = page.getByRole("dialog").last();
+    const dialog = page.locator('[data-form-page], [role="dialog"]').last();
     await expect(dialog).toBeVisible();
     await dialog.evaluate((el) =>
       Promise.all(
@@ -358,36 +359,26 @@ for (const mode of ["dark", "light"]) for (const width of [320, 390]) for (const
       ),
     );
     await inspectFields(page, dialog);
-    await page.evaluate(() => {
-      Object.defineProperties(window.visualViewport!, {
-        height: { configurable: true, value: 430 },
-        offsetTop: { configurable: true, value: 40 },
-      });
-      window.visualViewport!.dispatchEvent(new Event("resize"));
-    });
+    // Routed forms use the normal page scroller, not overlay visual bounds.
+    // The viewport suite separately exercises focused iOS visual-viewport panning.
+    await page.setViewportSize({width,height:430});
     await settle(page);
     await inspectFields(page, dialog);
     await expect
-      .poll(() => dialog.evaluate((el) => el.getBoundingClientRect().bottom))
-      .toBeLessThanOrEqual(470);
+      .poll(() => page.locator("main").evaluate((el) => el.getBoundingClientRect().bottom))
+      .toBeLessThanOrEqual(430);
   });
 
-test("small-width compact editor scrolls without hiding its field or fixed actions", async ({
+test("small-width compact editor scrolls with reachable fields and page actions", async ({
   page,
 }) => {
   await seed(page);
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto("routines");
   await page.getByTestId("button-edit-routine-r").click();
-  const dialog = page.getByRole("dialog");
+  const dialog = page.locator('[data-form-page], [role="dialog"]');
   await page.getByTestId("input-routine-name").focus();
-  await page.evaluate(() => {
-    Object.defineProperties(window.visualViewport!, {
-      height: { configurable: true, value: 280 },
-      offsetTop: { configurable: true, value: 0 },
-    });
-    window.visualViewport!.dispatchEvent(new Event("resize"));
-  });
+  await page.setViewportSize({width:320,height:280});
   await settle(page);
   await inspectFields(page, dialog);
   await expect(dialog.getByTestId("button-save-routine")).toBeVisible();
@@ -412,7 +403,7 @@ test("forced-color focus remains inside the profile field and ordinary button fo
   expect(outline).toEqual({ width: "1px", offset: "-2px" });
   await page.emulateMedia({ forcedColors: "none" });
   const cancel = page
-    .getByRole("dialog")
+    .locator('[data-form-page], [role="dialog"]')
     .getByRole("button", { name: "Cancel", exact: true });
   await cancel.focus();
   expect(

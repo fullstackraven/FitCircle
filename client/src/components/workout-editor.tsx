@@ -2,14 +2,15 @@ import { ChevronDown, Trash2 } from 'lucide-react';
 import '@/styles/training-editors.css';
 import { validWorkoutTargets } from '@/lib/workout-progress';
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { FormGroup, FormContent, FormHeader, FormTitle, FormDescription, FormFooter } from '@/components/forms/form-page';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { DaySelector } from './DaySelector';
 import { getColorClass } from '@/lib/color-utils';
 
-interface WorkoutModalProps {
+interface WorkoutEditorProps {
+  formId?: string;
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], setsGoal?: number) => boolean | undefined;
@@ -20,7 +21,7 @@ interface WorkoutModalProps {
 }
 
 
-export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColors, editingWorkout, preSelectedDays }: WorkoutModalProps) {
+export function WorkoutEditor({ isOpen, onClose, onSave, onDelete, availableColors, editingWorkout, preSelectedDays }: WorkoutEditorProps) {
   const [saveError, setSaveError] = useState('');
   const [workoutName, setWorkoutName] = useState('');
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || 'green');
@@ -74,12 +75,12 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent fixedFooter staticBody className="training-editor max-w-md text-strong">
-        <DialogHeader>
-          <DialogTitle>{editingWorkout ? 'Edit Workout' : 'New Workout'}</DialogTitle>
-          <DialogDescription>{editingWorkout ? 'Update exercise settings' : 'Set up an exercise for your Home dashboard'}</DialogDescription>
-        </DialogHeader>
+    <FormGroup formId="workout" open={isOpen} onOpenChange={onClose}>
+      <FormContent className="training-editor max-w-md text-strong">
+        <FormHeader>
+          <FormTitle>{editingWorkout ? 'Edit Workout' : 'New Workout'}</FormTitle>
+          <FormDescription>{editingWorkout ? 'Update exercise settings' : 'Set up an exercise for your Home dashboard'}</FormDescription>
+        </FormHeader>
         <div className="editor-sections">
           <section aria-labelledby="exercise-heading">
             <h3 id="exercise-heading" className="editor-section-title">Exercise</h3>
@@ -158,7 +159,7 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
           <DaySelector variant="sheet" heading="Schedule" selectedDays={scheduledDays} onSelectionChange={setScheduledDays} />
         </div>
         {saveError && <p role="alert" className="text-xs text-feature-red">{saveError}</p>}
-        <DialogFooter className="editor-footer">
+        <FormFooter className="editor-footer">
           <Button onClick={handleSave} disabled={!workoutName.trim() || !validTargets} className="editor-primary bg-action-selected text-on-action hover:bg-action">
             {editingWorkout ? 'Save Changes' : 'Add Workout'}
           </Button>
@@ -171,8 +172,8 @@ export function WorkoutModal({ isOpen, onClose, onSave, onDelete, availableColor
               }} className="editor-delete text-feature-red"><Trash2 size={16} aria-hidden="true" />Delete Workout</Button>}
             <Button variant="ghost" onClick={handleCancel} className="editor-cancel">Cancel</Button>
           </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </FormFooter>
+      </FormContent>
+    </FormGroup>
   );
 }

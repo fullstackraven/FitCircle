@@ -71,7 +71,7 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
       .getByRole("button", { name: "Edit Push-ups", exact: true })
       .click();
     await capture("workout-editor");
-    await page.getByRole("button", { name: "Close", exact: true }).click();
+    await page.getByRole("button", { name: "Back", exact: true }).click();
     await page.getByRole("button", { name: "Open Menu", exact: true }).click();
     await capture("sidebar");
     await page.getByRole("button", { name: "Close", exact: true }).click();
@@ -215,7 +215,7 @@ for (const mode of ["dark", "light"])
     await expect
       .poll(() =>
         page
-          .getByRole("dialog")
+          .locator("main")
           .evaluate((el) => el.getBoundingClientRect().bottom),
       )
       .toBeLessThanOrEqual(470);
@@ -457,7 +457,7 @@ for (const mode of ["dark", "light"])
     await page
       .getByRole("button", { name: "Save Profile", exact: true })
       .click();
-    await expect(page.getByRole("dialog")).toBeVisible();
+    await expect(page.locator('[data-form-page], [role="dialog"]')).toBeVisible();
     await expect(page.getByRole("alert")).toBeVisible();
     expect(
       await page.evaluate(() => localStorage.getItem("fitcircle_profile")),

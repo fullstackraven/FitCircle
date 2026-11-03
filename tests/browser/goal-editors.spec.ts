@@ -5,7 +5,7 @@ import { seedWellnessAppearance } from '../fixtures/appearance-wellness';
 test.use({ viewport: { width: 390, height: 844 }, timezoneId: 'America/New_York' });
 const editors = [
   { route: 'cardio', title: 'Cardio Goal', input: '#goalTarget', value: '47', save: 'Save Goal' },
-  { route: 'fasting', title: 'Fasting Goal', input: '#goalHours', value: '17', save: 'Save Settings' },
+  { route: 'fasting', title: 'Intermittent Fasting Goal', input: '#goalHours', value: '17', save: 'Save Settings' },
   { route: 'meditation', title: 'Meditation Goal', input: '#goalMinutes', value: '25', save: 'Save Goal' },
   { route: 'hydration', title: 'Hydration Goal', input: '#goal', value: '80', save: 'Save Goal' },
 ];
@@ -14,9 +14,9 @@ for (const mode of ['light', 'dark']) test(`${mode}: four goal editors open, sav
   for (const editor of editors) {
     await page.goto(editor.route);
     await page.getByRole('button', { name: 'Goal', exact: true }).click();
-    const dialog = page.getByRole('dialog', { name: editor.title, exact: true });
-    await expect(dialog.locator('h2')).toHaveText(editor.title);
-    await expect(dialog.locator('.goal-editor')).toHaveCSS('background-color', mode === 'light' ? 'rgb(255, 255, 255)' : 'rgb(15, 23, 41)');
+    const dialog = page.getByRole('region', { name: editor.title, exact: true });
+    await expect(page.getByRole('heading', {name: editor.title, exact:true})).toBeVisible();
+    await expect(dialog.locator('.goal-editor')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
     await expect(dialog.locator(editor.input)).toHaveCSS('font-size', '24px');
     await expect(dialog.locator('.goal-editor-ring')).toHaveCSS('width', '100px');
     expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
@@ -42,7 +42,7 @@ for (const mode of ['light', 'dark']) test(`${mode}: four goal editors open, sav
     await page.getByRole('button', { name: 'Goal', exact: true }).click();
     await expect(dialog.locator(editor.input)).toHaveValue(editor.value);
     if (editor.route === 'fasting') await expect(dialog.locator('#maxHours')).toHaveValue('22');
-    await dialog.getByRole('button', { name: 'Close', exact: true }).click(); await expect(dialog).toBeHidden();
+    await page.getByRole('button', { name: 'Back', exact: true }).click(); await expect(dialog).toBeHidden();
     await page.getByRole('button', { name: 'Goal', exact: true }).click();
     await dialog.getByRole('button', { name: 'Cancel', exact: true }).click(); await expect(dialog).toBeHidden();
   }

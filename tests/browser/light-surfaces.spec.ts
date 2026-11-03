@@ -20,7 +20,7 @@ for (const mode of ['light', 'dark']) test(`${mode}: scoped card and editor surf
   if (mode === 'dark') await expect(card).toHaveCSS('border-top-width', '0px');
   await contained(); await capture('home');
   await page.getByRole('button', { name: 'Edit Push-ups', exact: true }).click();
-  const dialog = page.getByRole('dialog');
+  const dialog = page.locator('[data-form-page], [role="dialog"]');
   const name = dialog.getByLabel('Workout Name');
   await expect(name).toHaveValue('Push-ups');
   if (mode === 'light' && !before) {
@@ -29,7 +29,7 @@ for (const mode of ['light', 'dark']) test(`${mode}: scoped card and editor surf
     await expect(dialog.locator('.editor-number-card').first()).toHaveCSS('background-color', 'rgb(241, 245, 249)');
   }
   if (mode === 'dark') {
-    await expect(dialog).toHaveCSS('background-color', 'rgb(15, 23, 41)');
+    await expect(dialog).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
     await expect(name).toHaveCSS('background-color', 'rgb(30, 41, 59)');
     await expect(name).toHaveCSS('border-top-width', '0px');
     await expect(dialog.locator('.editor-number-card').first()).toHaveCSS('background-color', 'rgb(30, 41, 59)');

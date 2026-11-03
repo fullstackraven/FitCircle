@@ -1,3 +1,5 @@
+import { FormScreen } from '@/components/forms/form-page';
+import { useRouteState, useRouteForm, useRecordFormState } from '@/components/forms/FormNavigation';
 import { GoalEditor, GoalSummary, GoalField } from "@/components/wellness/GoalEditor";
 import {
   WellnessPageShell,
@@ -18,11 +20,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  FormGroup,
+  FormContent,
+  FormDescription,
+  FormTitle,
+} from "@/components/forms/form-page";
 import {
   Collapsible,
   CollapsibleContent,
@@ -47,23 +49,24 @@ export default function MeditationPage() {
     getHistoricalStats,
   } = useMeditation();
   const { goals, updateGoal } = useGoals();
-  const [editingSession, setEditingSession] = useState<{
+  const [editingSession, setEditingSession] = useRecordFormState<{
     date: string;
     id: string;
     duration: string;
-  } | null>(null);
+  } | null>('editingSession', null, 'meditation-edit');
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0); // in seconds
   const [totalDuration, setTotalDuration] = useState(0); // in seconds
-  const [inputMinutes, setInputMinutes] = useState("");
+  const [meditationIntent,setMeditationIntent] = useRouteState<'add'|'start'>('meditationIntent','add');
+  const [inputMinutes, setInputMinutes] = useRouteState('inputMinutes', "");
   const [showCompletion, setShowCompletion] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Goal state
-  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
-  const [isMeditationDialogOpen, setIsMeditationDialogOpen] = useState(false);
-  const [goalMinutesInput, setGoalMinutesInput] = useState("");
+  const [isMeditationGoalPageOpen, setMeditationGoalPageOpen] = useRouteForm('meditation-goal');
+  const [isMeditationAddPageOpen, setMeditationAddPageOpen] = useRouteForm('meditation-add');
+  const [goalMinutesInput, setGoalMinutesInput] = useRouteState('goalMinutesInput', "");
   const [inputMinutesFocused, setInputMinutesFocused] = useState(false);
   const [goalMinutesFocused, setGoalMinutesFocused] = useState(false);
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
@@ -291,17 +294,17 @@ export default function MeditationPage() {
     }
 
     if (!updateGoal("meditationMinutes", minutesGoal)) return;
-    setIsGoalModalOpen(false);
+    setMeditationGoalPageOpen(false);
     alert("Meditation goal saved successfully!");
   };
 
-  return (
+  return <FormScreen>{(
     <>
       <WellnessPageShell
         title="Meditation"
         accent="var(--wellness-purple)"
         textAccent="hsl(var(--feature-purple))"
-        onGoal={() => setIsGoalModalOpen(true)}
+        onGoal={() => setMeditationGoalPageOpen(true)}
       >
         {error && (
           <p role="alert" className="text-sm text-warning-soft">
@@ -407,11 +410,12 @@ export default function MeditationPage() {
             /* Add Meditation Button */
             <div className="w-full">
               <WellnessPrimaryAction
-                onClick={() => setIsMeditationDialogOpen(true)}
+                onClick={() => {setMeditationIntent('add');setMeditationAddPageOpen(true);}}
                 data-testid="button-add-meditation"
               >
                 <span>Add Meditation</span>
               </WellnessPrimaryAction>
+              <Button className="mt-2 w-full" variant="outline" onClick={()=>{setMeditationIntent('start');setMeditationAddPageOpen(true);}}>Start Meditation</Button>
             </div>
           ) : (
             /* Active Session Controls */
@@ -648,9 +652,9 @@ export default function MeditationPage() {
         <WellnessHistory stats={getHistoricalStats()} unit="min" />
       </WellnessPageShell>
 
-      {/* Goal Setting Modal */}
-      {isGoalModalOpen && (
-        <GoalEditor title="Meditation Goal" subtitle="Build a consistent daily practice" onDismiss={() => setIsGoalModalOpen(false)} onSave={handleSetGoal}
+      {/* Goal settings page */}
+      {isMeditationGoalPageOpen && (
+        <GoalEditor formId="meditation-goal" title="Meditation Goal" subtitle="Build a consistent daily practice" onDismiss={() => setMeditationGoalPageOpen(false)} onSave={handleSetGoal}
           summary={<GoalSummary percentage={percentage(getTodayMinutes(), Number(goalMinutesInput))} label="Daily target" value={`${parseFloat(goalMinutesInput) || 0} min`} detail={`Today · ${getTodayMinutes()} minutes logged`} />}>
           <GoalField id="goalMinutes" label="Daily Meditation Goal (minutes)" unit="minutes" description="Your daily target for meditation sessions."><Input
                   id="goalMinutes"
@@ -664,17 +668,17 @@ export default function MeditationPage() {
         </GoalEditor>
       )}
 
-      <Dialog
+      <FormGroup formId="meditation-edit"
         open={Boolean(editingSession)}
         onOpenChange={(open) => {
           if (!open) setEditingSession(null);
         }}
       >
-        <DialogContent className="bg-surface border-separator text-strong rounded-2xl">
-          <DialogTitle>Edit Meditation</DialogTitle>
-          <DialogDescription className="sr-only">
+        <FormContent className="bg-surface border-separator text-strong rounded-2xl">
+          <FormTitle>Edit Meditation</FormTitle>
+          <FormDescription className="sr-only">
             Edit recorded session duration
-          </DialogDescription>
+          </FormDescription>
           <Label htmlFor="edit-meditation-minutes">Duration (minutes)</Label>
           <Input
             id="edit-meditation-minutes"
@@ -708,21 +712,21 @@ export default function MeditationPage() {
           >
             Save Changes
           </Button>
-        </DialogContent>
-      </Dialog>
+        </FormContent>
+      </FormGroup>
 
-      {/* Start Meditation Dialog */}
-      <Dialog
-        open={isMeditationDialogOpen}
-        onOpenChange={setIsMeditationDialogOpen}
+      {/* Start Meditation FormGroup */}
+      <FormGroup formId="meditation-add"
+        open={isMeditationAddPageOpen}
+        onOpenChange={setMeditationAddPageOpen}
       >
-        <DialogContent className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl">
-          <DialogTitle className="text-lg font-semibold text-center">
+        <FormContent className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl">
+          <FormTitle className="text-lg font-semibold text-center">
             Start Meditation
-          </DialogTitle>
-          <DialogDescription className="sr-only">
+          </FormTitle>
+          <FormDescription className="sr-only">
             Set meditation duration and start your session
-          </DialogDescription>
+          </FormDescription>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-supporting mb-2">
@@ -750,7 +754,7 @@ export default function MeditationPage() {
                   addSession(minutes)
                 ) {
                   setInputMinutes("");
-                  setIsMeditationDialogOpen(false);
+                  setMeditationAddPageOpen(false);
                 }
               }}
             >
@@ -759,7 +763,7 @@ export default function MeditationPage() {
             <Button
               onClick={() => {
                 startMeditation();
-                setIsMeditationDialogOpen(false);
+                setMeditationAddPageOpen(false);
               }}
               className="w-full bg-purple-600 hover:bg-purple-700 text-on-action"
               data-testid="button-start-meditation"
@@ -768,8 +772,8 @@ export default function MeditationPage() {
               Start Meditation
             </Button>
           </div>
-        </DialogContent>
-      </Dialog>
+        </FormContent>
+      </FormGroup>
     </>
-  );
+  )}</FormScreen>;
 }
