@@ -707,11 +707,7 @@ export default function CalendarPage() {
           {/* Recent Activity Panel */}
           <div data-testid="recent-activity-panel">
             <RecentActivityWidget widget={{
-              id: 'recent-activity',
-              type: 'recent-activity',
               title: 'Recent Activity',
-              enabled: true,
-              position: 2,
               size: 'large'
             }} />
           </div>

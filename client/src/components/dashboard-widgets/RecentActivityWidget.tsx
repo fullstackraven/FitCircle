@@ -1,10 +1,9 @@
 import { useWorkouts } from '@/hooks/use-workouts';
 import { Clock } from 'lucide-react';
-import { DashboardWidget } from '@/hooks/use-dashboard-widgets';
 import { format, parse } from 'date-fns';
 
 interface RecentActivityWidgetProps {
-  widget: DashboardWidget;
+  widget: { title: string; size: 'small' | 'medium' | 'large' };
 }
 
 export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {

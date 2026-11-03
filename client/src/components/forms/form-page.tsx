@@ -122,11 +122,11 @@ export function FormContent({ children, variant = 'standard', title, onCancel }:
     <AppHeader><PageHeader title={heading} onBack={close}/></AppHeader>
     <div ref={root} className={cn('form-page-content',variant==='training'&&'training-editor')} onPointerDownCapture={event=>{
         // Radix Select opens on pointerdown and suppresses its trigger click.
-        if((event.target as Element).closest('[role="combobox"]') && !['widgets','food-search','food-scan'].includes(active.group))markDirty();
+        if((event.target as Element).closest('[role="combobox"]') && !['food-search','food-scan'].includes(active.group))markDirty();
     }} onKeyDownCapture={event=>{
-        if(['Enter',' ','ArrowDown','ArrowUp'].includes(event.key) && (event.target as Element).closest('[role="combobox"]') && !['widgets','food-search','food-scan'].includes(active.group))markDirty();
-    }} onInputCapture={() => { if (!['widgets', 'food-search', 'food-scan'].includes(active.group))
-        markDirty(); }} onChangeCapture={() => { if (!['widgets', 'food-search', 'food-scan'].includes(active.group))
+        if(['Enter',' ','ArrowDown','ArrowUp'].includes(event.key) && (event.target as Element).closest('[role="combobox"]') && !['food-search','food-scan'].includes(active.group))markDirty();
+    }} onInputCapture={() => { if (!['food-search', 'food-scan'].includes(active.group))
+        markDirty(); }} onChangeCapture={() => { if (!['food-search', 'food-scan'].includes(active.group))
         markDirty(); }} onClickCapture={event => {
             const button = (event.target as Element)?.closest('button');
             if (!button)
@@ -139,7 +139,7 @@ export function FormContent({ children, variant = 'standard', title, onCancel }:
                 document.documentElement.dataset.formSaving = 'true';
             else {
                 delete document.documentElement.dataset.formSaving;
-                if ((button.hasAttribute('aria-pressed') || button.getAttribute('role') === 'combobox' || button.closest('.editor-days')) && !button.closest('.goal-editor-segments') && !['widgets', 'food-search', 'food-scan'].includes(active.group))
+                if ((button.hasAttribute('aria-pressed') || button.getAttribute('role') === 'combobox' || button.closest('.editor-days')) && !button.closest('.goal-editor-segments') && !['food-search', 'food-scan'].includes(active.group))
                     markDirty();
             }
         }}>{children}</div>

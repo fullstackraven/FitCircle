@@ -45,6 +45,7 @@ const schemas: Record<string, z.ZodTypeAny> = {
   fitcircle_reminders: z.array(shaped({ id: text, text, completed: z.boolean(), createdAt: text })),
   fitcircle_recovery_data: shaped({ recoveryDays: z.array(text) }),
   fitcircle_workout_duration_data: shaped({ completedSessions: z.array(shaped({ date: text, startTime: number })), currentSession: shaped({ date: text, startTime: number }).optional() }),
+  // Historical backups may contain retired dashboard preferences. Preserve them unchanged.
   fitcircle_dashboard_widgets: z.array(shaped({ id: text, type: text, title: text, enabled: z.boolean(), position: number, size: text })),
   fitcircle_control_settings: record(z.boolean()),
   fitcircle_goals: z.object({ weightGoalType: text.optional() }).catchall(number),
