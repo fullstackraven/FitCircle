@@ -19,7 +19,12 @@ for(const theme of ['dark','light'])test(`${theme}: new/edit workout and routine
  await expect(dialog.getByLabel('Workout Name')).toHaveValue('Push-ups');await expect(dialog.getByLabel('Total Reps',{exact:true})).toHaveValue('20');await expect(dialog.getByLabel('Number of Sets')).toHaveValue('1');await expect(dialog.getByRole('button',{name:'Monday',exact:true})).toHaveAttribute('aria-pressed','true');
  await contained();await expect(dialog.getByLabel('Total Reps',{exact:true})).toHaveCSS('font-size','28px');if(theme==='dark')await screenshot('edit-workout');
  const before=await data(page);await dialog.getByLabel('Workout Name').fill('Discarded');await dialog.getByRole('button',{name:'Cancel',exact:true}).click();expect(await data(page)).toEqual(before);
- await page.getByRole('button',{name:'Edit Push-ups',exact:true}).click();dialog=page.locator('[data-form-page], [role="dialog"]');await dialog.getByLabel('Workout Name').fill('Push-ups updated');await dialog.getByLabel('Workout color').selectOption('blue');await dialog.getByLabel('Weight (lbs) - Optional').fill('12');await dialog.getByRole('button',{name:'Weekdays',exact:true}).click();
+ await page.getByRole('button',{name:'Edit Push-ups',exact:true}).click();dialog=page.locator('[data-form-page], [role="dialog"]');
+ // Reopening hydrates the existing values after the routed editor mounts.
+ // Wait for that prefill before fill selects/replaces the input text.
+ await expect(dialog.getByLabel('Workout Name')).toHaveValue('Push-ups');
+ await dialog.getByLabel('Workout Name').fill('Push-ups updated');
+ await expect(dialog.getByLabel('Workout Name')).toHaveValue('Push-ups updated');await dialog.getByLabel('Workout color').selectOption('blue');await dialog.getByLabel('Weight (lbs) - Optional').fill('12');await dialog.getByRole('button',{name:'Weekdays',exact:true}).click();
  await dialog.getByRole('button',{name:'Save Changes',exact:true}).click();await expect(dialog).toBeHidden();let saved=await data(page);expect(saved.workouts.w).toMatchObject({name:'Push-ups updated',color:'blue',weightLbs:12,scheduledDays:[1,2,3,4,5]});expect(saved.dailyLogs).toEqual(before.dailyLogs);
  await page.getByRole('button',{name:'Edit Push-ups updated',exact:true}).click();page.once('dialog',d=>d.dismiss());await page.getByRole('button',{name:'Delete Workout',exact:true}).click();expect((await data(page)).workouts.w).toBeDefined();
  await page.getByRole('button',{name:'Edit Push-ups updated',exact:true}).click();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Delete Workout',exact:true}).click();expect((await data(page)).workouts.w).toBeUndefined();
