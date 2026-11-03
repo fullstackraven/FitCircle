@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "browser/routed-forms.spec.ts",
+    "form-route-inventory.test.ts",
     "browser/training-editors.spec.ts",
     "browser/reminder-add-green.spec.ts",
     "browser/two-action-greens.spec.ts",

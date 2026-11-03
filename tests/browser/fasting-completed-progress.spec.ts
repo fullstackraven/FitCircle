@@ -61,7 +61,7 @@ test("overnight completion drives the ring and edits/deletions recalculate it wi
     .first()
     .click();
   await page
-    .getByRole("dialog")
+    .locator('[data-form-page], [role="dialog"]')
     .locator('input[type="time"]')
     .nth(1)
     .fill("02:00");

@@ -186,7 +186,7 @@ test("cross-tab appearance changes preserve an open food editor, fields, route, 
     await effective(page, mode as "light" | "dark");
     await expect(page.getByTestId("input-edit-servings")).toHaveValue("2.25");
     await expect(
-      page.getByRole("dialog", { name: "Edit Entry", exact: true }),
+      page.getByRole('region', { name: "Edit Food Entry", exact: true }),
     ).toBeVisible();
     expect(page.url()).toBe(route);
     expect(

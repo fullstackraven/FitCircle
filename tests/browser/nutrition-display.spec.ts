@@ -12,7 +12,7 @@ for (const mode of ['light', 'dark']) test(`${mode}: food displays round while s
   const before = await page.evaluate(() => [localStorage.getItem('fitcircle_food_database'), localStorage.getItem('fitcircle_food_2026-10-19')]);
   await page.goto('food-tracker');
   await page.getByRole('button', { name: 'Add Food to Breakfast', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: 'Add Food', exact: true });
+  const dialog = page.getByRole('region', { name: 'Add Food', exact: true });
   const macros = dialog.locator('.your-food-card').first().locator('.your-food-macros');
   await expect(macros).toHaveText('Cal: 113C: 26gP: 6gF: 2g');
   await dialog.getByRole('button', { name: 'Most Frequent', exact: true }).click();
@@ -21,7 +21,7 @@ for (const mode of ['light', 'dark']) test(`${mode}: food displays round while s
   await expect(macros).toHaveText('Cal: 113C: 26gP: 6gF: 2g');
   expect(await page.evaluate(() => [localStorage.getItem('fitcircle_food_database'), localStorage.getItem('fitcircle_food_2026-10-19')])).toEqual(before);
   await dialog.locator('.your-food-card').first().getByTitle('Add to meal').click();
-  const entry = page.getByRole('dialog', { name: 'Add Entry', exact: true });
+  const entry = page.getByRole('region', { name: 'Add Food Entry', exact: true });
   await entry.getByTestId('input-add-servings').fill('2');
   await expect(entry.getByTestId('entry-nutrition-summary')).toContainText('227');
   await entry.getByRole('button', { name: 'Add', exact: true }).click();

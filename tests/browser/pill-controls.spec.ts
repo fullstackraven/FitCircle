@@ -27,10 +27,11 @@ for(const theme of ['dark','light'])for(const width of [320,390,1280]) {
   await page.mouse.move(0,0);
   for(const expected of protectedControls.filter(r=>r.theme===theme&&r.width===width)){
    const actual=await page.getByRole('button',{name:expected.name,exact:true}).evaluate((el,keys)=>{const c=getComputedStyle(el),r=el.getBoundingClientRect();return {rect:{x:r.x,y:r.y,width:r.width,height:r.height},style:Object.fromEntries(keys.map(k=>[k,c.getPropertyValue(k)]))};},Object.keys(expected.style));
-   // Lower-list content now changes the centered modal's height. Keep the
-   // protected actions anchored exactly 16px below search, with all sizes/styles intact.
+   // The popup's 1px shell border is gone. Preserve every control style and
+   // height, and measure its two-column width/position against the page search.
    const searchBox = await search.boundingBox();
-   expect(actual).toEqual({rect:{...(expected.rect as Record<string,number>),y:searchBox!.y+searchBox!.height+16},style:expected.style});
+   const width=(searchBox!.width-12)/2;const column=expected.name==='Scan Barcode'?0:1;
+   expect(actual).toEqual({rect:{...(expected.rect as Record<string,number>),x:searchBox!.x+column*(width+12),width,y:searchBox!.y+searchBox!.height+16},style:{...expected.style,width:`${width}px`}});
   }
   await check();
   await expect(search).toHaveCSS('border-top-left-radius','9999px');await search.focus();await expect(search).toBeFocused();

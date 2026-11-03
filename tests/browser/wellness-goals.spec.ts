@@ -142,7 +142,9 @@ test("weekly cardio uses 75/150 and a calendar week without rewriting saved hist
   expect(
     await page.evaluate(() => localStorage.getItem("fitcircle_cardio_data")),
   ).toBe(before);
-  await page.getByRole("button", { name: "Goal", exact: true }).click();
+  // Refresh reconstructs the routed editor instead of returning to its owner.
+  await expect(page).toHaveURL(/cardio\/goal$/);
+  await expect(page.getByRole("region", { name: "Cardio Goal", exact: true })).toBeVisible();
   await page.getByLabel(/Weekly Goal/).fill("100");
   page.once("dialog", (dialog) => dialog.accept());
   await page.getByRole("button", { name: "Save Goal", exact: true }).click();
@@ -331,7 +333,7 @@ test("failed explicit hydration writes preserve original bytes and visible draft
     };
   });
   await page.getByRole("button", { name: "Add Liquid", exact: true }).click();
-  const dialog = page.getByRole("dialog");
+  const dialog = page.locator('[data-form-page], [role="dialog"]');
   await dialog.getByLabel("Amount (oz)", {exact: true}).fill("12");
   await dialog.getByRole("button", { name: "Add", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("quota");

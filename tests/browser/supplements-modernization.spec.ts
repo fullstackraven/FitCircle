@@ -28,7 +28,7 @@ test('management keeps the same add form, edit behavior and deletion confirmatio
  const before=await page.evaluate(()=>localStorage.getItem('fitcircle_supplements'));
  page.once('dialog',d=>d.dismiss());await page.getByRole('button',{name:'Delete Fish Oil',exact:true}).click();expect(await page.evaluate(()=>localStorage.getItem('fitcircle_supplements'))).toBe(before);
  page.once('dialog',d=>d.accept());await Promise.all([page.waitForEvent('load'),page.getByRole('button',{name:'Delete Fish Oil',exact:true}).click()]);await expect(page.getByRole('checkbox',{name:'Fish Oil',exact:true})).toHaveCount(0);
- await page.getByRole('button',{name:'Manage Supplements',exact:true}).click();await page.getByRole('button',{name:'Add Supplement',exact:true}).last().click();await expect(page.getByRole('dialog',{name:'Add New Supplement'})).toBeVisible();
+ await page.getByRole('button',{name:'Manage Supplements',exact:true}).click();await page.getByRole('button',{name:'Add Supplement',exact:true}).last().click();await expect(page.getByRole('region', {name:'Add Supplement'})).toBeVisible();
  await page.getByLabel('Supplement Name',{exact:true}).fill('Magnesium');await page.getByRole('combobox').click();await page.getByRole('option',{name:'mg (milligrams)',exact:true}).click();await page.getByLabel('Amount/Quantity').fill('250');await Promise.all([page.waitForEvent('load'),page.getByRole('button',{name:'Add Supplement',exact:true}).last().click()]);await expect(page.getByRole('checkbox',{name:'Magnesium',exact:true})).toContainText('250 mg');
 });
 for(const mode of ['dark','light','system'])test(`mobile ${mode} appearance, management and empty state`,async({page})=>{

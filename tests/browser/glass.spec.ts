@@ -20,24 +20,16 @@ test('glass dock retains compact geometry, semantic selection and visible keyboa
   await expect.poll(() => logs.locator('svg').evaluate(el => getComputedStyle(el).color)).toBe('rgb(141, 157, 177)');
 });
 
-test('glass dialog remains nearly opaque, internally scrollable and safely closable', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 650 });
-  await page.goto('food-tracker');
-  await page.goto('profile');
-  await page.getByRole('button', { name: 'Edit Profile', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: 'Edit Profile' });
-  await expect(dialog).toHaveClass(/glass-dialog/);
-  const alpha = await dialog.evaluate(el => {
-    const color = getComputedStyle(el).backgroundColor;
-    return color.startsWith('rgba') ? Number(color.split(',').at(-1)!.replace(')', '')) : 1;
-  });
-  expect(alpha).toBeGreaterThanOrEqual(.94);
-  await dialog.locator('.dialog-body').evaluate(el => { el.scrollTop = el.scrollHeight; });
-  const close = await dialog.getByRole('button', { name: 'Close', exact: true }).boundingBox();
-  expect(close!.y).toBeGreaterThanOrEqual(0);
-  expect(close!.y + close!.height).toBeLessThanOrEqual(650);
-  await dialog.getByRole('button', { name: 'Close', exact: true }).click();
-  await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
+test('profile editor is a normal scrollable page with reachable Back and actions', async ({ page }) => {
+  await page.setViewportSize({width:390,height:430});await page.goto('profile');
+  await page.getByRole('button',{name:'Edit Profile',exact:true}).click();
+  const form=page.getByRole('region',{name:'Edit Profile'});await expect(form).toHaveAttribute('data-form-page','profile-edit');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await form.getByRole('button',{name:'Save Profile',exact:true}).scrollIntoViewIfNeeded();
+  await expect(form.getByRole('button',{name:'Save Profile',exact:true})).toBeInViewport();
+  await expect(page.getByRole('button',{name:'Back',exact:true})).toBeInViewport();
+  await page.getByRole('button',{name:'Back',exact:true}).click();await expect(page).toHaveURL(/profile$/);
+  await expect.poll(()=>page.locator('main').evaluate(el=>getComputedStyle(el).overflowY)).toBe('auto');
 });
 
 test('reduced motion and transparency produce static opaque materials', async ({ page }) => {

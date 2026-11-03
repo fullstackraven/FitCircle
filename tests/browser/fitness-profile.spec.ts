@@ -22,7 +22,7 @@ test('overview preserves legacy data, saves explicit edits and updates age at a 
   await expect(page.getByText('170 lb · 70 in',{exact:true})).toBeVisible();
   expect(await snapshot(page)).toEqual(before);
   await page.getByRole('button',{name:'Edit Profile',exact:true}).click();
-  const dialog=page.getByRole('dialog',{name:'Edit Profile',exact:true});
+  const dialog=page.getByRole('region', {name:'Edit Profile',exact:true});
   await expect(dialog.getByLabel('Name',{exact:true})).not.toBeFocused();
   await dialog.getByLabel('Name',{exact:true}).fill('Updated synthetic athlete');
   await dialog.getByLabel('Date of Birth',{exact:true}).fill('1990-10-18');

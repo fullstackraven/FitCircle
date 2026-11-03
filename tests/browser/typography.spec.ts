@@ -32,7 +32,7 @@ for (const size of [{ width: 390, height: 844 }, { width: 1440, height: 1000 }])
     await expect(input).toBeVisible();
     expect(await input.evaluate(el => getComputedStyle(el).fontFamily)).not.toContain('JetBrains');
     if (size.width < 768) expect(await input.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(16);
-    await page.getByRole('dialog').getByRole('button',{name:'Close',exact:true}).click();
+    await page.getByRole('button',{name:'Back',exact:true}).click();
     await page.goto('routines');
     await expect(page.getByRole('heading',{name:'FitCircle',exact:true})).toBeVisible();
     const routine = page.getByRole('heading',{name:longRoutine,exact:true});

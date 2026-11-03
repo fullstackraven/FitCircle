@@ -1,3 +1,5 @@
+import { FormOwner, useFormStore, closeForm } from '@/components/forms/FormNavigation';
+import { WidgetSettings } from '@/components/dashboard-widgets/WidgetSettings';
 import { PWAUpdateNotice } from '@/components/PWAUpdateNotice';
 import { FoodNotifications } from "@/components/FoodNotifications";
 import { HeaderHostContext } from "@/components/AppHeader";
@@ -39,31 +41,33 @@ import BottomNavigation from "@/components/BottomNavigation";
 import { ScrollLockProvider } from "@/contexts/ScrollLockContext";
 import { useIOSViewportGuard } from "@/hooks/useIOSViewportGuard";
 
+function WidgetsPage() { const store=useFormStore(); return <WidgetSettings formId="widgets" isOpen onClose={()=>closeForm(store)}/>; }
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path={/^\/(?:workouts\/(?:new|edit))?$/}><FormOwner owner="home"><Home/></FormOwner></Route>
       <Route path="/calendar" component={CalendarPage} />
-      <Route path="/profile" component={ProfilePage} />
+      <Route path={/^\/profile(?:\/.*)?$/}><FormOwner owner="profile"><ProfilePage/></FormOwner></Route>
       <Route path="/measurements" component={MeasurementsPage} />
       <Route path="/fitness-calculator"><FitnessCalculator /></Route>
-      <Route path="/fasting" component={FastingPage} />
-      <Route path="/meditation" component={MeditationPage} />
-      <Route path="/hydration" component={HydrationPage} />
-      <Route path="/food-tracker" component={FoodTrackerPage} />
-      <Route path="/food-database" component={FoodDatabasePage} />
+      <Route path={/^\/fasting(?:\/.*)?$/}><FormOwner owner="fasting"><FastingPage/></FormOwner></Route>
+      <Route path={/^\/meditation(?:\/.*)?$/}><FormOwner owner="meditation"><MeditationPage/></FormOwner></Route>
+      <Route path={/^\/hydration(?:\/.*)?$/}><FormOwner owner="hydration"><HydrationPage/></FormOwner></Route>
+      <Route path={/^\/food-tracker(?:\/.*)?$/}><FormOwner owner="food-tracker"><FoodTrackerPage/></FormOwner></Route>
+      <Route path={/^\/food-database(?:\/.*)?$/}><FormOwner owner="food-database"><FoodDatabasePage/></FormOwner></Route>
       <Route path="/restore-custom-foods" component={RestoreCustomFoodsPage} />
-      <Route path="/cardio" component={CardioPage} />
+      <Route path={/^\/cardio(?:\/.*)?$/}><FormOwner owner="cardio"><CardioPage/></FormOwner></Route>
       <Route path="/workout-statistics" component={WorkoutStatistics} />
       <Route path="/daily-journal" component={DailyJournal} />
       <Route path="/journal-log" component={JournalLog} />
       <Route path="/journal-entry" component={JournalEntryPage} />
       <Route path="/energy-level" component={EnergyLevelPage} />
-      <Route path="/supplements-page" component={SupplementsPage} />
+      <Route path={/^\/supplements-page(?:\/.*)?$/}><FormOwner owner="supplements-page"><SupplementsPage/></FormOwner></Route>
       <Route path="/recovery" component={RecoveryPage} />
-      <Route path="/dynamic-overview/:date" component={({ params }) => <DynamicOverview selectedDate={params.date} />} />
-      <Route path="/routines" component={RoutinesPage} />
+      <Route path={/^\/dynamic-overview\/([^/]+)(?:\/.*)?$/}>{params => <FormOwner owner="overview"><DynamicOverview selectedDate={params[0] ?? ""}/></FormOwner>}</Route>
+      <Route path={/^\/routines(?:\/.*)?$/}><FormOwner owner="routines"><RoutinesPage/></FormOwner></Route>
       <Route path="/wellness" component={WellnessPage} />
+      <Route path="/widgets/settings"><FormOwner owner="widgets"><WidgetsPage/></FormOwner></Route>
       {/* REMOVED: Bug reporting route removed per user request */}
 
       <Route path="/reminders" component={RemindersPage} />

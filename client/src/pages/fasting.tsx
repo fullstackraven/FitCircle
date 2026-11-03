@@ -1,3 +1,5 @@
+import { FormScreen } from '@/components/forms/form-page';
+import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { GoalEditor, GoalSummary, GoalField } from "@/components/wellness/GoalEditor";
 import { fastingDailyHours } from "@/lib/wellness-activity";
 import {
@@ -21,11 +23,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  FormGroup,
+  FormContent,
+  FormDescription,
+  FormTitle,
+} from "@/components/forms/form-page";
 import { useFasting, type FastingLog } from "@/hooks/use-fasting";
 import { useGoals } from "@/hooks/use-goals";
 import {
@@ -40,22 +42,22 @@ export default function FastingPage() {
   const { error, stats, logs, now, addLog, updateLog, deleteLog } = useFasting();
   const completed = completedFasts(logs, now);
   const { goals, updateGoal } = useGoals();
-  const [isFastingDialogOpen, setIsFastingDialogOpen] = useState(false);
-  const [editingLog, setEditingLog] = useState<FastingLog | null>(null);
+  const [isFastingEntryPageOpen, setFastingEntryPageOpen] = useRouteForm('fasting-entry');
+  const [editingLog, setEditingLog] = useRouteState<FastingLog | null>('editingLog', null);
 
   // Form state
-  const [startDate, setStartDate] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [startDate, setStartDate] = useRouteState('startDate', "");
+  const [startTime, setStartTime] = useRouteState('startTime', "");
+  const [endDate, setEndDate] = useRouteState('endDate', "");
+  const [endTime, setEndTime] = useRouteState('endTime', "");
 
   // Goal state
-  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
-  const [goalHoursInput, setGoalHoursInput] = useState("");
+  const [isFastingGoalPageOpen, setFastingGoalPageOpen] = useRouteForm('fasting-goal');
+  const [goalHoursInput, setGoalHoursInput] = useRouteState('goalHoursInput', "");
   const [goalHoursFocused, setGoalHoursFocused] = useState(false);
 
   // Max hours state (for integrated modal)
-  const [maxHoursInput, setMaxHoursInput] = useState("");
+  const [maxHoursInput, setMaxHoursInput] = useRouteState('maxHoursInput', "");
   const [maxHoursFocused, setMaxHoursFocused] = useState(false);
 
   // UI state for monthly collapsible sections
@@ -159,7 +161,7 @@ export default function FastingPage() {
     setStartTime("");
     setEndDate("");
     setEndTime("");
-    setIsFastingDialogOpen(false);
+    setFastingEntryPageOpen(false);
   };
 
   const handleEditLog = (log: FastingLog) => {
@@ -168,7 +170,7 @@ export default function FastingPage() {
     setStartTime(log.startTime);
     setEndDate(log.endDate);
     setEndTime(log.endTime);
-    setIsFastingDialogOpen(true);
+    setFastingEntryPageOpen(true);
   };
 
   const handleDeleteLog = (logId: string) => {
@@ -183,7 +185,7 @@ export default function FastingPage() {
     setStartTime("");
     setEndDate("");
     setEndTime("");
-    setIsFastingDialogOpen(false);
+    setFastingEntryPageOpen(false);
   };
 
   const handleSetGoal = async () => {
@@ -202,7 +204,7 @@ export default function FastingPage() {
 
     if (!updateGoal("fastingHours", hoursGoal)) return;
     if (!updateGoal("maxFastingHours", maxHours)) return;
-    setIsGoalModalOpen(false);
+    setFastingGoalPageOpen(false);
     alert("Fasting settings saved successfully!");
   };
 
@@ -211,12 +213,12 @@ export default function FastingPage() {
       ? calculateDuration(startDate, startTime, endDate, endTime)
       : 0;
 
-  return (
+  return <FormScreen>{(
     <>
       <WellnessPageShell
         title="Fasting"
         accent="var(--wellness-amber)"
-        onGoal={() => setIsGoalModalOpen(true)}
+        onGoal={() => setFastingGoalPageOpen(true)}
       >
         {error && (
           <p role="alert" className="text-sm text-warning-soft">
@@ -285,7 +287,7 @@ export default function FastingPage() {
               setStartTime(currentTime);
               setEndDate(currentDate);
               setEndTime(currentTime);
-              setIsFastingDialogOpen(true);
+              setFastingEntryPageOpen(true);
             }}
           >
             <span>Add Fast</span>
@@ -462,9 +464,9 @@ export default function FastingPage() {
         </div>
       </WellnessPageShell>
 
-      {/* Goal Setting Modal */}
-      {isGoalModalOpen && (
-        <GoalEditor title="Fasting Goal" subtitle="Configure your fasting targets" onDismiss={() => setIsGoalModalOpen(false)} onSave={handleSetGoal} saveLabel="Save Settings"
+      {/* Goal settings page */}
+      {isFastingGoalPageOpen && (
+        <GoalEditor formId="fasting-goal" title="Fasting Goal" subtitle="Configure your fasting targets" onDismiss={() => setFastingGoalPageOpen(false)} onSave={handleSetGoal} saveLabel="Save Settings"
           summary={<div className="fasting-goal-summary">
             <GoalSummary percentage={percentage(stats.todayHours, Number(goalHoursInput))} label="Today’s fast" value={`${amount(stats.todayHours.toFixed(1))} of ${amount(goalHoursInput)} hrs`} detail="Completed today" caption="Today" />
             <aside className="fasting-goal-average" aria-label="All-time average fast">
@@ -500,18 +502,17 @@ export default function FastingPage() {
         </GoalEditor>
       )}
 
-      {/* Log Fast Dialog */}
-      <Dialog open={isFastingDialogOpen} onOpenChange={setIsFastingDialogOpen}>
-        <DialogContent
+      {/* Log Fast FormGroup */}
+      <FormGroup formId="fasting-entry" open={isFastingEntryPageOpen} onOpenChange={setFastingEntryPageOpen}>
+        <FormContent
           className="bg-surface border-separator text-strong max-w-sm mx-auto rounded-2xl"
-          onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          <DialogTitle className="text-lg font-semibold text-center">
+          <FormTitle className="text-lg font-semibold text-center">
             {editingLog ? "Edit Fast" : "Log Fast"}
-          </DialogTitle>
-          <DialogDescription className="sr-only">
+          </FormTitle>
+          <FormDescription className="sr-only">
             Log your intermittent fasting period by entering start and end times
-          </DialogDescription>
+          </FormDescription>
 
           <div className="space-y-4">
             {/* Start Date & Time */}
@@ -602,8 +603,8 @@ export default function FastingPage() {
               </Button>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </FormContent>
+      </FormGroup>
     </>
-  );
+  )}</FormScreen>;
 }

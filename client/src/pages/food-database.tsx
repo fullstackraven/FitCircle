@@ -1,3 +1,5 @@
+import { FormScreen } from '@/components/forms/form-page';
+import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { PageHeader } from '@/components/ui/presentation';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, Trash2, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -5,7 +7,7 @@ import { useLocation } from 'wouter';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { FormGroup, FormContent, FormHeader, FormTitle } from '@/components/forms/form-page';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { localFoodService, LocalFoodItem, FoodUnit } from '@/lib/local-food-service';
@@ -19,8 +21,8 @@ export default function FoodDatabasePage() {
   const [allFoods, setAllFoods] = useState<LocalFoodItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [editingFood, setEditingFood] = useState<LocalFoodItem | null>(null);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingFood, setEditingFood] = useRouteState<LocalFoodItem | null>('editingFood', null);
+  const [isDatabaseEditPageOpen, setDatabaseEditPageOpen] = useRouteForm('database-edit');
   const [currentPage, setCurrentPage] = useState(1);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -123,7 +125,7 @@ export default function FoodDatabasePage() {
   // Handle edit
   const handleEdit = (food: LocalFoodItem) => {
     setEditingFood({ ...food });
-    setEditDialogOpen(true);
+    setDatabaseEditPageOpen(true);
   };
 
   // Handle save edit
@@ -154,7 +156,7 @@ export default function FoodDatabasePage() {
 
       if (result.success && result.food) {
         setAllFoods(prev => prev.map(f => f.id === editingFood.id ? result.food! : f));
-        setEditDialogOpen(false);
+        setDatabaseEditPageOpen(false);
         setEditingFood(null);
         toast({
           title: "Updated",
@@ -181,7 +183,7 @@ export default function FoodDatabasePage() {
     navigate('/food-tracker');
   };
 
-  return (
+  return <FormScreen>{(
     <div className="fitcircle-page">
       <div className="fitcircle-container">
         {/* Header */}
@@ -342,12 +344,12 @@ export default function FoodDatabasePage() {
         </div>
       </div>
 
-      {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="bg-canvas border-separator text-strong max-w-md overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Food</DialogTitle>
-          </DialogHeader>
+      {/* Edit FormGroup */}
+      <FormGroup formId="database-edit" open={isDatabaseEditPageOpen} onOpenChange={setDatabaseEditPageOpen}>
+        <FormContent className="bg-canvas border-separator text-strong max-w-md overflow-y-auto">
+          <FormHeader>
+            <FormTitle>Edit Food</FormTitle>
+          </FormHeader>
           
           {editingFood && (
             <div className="space-y-4 mt-4">
@@ -510,7 +512,7 @@ export default function FoodDatabasePage() {
               <div className="flex gap-3 pt-4">
                 <Button
                   onClick={() => {
-                    setEditDialogOpen(false);
+                    setDatabaseEditPageOpen(false);
                     setEditingFood(null);
                   }}
                   variant="outline"
@@ -529,8 +531,8 @@ export default function FoodDatabasePage() {
               </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
+        </FormContent>
+      </FormGroup>
     </div>
-  );
+  )}</FormScreen>;
 }

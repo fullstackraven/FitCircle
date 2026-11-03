@@ -25,18 +25,8 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
     const before = await nutritionBytes(page);
     const scroller = page.locator(".app-content");
     async function settleFoodOverlay() {
-      // Radix restores focus after its closing animation. That can scroll the
-      // background after a new panel is already visible. Use the original
-      // screenshot scene (page bottom) only after outgoing panels unmount.
-      await expect(
-        page.locator('.dialog-panel[data-state="closed"]'),
-      ).toHaveCount(0);
-      await expect(
-        page.locator('.dialog-panel[data-state="open"]'),
-      ).toHaveCount(1);
-      await scroller.evaluate((el) => {
-        el.scrollTop = el.scrollHeight;
-      });
+      await expect(page.locator('[data-form-page]')).toHaveCount(1);
+      await scroller.evaluate(el=>{el.scrollTop=0;});
     }
     async function capture(name: string) {
       await expect(page.locator("#fitcircle-startup")).toHaveCount(0);
@@ -97,10 +87,9 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
       .click();
     await capture("custom-food-create");
     await page
-      .getByRole("dialog")
-      .getByRole("button", { name: "Close", exact: true })
+      .getByRole("button", { name: "Back", exact: true })
       .click();
-    await page.getByTestId("button-add-breakfast").click();
+    await expect(page.getByTestId("input-search")).toBeVisible();
     await page
       .getByRole("button", { name: "Scan Barcode", exact: true })
       .click();
@@ -120,8 +109,7 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
       barcodeScrollTop,
     );
     await page
-      .getByRole("dialog")
-      .getByRole("button", { name: "Close", exact: true })
+      .getByRole("button", { name: "Back", exact: true })
       .click();
     await page.goto("food-database");
     await page.getByTestId("input-search").fill("Synthetic oats");
@@ -130,8 +118,7 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
     await page.getByTestId(`button-edit-${sampleFood.id}`).click();
     await capture("custom-food-editor");
     await page
-      .getByRole("dialog")
-      .getByRole("button", { name: "Close", exact: true })
+      .getByRole("button", { name: "Back", exact: true })
       .click();
     await page.goto("fitness-calculator");
     await expect(page.getByRole("tab", { name: "Calories", exact: true })).toHaveAttribute("aria-selected", "true");
@@ -140,7 +127,7 @@ for (const mode of process.env.APPEARANCE_CAPTURE_BEFORE
     // Routed calculator screenshots live in calculator-route.spec.ts.
     await page.goto("food-tracker");
     await page.getByTestId("button-calculator").click();
-    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.locator('[data-form-page], [role="dialog"]')).toHaveCount(0);
     await expect(page.getByRole("tab", { name: "Calories", exact: true })).toHaveAttribute("aria-selected", "true");
     await page.getByRole("button", { name: "Back", exact: true }).click();
     await page.goto("measurements");
@@ -261,8 +248,8 @@ for (const mode of ["dark", "light"]) {
     await page.getByTestId("button-add-breakfast").click();
     await page.getByTestId("input-search").fill("Synthetic oats");
     await page.getByTestId(`button-add-${sampleFood.id}`).click();
-    const dialog = page.getByRole("dialog");
-    await expect(dialog).toContainText("Add Entry");
+    const dialog = page.locator('[data-form-page], [role="dialog"]');
+    await expect(page.getByRole("heading",{name:"Add Food Entry",exact:true})).toBeVisible();
     await page.getByTestId("input-add-servings").fill("2");
     await page.getByTestId("button-save-add-entry").click();
     await expect(dialog).toHaveCount(0);
@@ -282,7 +269,7 @@ for (const mode of ["dark", "light"]) {
     await page
       .getByRole("button", { name: "Save Changes", exact: true })
       .click();
-    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.locator('[data-form-page], [role="dialog"]')).toHaveCount(0);
     await page.reload();
     await expect(page.getByTestId(`text-name-${sampleFood.id}`)).toHaveText(
       "Synthetic renamed oats",
@@ -308,7 +295,7 @@ for (const mode of ["dark", "light"]) {
       .poll(
         async () =>
           await page
-            .getByRole("dialog")
+            .locator("main")
             .evaluate((el) => el.getBoundingClientRect().bottom),
       )
       .toBeLessThanOrEqual(470);
@@ -318,7 +305,7 @@ for (const mode of ["dark", "light"]) {
     ).toBe("none");
     expect(
       await page
-        .getByRole("dialog")
+        .locator('[data-form-page], [role="dialog"]')
         .evaluate((el) => el.scrollWidth <= el.clientWidth),
     ).toBe(true);
   });
@@ -363,7 +350,7 @@ for (const mode of ["dark", "light"]) {
     await page
       .getByRole("button", { name: "Find Product", exact: true })
       .click();
-    await expect(page.getByRole("dialog")).toContainText("Add Entry");
+    await expect(page.getByRole("heading",{name:"Add Food Entry",exact:true})).toBeVisible();
     await expect(page.getByTestId("input-add-servings")).toHaveValue("1");
     await page.getByRole("button", { name: "Cancel", exact: true }).click();
     expect(await nutritionBytes(page)).toEqual(before);
@@ -381,20 +368,19 @@ test("System development appearance updates charts, portals and nutrition withou
   const before = await nutritionBytes(page);
   await page.getByTestId("button-add-breakfast").click();
   const surface = await page
-    .getByRole("dialog")
+    .locator('.form-page-content')
     .evaluate((el) => getComputedStyle(el).backgroundColor);
   await page.emulateMedia({ colorScheme: "dark" });
   await expect(page.locator("html")).toHaveAttribute("data-appearance", "dark");
   await expect
     .poll(() =>
       page
-        .getByRole("dialog")
+        .locator('.form-page-content')
         .evaluate((el) => getComputedStyle(el).backgroundColor),
     )
     .not.toBe(surface);
   await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Close", exact: true })
+    .getByRole("button", { name: "Back", exact: true })
     .click();
   await page.goto("measurements");
   const dot = page.locator(".recharts-dot").first();

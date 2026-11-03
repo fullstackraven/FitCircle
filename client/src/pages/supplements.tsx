@@ -1,10 +1,11 @@
+import { FormScreen } from '@/components/forms/form-page';
 import { PageHeader, EmptyState } from '@/components/ui/presentation';
 import '@/styles/supplements.css';
 import React, { useState, useEffect, useRef } from "react";
 import { Pill, Plus, Edit2, Trash2, Calendar, ChevronDown, ChevronUp, Check, SlidersHorizontal } from "lucide-react";
 import { useLocation } from "wouter";
 import { useSupplements } from "@/hooks/use-supplements";
-import { AddSupplementDialog } from "@/components/AddSupplementDialog";
+import { SupplementEditor } from "@/components/SupplementEditor";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { format } from "date-fns";
 
@@ -101,10 +102,10 @@ export function SupplementsPage() {
 
   const takenCount = tempSupplementLogs.filter(log => log.taken).length;
   const supplementById = new Map(allSupplements.map(supplement => [supplement.id, supplement]));
-  return (
+  return <FormScreen>{(
     <div className="fitcircle-page supplements-page">
       <div className="fitcircle-container">
-        <PageHeader title="Supplements" onBack={handleBack} actions={<div ref={addTriggerRef} className="supplement-add-trigger"><AddSupplementDialog onSupplementAdded={() => window.location.reload()}/></div>} />
+        <PageHeader title="Supplements" onBack={handleBack} actions={<div ref={addTriggerRef} className="supplement-add-trigger"><SupplementEditor formId="supplement" onSupplementAdded={() => window.location.reload()}/></div>} />
         <section className="fc-section supplements-card" aria-labelledby="daily-supplements-heading">
           <div className="flex items-center gap-3 mb-4">
             <span className="supplement-heading-icon"><Pill size={25}/></span>
@@ -148,5 +149,5 @@ export function SupplementsPage() {
         <p className="flex items-start gap-2 mt-5 text-xs text-muted-foreground leading-relaxed"><Calendar size={17} className="shrink-0 mt-0.5"/>Tip: Tap any day on the calendar to view or edit past supplement logs</p>
       </div>
     </div>
-  );
+  )}</FormScreen>;
 }

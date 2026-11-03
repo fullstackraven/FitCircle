@@ -13,7 +13,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { useLocation } from "wouter";
-import { ViewportOverlay } from "@/components/ui/viewport-overlay";
 import { amount, percentage } from "@/lib/wellness-progress";
 import {
   recentWellnessActivity,
@@ -260,24 +259,6 @@ export const WellnessHistoryRow = forwardRef<
     </button>
   );
 });
-export function WellnessGoalSheet({
-  title,
-  onDismiss,
-  children,
-  className = "",
-}: {
-  title: string;
-  onDismiss: () => void;
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <ViewportOverlay title={title} onDismiss={onDismiss}>
-      <div className={`wellness-goal-sheet ${className}`}>{children}</div>
-    </ViewportOverlay>
-  );
-}
-
 export function WellnessEntryActions({
   label,
   onEdit,

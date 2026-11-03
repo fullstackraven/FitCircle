@@ -25,9 +25,9 @@ export function useIOSViewportGuard() {
       // both a new shrink from the idle visual bounds and layout occlusion.
       const keyboardOpen = Boolean(focused && unfocusedHeight - height > 80 && layoutHeight - height - top > 80);
       root.classList.toggle('keyboard-open', keyboardOpen);
-      // Resize only the overlay's own scroller when the keyboard would cover
-      // its active field; never reset the page's scroll position or React tree.
-      const scroller = focused ? active?.closest<HTMLElement>('.dialog-body, .sheet-body, .viewport-overlay [role="dialog"]') : null;
+      // Scroll the active editor's actual scroller (page or lightweight overlay)
+      // only when its focused field would be covered; keep the React tree intact.
+      const scroller = focused ? (active?.closest('.form-page') ? active.closest<HTMLElement>('main') : active?.closest<HTMLElement>('.dialog-body, .sheet-body, .viewport-overlay [role="dialog"]')) : null;
       if (scroller && active) {
         const field = active.getBoundingClientRect();
         const bounds = scroller.getBoundingClientRect();

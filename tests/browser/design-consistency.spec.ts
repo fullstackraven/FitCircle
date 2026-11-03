@@ -66,7 +66,7 @@ for (const mode of ['dark', 'light']) for (const width of [320, 390]) {
 }
 
 for (const mode of ['dark', 'light']) for (const width of [320, 390]) {
-  test(`overlay chrome: ${mode} at ${width}px`, async ({ page }) => {
+  test(`routed editor and retained overlay chrome: ${mode} at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await seedWellnessAppearance(page, mode);
     const dir = `docs/review/design-consistency/after/overlays/${mode}-${width}`;
@@ -86,8 +86,22 @@ for (const mode of ['dark', 'light']) for (const width of [320, 390]) {
     };
     await page.goto('./');
     await page.getByRole('button', { name: 'Edit Push-ups', exact: true }).click();
-    await inspect('workout-editor');
-    await page.keyboard.press('Escape');
+    const editor = page.getByRole('region', { name: 'Edit Workout', exact: true });
+    await expect(editor).toBeVisible();
+    await expect(page).toHaveURL(/workouts\/edit\?id=w/);
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await editor.evaluate(el => el.getAnimations({subtree:true}).filter(animation => animation.effect?.getTiming().iterations !== Infinity).forEach(animation => animation.finish()));
+    const editorBox = (await editor.boundingBox())!;
+    expect(editorBox.x).toBeGreaterThanOrEqual(0);
+    expect(editorBox.x + editorBox.width).toBeLessThanOrEqual(width);
+    expect(await editor.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+    expect((await textContrast(page)).failures, 'workout-editor: text contrast').toEqual([]);
+    const save = editor.getByRole('button', { name: 'Save Changes', exact: true });
+    await save.scrollIntoViewIfNeeded();
+    await expect(save).toBeInViewport();
+    await page.screenshot({ path: `${dir}/workout-editor.png`, animations: 'disabled' });
+    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await expect(page).toHaveURL(/\/FitCircle\/$/);
     await page.getByRole('button', { name: 'Open Timer', exact: true }).click();
     await inspect('timer');
     await page.keyboard.press('Escape');
@@ -108,7 +122,8 @@ for (const mode of ['dark', 'light']) for (const width of [320, 390]) {
     await page.screenshot({ path: `${dir}/nested-select.png`, animations: 'disabled' });
     await option.click();
     await expect(page.getByRole('combobox')).toContainText('Pills/Capsules');
-    await page.keyboard.press('Escape');
+    await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await expect(page).toHaveURL(/supplements-page$/);
   });
 }
 

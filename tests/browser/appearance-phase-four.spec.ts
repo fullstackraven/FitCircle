@@ -105,7 +105,7 @@ for (const mode of modes)
       }
     }
     await page.goto("cardio");
-    await page.getByRole("button", { name: "Log Cardio", exact: true }).click();
+    await page.getByRole("button", { name: "Add Cardio", exact: true }).click();
     await capture("cardio-editor");
     await page.getByRole("button", { name: "Cancel", exact: true }).click();
     await page.goto("fasting");
@@ -171,7 +171,7 @@ for (const mode of ["dark", "light"]) {
       ).toBeVisible();
       await page.getByRole("button", { name: "Goal", exact: true }).click();
       await expect(
-        page.getByRole("dialog").locator("svg circle").first(),
+        page.locator('[data-form-page], [role="dialog"]').locator("svg circle").first(),
       ).toHaveAttribute("stroke", "hsl(var(--progress-track))");
       await page.getByRole("button", { name: "Cancel", exact: true }).click();
     }
@@ -316,7 +316,7 @@ for (const mode of ["dark", "light"]) {
     await expect
       .poll(() =>
         page
-          .getByRole("dialog")
+          .locator('[data-form-page], [role="dialog"]')
           .evaluate((el) => el.getBoundingClientRect().bottom),
       )
       .toBeLessThanOrEqual(470);
@@ -439,7 +439,7 @@ for (const mode of ["dark", "light"])
       offsets.push(
         Number(
           await page
-            .getByRole("dialog")
+            .locator('[data-form-page], [role="dialog"]')
             .locator("svg circle")
             .last()
             .getAttribute("stroke-dashoffset"),

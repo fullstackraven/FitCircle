@@ -1,3 +1,4 @@
+import { useRouteState } from '@/components/forms/FormNavigation';
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,7 @@ export function BarcodeEntry({
     draft: ProductDraft;
   }) => void;
 }) {
-  const [code, setCode] = useState("");
+  const [code, setCode] = useRouteState("barcodeCode", "");
   const [scanning, setScanning] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");

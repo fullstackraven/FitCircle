@@ -18,7 +18,7 @@ for (const mode of ['light', 'dark']) test(`${mode}: fasting daily progress stay
     await page.evaluate(logs => localStorage.setItem('fitcircle_fasting_logs', JSON.stringify(logs)), logs);
     await page.goto('fasting');
     await page.getByRole('button', { name: 'Goal', exact: true }).click();
-    return page.getByRole('dialog', { name: 'Fasting Goal', exact: true });
+    return page.getByRole('region', { name: 'Intermittent Fasting Goal', exact: true });
   };
   let dialog = await open([old]);
   await expect(dialog.getByRole('img', { name: '0% today', exact: true })).toBeVisible();

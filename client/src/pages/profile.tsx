@@ -1,3 +1,5 @@
+import { FormScreen } from '@/components/forms/form-page';
+import { useRouteState, useRecordFormState } from '@/components/forms/FormNavigation';
 import { PageHeader } from '@/components/ui/presentation';
 import { useState, useEffect } from 'react';
 import { User, CalendarDays, Ruler, Target, Pencil, ChevronRight, SlidersHorizontal } from 'lucide-react';
@@ -6,7 +8,7 @@ import { dashboardQuery } from '@/lib/dashboard-navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { FormGroup, FormContent, FormHeader, FormTitle, FormDescription, FormFooter } from '@/components/forms/form-page';
 import { readFitnessProfile, readTrainingOverview, readMeasurementPreview, saveFitnessProfile, primaryObjectives, type ProfilePatch } from '@/lib/fitness-profile';
 
 export default function ProfilePage() {
@@ -18,11 +20,11 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState(() => readFitnessProfile());
   const [training, setTraining] = useState(() => readTrainingOverview());
   const [measurements, setMeasurements] = useState(() => readMeasurementPreview());
-  const [editor, setEditor] = useState<'profile' | 'goals' | null>(null);
-  const [name, setName] = useState('');
-  const [dob, setDob] = useState('');
-  const [objective, setObjective] = useState('');
-  const [goal, setGoal] = useState('');
+  const [editor, setEditor] = useRecordFormState<'profile' | 'goals' | null>('editor', null, 'profile-edit');
+  const [name, setName] = useRouteState('name', '');
+  const [dob, setDob] = useRouteState('dob', '');
+  const [objective, setObjective] = useRouteState('objective', '');
+  const [goal, setGoal] = useRouteState('goal', '');
   const [error, setError] = useState('');
   const refresh = () => { setProfile(readFitnessProfile()); setTraining(readTrainingOverview()); setMeasurements(readMeasurementPreview()); };
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function ProfilePage() {
   const back = () => { if (fromDashboard) sessionStorage.setItem('fitcircle_dashboard_open', 'true'); navigate(fromDashboard ? returnTo : '/'); };
   const fullReps = training?.totalReps.toLocaleString() ?? 'Unavailable';
   const compactReps = training ? new Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 }).format(training.totalReps) : '—';
-  return (
+  return <FormScreen>{(
     <div className="w-full max-w-md mx-auto space-y-5">
       <PageHeader title="My Fitness Profile" onBack={back} align="start" className="mb-0" />
       {profile.error && <div role="alert" className="rounded-xl border border-amber-500/40 p-3 text-sm text-warning">{profile.error}<div className="flex gap-3 mt-2"><button className="fc-pill min-h-11" onClick={refresh}>Retry</button><button className="fc-pill min-h-11" onClick={() => navigate('/account-data' + (fromDashboard ? dashboardQuery(returnTo) : ''))}>Open Account Data</button></div></div>}
@@ -82,9 +84,9 @@ export default function ProfilePage() {
           <button onClick={() => openEditor('goals')} disabled={!!profile.error} className="fc-pill w-full min-h-16 flex items-center gap-3 text-left disabled:opacity-40"><Target size={20} className="shrink-0 text-muted-foreground" /><span className="flex-1 text-sm font-medium text-strong">Fitness Goals</span><ChevronRight size={18} className="text-muted-foreground" /></button>
         </div>
       </section>
-      <Dialog open={editor !== null} onOpenChange={open => { if (!open) setEditor(null); }}>
-        <DialogContent staticBody fixedFooter className="bg-canvas border-separator max-w-md p-4 gap-3">
-          <DialogHeader><DialogTitle>{editor === 'profile' ? 'Edit Profile' : 'Fitness Goals'}</DialogTitle><DialogDescription className="sr-only">Changes stay on this device. Training goals and calculations are not modified automatically.</DialogDescription></DialogHeader>
+      <FormGroup formId="profile-edit" open={editor !== null} onOpenChange={open => { if (!open) setEditor(null); }}>
+        <FormContent className="bg-canvas border-separator max-w-md p-4 gap-3">
+          <FormHeader><FormTitle>{editor === 'profile' ? 'Edit Profile' : 'Fitness Goals'}</FormTitle><FormDescription className="sr-only">Changes stay on this device. Training goals and calculations are not modified automatically.</FormDescription></FormHeader>
           <div className="space-y-3">
             {editor === 'profile' ? <>
               <label className="block text-sm text-supporting">Name<Input aria-label="Name" value={name} onChange={event => setName(event.target.value)} className="mt-1 text-base" /></label>
@@ -95,9 +97,9 @@ export default function ProfilePage() {
             </>}
             {error && <p role="alert" className="text-sm text-feature-red">{error}</p>}
           </div>
-          <DialogFooter className="grid grid-cols-2 gap-3 sm:space-x-0"><Button variant="outline" onClick={() => setEditor(null)}>Cancel</Button><Button onClick={save} className="bg-accent-bright text-on-bright hover:bg-accent-bright-hover">Save Profile</Button></DialogFooter>
-        </DialogContent>
-      </Dialog>
+          <FormFooter className="grid grid-cols-2 gap-3 sm:space-x-0"><Button variant="outline" onClick={() => setEditor(null)}>Cancel</Button><Button onClick={save} className="bg-accent-bright text-on-bright hover:bg-accent-bright-hover">Save Profile</Button></FormFooter>
+        </FormContent>
+      </FormGroup>
     </div>
-  );
+  )}</FormScreen>;
 }

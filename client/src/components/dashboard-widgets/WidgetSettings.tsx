@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Settings, Eye, EyeOff, Move, RotateCcw, ChevronUp, ChevronDown } from 'lucide-react';
 import { DashboardWidget, useDashboardWidgets } from '@/hooks/use-dashboard-widgets';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { FormGroup, FormContent, FormHeader, FormTitle, FormDescription } from '@/components/forms/form-page';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 
 interface WidgetSettingsProps {
+  formId?: string;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -45,17 +46,17 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl overflow-y-auto bg-surface border-separator text-strong rounded-2xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
+    <FormGroup formId="widgets" open={isOpen} onOpenChange={onClose}>
+      <FormContent className="max-w-2xl overflow-y-auto bg-surface border-separator text-strong rounded-2xl">
+        <FormHeader>
+          <FormTitle className="flex items-center space-x-2">
             <Settings className="w-5 h-5" />
             <span>Dashboard Widgets</span>
-          </DialogTitle>
-          <DialogDescription>
+          </FormTitle>
+          <FormDescription>
             Customize which widgets appear on your dashboard and their settings.
-          </DialogDescription>
-        </DialogHeader>
+          </FormDescription>
+        </FormHeader>
 
         <div className="space-y-6">
           {/* Control Buttons */}
@@ -123,7 +124,7 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
                       <button
                         onClick={() => moveWidget(widget.id, 'up')}
                         disabled={widget.position === 0}
-                        className="p-1 hover:bg-surface-secondary rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="fc-pill p-1 hover:bg-surface-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Move up"
                       >
                         <ChevronUp className="w-3 h-3 text-muted-foreground" />
@@ -131,7 +132,7 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
                       <button
                         onClick={() => moveWidget(widget.id, 'down')}
                         disabled={widget.position === availableWidgets.length - 1}
-                        className="p-1 hover:bg-surface-secondary rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="fc-pill p-1 hover:bg-surface-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Move down"
                       >
                         <ChevronDown className="w-3 h-3 text-muted-foreground" />
@@ -153,7 +154,7 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
             </div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </FormContent>
+    </FormGroup>
   );
 }
