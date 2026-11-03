@@ -12,7 +12,7 @@ import {
   WellnessHistoryRow,
   WellnessEntryActions,
 } from "@/components/wellness/WellnessUI";
-import { dailyTotals, weekDates } from "@/lib/wellness-progress";
+import { dailyTotals } from "@/lib/wellness-progress";
 import { WellnessHistory } from "@/components/WellnessHistory";
 import { percentage, amount } from "@/lib/wellness-progress";
 import React, { useState, useEffect } from "react";
@@ -53,7 +53,6 @@ export default function CardioPage() {
     addCustomType,
     getAllCardioTypes,
     getTodaysProgress,
-    getWeeklyProgress,
     getCardioStats,
     getHistoricalStats,
     data,
@@ -82,7 +81,6 @@ export default function CardioPage() {
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
 
   const todaysProgress = getTodaysProgress();
-  const weeklyProgress = getWeeklyProgress();
   const stats = getCardioStats();
   const cardioTypes = getAllCardioTypes();
 
@@ -293,20 +291,6 @@ export default function CardioPage() {
           )}
           unit={data.goal.type === "duration" ? "min" : "mi"}
         />
-        <WellnessTodaySection title="Weekly activity">
-          <p className="text-sm text-muted-foreground">
-            {weeklyProgress.totalDuration} min this week ·{" "}
-            {
-              weekDates().filter(
-                (date) =>
-                  (dailyTotals("cardioDuration", data)[date] ?? 0) > 0 ||
-                  (dailyTotals("cardioDistance", data)[date] ?? 0) > 0,
-              ).length
-            }{" "}
-            active days
-          </p>
-        </WellnessTodaySection>
-
         <QuickAddMinutes presets={[10, 20, 30]} onAdd={minutes => addCardioEntry('Walking', minutes)} />
         {/* Add Entry Button */}
         <FormGroup formId="cardio-add" open={isCardioAddPageOpen} onOpenChange={setCardioAddPageOpen}>
