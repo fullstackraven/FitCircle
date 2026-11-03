@@ -142,7 +142,9 @@ test("weekly cardio uses 75/150 and a calendar week without rewriting saved hist
   expect(
     await page.evaluate(() => localStorage.getItem("fitcircle_cardio_data")),
   ).toBe(before);
-  await page.getByRole("button", { name: "Goal", exact: true }).click();
+  // Refresh reconstructs the routed editor instead of returning to its owner.
+  await expect(page).toHaveURL(/cardio\/goal$/);
+  await expect(page.getByRole("region", { name: "Cardio Goal", exact: true })).toBeVisible();
   await page.getByLabel(/Weekly Goal/).fill("100");
   page.once("dialog", (dialog) => dialog.accept());
   await page.getByRole("button", { name: "Save Goal", exact: true }).click();
