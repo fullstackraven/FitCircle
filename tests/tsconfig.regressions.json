@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "browser/routed-page-repair.spec.ts",
     "browser/routed-forms.spec.ts",
     "form-route-inventory.test.ts",
     "browser/training-editors.spec.ts",

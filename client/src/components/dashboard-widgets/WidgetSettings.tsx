@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Settings, Eye, EyeOff, Move, RotateCcw, ChevronUp, ChevronDown } from 'lucide-react';
 import { DashboardWidget, useDashboardWidgets } from '@/hooks/use-dashboard-widgets';
-import { FormGroup, FormContent, FormHeader, FormTitle, FormDescription } from '@/components/forms/form-page';
+import { FormActions, FormGroup, FormContent, FormHeader, FormTitle, FormDescription } from '@/components/forms/form-page';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 
@@ -47,7 +47,7 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
 
   return (
     <FormGroup formId="widgets" open={isOpen} onOpenChange={onClose}>
-      <FormContent className="max-w-2xl overflow-y-auto bg-surface border-separator text-strong rounded-2xl">
+      <FormContent>
         <FormHeader>
           <FormTitle className="flex items-center space-x-2">
             <Settings className="w-5 h-5" />
@@ -154,6 +154,7 @@ export function WidgetSettings({ isOpen, onClose }: WidgetSettingsProps) {
             </div>
           </div>
         </div>
+        <FormActions primary={<Button onClick={onClose}>Done</Button>}/>
       </FormContent>
     </FormGroup>
   );

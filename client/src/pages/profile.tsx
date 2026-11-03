@@ -1,3 +1,4 @@
+import { FormActions } from '@/components/forms/form-page';
 import { FormScreen } from '@/components/forms/form-page';
 import { useRouteState, useRecordFormState } from '@/components/forms/FormNavigation';
 import { PageHeader } from '@/components/ui/presentation';
@@ -8,7 +9,7 @@ import { dashboardQuery } from '@/lib/dashboard-navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { FormGroup, FormContent, FormHeader, FormTitle, FormDescription, FormFooter } from '@/components/forms/form-page';
+import { FormGroup, FormContent, FormHeader, FormTitle, FormDescription } from '@/components/forms/form-page';
 import { readFitnessProfile, readTrainingOverview, readMeasurementPreview, saveFitnessProfile, primaryObjectives, type ProfilePatch } from '@/lib/fitness-profile';
 
 export default function ProfilePage() {
@@ -50,6 +51,8 @@ export default function ProfilePage() {
       window.dispatchEvent(new Event('fitcircleProfileChanged'));
     } catch (failure) { setError(failure instanceof Error ? failure.message : 'Could not save your profile. Please retry.'); }
   };
+  const profileURL = '/profile' + window.location.search;
+  const relatedPage = (path:string) => navigate(path+'?returnTo='+encodeURIComponent(profileURL));
   const back = () => { if (fromDashboard) sessionStorage.setItem('fitcircle_dashboard_open', 'true'); navigate(fromDashboard ? returnTo : '/'); };
   const fullReps = training?.totalReps.toLocaleString() ?? 'Unavailable';
   const compactReps = training ? new Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 }).format(training.totalReps) : '—';
@@ -73,19 +76,19 @@ export default function ProfilePage() {
           {[['Active Days', String(training.totalCompletedDays), String(training.totalCompletedDays)], ['Consistency', `${training.totalConsistency.toFixed(1)}%`, `${training.totalConsistency.toFixed(1)}%`], ['Total Reps', compactReps, fullReps]].map(([label, value, full]) => <div key={label} className="fc-metric flex flex-col justify-center min-h-20"><dt className="order-2">{label}</dt><dd title={full} className="order-1 type-metric text-strong">{value}</dd></div>)}
         </dl> : <p className="text-sm text-warning">Training history is unavailable. Existing records have not been changed.</p>}
         {training && training.totalReps === 0 && training.totalCompletedDays === 0 && <p className="text-sm text-muted-foreground mt-2">No workouts recorded yet</p>}
-        <button onClick={() => navigate('/workout-statistics')} className="fc-pill min-h-11 text-sm text-accent-text hover:text-accent-soft">View Workout Statistics</button>
+        <button onClick={() => relatedPage('/workout-statistics')} className="fc-pill min-h-11 text-sm text-accent-text hover:text-accent-soft">View Workout Statistics</button>
         <p className="text-xs text-muted-foreground">Active days and consistency use the same completed-day definitions as Workout Statistics.</p>
       </section>
       <section aria-labelledby="profile-details">
         <h2 id="profile-details" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Personal Details</h2>
         <div className="rounded-2xl bg-surface/90 divide-y divide-separator/60 px-4">
           <button onClick={() => openEditor('profile')} disabled={!!profile.error} className="fc-pill w-full min-h-16 flex items-center gap-3 text-left disabled:opacity-40"><CalendarDays size={20} className="shrink-0 text-muted-foreground" /><div className="min-w-0 flex-1"><span className="block text-sm font-medium text-strong">Date of Birth</span><span className="block text-xs text-muted-foreground mt-1">{profile.dateOfBirth ? `${profile.dateOfBirth} · Age ${profile.age}` : profile.age !== null ? `Age ${profile.age} · ${profile.ageSource}` : 'Optional'}</span></div><ChevronRight size={18} className="text-muted-foreground" /></button>
-          <button onClick={() => navigate('/measurements')} className="fc-pill w-full min-h-16 flex items-center gap-3 text-left"><Ruler size={20} className="shrink-0 text-muted-foreground" /><div className="min-w-0 flex-1"><span className="block text-sm font-medium text-strong">Body Measurements</span>{measurements && <span className="block text-xs text-muted-foreground mt-1">{measurements}</span>}</div><ChevronRight size={18} className="text-muted-foreground" /></button>
+          <button onClick={() => relatedPage('/measurements')} className="fc-pill w-full min-h-16 flex items-center gap-3 text-left"><Ruler size={20} className="shrink-0 text-muted-foreground" /><div className="min-w-0 flex-1"><span className="block text-sm font-medium text-strong">Body Measurements</span>{measurements && <span className="block text-xs text-muted-foreground mt-1">{measurements}</span>}</div><ChevronRight size={18} className="text-muted-foreground" /></button>
           <button onClick={() => openEditor('goals')} disabled={!!profile.error} className="fc-pill w-full min-h-16 flex items-center gap-3 text-left disabled:opacity-40"><Target size={20} className="shrink-0 text-muted-foreground" /><span className="flex-1 text-sm font-medium text-strong">Fitness Goals</span><ChevronRight size={18} className="text-muted-foreground" /></button>
         </div>
       </section>
       <FormGroup formId="profile-edit" open={editor !== null} onOpenChange={open => { if (!open) setEditor(null); }}>
-        <FormContent className="bg-canvas border-separator max-w-md p-4 gap-3">
+        <FormContent>
           <FormHeader><FormTitle>{editor === 'profile' ? 'Edit Profile' : 'Fitness Goals'}</FormTitle><FormDescription className="sr-only">Changes stay on this device. Training goals and calculations are not modified automatically.</FormDescription></FormHeader>
           <div className="space-y-3">
             {editor === 'profile' ? <>
@@ -97,7 +100,7 @@ export default function ProfilePage() {
             </>}
             {error && <p role="alert" className="text-sm text-feature-red">{error}</p>}
           </div>
-          <FormFooter className="grid grid-cols-2 gap-3 sm:space-x-0"><Button variant="outline" onClick={() => setEditor(null)}>Cancel</Button><Button onClick={save} className="bg-accent-bright text-on-bright hover:bg-accent-bright-hover">Save Profile</Button></FormFooter>
+          <FormActions primary={<Button onClick={save} className="bg-accent-bright text-on-bright hover:bg-accent-bright-hover">Save Profile</Button>} secondary={<Button variant="outline" onClick={() => setEditor(null)}>Cancel</Button>} />
         </FormContent>
       </FormGroup>
     </div>

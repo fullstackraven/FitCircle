@@ -1,3 +1,4 @@
+import { FormUnavailable } from './FormUnavailable';
 import React, { createContext, useContext, useEffect, useRef, type ReactNode } from 'react';
 import { AppHeader } from '@/components/AppHeader';
 import { PageHeader } from '@/components/ui/presentation';
@@ -30,7 +31,7 @@ export function FormScreen({ children }: {
         return found;
     };
     const selected = find(children);
-    return (selected ? React.cloneElement(selected, { key: active.id }) : null) ?? <section className="p-4"><h1 className="text-xl font-bold">Form unavailable</h1><p>This record or form is not available.</p><button className="fc-pill min-h-11 text-accent-text" onClick={() => store.navigate(ownerPath(store.owner), { replace: true })}>Back</button></section>;
+    return (selected ? React.cloneElement(selected, { key: active.id }) : null) ?? <FormUnavailable message="This record or form is not available." onBack={()=>store.navigate(ownerPath(store.owner),{replace:true})}/>;
 }
 export function FormGroup({ children, formId, open, onOpenChange }: {
     children: ReactNode;
@@ -59,12 +60,11 @@ else if (React.isValidElement<any>(node))
     result += text(node.props.children); }); return result; }
 function titleIn(nodes: ReactNode): string { let result = ''; React.Children.forEach(nodes, node => { if (!React.isValidElement<any>(node) || result)
     return; result = node.type === FormTitle ? text(node.props.children) : titleIn(node.props.children); }); return result; }
-export function FormContent({ children, className, title, onCancel, ..._unused }: {
+export function FormContent({ children, variant = 'standard', title, onCancel }: {
     children: ReactNode;
-    className?: string;
+    variant?: 'standard' | 'training';
     title?: string;
     onCancel?: () => void;
-    [key: string]: any;
 }) {
     const context = useContext(FormContext), store = useFormStore();
     const active = formForPath();
@@ -120,7 +120,7 @@ export function FormContent({ children, className, title, onCancel, ..._unused }
     const heading = active.title || title || titleIn(children);
     return <section className="form-page" aria-label={heading} data-form-page={active.id}>
     <AppHeader><PageHeader title={heading} onBack={close}/></AppHeader>
-    <div ref={root} className={cn('form-page-content', className)} onPointerDownCapture={event=>{
+    <div ref={root} className={cn('form-page-content',variant==='training'&&'training-editor')} onPointerDownCapture={event=>{
         // Radix Select opens on pointerdown and suppresses its trigger click.
         if((event.target as Element).closest('[role="combobox"]') && !['widgets','food-search','food-scan'].includes(active.group))markDirty();
     }} onKeyDownCapture={event=>{
@@ -148,7 +148,14 @@ export function FormContent({ children, className, title, onCancel, ..._unused }
 export function FormHeader({ children, className }: {
     children: ReactNode;
     className?: string;
-}) { return <div className={cn('dialog-header', className)}>{children}</div>; }
+}) {
+    const hidden=React.Children.toArray(children).every(node=>React.isValidElement<any>(node)&&(node.type===FormTitle||node.props.className?.includes('sr-only')));
+    return <div className={cn('form-introduction',hidden&&'sr-only',className)}>{children}</div>;
+}
 export function FormTitle(_props: React.HTMLAttributes<HTMLHeadingElement>) { return null; }
-export function FormDescription({ children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) { return <p {...props}>{children}</p>; }
-export function FormFooter({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) { return <div {...props} className={cn('dialog-footer', className)}>{children}</div>; }
+export function FormDescription({ children, className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) { return <p {...props} className={cn(className,'text-left')}>{children}</p>; }
+/** Page actions stay in document flow, with the primary action before Cancel. */
+export function FormActions({primary,secondary}:{primary:ReactNode;secondary?:ReactNode}) {
+    return <footer className="form-actions">{primary&&<div className="form-action-primary">{primary}</div>}{secondary&&<div className="form-action-secondary">{secondary}</div>}</footer>;
+}
+export function FormFooter({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) { return <div {...props} className={cn('form-footer', className)}>{children}</div>; }

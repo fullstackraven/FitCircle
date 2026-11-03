@@ -1,3 +1,4 @@
+import { FormActions } from '@/components/forms/form-page';
 import { FormScreen } from '@/components/forms/form-page';
 import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { PageHeader } from '@/components/ui/presentation';
@@ -180,7 +181,8 @@ export default function FoodDatabasePage() {
   };
 
   const handleBack = () => {
-    navigate('/food-tracker');
+    const origin=new URLSearchParams(window.location.search).get('returnTo');
+    navigate(origin?.split('?')[0] === '/food-tracker' ? origin : '/food-tracker');
   };
 
   return <FormScreen>{(
@@ -346,7 +348,7 @@ export default function FoodDatabasePage() {
 
       {/* Edit FormGroup */}
       <FormGroup formId="database-edit" open={isDatabaseEditPageOpen} onOpenChange={setDatabaseEditPageOpen}>
-        <FormContent className="bg-canvas border-separator text-strong max-w-md overflow-y-auto">
+        <FormContent>
           <FormHeader>
             <FormTitle>Edit Food</FormTitle>
           </FormHeader>
@@ -509,8 +511,13 @@ export default function FoodDatabasePage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 pt-4">
-                <Button
+              <FormActions primary={<Button
+                  onClick={handleSaveEdit}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action"
+                  data-testid="button-save-edit"
+                >
+                  Save Changes
+                </Button>} secondary={<Button
                   onClick={() => {
                     setDatabaseEditPageOpen(false);
                     setEditingFood(null);
@@ -520,15 +527,7 @@ export default function FoodDatabasePage() {
                   data-testid="button-cancel-edit"
                 >
                   Cancel
-                </Button>
-                <Button
-                  onClick={handleSaveEdit}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-on-action"
-                  data-testid="button-save-edit"
-                >
-                  Save Changes
-                </Button>
-              </div>
+                </Button>} />
             </div>
           )}
         </FormContent>

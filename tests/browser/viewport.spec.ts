@@ -171,7 +171,7 @@ test('nested form pages return to their parent and keep normal scrolling', async
   await page.getByRole('button', { name: 'Add Cardio', exact: true }).click();
   const outer = page.getByRole('region', { name: 'Add Cardio' });
   await assertSafeClose(outer);
-  await outer.getByRole('button', { name: '', exact: true }).click();
+  await outer.getByRole('button', { name: 'Add custom cardio type', exact: true }).click();
   const inner = page.getByRole('region', { name: 'Add Custom Cardio Type' });
   await expect(inner).toBeVisible(); await assertSafeClose(inner);
   await page.getByRole('button', { name: 'Back', exact: true }).click();

@@ -1,3 +1,4 @@
+import { FormActions } from '@/components/forms/form-page';
 import { useRouteForm, useRouteState, useFormStore, closeForm } from '@/components/forms/FormNavigation';
 import React, { useState } from 'react';
 import { FormGroup, FormContent, FormHeader, FormTitle, FormDescription, FormTrigger } from '@/components/forms/form-page';
@@ -69,7 +70,7 @@ export function SupplementEditor({ onSupplementAdded }: SupplementEditorProps) {
           <Plus className="w-4 h-4" />
         </Button>
       </FormTrigger>
-      <FormContent className="bg-surface border-separator text-strong max-w-md rounded-2xl">
+      <FormContent>
         <FormHeader>
           <FormTitle className="text-strong">Add New Supplement</FormTitle>
           <FormDescription className="text-muted-foreground">
@@ -128,15 +129,13 @@ export function SupplementEditor({ onSupplementAdded }: SupplementEditorProps) {
             />
           </div>
 
-          <div className="flex space-x-2 pt-4">
-            <Button
+          <FormActions primary={<Button
               type="submit"
               className="flex-1 bg-action-selected hover:bg-action text-on-action"
               disabled={!name.trim() || !measurementType || !amount.trim()}
             >
               Add Supplement
-            </Button>
-            <Button
+            </Button>} secondary={<Button
               type="button"
               variant="outline"
               onClick={() => {
@@ -148,8 +147,7 @@ export function SupplementEditor({ onSupplementAdded }: SupplementEditorProps) {
               className="flex-1 border-control text-supporting hover:bg-surface-secondary"
             >
               Cancel
-            </Button>
-          </div>
+            </Button>} />
         </form>
       </FormContent>
     </FormGroup>

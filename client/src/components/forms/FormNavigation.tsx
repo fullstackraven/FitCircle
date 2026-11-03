@@ -1,3 +1,5 @@
+import { getTodayString } from '@/lib/date-utils';
+import { FormUnavailable } from './FormUnavailable';
 import { createContext, useContext, useRef, useState, useEffect, useSyncExternalStore, type ReactNode, type SetStateAction, type Dispatch } from 'react';
 import { useLocation } from 'wouter';
 import { appPath, formForPath, definitions, ownerPath, allowFormExit, type FormDefinition } from '@/lib/form-routes';
@@ -21,7 +23,12 @@ function commitHistory(store: Store) {
         return;
     history.replaceState({ ...history.state, fitcircleForm: snapshot(store) }, '', window.location.href);
 }
-export function FormOwner({ owner, children }: {
+export function FormOwner({ owner, children }: { owner:string; children:ReactNode }) {
+    // Wouter can reuse this element between sibling feature routes. Draft state
+    // and route resolution must never carry over from a different feature.
+    return <FormOwnerScope key={owner} owner={owner}>{children}</FormOwnerScope>;
+}
+function FormOwnerScope({ owner, children }: {
     owner: string;
     children: ReactNode;
 }) {
@@ -42,7 +49,12 @@ export function FormOwner({ owner, children }: {
                 setFailure(error instanceof Error ? error.message : 'This form could not be opened.');
                 setReady(true);
             } });
-        const restore = () => { if(store.closing)return;const values = history.state?.fitcircleForm; if (values) {
+        const restore = () => {
+            // A draft fence pops to the same URL before asking about Back.
+            // Do not replace live fields with that older entry's snapshot.
+            const active=formForPath();
+            if(store.closing || (active && store.dirtyForms.has(active.id)))return;
+            const values = history.state?.fitcircleForm; if (values) {
             store.values = { ...store.values, ...values };
             store.listeners.forEach(fn => fn());
         } };
@@ -52,7 +64,7 @@ export function FormOwner({ owner, children }: {
     if (!ready)
         return <p role="status" className="p-4">Opening form…</p>;
     if (failure)
-        return <section className="p-4 space-y-4"><h1 className="text-xl font-bold">Form unavailable</h1><p role="alert">{failure} Your records have not been changed.</p><button className="fc-pill min-h-11 text-accent-text" onClick={() => { allowFormExit(); navigate(ownerPath(owner), { replace: true }); setFailure(''); }}>Back</button></section>;
+        return <FormUnavailable message={failure} onBack={()=>{allowFormExit();navigate(ownerPath(owner),{replace:true});setFailure('');}}/>;
     return <Context.Provider value={store}>{children}</Context.Provider>;
 }
 /** Same state API as React; only transient form context is copied into history. */
@@ -102,13 +114,24 @@ export function openForm(store: Store, group: string) {
         params.set('routine', v.selectedRoutineId);
     if (params.size)
         path += '?' + params;
-    const previous = group === 'food-entry' && formForPath()?.group === 'food-custom' && document.documentElement.dataset.formSaving ? (history.state?.fitcircleFormReturn ?? ownerPath(store.owner)) : appPath() + window.location.search;
+    const skipSubmittedCustom = group === 'food-entry' && formForPath()?.group === 'food-custom' && Boolean(document.documentElement.dataset.formSaving);
+    const originParams = new URLSearchParams(window.location.search);
+    if(store.owner==='food-tracker' && !formForPath() && (v.selectedDate!==getTodayString() || originParams.has('date')))originParams.set('date',v.selectedDate);
+    const origin=appPath()+(originParams.size?'?'+originParams:'');
+    const previous = skipSubmittedCustom ? (history.state?.fitcircleFormReturn ?? ownerPath(store.owner)) : origin;
+    // Store only navigation metadata for the parent; live form values remain
+    // in this feature's controller instead of being duplicated at every step.
+    const parent = skipSubmittedCustom ? history.state?.fitcircleFormParent : formForPath() ? {
+        fitcircleFormReturn:history.state?.fitcircleFormReturn,
+        fitcircleFormRoot:history.state?.fitcircleFormRoot,
+        fitcircleFormParent:history.state?.fitcircleFormParent,
+    } : undefined;
     if (formForPath()?.id === def.id) {
         commitHistory(store);
         return;
     }
     const root = history.state?.fitcircleFormRoot ?? (formForPath() ? ownerPath(store.owner) : previous);
-    store.navigate(path, { state: { fitcircleForm: snapshot(store), fitcircleFormReturn: previous, fitcircleFormRoot: root } });
+    store.navigate(path, { state: { fitcircleForm: snapshot(store), fitcircleFormReturn: previous, fitcircleFormRoot: root,fitcircleFormParent:parent } });
 }
 export function closeForm(store: Store) {
     allowFormExit();
@@ -116,8 +139,12 @@ export function closeForm(store: Store) {
     delete document.documentElement.dataset.formSaving;
     const def = formForPath();
     const target = save && def?.id !== 'cardio-type' ? history.state?.fitcircleFormRoot : history.state?.fitcircleFormReturn;
-    const destination=target || ownerPath(store.owner), values=snapshot(store);
-    const finish=()=>{store.closing=false;store.navigate(destination,{replace:true,state:{fitcircleForm:values}});};
+    const values=snapshot(store);
+    const fallback=ownerPath(store.owner)+(store.owner==='food-tracker' && values.selectedDate && values.selectedDate!==getTodayString() ? '?'+new URLSearchParams({date:values.selectedDate}) : '');
+    const destination=target || fallback;
+    const returningToParent = !(save && def?.id!=='cardio-type') && formForPath(destination.split('?')[0]);
+    const parent = returningToParent ? history.state?.fitcircleFormParent : undefined;
+    const finish=()=>{store.closing=false;store.navigate(destination,{replace:true,state:{...parent,fitcircleForm:values}});};
     if(history.state?.fitcircleDraftFence){
         store.closing=true;
         // Consume the editor's same-route draft fence before replacing its URL.

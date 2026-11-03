@@ -41,7 +41,8 @@ export default function MeasurementsPage() {
     new URLSearchParams(window.location.search).get("from") === "dashboard";
 
   const handleBack = () => {
-    navigate("/wellness");
+    const origin=new URLSearchParams(window.location.search).get("returnTo");
+    navigate(origin?.split("?")[0] === "/profile" ? origin : "/wellness");
   };
   const {
     addMeasurements,
