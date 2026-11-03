@@ -171,9 +171,7 @@ test("today’s completed fast populates the ring without becoming an active tim
   await expect(
     page.getByRole("img", { name: "100% of goal", exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByText("Completed today: 16.0 hr · 100% of duration goal"),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Fasting timeline', exact: true })).toHaveCount(0);
   await expect(
     page.getByText("2026-10-20 18:00 → 2026-10-21 10:00"),
   ).toBeVisible();

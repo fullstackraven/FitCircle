@@ -234,30 +234,6 @@ export default function FastingPage() {
           period="Today’s Completed Fast"
           title="Today’s Completed Fast"
         />
-        <WellnessTodaySection title="Fasting timeline">
-          <dl className="wellness-timeline mt-3">
-            <div>
-              <dt>Start</dt>
-              <dd>Not started</dd>
-            </div>
-            <div>
-              <dt>Elapsed</dt>
-              <dd>—</dd>
-            </div>
-            <div>
-              <dt>Target duration</dt>
-              <dd>{goals.fastingHours} hr</dd>
-            </div>
-            <div>
-              <dt>Target end / eating window</dt>
-              <dd>—</dd>
-            </div>
-          </dl>
-          <p className="text-xs text-muted-foreground mt-3">
-            Completed today: {stats.todayHours.toFixed(1)} hr ·{" "}
-            {Math.round(stats.percentage)}% of duration goal
-          </p>
-        </WellnessTodaySection>
         <WellnessRecentActivity
           totals={fastingDailyHours(completed)}
           unit="hr"

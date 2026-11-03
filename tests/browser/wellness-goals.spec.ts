@@ -181,9 +181,7 @@ test("completed fast crossing midnight meets duration target rather than display
   const before = await bytes(page);
   await page.goto("fasting");
   await expect(page.locator(".type-caption").first()).toHaveText("100%");
-  await expect(
-    page.getByText("Completed today: 16.0 hr · 100% of duration goal"),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Fasting timeline', exact: true })).toHaveCount(0);
   await expect(page.getByText("Today’s Completed Fast", { exact: true })).toBeVisible();
   await expect(page.getByText(/1 of 7 days met goal/)).toBeVisible();
   await page.getByRole("button", { name: "Goal", exact: true }).click();
