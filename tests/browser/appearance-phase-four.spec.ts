@@ -130,10 +130,11 @@ for (const mode of modes)
     ))
       expect(after[key], key).toBe(before[key]);
     await page.goto("meditation");
-    await page.getByTestId("button-add-meditation").click();
-    await capture("meditation-editor");
-    await page.getByLabel("Duration (minutes)", { exact: true }).fill("10");
     await page.getByTestId("button-start-meditation").click();
+    await capture("meditation-editor");
+    await page.getByRole("listbox", { name: "Minutes", exact: true }).press("Home");
+    await page.getByRole("listbox", { name: "Minutes", exact: true }).press("ArrowDown");
+    await page.getByRole("button", { name: "Start", exact: true }).click();
     await page.getByRole("button", { name: "Pause", exact: true }).click();
     await expect(page.getByText("Paused", { exact: true })).toBeVisible();
     // The established baseline shows the bottom of the page. Pin that position
@@ -201,9 +202,10 @@ for (const mode of ["dark", "light"]) {
   }) => {
     await seedWellnessAppearance(page, mode);
     await page.goto("meditation");
-    await page.getByTestId("button-add-meditation").click();
-    await page.getByLabel("Duration (minutes)", { exact: true }).fill("1");
     await page.getByTestId("button-start-meditation").click();
+    await page.getByRole("listbox", { name: "Minutes", exact: true }).press("Home");
+    await page.getByRole("listbox", { name: "Minutes", exact: true }).press("ArrowDown");
+    await page.getByRole("button", { name: "Start", exact: true }).click();
     await page.clock.runFor(2000);
     await page.getByRole("button", { name: "Pause", exact: true }).click();
     const paused = await page.getByText(/^\d{2}:\d{2}$/).innerText();
@@ -212,7 +214,7 @@ for (const mode of ["dark", "light"]) {
     await page.getByRole("button", { name: "Resume", exact: true }).click();
     await page.clock.runFor(58000);
     await expect(
-      page.getByRole("dialog", { name: "Session Complete", exact: true }),
+      page.getByRole("dialog", { name: "Meditation Timer", exact: true }).getByText("Session complete", {exact:true}),
     ).toBeVisible();
     const records = await page.evaluate(() =>
       JSON.parse(localStorage.getItem("fitcircle_meditation_logs")!),

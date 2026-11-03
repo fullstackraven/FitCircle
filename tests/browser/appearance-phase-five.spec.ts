@@ -203,9 +203,10 @@ test("changing appearance preserves a running meditation timer and its existing 
   await seedWellnessAppearance(page, "dark");
   await page.goto("meditation");
   const before = await domainBytes(page);
-  await page.getByTestId("button-add-meditation").click();
-  await page.getByLabel("Duration (minutes)", { exact: true }).fill("1");
   await page.getByTestId("button-start-meditation").click();
+  await page.getByRole("listbox", { name: "Minutes", exact: true }).press("Home");
+    await page.getByRole("listbox", { name: "Minutes", exact: true }).press("ArrowDown");
+  await page.getByRole("button", { name: "Start", exact: true }).click();
   const settings = await context.newPage();
   await settings.goto("settings");
   await choose(settings, "light");

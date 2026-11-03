@@ -1,3 +1,4 @@
+import { QuickAddMinutes } from '@/components/wellness/QuickAddMinutes';
 import { FormActions } from '@/components/forms/form-page';
 import { FormScreen } from '@/components/forms/form-page';
 import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
@@ -306,6 +307,7 @@ export default function CardioPage() {
           </p>
         </WellnessTodaySection>
 
+        <QuickAddMinutes presets={[10, 20, 30]} onAdd={minutes => addCardioEntry('Walking', minutes)} />
         {/* Add Entry Button */}
         <FormGroup formId="cardio-add" open={isCardioAddPageOpen} onOpenChange={setCardioAddPageOpen}>
           <FormTrigger asChild>

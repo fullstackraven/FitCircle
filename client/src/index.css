@@ -782,3 +782,8 @@
 }
 
 .fc-search-group .fc-search:focus-visible { outline:none; box-shadow:none; }
+
+/* Native iOS date/time editors must shrink with the fasting form column. */
+.fasting-datetime { inline-size: 100%; min-inline-size: 0; max-inline-size: 100%; box-sizing: border-box; }
+.fasting-datetime::-webkit-date-and-time-value { min-width: 0; }
+.fasting-datetime::-webkit-datetime-edit { min-width: 0; padding: 0; }

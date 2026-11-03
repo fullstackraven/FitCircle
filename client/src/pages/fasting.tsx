@@ -515,24 +515,24 @@ export default function FastingPage() {
             Log your intermittent fasting period by entering start and end times
           </FormDescription>
 
-          <div className="space-y-4">
+          <div className="space-y-4 min-w-0 w-full max-w-full">
             {/* Start Date & Time */}
             <div>
               <label className="block text-sm font-medium text-supporting mb-2">
                 Start Fast
               </label>
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0 w-full max-w-full">
                 <Input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="bg-surface-secondary border-control text-strong text-base"
+                  className="fasting-datetime w-full min-w-0 max-w-full box-border bg-surface-secondary border-control text-strong text-base"
                 />
                 <Input
                   type="time"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
-                  className="bg-surface-secondary border-control text-strong text-base"
+                  className="fasting-datetime w-full min-w-0 max-w-full box-border bg-surface-secondary border-control text-strong text-base"
                 />
               </div>
             </div>
@@ -542,18 +542,18 @@ export default function FastingPage() {
               <label className="block text-sm font-medium text-supporting mb-2">
                 End Fast
               </label>
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0 w-full max-w-full">
                 <Input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="bg-surface-secondary border-control text-strong text-base"
+                  className="fasting-datetime w-full min-w-0 max-w-full box-border bg-surface-secondary border-control text-strong text-base"
                 />
                 <Input
                   type="time"
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
-                  className="bg-surface-secondary border-control text-strong text-base"
+                  className="fasting-datetime w-full min-w-0 max-w-full box-border bg-surface-secondary border-control text-strong text-base"
                 />
               </div>
             </div>
