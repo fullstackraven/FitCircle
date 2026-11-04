@@ -391,7 +391,6 @@ test("missing core barcode nutrients require label review; camera denial leaves 
     }),
   );
   await openBarcode(page);
-  await page.getByRole("button", { name: "Start Camera" }).click();
   await expect(page.getByRole("alert")).toContainText("printed barcode");
   await page.getByRole("button", { name: "Stop Camera" }).click();
   await expect(page.getByLabel("Manual barcode")).toBeVisible();
@@ -438,7 +437,6 @@ test("camera permission resolved after closing releases tracks and cannot reopen
     });
   });
   await openBarcode(page);
-  await page.getByRole("button", { name: "Start Camera" }).click();
   await page.getByRole("button", { name: "Back", exact: true }).click();
   await page.evaluate(() => {
     const state = window as typeof window & {
@@ -536,7 +534,6 @@ test("closing an active decoder stops the synthetic video stream", async ({
     });
   });
   await openBarcode(page);
-  await page.getByRole("button", { name: "Start Camera" }).click();
   await expect
     .poll(() =>
       page
@@ -574,7 +571,6 @@ for (const event of ["pagehide", "visibilitychange"])
       });
     });
     await openBarcode(page);
-    await page.getByRole("button", { name: "Start Camera" }).click();
     await expect
       .poll(() =>
         page
@@ -601,7 +597,7 @@ for (const event of ["pagehide", "visibilitychange"])
       )
       .toBe(true);
     await expect(
-      page.getByRole("button", { name: "Start Camera" }),
+      page.getByRole("button", { name: "Restart Camera" }),
     ).toBeVisible();
   });
 
@@ -1092,4 +1088,77 @@ test.describe("deferred App startup", () => {
       page.getByRole("heading", { name: "Add Food Entry", exact: true }),
     ).toBeVisible();
   });
+});
+
+test('automatic camera retries, restarts and reentry create one fresh stream each', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(() => {
+    const state = { calls: 0, streams: [] as MediaStream[] };
+    (window as any).cameraLifecycle = state;
+    Object.defineProperty(navigator, 'mediaDevices', { configurable: true, value: {
+      getUserMedia: async () => {
+        state.calls++;
+        if (state.calls === 1) throw new DOMException('Synthetic permission denied', 'NotAllowedError');
+        const canvas = document.createElement('canvas');
+        canvas.width = 320; canvas.height = 240;
+        const stream = canvas.captureStream(5);
+        state.streams.push(stream);
+        return stream;
+      },
+    } });
+  });
+  await openBarcode(page);
+  await expect(page).toHaveURL(/food-tracker\/scan/);
+  await expect(page.getByRole('button', { name: 'Start Camera', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('alert')).toContainText('permission denied');
+  const count = () => page.evaluate(() => (window as any).cameraLifecycle.calls);
+  expect(await count()).toBe(1);
+  await page.getByRole('button', { name: 'Retry Camera', exact: true }).click();
+  const preview = page.getByLabel('Barcode camera preview');
+  await expect.poll(() => preview.evaluate(el => (el as HTMLVideoElement).srcObject !== null)).toBe(true);
+  expect(await count()).toBe(2);
+  await page.getByLabel('Manual barcode').fill(food.barcode);
+  expect(await count()).toBe(2); // Updating a field must not initialize another scanner.
+  await page.getByRole('button', { name: 'Stop Camera', exact: true }).click();
+  const ended = () => page.evaluate(() => (window as any).cameraLifecycle.streams.every((s: MediaStream) => s.getTracks().every(t => t.readyState === 'ended')));
+  await expect.poll(ended).toBe(true);
+  await page.getByRole('button', { name: 'Restart Camera', exact: true }).click();
+  await expect.poll(() => preview.evaluate(el => (el as HTMLVideoElement).srcObject !== null)).toBe(true);
+  expect(await count()).toBe(3);
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
+  await expect.poll(ended).toBe(true);
+  await page.getByRole('button', { name: 'Scan Barcode', exact: true }).click();
+  await expect.poll(() => preview.evaluate(el => (el as HTMLVideoElement).srcObject !== null)).toBe(true);
+  expect(await count()).toBe(4);
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
+  await expect.poll(ended).toBe(true);
+});
+
+test('automatic camera decodes an EAN frame and opens the existing food entry flow', async ({ page }) => {
+  await seed(page);
+  await page.evaluate(code => {
+    // Render a standard EAN-13 symbol into a synthetic camera frame.
+    const left = ['0001101','0011001','0010011','0111101','0100011','0110001','0101111','0111011','0110111','0001011'];
+    const right = left.map(bits => bits.replace(/[01]/g, bit => bit === '0' ? '1' : '0'));
+    const even = right.map(bits => bits.split('').reverse().join(''));
+    const parity = ['LLLLLL','LLGLGG','LLGGLG','LLGGGL','LGLLGG','LGGLLG','LGGGLL','LGLGLG','LGLGGL','LGGLGL'][Number(code[0])];
+    let bits = '101';
+    for (let i = 1; i <= 6; i++) bits += (parity[i - 1] === 'L' ? left : even)[Number(code[i])];
+    bits += '01010';
+    for (let i = 7; i <= 12; i++) bits += right[Number(code[i])];
+    bits += '101';
+    const canvas = document.createElement('canvas');
+    canvas.width = 520; canvas.height = 240;
+    const context = canvas.getContext('2d')!;
+    context.fillStyle = 'white'; context.fillRect(0, 0, 520, 240);
+    context.fillStyle = 'black';
+    [...bits].forEach((bit, i) => { if (bit === '1') context.fillRect(60 + i * 4, 40, 4, 160); });
+    const stream = canvas.captureStream(5);
+    (window as any).decodedStream = stream;
+    Object.defineProperty(navigator, 'mediaDevices', { configurable: true, value: { getUserMedia: async () => stream } });
+  }, food.barcode);
+  await openBarcode(page);
+  await expect(page.getByRole('heading', { name: 'Add Food Entry', exact: true })).toBeVisible();
+  await expect(page.getByLabel('Product serving quantity', { exact: true })).toHaveValue('40');
+  await expect.poll(() => page.evaluate(() => (window as any).decodedStream.getTracks().every((t: MediaStreamTrack) => t.readyState === 'ended'))).toBe(true);
 });

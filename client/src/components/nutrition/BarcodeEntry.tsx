@@ -14,7 +14,8 @@ export function BarcodeEntry({
   }) => void;
 }) {
   const [code, setCode] = useRouteState("barcodeCode", "");
-  const [scanning, setScanning] = useState(false);
+  // Each routed entry mounts a fresh scanner; retries/restarts remain explicit.
+  const [scanning, setScanning] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const request = useRef<AbortController>();
@@ -72,7 +73,7 @@ export function BarcodeEntry({
           disabled={busy}
           onClick={() => setScanning(true)}
         >
-          Start Camera
+          Restart Camera
         </Button>
       )}
       <form

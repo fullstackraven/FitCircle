@@ -10,6 +10,7 @@ export function BarcodeScanner({
 }) {
   const video = useRef<HTMLVideoElement>(null);
   const [error, setError] = useState("");
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let cancelled = false,
       stream: MediaStream | undefined,
@@ -101,7 +102,7 @@ export function BarcodeScanner({
       window.removeEventListener("pagehide", pageHidden);
       cleanup();
     };
-  }, []);
+  }, [attempt]);
   return (
     <div className="space-y-2">
       <video
@@ -116,9 +117,13 @@ export function BarcodeScanner({
         Center a UPC or EAN barcode in the camera. Images stay on your device.
       </p>
       {error && (
-        <p role="alert" className="text-sm text-warning-soft">
-          {error}
-        </p>
+        <>
+          <p role="alert" className="text-sm text-warning-soft">{error}</p>
+          <button className="fc-pill min-h-11 text-accent-text" onClick={() => {
+            setError("");
+            setAttempt(value => value + 1);
+          }}>Retry Camera</button>
+        </>
       )}
       <button className="fc-pill min-h-11 text-accent-text" onClick={onStop}>
         Stop Camera

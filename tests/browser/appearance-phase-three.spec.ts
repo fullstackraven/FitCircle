@@ -316,9 +316,6 @@ for (const mode of ["dark", "light"]) {
     await seedNutritionAppearance(page, mode);
     const before = await nutritionBytes(page);
     await page.getByTestId("button-add-breakfast").click();
-    await page
-      .getByRole("button", { name: "Scan Barcode", exact: true })
-      .click();
     await page.evaluate(() => {
       Object.defineProperty(navigator, "mediaDevices", {
         configurable: true,
@@ -331,7 +328,7 @@ for (const mode of ["dark", "light"]) {
       });
     });
     await page
-      .getByRole("button", { name: "Start Camera", exact: true })
+      .getByRole("button", { name: "Scan Barcode", exact: true })
       .click();
     await expect(page.getByRole("alert")).toBeVisible();
     await expect(
