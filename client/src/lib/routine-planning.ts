@@ -1,3 +1,4 @@
+import type { ExerciseCategory } from './exercise-catalog';
 import type { Workout, WorkoutData, Routine, WorkoutLogEntry } from '@/hooks/use-workouts';
 export interface Prescription {
     targetType: 'repetitions' | 'duration';
@@ -6,19 +7,26 @@ export interface Prescription {
     legacyTotal?: number;
 }
 export interface ExerciseDetails {
+    category?: ExerciseCategory;
     prescription?: Prescription;
     equipment?: string;
     restSeconds?: number;
     notes?: string;
 }
 export interface ExercisePlacement {
+    name?: string;
+    color?: string;
+    equipment?: string;
+    notes?: string;
+    category?: ExerciseCategory;
     legacyLogId?: string; // Stable identity retained for the canonical pre-routine log.
     id: string;
     exerciseId: string;
     prescription: Prescription;
-    weightLbs?: number;
-    restSeconds?: number;
+    weightLbs?: number | null;
+    restSeconds?: number | null;
 }
+/** Legacy backup compatibility only. No variation controls or runtime switching. */
 export interface TrainingVariation {
     id: string;
     name: string;
@@ -41,6 +49,24 @@ export function prescriptionText(p: Prescription) {
     const unit = p.targetType === 'duration' ? 'sec' : 'reps';
     return p.legacyTotal ? `${p.sets} sets · ${p.legacyTotal} ${unit} total (legacy split)` : `${p.sets} × ${p.perSet} ${unit}`;
 }
+/** Materialize active legacy targets once, retaining inactive backup metadata. */
+export function retireRoutineVariations(routine: Routine): Routine {
+    if (!routine.activeVariationId) return routine;
+    const active = routine.variations?.find(v => v.id === routine.activeVariationId);
+    const { activeVariationId: _retired, ...rest } = routine;
+    return { ...rest, placements: routine.placements?.map(p => {
+        const target = active?.targets[p.id];
+        if (!target) return p;
+        const { restSeconds, ...prescription } = target;
+        return { ...p, prescription, ...(restSeconds !== undefined ? { restSeconds } : {}) };
+    }) };
+}
+export function preservePlacementDetails(placement: ExercisePlacement, definition: Workout): ExercisePlacement {
+    return { ...placement, name: placement.name ?? definition.name, color: placement.color ?? definition.color,
+        category: placement.category ?? definition.category ?? 'full-body-functional', equipment: placement.equipment ?? definition.equipment ?? '',
+        notes: placement.notes ?? definition.notes ?? '', weightLbs: placement.weightLbs === undefined ? definition.weightLbs ?? null : placement.weightLbs,
+        restSeconds: placement.restSeconds === undefined ? definition.restSeconds ?? null : placement.restSeconds };
+}
 export const orderedRoutines = (data: WorkoutData) => Object.values(data.routines).sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id));
 /** Pure, idempotent conversion. Legacy definitions/logs are never rewritten. */
 export function migrateRoutinePlanning(data: WorkoutData): WorkoutData {
@@ -52,11 +78,14 @@ export function migrateRoutinePlanning(data: WorkoutData): WorkoutData {
         changed = true;
     }
     const routines: Record<string, Routine> = Object.fromEntries(Object.entries(data.routines).map(([id, r]) => {
-        if (r.placements)
-            return [id, r];
+        if (r.placements) {
+            const retired = retireRoutineVariations(r);
+            if (retired !== r) changed = true;
+            return [id, retired];
+        }
         changed = true;
         const exercises = Object.values(data.workouts).filter(w => !w.archived && (!w.scheduledDays?.length || r.selectedDays.some(d => w.scheduledDays!.includes(d)))).sort((a, b) => a.id.localeCompare(b.id));
-        return [id, { ...r, placements: exercises.map(w => ({ id: `legacy:${id}:${w.id}`, exerciseId: w.id, prescription: prescriptionFor(w), ...(w.weightLbs !== undefined ? { weightLbs: w.weightLbs } : {}), ...(w.restSeconds !== undefined ? { restSeconds: w.restSeconds } : {}) })) }];
+        return [id, retireRoutineVariations({ ...r, placements: exercises.map(w => ({ id: `legacy:${id}:${w.id}`, exerciseId: w.id, prescription: prescriptionFor(w), ...(w.weightLbs !== undefined ? { weightLbs: w.weightLbs } : {}), ...(w.restSeconds !== undefined ? { restSeconds: w.restSeconds } : {}) })) })];
     }));
     if (data.routineSchedulingVersion === 1) return changed ? { ...data, routines } : data;
     // Import formerly standalone schedules once into ordinary explicit routines.
@@ -85,13 +114,14 @@ export function migrateRoutinePlanning(data: WorkoutData): WorkoutData {
 
 }
 export function routineExercises(data: WorkoutData, routine: Routine) {
-    const variation = routine.variations?.find(v => v.id === routine.activeVariationId);
-    return (routine.placements ?? []).flatMap(p => {
+    const standard = retireRoutineVariations(routine);
+    return (standard.placements ?? []).flatMap(p => {
         const w = data.workouts[p.exerciseId];
-        if (!w || w.archived)
-            return [];
-        const target = variation?.targets[p.id] ?? p.prescription;
-        return [{ ...w, ...p, id: w.id, placementId: p.id, prescription: target, dailyGoal: totalTarget(target), setsGoal: target.sets, restSeconds: variation?.targets[p.id]?.restSeconds ?? p.restSeconds ?? w.restSeconds }];
+        if (!w || w.archived) return [];
+        return [{ ...w, ...p, id: w.id, placementId: p.id, prescription: p.prescription,
+            dailyGoal: totalTarget(p.prescription), setsGoal: p.prescription.sets,
+            weightLbs: p.weightLbs === null ? undefined : p.weightLbs ?? w.weightLbs,
+            restSeconds: p.restSeconds === null ? undefined : p.restSeconds ?? w.restSeconds }];
     });
 }
 /** The identity belongs to the placement, never to the reusable definition. */

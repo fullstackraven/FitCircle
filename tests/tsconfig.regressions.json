@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "browser/exercise-catalog.spec.ts",
+    "exercise-catalog.test.ts",
     "browser/app.spec.ts",
     "browser/viewport.spec.ts",
     "browser/routed-page-repair.spec.ts",

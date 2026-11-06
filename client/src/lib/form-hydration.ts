@@ -1,3 +1,5 @@
+import { exerciseCatalog, exerciseCategories } from './exercise-catalog';
+import { prebuiltExerciseSeed, customExerciseSeed } from './exercise-selection';
 import { routineExercises } from './routine-planning';
 import { entryId, meditationDays } from './wellness-records';
 import { localDay } from './wellness-progress';
@@ -44,24 +46,50 @@ export async function hydrateForm(def: FormDefinition, draft: Record<string, any
         state.goalHoursInput ??= String(goals.fastingHours);
         state.maxHoursInput ??= String(read(localStorage.getItem('fitcircle_goals'), {}).maxFastingHours ?? 24);
     }
-    if (def.group === 'workout' || def.group === 'routine') {
+    if (['workout','routine','custom-exercise','exercise-catalog'].includes(def.group)) {
         const data = parseStoredWorkouts(localStorage.getItem('workout-tracker-data'), getTodayString());
-        if (def.id.endsWith('-edit')) {
-            const collection = def.group === 'workout' ? data.workouts : data.routines;
-            const record = find(Array.isArray(collection) ? collection : Object.values(collection ?? {}), id);
-            state[def.group === 'workout' ? 'editingWorkout' : 'editingRoutine'] = record;
-            if(def.group==='routine')state.routineDraft ??= structuredClone(record);
-        }
-        else {
-            state[def.group === 'workout' ? 'editingWorkout' : 'editingRoutine'] = null;
-            if(def.group==='routine')state.routineDraft ??= {id:crypto.randomUUID(),name:'',selectedDays:[],placements:[],createdAt:new Date().toISOString()};
-        }
-        const routine = params.get('routine');
-        if (routine) {
-            const r = state.routineDraft?.id===routine ? state.routineDraft : find(Object.values(data.routines ?? {}), routine);
+        const routineId = params.get('routine');
+        if (routineId) {
+            const r = state.routineDraft?.id === routineId ? state.routineDraft : find(Object.values(data.routines), routineId);
             state.selectedRoutineId = r.id;
-            const placement=params.get('placement');
-            if(placement){const item=routineExercises({...data,routines:{...data.routines,[r.id]:r}},r).find(w=>w.placementId===placement);if(!item)throw Error('The exercise placement no longer exists.');state.editingPlacementId=placement;state.editingWorkout=item;}
+        } else if (def.group === 'exercise-catalog') throw Error('Choose a routine before adding exercises.');
+        if (def.group === 'routine') {
+            if (def.id.endsWith('-edit')) {
+                state.editingRoutine = find(Object.values(data.routines), id);
+                state.routineDraft ??= structuredClone(state.editingRoutine);
+            } else { state.editingRoutine = null; state.routineDraft ??= {id:crypto.randomUUID(),name:'',selectedDays:[],placements:[],createdAt:new Date().toISOString()}; }
+        } else if (def.group !== 'exercise-catalog') {
+            state.editingPlacementId = undefined;
+            state.exerciseSeed = undefined;
+            if (def.id.endsWith('-edit')) {
+                state.editingWorkout = find(Object.values(data.workouts), id);
+                state.exerciseMode = 'definition';
+                if (def.group === 'custom-exercise' && state.editingWorkout.catalogId) throw Error('This exercise is a bundled catalog template.');
+                const placement = params.get('placement');
+                if (routineId && placement) {
+                    const r = state.routineDraft?.id === routineId ? state.routineDraft : data.routines[routineId];
+                    const item = routineExercises(data,r).find(w => w.placementId === placement);
+                    if (!item) throw Error('The exercise placement no longer exists.');
+                    state.editingPlacementId=placement; state.editingWorkout=item; state.exerciseMode='placement';
+                }
+            } else {
+                state.editingWorkout=null;
+                const templateId=params.get('template'), exerciseId=params.get('exercise');
+                if (templateId) {
+                    const template=find(exerciseCatalog,templateId);
+                    const existing=Object.values(data.workouts).find(w => w.catalogId === templateId && !w.catalogHidden);
+                    state.exerciseSeed=prebuiltExerciseSeed(template,existing,draft.exerciseSeed?.catalogId === templateId ? draft.exerciseSeed.id : undefined);
+                    state.exerciseMode='prebuilt'; state.catalogTemplateId=templateId;
+                } else if (exerciseId) {
+                    const existing=find(Object.values(data.workouts),exerciseId);
+                    if (existing.catalogHidden) throw Error('This custom exercise is no longer in the catalog.');
+                    state.exerciseSeed={...existing}; state.exerciseMode='reuse'; state.catalogExerciseId=exerciseId;
+                } else if (def.group === 'custom-exercise') {
+                    const category=exerciseCategories.find(([key]) => key === state.catalogCategory)?.[0];
+                    state.exerciseSeed=draft.exerciseMode === 'custom' && draft.exerciseSeed ? draft.exerciseSeed : customExerciseSeed(category);
+                    state.exerciseMode='custom';
+                } else state.exerciseMode='custom';
+            }
         }
     }
     if (def.id === 'cardio-edit') {

@@ -80,7 +80,7 @@ export function useRouteState<T>(key: string, initial: T | (() => T)): [
 }
 function definition(store: Store, group: string): FormDefinition {
     const candidates = definitions.filter(d => d.owner === store.owner && d.group === group), v = store.values;
-    if (group === 'workout')
+    if (group === 'workout' || group === 'custom-exercise')
         return candidates.find(d => d.id.endsWith(v.editingWorkout ? '-edit' : '-new'))!;
     if (group === 'routine')
         return candidates.find(d => d.id.endsWith(v.editingRoutine ? '-edit' : '-new'))!;
@@ -99,7 +99,7 @@ export function openForm(store: Store, group: string) {
     store.closeTask = undefined;
     let path = def.owner === 'overview' ? ownerPath('overview') + def.path : def.path;
     const v = store.values, params = new URLSearchParams();
-    const record = group === 'workout' ? v.editingWorkout : group === 'routine' ? v.editingRoutine : group === 'cardio-edit' || group === 'hydration-edit' ? v.editingEntry : group === 'fasting-entry' ? v.editingLog : group === 'meditation-edit' ? v.editingSession : group === 'food-edit' ? v.editingEntry : group === 'database-edit' ? v.editingFood : null;
+    const record = group === 'workout' || group === 'custom-exercise' ? v.editingWorkout : group === 'routine' ? v.editingRoutine : group === 'cardio-edit' || group === 'hydration-edit' ? v.editingEntry : group === 'fasting-entry' ? v.editingLog : group === 'meditation-edit' ? v.editingSession : group === 'food-edit' ? v.editingEntry : group === 'database-edit' ? v.editingFood : null;
     const id = record?.id ?? (group === 'food-entry' ? v.addingFood?.id : group === 'food-custom' ? v.editingEntryId : undefined);
     if (id)
         params.set('id', id);
@@ -110,6 +110,8 @@ export function openForm(store: Store, group: string) {
         params.set('meal', v.searchMeal ?? 'breakfast');
     if (v.selectedRoutineId) params.set('routine', v.selectedRoutineId);
     if (v.editingPlacementId) params.set('placement', v.editingPlacementId);
+    if (v.catalogTemplateId) params.set('template', v.catalogTemplateId);
+    if (v.catalogExerciseId) params.set('exercise', v.catalogExerciseId);
     if (params.size)
         path += '?' + params;
     const skipSubmittedCustom = group === 'food-entry' && formForPath()?.group === 'food-custom' && Boolean(document.documentElement.dataset.formSaving);
@@ -136,13 +138,18 @@ export function closeForm(store: Store) {
     const save = Boolean(document.documentElement.dataset.formSaving);
     delete document.documentElement.dataset.formSaving;
     const def = formForPath();
-    const planningParent = def?.owner==='routines' && def.group==='workout' && formForPath((history.state?.fitcircleFormReturn??'').split('?')[0])?.group==='routine';
-    const target = save && def?.id !== 'cardio-type' && !planningParent ? history.state?.fitcircleFormRoot : history.state?.fitcircleFormReturn;
+    const returnForm = formForPath((history.state?.fitcircleFormReturn ?? '').split('?')[0]);
+    const plannerEditor = def?.owner === 'routines' && ['workout','custom-exercise'].includes(def.group);
+    const catalogParent = plannerEditor && returnForm?.group === 'exercise-catalog';
+    const skipCatalog = save && catalogParent && store.values.exerciseMode !== 'definition';
+    const planningParent = plannerEditor && (returnForm?.group === 'routine' || catalogParent);
+    const target = skipCatalog ? history.state?.fitcircleFormParent?.fitcircleFormReturn
+      : save && def?.id !== 'cardio-type' && !planningParent ? history.state?.fitcircleFormRoot : history.state?.fitcircleFormReturn;
     const values=snapshot(store);
     const fallback=ownerPath(store.owner)+(store.owner==='food-tracker' && values.selectedDate && values.selectedDate!==getTodayString() ? '?'+new URLSearchParams({date:values.selectedDate}) : '');
     const destination=target || fallback;
     const returningToParent = !(save && def?.id!=='cardio-type' && !planningParent) && formForPath(destination.split('?')[0]);
-    const parent = returningToParent ? history.state?.fitcircleFormParent : undefined;
+    const parent = returningToParent ? (skipCatalog ? history.state?.fitcircleFormParent?.fitcircleFormParent : history.state?.fitcircleFormParent) : undefined;
     const finish=()=>{store.closing=false;store.navigate(destination,{replace:true,state:{...parent,fitcircleForm:values}});};
     if(history.state?.fitcircleDraftFence){
         store.closing=true;

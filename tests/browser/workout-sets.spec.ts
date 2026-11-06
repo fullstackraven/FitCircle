@@ -13,11 +13,11 @@ test('sets preserve exact legacy allocation across prescription edits and agree 
  await circle.click();expect((await entry(page)).count).toBe(13);await card.getByTitle('Undo last set').click();expect((await entry(page)).count).toBe(6);
  await page.getByRole('button',{name:'Edit Push-ups',exact:true}).click();await page.getByLabel('Reps per Set',{exact:true}).fill('25');await page.getByLabel('Number of Sets').fill('4');await page.getByRole('button',{name:'Save Exercise',exact:true}).click();
  await expect(circle).toHaveAttribute('aria-label',/1 of 3/);await circle.click();await circle.click();expect(await entry(page)).toMatchObject({count:20,goalAtTime:20,completedSets:3,setsGoalAtTime:3});
- expect((await data(page)).dailyLogs['2025-01-01'].w).toMatchObject({count:20,goalAtTime:20});
+ expect((await data(page)).dailyLogs['2025-01-01'].w).toBe(20);
  await page.goto('calendar');await expect(page.locator('[aria-current="date"]').locator('..')).toContainText('Workouts complete');
  await page.goto('workout-statistics');await expect(page.getByRole('region',{name:'Monthly Statistics',exact:true}).getByText('Monthly Reps',{exact:true}).locator('..').locator('dd')).toHaveText('20');
  await page.goto('dynamic-overview/2026-10-27');await expect(page.getByText('20 reps · 3/3 sets')).toBeVisible();await page.getByTitle('Edit count').click();await page.getByLabel('Completed sets').fill('2');await page.getByTitle('Save',{exact:true}).click();expect((await entry(page)).count).toBe(13);
- await page.clock.setFixedTime(new Date('2026-10-28T12:00:00-04:00'));await page.goto('./');await expect(circle).toHaveAttribute('aria-label',/0 of 3/);await circle.click();expect((await data(page)).dailyLogs['2026-10-28'].w).toMatchObject({count:6,goalAtTime:20,completedSets:1,setsGoalAtTime:3});
+ await page.clock.setFixedTime(new Date('2026-10-28T12:00:00-04:00'));await page.goto('./');await expect(circle).toHaveAttribute('aria-label',/0 of 4/);await circle.click();expect((await data(page)).dailyLogs['2026-10-28'].w).toMatchObject({count:25,goalAtTime:100,completedSets:1,setsGoalAtTime:4});
 });
 test('legacy partial day stays rep-based; following day adopts one set without rewriting history',async({page})=>{
  await seed(page,true);const before=await data(page);const card=page.getByTestId('home-workout-w');await expect(card.getByRole('button',{name:/Record a rep/})).toHaveAttribute('aria-label',/7 of 20/);
@@ -32,7 +32,7 @@ test('workout form validates positive whole rep/set goals and preserves compact 
  for(const value of ['10000','0','-1','','20.5']) {await reps.fill(value);await expect(reps).toHaveValue(value==='0'?'':value);await expect(save).toBeDisabled();await expect(page.getByRole('alert')).toBeVisible();}
  await page.getByLabel('Number of Sets').fill('1');await reps.fill('9999');await expect(save).toBeEnabled();
  await page.getByLabel('Number of Sets').fill('');await expect(save).toBeDisabled();await page.getByLabel('Number of Sets').fill('-1');await expect(save).toBeDisabled();await page.getByLabel('Number of Sets').fill('4');await reps.fill('20');
- await page.setViewportSize({width:320,height:568});await save.scrollIntoViewIfNeeded();await expect(save).toBeInViewport();await save.click();expect((await data(page)).workouts.w.setsGoal).toBe(4);
+ await page.setViewportSize({width:320,height:568});await save.scrollIntoViewIfNeeded();await expect(save).toBeInViewport();await save.click();expect(Object.values((await data(page)).routines).some((r:any)=>r.placements.some((p:any)=>p.exerciseId==='w'&&p.prescription.sets===4))).toBe(true);
 });
 test('Calendar waits for every scheduled set workout, including untouched circles',async({page})=>{
  await seed(page);

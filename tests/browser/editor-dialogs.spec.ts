@@ -17,7 +17,7 @@ async function seed(page: Page) {
 const readData = (page: Page) => page.evaluate(() => JSON.parse(localStorage.getItem('workout-tracker-data')!));
 
 async function assertContained(page: Page, dialog: Locator) {
-  await expect(dialog).toHaveAttribute('data-form-page', /routine|workout/);
+  await expect(dialog).toHaveAttribute('data-form-page', /routine|workout|custom-exercise/);
   await expect(dialog.getByLabel(/Routine Name|Workout Name/).first()).toBeVisible();
   expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
   await expect(page.getByRole('button',{name:'Back',exact:true})).toBeVisible();
@@ -51,19 +51,19 @@ for (const size of [{ name: 'phone', width: 390, height: 600 }, { name: 'small p
     await expect(dialog).toBeHidden();
     await page.getByRole('heading', { name: 'Strength', exact: true }).click();
     await page.getByTestId('button-add-workout-r1').click();
-    await page.getByRole('button',{name:'Create New Exercise',exact:true}).click();
-    dialog = page.getByRole('region', { name: 'Add Exercise' });
+    await page.getByRole('button',{name:'Custom Exercise',exact:true}).click();
+    dialog = page.getByRole('region', { name: 'Create Custom Exercise' });
     await expect(page.getByRole('heading',{level:1})).toBeVisible();
     await dialog.getByLabel('Workout Name').fill('New test exercise');
-    await dialog.getByLabel('Reps per Set', { exact: true }).fill('12');
+    await dialog.getByLabel('Number of Sets').fill('1');await dialog.getByLabel('Reps per Set', { exact: true }).fill('12');
     await dialog.getByLabel('Weight (lbs) - Optional', { exact: true }).fill('25');
     await dialog.getByLabel('Workout color').selectOption('blue');
     await assertContained(page, dialog);
     await dialog.getByRole('button', { name: 'Save Exercise', exact: true }).click();
     await expect(dialog).toBeHidden();
     await page.getByTestId('button-add-workout-r1').click();
-    await page.getByRole('button', { name: 'Edit reusable exercise New test exercise', exact: true }).click();
-    dialog = page.getByRole('region', { name: 'Edit Exercise' });
+    await page.getByRole('button', { name: 'Edit custom exercise New test exercise', exact: true }).click();
+    dialog = page.getByRole('region', { name: 'Edit Custom Exercise' });
     await dialog.getByLabel('Workout Name').fill('Updated test exercise');
     await dialog.getByLabel('Reps per Set', { exact: true }).fill('15');
     if (size.name === 'phone') {

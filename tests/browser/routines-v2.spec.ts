@@ -5,14 +5,14 @@ import {test,expect} from '@playwright/test';
 import {seedWellnessAppearance} from '../fixtures/appearance-wellness';
 test.use({viewport:{width:390,height:844},timezoneId:'America/New_York'});
 const stored=(page:import('@playwright/test').Page)=>page.evaluate(()=>JSON.parse(localStorage.getItem('workout-tracker-data')!));
-for(const mode of ['light','dark','system'])test(`${mode}: routed planning, reuse, targets, variations, Home logging and deletion preserve history`,async({page})=>{
+for(const mode of ['light','dark','system'])test(`${mode}: routed planning, reuse, targets, Home logging and deletion preserve history`,async({page})=>{
  test.setTimeout(90000);await seedWellnessAppearance(page,mode);await page.goto('routines');
  await expect(page.getByRole('heading',{name:'My Routines',exact:true})).toBeVisible();expect(await pillGeometry(page)).toEqual([]);
  const initial=(await stored(page)).dailyLogs;
  await page.getByTestId('button-create-routine').click();await expect(page.getByRole('dialog')).toHaveCount(0);
  await page.getByLabel('Routine Name',{exact:true}).fill('Upper Body');await page.getByRole('button',{name:'Monday',exact:true}).click();
- await page.getByRole('button',{name:'Add Exercise',exact:true}).click();await page.getByRole('button',{name:'Add Push-ups',exact:true}).click();
- await page.getByRole('button',{name:'Create New Exercise',exact:true}).click();await expect(page).toHaveURL(/routines\/workouts\/new/);
+ await page.getByRole('button',{name:'Add Exercise',exact:true}).click();await page.getByRole('button',{name:'Add Push-ups',exact:true}).click();await page.getByRole('button',{name:'Save Exercise',exact:true}).click();await page.getByRole('button',{name:'Add Exercise',exact:true}).click();
+ await page.getByRole('button',{name:'Custom Exercise',exact:true}).click();await expect(page).toHaveURL(/routines\/exercises\/custom\/new/);
  await page.getByLabel('Workout Name',{exact:true}).fill('Timed Hold');await page.getByRole('button',{name:'Duration',exact:true}).click();
  await page.getByLabel('Number of Sets').fill('3');await page.getByLabel('Seconds per Set').fill('30');await page.getByLabel('Weight (lbs) - Optional').fill('0');
  if(process.env.ROUTINES_REVIEW==='1'&&mode==='dark'){fs.mkdirSync('docs/review/routines-v2',{recursive:true});await page.screenshot({path:'docs/review/routines-v2/exercise-dark.png'});}
@@ -22,22 +22,19 @@ for(const mode of ['light','dark','system'])test(`${mode}: routed planning, reus
  await page.getByRole('button',{name:'Reorder Timed Hold',exact:true}).focus();await page.keyboard.press('ArrowUp');
  if(process.env.ROUTINES_REVIEW==='1'&&mode==='light'){fs.mkdirSync('docs/review/routines-v2',{recursive:true});await page.screenshot({path:'docs/review/routines-v2/routine-light.png'});}
  await page.getByLabel('Description / notes').fill('General training');
- await page.getByRole('button',{name:'Add Variation',exact:true}).click();expect(await pillGeometry(page)).toEqual([]);await page.getByLabel('Variation name New variation').fill('Week B');
  await page.getByRole('button',{name:'Configure Timed Hold',exact:true}).click();await page.getByLabel('Seconds per Set').fill('45');await page.getByLabel('Weight (lbs) - Optional').fill('15');await page.getByLabel('Rest between sets (seconds)').fill('90');
  await page.getByRole('button',{name:'Save Exercise',exact:true}).click();
  await page.getByRole('button',{name:'Save Routine',exact:true}).click();await expect(page).toHaveURL(/routines$/);
  let data=await stored(page);const r:any=Object.values(data.routines).find((r:any)=>r.name==='Upper Body');const hold:any=Object.values(data.workouts).find((w:any)=>w.name==='Timed Hold');
  const logId=placementLogId(r.id,r.placements[0].id);
- expect(r.placements.map((p:any)=>p.exerciseId)).toEqual([hold.id,'w']);expect(hold).toMatchObject({equipment:'Resistance bands',restSeconds:30,notes:'Maintain a comfortable posture.',weightLbs:0});expect(r.variations[0].targets[r.placements[0].id].restSeconds).toBe(90);expect(r.placements[0].weightLbs).toBe(15);expect(data.dailyLogs).toEqual(initial);
+ expect(r.placements.map((p:any)=>p.exerciseId)).toEqual([hold.id,'w']);expect(hold).toMatchObject({equipment:'Resistance bands',restSeconds:30,notes:'Maintain a comfortable posture.',weightLbs:0});expect(r.placements[0].restSeconds).toBe(90);expect(r.placements[0].weightLbs).toBe(15);expect(data.dailyLogs).toEqual(initial);
  await page.getByTestId('routine-header-'+r.id).click();await expect(page.getByTestId(`routine-exercise-${r.id}-${hold.id}`)).toContainText('3 × 45 sec');
  if(process.env.ROUTINES_REVIEW==='1'&&mode==='light')await page.screenshot({path:'docs/review/routines-v2/routines-light.png'});
  await page.goto('./');await expect(page.getByTestId('home-workout-'+logId)).toHaveCount(1);
  const circle=page.getByTestId('home-workout-'+logId).getByRole('button',{name:/Record a set/});await circle.click();
  data=await stored(page);const day='2026-10-19';expect(data.dailyLogs[day][logId]).toMatchObject({count:45,goalAtTime:135,targetTypeAtTime:'duration',completedSets:1});
  await page.getByTestId('home-workout-'+logId).getByRole('button',{name:/Undo last set/}).click();expect((await stored(page)).dailyLogs[day][logId].count).toBe(0);await circle.click();
- await page.goto(`routines/edit?id=${r.id}`);await page.getByLabel('Current variation',{exact:true}).selectOption('');
- await page.getByRole('button',{name:'Save Routine',exact:true}).click();expect((await stored(page)).dailyLogs[day][logId].count).toBe(45);
- await page.goto(`routines/edit?id=${r.id}`);const beforeVariationDelete=(await stored(page)).dailyLogs;page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Delete variation Week B',exact:true}).click();await page.getByRole('button',{name:'Save Routine',exact:true}).click();expect((await stored(page)).routines[r.id].variations).toHaveLength(0);expect((await stored(page)).dailyLogs).toEqual(beforeVariationDelete);
+ await page.goto(`routines/edit?id=${r.id}`);const recorded=(await stored(page)).dailyLogs;await page.getByRole('button',{name:'Configure Timed Hold',exact:true}).click();await page.getByLabel('Seconds per Set').fill('30');await page.getByRole('button',{name:'Save Exercise',exact:true}).click();await page.getByRole('button',{name:'Save Routine',exact:true}).click();expect((await stored(page)).dailyLogs).toEqual(recorded);
  await page.goto('./');await expect(page.getByTestId('home-workout-'+logId)).toContainText('45 / 135');
  await page.goto('workout-statistics');await expect(page.getByText(/Exercise duration logged: 45/)).toBeVisible();
  await page.goto('calendar');await expect(page.getByRole('heading',{name:'Recent Activity',exact:true})).toBeVisible();
@@ -55,7 +52,7 @@ test('multiple routines reuse a definition, keep independent targets and record 
  await page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('workout-tracker-data')!);d.routines={};d.dailyLogs={};d.routineSchedulingVersion=1;localStorage.setItem('workout-tracker-data',JSON.stringify(d));});
  await page.goto('routines');
  for(const [name,sets,reps] of [['First',3,10],['Second',2,20]] as const){
-  await page.getByTestId('button-create-routine').click();await page.getByLabel('Routine Name').fill(name);await page.getByRole('button',{name:'Monday',exact:true}).click();await page.getByRole('button',{name:'Add Exercise',exact:true}).click();await page.getByRole('button',{name:'Add Push-ups',exact:true}).click();await page.getByRole('button',{name:'Configure Push-ups',exact:true}).click();await page.getByLabel('Number of Sets').fill(String(sets));await page.getByLabel('Reps per Set',{exact:true}).fill(String(reps));await page.getByRole('button',{name:'Save Exercise',exact:true}).click();await page.getByRole('button',{name:'Save Routine',exact:true}).click();
+  await page.getByTestId('button-create-routine').click();await page.getByLabel('Routine Name').fill(name);await page.getByRole('button',{name:'Monday',exact:true}).click();await page.getByRole('button',{name:'Add Exercise',exact:true}).click();await page.getByRole('button',{name:'Add Push-ups',exact:true}).click();await page.getByLabel('Number of Sets').fill(String(sets));await page.getByLabel('Reps per Set',{exact:true}).fill(String(reps));await page.getByRole('button',{name:'Save Exercise',exact:true}).click();await page.getByRole('button',{name:'Save Routine',exact:true}).click();
  }
  const d=await stored(page);expect(Object.keys(d.workouts)).toEqual(['w']);const routines:any[]=Object.values(d.routines);expect(routines.map(r=>r.placements[0].prescription.sets*r.placements[0].prescription.perSet)).toEqual([30,40]);
  const firstId=placementLogId(routines[0].id,routines[0].placements[0].id), secondId=placementLogId(routines[1].id,routines[1].placements[0].id);

@@ -1,5 +1,6 @@
 export const routedFormCases=[
  ['/workouts/new','Add Exercise'],['/workouts/edit?id=w','Edit Exercise'],
+ ['/routines/exercises/add?routine=r','Add Exercise'],['/routines/exercises/custom/new?routine=r','Create Custom Exercise'],['/routines/exercises/custom/edit?id=w&routine=r','Edit Custom Exercise'],
  ['/routines/workouts/new?routine=r','Add Exercise'],['/routines/workouts/edit?id=w','Edit Exercise'],['/routines/new','Create Routine'],['/routines/edit?id=r','Edit Routine'],
  ['/dynamic-overview/2026-10-19/duration','Edit Workout Duration'],
  ['/cardio/goal','Cardio Goal'],['/cardio/add','Add Cardio'],['/cardio/edit?id=cardio','Edit Cardio'],['/cardio/types/new','Add Custom Cardio Type'],

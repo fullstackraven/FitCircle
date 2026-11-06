@@ -48,7 +48,7 @@ for (const mode of ['light', 'dark']) test(`${mode}: pointer ordering persists, 
   await expect(page.locator('details')).toHaveCount(0);
   await page.getByRole('button', { name: 'Cancel', exact: true }).click();
   await page.getByTestId('button-edit-routine-r').click();
-  await expect(page.getByLabel('Description / notes')).toHaveCount(1); await expect(page.getByLabel('Current variation', { exact: true })).toHaveCount(1);
+  await expect(page.getByLabel('Description / notes')).toHaveCount(1); await expect(page.getByLabel('Current variation', { exact: true })).toHaveCount(0);
   await expect(page.locator('summary')).toHaveCount(0);
   await page.getByRole('button', { name: 'Reorder Hold', exact: true }).focus(); await page.keyboard.press('ArrowUp');
   expect((await read(page)).routines.r.placements.map((p: any) => p.exerciseId)).toEqual(['b', 'w', 'c']);
@@ -61,8 +61,8 @@ for (const mode of ['light', 'dark']) test(`${mode}: pointer ordering persists, 
   await page.getByRole('button', { name: 'Save Routine', exact: true }).click(); await page.reload();
   expect((await read(page)).routines.r.placements.map((p: any) => p.exerciseId)).toEqual(['b', 'c', 'w']);
   await page.getByTestId('routine-header-r').click(); await page.getByTestId('button-add-workout-r').click();
-  await expect(page.getByTestId('button-add-workout-r')).toHaveAttribute('aria-expanded', 'true');
-  await page.getByRole('button', { name: 'Edit reusable exercise Push-ups', exact: true }).click();
+  await expect(page).toHaveURL(/routines\/exercises\/add/);
+  await page.getByRole('button', { name: 'Edit custom exercise Push-ups', exact: true }).click();
   await page.getByLabel('Equipment', { exact: true }).fill('Bands'); await page.getByLabel('Workout color').selectOption('blue');
   await page.getByRole('button', { name: 'Save Exercise', exact: true }).click();
   d = await read(page); expect(d.workouts.w.equipment).toBe('Bands'); expect(d.workouts.w.color).toBe('blue'); expect(d.dailyLogs).toEqual(before.dailyLogs);
@@ -95,14 +95,14 @@ test('editing a reusable definition from a routine preserves the parent draft an
   await page.getByTestId('button-edit-routine-r').click();
   await page.getByLabel('Routine Name', { exact: true }).fill('Draft routine');
   await page.getByRole('button', { name: 'Add Exercise', exact: true }).click();
-  await page.getByRole('button', { name: 'Edit reusable exercise Push-ups', exact: true }).click();
+  await page.getByRole('button', { name: 'Edit custom exercise Push-ups', exact: true }).click();
   await page.getByLabel('Equipment', { exact: true }).fill('Bodyweight');
   await page.getByRole('button', { name: 'Save Exercise', exact: true }).click();
-  await expect(page).toHaveURL(/routines\/edit\?id=r/);
+  await expect(page).toHaveURL(/routines\/exercises\/add/);await page.getByRole('button',{name:'Back',exact:true}).click();
   await expect(page.getByLabel('Routine Name', { exact: true })).toHaveValue('Draft routine');
   await page.getByRole('button', { name: 'Save Routine', exact: true }).click();
   const after = await read(page);
-  expect(after.routines.r.placements).toEqual(before.routines.r.placements);
+  expect(after.routines.r.placements.map((p:any)=>[p.id,p.exerciseId,p.prescription])).toEqual(before.routines.r.placements.map((p:any)=>[p.id,p.exerciseId,p.prescription]));
   expect(after.routines.r.name).toBe('Draft routine');
   expect(after.workouts.w.equipment).toBe('Bodyweight');
   expect(after.dailyLogs).toEqual(before.dailyLogs);

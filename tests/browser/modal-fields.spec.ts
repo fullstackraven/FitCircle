@@ -162,7 +162,7 @@ const cases: {
     open: async (page) => {
       await page.getByTestId("routine-header-r").click();
       await page.getByTestId("button-add-workout-r").click();
-      await button(page, "Edit reusable exercise Synthetic exercise").click();
+      await button(page, "Edit custom exercise Synthetic exercise").click();
     },
   },
   {

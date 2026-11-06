@@ -31,7 +31,7 @@ test('explicit assignments, ordering and multiple routines keep distinct placeme
  const planned=plannedExercises(m,3);assert.equal(planned.length,2);assert.deepEqual(planned.map(w=>w.dailyGoal),[30,40]);assert.deepEqual(planned.map(w=>w.routineNames),[['Upper'],['Second']]);assert.notEqual(planned[0].id,planned[1].id);
  m.routines.r.placements=[];assert.equal(routineExercises(m,m.routines.r).length,0);assert.equal(plannedExercises(m,3)[0].dailyGoal,40);assert.deepEqual(m.dailyLogs,legacy().dailyLogs);
 });
-test('variation switches and prescription edits never reinterpret an existing daily snapshot',()=>{
+test('legacy active variation targets and prescription edits never reinterpret an existing daily snapshot',()=>{
  const m=migrateRoutinePlanning(legacy()),r=m.routines.r,p=r.placements![0];
  const first=plannedExercises(m,1)[0],entry=stepWorkout(first,undefined,1);
  r.variations=[{id:'endurance',name:'Endurance',targets:{[p.id]:{targetType:'duration',sets:2,perSet:30,restSeconds:60}}}];r.activeVariationId='endurance';
