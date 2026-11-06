@@ -60,11 +60,12 @@ else if (React.isValidElement<any>(node))
     result += text(node.props.children); }); return result; }
 function titleIn(nodes: ReactNode): string { let result = ''; React.Children.forEach(nodes, node => { if (!React.isValidElement<any>(node) || result)
     return; result = node.type === FormTitle ? text(node.props.children) : titleIn(node.props.children); }); return result; }
-export function FormContent({ children, variant = 'standard', title, onCancel }: {
+export function FormContent({ children, variant = 'standard', title, onCancel, headerActions }: {
     children: ReactNode;
     variant?: 'standard' | 'training';
     title?: string;
     onCancel?: () => void;
+    headerActions?: ReactNode;
 }) {
     const context = useContext(FormContext), store = useFormStore();
     const active = formForPath();
@@ -119,14 +120,14 @@ export function FormContent({ children, variant = 'standard', title, onCancel }:
         return null;
     const heading = active.title || title || titleIn(children);
     return <section className="form-page" aria-label={heading} data-form-page={active.id}>
-    <AppHeader><PageHeader title={heading} onBack={close}/></AppHeader>
+    <AppHeader><PageHeader title={heading} onBack={close} actions={headerActions} className={headerActions ? "!grid-cols-[44px_minmax(0,1fr)_auto] px-4" : undefined}/></AppHeader>
     <div ref={root} className={cn('form-page-content',variant==='training'&&'training-editor')} onPointerDownCapture={event=>{
         // Radix Select opens on pointerdown and suppresses its trigger click.
-        if((event.target as Element).closest('[role="combobox"]') && !['food-search','food-scan'].includes(active.group))markDirty();
+        if((event.target as Element).closest('[role="combobox"]') && !['food-search','food-scan','exercise-catalog'].includes(active.group))markDirty();
     }} onKeyDownCapture={event=>{
-        if(['Enter',' ','ArrowDown','ArrowUp'].includes(event.key) && (event.target as Element).closest('[role="combobox"]') && !['food-search','food-scan'].includes(active.group))markDirty();
-    }} onInputCapture={() => { if (!['food-search', 'food-scan'].includes(active.group))
-        markDirty(); }} onChangeCapture={() => { if (!['food-search', 'food-scan'].includes(active.group))
+        if(['Enter',' ','ArrowDown','ArrowUp'].includes(event.key) && (event.target as Element).closest('[role="combobox"]') && !['food-search','food-scan','exercise-catalog'].includes(active.group))markDirty();
+    }} onInputCapture={() => { if (!['food-search', 'food-scan', 'exercise-catalog'].includes(active.group))
+        markDirty(); }} onChangeCapture={() => { if (!['food-search', 'food-scan', 'exercise-catalog'].includes(active.group))
         markDirty(); }} onClickCapture={event => {
             const button = (event.target as Element)?.closest('button');
             if (!button)
@@ -146,7 +147,7 @@ export function FormContent({ children, variant = 'standard', title, onCancel }:
                 document.documentElement.dataset.formSaving = 'true';
             else {
                 delete document.documentElement.dataset.formSaving;
-                if ((button.hasAttribute('aria-pressed') || button.getAttribute('role') === 'combobox' || button.closest('.editor-days')) && !button.closest('.goal-editor-segments') && !['food-search', 'food-scan'].includes(active.group))
+                if ((button.hasAttribute('aria-pressed') || button.getAttribute('role') === 'combobox' || button.closest('.editor-days')) && !button.closest('.goal-editor-segments') && !['food-search', 'food-scan', 'exercise-catalog'].includes(active.group))
                     markDirty();
             }
         }}>{children}</div>

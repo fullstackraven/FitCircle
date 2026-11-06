@@ -18,6 +18,7 @@ test('fitness navigation, workout persistence, food search, and fully offline re
   await page.getByRole('button', { name: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today], exact: true }).click();
   await page.getByRole('button', { name: 'Add Exercise', exact: true }).click();
   await page.getByRole('button', { name: 'Add Migration smoke workout', exact: true }).click();
+  await page.getByRole('button', { name: 'Save Exercise', exact: true }).click();
   await page.getByRole('button', { name: 'Save Routine', exact: true }).click();
   await page.getByRole('button', { name: 'Home', exact: true }).click();
   await expect(page.getByText('Migration smoke workout', { exact: true })).toBeVisible();

@@ -25,9 +25,9 @@ for(const theme of ['dark','light'])test(`${theme}: new/edit workout and routine
  await expect(dialog.getByLabel('Workout Name')).toHaveValue('Push-ups');
  await dialog.getByLabel('Workout Name').fill('Push-ups updated');
  await expect(dialog.getByLabel('Workout Name')).toHaveValue('Push-ups updated');await dialog.getByLabel('Workout color').selectOption('blue');await dialog.getByLabel('Weight (lbs) - Optional').fill('12');
- await dialog.getByRole('button',{name:'Save Exercise',exact:true}).click();await expect(dialog).toBeHidden();let saved=await data(page);expect(saved.workouts.w).toMatchObject({name:'Push-ups updated',color:'blue',weightLbs:12,scheduledDays:before.workouts.w.scheduledDays});expect(saved.dailyLogs).toEqual(before.dailyLogs);
+ await dialog.getByRole('button',{name:'Save Exercise',exact:true}).click();await expect(dialog).toBeHidden();let saved=await data(page);expect(saved.routines.r.placements.find((p:any)=>p.exerciseId==='w')).toMatchObject({name:'Push-ups updated',color:'blue',weightLbs:12});expect(saved.workouts.w).toEqual(before.workouts.w);expect(saved.dailyLogs).toEqual(before.dailyLogs);
  await page.getByRole('button',{name:'Edit Push-ups updated',exact:true}).click();page.once('dialog',d=>d.dismiss());await page.getByRole('button',{name:'Delete Exercise',exact:true}).click();expect((await data(page)).workouts.w).toBeDefined();
- page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Delete Exercise',exact:true}).click();expect((await data(page)).workouts.w).toBeUndefined();
+ page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Delete Exercise',exact:true}).click();expect((await data(page)).workouts.w).toBeDefined();expect((await data(page)).routines.r.placements).toHaveLength(0);
  await page.getByRole('button',{name:'Add new workout',exact:true}).click();dialog=page.getByRole('region', {name:'Add Exercise',exact:true});
  await expect(dialog.getByLabel('Workout Name')).toHaveValue('');await expect(dialog.getByLabel('Reps per Set',{exact:true})).toHaveValue('10');await expect(dialog.getByLabel('Number of Sets')).toHaveValue('1');await expect(dialog.getByRole('button',{name:'Save Exercise',exact:true})).toBeDisabled();
  await contained();if(theme==='dark')await screenshot('new-workout');

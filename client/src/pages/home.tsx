@@ -166,6 +166,11 @@ export default function Home() {
   };
 
   const handleEditWorkout = (workout: any) => {
+    if (workout.routineId && workout.placementId) {
+      const params=new URLSearchParams({id:workout.exerciseId ?? workout.id,routine:workout.routineId,placement:workout.placementId});
+      navigate('/routines/workouts/edit?'+params,{state:{fitcircleFormReturn:'/',fitcircleFormRoot:'/'}});
+      return;
+    }
     setEditingWorkout({...getWorkoutById(workout.exerciseId ?? workout.id)??workout});
     setWorkoutPageOpen(true);
   };

@@ -58,8 +58,8 @@ test('exercise forms have no schedule controls; unassigned definitions stay avai
  await expect(page.getByRole('button',{name:/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Weekdays|Weekends)$/})).toHaveCount(0);
  await page.getByLabel('Workout Name').fill('Saved unassigned');await page.getByRole('button',{name:'Save Exercise',exact:true}).click();
  await page.goto('./');await expect(page.getByText('Saved unassigned',{exact:true})).toHaveCount(0);
- await page.goto('routines');await expect(page.getByText('1 unassigned exercise available in Add Exercise.',{exact:true})).toBeVisible();
- await page.getByTestId('routine-header-a').click();await page.getByTestId('button-add-workout-a').click();await page.getByRole('button',{name:'Add Saved unassigned',exact:true}).click();
+ await page.goto('routines');await expect(page.getByText(/unassigned exercise available/)).toHaveCount(0);
+ await page.getByTestId('routine-header-a').click();await page.getByTestId('button-add-workout-a').click();await page.getByRole('button',{name:'Add Saved unassigned',exact:true}).click();await page.getByRole('button',{name:'Save Exercise',exact:true}).click();
  await page.goto('./');await expect(page.getByText('Saved unassigned',{exact:true})).toBeVisible();
  await page.goto('routines/workouts/new?routine=a');await expect(page.getByRole('button',{name:'Wednesday',exact:true})).toHaveCount(0);await page.getByRole('button',{name:'Cancel',exact:true}).click();
 });

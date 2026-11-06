@@ -1,0 +1,2647 @@
+[
+  {
+    "id": "catalog:push-ups",
+    "name": "Push-ups",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "pushup",
+      "press up"
+    ]
+  },
+  {
+    "id": "catalog:incline-push-ups",
+    "name": "Incline Push-ups",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "Bodyweight",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "incline pushup"
+    ]
+  },
+  {
+    "id": "catalog:decline-push-ups",
+    "name": "Decline Push-ups",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "Bodyweight",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "decline pushup"
+    ]
+  },
+  {
+    "id": "catalog:archer-push-ups",
+    "name": "Archer Push-ups",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:chest-dips",
+    "name": "Chest Dips",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "Bodyweight",
+      "Parallel bars"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:barbell-bench-press",
+    "name": "Barbell Bench Press",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "Barbell",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "BB bench",
+      "flat bench"
+    ]
+  },
+  {
+    "id": "catalog:incline-barbell-bench-press",
+    "name": "Incline Barbell Bench Press",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "Barbell",
+      "Incline bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dumbbell-bench-press",
+    "name": "Dumbbell Bench Press",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "Dumbbells",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "DB bench",
+      "flat dumbbell press"
+    ]
+  },
+  {
+    "id": "catalog:incline-dumbbell-press",
+    "name": "Incline Dumbbell Press",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "Dumbbells",
+      "Incline bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dumbbell-floor-press",
+    "name": "Dumbbell Floor Press",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dumbbell-chest-fly",
+    "name": "Dumbbell Chest Fly",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders"
+    ],
+    "equipment": [
+      "Dumbbells",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:cable-chest-fly",
+    "name": "Cable Chest Fly",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:low-to-high-cable-fly",
+    "name": "Low-to-high Cable Fly",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:machine-chest-press",
+    "name": "Machine Chest Press",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:pec-deck-fly",
+    "name": "Pec Deck Fly",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders"
+    ],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:band-chest-press",
+    "name": "Band Chest Press",
+    "category": "chest",
+    "secondaryCategories": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "Resistance band"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:pull-ups",
+    "name": "Pull-ups",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Bodyweight",
+      "Pull-up bar"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "pullup",
+      "pull up"
+    ]
+  },
+  {
+    "id": "catalog:chin-ups",
+    "name": "Chin-ups",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Bodyweight",
+      "Pull-up bar"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "chinup"
+    ]
+  },
+  {
+    "id": "catalog:inverted-rows",
+    "name": "Inverted Rows",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Bodyweight",
+      "Bar"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:barbell-bent-over-row",
+    "name": "Barbell Bent-over Row",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "BB rows",
+      "bent over rows"
+    ]
+  },
+  {
+    "id": "catalog:pendlay-row",
+    "name": "Pendlay Row",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:one-arm-dumbbell-row",
+    "name": "One-arm Dumbbell Row",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Dumbbell",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:chest-supported-dumbbell-row",
+    "name": "Chest-supported Dumbbell Row",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Dumbbells",
+      "Incline bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:seated-cable-row",
+    "name": "Seated Cable Row",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "cable rows"
+    ]
+  },
+  {
+    "id": "catalog:single-arm-cable-row",
+    "name": "Single-arm Cable Row",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:lat-pulldown",
+    "name": "Lat Pulldown",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "lat PD",
+      "lat pull down"
+    ]
+  },
+  {
+    "id": "catalog:straight-arm-pulldown",
+    "name": "Straight-arm Pulldown",
+    "category": "back",
+    "secondaryCategories": [],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:t-bar-row",
+    "name": "T-bar Row",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Barbell",
+      "Landmine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:machine-row",
+    "name": "Machine Row",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:band-row",
+    "name": "Band Row",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Resistance band"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:band-pulldown",
+    "name": "Band Pulldown",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Resistance band"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dumbbell-pullover",
+    "name": "Dumbbell Pullover",
+    "category": "back",
+    "secondaryCategories": [
+      "biceps",
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Dumbbell",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:scapular-pull-ups",
+    "name": "Scapular Pull-ups",
+    "category": "back",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Bodyweight",
+      "Pull-up bar"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:barbell-overhead-press",
+    "name": "Barbell Overhead Press",
+    "category": "shoulders",
+    "secondaryCategories": [
+      "triceps"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "OHP",
+      "military press",
+      "BB overhead"
+    ]
+  },
+  {
+    "id": "catalog:seated-dumbbell-shoulder-press",
+    "name": "Seated Dumbbell Shoulder Press",
+    "category": "shoulders",
+    "secondaryCategories": [
+      "triceps"
+    ],
+    "equipment": [
+      "Dumbbells",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:arnold-press",
+    "name": "Arnold Press",
+    "category": "shoulders",
+    "secondaryCategories": [
+      "triceps"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dumbbell-lateral-raise",
+    "name": "Dumbbell Lateral Raise",
+    "category": "shoulders",
+    "secondaryCategories": [],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:cable-lateral-raise",
+    "name": "Cable Lateral Raise",
+    "category": "shoulders",
+    "secondaryCategories": [],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dumbbell-front-raise",
+    "name": "Dumbbell Front Raise",
+    "category": "shoulders",
+    "secondaryCategories": [],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:rear-delt-fly",
+    "name": "Rear Delt Fly",
+    "category": "shoulders",
+    "secondaryCategories": [
+      "back"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "reverse fly"
+    ]
+  },
+  {
+    "id": "catalog:reverse-pec-deck",
+    "name": "Reverse Pec Deck",
+    "category": "shoulders",
+    "secondaryCategories": [
+      "back"
+    ],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:face-pull",
+    "name": "Face Pull",
+    "category": "shoulders",
+    "secondaryCategories": [
+      "back"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:band-pull-apart",
+    "name": "Band Pull-apart",
+    "category": "shoulders",
+    "secondaryCategories": [
+      "back"
+    ],
+    "equipment": [
+      "Resistance band"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:pike-push-ups",
+    "name": "Pike Push-ups",
+    "category": "shoulders",
+    "secondaryCategories": [
+      "triceps"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:handstand-push-ups",
+    "name": "Handstand Push-ups",
+    "category": "shoulders",
+    "secondaryCategories": [
+      "triceps"
+    ],
+    "equipment": [
+      "Bodyweight",
+      "Wall"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:landmine-press",
+    "name": "Landmine Press",
+    "category": "shoulders",
+    "secondaryCategories": [
+      "triceps"
+    ],
+    "equipment": [
+      "Barbell",
+      "Landmine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:kettlebell-bottoms-up-press",
+    "name": "Kettlebell Bottoms-up Press",
+    "category": "shoulders",
+    "secondaryCategories": [
+      "triceps"
+    ],
+    "equipment": [
+      "Kettlebell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dumbbell-shrug",
+    "name": "Dumbbell Shrug",
+    "category": "shoulders",
+    "secondaryCategories": [],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:machine-shoulder-press",
+    "name": "Machine Shoulder Press",
+    "category": "shoulders",
+    "secondaryCategories": [
+      "triceps"
+    ],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:barbell-curl",
+    "name": "Barbell Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:ez-bar-curl",
+    "name": "EZ-bar Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "EZ bar"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:alternating-dumbbell-curl",
+    "name": "Alternating Dumbbell Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:hammer-curl",
+    "name": "Hammer Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:incline-dumbbell-curl",
+    "name": "Incline Dumbbell Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Dumbbells",
+      "Incline bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:concentration-curl",
+    "name": "Concentration Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:preacher-curl",
+    "name": "Preacher Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "EZ bar",
+      "Preacher bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:cable-curl",
+    "name": "Cable Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:high-cable-curl",
+    "name": "High Cable Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:bayesian-cable-curl",
+    "name": "Bayesian Cable Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:band-curl",
+    "name": "Band Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Resistance band"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:spider-curl",
+    "name": "Spider Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Dumbbells",
+      "Incline bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:zottman-curl",
+    "name": "Zottman Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:machine-biceps-curl",
+    "name": "Machine Biceps Curl",
+    "category": "biceps",
+    "secondaryCategories": [
+      "forearms-grip"
+    ],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:bench-dips",
+    "name": "Bench Dips",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:diamond-push-ups",
+    "name": "Diamond Push-ups",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "close grip push up",
+      "narrow pushup"
+    ]
+  },
+  {
+    "id": "catalog:close-grip-bench-press",
+    "name": "Close-grip Bench Press",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Barbell",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:lying-triceps-extension",
+    "name": "Lying Triceps Extension",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "EZ bar",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "skull crusher"
+    ]
+  },
+  {
+    "id": "catalog:overhead-dumbbell-triceps-extension",
+    "name": "Overhead Dumbbell Triceps Extension",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dumbbell-triceps-kickback",
+    "name": "Dumbbell Triceps Kickback",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:rope-triceps-pushdown",
+    "name": "Rope Triceps Pushdown",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Cable",
+      "Rope"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:straight-bar-triceps-pushdown",
+    "name": "Straight-bar Triceps Pushdown",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:overhead-cable-triceps-extension",
+    "name": "Overhead Cable Triceps Extension",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:single-arm-cable-triceps-extension",
+    "name": "Single-arm Cable Triceps Extension",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:band-triceps-pushdown",
+    "name": "Band Triceps Pushdown",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Resistance band"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:bodyweight-triceps-extension",
+    "name": "Bodyweight Triceps Extension",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Bar"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:machine-triceps-extension",
+    "name": "Machine Triceps Extension",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:jm-press",
+    "name": "JM Press",
+    "category": "triceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Barbell",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:wrist-curl",
+    "name": "Wrist Curl",
+    "category": "forearms-grip",
+    "secondaryCategories": [],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:reverse-wrist-curl",
+    "name": "Reverse Wrist Curl",
+    "category": "forearms-grip",
+    "secondaryCategories": [],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:reverse-curl",
+    "name": "Reverse Curl",
+    "category": "forearms-grip",
+    "secondaryCategories": [],
+    "equipment": [
+      "Barbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:wrist-pronation-and-supination",
+    "name": "Wrist Pronation and Supination",
+    "category": "forearms-grip",
+    "secondaryCategories": [],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:farmer-carry",
+    "name": "Farmer Carry",
+    "category": "forearms-grip",
+    "secondaryCategories": [],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:suitcase-carry",
+    "name": "Suitcase Carry",
+    "category": "forearms-grip",
+    "secondaryCategories": [],
+    "equipment": [
+      "Kettlebell"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:plate-pinch-hold",
+    "name": "Plate Pinch Hold",
+    "category": "forearms-grip",
+    "secondaryCategories": [],
+    "equipment": [
+      "Weight plates"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dead-hang",
+    "name": "Dead Hang",
+    "category": "forearms-grip",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Pull-up bar"
+    ],
+    "targetType": "duration",
+    "aliases": [
+      "bar hang"
+    ]
+  },
+  {
+    "id": "catalog:towel-hang",
+    "name": "Towel Hang",
+    "category": "forearms-grip",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Pull-up bar",
+      "Towel"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:gripper-squeeze",
+    "name": "Gripper Squeeze",
+    "category": "forearms-grip",
+    "secondaryCategories": [],
+    "equipment": [
+      "Hand gripper"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:finger-extension",
+    "name": "Finger Extension",
+    "category": "forearms-grip",
+    "secondaryCategories": [],
+    "equipment": [
+      "Resistance band"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:wrist-roller",
+    "name": "Wrist Roller",
+    "category": "forearms-grip",
+    "secondaryCategories": [],
+    "equipment": [
+      "Wrist roller"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:bottoms-up-kettlebell-hold",
+    "name": "Bottoms-up Kettlebell Hold",
+    "category": "forearms-grip",
+    "secondaryCategories": [],
+    "equipment": [
+      "Kettlebell"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:bodyweight-squat",
+    "name": "Bodyweight Squat",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "air squat",
+      "squat"
+    ]
+  },
+  {
+    "id": "catalog:barbell-back-squat",
+    "name": "Barbell Back Squat",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Barbell",
+      "Squat rack"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:barbell-front-squat",
+    "name": "Barbell Front Squat",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Barbell",
+      "Squat rack"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:goblet-squat",
+    "name": "Goblet Squat",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Kettlebell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dumbbell-split-squat",
+    "name": "Dumbbell Split Squat",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:bulgarian-split-squat",
+    "name": "Bulgarian Split Squat",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Dumbbells",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:forward-lunge",
+    "name": "Forward Lunge",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:reverse-lunge",
+    "name": "Reverse Lunge",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:walking-lunge",
+    "name": "Walking Lunge",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:lateral-lunge",
+    "name": "Lateral Lunge",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:step-up",
+    "name": "Step-up",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Bodyweight",
+      "Step"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:pistol-squat",
+    "name": "Pistol Squat",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:assisted-sissy-squat",
+    "name": "Assisted Sissy Squat",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Bodyweight",
+      "Support"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:hack-squat",
+    "name": "Hack Squat",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:leg-press",
+    "name": "Leg Press",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:leg-extension",
+    "name": "Leg Extension",
+    "category": "quadriceps",
+    "secondaryCategories": [],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:wall-sit",
+    "name": "Wall Sit",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Bodyweight",
+      "Wall"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:spanish-squat",
+    "name": "Spanish Squat",
+    "category": "quadriceps",
+    "secondaryCategories": [
+      "hamstrings-glutes"
+    ],
+    "equipment": [
+      "Resistance band"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:conventional-deadlift",
+    "name": "Conventional Deadlift",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "deadlift",
+      "DL"
+    ]
+  },
+  {
+    "id": "catalog:romanian-deadlift",
+    "name": "Romanian Deadlift",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "RDL"
+    ]
+  },
+  {
+    "id": "catalog:sumo-deadlift",
+    "name": "Sumo Deadlift",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:single-leg-romanian-deadlift",
+    "name": "Single-leg Romanian Deadlift",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Dumbbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:good-morning",
+    "name": "Good Morning",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:barbell-hip-thrust",
+    "name": "Barbell Hip Thrust",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Barbell",
+      "Bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "hip thrust"
+    ]
+  },
+  {
+    "id": "catalog:glute-bridge",
+    "name": "Glute Bridge",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:single-leg-glute-bridge",
+    "name": "Single-leg Glute Bridge",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:cable-pull-through",
+    "name": "Cable Pull-through",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:kettlebell-swing",
+    "name": "Kettlebell Swing",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Kettlebell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:lying-leg-curl",
+    "name": "Lying Leg Curl",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "hamstring curl"
+    ]
+  },
+  {
+    "id": "catalog:seated-leg-curl",
+    "name": "Seated Leg Curl",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:nordic-hamstring-curl",
+    "name": "Nordic Hamstring Curl",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Anchor"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:sliding-leg-curl",
+    "name": "Sliding Leg Curl",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Sliders"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:back-extension",
+    "name": "Back Extension",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Roman chair"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:cable-glute-kickback",
+    "name": "Cable Glute Kickback",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:hip-abduction",
+    "name": "Hip Abduction",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:clamshell",
+    "name": "Clamshell",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:banded-lateral-walk",
+    "name": "Banded Lateral Walk",
+    "category": "hamstrings-glutes",
+    "secondaryCategories": [],
+    "equipment": [
+      "Resistance band"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:standing-calf-raise",
+    "name": "Standing Calf Raise",
+    "category": "calves-lower-legs",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:seated-calf-raise",
+    "name": "Seated Calf Raise",
+    "category": "calves-lower-legs",
+    "secondaryCategories": [],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:single-leg-calf-raise",
+    "name": "Single-leg Calf Raise",
+    "category": "calves-lower-legs",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:donkey-calf-raise",
+    "name": "Donkey Calf Raise",
+    "category": "calves-lower-legs",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Support"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:leg-press-calf-raise",
+    "name": "Leg Press Calf Raise",
+    "category": "calves-lower-legs",
+    "secondaryCategories": [],
+    "equipment": [
+      "Machine"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dumbbell-calf-raise",
+    "name": "Dumbbell Calf Raise",
+    "category": "calves-lower-legs",
+    "secondaryCategories": [],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:tibialis-raise",
+    "name": "Tibialis Raise",
+    "category": "calves-lower-legs",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Wall"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:band-ankle-dorsiflexion",
+    "name": "Band Ankle Dorsiflexion",
+    "category": "calves-lower-legs",
+    "secondaryCategories": [],
+    "equipment": [
+      "Resistance band"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:band-ankle-inversion",
+    "name": "Band Ankle Inversion",
+    "category": "calves-lower-legs",
+    "secondaryCategories": [],
+    "equipment": [
+      "Resistance band"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:band-ankle-eversion",
+    "name": "Band Ankle Eversion",
+    "category": "calves-lower-legs",
+    "secondaryCategories": [],
+    "equipment": [
+      "Resistance band"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:heel-walk",
+    "name": "Heel Walk",
+    "category": "calves-lower-legs",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:toe-walk",
+    "name": "Toe Walk",
+    "category": "calves-lower-legs",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:plank",
+    "name": "Plank",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:side-plank",
+    "name": "Side Plank",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:hollow-body-hold",
+    "name": "Hollow Body Hold",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dead-bug",
+    "name": "Dead Bug",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:bird-dog",
+    "name": "Bird Dog",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:crunch",
+    "name": "Crunch",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:reverse-crunch",
+    "name": "Reverse Crunch",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:bicycle-crunch",
+    "name": "Bicycle Crunch",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:hanging-knee-raise",
+    "name": "Hanging Knee Raise",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Pull-up bar"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:hanging-leg-raise",
+    "name": "Hanging Leg Raise",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Pull-up bar"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:lying-leg-raise",
+    "name": "Lying Leg Raise",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:ab-wheel-rollout",
+    "name": "Ab Wheel Rollout",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Ab wheel"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:cable-crunch",
+    "name": "Cable Crunch",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:pallof-press",
+    "name": "Pallof Press",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "anti rotation press"
+    ]
+  },
+  {
+    "id": "catalog:cable-wood-chop",
+    "name": "Cable Wood Chop",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Cable"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:russian-twist",
+    "name": "Russian Twist",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:v-up",
+    "name": "V-up",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:decline-sit-up",
+    "name": "Decline Sit-up",
+    "category": "core-abdominals",
+    "secondaryCategories": [],
+    "equipment": [
+      "Decline bench"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:burpee",
+    "name": "Burpee",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:turkish-get-up",
+    "name": "Turkish Get-up",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Kettlebell"
+    ],
+    "targetType": "repetitions",
+    "aliases": [
+      "TGU"
+    ]
+  },
+  {
+    "id": "catalog:kettlebell-clean",
+    "name": "Kettlebell Clean",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Kettlebell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:kettlebell-snatch",
+    "name": "Kettlebell Snatch",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Kettlebell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dumbbell-thruster",
+    "name": "Dumbbell Thruster",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:barbell-clean",
+    "name": "Barbell Clean",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:barbell-snatch",
+    "name": "Barbell Snatch",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:clean-and-jerk",
+    "name": "Clean and Jerk",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Barbell"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:dumbbell-man-maker",
+    "name": "Dumbbell Man Maker",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Dumbbells"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:bear-crawl",
+    "name": "Bear Crawl",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:crab-walk",
+    "name": "Crab Walk",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:medicine-ball-slam",
+    "name": "Medicine Ball Slam",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Medicine ball"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:medicine-ball-rotational-throw",
+    "name": "Medicine Ball Rotational Throw",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Medicine ball"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:sled-push",
+    "name": "Sled Push",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Sled"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:sled-drag",
+    "name": "Sled Drag",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Sled"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:sandbag-shouldering",
+    "name": "Sandbag Shouldering",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Sandbag"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:box-jump",
+    "name": "Box Jump",
+    "category": "full-body-functional",
+    "secondaryCategories": [
+      "core-abdominals"
+    ],
+    "equipment": [
+      "Box"
+    ],
+    "targetType": "repetitions",
+    "aliases": []
+  },
+  {
+    "id": "catalog:walking",
+    "name": "Walking",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:running",
+    "name": "Running",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:treadmill-walking",
+    "name": "Treadmill Walking",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Treadmill"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:treadmill-running",
+    "name": "Treadmill Running",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Treadmill"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:stationary-cycling",
+    "name": "Stationary Cycling",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Stationary bike"
+    ],
+    "targetType": "duration",
+    "aliases": [
+      "exercise bike",
+      "indoor cycling"
+    ]
+  },
+  {
+    "id": "catalog:outdoor-cycling",
+    "name": "Outdoor Cycling",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bicycle"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:rowing-ergometer",
+    "name": "Rowing Ergometer",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Rowing machine"
+    ],
+    "targetType": "duration",
+    "aliases": [
+      "rowing",
+      "erg"
+    ]
+  },
+  {
+    "id": "catalog:elliptical-training",
+    "name": "Elliptical Training",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Elliptical"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:stair-climbing",
+    "name": "Stair Climbing",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Stairs"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:swimming",
+    "name": "Swimming",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Pool"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:jump-rope",
+    "name": "Jump Rope",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Jump rope"
+    ],
+    "targetType": "duration",
+    "aliases": [
+      "skipping"
+    ]
+  },
+  {
+    "id": "catalog:jumping-jacks",
+    "name": "Jumping Jacks",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:mountain-climbers",
+    "name": "Mountain Climbers",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:high-knees",
+    "name": "High Knees",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:battle-ropes",
+    "name": "Battle Ropes",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Battle ropes"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:shadow-boxing",
+    "name": "Shadow Boxing",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:heavy-bag-boxing",
+    "name": "Heavy Bag Boxing",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Punching bag"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:shuttle-run",
+    "name": "Shuttle Run",
+    "category": "cardio-conditioning",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:cat-cow",
+    "name": "Cat-cow",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:child-s-pose",
+    "name": "Child’s Pose",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:downward-dog",
+    "name": "Downward Dog",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:world-s-greatest-stretch",
+    "name": "World’s Greatest Stretch",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:couch-stretch",
+    "name": "Couch Stretch",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Support"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:half-kneeling-hip-flexor-stretch",
+    "name": "Half-kneeling Hip Flexor Stretch",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:figure-four-stretch",
+    "name": "Figure-four Stretch",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:seated-hamstring-stretch",
+    "name": "Seated Hamstring Stretch",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:standing-calf-stretch",
+    "name": "Standing Calf Stretch",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Wall"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:doorway-chest-stretch",
+    "name": "Doorway Chest Stretch",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Doorway"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:thoracic-open-book",
+    "name": "Thoracic Open Book",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:90-90-hip-switch",
+    "name": "90/90 Hip Switch",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:ankle-knee-to-wall-mobilization",
+    "name": "Ankle Knee-to-wall Mobilization",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight",
+      "Wall"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:shoulder-pass-through",
+    "name": "Shoulder Pass-through",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Dowel"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:foam-rolling",
+    "name": "Foam Rolling",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Foam roller"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:diaphragmatic-breathing",
+    "name": "Diaphragmatic Breathing",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  },
+  {
+    "id": "catalog:neck-rotation",
+    "name": "Neck Rotation",
+    "category": "mobility-recovery",
+    "secondaryCategories": [],
+    "equipment": [
+      "Bodyweight"
+    ],
+    "targetType": "duration",
+    "aliases": []
+  }
+]

@@ -2,6 +2,9 @@
 export const formDefinitions = [
     ['workout-new', 'home', '/workouts/new', 'workout', 'Add Exercise'],
     ['workout-edit', 'home', '/workouts/edit', 'workout', 'Edit Exercise'],
+    ['exercise-catalog', 'routines', '/routines/exercises/add', 'exercise-catalog', 'Add Exercise'],
+    ['custom-exercise-new', 'routines', '/routines/exercises/custom/new', 'custom-exercise', 'Create Custom Exercise'],
+    ['custom-exercise-edit', 'routines', '/routines/exercises/custom/edit', 'custom-exercise', 'Edit Custom Exercise'],
     ['routine-workout-new', 'routines', '/routines/workouts/new', 'workout', 'Add Exercise'],
     ['routine-workout-edit', 'routines', '/routines/workouts/edit', 'workout', 'Edit Exercise'],
     ['routine-new', 'routines', '/routines/new', 'routine', 'Create Routine'],

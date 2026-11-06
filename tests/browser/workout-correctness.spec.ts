@@ -30,5 +30,5 @@ test('editing future targets leaves an already completed daily snapshot intact',
  const circle=page.getByRole('button',{name:/Record a set for Pushups/});await circle.click();await expect(circle).toHaveAttribute('aria-label',/1 of 1/);
  const before=await page.evaluate(()=>JSON.parse(localStorage.getItem('workout-tracker-data')!).dailyLogs);
  await page.getByRole('button',{name:'Edit Pushups',exact:true}).click();await page.getByLabel('Number of Sets').fill('2');await page.getByRole('button',{name:'Save Exercise',exact:true}).click();await expect(circle).toHaveAttribute('aria-label',/1 of 1/);
- const d=await page.evaluate(()=>JSON.parse(localStorage.getItem('workout-tracker-data')!));expect(d.dailyLogs).toEqual(before);expect(d.workouts.w.setsGoal).toBe(2);
+ const d=await page.evaluate(()=>JSON.parse(localStorage.getItem('workout-tracker-data')!));expect(d.dailyLogs).toEqual(before);expect(Object.values(d.routines).some((r:any)=>r.placements.some((p:any)=>p.exerciseId==='w'&&p.prescription.sets===2))).toBe(true);expect(d.workouts.w.setsGoal).toBe(1);
 });

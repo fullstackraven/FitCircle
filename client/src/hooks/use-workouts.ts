@@ -1,4 +1,4 @@
-import { plannedExercises, plannedWithActivity, orderedRoutines, routineExercises, historicalDefinitions, historicalActivities, loggedExercises, recordedReps, recordedSeconds, prescriptionFor, totalTarget, validPrescription, newPlanningId, type ExerciseDetails, type ExercisePlacement, type TrainingVariation } from '@/lib/routine-planning';
+import { retireRoutineVariations, preservePlacementDetails, plannedExercises, plannedWithActivity, orderedRoutines, routineExercises, historicalDefinitions, historicalActivities, loggedExercises, recordedReps, recordedSeconds, prescriptionFor, totalTarget, validPrescription, newPlanningId, type ExerciseDetails, type ExercisePlacement, type TrainingVariation } from '@/lib/routine-planning';
 import { useWorkoutStore, commitWorkouts } from '@/lib/workout-store';
 import { validWorkoutTargets, workoutProgress, workoutLogComplete, stepWorkout, isSetLog, repsForSets } from '@/lib/workout-progress';
 import { getTotalWorkoutStats } from '@/lib/workout-statistics';
@@ -13,6 +13,8 @@ export interface GoalHistoryEntry {
 }
 
 export interface Workout extends ExerciseDetails {
+  catalogId?: string;
+  catalogHidden?: boolean;
   exerciseId?: string;
   placementId?: string;
   archived?: boolean;
@@ -51,6 +53,7 @@ export interface DailyLog {
 export interface Routine {
   placements?: ExercisePlacement[];
   description?: string;
+  /** Retained only for legacy backup compatibility; active targets are materialized on read. */
   variations?: TrainingVariation[];
   activeVariationId?: string;
   id: string;
@@ -615,16 +618,38 @@ export function useWorkouts(options?: { skipInitialWrite?: boolean }) {
       return {...prev,dailyLogs,workouts:{...prev.workouts,[exercise.id]:{...exercise,dailyGoal:totalTarget(p),setsGoal:p.sets,count:prev.workouts[exercise.id]?.count??exercise.count}}};
     });
   };
+  const saveExerciseTemplate = (exercise: Workout) => {
+    if (!exercise.name.trim() || !validPrescription(prescriptionFor(exercise)) || (exercise.weightLbs !== undefined && (!Number.isFinite(exercise.weightLbs) || exercise.weightLbs < 0))) return false;
+    return setData(prev => {
+      const old = prev.workouts[exercise.id];
+      const changedTarget = old && (old.dailyGoal !== exercise.dailyGoal || prescriptionFor(old).targetType !== prescriptionFor(exercise).targetType);
+      const dailyLogs = changedTarget ? Object.fromEntries(Object.entries(prev.dailyLogs).map(([date,day]) => [date,
+        typeof day[exercise.id] === 'number' ? { ...day, [exercise.id]: {count:day[exercise.id] as number,goalAtTime:old.dailyGoal,targetTypeAtTime:'repetitions' as const,nameAtTime:old.name,colorAtTime:old.color,exerciseIdAtTime:old.id} } : day
+      ])) : prev.dailyLogs;
+      return { ...prev, dailyLogs, workouts: { ...prev.workouts, [exercise.id]: exercise },
+        routines: old ? Object.fromEntries(Object.entries(prev.routines).map(([id,r]) => [id, { ...r,
+          placements: r.placements?.map(p => p.exerciseId === old.id ? preservePlacementDetails(p, old) : p) }])) : prev.routines };
+    });
+  };
+  const hideExerciseTemplate = (id: string) => setData(prev => prev.workouts[id]
+    ? { ...prev, workouts: { ...prev.workouts, [id]: { ...prev.workouts[id], catalogHidden: true } } } : prev);
+  const saveRoutineExercise = (routine: Routine, placement: ExercisePlacement, definition?: Workout) => setData(prev => {
+    if (!prev.routines[routine.id] || !routine.name.trim() || !validPrescription(placement.prescription) || (!definition && !prev.workouts[placement.exerciseId]) || (definition && (prev.workouts[definition.id] || definition.id !== placement.exerciseId))) return prev;
+    const next = { ...routine, placements: routine.placements?.some(p => p.id === placement.id)
+      ? routine.placements.map(p => p.id === placement.id ? placement : p) : [...routine.placements ?? [], placement] };
+    return { ...prev, workouts: definition ? { ...prev.workouts, [definition.id]: definition } : prev.workouts,
+      routines: { ...prev.routines, [routine.id]: retireRoutineVariations(next) } };
+  });
   const saveRoutinePlan = (routine: Routine) => setData(prev=>{
     if(!routine.name.trim() || !routine.selectedDays.length || routine.selectedDays.some(d=>!Number.isInteger(d)||d<0||d>6) || routine.placements?.some(p=>!prev.workouts[p.exerciseId]||!validPrescription(p.prescription)) || new Set(routine.placements?.map(p=>p.id)).size !== routine.placements?.length)return prev;
-    return {...prev,routines:{...prev.routines,[routine.id]:routine}};
+    return {...prev,routines:{...prev.routines,[routine.id]:retireRoutineVariations(routine)}};
   });
 
 
 
   return {
     workoutData: data,
-    saveExercise, saveRoutinePlan,
+    saveExercise, saveRoutinePlan, saveExerciseTemplate, hideExerciseTemplate, saveRoutineExercise,
     getPlannedExercises: (day: number) => plannedExercises(data,day),
     getHistoricalWorkoutArray: () => historicalActivities(data),
     getDurationTotals: () => Object.values(data.dailyLogs).reduce((total,log)=>total+Object.values(log).reduce<number>((sum,e)=>sum+recordedSeconds(e),0),0),

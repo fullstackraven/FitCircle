@@ -47,10 +47,10 @@ for(const theme of ['dark','light'])for(const width of [320,390,1280]) {
   await page.getByRole('button',{name:'Create Custom Food',exact:true}).click();await check();await page.getByRole('button',{name:'Cancel',exact:true}).click();
   await page.goto('routines');await page.getByTestId('routine-header-r').click();await check();
   await page.getByTestId('button-add-workout-r').click();
-  await expect(page.getByTestId('button-add-workout-r')).toHaveAttribute('aria-expanded','true');await check();
-  await page.getByRole('button',{name:'Create New Exercise',exact:true}).click();
-  await expect(page).toHaveURL(/routines\/workouts\/new/);await check();
-  await page.getByRole('button',{name:'Cancel',exact:true}).click();await expect(page).toHaveURL(/routines$/);
+  await expect(page).toHaveURL(/routines\/exercises\/add/);await check();
+  await page.getByRole('button',{name:'Custom Exercise',exact:true}).click();
+  await expect(page).toHaveURL(/routines\/exercises\/custom\/new/);await check();
+  await page.getByRole('button',{name:'Cancel',exact:true}).click();await expect(page).toHaveURL(/routines\/exercises\/add/);
   await page.goto('dynamic-overview/2026-10-19');await page.getByTitle('Edit count').first().click();await check();await page.getByTitle('Cancel',{exact:true}).click();
   await page.goto('calendar');await page.getByTestId('button-toggle-view').click();await check();await page.getByTestId('button-next-page').click();await check();
   for(const route of ['cardio','hydration','meditation','fasting']){await page.goto(route);await page.getByRole('button',{name:'Goal',exact:true}).click();await check();await page.getByRole('button',{name:'Cancel',exact:true}).click();}
