@@ -552,7 +552,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                             setEditingWorkoutCount(e.target.value)
                           }
                           className="w-16 px-2 py-1 text-sm bg-surface text-strong rounded border border-control-muted-border focus:outline-none focus:border-blue-400"
-                          aria-label={workout.progress.mode === "sets" ? "Completed sets" : "Recorded reps"}
+                          aria-label={workout.progress.mode === "sets" ? "Completed sets" : workout.progress.targetType === "duration" ? "Recorded seconds" : "Recorded reps"}
                           max={workout.progress.mode === "sets" ? workout.progress.goal : undefined}
                           min="0"
                           autoFocus
@@ -575,7 +575,7 @@ export function DynamicOverview({ selectedDate }: DynamicOverviewProps) {
                     ) : (
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-bold text-strong">
-                          {workout.count}{workout.progress.mode === "sets" && ` reps · ${workout.progress.count}/${workout.progress.goal} sets`}
+                          {workout.count}{workout.progress.mode === "sets" && ` ${workout.progress.targetType === "duration" ? "sec" : "reps"} · ${workout.progress.count}/${workout.progress.goal} sets`}
                         </span>
                         <button
                           onClick={() =>

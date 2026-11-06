@@ -18,10 +18,10 @@ const readData = (page: Page) => page.evaluate(() => JSON.parse(localStorage.get
 
 async function assertContained(page: Page, dialog: Locator) {
   await expect(dialog).toHaveAttribute('data-form-page', /routine|workout/);
-  await expect(dialog.getByLabel(/Routine name|Workout Name/).first()).toHaveAttribute('placeholder', /e\.g\. Push Day|Workout name/);
+  await expect(dialog.getByLabel(/Routine Name|Workout Name/).first()).toBeVisible();
   expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
   await expect(page.getByRole('button',{name:'Back',exact:true})).toBeVisible();
-  const lastField=dialog.locator('input').last();await lastField.scrollIntoViewIfNeeded();
+  const lastField=dialog.locator('input:visible').last();await lastField.scrollIntoViewIfNeeded();
   await expect(lastField).toBeInViewport();
   const action=dialog.locator('.editor-primary');await action.scrollIntoViewIfNeeded();await expect(action).toBeInViewport();
   await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
@@ -51,20 +51,22 @@ for (const size of [{ name: 'phone', width: 390, height: 600 }, { name: 'small p
     await expect(dialog).toBeHidden();
     await page.getByRole('heading', { name: 'Strength', exact: true }).click();
     await page.getByTestId('button-add-workout-r1').click();
-    dialog = page.getByRole('region', { name: 'Add Workout' });
+    await page.getByText('＋ Add Exercise',{exact:true}).click();await page.getByRole('button',{name:'Create New Exercise',exact:true}).click();
+    dialog = page.getByRole('region', { name: 'Add Exercise' });
     await expect(page.getByRole('heading',{level:1})).toBeVisible();
     await dialog.getByLabel('Workout Name').fill('New test exercise');
-    await dialog.getByLabel('Total Reps', { exact: true }).fill('12');
+    await dialog.getByLabel('Reps per Set', { exact: true }).fill('12');
     await dialog.getByLabel('Weight (lbs) - Optional', { exact: true }).fill('25');
-    await dialog.getByLabel('Workout color').selectOption('blue');
+    await dialog.getByText('Exercise Details · Equipment, rest, instructions, color',{exact:true}).click();await dialog.getByLabel('Workout color').selectOption('blue');
     await assertContained(page, dialog);
-    await dialog.getByRole('button', { name: 'Add Workout', exact: true }).click();
+    await dialog.getByRole('button', { name: 'Save Exercise', exact: true }).click();
     await expect(dialog).toBeHidden();
-    await page.getByText('Edit Workouts', { exact: true }).click();
+    await page.getByRole('button',{name:'Save Routine',exact:true}).click();
+    await page.getByText('Exercise Library', { exact: true }).click();
     await page.getByRole('button', { name: 'Edit workout New test exercise', exact: true }).click();
-    dialog = page.getByRole('region', { name: 'Edit Workout' });
+    dialog = page.getByRole('region', { name: 'Edit Exercise' });
     await dialog.getByLabel('Workout Name').fill('Updated test exercise');
-    await dialog.getByLabel('Total Reps', { exact: true }).fill('15');
+    await dialog.getByLabel('Reps per Set', { exact: true }).fill('15');
     if (size.name === 'phone') {
       await page.setViewportSize({ width: 390, height: 430 });
       await expect.poll(() => page.locator('main').evaluate(el => el.getBoundingClientRect().height)).toBeLessThanOrEqual(430);
@@ -72,7 +74,7 @@ for (const size of [{ name: 'phone', width: 390, height: 600 }, { name: 'small p
       await expect(dialog.getByLabel('Weight (lbs) - Optional', { exact: true })).toHaveValue('25');
     }
     await assertContained(page, dialog);
-    await dialog.getByRole('button', { name: 'Save Changes' }).click();
+    await dialog.getByRole('button', { name: 'Save Exercise' }).click();
     await expect(dialog).toBeHidden();
     await page.reload();
     const data = await readData(page);
@@ -82,41 +84,8 @@ for (const size of [{ name: 'phone', width: 390, height: 600 }, { name: 'small p
   });
 }
 
-test('routine trash requires explicit confirmation; cancellation and deletion preserve workouts/history', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 700 });
-  await seed(page);
-  await page.goto('routines');
-  const trigger = page.getByRole('button', { name: 'Delete routine Strength', exact: true });
-  await expect(trigger.locator('svg')).toHaveClass(/lucide-trash/);
-  const before = await readData(page);
-  for (const dismiss of ['Cancel', 'Escape', 'Close', 'Backdrop']) {
-    await trigger.click();
-    const confirmation = page.getByRole('alertdialog', { name: 'Delete routine?' });
-    await expect(confirmation).toHaveClass(/glass-dialog/);
-    await expect(confirmation).toContainText('Strength');
-    await expect(confirmation.getByRole('button', { name: 'Cancel' })).toBeFocused();
-    expect(await readData(page)).toEqual(before);
-    if (dismiss === 'Escape') await page.keyboard.press('Escape');
-    else if (dismiss === 'Backdrop') await page.mouse.click(4, 4);
-    else await confirmation.getByRole('button', { name: dismiss, exact: true }).click();
-    await expect(confirmation).toBeHidden();
-    expect(await readData(page)).toEqual(before);
-    await expect(trigger).toBeFocused();
-  }
-  await trigger.click();
-  await page.getByRole('alertdialog').getByRole('button', { name: 'Delete routine', exact: true }).click();
-  await expect(page.getByRole('alertdialog')).toBeHidden();
-  await expect(page.getByTestId('routine-header-r1')).toHaveCount(0);
-  await page.reload();
-  const after = await readData(page);
-  expect(after.routines.r1).toBeUndefined();
-  expect(after.routines.r2).toEqual(before.routines.r2);
-  expect(after.workouts.w1).toEqual({ ...before.workouts.w1, routineId: undefined });
-  expect(after.dailyLogs).toEqual(before.dailyLogs);
-  await page.getByRole('button', { name: 'Delete routine Keep this routine', exact: true }).click();
-  await page.getByRole('alertdialog').getByRole('button', { name: 'Delete routine', exact: true }).click();
-  await expect(page.getByTestId('button-add-routine')).toBeFocused();
-  expect((await readData(page)).workouts).toEqual(after.workouts);
-  expect((await readData(page)).dailyLogs).toEqual(before.dailyLogs);
-  await expect.poll(() => page.locator('main').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
+test('routine deletion requires confirmation and preserves shared exercises and history',async({page})=>{
+ await seed(page);await page.goto('routines');const before=await readData(page);
+ await page.getByTestId('button-edit-routine-r1').click();page.once('dialog',d=>d.dismiss());await page.getByRole('button',{name:'Delete Routine',exact:true}).click();expect(await readData(page)).toEqual(before);
+ page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Delete Routine',exact:true}).click();await expect(page.getByTestId('routine-header-r1')).toHaveCount(0);const after=await readData(page);expect(after.workouts.w1).toMatchObject({id:'w1',name:'Existing exercise'});expect(after.dailyLogs).toEqual(before.dailyLogs);expect(after.routines.r2.id).toBe('r2');
 });

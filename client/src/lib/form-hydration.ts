@@ -1,3 +1,4 @@
+import { routineExercises } from './routine-planning';
 import { entryId, meditationDays } from './wellness-records';
 import { localDay } from './wellness-progress';
 import { loadStoredCardio } from './cardio-initialization';
@@ -49,15 +50,19 @@ export async function hydrateForm(def: FormDefinition, draft: Record<string, any
             const collection = def.group === 'workout' ? data.workouts : data.routines;
             const record = find(Array.isArray(collection) ? collection : Object.values(collection ?? {}), id);
             state[def.group === 'workout' ? 'editingWorkout' : 'editingRoutine'] = record;
+            if(def.group==='routine')state.routineDraft ??= structuredClone(record);
         }
         else {
             state[def.group === 'workout' ? 'editingWorkout' : 'editingRoutine'] = null;
+            if(def.group==='routine')state.routineDraft ??= {id:crypto.randomUUID(),name:'',selectedDays:[],placements:[],createdAt:new Date().toISOString()};
         }
         const routine = params.get('routine');
         if (routine) {
-            const r = find(Object.values(data.routines ?? {}), routine);
+            const r = state.routineDraft?.id===routine ? state.routineDraft : find(Object.values(data.routines ?? {}), routine);
             state.selectedRoutineId = r.id;
             state.preSelectedDays = r.selectedDays;
+            const placement=params.get('placement');
+            if(placement){const item=routineExercises({...data,routines:{...data.routines,[r.id]:r}},r).find(w=>w.placementId===placement);if(!item)throw Error('The exercise placement no longer exists.');state.editingPlacementId=placement;state.editingWorkout=item;}
         }
     }
     if (def.id === 'cardio-edit') {

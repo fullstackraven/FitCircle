@@ -86,7 +86,7 @@ for (const mode of ['dark', 'light']) for (const width of [320, 390]) {
     };
     await page.goto('./');
     await page.getByRole('button', { name: 'Edit Push-ups', exact: true }).click();
-    const editor = page.getByRole('region', { name: 'Edit Workout', exact: true });
+    const editor = page.getByRole('region', { name: 'Edit Exercise', exact: true });
     await expect(editor).toBeVisible();
     await expect(page).toHaveURL(/workouts\/edit\?id=w/);
     await expect(page.getByRole('dialog')).toHaveCount(0);
@@ -96,7 +96,7 @@ for (const mode of ['dark', 'light']) for (const width of [320, 390]) {
     expect(editorBox.x + editorBox.width).toBeLessThanOrEqual(width);
     expect(await editor.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
     expect((await textContrast(page)).failures, 'workout-editor: text contrast').toEqual([]);
-    const save = editor.getByRole('button', { name: 'Save Changes', exact: true });
+    const save = editor.getByRole('button', { name: 'Save Exercise', exact: true });
     await save.scrollIntoViewIfNeeded();
     await expect(save).toBeInViewport();
     await page.screenshot({ path: `${dir}/workout-editor.png`, animations: 'disabled' });

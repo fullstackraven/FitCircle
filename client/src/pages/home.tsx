@@ -1,3 +1,5 @@
+import type { Workout } from '@/hooks/use-workouts';
+import { type ExerciseDetails } from '@/lib/routine-planning';
 import { FormScreen } from '@/components/forms/form-page';
 import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
 import { focusDashboardOnOpen, returnDashboardFocus } from '@/lib/dashboard-navigation';
@@ -35,7 +37,6 @@ export default function Home() {
     decrementWorkout,
     deleteWorkout,
     updateWorkout,
-    updateWorkoutGoal,
     getTodaysTotals,
     getRecentActivity,
     getAvailableColors,
@@ -43,7 +44,7 @@ export default function Home() {
     canAddMoreWorkouts,
     isWorkoutActiveOnDay,
     getRoutineArray,
-    getWorkoutsByDays
+    saveExercise
   } = useWorkouts();
 
   const { timerState, startTimer, startTimerFromSeconds, pauseTimer, resumeTimer, resetTimer, formatTime, getProgress } = useTimer();
@@ -61,7 +62,7 @@ export default function Home() {
 
   const [isWorkoutPageOpen, setWorkoutPageOpen] = useRouteForm('workout');
   const [clickingWorkout, setClickingWorkout] = useState<string | null>(null);
-  const [editingWorkout, setEditingWorkout] = useRouteState<{ id: string; name: string; color: string; dailyGoal: number; setsGoal?: number; weightLbs?: number; scheduledDays?: number[] } | null>('editingWorkout', null);
+  const [editingWorkout, setEditingWorkout] = useRouteState<Workout | null>('editingWorkout', null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
   const [isTimerOpen, setIsTimerOpen] = useState(false);
@@ -102,11 +103,12 @@ export default function Home() {
   
   // Filter workouts that should be active today
   const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
-  const todaysWorkouts = workouts.filter(workout => isWorkoutActiveOnDay(workout, today));
+  const todaysWorkouts = todaysTotals.filter(w => workouts.some(active=>active.id===w.id));
   
   // Get today's routine
   const routines = getRoutineArray();
-  const todaysRoutine = routines.find(routine => routine.selectedDays.includes(today));
+  const todayRoutines = routines.filter(routine => routine.selectedDays.includes(today));
+  const todaysRoutine = todayRoutines.length ? { name: todayRoutines.map(r=>r.name).join(' · ') } : undefined;
   
 
   // Get current week's days with scheduled workouts
@@ -155,31 +157,15 @@ export default function Home() {
     if (!decrementWorkout(workoutId)) toast({title:'Undo was not saved',description:'Please retry.',variant:'destructive'});
   };
 
-  const handleDeleteWorkout = (workoutId: string) => {
-    if (confirm('Are you sure you want to delete this workout? This will remove all its data.')) {
-      deleteWorkout(workoutId);
-    }
-  };
+  const handleDeleteWorkout = (workoutId: string) => deleteWorkout(workoutId);
 
-  const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], setsGoal = 1) => {
-    const saved = editingWorkout
-      ? updateWorkout(editingWorkout.id, name, dailyGoal, weightLbs, scheduledDays, color, setsGoal)
-      : addWorkout(name, color, dailyGoal, weightLbs, scheduledDays, undefined, setsGoal);
-    if (saved) setEditingWorkout(null);
-    return saved;
-
+  const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], setsGoal = 1, details: ExerciseDetails = {}) => {
+    const exercise: Workout={...editingWorkout,id:editingWorkout?.id ?? crypto.randomUUID(),name,color,dailyGoal,setsGoal,weightLbs,scheduledDays,count:editingWorkout?.count??0,...details};
+    const saved=saveExercise(exercise); if(saved)setEditingWorkout(null);return saved;
   };
 
   const handleEditWorkout = (workout: any) => {
-    setEditingWorkout({
-      id: workout.id,
-      name: workout.name,
-      color: workout.color,
-      dailyGoal: workout.dailyGoal,
-      setsGoal: workout.setsGoal,
-      weightLbs: workout.weightLbs,
-      scheduledDays: workout.scheduledDays
-    });
+    setEditingWorkout({...getWorkoutById(workout.id)??workout});
     setWorkoutPageOpen(true);
   };
 
@@ -319,7 +305,7 @@ export default function Home() {
                     <ProgressCircle
                       ariaLabel={`Record a ${progress.mode === "sets" ? "set" : "rep"} for ${workout.name}: ${progress.count} of ${progress.goal}`}
                       cardStyle
-                      unitLabel={progress.mode === "sets" ? "Sets" : "Reps"}
+                      unitLabel={progress.mode === "sets" ? "Sets" : progress.targetType === "duration" ? "Sec" : "Reps"}
                       displayRatio={progress.mode === "sets"}
                       count={progress.count}
                       goal={progress.goal}
@@ -331,8 +317,9 @@ export default function Home() {
                       isAnimating={clickingWorkout === workout.id}
                     />
                     <div className="min-w-0 w-full text-center">
-                      <h3 className="home-workout-name mt-2 text-sm font-semibold text-strong">{workout.name}</h3>
-                      <p className="text-xs text-muted-foreground mt-1"><span className="type-metric">{currentCount} / {progress.repGoal}</span> reps{progress.mode === "reps" && <span className="block">Rep tracking today</span>}</p>
+                      <h3 className="home-workout-name mt-2 text-sm font-semibold text-strong">{workout.name}{workout.routineNames?.length ? <span className="block text-xs font-normal text-muted-foreground">{workout.routineNames.join(' · ')} · {workout.progress.targetType === 'duration' ? 'sec' : 'reps'}</span> : workout.progress.targetType === 'duration' ? ' (sec)' : ''}</h3>
+                      <p className="text-xs text-muted-foreground mt-1"><span className="type-metric">{currentCount} / {progress.repGoal}</span> {progress.targetType === "duration" ? "sec" : "reps"}{progress.mode === "reps" && <span className="block">Individual target tracking today</span>}</p>
+                      {(workout.routineNames?.length??0)>1&&<p className="text-xs text-muted-foreground">Target from {workout.routineNames![0]} · Shared daily progress</p>}
                       {workout.weightLbs && (
                         <div className="text-xs text-muted-foreground">
                           {workout.weightLbs} lbs
@@ -537,7 +524,7 @@ export default function Home() {
               <div key={workout.id} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className={`w-4 h-4 rounded-full ${getColorClass(workout.color)}`}></div>
-                  <span className="entity-name font-medium text-strong">{workout.name}</span>
+                  <span className="entity-name font-medium text-strong">{workout.name}{workout.routineNames?.length ? <span className="block text-xs font-normal text-muted-foreground">{workout.routineNames.join(' · ')} · {workout.progress.targetType === 'duration' ? 'sec' : 'reps'}</span> : workout.progress.targetType === 'duration' ? ' (sec)' : ''}</span>
                 </div>
                 <span className="type-metric shrink-0 text-lg font-bold text-strong">{typeof workout.count === 'number' ? workout.count : 0}</span>
               </div>

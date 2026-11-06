@@ -26,10 +26,10 @@ test('workout/routine routes retain editing, direct refresh and unsaved Back pro
  await expect(page.getByLabel('Workout Name')).toHaveValue('Push-ups');await page.getByLabel('Workout Name').fill('Route edited');
  page.once('dialog',d=>d.dismiss());await page.getByRole('button',{name:'Back',exact:true}).click();
  await expect(page.getByLabel('Workout Name')).toHaveValue('Route edited');
- await page.getByRole('button',{name:'Save Changes',exact:true}).click();await expect(page).toHaveURL(/\/FitCircle\/$/);
+ await page.getByRole('button',{name:'Save Exercise',exact:true}).click();await expect(page).toHaveURL(/\/FitCircle\/$/);
  await page.goto('routines');await page.getByTestId('button-create-routine').click();await expect(page).toHaveURL(/routines\/new$/);
  await page.getByLabel('Routine Name').fill('Route routine');await page.getByRole('button',{name:'Weekdays',exact:true}).click();
- await page.getByRole('button',{name:'Create Routine',exact:true}).click();await expect(page).toHaveURL(/routines$/);
+ await page.getByRole('button',{name:'Save Routine',exact:true}).click();await expect(page).toHaveURL(/routines$/);
 });
 
 
@@ -110,12 +110,12 @@ test('browser Back protects drafts, Cancel discards explicitly, and Home Timer r
  await expect(page).toHaveURL(/workouts\/new/);await expect(page.getByLabel('Workout Name')).toHaveValue('Unsaved Back draft');
  page.once('dialog',d=>d.accept());await page.goBack();await expect(page).toHaveURL(/\/FitCircle\/$/);
  await page.getByRole('button',{name:'Add new workout',exact:true}).click();await page.getByLabel('Workout Name').fill('Created on page');
- await page.getByRole('button',{name:'Add Workout',exact:true}).click();await expect(page).toHaveURL(/\/FitCircle\/$/);
- await page.getByRole('button',{name:'Edit Created on page',exact:true}).click();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Delete Workout',exact:true}).click();
+ await page.getByRole('button',{name:'Save Exercise',exact:true}).click();await expect(page).toHaveURL(/\/FitCircle\/$/);
+ await page.getByRole('button',{name:'Edit Created on page',exact:true}).click();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Delete Exercise',exact:true}).click();
  await expect(page).toHaveURL(/\/FitCircle\/$/);await expect(page.getByText('Created on page',{exact:true})).toHaveCount(0);
  await page.getByTitle('Open Timer').click();await expect(page.getByRole('dialog',{name:'Timer',exact:true})).toBeVisible();
  await expect(page.locator('[data-form-page]')).toHaveCount(0);await page.getByRole('dialog',{name:'Timer',exact:true}).getByRole('button',{name:'Close',exact:true}).click();
- await page.goto('routines/edit?id=r');await page.getByLabel('Routine Name').fill('Edited on page');await page.getByRole('button',{name:'Save Changes',exact:true}).click();
+ await page.goto('routines/edit?id=r');await page.getByLabel('Routine Name').fill('Edited on page');await page.getByRole('button',{name:'Save Routine',exact:true}).click();
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('workout-tracker-data')!).routines.r.name)).toBe('Edited on page');
 });
 

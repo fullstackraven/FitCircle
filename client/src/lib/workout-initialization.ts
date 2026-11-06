@@ -1,3 +1,4 @@
+import { migrateRoutinePlanning } from './routine-planning';
 import { workoutDataSchema } from './backup';
 import type { WorkoutData } from '@/hooks/use-workouts';
 
@@ -28,5 +29,5 @@ export function parseStoredWorkouts(raw: string | null, today: string): WorkoutD
   }
   // Validate, never normalize: retain numeric logs, strings, timestamps, arrays
   // accepted by legacy backup validation, and unknown metadata exactly as saved.
-  return value as unknown as WorkoutData;
+  try { return migrateRoutinePlanning(value as unknown as WorkoutData); } catch { throw new StoredWorkoutDataError(raw,'invalid'); }
 }

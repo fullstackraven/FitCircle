@@ -108,8 +108,8 @@ export function openForm(store: Store, group: string) {
         params.set('date', date);
     if (store.owner === 'food-tracker')
         params.set('meal', v.searchMeal ?? 'breakfast');
-    if (v.selectedRoutineId)
-        params.set('routine', v.selectedRoutineId);
+    if (v.selectedRoutineId) params.set('routine', v.selectedRoutineId);
+    if (v.editingPlacementId) params.set('placement', v.editingPlacementId);
     if (params.size)
         path += '?' + params;
     const skipSubmittedCustom = group === 'food-entry' && formForPath()?.group === 'food-custom' && Boolean(document.documentElement.dataset.formSaving);
@@ -136,11 +136,12 @@ export function closeForm(store: Store) {
     const save = Boolean(document.documentElement.dataset.formSaving);
     delete document.documentElement.dataset.formSaving;
     const def = formForPath();
-    const target = save && def?.id !== 'cardio-type' ? history.state?.fitcircleFormRoot : history.state?.fitcircleFormReturn;
+    const planningParent = def?.owner==='routines' && def.group==='workout' && formForPath((history.state?.fitcircleFormReturn??'').split('?')[0])?.group==='routine';
+    const target = save && def?.id !== 'cardio-type' && !planningParent ? history.state?.fitcircleFormRoot : history.state?.fitcircleFormReturn;
     const values=snapshot(store);
     const fallback=ownerPath(store.owner)+(store.owner==='food-tracker' && values.selectedDate && values.selectedDate!==getTodayString() ? '?'+new URLSearchParams({date:values.selectedDate}) : '');
     const destination=target || fallback;
-    const returningToParent = !(save && def?.id!=='cardio-type') && formForPath(destination.split('?')[0]);
+    const returningToParent = !(save && def?.id!=='cardio-type' && !planningParent) && formForPath(destination.split('?')[0]);
     const parent = returningToParent ? history.state?.fitcircleFormParent : undefined;
     const finish=()=>{store.closing=false;store.navigate(destination,{replace:true,state:{...parent,fitcircleForm:values}});};
     if(history.state?.fitcircleDraftFence){

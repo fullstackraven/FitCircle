@@ -1,3 +1,4 @@
+import { prescriptionFor } from './routine-planning';
 import type { Workout, WorkoutLogEntry } from '@/hooks/use-workouts';
 export type SetLog = WorkoutLogEntry & { completedSets: number; setsGoalAtTime: number };
 export function isSetLog(entry: number | WorkoutLogEntry | undefined): entry is SetLog {
@@ -6,11 +7,12 @@ export function isSetLog(entry: number | WorkoutLogEntry | undefined): entry is 
 export const repsForSets = (sets: number, reps: number, target: number) => Math.floor(sets * reps / target);
 export function workoutProgress(workout: Workout, entry?: number | WorkoutLogEntry) {
   const reps = typeof entry === 'object' ? entry.count : entry || 0;
-  if (isSetLog(entry)) return { mode: 'sets' as const, count: entry.completedSets, goal: entry.setsGoalAtTime, reps, repGoal: entry.goalAtTime };
+  const targetType = typeof entry==='object' ? entry.targetTypeAtTime??'repetitions' : reps>0?'repetitions':prescriptionFor(workout).targetType;
+  if (isSetLog(entry)) return { targetType, mode: 'sets' as const, count: entry.completedSets, goal: entry.setsGoalAtTime, reps, repGoal: entry.goalAtTime };
   // Any legacy object (including an undone zero) or positive numeric record stays
   // rep-based for this day. Reading never adds metadata to historical records.
-  if (typeof entry === 'object' || reps > 0) return { mode: 'reps' as const, count: reps, goal: typeof entry === 'object' ? entry.goalAtTime : workout.dailyGoal, reps, repGoal: typeof entry === 'object' ? entry.goalAtTime : workout.dailyGoal };
-  return { mode: 'sets' as const, count: 0, goal: workout.setsGoal ?? 1, reps: 0, repGoal: workout.dailyGoal };
+  if (typeof entry === 'object' || reps > 0) return { targetType, mode: 'reps' as const, count: reps, goal: typeof entry === 'object' ? entry.goalAtTime : workout.dailyGoal, reps, repGoal: typeof entry === 'object' ? entry.goalAtTime : workout.dailyGoal };
+  return { targetType, mode: 'sets' as const, count: 0, goal: workout.setsGoal ?? 1, reps: 0, repGoal: workout.dailyGoal };
 }
 export function workoutLogComplete(entry: number | WorkoutLogEntry | undefined, legacyGoal: number) {
   return isSetLog(entry) ? entry.completedSets >= entry.setsGoalAtTime
@@ -19,8 +21,9 @@ export function workoutLogComplete(entry: number | WorkoutLogEntry | undefined, 
 export function stepWorkout(workout: Workout, entry: number | WorkoutLogEntry | undefined, direction: 1 | -1): WorkoutLogEntry {
   const p = workoutProgress(workout, entry);
   const count = Math.max(0, Math.min(p.goal, p.count + direction));
-  if (p.mode === 'reps') return { ...(typeof entry === 'object' ? entry : {}), count: direction < 0 ? Math.max(0,p.count - 1) : Math.max(p.count,count), goalAtTime:p.repGoal };
-  return { ...(typeof entry === 'object' ? entry : {}), count:(isSetLog(entry) ? entry.carriedReps ?? 0 : 0) + repsForSets(count,p.repGoal,p.goal), goalAtTime:p.repGoal, completedSets:count, setsGoalAtTime:p.goal };
+  const snapshot = typeof entry === 'object' ? entry : {targetTypeAtTime: entry ? 'repetitions' as const : prescriptionFor(workout).targetType, nameAtTime:workout.name,colorAtTime:workout.color,routineNamesAtTime:workout.routineNames};
+  if (p.mode === 'reps') return { ...snapshot, count: direction < 0 ? Math.max(0,p.count - 1) : Math.max(p.count,count), goalAtTime:p.repGoal };
+  return { ...snapshot, count:(isSetLog(entry) ? entry.carriedReps ?? 0 : 0) + repsForSets(count,p.repGoal,p.goal), goalAtTime:p.repGoal, completedSets:count, setsGoalAtTime:p.goal };
 }
 
 // Mutation validation only: existing stored historical goals are never normalized.

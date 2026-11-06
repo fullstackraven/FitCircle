@@ -226,7 +226,7 @@ for (const mode of ["dark", "light"])
       await field.evaluate((el) => getComputedStyle(el).outlineStyle),
     ).toBe("none");
     await page
-      .getByRole("button", { name: "Save Changes", exact: true })
+      .getByRole("button", { name: "Save Exercise", exact: true })
       .click();
     await expect(
       page.getByRole("button", {

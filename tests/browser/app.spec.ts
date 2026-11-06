@@ -7,8 +7,8 @@ test('fitness navigation, workout persistence, food search, and fully offline re
   await expect(page.getByText('New workout', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Add new workout', exact: true }).click();
   await page.locator('#workout-name').fill('Migration smoke workout');
-  await page.locator('#daily-goal').fill('10');
-  await page.getByRole('button', { name: 'Add Workout', exact: true }).click();
+  await page.locator('#per-set').fill('10');
+  await page.getByRole('button', { name: 'Save Exercise', exact: true }).click();
   await expect(page.getByText('Migration smoke workout', { exact: true })).toBeVisible();
   await page.reload();
   await expect(page.getByText('Migration smoke workout', { exact: true })).toBeVisible();

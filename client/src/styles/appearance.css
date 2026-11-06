@@ -452,15 +452,11 @@
   outline: 1px solid var(--defined-card-border);
   outline-offset: -1px;
 }
-:root[data-appearance="light"] .training-editor :is(.editor-name, .editor-number-card) {
+:root[data-appearance="light"] .training-editor .editor-name {
   background: var(--defined-input-background);
 }
 :root[data-appearance="light"] .training-editor .editor-name {
   border: 1px solid var(--defined-input-border);
-}
-:root[data-appearance="light"] .training-editor .editor-number-card {
-  outline: 1px solid var(--defined-input-border);
-  outline-offset: -1px;
 }
 
 /* Inset, paint-only Today border: no grid or activity-indicator displacement.

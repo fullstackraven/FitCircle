@@ -1,3 +1,4 @@
+import { plannedWithActivity, historicalDefinitions, recordedReps } from './routine-planning';
 import { workoutLogComplete } from './workout-progress';
 import type { WorkoutData, WorkoutLogEntry, Workout } from '@/hooks/use-workouts';
 import { getTodayString, getDateString } from './date-utils';
@@ -6,7 +7,7 @@ import { getTodayString, getDateString } from './date-utils';
 export function getTotalWorkoutStats(data: WorkoutData, readRecovery: () => string | null) {
   const getCountFromLogEntry = (entry: number | WorkoutLogEntry | undefined): number => !entry ? 0 : typeof entry === 'object' ? entry.count : entry;
   const isWorkoutActiveOnDay = (workout: Workout, day: number) => !workout.scheduledDays || workout.scheduledDays.length === 0 || workout.scheduledDays.includes(day);
-  const workoutArray = Object.values(data.workouts || {});
+  const workoutArray = historicalDefinitions(data);
   const today = getTodayString();
   let totalReps = 0;
   let totalCompletedDays = 0;
@@ -73,12 +74,12 @@ export function getTotalWorkoutStats(data: WorkoutData, readRecovery: () => stri
     if (isToday) {
       // For today: check scheduled workouts against current goals
       const todayDayOfWeek = new Date().getDay();
-      const todaysScheduledWorkouts = workoutArray.filter(workout => isWorkoutActiveOnDay(workout, todayDayOfWeek));
+      const todaysScheduledWorkouts = plannedWithActivity(data,todayDayOfWeek,dateStr);
       
       let allGoalsMet = true;
       todaysScheduledWorkouts.forEach(workout => {
         const count = getCountFromLogEntry(dayLog[workout.id]);
-        totalReps += count;
+        totalReps += recordedReps(dayLog[workout.id]);
         if (!workoutLogComplete(dayLog[workout.id], typeof dayLog[workout.id] === 'object' ? (dayLog[workout.id] as WorkoutLogEntry).goalAtTime : workout.dailyGoal)) {
           allGoalsMet = false;
         }
@@ -95,7 +96,7 @@ export function getTotalWorkoutStats(data: WorkoutData, readRecovery: () => stri
           const logEntry = dayLog[workout.id];
           const count = getCountFromLogEntry(logEntry);
           const goalAtTime = typeof logEntry === 'object' ? logEntry.goalAtTime : workout.dailyGoal;
-          totalReps += count;
+          totalReps += recordedReps(dayLog[workout.id]);
           if (!workoutLogComplete(logEntry, goalAtTime)) {
             allGoalsMet = false;
           }

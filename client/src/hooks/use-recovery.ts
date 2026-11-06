@@ -58,8 +58,8 @@ export const useRecovery = () => {
     if (!totalCompletedDaysFromStats) {
       // Fallback calculation if not provided
       const workoutData = localStorage.getItem(STORAGE_KEYS.WORKOUTS);
-      const workouts = workoutData ? safeParseJSON(workoutData, { workouts: {}, dailyLogs: {} }) : { workouts: {}, dailyLogs: {} };
-      const workoutArray = Object.values(workouts.workouts || {});
+      const workouts = workoutData ? safeParseJSON<any>(workoutData, { workouts: {}, dailyLogs: {} }) : { workouts: {}, dailyLogs: {}, archivedWorkouts:{} };
+      const workoutArray = Object.values({...workouts.archivedWorkouts,...workouts.workouts});
       
       if (workoutArray.length > 0) {
         Object.entries(workouts.dailyLogs || {}).forEach(([dateStr, dayLog]) => {

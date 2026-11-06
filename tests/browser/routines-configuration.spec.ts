@@ -107,7 +107,7 @@ test("inline expansion is keyboard accessible, independently retained, read-only
   await expect(page.getByTestId("routine-exercise-r0-w1")).toHaveCount(0);
   await page.getByTestId("routine-header-r1").click();
   await expect(page.getByTestId("routine-exercise-r1-w1")).toContainText(
-    "25 reps · 1 set · 40 lb",
+    "1 × 25 reps · 40 lb",
   );
   await expect(first).toHaveAttribute("aria-expanded", "true");
   await first.focus();
@@ -126,65 +126,16 @@ test("inline expansion is keyboard accessible, independently retained, read-only
   expect(await raw(page)).toBe(before);
 });
 
-test("editing existing exercise schedules adds/removes shared routine membership and updates Home without duplicating history", async ({
-  page,
-}) => {
-  await seed(page);
-  const before = await data(page);
-  await page.getByTestId("routine-header-r0").click();
-  await page.getByText("Edit Workouts", { exact: true }).click();
-  await page
-    .getByRole("button", { name: "Edit workout Weighted carry", exact: true })
-    .click();
-  let dialog = page.getByRole('region', { name: "Edit Workout", exact: true });
-  await dialog
-    .getByRole("button", { name: "Clear Selection", exact: true })
-    .click();
-  await dialog.getByRole("button", { name: "Monday", exact: true }).click();
-  await dialog.getByLabel("Workout Name").fill("Shared weighted carry");
-  await dialog.getByLabel("Total Reps", { exact: true }).fill("30");
-  await dialog.getByLabel("Workout color").selectOption("red");
-  await dialog
-    .getByRole("button", { name: "Save Changes", exact: true })
-    .click();
-  await expect(page.getByTestId("routine-exercise-r0-w1")).toContainText(
-    "30 reps · 1 set · 40 lb",
-  );
-  const edited = await data(page);
-  expect(Object.keys(edited.workouts)).toEqual(Object.keys(before.workouts));
-  expect(edited.dailyLogs).toEqual(before.dailyLogs);
-  expect(edited.journalEntries).toEqual(before.journalEntries);
-  await page.goto("./");
-  await expect(page.getByTestId("home-workout-w1")).toContainText(
-    "Shared weighted carry",
-  );
-  await expect(
-    page.getByRole("region", { name: "Today's Workout" }),
-  ).toContainText("PUSH");
-  await page.goto("routines");
-  await page.getByTestId("button-edit-routine-r0").click();
-  dialog = page.getByRole('region', { name: "Edit Routine", exact: true });
-  await dialog.getByLabel("Routine Name").fill("PUSH Tuesday");
-  await dialog
-    .getByRole("button", { name: "Clear Selection", exact: true })
-    .click();
-  await dialog.getByRole("button", { name: "Tuesday", exact: true }).click();
-  await dialog.getByTestId("button-save-routine").click();
-  await page.getByTestId("routine-header-r0").click();
-  await expect(page.getByTestId("routine-exercise-r0-w1")).toHaveCount(0);
-  await expect(page.getByTestId("routine-exercise-r0-w2")).toBeVisible();
-  await page.reload();
-  expect((await data(page)).routines.r0.selectedDays).toEqual([2]);
-  expect((await data(page)).dailyLogs).toEqual(before.dailyLogs);
-  await page.goto("./");
-  await expect(page.getByTestId("home-workout-w1")).toBeVisible(); // Routine-day edits never rewrite exercise schedules.
-  await expect(
-    page.getByRole("region", { name: "Today's Workout" }),
-  ).not.toContainText("PUSH Tuesday");
-  await page.goto("reminders");
-  await expect(
-    page.getByText("Synthetic reminder", { exact: true }),
-  ).toBeVisible();
+test("explicit assignments survive routine schedule changes without rewriting exercise definitions or history", async ({page}) => {
+ await seed(page); const before=await data(page);
+ await page.getByTestId('button-edit-routine-r0').click();
+ await page.getByText('＋ Add Exercise',{exact:true}).click();await page.getByRole('button',{name:'Add Weighted carry',exact:true}).click();
+ await page.getByRole('button',{name:'Clear Selection',exact:true}).click();await page.getByRole('button',{name:'Tuesday',exact:true}).click();
+ await page.getByRole('button',{name:'Save Routine',exact:true}).click();
+ const after=await data(page);expect(after.routines.r0.placements.map((p:any)=>p.exerciseId)).toContain('w1');expect(after.workouts).toEqual(before.workouts);expect(after.dailyLogs).toEqual(before.dailyLogs);expect(after.journalEntries).toEqual(before.journalEntries);
+ await page.reload();await page.getByTestId('routine-header-r0').click();await expect(page.getByTestId('routine-exercise-r0-w1')).toBeVisible();
+ await page.goto('./');await expect(page.getByTestId('home-workout-w0')).toHaveCount(0);
+ await page.goto('reminders');await expect(page.getByText('Synthetic reminder',{exact:true})).toBeVisible();
 });
 
 test("complete backup restores routine IDs, definitions, schedules, weights, colors and historical records unchanged", async ({
@@ -225,7 +176,7 @@ test("complete backup restores routine IDs, definitions, schedules, weights, col
   await page.goto("routines");
   await page.getByTestId("routine-header-r1").click();
   await expect(page.getByTestId("routine-exercise-r1-w1")).toContainText(
-    "25 reps · 1 set · 40 lb",
+    "1 × 25 reps · 40 lb",
   );
 });
 
@@ -253,12 +204,12 @@ for (const width of [320, 390, 1280])
       const name = (await card.getByRole("heading").boundingBox())!;
       expect(name.x + name.width).toBeLessThanOrEqual(bounds.x);
     }
-    await page.getByText("Edit Workouts", { exact: true }).click();
+    await page.getByText("Exercise Library", { exact: true }).click();
     await page
-      .getByRole("button", { name: "Add New Workout", exact: true })
+      .getByRole("button", { name: "Create New Exercise", exact: true })
       .scrollIntoViewIfNeeded();
     const last = page.getByRole("button", {
-      name: "Add New Workout",
+      name: "Create New Exercise",
       exact: true,
     });
     await page.locator("main").evaluate((el) => {

@@ -1,179 +1,76 @@
-import { ChevronDown, Trash2 } from 'lucide-react';
 import '@/styles/training-editors.css';
-import { validWorkoutTargets } from '@/lib/workout-progress';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import type { Workout } from '@/hooks/use-workouts';
+import { prescriptionFor, totalTarget, validPrescription, prescriptionText, type ExerciseDetails, type Prescription } from '@/lib/routine-planning';
 import { FormGroup, FormContent, FormHeader, FormTitle, FormDescription, FormFooter } from '@/components/forms/form-page';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { DaySelector } from './DaySelector';
-import { getColorClass } from '@/lib/color-utils';
-
-interface WorkoutEditorProps {
-  formId?: string;
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], setsGoal?: number) => boolean | undefined;
-  onDelete?: (workoutId: string) => void;
-  availableColors: string[];
-  editingWorkout?: { id: string; name: string; color: string; dailyGoal: number; setsGoal?: number; weightLbs?: number; scheduledDays?: number[] } | null;
-  preSelectedDays?: number[];
+interface Props {
+    formId?: string;
+    isOpen: boolean;
+    onClose: () => void;
+    onSave: (name: string, color: string, total: number, weight?: number, days?: number[], sets?: number, details?: ExerciseDetails) => boolean | undefined;
+    onDelete?: (id: string) => boolean | void;
+    availableColors: string[];
+    editingWorkout?: Partial<Workout> & {
+        id: string;
+        name: string;
+        color: string;
+        dailyGoal: number;
+    } | null;
+    preSelectedDays?: number[];
+    routineContext?: boolean;
 }
-
-
-export function WorkoutEditor({ isOpen, onClose, onSave, onDelete, availableColors, editingWorkout, preSelectedDays }: WorkoutEditorProps) {
-  const [saveError, setSaveError] = useState('');
-  const [workoutName, setWorkoutName] = useState('');
-  const [selectedColor, setSelectedColor] = useState(availableColors[0] || 'green');
-  const [dailyGoal, setDailyGoal] = useState<number | string>(10);
-  const [setsGoal, setSetsGoal] = useState<number | string>(1);
-  const validTargets = validWorkoutTargets(Number(dailyGoal), Number(setsGoal));
-  const [weightLbs, setWeightLbs] = useState<number | string>('');
-  const [scheduledDays, setScheduledDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]); // Default to all days
-
-  // Initialize form when editing or when preSelectedDays is provided
-  useEffect(() => {
-    if (editingWorkout) {
-      setWorkoutName(editingWorkout.name);
-      setSelectedColor(editingWorkout.color);
-      setDailyGoal(editingWorkout.dailyGoal);
-      setSetsGoal(editingWorkout.setsGoal ?? 1);
-      setWeightLbs(editingWorkout.weightLbs || '');
-      setScheduledDays(editingWorkout.scheduledDays || [0, 1, 2, 3, 4, 5, 6]);
-    } else if (isOpen && preSelectedDays) {
-      // When opening a new workout with pre-selected days (from a routine)
-      setScheduledDays(preSelectedDays);
-    } else if (!isOpen) {
-      resetForm();
-    }
-  }, [editingWorkout, isOpen, preSelectedDays]);
-
-  const handleSave = () => {
-    const finalGoal = typeof dailyGoal === 'string' ? parseInt(dailyGoal) || 1 : dailyGoal;
-    const finalWeight = typeof weightLbs === 'string' ? (weightLbs === '' ? undefined : parseInt(weightLbs) || undefined) : weightLbs;
-    if (workoutName.trim() && validTargets) {
-      if (!onSave(workoutName.trim(), selectedColor, finalGoal, finalWeight, scheduledDays, Number(setsGoal))) { setSaveError('Changes were not saved. You can retry or cancel.'); return; }
-      setSaveError('');
-      resetForm();
-      onClose();
-    }
-  };
-
-  const resetForm = () => {
-    setSaveError('');
-    setWorkoutName('');
-    setSelectedColor(availableColors[0] || 'green');
-    setDailyGoal(10);
-    setSetsGoal(1);
-    setWeightLbs('');
-    setScheduledDays([0, 1, 2, 3, 4, 5, 6]); // Reset to all days
-  };
-
-  const handleCancel = () => {
-    resetForm();
-    onClose();
-  };
-
-  return (
-    <FormGroup formId="workout" open={isOpen} onOpenChange={onClose}>
-      <FormContent variant="training">
-        <FormHeader>
-          <FormTitle>{editingWorkout ? 'Edit Workout' : 'New Workout'}</FormTitle>
-          <FormDescription>{editingWorkout ? 'Update exercise settings' : 'Set up an exercise for your Home dashboard'}</FormDescription>
-        </FormHeader>
-        <div className="editor-sections">
-          <section aria-labelledby="exercise-heading">
-            <h3 id="exercise-heading" className="editor-section-title">Exercise</h3>
-            <Label htmlFor="workout-name" className="sr-only">Workout Name</Label>
-            <Input
-                id="workout-name"
-                type="text"
-                value={workoutName}
-                onChange={(e) => setWorkoutName(e.target.value)}
-                className="editor-name" placeholder="Workout name"
-              />
-          </section>
-          <section aria-labelledby="workout-details-heading">
-            <div className="editor-section-row">
-              <h3 id="workout-details-heading" className="editor-section-title">Workout details</h3>
-              <div className="editor-color">
-                <span aria-hidden="true" className={`editor-color-dot ${getColorClass(selectedColor)}`} />
-                <select id="workout-color" value={selectedColor} onChange={event => setSelectedColor(event.target.value)}
-                  className="fc-pill editor-color-select" aria-label="Workout color">
-                  {Array.from(new Set([...availableColors, selectedColor])).map(color => (
-                    <option key={color} value={color} className="bg-canvas text-strong">{color.charAt(0).toUpperCase() + color.slice(1)}</option>
-                  ))}
-                </select>
-                <ChevronDown size={16} aria-hidden="true" className="editor-color-chevron" />
-              </div>
-            </div>
-            <div className="editor-numbers">
-              <div className="editor-number-card"><Input
-                id="weight-lbs"
-                aria-label="Weight (lbs) - Optional"
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={weightLbs.toString()}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, ''); // Only allow digits
-                
-                  if (value === '') {
-                    // Allow empty field for bodyweight exercises
-                    setWeightLbs('');
-                    return;
-                  }
-                
-                  const numValue = parseInt(value);
-                  // Allow up to 4 digits (1-9999 lbs)
-                  if (numValue >= 1 && numValue <= 9999) {
-                    setWeightLbs(numValue);
-                  }
-                }}
-                onFocus={(e) => {
-
-                  e.target.select(); // Select all text when focused
-                }}
-
-                className="editor-value" placeholder="—"
-              /><Label htmlFor="weight-lbs">Weight (lbs)</Label></div>
-              <div className="editor-number-card"><Input
-                id="daily-goal"
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={dailyGoal.toString()}
-                onChange={e => setDailyGoal(e.target.value)}
-                onFocus={(e) => {
-
-                  e.target.select(); // Select all text when focused
-                }}
-
-                className="editor-value"
-              /><Label htmlFor="daily-goal">Total Reps</Label></div>
-              <div className="editor-number-card"><Input id="sets-goal" aria-label="Number of Sets" type="number" inputMode="numeric" min="1" max={Number(dailyGoal)} step="1"
-                value={setsGoal} onChange={e => setSetsGoal(e.target.value)} className="editor-value" /><Label htmlFor="sets-goal">Sets</Label></div>
-            </div>
-            {!validTargets && <p role="alert" className="text-xs text-feature-red mt-2">Reps: 1–9,999. Sets: 1–Total Reps. Use whole numbers.</p>}
-          </section>
-          <DaySelector variant="sheet" heading="Schedule" selectedDays={scheduledDays} onSelectionChange={setScheduledDays} />
+export function WorkoutEditor({ isOpen, onClose, onSave, onDelete, availableColors, editingWorkout, preSelectedDays, routineContext }: Props) {
+    const seed = editingWorkout ? prescriptionFor(editingWorkout as Workout) : { targetType: 'repetitions' as const, sets: 1, perSet: 10 };
+    const [name, setName] = useState(editingWorkout?.name ?? '');
+    const [p, setP] = useState<Prescription>(seed);
+    const [weight, setWeight] = useState('');
+    const [color, setColor] = useState('green');
+    const [days, setDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
+    const [equipment, setEquipment] = useState('');
+    const [rest, setRest] = useState('');
+    const [notes, setNotes] = useState('');
+    const [error, setError] = useState('');
+    useEffect(() => { if (!isOpen)
+        return; setName(editingWorkout?.name ?? ''); setP(editingWorkout ? prescriptionFor(editingWorkout as Workout) : { targetType: 'repetitions', sets: 1, perSet: 10 }); setColor(editingWorkout?.color ?? availableColors[0] ?? 'green'); setWeight(editingWorkout?.weightLbs === undefined ? '' : String(editingWorkout.weightLbs)); setDays(editingWorkout?.scheduledDays ?? preSelectedDays ?? [0, 1, 2, 3, 4, 5, 6]); setEquipment(editingWorkout?.equipment ?? ''); setRest(editingWorkout?.restSeconds === undefined ? '' : String(editingWorkout.restSeconds)); setNotes(editingWorkout?.notes ?? ''); setError(''); }, [isOpen, editingWorkout]);
+    const valid = validPrescription(p) && (!weight || Number.isFinite(Number(weight)) && Number(weight) >= 0 && Number(weight) <= 9999) && (!rest || Number.isInteger(Number(rest)) && Number(rest) >= 0 && Number(rest) <= 86400);
+    const change = (values: Partial<Prescription>) => setP(previous => ({ ...previous, ...values, legacyTotal: undefined }));
+    return <FormGroup formId="workout" open={isOpen} onOpenChange={onClose}><FormContent variant="training">
+    <FormHeader><FormTitle>{editingWorkout ? 'Edit Exercise' : 'Add Exercise'}</FormTitle><FormDescription>{routineContext ? 'Configure this routine placement' : 'Configure a reusable exercise'}</FormDescription></FormHeader>
+    <div className="editor-sections">
+      <section className="form-field"><Label htmlFor="workout-name">Exercise Name</Label><Input id="workout-name" aria-label="Workout Name" disabled={routineContext && !!editingWorkout} value={name} onChange={e => setName(e.target.value)} className="editor-name"/></section>
+      <section className="space-y-4">
+        <Label>Target Type</Label><div className="goal-editor-segments" role="group" aria-label="Target Type">{(['repetitions', 'duration'] as const).map(type => <Button key={type} variant="ghost" aria-pressed={p.targetType === type} onClick={() => change({ targetType: type })}>{type === 'duration' ? 'Duration' : 'Repetitions'}</Button>)}</div>
+        <div className="grid grid-cols-2 gap-3 min-w-0">
+          <div className="form-field"><Label htmlFor="sets-goal">Sets</Label><Input id="sets-goal" aria-label="Number of Sets" type="number" min="1" max="999" value={p.sets || ''} onChange={e => change({ sets: Number(e.target.value) })}/></div>
+          <div className="form-field"><Label htmlFor="per-set">{p.targetType === 'duration' ? 'Seconds per Set' : 'Reps per Set'}</Label><Input id="per-set" type="number" min="1" max={p.targetType === 'duration' ? 86400 : 9999} value={p.perSet || ''} onChange={e => change({ perSet: Number(e.target.value) })}/></div>
         </div>
-        {saveError && <p role="alert" className="text-xs text-feature-red">{saveError}</p>}
-        <FormFooter className="editor-footer">
-          <Button onClick={handleSave} disabled={!workoutName.trim() || !validTargets} className="editor-primary bg-action-selected text-on-action hover:bg-action">
-            {editingWorkout ? 'Save Changes' : 'Add Workout'}
-          </Button>
-          <div className={editingWorkout && onDelete ? 'editor-secondary editor-secondary-split' : 'editor-secondary'}>
-            {editingWorkout && onDelete && <Button variant="ghost" onClick={() => {
-                if (editingWorkout && onDelete) {
-                  onDelete(editingWorkout.id);
-                  handleCancel();
-                }
-              }} className="editor-delete text-feature-red"><Trash2 size={16} aria-hidden="true" />Delete Workout</Button>}
-            <Button variant="ghost" onClick={handleCancel} className="editor-cancel">Cancel</Button>
-          </div>
-        </FormFooter>
-      </FormContent>
-    </FormGroup>
-  );
+        <p className="rounded-xl bg-surface-secondary p-4 font-semibold text-accent-text" aria-live="polite">Target · {prescriptionText(p)}</p>
+        {p.legacyTotal !== undefined && <p className="text-sm text-muted-foreground">Existing uneven total is preserved. Editing sets or target per set replaces this legacy split.</p>}
+        <div className="form-field"><Label htmlFor="weight-lbs">Weight (lbs) · Optional</Label><Input id="weight-lbs" aria-label="Weight (lbs) - Optional" type="number" min="0" step="any" value={weight} onChange={e => setWeight(e.target.value)}/><p className="text-xs text-muted-foreground">Leave empty for bodyweight. Equipment resistance levels belong in notes, not pounds.</p></div>
+      </section>
+      <details className="space-y-4"><summary className="min-h-11 cursor-pointer font-semibold">Exercise Details · Equipment, rest, instructions, color</summary>
+        <div className="form-field"><Label htmlFor="exercise-equipment">Equipment</Label><Input id="exercise-equipment" disabled={routineContext && !!editingWorkout} value={equipment} onChange={e => setEquipment(e.target.value)}/></div>
+        <div className="form-field"><Label htmlFor="exercise-rest">Rest between sets (seconds)</Label><Input id="exercise-rest" type="number" min="0" value={rest} onChange={e => setRest(e.target.value)}/></div>
+        <div className="form-field"><Label htmlFor="exercise-notes">Instructions / notes</Label><textarea id="exercise-notes" className="glass-input rounded-xl w-full min-h-24 p-3" disabled={routineContext && !!editingWorkout} value={notes} onChange={e => setNotes(e.target.value)}/></div>
+        <div className="form-field"><Label htmlFor="workout-color">Exercise color</Label><select id="workout-color" aria-label="Workout color" className="glass-input min-h-11 rounded-xl p-3" disabled={routineContext && !!editingWorkout} value={color} onChange={e => setColor(e.target.value)}>{[...new Set([...availableColors, color])].map(c => <option key={c}>{c}</option>)}</select></div>
+      </details>
+      {!routineContext && <DaySelector variant="sheet" heading="Standalone schedule" selectedDays={days} onSelectionChange={setDays}/>}
+    </div>
+    {(!valid || error) && <p role="alert" className="text-sm text-feature-red">{error || 'Use positive whole sets and targets, up to 9,999 total reps or 86,400 total seconds; optional weight and rest must be non-negative.'}</p>}
+    <FormFooter className="editor-footer"><Button className="editor-primary bg-action-selected text-on-action hover:bg-action" disabled={!name.trim() || !valid} onClick={() => { const saved = onSave(name.trim(), color, totalTarget(p), weight === '' ? undefined : Number(weight), days, p.sets, { prescription: p, equipment: equipment.trim(), restSeconds: rest === '' ? undefined : Number(rest), notes: notes.trim() }); if (saved)
+        onClose();
+    else
+        setError('Changes were not saved. Please retry.'); }}>Save Exercise</Button>
+      <div className="editor-secondary">{editingWorkout && onDelete && <Button variant="ghost" className="text-feature-red" onClick={() => { if (confirm('Delete this reusable exercise? It will be removed from routines; historical activity is kept.')) {
+        if (onDelete(editingWorkout.id) !== false)
+            onClose();
+        else
+            setError('Exercise could not be deleted. Please retry.');
+    } }}>Delete Exercise</Button>}<Button variant="ghost" onClick={onClose}>Cancel</Button></div>
+    </FormFooter>
+  </FormContent></FormGroup>;
 }

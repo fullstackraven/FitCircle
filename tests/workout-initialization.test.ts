@@ -46,8 +46,8 @@ for (const fixture of historicalIntegrityFixtures) {
   });
 }
 
-test('legacy array workout containers remain unchanged when backup validation accepts them', () => {
+test('legacy array workout containers migrate by stable ID without changing records', () => {
   const data = { workouts: [{ id: 'legacy-a', name: 'Synthetic legacy array', color: 'green', count: 0, dailyGoal: 20 }],
     dailyLogs: { '2026-01-01': { 'legacy-a': 8 } }, journalEntries: {}, routines: {} };
-  assert.deepEqual(mount(JSON.stringify(data)).data, data);
+  assert.deepEqual(mount(JSON.stringify(data)).data, {...data,workouts:{'legacy-a':data.workouts[0]}});
 });

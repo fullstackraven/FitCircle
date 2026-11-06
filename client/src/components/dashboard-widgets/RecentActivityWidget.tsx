@@ -13,6 +13,8 @@ export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {
 
   // Helper function to get routine name for a specific date
   const getRoutineForDate = (dateString: string, dayWorkouts: any[]) => {
+    const snapshots=[...new Set(dayWorkouts.filter(w=>w.count>0).flatMap(w=>w.routineNames??[]))];
+    if(snapshots.length)return snapshots.join(' · ');
     try {
       // Parse the date string directly to avoid timezone issues
       const [year, month, day] = dateString.split('-').map(Number);
@@ -27,21 +29,19 @@ export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {
       }
       
       // Find routines that are scheduled for this day of the week
-      const matchingRoutines = routines.filter(routine =>
-        routine.selectedDays.includes(dayOfWeek)
-      );
-      
+      const matchingRoutines = routines.filter(routine => routine.placements?.some(p=>completedWorkouts.some(w=>w.id===p.exerciseId)));
+
       if (matchingRoutines.length === 0) {
         return null;
       }
       
       // If only one routine matches, return it
       if (matchingRoutines.length === 1) {
-        return matchingRoutines[0].name;
+        return matchingRoutines.map(r=>r.name).join(' · ');
       }
       
       // If multiple routines match, return the first matching routine
-      return matchingRoutines[0].name;
+      return matchingRoutines.map(r=>r.name).join(' · ');
     } catch (error) {
       return null;
     }
@@ -91,7 +91,7 @@ export function RecentActivityWidget({ widget }: RecentActivityWidgetProps) {
                     <div className="text-xs text-muted-foreground mt-1">{routineName}</div>
                   )}
                 </div>
-                <div className="text-strong font-medium">{day.totalReps} reps</div>
+                <div className="text-strong font-medium">{day.totalReps} reps{day.totalSeconds>0 ? ` · ${day.totalSeconds} sec` : ''}</div>
               </div>
             );
           })
