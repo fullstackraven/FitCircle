@@ -1,9 +1,9 @@
 /** Transient navigation context lives in browser history, never fitness storage. */
 export const formDefinitions = [
-    ['workout-new', 'home', '/workouts/new', 'workout', 'Add Workout'],
-    ['workout-edit', 'home', '/workouts/edit', 'workout', 'Edit Workout'],
-    ['routine-workout-new', 'routines', '/routines/workouts/new', 'workout', 'Add Workout'],
-    ['routine-workout-edit', 'routines', '/routines/workouts/edit', 'workout', 'Edit Workout'],
+    ['workout-new', 'home', '/workouts/new', 'workout', 'Add Exercise'],
+    ['workout-edit', 'home', '/workouts/edit', 'workout', 'Edit Exercise'],
+    ['routine-workout-new', 'routines', '/routines/workouts/new', 'workout', 'Add Exercise'],
+    ['routine-workout-edit', 'routines', '/routines/workouts/edit', 'workout', 'Edit Exercise'],
     ['routine-new', 'routines', '/routines/new', 'routine', 'Create Routine'],
     ['routine-edit', 'routines', '/routines/edit', 'routine', 'Edit Routine'],
     ['duration', 'overview', '/duration', 'duration', 'Edit Workout Duration'],

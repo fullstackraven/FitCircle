@@ -160,7 +160,7 @@ const cases: {
     name: "workout editor",
     route: "routines",
     open: async (page) => {
-      await page.getByText("Edit Workouts", { exact: true }).click();
+      await page.getByText("Exercise Library", { exact: true }).click();
       await button(page, "Edit workout Synthetic exercise").click();
     },
   },

@@ -131,6 +131,13 @@ export function FormContent({ children, variant = 'standard', title, onCancel }:
             const button = (event.target as Element)?.closest('button');
             if (!button)
                 return;
+            // Planner buttons mutate a routine draft rather than submitting it.
+            // Track those changes just like inputs before nested navigation.
+            if (button.closest('[data-planning-edit]')) {
+                delete document.documentElement.dataset.formSaving;
+                markDirty();
+                return;
+            }
             const label = button.getAttribute('aria-label') ?? button.textContent?.trim() ?? '';
             // Cancel is an explicit discard; Back and browser navigation remain guarded.
             if (/^cancel$/i.test(label))

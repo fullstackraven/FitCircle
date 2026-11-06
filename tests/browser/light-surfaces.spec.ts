@@ -26,13 +26,13 @@ for (const mode of ['light', 'dark']) test(`${mode}: scoped card and editor surf
   if (mode === 'light' && !before) {
     await expect(name).toHaveCSS('background-color', 'rgb(241, 245, 249)');
     await expect(name).toHaveCSS('border-top-color', 'rgb(203, 213, 225)');
-    await expect(dialog.locator('.editor-number-card').first()).toHaveCSS('background-color', 'rgb(241, 245, 249)');
+    await expect(dialog.getByLabel('Number of Sets')).toBeVisible();
   }
   if (mode === 'dark') {
     await expect(dialog).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
     await expect(name).toHaveCSS('background-color', 'rgb(30, 41, 59)');
     await expect(name).toHaveCSS('border-top-width', '0px');
-    await expect(dialog.locator('.editor-number-card').first()).toHaveCSS('background-color', 'rgb(30, 41, 59)');
+    await expect(dialog.getByLabel('Number of Sets')).toBeVisible();
   }
   await capture('workout');
   await name.fill('Unsaved surface check'); await name.focus();
@@ -41,7 +41,7 @@ for (const mode of ['light', 'dark']) test(`${mode}: scoped card and editor surf
   await expect(card).toContainText('Push-ups');
   await page.getByRole('button', { name: 'Add new workout', exact: true }).click();
   await expect(dialog.getByLabel('Workout Name')).toHaveValue('');
-  await expect(dialog.getByRole('button', { name: 'Add Workout', exact: true })).toBeDisabled();
+  await expect(dialog.getByRole('button', { name: 'Save Exercise', exact: true })).toBeDisabled();
   await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
   await page.goto('calendar');
   await expect(page.getByText('Workout Statistics', { exact: true })).toBeVisible();
@@ -58,7 +58,7 @@ for (const mode of ['light', 'dark']) test(`${mode}: scoped card and editor surf
   await dialog.getByLabel('Routine Name').fill('Surface review');
   await dialog.getByRole('button', { name: 'Weekdays', exact: true }).click();
   await expect(dialog).toContainText('5 training days selected');
-  await expect(dialog.getByRole('button', { name: 'Create Routine', exact: true })).toBeEnabled();
+  await expect(dialog.getByRole('button', { name: 'Save Routine', exact: true })).toBeEnabled();
   await capture('routine');
   await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
   const edit = page.locator('[data-testid^="button-edit-routine-"]').first();

@@ -54,7 +54,7 @@ export function WorkoutStatistics() {
   const [, navigate] = useLocation();
   const origin=new URLSearchParams(window.location.search).get("returnTo");
   const fromProfile=origin?.split("?")[0] === "/profile";
-  const { getMonthlyStats, getTotalStats, getIndividualWorkoutTotals } = useWorkouts();
+  const { getMonthlyStats, getTotalStats, getIndividualWorkoutTotals, getDurationTotals } = useWorkouts();
   const [currentMonth, setCurrentMonth] = React.useState(new Date());
   const [totalsOpen, setTotalsOpen] = React.useState(false);
 
@@ -70,10 +70,12 @@ export function WorkoutStatistics() {
     totalConsistency: 0
   };
   
+  const totalSeconds = getDurationTotals();
   const individualWorkoutTotals = getIndividualWorkoutTotals() || [];
 
   return (
     <div className="w-full max-w-3xl mx-auto">
+      {totalSeconds > 0 && <p className="text-sm text-muted-foreground mb-4">Exercise duration logged: {totalSeconds.toLocaleString()} seconds · excluded from rep totals</p>}
       <PageHeader title="Workout Statistics" onBack={() => navigate(fromProfile ? origin! : "/calendar")} backLabel={fromProfile ? "Back to Profile" : "Back to Calendar"} align="start" />
 
       <div className="space-y-4">
@@ -126,7 +128,7 @@ export function WorkoutStatistics() {
                       <span aria-hidden="true" className={`w-3 h-3 shrink-0 rounded-full ${colorClassMap[workout.color]}`} />
                       <span className="entity-name text-sm font-medium text-subtle">{workout.name}</span>
                     </div>
-                    <span className="type-metric shrink-0 text-base font-semibold text-strong">{workout.totalReps.toLocaleString()}</span>
+                    <span className="type-metric shrink-0 text-base font-semibold text-strong">{workout.totalReps.toLocaleString()} reps{workout.totalSeconds > 0 ? ` · ${workout.totalSeconds.toLocaleString()} sec` : ''}</span>
                   </li>
                 ))}
               </ul>

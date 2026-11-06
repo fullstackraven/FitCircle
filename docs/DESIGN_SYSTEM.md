@@ -80,3 +80,7 @@ Run `npm run audit:controls` to inspect every imported control declaration, incl
 ## Dashboard composition
 
 Home and Dynamic Overview retain their fixed layouts; Widget Settings and its configurable renderer have been removed. Calendar still uses `RecentActivityWidget` with its existing title and size. The historical `fitcircle_dashboard_widgets` localStorage key remains registered and validated only for backup/export/import compatibility. No dashboard reads, writes, or clears those preferences. Existing saved values are left intact.
+
+## Routine planning forms
+
+Routines 2.0 uses expandable bordered cards with ordered exercise rows, a compact New action, and the existing routed form shell. Add/Edit Exercise leads with target type and sets × reps or seconds per set, followed by optional weight and collapsed details. Routine notes and manually selected variations are secondary settings. Use semantic surfaces, wrapping names, 44px controls and full-width green primary actions. Routines never performs workout logging. See [ROUTINES_2.md](ROUTINES_2.md) for migration, daily identity and history rules.

@@ -1,3 +1,4 @@
+import { workoutDataSchema } from './backup';
 import { useSyncExternalStore } from 'react';
 import type { WorkoutData } from '@/hooks/use-workouts';
 import { parseStoredWorkouts, StoredWorkoutDataError } from './workout-initialization';
@@ -21,7 +22,7 @@ export function commitWorkouts(update: (previous: WorkoutData) => WorkoutData): 
   try {
     const previous = read();
     const next = update(previous);
-    if (next === previous) return false;
+    if (next === previous || !workoutDataSchema.safeParse(next).success) return false;
     const raw = JSON.stringify(next);
     if (raw !== rawSnapshot) localStorage.setItem(STORAGE_KEYS.WORKOUTS, raw);
     snapshot = next; rawSnapshot = raw;

@@ -86,7 +86,7 @@ for (const mode of ['dark', 'light']) for (const width of [320, 390]) {
     };
     await page.goto('./');
     await page.getByRole('button', { name: 'Edit Push-ups', exact: true }).click();
-    const editor = page.getByRole('region', { name: 'Edit Workout', exact: true });
+    const editor = page.getByRole('region', { name: 'Edit Exercise', exact: true });
     await expect(editor).toBeVisible();
     await expect(page).toHaveURL(/workouts\/edit\?id=w/);
     await expect(page.getByRole('dialog')).toHaveCount(0);
@@ -96,7 +96,7 @@ for (const mode of ['dark', 'light']) for (const width of [320, 390]) {
     expect(editorBox.x + editorBox.width).toBeLessThanOrEqual(width);
     expect(await editor.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
     expect((await textContrast(page)).failures, 'workout-editor: text contrast').toEqual([]);
-    const save = editor.getByRole('button', { name: 'Save Changes', exact: true });
+    const save = editor.getByRole('button', { name: 'Save Exercise', exact: true });
     await save.scrollIntoViewIfNeeded();
     await expect(save).toBeInViewport();
     await page.screenshot({ path: `${dir}/workout-editor.png`, animations: 'disabled' });
@@ -110,8 +110,15 @@ for (const mode of ['dark', 'light']) for (const width of [320, 390]) {
     await page.keyboard.press('Escape');
     await page.goto('routines');
     const before = await page.evaluate(() => localStorage.getItem('workout-tracker-data'));
-    await page.getByRole('button', { name: 'Delete routine PUSH', exact: true }).click();
-    await inspect('confirmation', 'alertdialog');
+    await page.getByTestId('button-edit-routine-r').click();
+    const confirmation = page.waitForEvent('dialog');
+    const deletion = page.getByRole('button', { name: 'Delete Routine', exact: true }).click();
+    const prompt = await confirmation;
+    expect(prompt.type()).toBe('confirm');
+    expect(prompt.message()).toContain('PUSH');
+    await prompt.dismiss();
+    await deletion;
+    await expect(page.getByLabel('Routine Name')).toHaveValue('PUSH');
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
     expect(await page.evaluate(() => localStorage.getItem('workout-tracker-data'))).toBe(before);
     await page.goto('supplements-page');

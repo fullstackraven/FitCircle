@@ -1,3 +1,5 @@
+import { getDateString } from '@/lib/date-utils';
+import { recordedReps, recordedSeconds } from '@/lib/routine-planning';
 import { useWellnessClock } from '@/hooks/use-preserved-wellness';
 import { focusDashboardOnOpen, returnDashboardFocus } from '@/lib/dashboard-navigation';
 import { getTodayString } from '@/lib/date-utils';
@@ -70,7 +72,7 @@ export default function CalendarPage() {
   useWellnessClock();
   const [, navigate] = useLocation();
   const { 
-    getWorkoutArray,
+    getWorkoutArray, getHistoricalWorkoutArray, getTodaysTotals,
     getDailyLogs,
     addJournalEntry,
     getJournalEntry,
@@ -105,7 +107,7 @@ export default function CalendarPage() {
     getWorkoutDurationForDate
   } = useWorkoutDuration();
 
-  const workouts = getWorkoutArray() || [];
+  const workouts = getHistoricalWorkoutArray() || [];
   const logs = getDailyLogs() || {};
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -149,7 +151,7 @@ export default function CalendarPage() {
     if (!dateLog) return false;
     // New set days include scheduled workouts with no sets yet, matching Home.
     if (dateStr === getTodayString() && Object.values(dateLog).some(isSetLog)) {
-      const scheduled = workouts.filter(w => !w.scheduledDays?.length || w.scheduledDays.includes(date.getDay()));
+      const scheduled = getTodaysTotals();
       return scheduled.length > 0 && scheduled.every(w => workoutLogComplete(dateLog[w.id], typeof dateLog[w.id] === 'object' ? (dateLog[w.id] as { goalAtTime:number }).goalAtTime : w.dailyGoal));
     }
 
@@ -217,7 +219,7 @@ export default function CalendarPage() {
     Object.keys(dateLog).forEach(workoutId => {
       const logEntry = dateLog[workoutId];
       const count = typeof logEntry === 'object' ? logEntry.count : (logEntry || 0);
-      total += count;
+      total += recordedReps(logEntry);
     });
     
     return total;
@@ -285,6 +287,7 @@ export default function CalendarPage() {
             <div className="flex items-end justify-between h-40 px-2 gap-2">
               {weekDays.map((date, index) => {
                 const totalReps = getTotalRepsForDate(date);
+                const totalSeconds = Object.values(logs[getDateString(date)]??{}).reduce<number>((sum,e)=>sum+recordedSeconds(e),0);
                 const isRecovery = isRecoveryDay(`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
                 const barHeightPercent = Math.min((totalReps / 800) * 100, 100);
                 const barHeight = isRecovery ? 100 : (totalReps > 0 ? Math.max(barHeightPercent, 5) : 0);
@@ -307,7 +310,7 @@ export default function CalendarPage() {
                       )}
                     </div>
                     <div className="text-xs text-muted-foreground">{dayNames[index]}</div>
-                    <div className="text-xs text-dim">{totalReps}</div>
+                    <div className="text-xs text-dim">{totalReps}{totalSeconds > 0 ? ` reps · ${totalSeconds} sec` : ''}</div>
                   </div>
                 );
               })}
