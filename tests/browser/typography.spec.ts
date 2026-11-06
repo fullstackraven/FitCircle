@@ -34,7 +34,7 @@ for (const size of [{ width: 390, height: 844 }, { width: 1440, height: 1000 }])
     if (size.width < 768) expect(await input.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(16);
     await page.getByRole('button',{name:'Back',exact:true}).click();
     await page.goto('routines');
-    await expect(page.getByRole('heading',{name:'Routines',exact:true})).toBeVisible();
+    await expect(page.getByRole('heading',{name:'FitCircle',exact:true})).toBeVisible();
     const routine = page.getByRole('heading',{name:longRoutine,exact:true});
     await expect(routine).toBeVisible();
     expect(await routine.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);

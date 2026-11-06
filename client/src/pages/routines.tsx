@@ -6,13 +6,15 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { useEffect, useState } from 'react';
 import { VersionLabel } from '@/components/VersionLabel';
 import { focusDashboardOnOpen, returnDashboardFocus } from '@/lib/dashboard-navigation';
-import { Plus, Menu, Edit, ChevronDown, GripVertical } from 'lucide-react';
+import { Plus, Menu, Edit, ChevronDown, ChevronRight } from 'lucide-react';
 import { useWorkouts, type Routine, type Workout } from '@/hooks/use-workouts';
 import { newPlanningId, prescriptionFor, prescriptionText, routineExercises, type ExerciseDetails, type ExercisePlacement } from '@/lib/routine-planning';
 import { getColorClass } from '@/lib/color-utils';
 import { Button } from '@/components/ui/button';
 import { WorkoutEditor } from '@/components/workout-editor';
-import { RoutineEditor, movePlacement } from '@/components/routine-editor';
+import { RoutineEditor } from '@/components/routine-editor';
+import { SortableExercises } from '@/components/SortableExercises';
+import { ExercisePicker } from '@/components/ExercisePicker';
 const daysText = (days: number[]) => days.map(d => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d]).join(', ');
 export default function RoutinesPage() {
     const api = useWorkouts();
@@ -49,7 +51,7 @@ export default function RoutinesPage() {
         const exercise: Workout = { ...editingWorkout, id, name, color, dailyGoal: total, setsGoal, weightLbs, scheduledDays, count: editingWorkout?.count ?? 0, ...details };
         if (!placementId && !api.saveExercise(exercise))
             return false;
-        if (selectedRoutineId) {
+        if (selectedRoutineId && (placementId || !editingWorkout)) {
             const r = draft?.id === selectedRoutineId ? draft : api.routines[selectedRoutineId];
             if (!r)
                 return false;
@@ -77,7 +79,7 @@ export default function RoutinesPage() {
             setError('Routine could not be deleted.');
     } };
     return <FormScreen><div className="fitcircle-page">
-  <AppHeader><div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center"><button className="fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors" aria-label="Open Menu" onClick={() => setMenu(true)}><Menu size={22}/></button><h1 className="text-xl font-bold">Routines</h1></div></AppHeader>
+  <AppHeader><div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center"><button className="fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors" aria-label="Open Menu" onClick={() => setMenu(true)}><Menu size={22}/></button><h1 className="fitcircle-wordmark text-2xl font-bold text-strong">FitCircle</h1></div></AppHeader>
   <div className="fitcircle-container space-y-4 pb-6">
    <div className="flex gap-3 items-center justify-between"><div className="min-w-0"><h2 className="text-2xl font-bold">My Routines</h2><p className="text-sm text-muted-foreground">{routines.length} routines · {routines.reduce((n, r) => n + (r.placements?.length ?? 0), 0)} exercise placements</p></div><Button className="bg-accent-text text-[hsl(var(--on-selected-action))] hover:bg-action-hover hover:text-on-action" onClick={() => openRoutine()} data-testid="button-create-routine"><Plus size={18}/>New</Button></div>
    {error && <p role="alert" className="text-feature-red">{error}</p>}
@@ -87,17 +89,23 @@ export default function RoutinesPage() {
             const open = expanded.has(r.id);
             return <section key={r.id} className="rounded-2xl border border-separator bg-surface overflow-hidden" data-testid={`routine-card-${r.id}`}>
     <div className="flex gap-1 items-center px-4 py-3"><button data-control-geometry="record" data-testid={`routine-header-${r.id}`} aria-expanded={open} className="min-h-14 min-w-0 flex-1 text-left" onClick={() => setExpanded(prev => { const n = new Set(prev); n.has(r.id) ? n.delete(r.id) : n.add(r.id); return n; })}><h3 className="font-bold text-lg break-words">{r.name}</h3><p className="text-sm text-muted-foreground">{daysText(r.selectedDays)} · {rows.length} exercises{r.activeVariationId ? ` · ${r.variations?.find(v => v.id === r.activeVariationId)?.name ?? ''}` : ''}</p></button><Button size="icon" variant="ghost" aria-label={`Edit routine ${r.name}`} data-testid={`button-edit-routine-${r.id}`} onClick={() => openRoutine(r)}><Edit size={18}/></Button><ChevronDown className={`h-4 w-4 ${open ? 'rotate-180' : ''}`}/></div>
-    {open && <div className="border-t border-separator p-3 space-y-2">{rows.map((w, i) => <div key={w.placementId} className="flex gap-2 rounded-xl bg-surface-secondary p-3 min-w-0" data-testid={`routine-exercise-${r.id}-${w.id}`}><GripVertical className="h-4 w-4 shrink-0 mt-3 text-muted-foreground"/><span className={`h-2.5 w-2.5 mt-4 shrink-0 rounded-full ${getColorClass(w.color)}`}/><button data-control-geometry="record" className="min-w-0 flex-1 text-left min-h-11" onClick={() => openExercise(r, r.placements!.find(p => p.id === w.placementId))}><strong className="entity-name block">{w.name}</strong><span className="text-sm text-muted-foreground">{prescriptionText(w.prescription)}{w.weightLbs !== undefined ? ` · ${w.weightLbs} lb` : ''}</span></button><div className="flex shrink-0"><button className="fc-pill min-h-11 min-w-11" aria-label={`Move ${w.name} up`} disabled={i === 0} onClick={() => { if (!api.saveRoutinePlan({ ...r, placements: movePlacement(r.placements!, i, -1) }))
-                setError('Order could not be saved.'); }}>↑</button><button className="fc-pill min-h-11 min-w-11" aria-label={`Move ${w.name} down`} disabled={i === rows.length - 1} onClick={() => { if (!api.saveRoutinePlan({ ...r, placements: movePlacement(r.placements!, i, 1) }))
-                setError('Order could not be saved.'); }}>↓</button></div></div>)}{!rows.length && <p className="py-4 text-sm text-muted-foreground">No exercises assigned.</p>}<Button className="w-full" variant="outline" data-testid={`button-add-workout-${r.id}`} onClick={() => openRoutine(r)}>＋ Add Exercise</Button></div>}
+    {open && <div className="border-t border-separator p-3 space-y-2">
+      <SortableExercises items={rows.map(w => ({ ...w, id: w.placementId! }))} name={w => w.name} onActivate={w => openExercise(r, r.placements!.find(p => p.id === w.id))} rowClassName="bg-surface-secondary p-3" testId={w => `routine-exercise-${r.id}-${w.exerciseId}`} onReorder={ordered => { const visible = new Set(ordered.map(w => w.id)); const sorted = ordered.map(w => r.placements!.find(p => p.id === w.id)!)[Symbol.iterator](); const placements = r.placements!.map(p => visible.has(p.id) ? sorted.next().value! : p); if (!api.saveRoutinePlan({ ...r, placements })) setError('Order could not be saved.'); }}>
+        {w => <button data-control-geometry="record" className="flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left" onClick={() => openExercise(r, r.placements!.find(p => p.id === w.id))}>
+          <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${getColorClass(w.color)}`}/><span className="min-w-0 flex-1"><strong className="entity-name block">{w.name}</strong><span className="text-sm text-muted-foreground">{prescriptionText(w.prescription)}{w.weightLbs !== undefined ? ` · ${w.weightLbs} lb` : ''}</span></span><ChevronRight size={18} className="shrink-0 text-muted-foreground"/>
+        </button>}
+      </SortableExercises>
+      {!rows.length && <p className="py-4 text-sm text-muted-foreground">No exercises assigned.</p>}
+      <ExercisePicker exercises={exercises} assigned={(r.placements ?? []).map(p => p.exerciseId)} testId={`button-add-workout-${r.id}`} onCreate={() => openExercise(r)} onEdit={w => { setSelectedRoutineId(undefined); setPlacementId(undefined); setEditingWorkout(w); setExerciseOpen(true); }} onSelect={w => { if (!api.saveRoutinePlan({ ...r, placements: [...r.placements ?? [], { id: newPlanningId(), exerciseId: w.id, prescription: prescriptionFor(w), weightLbs: w.weightLbs, restSeconds: w.restSeconds }] })) setError('Exercise could not be added.'); }}/>
+    </div>}
+
    </section>;
         })}
-   <details className="rounded-2xl border border-separator p-4"><summary className="min-h-11 cursor-pointer font-semibold">Exercise Library</summary><div data-testid="exercise-library" className="space-y-2">{exercises.map(w => <button data-control-geometry="record" key={w.id} className="min-h-14 min-w-0 text-left w-full border-b border-separator" aria-label={`Edit workout ${w.name}`} onClick={() => { setSelectedRoutineId(undefined); setPlacementId(undefined); setEditingWorkout(w); setExerciseOpen(true); }}><strong className="entity-name block">{w.name}</strong><span className="text-sm text-muted-foreground">{prescriptionText(prescriptionFor(w))}</span></button>)}<Button variant="outline" className="w-full" onClick={() => openExercise(null)}>Create New Exercise</Button></div></details>
-   <p className="text-center text-sm text-muted-foreground">Configure here · Log workouts on Home</p>
+
   </div>
-  <RoutineEditor formId="routine" isOpen={routineOpen} onClose={() => { setRoutineOpen(false); setDraft(null); setEditingRoutine(null); }} draft={draft} onChange={setDraft} exercises={exercises} onExercise={p => openExercise(draft, p)} onSave={r => { const saved = api.saveRoutinePlan(r); if (!saved)
+  <RoutineEditor formId="routine" isOpen={routineOpen} onClose={() => { setRoutineOpen(false); setDraft(null); setEditingRoutine(null); }} draft={draft} onChange={setDraft} exercises={exercises} onExercise={p => openExercise(draft, p)} onEditDefinition={w => { setSelectedRoutineId(draft?.id); setPlacementId(undefined); setEditingWorkout(w); setExerciseOpen(true); }} onSave={r => { const saved = api.saveRoutinePlan(r); if (!saved)
         setError('Routine could not be saved. Please check its exercises and retry.'); return saved; }} onDelete={editingRoutine ? () => removeRoutine(editingRoutine) : undefined}/>
-  <WorkoutEditor formId="workout" isOpen={exerciseOpen} editingWorkout={editingWorkout} availableColors={api.getAvailableColors()} routineContext={!!selectedRoutineId} onClose={() => { setExerciseOpen(false); setEditingWorkout(null); setPlacementId(undefined); setSelectedRoutineId(undefined); }} onSave={saveExercise} onDelete={!selectedRoutineId ? id => api.deleteWorkout(id) : undefined}/>
+  <WorkoutEditor formId="workout" isOpen={exerciseOpen} editingWorkout={editingWorkout} availableColors={api.getAvailableColors()} routineContext={!!selectedRoutineId && (!!placementId || !editingWorkout)} onClose={() => { setExerciseOpen(false); setEditingWorkout(null); setPlacementId(undefined); setSelectedRoutineId(undefined); }} onSave={saveExercise} onDelete={!selectedRoutineId ? id => api.deleteWorkout(id) : undefined}/>
   <Sheet open={menu} onOpenChange={setMenu}><SheetContent side="left" onOpenAutoFocus={focusDashboardOnOpen} onCloseAutoFocus={returnDashboardFocus} className="w-80 bg-canvas border-separator outline-none"><SheetHeader className="sr-only"><SheetTitle>Navigation Menu</SheetTitle></SheetHeader><div className="flex h-full flex-col"><DashboardMenu open={menu} returnTo="/routines" onNavigate={() => setMenu(false)}/><div className="p-4 border-t border-separator"><VersionLabel onActivate={() => setMenu(false)}/></div></div></SheetContent></Sheet>
  </div></FormScreen>;
 }
