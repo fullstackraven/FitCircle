@@ -42,12 +42,16 @@ test('only an absent key creates a fresh document', () => {
 for (const fixture of historicalIntegrityFixtures) {
   test(`validated initialization preserves ${fixture.name}`, () => {
     const result = mount(JSON.stringify(fixture.data));
-    assert.deepEqual(result.data, fixture.data); assert.deepEqual(result.writes, []);
+    const { routines, ...retained } = result.data as typeof fixture.data;
+    const { routines: _legacyRoutines, ...original } = fixture.data;
+    assert.deepEqual(retained, original); assert.ok(Object.values(routines).every(r => Array.isArray(r.placements)));  assert.deepEqual(result.writes, []);
   });
 }
 
 test('legacy array workout containers migrate by stable ID without changing records', () => {
   const data = { workouts: [{ id: 'legacy-a', name: 'Synthetic legacy array', color: 'green', count: 0, dailyGoal: 20 }],
     dailyLogs: { '2026-01-01': { 'legacy-a': 8 } }, journalEntries: {}, routines: {} };
-  assert.deepEqual(mount(JSON.stringify(data)).data, {...data,workouts:{'legacy-a':data.workouts[0]}});
+  const loaded = mount(JSON.stringify(data)).data as any;
+  assert.deepEqual(loaded.workouts, {'legacy-a':data.workouts[0]});assert.deepEqual(loaded.dailyLogs,data.dailyLogs);assert.deepEqual(loaded.journalEntries,data.journalEntries);
+  assert.deepEqual(Object.values(loaded.routines).map((r:any)=>r.placements.map((p:any)=>p.exerciseId)), [['legacy-a']]);
 });

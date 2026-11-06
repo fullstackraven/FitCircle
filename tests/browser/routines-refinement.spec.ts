@@ -8,6 +8,7 @@ async function setup(page: Page, mode = 'light') {
   await seedWellnessAppearance(page, mode);
   await page.evaluate(() => {
     const d = JSON.parse(localStorage.getItem('workout-tracker-data')!);
+    d.routineSchedulingVersion = 1;
     d.workouts.b = { ...d.workouts.w, id: 'b', name: 'Row', color: 'blue' };
     d.workouts.c = { ...d.workouts.w, id: 'c', name: 'Hold', color: 'purple' };
     const placements = ['w', 'b', 'c'].map(id => ({ id: 'p-' + id, exerciseId: id, prescription: { targetType: 'repetitions', sets: 2, perSet: 10 } }));

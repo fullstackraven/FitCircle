@@ -20,6 +20,7 @@ export default function RoutinesPage() {
     const api = useWorkouts();
     const exercises = api.getWorkoutArray();
     const routines = api.getRoutineArray();
+    const unassigned = exercises.filter(w => !routines.some(r => r.placements?.some(p => p.exerciseId === w.id))).length;
     const [menu, setMenu] = useState(false);
     useEffect(() => {
         const requested = new URLSearchParams(window.location.search).get('dashboard') === 'open';
@@ -60,7 +61,7 @@ export default function RoutinesPage() {
                 next = { ...r, placements: r.placements?.map(p => p.id === placementId ? { ...p, weightLbs } : p), variations: r.variations?.map(v => v.id === r.activeVariationId ? { ...v, targets: { ...v.targets, [placementId]: { ...prescriptionFor(exercise), restSeconds: exercise.restSeconds } } } : v) };
             }
             else {
-                const placement = { id: placementId ?? newPlanningId(), exerciseId: id, prescription: prescriptionFor(exercise), weightLbs, restSeconds: exercise.restSeconds };
+                const placement = { ...(placementId ? r.placements!.find(p => p.id === placementId) : {}), id: placementId ?? newPlanningId(), exerciseId: id, prescription: prescriptionFor(exercise), weightLbs, restSeconds: exercise.restSeconds };
                 next = { ...r, placements: placementId ? r.placements!.map(p => p.id === placementId ? placement : p) : [...r.placements ?? [], placement] };
             }
             if (draft?.id === selectedRoutineId)
@@ -82,6 +83,7 @@ export default function RoutinesPage() {
   <AppHeader><div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center"><button className="fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors" aria-label="Open Menu" onClick={() => setMenu(true)}><Menu size={22}/></button><h1 className="fitcircle-wordmark text-2xl font-bold text-strong">FitCircle</h1></div></AppHeader>
   <div className="fitcircle-container space-y-4 pb-6">
    <div className="flex gap-3 items-center justify-between"><div className="min-w-0"><h2 className="text-2xl font-bold">My Routines</h2><p className="text-sm text-muted-foreground">{routines.length} routines · {routines.reduce((n, r) => n + (r.placements?.length ?? 0), 0)} exercise placements</p></div><Button className="bg-accent-text text-[hsl(var(--on-selected-action))] hover:bg-action-hover hover:text-on-action" onClick={() => openRoutine()} data-testid="button-create-routine"><Plus size={18}/>New</Button></div>
+   {unassigned > 0 && <p className="text-sm text-muted-foreground">{unassigned} unassigned {unassigned === 1 ? 'exercise' : 'exercises'} available in Add Exercise.</p>}
    {error && <p role="alert" className="text-feature-red">{error}</p>}
    {!routines.length && <div className="rounded-2xl border border-separator p-6 text-center"><p>No routines yet.</p><Button variant="ghost" data-testid="button-add-routine" onClick={() => openRoutine()}>Create Routine</Button></div>}
    {routines.map(r => {

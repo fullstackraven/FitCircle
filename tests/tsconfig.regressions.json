@@ -99,6 +99,7 @@
     "browser/routines-configuration.spec.ts",
     "browser/routines-v2.spec.ts",
     "browser/routines-refinement.spec.ts",
+    "browser/routine-scheduling.spec.ts",
     "routine-planning.test.ts",
     "browser/modal-fields.spec.ts",
     "dashboard-sharing.test.ts",

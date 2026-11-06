@@ -16,11 +16,11 @@ export { food as foodDataSchema };
 const foods = z.array(food);
 const session = shaped({ id: text, time: text, duration: number });
 const prescription = shaped({targetType:z.enum(['repetitions','duration']),sets:number.int().positive(),perSet:number.int().positive(),legacyTotal:number.int().positive().optional()}).refine(validPrescription,'Invalid exercise prescription');
-const placement = shaped({id:text.min(1),exerciseId:text.min(1),prescription,weightLbs:number.nonnegative().optional(),restSeconds:number.nonnegative().optional()});
+const placement = shaped({legacyLogId:text.optional(),id:text.min(1),exerciseId:text.min(1),prescription,weightLbs:number.nonnegative().optional(),restSeconds:number.nonnegative().optional()}).refine(p => !p.legacyLogId || p.legacyLogId === p.exerciseId, 'Invalid legacy placement identity');
 const variation = shaped({id:text.min(1),name:text.min(1),targets:record(prescription.and(shaped({restSeconds:number.nonnegative().optional()})))});
-const routine = shaped({id:text,name:text,selectedDays:z.array(number),createdAt:text,placements:z.array(placement).optional(),description:text.optional(),variations:z.array(variation).optional(),activeVariationId:text.optional()}).refine(r=> !r.placements || new Set(r.placements.map(p=>p.exerciseId)).size===r.placements.length && new Set(r.placements.map(p=>p.id)).size===r.placements.length,'Duplicate exercise placement');
+const routine = shaped({id:text,name:text,selectedDays:z.array(number),createdAt:text,placements:z.array(placement).optional(),description:text.optional(),variations:z.array(variation).optional(),activeVariationId:text.optional()}).refine(r=> !r.placements || new Set(r.placements.map(p=>p.id)).size===r.placements.length,'Duplicate exercise placement');
 const workout = shaped({ prescription:prescription.optional(),equipment:text.optional(),restSeconds:number.nonnegative().optional(),notes:text.optional(),archived:z.boolean().optional(), id: text, name: text, color: text, count: number, dailyGoal: number, setsGoal: number.int().positive().optional(), scheduledDays: z.array(number.int().min(0).max(6)).optional(), goalHistory: z.array(shaped({ goal: number, timestamp: text })).optional() }).refine(w => w.setsGoal === undefined || (Number.isInteger(w.dailyGoal) && w.setsGoal <= w.dailyGoal), 'Sets must not exceed total reps').refine(w=>!w.prescription || (totalTarget(w.prescription)===w.dailyGoal && w.prescription.sets===(w.setsGoal??1)), 'Prescription does not match legacy target fields');
-const setAwareLog = shaped({ count:number, goalAtTime:number, targetTypeAtTime:z.enum(['repetitions','duration']).optional(),nameAtTime:text.optional(),colorAtTime:text.optional(),routineNamesAtTime:z.array(text).optional(), carriedReps:number.int().nonnegative().optional(), completedSets:number.int().nonnegative().optional(), setsGoalAtTime:number.int().positive().optional() }).refine(log => {
+const setAwareLog = shaped({ exerciseIdAtTime:text.optional(),routineIdAtTime:text.optional(),placementIdAtTime:text.optional(),count:number, goalAtTime:number, targetTypeAtTime:z.enum(['repetitions','duration']).optional(),nameAtTime:text.optional(),colorAtTime:text.optional(),routineNamesAtTime:z.array(text).optional(), carriedReps:number.int().nonnegative().optional(), completedSets:number.int().nonnegative().optional(), setsGoalAtTime:number.int().positive().optional() }).refine(log => {
   if (log.completedSets === undefined && log.setsGoalAtTime === undefined) return true;
   return log.completedSets !== undefined && log.setsGoalAtTime !== undefined
     && Number.isInteger(log.goalAtTime) && log.setsGoalAtTime <= log.goalAtTime
@@ -29,7 +29,10 @@ const setAwareLog = shaped({ count:number, goalAtTime:number, targetTypeAtTime:z
 }, 'Invalid set progress or credited reps');
 const dailyLog = record(z.union([number, setAwareLog]));
 // Shared validation only; backup acceptance and stored representations are unchanged.
-export const workoutDataSchema = shaped({ workouts: z.union([record(workout), z.array(workout)]), dailyLogs: record(dailyLog).optional(), journalEntries: record(z.union([text, shaped({ text, timestamp: text })])).optional(), archivedWorkouts:record(workout).optional(), routines: record(routine).optional() });
+export const workoutDataSchema = shaped({ routineSchedulingVersion:z.literal(1).optional(), workouts: z.union([record(workout), z.array(workout)]), dailyLogs: record(dailyLog).optional(), journalEntries: record(z.union([text, shaped({ text, timestamp: text })])).optional(), archivedWorkouts:record(workout).optional(), routines: record(routine).optional() }).refine(data => {
+  const aliases = Object.values(data.routines ?? {}).flatMap(r => (r.placements ?? []).flatMap(p => p.legacyLogId ? [p.legacyLogId] : []));
+  return new Set(aliases).size === aliases.length;
+}, 'Duplicate legacy logging identity');
 const schemas: Record<string, z.ZodTypeAny> = {
   fitcircle_nutrition_goals: nutritionGoalsSchema,
   'workout-tracker-data': workoutDataSchema,

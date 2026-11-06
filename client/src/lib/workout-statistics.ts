@@ -1,4 +1,4 @@
-import { plannedWithActivity, historicalDefinitions, recordedReps } from './routine-planning';
+import { plannedWithActivity, historicalActivities, recordedReps } from './routine-planning';
 import { workoutLogComplete } from './workout-progress';
 import type { WorkoutData, WorkoutLogEntry, Workout } from '@/hooks/use-workouts';
 import { getTodayString, getDateString } from './date-utils';
@@ -6,8 +6,7 @@ import { getTodayString, getDateString } from './date-utils';
 // The existing Calendar all-time calculation, shared without changing its definitions.
 export function getTotalWorkoutStats(data: WorkoutData, readRecovery: () => string | null) {
   const getCountFromLogEntry = (entry: number | WorkoutLogEntry | undefined): number => !entry ? 0 : typeof entry === 'object' ? entry.count : entry;
-  const isWorkoutActiveOnDay = (workout: Workout, day: number) => !workout.scheduledDays || workout.scheduledDays.length === 0 || workout.scheduledDays.includes(day);
-  const workoutArray = historicalDefinitions(data);
+  const workoutArray = historicalActivities(data);
   const today = getTodayString();
   let totalReps = 0;
   let totalCompletedDays = 0;

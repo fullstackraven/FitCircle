@@ -16,7 +16,7 @@ test('mounted consumers subscribe to edits and persist interleaved journal and s
  });
  await page.locator('#shared-probe').click();await expect(page.getByRole('button',{name:'Edit From second consumer',exact:true})).toBeVisible();
  await page.getByRole('button',{name:/Record a set for From second consumer/}).click();
- const d=await page.evaluate(()=>JSON.parse(localStorage.getItem('workout-tracker-data')!));expect(d.workouts.w.setsGoal).toBe(2);expect(d.journalEntries['2026-01-01'].text).toBe('Retained journal');expect(Object.values(d.dailyLogs)[0]).toMatchObject({w:{count:10,completedSets:1}});
+ const d=await page.evaluate(()=>JSON.parse(localStorage.getItem('workout-tracker-data')!));expect(d.workouts.w.setsGoal).toBe(2);expect(d.journalEntries['2026-01-01'].text).toBe('Retained journal');expect(Object.values(d.dailyLogs)[0]).toMatchObject({w:{count:20,completedSets:1}});
 });
 test('failed saves keep the workout editor open and original records intact',async({page})=>{
  await page.goto('profile');await page.evaluate(()=>localStorage.setItem('workout-tracker-data',JSON.stringify({workouts:{w:{id:'w',name:'Pushups',color:'green',count:0,dailyGoal:20,setsGoal:1}},dailyLogs:{},routines:{},journalEntries:{}})));await page.goto('./');

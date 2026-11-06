@@ -16,7 +16,7 @@ const record = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === 'object' && !Array.isArray(value);
 
 export function parseStoredWorkouts(raw: string | null, today: string): WorkoutData {
-  if (raw === null) return { workouts: {}, dailyLogs: {}, journalEntries: {}, routines: {}, lastDate: today };
+  if (raw === null) return { routineSchedulingVersion: 1, workouts: {}, dailyLogs: {}, journalEntries: {}, routines: {}, lastDate: today };
   let value: unknown;
   try { value = JSON.parse(raw); }
   catch { throw new StoredWorkoutDataError(raw, 'invalid'); }

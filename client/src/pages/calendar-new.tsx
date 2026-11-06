@@ -80,7 +80,6 @@ export default function CalendarPage() {
     getTotalStats,
     getIndividualWorkoutTotals,
     editWorkoutForDate,
-    isWorkoutActiveOnDay,
     getWorkoutLogsForDate
   } = useWorkouts();
   const {
