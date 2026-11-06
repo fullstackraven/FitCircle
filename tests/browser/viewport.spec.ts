@@ -52,7 +52,10 @@ test('home and routines reach their last items above the measured dock', async (
   expect(header!.y).toBeGreaterThanOrEqual(59);
   await page.getByRole('button', { name: 'Routines', exact: true }).click();
   await bottomAboveDock(page, page.getByTestId('routine-header-r7'));
-  await bottomAboveDock(page, page.getByTestId('button-create-routine'));
+  const newRoutine = page.getByTestId('button-create-routine');
+  await newRoutine.scrollIntoViewIfNeeded();
+  await expect(newRoutine).toBeInViewport();
+  expect((await newRoutine.boundingBox())!.y + (await newRoutine.boundingBox())!.height).toBeLessThanOrEqual((await page.locator('.app-dock').boundingBox())!.y);
   expect(await page.evaluate(() => document.scrollingElement!.scrollTop)).toBe(0);
   const nav = await page.getByRole('navigation', { name: 'Bottom navigation' }).boundingBox();
   expect(nav!.x).toBeGreaterThanOrEqual(0);

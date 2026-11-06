@@ -77,7 +77,7 @@ export default function RoutinesPage() {
             setError('Routine could not be deleted.');
     } };
     return <FormScreen><div className="fitcircle-page">
-  <AppHeader><div className="relative flex h-14 items-center justify-center"><Button size="icon" variant="ghost" className="absolute left-0" aria-label="Open Menu" onClick={() => setMenu(true)}><Menu /></Button><h1 className="text-xl font-bold">Routines</h1></div></AppHeader>
+  <AppHeader><div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center"><button className="fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors" aria-label="Open Menu" onClick={() => setMenu(true)}><Menu size={22}/></button><h1 className="text-xl font-bold">Routines</h1></div></AppHeader>
   <div className="fitcircle-container space-y-4 pb-6">
    <div className="flex gap-3 items-center justify-between"><div className="min-w-0"><h2 className="text-2xl font-bold">My Routines</h2><p className="text-sm text-muted-foreground">{routines.length} routines · {routines.reduce((n, r) => n + (r.placements?.length ?? 0), 0)} exercise placements</p></div><Button className="bg-accent-text text-[hsl(var(--on-selected-action))] hover:bg-action-hover hover:text-on-action" onClick={() => openRoutine()} data-testid="button-create-routine"><Plus size={18}/>New</Button></div>
    {error && <p role="alert" className="text-feature-red">{error}</p>}

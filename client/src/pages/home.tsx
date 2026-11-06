@@ -317,7 +317,7 @@ export default function Home() {
                       isAnimating={clickingWorkout === workout.id}
                     />
                     <div className="min-w-0 w-full text-center">
-                      <h3 className="home-workout-name mt-2 text-sm font-semibold text-strong">{workout.name}{workout.routineNames?.length ? <span className="block text-xs font-normal text-muted-foreground">{workout.routineNames.join(' · ')} · {workout.progress.targetType === 'duration' ? 'sec' : 'reps'}</span> : workout.progress.targetType === 'duration' ? ' (sec)' : ''}</h3>
+                      <h3 className="home-workout-name mt-2 text-sm font-semibold text-strong"><span className="entity-name">{workout.name}</span>{workout.routineNames?.length ? <span className="block text-xs font-normal text-muted-foreground">{workout.routineNames.join(' · ')} · {workout.progress.targetType === 'duration' ? 'sec' : 'reps'}</span> : workout.progress.targetType === 'duration' ? ' (sec)' : ''}</h3>
                       <p className="text-xs text-muted-foreground mt-1"><span className="type-metric">{currentCount} / {progress.repGoal}</span> {progress.targetType === "duration" ? "sec" : "reps"}{progress.mode === "reps" && <span className="block">Individual target tracking today</span>}</p>
                       {(workout.routineNames?.length??0)>1&&<p className="text-xs text-muted-foreground">Target from {workout.routineNames![0]} · Shared daily progress</p>}
                       {workout.weightLbs && (
@@ -524,7 +524,7 @@ export default function Home() {
               <div key={workout.id} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className={`w-4 h-4 rounded-full ${getColorClass(workout.color)}`}></div>
-                  <span className="entity-name font-medium text-strong">{workout.name}{workout.routineNames?.length ? <span className="block text-xs font-normal text-muted-foreground">{workout.routineNames.join(' · ')} · {workout.progress.targetType === 'duration' ? 'sec' : 'reps'}</span> : workout.progress.targetType === 'duration' ? ' (sec)' : ''}</span>
+                  <span className="entity-name font-medium text-strong"><span className="entity-name">{workout.name}</span>{workout.routineNames?.length ? <span className="block text-xs font-normal text-muted-foreground">{workout.routineNames.join(' · ')} · {workout.progress.targetType === 'duration' ? 'sec' : 'reps'}</span> : workout.progress.targetType === 'duration' ? ' (sec)' : ''}</span>
                 </div>
                 <span className="type-metric shrink-0 text-lg font-bold text-strong">{typeof workout.count === 'number' ? workout.count : 0}</span>
               </div>
