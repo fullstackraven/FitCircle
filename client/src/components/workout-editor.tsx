@@ -56,7 +56,7 @@ export function WorkoutEditor({ isOpen, onClose, onSave, onDelete, availableColo
         <div className="form-field"><Label htmlFor="exercise-equipment">Equipment</Label><Input id="exercise-equipment" disabled={routineContext && !!editingWorkout} value={equipment} onChange={e => setEquipment(e.target.value)}/></div>
         <div className="form-field"><Label htmlFor="exercise-rest">Rest between sets (seconds)</Label><Input id="exercise-rest" type="number" min="0" value={rest} onChange={e => setRest(e.target.value)}/></div>
         <div className="form-field"><Label htmlFor="exercise-notes">Instructions / notes</Label><textarea id="exercise-notes" className="glass-input rounded-xl w-full min-h-24 p-3" disabled={routineContext && !!editingWorkout} value={notes} onChange={e => setNotes(e.target.value)}/></div>
-        <div className="form-field"><Label htmlFor="workout-color">Exercise color</Label><select id="workout-color" aria-label="Workout color" className="glass-input min-h-11 rounded-xl p-3" disabled={routineContext && !!editingWorkout} value={color} onChange={e => setColor(e.target.value)}>{[...new Set([...availableColors, color])].map(c => <option key={c}>{c}</option>)}</select></div>
+        <div className="form-field"><Label htmlFor="workout-color">Exercise color</Label><select id="workout-color" aria-label="Workout color" className="glass-input fc-pill min-h-11 p-3" disabled={routineContext && !!editingWorkout} value={color} onChange={e => setColor(e.target.value)}>{[...new Set([...availableColors, color])].map(c => <option key={c}>{c}</option>)}</select></div>
       </details>
       {!routineContext && <DaySelector variant="sheet" heading="Standalone schedule" selectedDays={days} onSelectionChange={setDays}/>}
     </div>

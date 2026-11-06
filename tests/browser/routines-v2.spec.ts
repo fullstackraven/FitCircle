@@ -1,3 +1,4 @@
+import {pillGeometry} from '../fixtures/pill-geometry';
 import fs from 'node:fs';
 import {test,expect} from '@playwright/test';
 import {seedWellnessAppearance} from '../fixtures/appearance-wellness';
@@ -5,7 +6,7 @@ test.use({viewport:{width:390,height:844},timezoneId:'America/New_York'});
 const stored=(page:import('@playwright/test').Page)=>page.evaluate(()=>JSON.parse(localStorage.getItem('workout-tracker-data')!));
 for(const mode of ['light','dark','system'])test(`${mode}: routed planning, reuse, targets, variations, Home logging and deletion preserve history`,async({page})=>{
  test.setTimeout(90000);await seedWellnessAppearance(page,mode);await page.goto('routines');
- await expect(page.getByRole('heading',{name:'My Routines',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'My Routines',exact:true})).toBeVisible();expect(await pillGeometry(page)).toEqual([]);
  const initial=(await stored(page)).dailyLogs;
  await page.getByTestId('button-create-routine').click();await expect(page.getByRole('dialog')).toHaveCount(0);
  await page.getByLabel('Routine Name',{exact:true}).fill('Upper Body');await page.getByRole('button',{name:'Monday',exact:true}).click();
@@ -14,13 +15,13 @@ for(const mode of ['light','dark','system'])test(`${mode}: routed planning, reus
  await page.getByLabel('Workout Name',{exact:true}).fill('Timed Hold');await page.getByRole('button',{name:'Duration',exact:true}).click();
  await page.getByLabel('Number of Sets').fill('3');await page.getByLabel('Seconds per Set').fill('30');await page.getByLabel('Weight (lbs) - Optional').fill('0');
  if(process.env.ROUTINES_REVIEW==='1'&&mode==='dark'){fs.mkdirSync('docs/review/routines-v2',{recursive:true});await page.screenshot({path:'docs/review/routines-v2/exercise-dark.png'});}
- await page.getByText('Exercise Details · Equipment, rest, instructions, color',{exact:true}).click();await page.getByLabel('Equipment',{exact:true}).fill('Resistance bands');await page.getByLabel('Rest between sets (seconds)').fill('30');await page.getByLabel('Instructions / notes').fill('Maintain a comfortable posture.');
+ await page.getByText('Exercise Details · Equipment, rest, instructions, color',{exact:true}).click();await page.getByLabel('Equipment',{exact:true}).fill('Resistance bands');await page.getByLabel('Rest between sets (seconds)').fill('30');expect(await pillGeometry(page)).toEqual([]);await page.getByLabel('Instructions / notes').fill('Maintain a comfortable posture.');
  await page.getByRole('button',{name:'Save Exercise',exact:true}).click();await expect(page).toHaveURL(/routines\/new/);
  await expect(page.getByLabel('Routine Name')).toHaveValue('Upper Body');await expect(page.getByRole('button',{name:'Configure Timed Hold',exact:true})).toBeVisible();
  await page.getByRole('button',{name:'Move Timed Hold up',exact:true}).click();
  if(process.env.ROUTINES_REVIEW==='1'&&mode==='light'){fs.mkdirSync('docs/review/routines-v2',{recursive:true});await page.screenshot({path:'docs/review/routines-v2/routine-light.png'});}
  await page.getByText('Additional Options',{exact:true}).click();await page.getByLabel('Description / notes').fill('General training');
- await page.getByRole('button',{name:'Add Variation',exact:true}).click();await page.getByLabel('Variation name New variation').fill('Week B');
+ await page.getByRole('button',{name:'Add Variation',exact:true}).click();expect(await pillGeometry(page)).toEqual([]);await page.getByLabel('Variation name New variation').fill('Week B');
  await page.getByRole('button',{name:'Configure Timed Hold',exact:true}).click();await page.getByLabel('Seconds per Set').fill('45');await page.getByLabel('Weight (lbs) - Optional').fill('15');await page.getByText('Exercise Details · Equipment, rest, instructions, color',{exact:true}).click();await page.getByLabel('Rest between sets (seconds)').fill('90');
  await page.getByRole('button',{name:'Save Exercise',exact:true}).click();
  await page.getByRole('button',{name:'Save Routine',exact:true}).click();await expect(page).toHaveURL(/routines$/);
