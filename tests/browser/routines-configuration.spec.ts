@@ -129,7 +129,7 @@ test("inline expansion is keyboard accessible, independently retained, read-only
 test("explicit assignments survive routine schedule changes without rewriting exercise definitions or history", async ({page}) => {
  await seed(page); const before=await data(page);
  await page.getByTestId('button-edit-routine-r0').click();
- await page.getByText('＋ Add Exercise',{exact:true}).click();await page.getByRole('button',{name:'Add Weighted carry',exact:true}).click();
+ await page.getByRole('button',{name:'Add Exercise',exact:true}).click();await page.getByRole('button',{name:'Add Weighted carry',exact:true}).click();
  await page.getByRole('button',{name:'Clear Selection',exact:true}).click();await page.getByRole('button',{name:'Tuesday',exact:true}).click();
  await page.getByRole('button',{name:'Save Routine',exact:true}).click();
  const after=await data(page);expect(after.routines.r0.placements.map((p:any)=>p.exerciseId)).toContain('w1');expect(after.workouts).toEqual(before.workouts);expect(after.dailyLogs).toEqual(before.dailyLogs);expect(after.journalEntries).toEqual(before.journalEntries);
@@ -204,7 +204,8 @@ for (const width of [320, 390, 1280])
       const name = (await card.getByRole("heading").boundingBox())!;
       expect(name.x + name.width).toBeLessThanOrEqual(bounds.x);
     }
-    await page.getByText("Exercise Library", { exact: true }).click();
+    await expect(page.getByText("Exercise Library", { exact: true })).toHaveCount(0);
+    await page.getByTestId("button-add-workout-r7").click();
     await page
       .getByRole("button", { name: "Create New Exercise", exact: true })
       .scrollIntoViewIfNeeded();
@@ -220,7 +221,7 @@ for (const width of [320, 390, 1280])
     ).toBeLessThanOrEqual((await page.locator(".app-dock").boundingBox())!.y);
     expect(
       await page
-        .getByTestId("exercise-library")
+        .getByTestId("routine-card-r7")
         .evaluate((el) => el.scrollWidth <= el.clientWidth),
     ).toBe(true);
     const header = page.locator(".fitcircle-fixed-header");

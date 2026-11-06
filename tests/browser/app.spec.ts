@@ -9,6 +9,17 @@ test('fitness navigation, workout persistence, food search, and fully offline re
   await page.locator('#workout-name').fill('Migration smoke workout');
   await page.locator('#per-set').fill('10');
   await page.getByRole('button', { name: 'Save Exercise', exact: true }).click();
+  // A saved definition is unscheduled until explicitly assigned to a routine.
+  await expect(page.getByText('Migration smoke workout', { exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Routines', exact: true }).click();
+  await page.getByTestId('button-create-routine').click();
+  await page.getByLabel('Routine Name', { exact: true }).fill('Smoke routine');
+  const today = await page.evaluate(() => new Date().getDay());
+  await page.getByRole('button', { name: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today], exact: true }).click();
+  await page.getByRole('button', { name: 'Add Exercise', exact: true }).click();
+  await page.getByRole('button', { name: 'Add Migration smoke workout', exact: true }).click();
+  await page.getByRole('button', { name: 'Save Routine', exact: true }).click();
+  await page.getByRole('button', { name: 'Home', exact: true }).click();
   await expect(page.getByText('Migration smoke workout', { exact: true })).toBeVisible();
   await page.reload();
   await expect(page.getByText('Migration smoke workout', { exact: true })).toBeVisible();

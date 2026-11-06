@@ -1,3 +1,6 @@
+import { historicalActivities } from '@/lib/routine-planning';
+import { parseStoredWorkouts } from '@/lib/workout-initialization';
+import type { WorkoutData } from './use-workouts';
 import { isSetLog, workoutLogComplete } from '@/lib/workout-progress';
 import { useState, useCallback } from 'react';
 import { safeParseJSON, STORAGE_KEYS } from '@/lib/storage-utils';
@@ -58,8 +61,9 @@ export const useRecovery = () => {
     if (!totalCompletedDaysFromStats) {
       // Fallback calculation if not provided
       const workoutData = localStorage.getItem(STORAGE_KEYS.WORKOUTS);
-      const workouts = workoutData ? safeParseJSON<any>(workoutData, { workouts: {}, dailyLogs: {} }) : { workouts: {}, dailyLogs: {}, archivedWorkouts:{} };
-      const workoutArray = Object.values({...workouts.archivedWorkouts,...workouts.workouts});
+      let workouts: WorkoutData = { workouts:{},dailyLogs:{},journalEntries:{},routines:{} };
+      try { workouts = parseStoredWorkouts(workoutData, getTodayString()); } catch { /* Keep the existing safe empty fallback for unreadable data. */ }
+      const workoutArray = historicalActivities(workouts);
       
       if (workoutArray.length > 0) {
         Object.entries(workouts.dailyLogs || {}).forEach(([dateStr, dayLog]) => {

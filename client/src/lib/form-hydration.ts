@@ -60,7 +60,6 @@ export async function hydrateForm(def: FormDefinition, draft: Record<string, any
         if (routine) {
             const r = state.routineDraft?.id===routine ? state.routineDraft : find(Object.values(data.routines ?? {}), routine);
             state.selectedRoutineId = r.id;
-            state.preSelectedDays = r.selectedDays;
             const placement=params.get('placement');
             if(placement){const item=routineExercises({...data,routines:{...data.routines,[r.id]:r}},r).find(w=>w.placementId===placement);if(!item)throw Error('The exercise placement no longer exists.');state.editingPlacementId=placement;state.editingWorkout=item;}
         }

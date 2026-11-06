@@ -42,7 +42,7 @@ export default function Home() {
     getAvailableColors,
     getWorkoutArray,
     canAddMoreWorkouts,
-    isWorkoutActiveOnDay,
+    getPlannedExercises,
     getRoutineArray,
     saveExercise
   } = useWorkouts();
@@ -103,7 +103,8 @@ export default function Home() {
   
   // Filter workouts that should be active today
   const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
-  const todaysWorkouts = todaysTotals.filter(w => workouts.some(active=>active.id===w.id));
+  const scheduled = getPlannedExercises(today);
+  const todaysWorkouts = todaysTotals.filter(w => scheduled.some(active => active.id === w.id));
   
   // Get today's routine
   const routines = getRoutineArray();
@@ -124,7 +125,7 @@ export default function Home() {
         dayOfWeek: index, // 0-6
         name: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][index],
         date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        workouts: workouts.filter(workout => isWorkoutActiveOnDay(workout, index))
+        workouts: getPlannedExercises(index)
       };
     });
   };
@@ -161,29 +162,18 @@ export default function Home() {
 
   const handleAddWorkout = (name: string, color: string, dailyGoal: number, weightLbs?: number, scheduledDays?: number[], setsGoal = 1, details: ExerciseDetails = {}) => {
     const exercise: Workout={...editingWorkout,id:editingWorkout?.id ?? crypto.randomUUID(),name,color,dailyGoal,setsGoal,weightLbs,scheduledDays,count:editingWorkout?.count??0,...details};
-    const saved=saveExercise(exercise); if(saved)setEditingWorkout(null);return saved;
+    const saved=saveExercise(exercise); if(saved){ if(!editingWorkout)toast({title:'Exercise saved',description:'Assign it to a routine to schedule it.'});setEditingWorkout(null); }return saved;
   };
 
   const handleEditWorkout = (workout: any) => {
-    setEditingWorkout({...getWorkoutById(workout.id)??workout});
+    setEditingWorkout({...getWorkoutById(workout.exerciseId ?? workout.id)??workout});
     setWorkoutPageOpen(true);
   };
-
-  const getScheduledDaysText = (scheduledDays: number[]): string => {
-    if (!scheduledDays || scheduledDays.length === 7) return 'Daily';
-    if (scheduledDays.length === 5 && scheduledDays.every(day => day >= 1 && day <= 5)) return 'Weekdays';
-    if (scheduledDays.length === 2 && scheduledDays.includes(0) && scheduledDays.includes(6)) return 'Weekends';
-    
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    return scheduledDays.map(day => dayNames[day]).join(', ');
-  };
-
-
 
   // Account for timer circle (1 slot) + add workout button (1 slot if available) + actual workouts
   const timerSlots = 1; // Timer always takes 1 slot
   const addWorkoutSlots = canAddMoreWorkouts() ? 1 : 0;
-  const usedSlots = workouts.length + timerSlots + addWorkoutSlots;
+  const usedSlots = todaysWorkouts.length + timerSlots + addWorkoutSlots;
   const minSlots = Math.max(6, usedSlots); // Ensure at least 6 total slots for good layout
   const emptySlots = Math.max(0, minSlots - usedSlots);
 
@@ -319,7 +309,6 @@ export default function Home() {
                     <div className="min-w-0 w-full text-center">
                       <h3 className="home-workout-name mt-2 text-sm font-semibold text-strong"><span className="entity-name">{workout.name}</span>{workout.routineNames?.length ? <span className="block text-xs font-normal text-muted-foreground">{workout.routineNames.join(' · ')} · {workout.progress.targetType === 'duration' ? 'sec' : 'reps'}</span> : workout.progress.targetType === 'duration' ? ' (sec)' : ''}</h3>
                       <p className="text-xs text-muted-foreground mt-1"><span className="type-metric">{currentCount} / {progress.repGoal}</span> {progress.targetType === "duration" ? "sec" : "reps"}{progress.mode === "reps" && <span className="block">Individual target tracking today</span>}</p>
-                      {(workout.routineNames?.length??0)>1&&<p className="text-xs text-muted-foreground">Target from {workout.routineNames![0]} · Shared daily progress</p>}
                       {workout.weightLbs && (
                         <div className="text-xs text-muted-foreground">
                           {workout.weightLbs} lbs

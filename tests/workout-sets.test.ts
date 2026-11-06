@@ -37,7 +37,7 @@ test('completion reads set metadata; legacy goals still use reps',()=>{
 });
 const mixed=()=>({workouts:{w:{...workout,setsGoal:3}},routines:{},journalEntries:{},lastDate:'2026-10-27',dailyLogs:{'2026-10-25':{w:20},'2026-10-26':{w:{count:20,goalAtTime:20}},'2026-10-27':{w:{count:6,goalAtTime:20,completedSets:1,setsGoalAtTime:3}}}});
 test('initialization preserves mixed formats exactly; invalid set records are rejected',()=>{
- const data=mixed(),raw=JSON.stringify(data);assert.equal(JSON.stringify(parseStoredWorkouts(raw,'2026-10-27')),raw);
+ const data=mixed(),raw=JSON.stringify(data);const parsed=parseStoredWorkouts(raw,'2026-10-27');assert.deepEqual(parsed.workouts,data.workouts);assert.deepEqual(parsed.dailyLogs,data.dailyLogs);assert.deepEqual(parsed.journalEntries,data.journalEntries);assert.equal(parsed.routineSchedulingVersion,1);
  for(const fields of [{completedSets:-1},{completedSets:4},{setsGoalAtTime:0},{setsGoalAtTime:21},{count:7},{completedSets:undefined},{completedSets:1.5}]){
  const bad=mixed();Object.assign(bad.dailyLogs['2026-10-27'].w,fields);assert.equal(workoutDataSchema.safeParse(bad).success,false);
  }
@@ -95,4 +95,18 @@ test('current schedules never invent missing historical obligations',t=>{
 test('backup restores retained reps from a confirmed target change without normalization',async()=>{
  const source=new MemoryStorage(),target=new MemoryStorage();const d=mixed();Object.assign(d.dailyLogs['2026-10-27'].w,{carriedReps:12,count:18});const raw=JSON.stringify(d);source.setItem('workout-tracker-data',raw);
  const backup=await createBackup(source,new IDBFactory());applyRestore(prepareRestore(JSON.parse(JSON.stringify(backup))),target,new MemoryStorage());assert.equal(target.getItem('workout-tracker-data'),raw);
+});
+
+
+test('recovery fallback recognizes completed placement records after routine removal',()=>{
+ const descriptor=Object.getOwnPropertyDescriptor(globalThis,'localStorage');
+ const data={...mixed(),routineSchedulingVersion:1 as const};
+ (data.dailyLogs as Record<string,Record<string,unknown>>)['2026-10-28']={
+   'placement:["removed","p"]':{exerciseIdAtTime:'w',routineIdAtTime:'removed',placementIdAtTime:'p',nameAtTime:'Push-ups',colorAtTime:'green',targetTypeAtTime:'repetitions',count:30,goalAtTime:30,completedSets:3,setsGoalAtTime:3}
+ };
+ try{
+  Object.defineProperty(globalThis,'localStorage',{configurable:true,value:{getItem:(k:string)=>k==='workout-tracker-data'?JSON.stringify(data):null,setItem:()=>assert.fail('read must not write')}});
+  function Probe(){assert.equal(useRecovery().getRecoveryStats().totalWorkoutDays,2);return null;}
+  renderToString(createElement(Probe));
+ }finally{if(descriptor)Object.defineProperty(globalThis,'localStorage',descriptor);else Reflect.deleteProperty(globalThis,'localStorage');}
 });

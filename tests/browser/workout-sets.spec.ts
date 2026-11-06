@@ -17,7 +17,7 @@ test('sets preserve exact legacy allocation across prescription edits and agree 
  await page.goto('calendar');await expect(page.locator('[aria-current="date"]').locator('..')).toContainText('Workouts complete');
  await page.goto('workout-statistics');await expect(page.getByRole('region',{name:'Monthly Statistics',exact:true}).getByText('Monthly Reps',{exact:true}).locator('..').locator('dd')).toHaveText('20');
  await page.goto('dynamic-overview/2026-10-27');await expect(page.getByText('20 reps · 3/3 sets')).toBeVisible();await page.getByTitle('Edit count').click();await page.getByLabel('Completed sets').fill('2');await page.getByTitle('Save',{exact:true}).click();expect((await entry(page)).count).toBe(13);
- await page.clock.setFixedTime(new Date('2026-10-28T12:00:00-04:00'));await page.goto('./');await expect(circle).toHaveAttribute('aria-label',/0 of 4/);await circle.click();expect((await data(page)).dailyLogs['2026-10-28'].w).toMatchObject({count:25,goalAtTime:100,completedSets:1,setsGoalAtTime:4});
+ await page.clock.setFixedTime(new Date('2026-10-28T12:00:00-04:00'));await page.goto('./');await expect(circle).toHaveAttribute('aria-label',/0 of 3/);await circle.click();expect((await data(page)).dailyLogs['2026-10-28'].w).toMatchObject({count:6,goalAtTime:20,completedSets:1,setsGoalAtTime:3});
 });
 test('legacy partial day stays rep-based; following day adopts one set without rewriting history',async({page})=>{
  await seed(page,true);const before=await data(page);const card=page.getByTestId('home-workout-w');await expect(card.getByRole('button',{name:/Record a rep/})).toHaveAttribute('aria-label',/7 of 20/);

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { IDBFactory } from 'fake-indexeddb';
-import { useWorkouts } from '../client/src/hooks/use-workouts';
+import { useWorkouts, type WorkoutData } from '../client/src/hooks/use-workouts';
 import { createBackup, prepareRestore, applyRestore } from '../client/src/lib/backup';
 import { historicalIntegrityFixtures } from './fixtures/historical-integrity';
 
@@ -48,6 +48,37 @@ function readThroughHook(storage: Storage) {
   }
 }
 
+// These legacy fixtures have no routines or exercise weekday restrictions.
+// Scheduling may be projected into a routine; definitions, history, journals and
+// the stored/exported bytes must still be preserved exactly.
+function assertPreservedHistory(snapshot: unknown, original: WorkoutData) {
+  const actual = snapshot as Pick<WorkoutData, 'workouts' | 'routines' | 'dailyLogs' | 'journalEntries'>;
+  assert.deepEqual(actual.workouts, original.workouts);
+  assert.deepEqual(actual.dailyLogs, original.dailyLogs);
+  assert.deepEqual(actual.journalEntries, original.journalEntries);
+  assert.deepEqual(original.routines, {});
+  const definitions = Object.values(original.workouts).sort((a, b) => a.id.localeCompare(b.id));
+  assert.ok(definitions.every(w => !w.scheduledDays?.length));
+  const routineId = 'legacy-schedule:0,1,2,3,4,5,6';
+  assert.deepEqual(Object.keys(actual.routines), definitions.length ? [routineId] : []);
+  if (!definitions.length) return;
+  const { placements, ...routine } = actual.routines[routineId];
+  assert.deepEqual(routine, { id: routineId, name: 'Imported workouts',
+    selectedDays: [0, 1, 2, 3, 4, 5, 6], createdAt: '1970-01-01T00:00:00.000Z' });
+  assert.equal(placements?.length, definitions.length);
+  definitions.forEach((definition, index) => {
+    const placement = placements![index];
+    assert.equal(placement.id, `legacy:unassigned:${definition.id}`);
+    assert.equal(placement.exerciseId, definition.id);
+    assert.equal(placement.legacyLogId, definition.id);
+    assert.equal(placement.prescription.targetType, 'repetitions');
+    assert.equal(placement.prescription.sets, definition.setsGoal ?? 1);
+    assert.equal(placement.prescription.legacyTotal ?? placement.prescription.sets * placement.prescription.perSet, definition.dailyGoal);
+    assert.equal(placement.weightLbs, definition.weightLbs);
+    assert.equal(placement.restSeconds, definition.restSeconds);
+  });
+}
+
 for (const fixture of historicalIntegrityFixtures) {
   test(`initialization preserves ${fixture.name} across repeated mounts`, () => {
     const storage = new MemoryStorage();
@@ -57,7 +88,7 @@ for (const fixture of historicalIntegrityFixtures) {
     storage.setItem('workout-tracker-data', raw);
     storage.writes = [];
     for (let mount = 0; mount < 3; mount++) {
-      assert.deepEqual(readThroughHook(storage), fixture.data);
+      assertPreservedHistory(readThroughHook(storage), fixture.data);
       assert.equal(storage.getItem('workout-tracker-data'), raw);
       assert.deepEqual(storage.writes, [], 'initialization must not write historical replacements');
     }
@@ -77,7 +108,7 @@ for (const fixture of historicalIntegrityFixtures) {
       target.setItem('unrelated-synthetic-key', 'retain');
       applyRestore(prepareRestore(input), target, new MemoryStorage());
       assert.equal(target.getItem('workout-tracker-data'), raw);
-      assert.deepEqual(readThroughHook(target), fixture.data);
+      assertPreservedHistory(readThroughHook(target), fixture.data);
       assert.equal(target.getItem('workout-tracker-data'), raw);
       assert.equal(target.getItem('workout-tracker-logs'), JSON.stringify(fixture.data.dailyLogs));
       assert.equal(target.getItem('unrelated-synthetic-key'), 'retain');

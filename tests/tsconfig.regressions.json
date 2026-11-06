@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "browser/app.spec.ts",
+    "browser/viewport.spec.ts",
     "browser/routed-page-repair.spec.ts",
     "browser/retired-widget-settings.spec.ts",
     "browser/routed-forms.spec.ts",
@@ -98,6 +100,8 @@
     "browser/nutrition-details.spec.ts",
     "browser/routines-configuration.spec.ts",
     "browser/routines-v2.spec.ts",
+    "browser/routines-refinement.spec.ts",
+    "browser/routine-scheduling.spec.ts",
     "routine-planning.test.ts",
     "browser/modal-fields.spec.ts",
     "dashboard-sharing.test.ts",

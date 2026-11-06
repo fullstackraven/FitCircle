@@ -21,7 +21,7 @@ export function workoutLogComplete(entry: number | WorkoutLogEntry | undefined, 
 export function stepWorkout(workout: Workout, entry: number | WorkoutLogEntry | undefined, direction: 1 | -1): WorkoutLogEntry {
   const p = workoutProgress(workout, entry);
   const count = Math.max(0, Math.min(p.goal, p.count + direction));
-  const snapshot = typeof entry === 'object' ? entry : {targetTypeAtTime: entry ? 'repetitions' as const : prescriptionFor(workout).targetType, nameAtTime:workout.name,colorAtTime:workout.color,routineNamesAtTime:workout.routineNames};
+  const snapshot = typeof entry === 'object' ? entry : {exerciseIdAtTime:workout.exerciseId??workout.id,routineIdAtTime:workout.routineId,placementIdAtTime:workout.placementId,targetTypeAtTime: entry ? 'repetitions' as const : prescriptionFor(workout).targetType, nameAtTime:workout.name,colorAtTime:workout.color,routineNamesAtTime:workout.routineNames};
   if (p.mode === 'reps') return { ...snapshot, count: direction < 0 ? Math.max(0,p.count - 1) : Math.max(p.count,count), goalAtTime:p.repGoal };
   return { ...snapshot, count:(isSetLog(entry) ? entry.carriedReps ?? 0 : 0) + repsForSets(count,p.repGoal,p.goal), goalAtTime:p.repGoal, completedSets:count, setsGoalAtTime:p.goal };
 }
