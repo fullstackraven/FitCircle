@@ -1,4 +1,5 @@
 import { test, expect, type Page, type Locator } from '@playwright/test';
+import { placementLogId } from '../../client/src/lib/routine-planning';
 
 // Chromium mobile emulation + injected safe-area variables exercise the layout
 // contract. These are not real iOS Safari/standalone device tests.
@@ -42,8 +43,11 @@ async function bottomAboveDock(page: Page, target: Locator) {
 
 test('home and routines reach their last items above the measured dock', async ({ page }) => {
   await page.goto('./');
-  await expect(page.getByText('Exercise 9', { exact: true })).toBeAttached();
-  await bottomAboveDock(page, page.getByText('Exercise 9', { exact: true }));
+  // All eight routines retain their ten distinct placements, including shared definitions.
+  await expect(page.locator('[data-testid^="home-workout-"]')).toHaveCount(80);
+  const lastExercise = page.getByTestId('home-workout-' + placementLogId('r7', 'legacy:r7:w9')).getByText('Exercise 9', { exact: true });
+  await expect(lastExercise).toBeAttached();
+  await bottomAboveDock(page, lastExercise);
   await bottomAboveDock(page, page.getByRole('button', { name: 'Open Timer', exact: true }));
   const dock = await page.locator('.app-dock').boundingBox();
   const measured = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dock-height')));

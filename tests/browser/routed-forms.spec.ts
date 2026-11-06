@@ -111,6 +111,8 @@ test('browser Back protects drafts, Cancel discards explicitly, and Home Timer r
  page.once('dialog',d=>d.accept());await page.goBack();await expect(page).toHaveURL(/\/FitCircle\/$/);
  await page.getByRole('button',{name:'Add new workout',exact:true}).click();await page.getByLabel('Workout Name').fill('Created on page');
  await page.getByRole('button',{name:'Save Exercise',exact:true}).click();await expect(page).toHaveURL(/\/FitCircle\/$/);
+ await expect(page.getByRole('button',{name:'Edit Created on page',exact:true})).toHaveCount(0);
+ await page.getByRole('button',{name:'Routines',exact:true}).click();await page.getByTestId('routine-header-r').click();await page.getByTestId('button-add-workout-r').click();await page.getByRole('button',{name:'Add Created on page',exact:true}).click();await page.getByRole('button',{name:'Home',exact:true}).click();
  await page.getByRole('button',{name:'Edit Created on page',exact:true}).click();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Delete Exercise',exact:true}).click();
  await expect(page).toHaveURL(/\/FitCircle\/$/);await expect(page.getByText('Created on page',{exact:true})).toHaveCount(0);
  await page.getByTitle('Open Timer').click();await expect(page.getByRole('dialog',{name:'Timer',exact:true})).toBeVisible();

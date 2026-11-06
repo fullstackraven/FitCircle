@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "browser/app.spec.ts",
+    "browser/viewport.spec.ts",
     "browser/routed-page-repair.spec.ts",
     "browser/retired-widget-settings.spec.ts",
     "browser/routed-forms.spec.ts",
