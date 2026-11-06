@@ -280,7 +280,7 @@ export default function Home() {
       <section className="mb-8">
         <div className="space-y-5 overflow-visible">
           {/* No Workouts Message */}
-          {todaysRoutine && todaysWorkouts.length === 0 && (
+          {todaysWorkouts.length === 0 && (
             <div className="glass-panel bg-surface rounded-xl p-6 text-center">
               <h3 className="text-lg font-semibold text-strong mb-2">No workouts scheduled for today!</h3>
               <p className="text-supporting">Enjoy an active recovery day!</p>
