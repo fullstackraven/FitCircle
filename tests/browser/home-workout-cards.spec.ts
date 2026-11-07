@@ -26,7 +26,7 @@ for(const theme of ['dark','light']) test(`Home workout cards ${theme}`,async({p
  await page.setViewportSize({width:320,height:844});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
  const a=await card.boundingBox(),b=await page.getByTestId('home-workout-b').boundingBox();expect(a!.height).toBe(b!.height);expect(b!.x+b!.width).toBeLessThanOrEqual(320);
- await page.getByTitle('Add new workout').scrollIntoViewIfNeeded();await expect(page.getByTitle('Add new workout')).toBeInViewport();
+ await page.getByTitle('Manage Today’s Session').scrollIntoViewIfNeeded();await expect(page.getByTitle('Manage Today’s Session')).toBeInViewport();
  await card.getByRole('button',{name:'Edit Push-ups',exact:true}).click();await expect(page.getByLabel('Number of Sets')).toHaveValue('2');
  page.once('dialog',d=>d.dismiss());await page.getByRole('button',{name:'Delete Exercise',exact:true}).click();await expect(page.getByLabel('Workout Name')).toBeVisible();
  page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Delete Exercise',exact:true}).click();await expect(card).toHaveCount(0);

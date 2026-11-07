@@ -1,3 +1,4 @@
+import { ROUTINE_SORT_KEY, isRoutineSort } from './routine-sort';
 import { validPrescription, totalTarget } from './routine-planning';
 import { APPEARANCE_KEY, isAppearancePreference } from './appearance';
 import { nutritionGoalsSchema } from './nutrition';
@@ -75,6 +76,10 @@ export interface Backup {
 export interface RestorePlan { entries: Record<string, string>; ignoredKeys: string[] }
 const plain = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value);
 function validateEntry(key: string, raw: string) {
+  if (key === ROUTINE_SORT_KEY) {
+    if (!isRoutineSort(raw)) throw new Error('Invalid routine sorting preference');
+    return;
+  }
   if (key === APPEARANCE_KEY) {
     if (!isAppearancePreference(raw)) throw new Error('Invalid appearance preference');
     return;

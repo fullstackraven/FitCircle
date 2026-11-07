@@ -4,20 +4,17 @@ test('fitness navigation, workout persistence, food search, and fully offline re
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('./');
-  await expect(page.getByText('New workout', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Add new workout', exact: true }).click();
-  await page.locator('#workout-name').fill('Migration smoke workout');
-  await page.locator('#per-set').fill('10');
-  await page.getByRole('button', { name: 'Save Exercise', exact: true }).click();
-  // A saved definition is unscheduled until explicitly assigned to a routine.
-  await expect(page.getByText('Migration smoke workout', { exact: true })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Routines', exact: true }).click();
-  await page.getByTestId('button-create-routine').click();
+  await expect(page.getByText('Today’s Session', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Manage Today’s Session', exact: true }).click();
+  await page.getByRole('button', { name: 'Create New Routine', exact: true }).click();
   await page.getByLabel('Routine Name', { exact: true }).fill('Smoke routine');
   const today = await page.evaluate(() => new Date().getDay());
   await page.getByRole('button', { name: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today], exact: true }).click();
   await page.getByRole('button', { name: 'Add Exercise', exact: true }).click();
-  await page.getByRole('button', { name: 'Add Migration smoke workout', exact: true }).click();
+  await page.getByRole('button', { name: 'Custom Exercise', exact: true }).click();
+  await page.locator('#workout-name').fill('Migration smoke workout');
+  await page.locator('#per-set').fill('10');
+  await page.getByLabel('Number of Sets').fill('1');
   await page.getByRole('button', { name: 'Save Exercise', exact: true }).click();
   await page.getByRole('button', { name: 'Save Routine', exact: true }).click();
   await page.getByRole('button', { name: 'Home', exact: true }).click();
@@ -79,7 +76,7 @@ test('settings backup exports local and IndexedDB foods, validates before import
   backup.localStorage.fitcircle_username = 'Restored';
   await page.locator('input[type=file]').setInputFiles({ name: 'good.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
   await page.waitForURL('http://127.0.0.1:4173/FitCircle/');
-  await expect(page.getByText('New workout', { exact: true })).toBeVisible();
+  await expect(page.getByText('Today’s Session', { exact: true })).toBeVisible();
   const stored = await page.evaluate(() => ({ name: localStorage.getItem('fitcircle_username'), other: localStorage.getItem('other-app-key'), foods: JSON.parse(localStorage.getItem('fitcircle_food_database') || '[]') }));
   expect(stored.name).toBe('Restored'); expect(stored.other).toBe('keep');
   expect(stored.foods.some((f: {id: string}) => f.id === 'custom-idb')).toBe(true);

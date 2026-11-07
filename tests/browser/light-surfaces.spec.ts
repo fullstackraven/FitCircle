@@ -39,7 +39,7 @@ for (const mode of ['light', 'dark']) test(`${mode}: scoped card and editor surf
   await expect(name).toHaveCSS('box-shadow', mode === 'light' ? 'rgb(21, 128, 61) 0px 0px 0px 2px inset' : 'rgb(74, 222, 128) 0px 0px 0px 2px inset');
   await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
   await expect(card).toContainText('Push-ups');
-  await page.getByRole('button', { name: 'Add new workout', exact: true }).click();
+  await page.goto('workouts/new');
   await expect(dialog.getByLabel('Workout Name')).toHaveValue('');
   await expect(dialog.getByRole('button', { name: 'Save Exercise', exact: true })).toBeDisabled();
   await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();

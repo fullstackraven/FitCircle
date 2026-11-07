@@ -24,7 +24,7 @@ for (const mode of ['light', 'dark']) test(`${mode}: fixed dashboards retain fun
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   };
   await page.goto('./');
-  await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Manage Today’s Session', exact: true })).toBeVisible();
   await page.getByTitle('Open Timer', { exact: true }).click();
   await expect(page.getByRole('dialog', { name: 'Timer', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Cancel', exact: true }).click();

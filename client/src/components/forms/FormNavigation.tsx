@@ -92,6 +92,10 @@ function definition(store: Store, group: string): FormDefinition {
         return candidates.find(d => d.id === (v.editor === 'goals' ? 'profile-goals' : 'profile-edit'))!;
     return candidates[0];
 }
+/** Count only history entries belonging to a cross-page form visit. */
+export function nextFormHistoryDepth(state: any = history.state) {
+    return typeof state?.fitcircleFormDepth === 'number' ? { fitcircleFormDepth: state.fitcircleFormDepth + 1 } : {};
+}
 export function openForm(store: Store, group: string) {
     const def = definition(store, group);
     if (!def)
@@ -131,7 +135,13 @@ export function openForm(store: Store, group: string) {
         return;
     }
     const root = history.state?.fitcircleFormRoot ?? (formForPath() ? ownerPath(store.owner) : previous);
-    store.navigate(path, { state: { fitcircleForm: snapshot(store), fitcircleFormReturn: previous, fitcircleFormRoot: root,fitcircleFormParent:parent } });
+    store.navigate(path, { state: { fitcircleForm: snapshot(store), fitcircleFormReturn: previous, fitcircleFormRoot: root,fitcircleFormParent:parent, ...nextFormHistoryDepth() } });
+}
+/** Enter an existing routed form from another page using the same return metadata. */
+export function openFormFromPage(navigate: Store['navigate'], path: string) {
+    if (!formForPath(path.split('?')[0])) throw Error('Unknown form route');
+    const origin = appPath() + window.location.search;
+    navigate(path, { state: { fitcircleFormReturn: origin, fitcircleFormRoot: origin, fitcircleFormDepth: 1 } });
 }
 export function closeForm(store: Store) {
     allowFormExit();
@@ -148,9 +158,19 @@ export function closeForm(store: Store) {
     const values=snapshot(store);
     const fallback=ownerPath(store.owner)+(store.owner==='food-tracker' && values.selectedDate && values.selectedDate!==getTodayString() ? '?'+new URLSearchParams({date:values.selectedDate}) : '');
     const destination=target || fallback;
+    const depth = history.state?.fitcircleFormDepth;
+    if (Number.isInteger(depth) && depth > 0 && destination === history.state?.fitcircleFormRoot && !formForPath(destination.split('?')[0])) {
+        // Return to the original page entry, consuming this visit's editors and
+        // draft fences so Back cannot reopen a submitted nested form.
+        store.closing = true;
+        return new Promise<void>(resolve => {
+            window.addEventListener('popstate', () => { store.closing = false; resolve(); }, {once:true});
+            history.go(-depth);
+        });
+    }
     const returningToParent = !(save && def?.id!=='cardio-type' && !planningParent) && formForPath(destination.split('?')[0]);
     const parent = returningToParent ? (skipCatalog ? history.state?.fitcircleFormParent?.fitcircleFormParent : history.state?.fitcircleFormParent) : undefined;
-    const finish=()=>{store.closing=false;store.navigate(destination,{replace:true,state:{...parent,fitcircleForm:values}});};
+    const finish=()=>{store.closing=false;store.navigate(destination,{replace:true,state:{...parent,fitcircleForm:values,...(typeof history.state?.fitcircleFormDepth === 'number' ? {fitcircleFormDepth:history.state.fitcircleFormDepth} : {})}});};
     if(history.state?.fitcircleDraftFence){
         store.closing=true;
         // Consume the editor's same-route draft fence before replacing its URL.
