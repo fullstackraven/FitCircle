@@ -1,13 +1,13 @@
 import type { Workout } from '@/hooks/use-workouts';
 import { type ExerciseDetails } from '@/lib/routine-planning';
 import { FormScreen } from '@/components/forms/form-page';
-import { useRouteState, useRouteForm } from '@/components/forms/FormNavigation';
+import { useRouteState, useRouteForm, openFormFromPage } from '@/components/forms/FormNavigation';
 import { focusDashboardOnOpen, returnDashboardFocus } from '@/lib/dashboard-navigation';
 import { DashboardMenu } from '@/components/DashboardMenu';
 import { VersionLabel } from "@/components/VersionLabel";
 import { AppHeader } from "@/components/AppHeader";
-import { useState, useEffect } from 'react';
-import { Plus, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Target, TrendingUp, Calculator, UtensilsCrossed, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp, ChevronRight, Timer, Activity, Brain, Droplet } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { ListTodo, Edit, Undo2, Trash2, CalendarDays, CheckCircle, Scale, Settings, Menu, User, Clock, Target, TrendingUp, Calculator, UtensilsCrossed, Play, Pause, Square, StopCircle, RotateCcw, ChevronDown, ChevronUp, ChevronRight, Timer, Activity, Brain, Droplet } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useWorkouts } from '@/hooks/use-workouts';
 import { useControls } from '@/hooks/use-controls';
@@ -41,7 +41,6 @@ export default function Home() {
     getRecentActivity,
     getAvailableColors,
     getWorkoutArray,
-    canAddMoreWorkouts,
     getPlannedExercises,
     getRoutineArray,
     saveExercise
@@ -65,6 +64,8 @@ export default function Home() {
   const [editingWorkout, setEditingWorkout] = useRouteState<Workout | null>('editingWorkout', null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState(() => localStorage.getItem('fitcircle_username') || 'User');
+  const [isManageOpen, setManageOpen] = useState(false);
+  const manageButton = useRef<HTMLButtonElement>(null);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [timerHours, setTimerHours] = useState<string>('0');
   const [timerMinutes, setTimerMinutes] = useState<string>('0');
@@ -168,22 +169,21 @@ export default function Home() {
   const handleEditWorkout = (workout: any) => {
     if (workout.routineId && workout.placementId) {
       const params=new URLSearchParams({id:workout.exerciseId ?? workout.id,routine:workout.routineId,placement:workout.placementId});
-      navigate('/routines/workouts/edit?'+params,{state:{fitcircleFormReturn:'/',fitcircleFormRoot:'/'}});
+      openFormFromPage(navigate, '/routines/workouts/edit?'+params);
       return;
     }
     setEditingWorkout({...getWorkoutById(workout.exerciseId ?? workout.id)??workout});
     setWorkoutPageOpen(true);
   };
 
-  // Account for timer circle (1 slot) + add workout button (1 slot if available) + actual workouts
-  const timerSlots = 1; // Timer always takes 1 slot
-  const addWorkoutSlots = canAddMoreWorkouts() ? 1 : 0;
-  const usedSlots = todaysWorkouts.length + timerSlots + addWorkoutSlots;
-  const minSlots = Math.max(6, usedSlots); // Ensure at least 6 total slots for good layout
-  const emptySlots = Math.max(0, minSlots - usedSlots);
-
-
-
+  const manageRoutine = (id?: string) => {
+    setManageOpen(false);
+    openFormFromPage(navigate, id ? '/routines/edit?' + new URLSearchParams({id}) : '/routines/new');
+  };
+  const manageSession = () => {
+    if (todayRoutines.length === 1) manageRoutine(todayRoutines[0].id);
+    else setManageOpen(true);
+  };
 
   return <FormScreen>{(
     <div 
@@ -485,25 +485,25 @@ export default function Home() {
               )}
             </div>
 
-            {/* Add Workout Button */}
-            {canAddMoreWorkouts() && (
+            {/* Manage today's scheduled routines */}
               <div className="home-workout-utility flex flex-col items-center space-y-2 rounded-[18px] border border-separator p-3">
                 <div className="w-24 h-24 flex items-center justify-center">
                 <button
-                  onClick={() => setWorkoutPageOpen(true)}
+                  ref={manageButton}
+                  onClick={manageSession}
                   className="fc-pill home-utility-circle w-20 h-20 bg-surface flex items-center justify-center border-4 border-dashed border-separator hover:border-control transition-colors"
                   style={{ width: '80px', height: '80px' }}
-                  title="Add new workout"
+                  aria-label="Manage Today’s Session"
+                  title="Manage Today’s Session"
                 >
-                  <Plus className="w-8 h-8 text-muted-foreground" />
+                  <ListTodo className="w-8 h-8 text-muted-foreground" />
                 </button>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm text-supporting font-medium">Add</div>
-                  <div className="text-xs text-muted-foreground">New workout</div>
+                  <div className="text-sm text-supporting font-medium">Manage</div>
+                  <div className="text-xs text-muted-foreground">Today’s Session</div>
                 </div>
               </div>
-            )}
           </div>
         </div>
       </section>
@@ -532,6 +532,22 @@ export default function Home() {
 
 
 
+
+      <Dialog open={isManageOpen} onOpenChange={setManageOpen}>
+        <DialogContent className="max-w-sm" onCloseAutoFocus={event => { event.preventDefault(); manageButton.current?.focus(); }}>
+          <DialogHeader>
+            <DialogTitle>Manage Today’s Session</DialogTitle>
+            <DialogDescription>{todayRoutines.length ? 'Choose a routine to edit. Changes apply to its regular schedule.' : 'No routines scheduled today. Create a routine or view your routines.'}</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            {todayRoutines.length ? todayRoutines.map(routine => <Button key={routine.id} variant="outline" className="w-full min-h-11 h-auto whitespace-normal justify-between text-left" onClick={() => manageRoutine(routine.id)}>{routine.name}<ChevronRight className="ml-2 h-4 w-4 shrink-0"/></Button>) : <>
+              <Button variant="outline" className="w-full" onClick={() => manageRoutine()}>Create New Routine</Button>
+              <Button variant="outline" className="w-full" onClick={() => { setManageOpen(false); navigate('/routines'); }}>View Routines</Button>
+            </>}
+          </div>
+          <DialogFooter><Button variant="ghost" onClick={() => setManageOpen(false)}>Cancel</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <WorkoutEditor formId="workout"
         isOpen={isWorkoutPageOpen}

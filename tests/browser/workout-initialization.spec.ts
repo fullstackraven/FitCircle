@@ -16,7 +16,7 @@ for (const { name, raw } of malformedWorkouts) {
       await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
       expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe(raw);
       await expect(page.getByRole('heading', { name: 'Your saved workouts need attention' })).toBeVisible();
-      await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: 'Manage Today’s Session', exact: true })).toHaveCount(0);
       const download = page.waitForEvent('download');
       await page.getByRole('button', { name: 'Download original stored data' }).click();
       const file = await download;
@@ -46,7 +46,7 @@ test('Settings restores a verified backup after a blocked initialization without
   page.on('dialog', dialog => dialog.accept());
   await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-verified-backup.json', mimeType: 'application/json',
     buffer: Buffer.from(JSON.stringify({ [key]: data })) });
-  await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Manage Today’s Session', exact: true })).toBeVisible();
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)!), key)).toEqual(data);
   expect(await page.evaluate(() => localStorage.getItem('unrelated-synthetic'))).toBe('retain');
 });
@@ -83,7 +83,7 @@ test('quota failures leave an existing valid workout document intact across relo
   for (let load = 0; load < 2; load++) {
     if (load === 0) await page.goto('./');
     else await page.reload();
-    await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Manage Today’s Session', exact: true })).toBeVisible();
     expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe(raw);
   }
 });

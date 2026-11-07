@@ -58,17 +58,17 @@ test('multiple exercises and long names remain reachable on narrow and desktop H
     await expect(last.getByText(names[2],{exact:true})).toBeVisible();
     expect(await last.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
     const timerCircle = (await page.getByTitle('Open Timer').locator('.rounded-full').boundingBox())!;
-    const addCircle = (await page.getByRole('button',{name:'Add new workout',exact:true}).boundingBox())!;
+    const addCircle = (await page.getByRole('button',{name:'Manage Today’s Session',exact:true}).boundingBox())!;
     expect(addCircle.y).toBe(timerCircle.y);
     expect(addCircle.height).toBe(timerCircle.height);
-    expect((await page.getByText('Add',{exact:true}).boundingBox())!.y).toBe((await page.getByText('Timer',{exact:true}).boundingBox())!.y);
-    await page.getByRole('button',{name:'Add new workout',exact:true}).click();
+    expect((await page.getByText('Manage',{exact:true}).boundingBox())!.y).toBe((await page.getByText('Timer',{exact:true}).boundingBox())!.y);
+    await page.getByRole('button',{name:'Manage Today’s Session',exact:true}).click();
     await expect(page.locator('[data-form-page], [role="dialog"]')).toBeVisible();
     await page.locator('[data-form-page], [role="dialog"]').getByRole('button',{name:'Cancel',exact:true}).click();
     await page.getByTitle('Open Timer').click(); await expect(page.locator('[data-form-page], [role="dialog"]')).toBeVisible();
     await page.locator('[data-form-page], [role="dialog"]').getByRole('button',{name:'Close',exact:true}).click();
     await page.locator('.app-content').evaluate(el=>{el.scrollTop=el.scrollHeight;});
-    const add = (await page.getByRole('button',{name:'Add new workout',exact:true}).boundingBox())!;
+    const add = (await page.getByRole('button',{name:'Manage Today’s Session',exact:true}).boundingBox())!;
     expect(add.y+add.height).toBeLessThanOrEqual((await page.locator('.app-dock').boundingBox())!.y);
   }
 });

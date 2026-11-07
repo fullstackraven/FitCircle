@@ -27,7 +27,7 @@ for (const size of [{ width: 390, height: 844 }, { width: 1440, height: 1000 }])
     expect(await routineOnHome.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
     await page.evaluate(() => document.fonts.ready);
     await page.screenshot({ path:`/tmp/typography-home-${size.width}.png` });
-    await page.getByRole('button',{name:'Add new workout',exact:true}).click();
+    await page.goto('workouts/new');
     const input = page.locator('#workout-name');
     await expect(input).toBeVisible();
     expect(await input.evaluate(el => getComputedStyle(el).fontFamily)).not.toContain('JetBrains');

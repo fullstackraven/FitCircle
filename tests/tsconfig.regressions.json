@@ -1,6 +1,9 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "routine-sort.test.ts",
+    "browser/session-management.spec.ts",
+    "browser/routine-sorting.spec.ts",
     "browser/exercise-catalog.spec.ts",
     "exercise-catalog.test.ts",
     "browser/app.spec.ts",

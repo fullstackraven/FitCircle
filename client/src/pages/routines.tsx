@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { useEffect, useState } from 'react';
 import { VersionLabel } from '@/components/VersionLabel';
 import { focusDashboardOnOpen, returnDashboardFocus } from '@/lib/dashboard-navigation';
-import { Plus, Menu, Edit, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Menu, Edit, ChevronDown, ChevronRight, Ellipsis, Check } from 'lucide-react';
 import { useWorkouts, type Routine, type Workout } from '@/hooks/use-workouts';
 import { newPlanningId, prescriptionFor, prescriptionText, routineExercises, type ExerciseDetails, type ExercisePlacement } from '@/lib/routine-planning';
 import { getColorClass } from '@/lib/color-utils';
@@ -15,6 +15,8 @@ import { WorkoutEditor } from '@/components/workout-editor';
 import { RoutineEditor } from '@/components/routine-editor';
 import { SortableExercises } from '@/components/SortableExercises';
 import { ExercisePicker } from '@/components/ExercisePicker';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import { readRoutineSort, sortRoutines, routineSortOptions, ROUTINE_SORT_KEY, type RoutineSort } from '@/lib/routine-sort';
 import { ExerciseCatalog } from '@/components/ExerciseCatalog';
 import { customExerciseSeed, prebuiltExerciseSeed, type ExerciseMode } from '@/lib/exercise-selection';
 import type { CatalogExercise, EquipmentFilter, ExerciseCategory } from '@/lib/exercise-catalog';
@@ -22,7 +24,9 @@ const daysText = (days: number[]) => days.map(d => ['Sun', 'Mon', 'Tue', 'Wed', 
 export default function RoutinesPage() {
     const api = useWorkouts();
     const exercises = api.getWorkoutArray();
-    const routines = api.getRoutineArray();
+    const [sort, setSort] = useState(() => readRoutineSort(localStorage));
+    const [sortOpen, setSortOpen] = useState(false);
+    const routines = sortRoutines(api.getRoutineArray(), sort);
     const [menu, setMenu] = useState(false);
     useEffect(() => {
         const requested = new URLSearchParams(window.location.search).get('dashboard') === 'open';
@@ -32,6 +36,11 @@ export default function RoutinesPage() {
     }, []);
     const [expanded, setExpanded] = useState<Set<string>>(new Set());
     const [error, setError] = useState('');
+    const selectSort = (value: RoutineSort) => {
+        setSort(value); setSortOpen(false); setError('');
+        try { localStorage.setItem(ROUTINE_SORT_KEY, value); }
+        catch { setError('The sort order changed, but could not be saved for next time.'); }
+    };
     const [routineOpen, setRoutineOpen] = useRouteForm('routine');
     const [exerciseOpen, setExerciseOpen] = useRouteForm('workout');
     const [catalogOpen, setCatalogOpen] = useRouteForm('exercise-catalog');
@@ -113,7 +122,21 @@ export default function RoutinesPage() {
     return <FormScreen><div className="fitcircle-page">
   <AppHeader><div className="relative text-center max-w-md mx-auto px-4 h-14 flex items-center justify-center"><button className="fc-pill fc-icon-button absolute top-1/2 -translate-y-1/2 left-4 min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-strong transition-colors" aria-label="Open Menu" onClick={() => setMenu(true)}><Menu size={22}/></button><h1 className="fitcircle-wordmark text-2xl font-bold text-strong">FitCircle</h1></div></AppHeader>
   <div className="fitcircle-container space-y-4 pb-6">
-   <div className="flex gap-3 items-center justify-between"><div className="min-w-0"><h2 className="text-2xl font-bold">My Routines</h2></div><Button className="bg-accent-text text-[hsl(var(--on-selected-action))] hover:bg-action-hover hover:text-on-action" onClick={() => openRoutine()} data-testid="button-create-routine"><Plus size={18}/>New</Button></div>
+   <div className="flex gap-3 items-center justify-between"><div className="min-w-0"><h2 className="text-2xl font-bold">Routines</h2></div><div className="flex shrink-0 items-center gap-2">
+     <Dialog open={sortOpen} onOpenChange={setSortOpen}>
+      <DialogTrigger asChild><Button size="icon" variant="ghost" className="min-h-11 min-w-11" aria-label="Sort Routines"><Ellipsis size={22}/></Button></DialogTrigger>
+      <DialogContent className="max-w-sm" aria-describedby={undefined}>
+       <DialogHeader><DialogTitle>Sort Routines</DialogTitle></DialogHeader>
+       <div role="group" aria-label="Routine order" className="space-y-3">
+        {['Name','Date Created','Days'].map(group => <div key={group} role="group" aria-label={group}>
+         <h3 className="mb-1 text-sm font-semibold text-muted-foreground">{group}</h3>
+         {routineSortOptions.filter(option => option.group === group).map(option => <Button key={option.value} variant="ghost" aria-pressed={sort === option.value} className="w-full min-h-11 justify-between" onClick={() => selectSort(option.value)}>{option.label}{sort === option.value && <Check size={18} className="text-accent-text"/>}</Button>)}
+        </div>)}
+       </div>
+       <DialogFooter><Button variant="ghost" onClick={() => setSortOpen(false)}>Cancel</Button></DialogFooter>
+      </DialogContent>
+     </Dialog>
+     <Button className="bg-accent-text text-[hsl(var(--on-selected-action))] hover:bg-action-hover hover:text-on-action" onClick={() => openRoutine()} data-testid="button-create-routine"><Plus size={18}/>New</Button></div></div>
 
    {error && <p role="alert" className="text-feature-red">{error}</p>}
    {!routines.length && <div className="rounded-2xl border border-separator p-6 text-center"><p>No routines yet.</p><Button variant="ghost" data-testid="button-add-routine" onClick={() => openRoutine()}>Create Routine</Button></div>}

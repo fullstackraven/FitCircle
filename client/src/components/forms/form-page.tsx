@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useRef, type ReactNode } f
 import { AppHeader } from '@/components/AppHeader';
 import { PageHeader } from '@/components/ui/presentation';
 import { formForPath, FORM_EXIT, ownerPath } from '@/lib/form-routes';
-import { useRouteForm, useFormStore, closeForm } from './FormNavigation';
+import { useRouteForm, useFormStore, closeForm, nextFormHistoryDepth } from './FormNavigation';
 import { cn } from '@/lib/utils';
 import '@/styles/form-pages.css';
 const FormContext = createContext<{
@@ -76,7 +76,7 @@ export function FormContent({ children, variant = 'standard', title, onCancel, h
             dirty.current = true;
             if(active)store.dirtyForms.add(active.id);
             // A same-route history fence keeps the form mounted while Back asks.
-            history.pushState({...history.state, fitcircleDraftFence:fence.current}, '', window.location.href);
+            history.pushState({...history.state, ...nextFormHistoryDepth(), fitcircleDraftFence:fence.current}, '', window.location.href);
         }
     };
     const close = () => { if (dirty.current && !window.confirm('Discard unsaved changes?'))
@@ -84,7 +84,7 @@ export function FormContent({ children, variant = 'standard', title, onCancel, h
     useEffect(() => {
         if(active && dirty.current){
             store.dirtyForms.add(active.id);
-            if(!history.state?.fitcircleDraftFence)history.pushState({...history.state,fitcircleDraftFence:fence.current},'',window.location.href);
+            if(!history.state?.fitcircleDraftFence)history.pushState({...history.state, ...nextFormHistoryDepth(),fitcircleDraftFence:fence.current},'',window.location.href);
         }
         const clear = () => { allowedToLeave.current=true;dirty.current = false;if(active)store.dirtyForms.delete(active.id); };
         const unload = (event: BeforeUnloadEvent) => { if (dirty.current) {
@@ -95,7 +95,7 @@ export function FormContent({ children, variant = 'standard', title, onCancel, h
             if (!dirty.current || history.state?.fitcircleDraftFence === fence.current) return;
             event.stopImmediatePropagation();
             if (!window.confirm('Discard unsaved changes?')) {
-                history.pushState({...history.state, fitcircleForm:{...store.values}, fitcircleDraftFence:fence.current}, '', window.location.href);
+                history.pushState({...history.state, ...nextFormHistoryDepth(), fitcircleForm:{...store.values}, fitcircleDraftFence:fence.current}, '', window.location.href);
                 return;
             }
             dirty.current=false;

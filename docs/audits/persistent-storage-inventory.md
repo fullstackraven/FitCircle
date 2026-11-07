@@ -2,7 +2,7 @@
 
 Audited application source against main `ca35fd1` (PR #22). No active fitness-data key was missing from the existing backup allowlist. The gaps were future-source detection, completeness attestation, and clear rejection of some IndexedDB read errors. No new storage mechanism was discovered.
 
-There are **83 registered sources**: **77 localStorage keys/patterns included**, **one included IndexedDB database/store**, and **five intentional exclusions** (two temporary localStorage keys, one sessionStorage flag, two CacheStorage sources). Patterns represent arbitrarily many dated records, not one record. Some included exact keys exist solely for compatibility, not active features. A registry source is different from an individual call site or record count.
+There are **84 registered sources**: **78 localStorage keys/patterns included**, **one included IndexedDB database/store**, and **five intentional exclusions** (two temporary localStorage keys, one sessionStorage flag, two CacheStorage sources). Patterns represent arbitrarily many dated records, not one record. Some included exact keys exist solely for compatibility, not active features. A registry source is different from an individual call site or record count.
 
 The table traces actual TypeScript/JavaScript AST calls, imported constants, finite maps and dynamic expressions. File operations indicate read/write locations; generic guarded export/restore loops are described below. Run `npm run audit:storage -- --json` for individual locations and `npm run audit:storage -- --write-inventory` to refresh the table after a reviewed registry change.
 
@@ -23,6 +23,7 @@ The table traces actual TypeScript/JavaScript AST calls, imported constants, fin
 
 | Key / pattern | Mechanism | Feature | Read/write source files (operations) | Classification | Backup | Restore | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| `fitcircle_routine_sort` | localStorage | Routine presentation order | `client/src/pages/routines.tsx` (setItem) | settings | Included | Restorable | Separate optional sorting preference; no mutation of routines or schedules. |
 | `fitcircle_appearance` | localStorage | Appearance preference | `client/src/lib/appearance.ts` (getItem)<br>`client/src/lib/appearance.ts` (setItem)<br>`client/index.html.inline.js` (getItem) | settings | Included | Restorable | Explicit dark/light/system preference; validated before scalar handling; no default write or fitness-data migration. |
 | `fitcircle_nutrition_goals` | localStorage | Explicit nutrition targets | `client/src/lib/nutrition.ts` (getItem)<br>`client/src/lib/nutrition.ts` (setItem) | user data | Included | Restorable | User-confirmed calorie and macro goals; independent of calculator estimates. |
 | `workout-tracker-data` | localStorage | Workouts, routines, daily logs and journal | `client/src/hooks/use-recovery.ts` (getItem)<br>`client/src/lib/fitness-profile.ts` (getItem)<br>`client/src/lib/goals-utils.ts` (getItem)<br>`client/src/lib/workout-store.ts` (getItem)<br>`client/src/lib/workout-store.ts` (setItem) | user data | Included | Restorable | Preserve current and recoverable records with existing version 2 validation. |

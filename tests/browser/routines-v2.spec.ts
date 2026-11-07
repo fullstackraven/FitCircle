@@ -7,7 +7,7 @@ test.use({viewport:{width:390,height:844},timezoneId:'America/New_York'});
 const stored=(page:import('@playwright/test').Page)=>page.evaluate(()=>JSON.parse(localStorage.getItem('workout-tracker-data')!));
 for(const mode of ['light','dark','system'])test(`${mode}: routed planning, reuse, targets, Home logging and deletion preserve history`,async({page})=>{
  test.setTimeout(90000);await seedWellnessAppearance(page,mode);await page.goto('routines');
- await expect(page.getByRole('heading',{name:'My Routines',exact:true})).toBeVisible();expect(await pillGeometry(page)).toEqual([]);
+ await expect(page.getByRole('heading',{name:'Routines',exact:true})).toBeVisible();expect(await pillGeometry(page)).toEqual([]);
  const initial=(await stored(page)).dailyLogs;
  await page.getByTestId('button-create-routine').click();await expect(page.getByRole('dialog')).toHaveCount(0);
  await page.getByLabel('Routine Name',{exact:true}).fill('Upper Body');await page.getByRole('button',{name:'Monday',exact:true}).click();

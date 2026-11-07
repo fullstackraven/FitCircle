@@ -105,20 +105,15 @@ test('nested Cardio type returns to the unfinished Add Cardio page without losin
 });
 
 test('browser Back protects drafts, Cancel discards explicitly, and Home Timer remains a popup',async({page})=>{
- await seed(page);await page.goto('./');await page.getByRole('button',{name:'Add new workout',exact:true}).click();
- await page.getByLabel('Workout Name').fill('Unsaved Back draft');page.once('dialog',d=>d.dismiss());await page.goBack();
- await expect(page).toHaveURL(/workouts\/new/);await expect(page.getByLabel('Workout Name')).toHaveValue('Unsaved Back draft');
+ await seed(page);await page.goto('./');await page.getByRole('button',{name:'Manage Today’s Session',exact:true}).click();
+ await page.getByLabel('Routine Name').fill('Unsaved Back draft');page.once('dialog',d=>d.dismiss());await page.goBack();
+ await expect(page).toHaveURL(/routines\/edit/);await expect(page.getByLabel('Routine Name')).toHaveValue('Unsaved Back draft');
  page.once('dialog',d=>d.accept());await page.goBack();await expect(page).toHaveURL(/\/FitCircle\/$/);
- await page.getByRole('button',{name:'Add new workout',exact:true}).click();await page.getByLabel('Workout Name').fill('Created on page');
- await page.getByRole('button',{name:'Save Exercise',exact:true}).click();await expect(page).toHaveURL(/\/FitCircle\/$/);
- await expect(page.getByRole('button',{name:'Edit Created on page',exact:true})).toHaveCount(0);
- await page.getByRole('button',{name:'Routines',exact:true}).click();await page.getByTestId('routine-header-r').click();await page.getByTestId('button-add-workout-r').click();await page.getByRole('button',{name:'Add Created on page',exact:true}).click();await page.getByRole('button',{name:'Save Exercise',exact:true}).click();await page.getByRole('button',{name:'Home',exact:true}).click();
- await page.getByRole('button',{name:'Edit Created on page',exact:true}).click();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Delete Exercise',exact:true}).click();
- await expect(page).toHaveURL(/\/FitCircle\/$/);await expect(page.getByText('Created on page',{exact:true})).toHaveCount(0);
+ await page.getByRole('button',{name:'Manage Today’s Session',exact:true}).click();await page.getByLabel('Routine Name').fill('Edited on page');
+ await page.getByRole('button',{name:'Save Routine',exact:true}).click();await expect(page).toHaveURL(/\/FitCircle\/$/);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('workout-tracker-data')!).routines.r.name)).toBe('Edited on page');
  await page.getByTitle('Open Timer').click();await expect(page.getByRole('dialog',{name:'Timer',exact:true})).toBeVisible();
  await expect(page.locator('[data-form-page]')).toHaveCount(0);await page.getByRole('dialog',{name:'Timer',exact:true}).getByRole('button',{name:'Close',exact:true}).click();
- await page.goto('routines/edit?id=r');await page.getByLabel('Routine Name').fill('Edited on page');await page.getByRole('button',{name:'Save Routine',exact:true}).click();
- expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('workout-tracker-data')!).routines.r.name)).toBe('Edited on page');
 });
 
 test('dropdown and button-only edits are protected before leaving the form',async({page})=>{

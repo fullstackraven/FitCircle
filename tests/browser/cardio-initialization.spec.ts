@@ -81,7 +81,7 @@ test('raw cardio recovery download survives browser handoff and complete backup 
   await page.getByRole('link', { name: 'Open Account Data to restore a backup' }).click();
   page.on('dialog', dialog => dialog.accept());
   await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-cardio-backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ [cardioKey]: modernCardio })) });
-  await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Manage Today’s Session', exact: true })).toBeVisible();
   await page.goto('cardio');
   await expect(page.getByRole('button', { name: 'Add Cardio', exact: true })).toBeVisible();
   expect(await page.evaluate(key => localStorage.getItem(key), cardioKey)).toBe(JSON.stringify(modernCardio));
@@ -92,7 +92,7 @@ test('accepted incomplete cardio backup remains blocked and another verified bac
   page.on('dialog', dialog => dialog.accept());
   const partial = { goal: { type: 'duration', target: 21 } };
   await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-incomplete.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ [cardioKey]: partial })) });
-  await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Manage Today’s Session', exact: true })).toBeVisible();
   await page.goto('cardio');
   await expect(page.getByRole('heading', { name: 'Your saved cardio data needs attention' })).toBeVisible();
   await expect(page.locator('body')).toContainText('cardio tracking has not resumed');
@@ -100,7 +100,7 @@ test('accepted incomplete cardio backup remains blocked and another verified bac
   expect(await page.evaluate(key => localStorage.getItem(key), cardioKey)).toBe(JSON.stringify(partial));
   await page.getByRole('link', { name: 'Open Account Data to restore a backup' }).click();
   await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-complete.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ [cardioKey]: modernCardio })) });
-  await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Manage Today’s Session', exact: true })).toBeVisible();
   await page.goto('cardio');
   await expect(page.getByRole('button', { name: 'Add Cardio', exact: true })).toBeVisible();
 });
@@ -138,7 +138,7 @@ test('editing a valid cardio session preserves weekly goals, legacy entries and 
 test('legacy dashboard preferences do not cause hidden cardio writes', async ({ page }) => {
   await seed(page, { [cardioKey]: '{', fitcircle_dashboard_widgets: JSON.stringify([{ id: 'cardio-synthetic', type: 'cardio', title: 'Cardio', enabled: true, position: 0, size: 'small' }]) });
   await page.goto('./');
-  await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Manage Today’s Session', exact: true })).toBeVisible();
   expect(await page.evaluate(key => localStorage.getItem(key), cardioKey)).toBe('{');
   expect(await writes(page)).toEqual([]);
 });
@@ -162,7 +162,7 @@ test('editing a legacy alias keeps the source and produces an exportable canonic
   expect(JSON.parse(backup.localStorage[cardioKey]).dailyLogs['2025-03-02'].sessions[0].duration).toBe(13);
   page.on('dialog', dialog => dialog.accept());
   await page.locator('input[type="file"]').setInputFiles({ name: 'synthetic-roundtrip.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
-  await expect(page.getByRole('button', { name: 'Add new workout', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Manage Today’s Session', exact: true })).toBeVisible();
   await page.goto('cardio');
   await expect(page.getByRole('button', { name: 'Add Cardio', exact: true })).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('cardio'))).toBe(raw);
